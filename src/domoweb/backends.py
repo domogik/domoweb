@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import User
-from domogik.ui.djangodomo.models import Accounts
+from domoweb.models import Accounts
 
 class RestBackend(object):
     def authenticate(self, username=None, password=None):

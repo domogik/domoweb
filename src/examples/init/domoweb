@@ -1,0 +1,85 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          domoweb
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      1
+# Short-Description: Start DomoWeb UI for Domogik
+### END INIT INFO
+
+#This file is part of B{Domogik} project (U{http://www.domogik.org}).
+#
+#License
+#=======
+#
+#B{Domogik} is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#B{Domogik} is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with Domogik. If not, see U{http://www.gnu.org/licenses}.
+
+# source application-specific settings
+CUSTOM_PATH=""
+
+[ -f /etc/conf.d/domoweb ] && . /etc/conf.d/domoweb
+[ -f /etc/default/domoweb ] && . /etc/default/domoweb
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$CUSTOM_PATH:
+if [ $UID != 0 ];then
+    echo "Must be run with root privileges";
+    exit 1;
+fi
+
+function start_django {
+    echo -n " * Starting Django..."
+    USER_HOME=$(grep $DOMOWEB_USER /etc/passwd | cut -d":" -f6)
+    DJANGO_SERVER_IP=$(grep "^django_server_ip" ${USER_HOME}/.domogik/domoweb.cfg | cut -d " " -f 3)
+    if [ -z ${DJANGO_SERVER_IP} ] ; then
+        DJANGO_SERVER_IP=0.0.0.0
+    fi
+    DJANGO_SERVER_PORT=$(grep "^django_server_port" ${USER_HOME}/.domogik/domoweb.cfg | cut -d " " -f 3)
+    if [ -z ${DJANGO_SERVER_PORT} ] ; then
+        DJANGO_SERVER_PORT=40404
+    fi
+    /bin/su - ${DOMOWEB_USER} -c "dmg_domoweb runserver ${DJANGO_SERVER_IP}:${DJANGO_SERVER_PORT}>/var/log/domogik/domoweb.log 2>&1 &"
+    if [ $? -gt 0 ]; then
+        echo " An error occured during DomoWeb startup."
+        exit 1
+    else
+        echo " Done."
+    fi
+}
+
+function stop_django {
+    echo -n " * Stopping DomoWeb..."
+    for pid in `ps ax | grep "dmg_domoweb runserver" | grep -v grep | awk '{print $1}'`; do
+        kill -15 $pid 2>/dev/null 1>&2
+    done
+    echo " Done."
+}
+
+case "$1" in
+    start)
+    start_django
+    ;;
+    stop)
+    stop_django
+    ;;
+    restart)
+    $0 stop $2
+    sleep 5
+    $0 start $2
+    ;;
+    *)
+    echo "usage: $0 {start|stop|restart}"
+esac
+exit 0

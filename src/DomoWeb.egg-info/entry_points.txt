@@ -1,0 +1,3 @@
+[console_scripts]
+dmg_domoweb = domoweb.manage:run_manager
+

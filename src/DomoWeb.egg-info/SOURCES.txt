@@ -1,0 +1,8 @@
+setup.py
+src/DomoWeb.egg-info/PKG-INFO
+src/DomoWeb.egg-info/SOURCES.txt
+src/DomoWeb.egg-info/dependency_links.txt
+src/DomoWeb.egg-info/entry_points.txt
+src/DomoWeb.egg-info/not-zip-safe
+src/DomoWeb.egg-info/requires.txt
+src/DomoWeb.egg-info/top_level.txt

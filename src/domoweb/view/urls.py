@@ -37,7 +37,7 @@ Implements
 from django.conf.urls.defaults import *
 
 
-urlpatterns = patterns('domogik.ui.djangodomo.view.views',
+urlpatterns = patterns('domoweb.view.views',
     url(r'^$', 'house', name="view_index_view"),
     url(r'house/$', 'house', name="view_house_view"),
     url(r'house/edit/(?P<from_page>\w+)/$', 'house_edit', name="edit_house_view"),

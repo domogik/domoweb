@@ -146,7 +146,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-ROOT_URLCONF = 'domogik.ui.djangodomo.urls'
+ROOT_URLCONF = 'domoweb.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or
@@ -157,10 +157,10 @@ TEMPLATE_DIRS = (
     '%s/view/templates/' % PROJECT_PATH,
     '%s/admin/templates/' % PROJECT_PATH,
     '%s/rinor/templates/' % PROJECT_PATH,
-    '/usr/local/share/domogik/ui/djangodomo/home/templates/',
-    '/usr/local/share/domogik/ui/djangodomo/view/templates/',
-    '/usr/local/share/domogik/ui/djangodomo/admin/templates/',
-    '/usr/local/share/domogik/ui/djangodomo/rinor/templates/',
+    '/usr/local/share/domoweb/home/templates/',
+    '/usr/local/share/domoweb/view/templates/',
+    '/usr/local/share/domoweb/admin/templates/',
+    '/usr/local/share/domoweb/rinor/templates/',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -177,10 +177,10 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django_pipes', # Used to create Django's model using REST
-    'domogik.ui.djangodomo.home',
-    'domogik.ui.djangodomo.view',
-    'domogik.ui.djangodomo.admin',
-    'domogik.ui.djangodomo.rinor',
+    'domoweb.home',
+    'domoweb.view',
+    'domoweb.admin',
+    'domoweb.rinor',
 )
 
 
@@ -203,7 +203,7 @@ STATIC_WIDGETS_ROOT = None
 #STATIC_DESIGN_ROOT = None 
 
 #Only loads the widgets from the FIRST existing directory in TEMPLATE_DIRS
-for t_path in (PROJECT_PATH, '/usr/local/share/domogik/ui/djangodomo/',):
+for t_path in (PROJECT_PATH, '/usr/local/share/domoweb/',):
     if os.path.isdir(t_path):
         STATIC_DESIGN_ROOT = '%s/design' % t_path
         w_path = os.path.join(t_path, "widgets")
@@ -217,7 +217,7 @@ for t_path in (PROJECT_PATH, '/usr/local/share/domogik/ui/djangodomo/',):
 
 
 # For login Auth
-AUTHENTICATION_BACKENDS = ('domogik.ui.djangodomo.backends.RestBackend',)
+AUTHENTICATION_BACKENDS = ('domoweb.backends.RestBackend',)
 LOGIN_URL = '/admin/login'
 LOGOUT_URL = '/admin/logout'
 LOGIN_REDIRECT_URL = '/admin/'

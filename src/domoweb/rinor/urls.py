@@ -37,7 +37,7 @@ Implements
 from django.conf.urls.defaults import *
 
 
-urlpatterns = patterns('domogik.ui.djangodomo.rinor.views',
+urlpatterns = patterns('domoweb.rinor.views',
 
     url(r'error/BadStatusLine$', 'error_badstatusline', name="error_badstatusline_view"),
     url(r'error/ResourceNotAvailable$', 'error_resourcenotavailable', name="error_resourcenotavailable_view"),

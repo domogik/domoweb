@@ -37,6 +37,6 @@ Implements
 from django.conf.urls.defaults import *
 
 
-urlpatterns = patterns('domogik.ui.djangodomo.home.views',
+urlpatterns = patterns('domoweb.home.views',
     url(r'^$', 'index', name="index_view"),
 )
