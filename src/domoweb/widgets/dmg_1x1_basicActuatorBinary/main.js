@@ -50,18 +50,15 @@
                 // Suppose the switch currently off
                 this.processingValue = 1;
             }
-            rest.get(['command', o.devicetechnology, o.deviceaddress, this.values[this.processingValue]],
-                function(data) {
-                    var status = (data.status).toLowerCase();
-                    if (status == 'ok') {
-                        self.valid(o.featureconfirmation);
-                    } else {
-                        /* Error */
-                        self.cancel();
-                        $.notification('error', data.description);
-                    }
-                }
-            );
+            rinor.get(['command', o.devicetechnology, o.deviceaddress, this.values[this.processingValue]])
+                .success(function(data, status, xhr){
+                    self.valid(o.featureconfirmation);
+                })
+                .error(function(jqXHR, status, error){
+                    self.cancel();
+                    if (jqXHR.status == 400)
+                        $.notification('error', jqXHR.responseText);
+                });
         },
 
         cancel: function() {

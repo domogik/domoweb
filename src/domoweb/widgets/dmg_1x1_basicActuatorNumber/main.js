@@ -76,16 +76,13 @@
         action: function() {
             var self = this, o = this.options;
             self._startProcessingState();
-            rest.get(['command', o.devicetechnology, o.deviceaddress, o.model_parameters.command, self.value],
-                function(data) {
-                    self._stopProcessingState();
-                    var status = (data.status).toLowerCase();
-                    if (status == 'ok') {
-                    } else {
-                        $.notification('error', data.description);
-                    }
-                }
-            );
+            rinor.get(['command', o.devicetechnology, o.deviceaddress, o.model_parameters.command, self.value])
+                .success(function(data, status, xhr){
+                })
+                .error(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', jqXHR.responseText);
+                });
         },
         
         _startProcessingState: function() {

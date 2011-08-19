@@ -50,26 +50,24 @@
             } else {
                 restcommand = ['command', o.devicetechnology, o.deviceaddress, o.model_parameters.command];
             }
-            rest.get(restcommand,
-                function(data) {
-                    var status = (data.status).toLowerCase();
-                    if (status == 'ok') {
-                        if (self.sequence) {
-                            self._value.html(self.sequence[self.sequenceIndex]['key']);
-                            if (self.sequenceIndex == self.sequence.length - 1) {
-                                self.sequenceIndex = 0;
-                            } else {
-                                self.sequenceIndex++;
-                            }
+            
+            rest.get(restcommand)
+                .success(function(data, status, xhr){
+                    if (self.sequence) {
+                        self._value.html(self.sequence[self.sequenceIndex]['key']);
+                        if (self.sequenceIndex == self.sequence.length - 1) {
+                            self.sequenceIndex = 0;
+                        } else {
+                            self.sequenceIndex++;
                         }
-                        self.valid(o.featureconfirmation);
-                    } else {
-                        /* Error */
-                        self.cancel();
-                        $.notification('error', data.description);
                     }
-                }
-            );
+                    self.valid(o.featureconfirmation);
+                })
+                .error(function(jqXHR, status, error){
+                    self.cancel();
+                    if (jqXHR.status == 400)
+                        $.notification('error', jqXHR.responseText);
+                });
         },
         
         cancel: function() {

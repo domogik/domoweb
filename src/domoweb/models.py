@@ -339,15 +339,6 @@ class Accounts(pipes.DmgPipe):
         if resp :
             return resp
 
-class Stats(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/stats"
-
-    @staticmethod
-    def get_latest(id, key):
-        resp = Stats.objects.get({'parameters':str(id) + "/" + key + "/latest"})
-        if resp :
-            return resp
-
 class Packages(pipes.DmgPipe):
     uri = settings.INTERNAL_REST_URL + "/package"
 
@@ -380,3 +371,28 @@ class Packages(pipes.DmgPipe):
         resp = Packages.objects.get({'parameters':"get-mode"})
         if resp :
             return resp 
+
+class Command(pipes.DmgPipe):
+    uri = settings.INTERNAL_REST_URL + "/command"
+
+    @staticmethod
+    def send(techno, address, command, values):
+        # Change to PUT
+        resp = Command.objects.get({'parameters':techno + "/" + address + "/" + command + "/" + values})
+        if resp :
+            return resp
+
+class State(pipes.DmgPipe):
+    uri = settings.INTERNAL_REST_URL + "/stats"
+
+    @staticmethod
+    def get_latest(id, key):
+        resp = State.objects.get({'parameters':str(id) + "/" + key + "/latest"})
+        if resp :
+            return resp
+
+    @staticmethod
+    def get_last(id, key, nb):
+        resp = State.objects.get({'parameters':str(id) + "/" + key + "/last/" + nb})
+        if resp :
+            return resp

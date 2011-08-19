@@ -152,7 +152,7 @@ def house(request):
     except BadStatusLine:
         HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailableException")
+        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
     return __go_to_page(
         request, 'house.html',
         page_title,
@@ -189,7 +189,7 @@ def house_edit(request, from_page):
     except BadStatusLine:
         HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailableException")
+        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
     return __go_to_page(
         request, 'house.edit.html',
         page_title,
@@ -227,7 +227,7 @@ def area(request, area_id):
     except BadStatusLine:
         HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailableException")
+        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
     page_title = _("View ") + result_area_by_id.area[0].name
     return __go_to_page(
@@ -267,7 +267,7 @@ def area_edit(request, area_id, from_page):
     except BadStatusLine:
         HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailableException")
+        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
     page_title = _("Edit ") + result_area_by_id.area[0].name
     return __go_to_page(
@@ -304,7 +304,7 @@ def room(request, room_id):
     except BadStatusLine:
         HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailableException")
+        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
     page_title = _("View ") + result_room_by_id.room[0].name
     return __go_to_page(
@@ -343,7 +343,7 @@ def room_edit(request, room_id, from_page):
     except BadStatusLine:
         HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailableException")
+        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
     page_title = _("Edit ") + result_room_by_id.room[0].name
     return __go_to_page(

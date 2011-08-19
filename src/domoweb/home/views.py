@@ -153,7 +153,7 @@ def index(request):
     except BadStatusLine:
         return HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailableException")
+        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
     return __go_to_page(
         request, 'index.html',

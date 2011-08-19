@@ -105,19 +105,16 @@ const auto_send = 3000; // 3 seconds
             var self = this, o = this.options;
             if (this._processingValue != this.currentValue) {
                 this._startProcessingState();
-                rest.get(['command', o.devicetechnology, o.deviceaddress, o.model_parameters.command, this._processingValue],
-                    function(data) {
-                        var status = (data.status).toLowerCase();
-                        if (status == 'ok') {
-                            self.valid(o.featureconfirmation);
-                        } else {
-                            /* Error */
-                            self.cancel();
-                            $.notification('error', data.description);
-                        }
-                    }
-                );
-			}
+                rinor.get(['command', o.devicetechnology, o.deviceaddress, o.model_parameters.command, this._processingValue])
+                    .success(function(data, status, xhr){
+                        self.valid(o.featureconfirmation);
+                    })
+                    .error(function(jqXHR, status, error){
+                        self.cancel();
+                        if (jqXHR.status == 400)
+                            $.notification('error', jqXHR.responseText);
+                    });
+            }
         },
         
         plus_range: function() {

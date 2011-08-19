@@ -79,16 +79,15 @@ function get_widgets_options(id) {
         
         _initValues: function(nb) {
             var self = this, o = this.options;
-            rest.get(['stats', o.deviceid, o.key, 'last', nb],
-                function(data) {
-                    var status = (data.status).toLowerCase();
-                    if (status == 'ok') {
-                        self._statsHandler(data.stats);
-                    } else {
+            rinor.get(['state', o.deviceid, o.key, 'last', nb])
+                .success(function(data, status, xhr){
+                    console.log(data)
+                    self._statsHandler(data);
+                })
+                .error(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
                         $.notification('error', '{% trans "Getting stats failed" %} (' + data.description + ')');
-                    }
-                }
-            );
+                });
         },
         
         _eventsHandler: function(events) {

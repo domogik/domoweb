@@ -33,12 +33,65 @@ Implements
 @license: GPL(v3)
 @organization: Domogik
 """
-from django.shortcuts import render_to_response
+from django.conf import settings
+from django.http import HttpResponse
 from django.template import RequestContext
+from django.shortcuts import render_to_response
+from django.shortcuts import redirect
+import simplejson
 
+from django_pipes.exceptions import ResourceNotAvailableException
+from httplib import BadStatusLine
 
+from domoweb.models import (
+    Command, State
+)
+
+class JSONResponse(HttpResponse):
+    def __init__(self, data, key=None):
+        if (data.status == 'OK'):
+            indent = 2 if settings.DEBUG else None
+            if (key):
+                if data.items.has_key(key):
+                    content = simplejson.dumps(data.items[key], indent=indent)
+                else:
+                    raise AttributeError
+            else:
+                content = 'OK'
+            code = 200
+        else:
+            content = data.description,
+            code = 400
+        super(JSONResponse, self).__init__(
+            content = content,
+            mimetype = "application/json",
+        )
+        self.status_code = code
+        self['Pragma'] = 'no-cache'
+        self['Cache-Control'] = 'no-cache, must-revalidate'
+        self['Expires'] = '0'        
+
+        
 def error_badstatusline(request):
     return render_to_response('error/BadStatusLine.html')
         
 def error_resourcenotavailable(request):
-    return render_to_response('error/ResourceNotAvailableException.html')
+    return render_to_response('error/ResourceNotAvailable.html')
+
+def rinor_command(request, techno, address, command, values=None):
+    try:
+        data = Command.send(techno, address, command, values)
+    except BadStatusLine:
+        HttpResponseRedirect("/rinor/error/BadStatusLine")
+    except ResourceNotAvailableException:
+        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
+    return JSONResponse(data)
+
+def rinor_state_last(request, device_id, key, nb=1):
+    try:
+        data = State.get_last(device_id, key, nb)
+    except BadStatusLine:
+        HttpResponseRedirect("/rinor/error/BadStatusLine")
+    except ResourceNotAvailableException:
+        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
+    return JSONResponse(data, 'stats')

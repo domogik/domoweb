@@ -46,36 +46,30 @@
                 currentValue = "off";
             }
             if ((currentValue == "off") || (currentValue == "#000000")) {
-                rest.get(['command', o.devicetechnology, o.deviceaddress, 'setcolor', 'on'],
-                    function(data) {
-                        var status = (data.status).toLowerCase();
-                        if (status == 'ok') {
-                            $('#colorpicker').show();
-                            $('#preview').show();
-                            $('#colorpicker_off').hide();
-                            self.displayValue('on');
-                        } else {
-                            /* Error */
-                            $.notification('error', data.description);
-                        }
-                    }
-                );
+                rinor.get(['command', o.devicetechnology, o.deviceaddress, 'setcolor', 'on'])
+                    .success(function(data, status, xhr){
+                        $('#colorpicker').show();
+                        $('#preview').show();
+                        $('#colorpicker_off').hide();
+                        self.displayValue('on');
+                    })
+                    .error(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', jqXHR.responseText);
+                    });
             }
             else {
-                rest.get(['command', o.devicetechnology, o.deviceaddress, 'setcolor', 'off'],
-                    function(data) {
-                        var status = (data.status).toLowerCase();
-                        if (status == 'ok') {
-                            $('#colorpicker').hide();
-                            $('#preview').hide();
-                            $('#colorpicker_off').show();
-                            self.displayValue('off');
-                        } else {
-                            /* Error */
-                            $.notification('error', data.description);
-                        }
-                    }
-                );
+                rinor.get(['command', o.devicetechnology, o.deviceaddress, 'setcolor', 'off'])
+                    .success(function(data, status, xhr){
+                        $('#colorpicker').hide();
+                        $('#preview').hide();
+                        $('#colorpicker_off').show();
+                        self.displayValue('off');
+                    })
+                    .error(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', jqXHR.responseText);
+                    });
             }
         },
 
@@ -93,25 +87,21 @@
             var self = this, o = this.options;
             // change preview color
             $('#preview').css({
-                backgroundColor: color,
+                backgroundColor: color
             });
             $.farbtastic('#colorpicker').setColor(color);
             // call command
             if (dontCallCmd != 1) {
-                rest.get(['command', o.devicetechnology, o.deviceaddress, 'setcolor', color],
-                    function(data) {
-                        var status = (data.status).toLowerCase();
-                        if (status == 'ok') {
-                            $('#colorpicker').show();
-                            $('#preview').show();
-                            $('#colorpicker_off').hide();
-                        }
-                        else {
-                            /* Error */
-                            $.notification('error', data.description);
-                        }
-                    }
-                );
+                rinor.get(['command', o.devicetechnology, o.deviceaddress, 'setcolor', color])
+                    .success(function(data, status, xhr){
+                        $('#colorpicker').show();
+                        $('#preview').show();
+                        $('#colorpicker_off').hide();
+                    })
+                    .error(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', jqXHR.responseText);
+                    });
             }
         },
 

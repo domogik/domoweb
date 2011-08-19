@@ -42,19 +42,16 @@
         
         action: function(command_code) {
             var self = this, o = this.options;
-            rest.get(['command', o.devicetechnology, o.deviceaddress, command_code],
-                function(data) {
-                    var status = (data.status).toLowerCase();
-                    if (status == 'ok') {
-                        self.valid(o.featureconfirmation);
-                    } else {
-                        /* Error */
-                        self.cancel();
-                    }
-                }
-            );
+            rinor.get(['command', o.devicetechnology, o.deviceaddress, command_code])
+                .success(function(data, status, xhr){
+                    self.valid(o.featureconfirmation);
+                })
+                .error(function(jqXHR, status, error){
+                    self.cancel();
+                    if (jqXHR.status == 400)
+                        $.notification('error', jqXHR.responseText);
+                });
         },
-
         cancel: function() {
             this.element.stopProcessingState();
         },
