@@ -43,6 +43,7 @@ from django.utils.translation import ugettext
 from django.conf import settings
 from distutils2.version import *
 from distutils2.version import IrrationalVersionError
+from domoweb.utils import *
 
 from domoweb.rest import (
     House, Areas, Rooms, Devices, DeviceUsages, DeviceTechnologies, DeviceTypes,
@@ -51,38 +52,6 @@ from domoweb.rest import (
 
 from django_pipes.exceptions import ResourceNotAvailableException
 from httplib import BadStatusLine
-
-def __go_to_page(request, html_page, page_title, page_messages, **attribute_list):
-    """
-    Common method called to go to an html page
-    @param request : HTTP request
-    @param html_page : the page to go to
-    @param page_title : page title
-    @param **attribute_list : list of attributes (dictionnary) that need to be
-           put in the HTTP response
-    @return an HttpResponse object
-    """
-    if (not page_messages) :
-        page_messages = []
-        
-    status = request.GET.get('status', None)
-    msg = request.GET.get('msg', None)
-    if (msg):
-        page_messages.append({'status':status, 'msg':msg })
-        
-    response_attr_list = {}
-    response_attr_list['page_title'] = page_title
-    response_attr_list['page_messages'] = page_messages
-    response_attr_list['rest_url'] = settings.EXTERNAL_REST_URL
-    response_attr_list['is_user_connected'] = __is_user_connected(request)
-    for attribute in attribute_list:
-        response_attr_list[attribute] = attribute_list[attribute]
-    response = render_to_response(html_page, response_attr_list,
-                              context_instance=RequestContext(request))
-    response['Pragma'] = 'no-cache'
-    response['Cache-Control'] = 'no-cache, must-revalidate'
-    response['Expires'] = '0'
-    return response
 
 def login(request):
     """
@@ -103,7 +72,7 @@ def login(request):
             HttpResponseRedirect("/rinor/error/BadStatusLine")
         except ResourceNotAvailableException:
             return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
-        return __go_to_page(
+        return go_to_page(
             request, 'login.html',
             page_title,
             page_messages,
@@ -147,63 +116,6 @@ def auth(request, next):
         # User not found, ask again to log in
         error_msg = ugettext(u"Sorry unable to log in. Please check login name / password and try again.")
         return HttpResponseRedirect('/admin/login/?status=error&msg=%s' % error_msg)
-
-def admin_required(f):
-    def wrap(request, *args, **kwargs):
-        #this check the session if userid key exist, if not it will redirect to login page
-        if not __is_user_admin(request):
-            path = urlquote(request.get_full_path())
-            return HttpResponseRedirect("/admin/login/?next=%s" % path)
-        return f(request, *args, **kwargs)
-    wrap.__doc__=f.__doc__
-    wrap.__name__=f.__name__
-    return wrap
-
-def __get_user_connected(request):
-    """
-    Get current user connected
-    @param request : HTTP request
-    @return the user or None
-    """
-    try:
-        return request.session['user']
-    except KeyError:
-        return None
-
-def __is_user_connected(request):
-    """
-    Check if the user is connected
-    @param request : HTTP request
-    @return True or False
-    """
-    try:
-        request.session['user']
-        return True
-    except KeyError:
-        return False
-
-def __is_user_admin(request):
-    """
-    Check if user has administrator rights
-    @param request : HTTP request
-    @return True or False
-    """
-    user = __get_user_connected(request)
-    return user is not None and user['is_admin']
-
-def __is_normal_mode(request):
-    """
-    Check if domogik is installed in developper mode
-    @param request : HTTP request
-    @return True or False
-    """
-    try:
-        mode = Packages.get_mode()
-    except BadStatusLine:
-        HttpResponseRedirect("/rinor/error/BadStatusLine")
-    except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
-    return mode.mode[0] == "normal"
     
 @admin_required
 def admin_management_accounts(request):
@@ -222,7 +134,7 @@ def admin_management_accounts(request):
         HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
-    return __go_to_page(
+    return go_to_page(
         request, 'management/accounts.html',
         page_title,
         page_messages,
@@ -255,7 +167,7 @@ def admin_organization_devices(request):
     except ResourceNotAvailableException:
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
-    return __go_to_page(
+    return go_to_page(
         request, 'organization/devices.html',
         page_title,
         page_messages,
@@ -294,7 +206,7 @@ def admin_organization_rooms(request):
     except ResourceNotAvailableException:
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
-    return __go_to_page(
+    return go_to_page(
         request, 'organization/rooms.html',
         page_title,
         page_messages,
@@ -327,7 +239,7 @@ def admin_organization_areas(request):
     except ResourceNotAvailableException:
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
-    return __go_to_page(
+    return go_to_page(
         request, 'organization/areas.html',
         page_title,
         page_messages,
@@ -356,7 +268,7 @@ def admin_organization_house(request):
     except ResourceNotAvailableException:
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
-    return __go_to_page(
+    return go_to_page(
         request, 'organization/house.html',
         page_title,
         page_messages,
@@ -387,7 +299,7 @@ def admin_organization_widgets(request):
     except ResourceNotAvailableException:
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
-    return __go_to_page(
+    return go_to_page(
         request, 'organization/widgets.html',
         page_title,
         page_messages,
@@ -417,7 +329,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_name, plugin_type):
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
     if plugin_type == "plugin":
         page_title = _("Plugin")
-        return __go_to_page(
+        return go_to_page(
             request, 'plugins/plugin.html',
             page_title,
             page_messages,
@@ -429,7 +341,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_name, plugin_type):
         )
     if plugin_type == "hardware":
         page_title = _("Hardware")
-        return __go_to_page(
+        return go_to_page(
             request, 'plugins/hardware.html',
             page_title,
             page_messages,
@@ -451,7 +363,7 @@ def admin_tools_helpers(request):
     page_title = _("Helpers tools")
     page_messages = []
 
-    return __go_to_page(
+    return go_to_page(
         request, 'tools/helpers.html',
         page_title,
         page_messages,
@@ -477,7 +389,7 @@ def admin_tools_rinor(request):
         HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
-    return __go_to_page(
+    return go_to_page(
         request, 'tools/rinor.html',
         page_title,
         page_messages,
@@ -509,7 +421,7 @@ def admin_packages_repositories(request):
         HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
-    return __go_to_page(
+    return go_to_page(
         request, 'packages/repositories.html',
         page_title,
         page_messages,
@@ -605,7 +517,7 @@ def admin_packages_plugins(request):
     except ResourceNotAvailableException:
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
     
-    return __go_to_page(
+    return go_to_page(
         request, 'packages/plugins.html',
         page_title,
         page_messages,
@@ -645,7 +557,7 @@ def admin_packages_hardwares(request):
         print "%s %", (h.host, rest_info.rest[0].info.Host)
         if (h.host == rest_info.rest[0].info.Host) :
             host = h
-    return __go_to_page(
+    return go_to_page(
         request, 'packages/hardwares.html',
         page_title,
         page_messages,

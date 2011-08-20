@@ -41,6 +41,7 @@ from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.conf import settings
+from domoweb.utils import *
 
 from domoweb.rest import (
     House, Areas, Rooms, Devices, DeviceUsages, DeviceTechnologies, DeviceTypes,
@@ -49,81 +50,6 @@ from domoweb.rest import (
 
 from django_pipes.exceptions import ResourceNotAvailableException
 from httplib import BadStatusLine
-
-def __go_to_page(request, html_page, page_title, page_messages, **attribute_list):
-    """
-    Common method called to go to an html page
-    @param request : HTTP request
-    @param html_page : the page to go to
-    @param page_title : page title
-    @param **attribute_list : list of attributes (dictionnary) that need to be
-           put in the HTTP response
-    @return an HttpResponse object
-    """
-    if (not page_messages) :
-        page_messages = []
-        
-    status = request.GET.get('status', None)
-    msg = request.GET.get('msg', None)
-    if (msg):
-        page_messages.append({'status':status, 'msg':msg })
-        
-    response_attr_list = {}
-    response_attr_list['page_title'] = page_title
-    response_attr_list['page_messages'] = page_messages
-    response_attr_list['rest_url'] = settings.EXTERNAL_REST_URL
-    response_attr_list['is_user_connected'] = __is_user_connected(request)
-    for attribute in attribute_list:
-        response_attr_list[attribute] = attribute_list[attribute]
-    response = render_to_response(html_page, response_attr_list,
-                              context_instance=RequestContext(request))
-    response['Pragma'] = 'no-cache'
-    response['Cache-Control'] = 'no-cache, must-revalidate'
-    response['Expires'] = '0'
-    return response
-
-def admin_required(f):
-    def wrap(request, *args, **kwargs):
-        #this check the session if userid key exist, if not it will redirect to login page
-        if not __is_user_admin(request):
-            path = urlquote(request.get_full_path())
-            return HttpResponseRedirect("/admin/login/?next=%s" % path)
-        return f(request, *args, **kwargs)
-    wrap.__doc__=f.__doc__
-    wrap.__name__=f.__name__
-    return wrap
-
-def __get_user_connected(request):
-    """
-    Get current user connected
-    @param request : HTTP request
-    @return the user or None
-    """
-    try:
-        return request.session['user']
-    except KeyError:
-        return None
-
-def __is_user_connected(request):
-    """
-    Check if the user is connected
-    @param request : HTTP request
-    @return True or False
-    """
-    try:
-        request.session['user']
-        return True
-    except KeyError:
-        return False
-
-def __is_user_admin(request):
-    """
-    Check if user has administrator rights
-    @param request : HTTP request
-    @return True or False
-    """
-    user = __get_user_connected(request)
-    return user is not None and user['is_admin']
 
 def house(request):
     """
@@ -153,7 +79,7 @@ def house(request):
         HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
-    return __go_to_page(
+    return go_to_page(
         request, 'house.html',
         page_title,
         page_messages,
@@ -190,7 +116,7 @@ def house_edit(request, from_page):
         HttpResponseRedirect("/rinor/error/BadStatusLine")
     except ResourceNotAvailableException:
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
-    return __go_to_page(
+    return go_to_page(
         request, 'house.edit.html',
         page_title,
         page_messages,
@@ -230,7 +156,7 @@ def area(request, area_id):
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
     page_title = _("View ") + result_area_by_id.area[0].name
-    return __go_to_page(
+    return go_to_page(
         request, 'area.html',
         page_title,
         page_messages,
@@ -270,7 +196,7 @@ def area_edit(request, area_id, from_page):
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
     page_title = _("Edit ") + result_area_by_id.area[0].name
-    return __go_to_page(
+    return go_to_page(
         request, 'area.edit.html',
         page_title,
         page_messages,
@@ -307,7 +233,7 @@ def room(request, room_id):
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
     page_title = _("View ") + result_room_by_id.room[0].name
-    return __go_to_page(
+    return go_to_page(
         request, 'room.html',
         page_title,
         page_messages,
@@ -346,7 +272,7 @@ def room_edit(request, room_id, from_page):
         return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
 
     page_title = _("Edit ") + result_room_by_id.room[0].name
-    return __go_to_page(
+    return go_to_page(
         request, 'room.edit.html',
         page_title,
         page_messages,
