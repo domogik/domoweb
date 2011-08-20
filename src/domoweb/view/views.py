@@ -42,7 +42,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.conf import settings
 
-from domoweb.rinor import (
+from domoweb.rest import (
     House, Areas, Rooms, Devices, DeviceUsages, DeviceTechnologies, DeviceTypes,
     Features, FeatureAssociations, Plugins, Accounts, Rest, Packages
 )

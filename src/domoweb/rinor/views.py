@@ -43,7 +43,7 @@ import simplejson
 from django_pipes.exceptions import ResourceNotAvailableException
 from httplib import BadStatusLine
 
-from domoweb.rinor import (
+from domoweb.rest import (
     Command, State
 )
 
