@@ -44,7 +44,7 @@ from django.conf import settings
 from distutils2.version import *
 from distutils2.version import IrrationalVersionError
 
-from domoweb.models import (
+from domoweb.rinor import (
     House, Areas, Rooms, Devices, DeviceUsages, DeviceTechnologies, DeviceTypes,
     Features, FeatureAssociations, Plugins, Accounts, Rest, Packages
 )

@@ -20,7 +20,7 @@
 #Module purpose
 #==============
 #
-#Help to manage Domoweb installation
+#Help to manage DomoWeb installation
 #
 #Implements
 #==========
@@ -139,22 +139,6 @@ function update_default_config {
     fi
 }
 
-function update_user_config {
-    if [ "$keep" = "n" -o "$keep" = "N" ];then
-        if [ "$MODE" = "install" ];then
-            prefix="/usr/local"
-            sed -i "s;^#package_path.*$;package_path = $dmg_home;" $dmg_home/domoweb.cfg
-        else
-            prefix=$PWD/src
-        fi
-        sed -i "s;^custom_prefix.*$;custom_prefix=$prefix;" $dmg_home/domoweb.cfg
-
-        read -p "If you need to reach Domogik from outside, you can specify an IP now : " out_bind_addr
-        sed -i "s/^external_rest_server_ip.*$/external_rest_server_ip = $out_bind_addr/" $dmg_home/domoweb.cfg
-        
-    fi
-}
-
 function check_python {
 if [ ! -x "$(which python)" ];then
         echo "No python binary found, please install at least python2.6";
@@ -204,8 +188,9 @@ fi
 run_setup_py $MODE
 copy_sample_files
 update_default_config
-update_user_config
 create_log_dir
+
+#python manage.py syncdb
 
 echo "Everything seems to be good, DomoWeb should be installed correctly."
 echo "I will start the test_config.py script to check it."

@@ -98,10 +98,6 @@ def test_config_files():
     r = f.readlines()
     lines = filter(lambda x: not x.startswith('#') and x != '\n',r)
     f.close()
-    #user = ''
-    manager_params = ''
-    custom_path = ''
-    hub_iface = ''
     for line in lines:
         item,value = line.strip().split("=")
         if item.strip() == "DOMOWEB_USER":

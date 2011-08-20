@@ -35,6 +35,8 @@ Implements
 """
 
 import os
+import pwd
+
 from domogik.common.configloader import Loader
 
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -48,7 +50,30 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-# Note that we use our own Database model and not Django's one.
+### Find User home
+if os.path.isfile("/etc/default/domoweb"):
+    file = "/etc/default/domoweb"
+else:
+    file = "/etc/conf.d/domoweb"
+f = open(file,"r")
+r = f.readlines()
+lines = filter(lambda x: not x.startswith('#') and x != '\n',r)
+f.close()
+for line in lines:
+    item,value = line.strip().split("=")
+    if item.strip() == "DOMOWEB_USER":
+        user = value
+    else:
+        raise KeyError("Unknown config value in the main config file : %s" % item)
+try:
+    user_entry = pwd.getpwnam(user)
+except KeyError:
+    raise KeyError("The user %s does not exists, you MUST create it or change the DOMOWEB_USER parameter in %s. Please report this as a bug if you used install.sh." % (user, file))
+user_home = user_entry.pw_dir
+
+### UI Database settings
+DATABASE_ENGINE = 'sqlite3'
+DATABASE_NAME = "%s/.domogik/domoweb.db" % user_home
 
 ### Rest settings
 cfg_rest = Loader('django')
@@ -177,6 +202,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django_pipes', # Used to create Django's model using REST
+    'domoweb',
     'domoweb.home',
     'domoweb.view',
     'domoweb.admin',
