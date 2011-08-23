@@ -38,11 +38,18 @@ from django.conf.urls.defaults import *
 from django.conf import settings
 
 # Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
+#from django.contrib import admin
+#admin.autodiscover()
 
-urlpatterns = patterns('',
-    (r'^$', include('domoweb.home.urls')),
+urlpatterns = patterns('domoweb.views',
+    url(r'^$', 'index', name="index_view"),
+    url(r'error/BadStatusLine$', 'error_badstatusline', name="error_badstatusline_view"),
+    url(r'error/ResourceNotAvailable$', 'error_resourcenotavailable', name="error_resourcenotavailable_view"),
+    url(r'^config/welcome$', 'config_configserver', name="config_welcome_view"),
+    url(r'^config/configserver$', 'config_configserver', name="config_configserver_view"),
+    url(r'^config/testserver$', 'config_testserver', name="config_testserve_view"),
+)
+urlpatterns += patterns('',    
     (r'^view/', include('domoweb.view.urls')),
     (r'^admin/', include('domoweb.admin.urls')),
     (r'^rinor/', include('domoweb.rinor.urls')),

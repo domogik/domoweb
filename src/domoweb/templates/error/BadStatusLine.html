@@ -1,4 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
 # Copyright 2011 Domogik project
 
@@ -18,7 +17,7 @@
 
 # Author : Cédric Trévisan <cedric@domogik.org>
 -->
-{% extends "layouts/base_without_nav.html" %}
+{% extends "layouts/base_minimal.html" %}
 {% load i18n %}
 
 {% block css %}
@@ -30,8 +29,8 @@
 
 {% block content %}
     <div id="error">
-        <h1>{% trans "Interface Server not responding" %}</h1>
-        <p>Check if the server is running</p>
-        <p><a href="http://wiki.domogik.org/tiki-index.php?page=Install">How to start the server? (Domogik Wiki)</a></p>
+        <h1>{% trans "Interface Server has crashed" %}</h1>
+        <p>A bug is probably causing the REST server to crash on this url.</p>
+        <p><a href="http://tracker.domogik.org/">Please fill a bug report, with maximum details</a></p>
     </div>
 {% endblock %}

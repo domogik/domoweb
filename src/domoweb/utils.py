@@ -1,9 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+import re
+from django.utils.http import urlquote
+from django.utils.http import urlquote
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from domoweb.models import Parameters
+from django.shortcuts import redirect
+from domoweb.rest import (
+    Packages, Rest
+)
 
 def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
     """
@@ -15,6 +22,7 @@ def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
            put in the HTTP response
     @return an HttpResponse object
     """
+    
     if (not page_messages) :
         page_messages = []
         
@@ -26,8 +34,9 @@ def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
     response_attr_list = {}
     response_attr_list['page_title'] = page_title
     response_attr_list['page_messages'] = page_messages
-    response_attr_list['rest_url'] = settings.EXTERNAL_REST_URL
-    response_attr_list['version'] = settings.SOURCES_VERSION
+    
+#    response_attr_list['rest_url'] = settings.EXTERNAL_REST_URL
+    response_attr_list['version'] = settings.PACKAGE_VERSION
     response_attr_list['is_user_connected'] = __is_user_connected(request)
     for attribute in attribute_list:
         response_attr_list[attribute] = attribute_list[attribute]
@@ -43,7 +52,7 @@ def admin_required(f):
         #this check the session if userid key exist, if not it will redirect to login page
         if not __is_user_admin(request):
             path = urlquote(request.get_full_path())
-            return HttpResponseRedirect("/admin/login/?next=%s" % path)
+            return redirect("/admin/login/?next=%s" % path)
         return f(request, *args, **kwargs)
     wrap.__doc__=f.__doc__
     wrap.__name__=f.__name__
@@ -80,3 +89,31 @@ def __is_user_admin(request):
     """
     user = __get_user_connected(request)
     return user is not None and user['is_admin']
+
+def rinor_isconfigured(function):
+    """
+    Check if rinor is configured
+    """
+    def _dec(request, *args, **kwargs):
+        try:
+            ip = Parameters.objects.get(key='rinor_ip')
+            port = Parameters.objects.get(key='rinor_port')
+            externalip = Parameters.objects.get(key='rinor_external_ip')
+            externalport = Parameters.objects.get(key='rinor_external_port')
+            if not 'rinor_url' in request.session:
+                request.session['rinor_url'] = 'http://' + externalip.value + ':' + externalport.value
+            if not 'normal_mode' in request.session:
+                mode = Packages.get_mode()
+                request.session['normal_mode']=(mode.mode[0] == "normal")
+        except Parameters.DoesNotExist:
+            return redirect("config_welcome_view")
+        else:
+            return function(request, *args, **kwargs)
+    return _dec
+
+def ipFormatChk(ip_str):
+   pattern = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+   if re.match(pattern, ip_str):
+      return True
+   else:
+      return False

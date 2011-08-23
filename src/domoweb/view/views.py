@@ -51,6 +51,7 @@ from domoweb.rest import (
 from django_pipes.exceptions import ResourceNotAvailableException
 from httplib import BadStatusLine
 
+@rinor_isconfigured
 def house(request):
     """
     Method called when the show index page is accessed
@@ -76,9 +77,9 @@ def house(request):
         result_house_rooms.merge_uiconfig()
 
     except BadStatusLine:
-        HttpResponseRedirect("/rinor/error/BadStatusLine")
+        return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
+        return redirect("error_resourcenotavailable_view")
     return go_to_page(
         request, 'house.html',
         page_title,
@@ -113,9 +114,9 @@ def house_edit(request, from_page):
         result_all_devices.merge_features()
 
     except BadStatusLine:
-        HttpResponseRedirect("/rinor/error/BadStatusLine")
+        return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
+        return redirect("error_resourcenotavailable_view")
     return go_to_page(
         request, 'house.edit.html',
         page_title,
@@ -127,6 +128,7 @@ def house_edit(request, from_page):
         devices_list=result_all_devices.device
     )
 
+@rinor_isconfigured
 def area(request, area_id):
     """
     Method called when the show area page is accessed
@@ -151,9 +153,9 @@ def area(request, area_id):
         result_house = House()
 
     except BadStatusLine:
-        HttpResponseRedirect("/rinor/error/BadStatusLine")
+        return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
+        return redirect("error_resourcenotavailable_view")
 
     page_title = _("View ") + result_area_by_id.area[0].name
     return go_to_page(
@@ -169,6 +171,7 @@ def area(request, area_id):
         house=result_house
     )
 
+@rinor_isconfigured
 @admin_required
 def area_edit(request, area_id, from_page):
     """
@@ -191,9 +194,9 @@ def area_edit(request, area_id, from_page):
         result_all_devices.merge_features()
 
     except BadStatusLine:
-        HttpResponseRedirect("/rinor/error/BadStatusLine")
+        return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
+        return redirect("error_resourcenotavailable_view")
 
     page_title = _("Edit ") + result_area_by_id.area[0].name
     return go_to_page(
@@ -208,6 +211,7 @@ def area_edit(request, area_id, from_page):
         devices_list=result_all_devices.device
     )
 
+@rinor_isconfigured
 def room(request, room_id):
     """
     Method called when the show room page is accessed
@@ -228,9 +232,9 @@ def room(request, room_id):
         result_house = House()
 
     except BadStatusLine:
-        HttpResponseRedirect("/rinor/error/BadStatusLine")
+        return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
+        return redirect("error_resourcenotavailable_view")
 
     page_title = _("View ") + result_room_by_id.room[0].name
     return go_to_page(
@@ -245,6 +249,7 @@ def room(request, room_id):
         house=result_house
     )
 
+@rinor_isconfigured
 @admin_required
 def room_edit(request, room_id, from_page):
     """
@@ -267,9 +272,9 @@ def room_edit(request, room_id, from_page):
         result_all_devices.merge_features()
 
     except BadStatusLine:
-        HttpResponseRedirect("/rinor/error/BadStatusLine")
+        return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
+        return redirect("error_resourcenotavailable_view")
 
     page_title = _("Edit ") + result_room_by_id.room[0].name
     return go_to_page(

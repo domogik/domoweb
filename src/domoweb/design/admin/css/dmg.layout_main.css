@@ -1,0 +1,16 @@
+body {
+    font: 65% Arial, Helvetica, sans-serif;
+/*	background-color:#eeeeee;*/
+    background: url(../images/background.jpg) 0 0 repeat;
+	margin:0;
+}
+
+footer {
+    position:fixed;
+    bottom:0;
+    right:0;
+    display:block;
+    padding:0.5em;
+    background-color:rgba(45,44,47,0.4);
+    color: #BEBAC7;
+}

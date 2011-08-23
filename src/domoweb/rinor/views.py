@@ -35,16 +35,14 @@ Implements
 """
 from django.conf import settings
 from django.http import HttpResponse
-from django.template import RequestContext
-from django.shortcuts import render_to_response
 from django.shortcuts import redirect
 import simplejson
 
 from django_pipes.exceptions import ResourceNotAvailableException
 from httplib import BadStatusLine
-
+from domoweb.utils import *
 from domoweb.rest import (
-    Command, State
+    Command, State, Rest
 )
 
 class JSONResponse(HttpResponse):
@@ -71,27 +69,32 @@ class JSONResponse(HttpResponse):
         self['Cache-Control'] = 'no-cache, must-revalidate'
         self['Expires'] = '0'        
 
-        
-def error_badstatusline(request):
-    return render_to_response('error/BadStatusLine.html')
-        
-def error_resourcenotavailable(request):
-    return render_to_response('error/ResourceNotAvailable.html')
-
+@rinor_isconfigured
 def rinor_command(request, techno, address, command, values=None):
     try:
         data = Command.send(techno, address, command, values)
     except BadStatusLine:
-        HttpResponseRedirect("/rinor/error/BadStatusLine")
+        return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
+        return redirect("error_resourcenotavailable_view")
     return JSONResponse(data)
 
+@rinor_isconfigured
 def rinor_state_last(request, device_id, key, nb=1):
     try:
         data = State.get_last(device_id, key, nb)
     except BadStatusLine:
-        HttpResponseRedirect("/rinor/error/BadStatusLine")
+        return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
-        return HttpResponseRedirect("/rinor/error/ResourceNotAvailable")
+        return redirect("error_resourcenotavailable_view")
     return JSONResponse(data, 'stats')
+
+@rinor_isconfigured
+def rinor_info(request):
+    try:
+        data = Rest.get_info()
+    except BadStatusLine:
+        return redirect("error_badstatusline_view")
+    except ResourceNotAvailableException:
+        return redirect("error_resourcenotavailable_view")
+    return JSONResponse(data, 'rest')

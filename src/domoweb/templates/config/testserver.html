@@ -1,0 +1,86 @@
+<!--
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Cédric Trévisan <cedric@domogik.org>
+-->
+{% extends "layouts/base_centered_panel.html" %}
+{% load i18n %}
+
+{% block css %}
+<style type="text/css">
+    .build {
+        color: #4F4F4F;
+        font-style: italic;
+        text-align: center;
+        font-size:0.8em
+    }
+    .success_message, .fail_message {
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.2em;
+        padding-left: 32px;
+        background-position: 0% 50%;
+        background-repeat: no-repeat;
+        width:28em;
+        margin:auto;
+    }
+</style>
+{% endblock %}
+{% block js_include %}
+{% endblock %}
+{% block js_script %}
+    $(function(){
+        $('a.next').click(function(event) {event.preventDefault();}).addClass('disabled');
+
+        rinor.get(['info'])
+            .success(function(data, status, xhr){
+                $('#internal').attr('class', 'success_message icon32-status-true').html('Successfully connected Domogik v' + data[0].info.Domogik_release + ' on ' + data[0].info.Host + ' <div class="build">' + data[0].info.Sources_release + '</div>');
+                $('a.next').unbind('click').removeClass('disabled');
+            })
+            .error(function(jqXHR, status, error){
+                $('#internal').attr('class', 'fail_message icon32-status-warning').html('Error : ' + jqXHR.responseText);
+                $('a.next').click(function(event) {event.preventDefault();}).addClass('disabled');
+                if (jqXHR.status == 400)
+                    $.notification('error', jqXHR.responseText);
+            });
+        rest.get([],
+            function(data) {
+                var status = (data.status).toLowerCase();
+                if (status == 'ok') {
+                    $('#external').attr('class', 'success_message icon32-status-true').html('Successfully connected Domogik v' + data.rest[0].info.Domogik_release + ' on ' + data.rest[0].info.Host + ' <div class="build">' + data.rest[0].info.Sources_release + '</div>');
+                    $('a.next').unbind('click').removeClass('disabled');
+                } else {
+                    $('#external').attr('class', 'fail_message icon32-status-warning').html('Error : ' + data.description);
+                    $('a.next').click(function(event) {event.preventDefault();}).addClass('disabled');
+                    $.notification('error', data.description );                                                                      
+                }
+            }
+        );
+    });
+{% endblock %}
+{% block title %}{% trans page_title %}{% endblock %}
+
+{% block content %}
+    <h2>Testing Domogik Server connection</h2>
+    <div id='internal' class='loader'><span class='offscreen'>Loading</span></div>
+    <h2>Testing Domogik Server external access</h2>
+    <div id='external' class='loader'><span class='offscreen'>Loading</span></div>
+    <ul class='wizard_nav'>
+        <li><a href='{% url config_configserver_view %}' class='button previous'>Previous</a></li>
+        <li><a href='{% url index_view %}' class='button next'>Finish</a></li>
+    </ul>
+{% endblock %}

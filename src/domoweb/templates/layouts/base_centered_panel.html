@@ -1,4 +1,4 @@
-{% extends "layouts/global.html" %}
+{% extends "layouts/global.new.html" %}
 
 {% comment %}
 # Copyright 2011 Domogik project
@@ -22,17 +22,20 @@
 {% load i18n %}
 
 {% block global_css %}
-<link href="/design/common/css/layout.without_nav.css" rel="stylesheet" type="text/css" />
+    <link href="/design/admin/css/dmg.layout_main.css" rel="stylesheet" type="text/css"/>
+    <link href="/design/admin/css/dmg.layout_centered_panel.css" rel="stylesheet" type="text/css"/>
+    <link href="/design/admin/css/dmg.buttons.css" rel="stylesheet" type="text/css"/>
+    <link href="/design/admin/css/dmg.forms.css" rel="stylesheet" type="text/css"/>
 {% endblock %}
 
 {% block global_js_include %}
 {% endblock %}
 
 {% block body %}
-    <div id="content-bgnd">
+    <div class='content-centered-panel'>
         <header id="mainheader">
             <a href="/domogik" id="logo"><img src="/design/common/images/logo_domogik.png" alt="Domogik logo" /></a>
-            <div id="title">{% trans "Free home automation under Linux" %}</div>
+            <h1>{% trans page_title %}</h1>
         </header>
         <section id="mainsection">
             {% block content %}{% endblock %}

@@ -36,10 +36,8 @@ Implements
 
 from django.conf.urls.defaults import *
 
-
 urlpatterns = patterns('domoweb.rinor.views',
-    url(r'error/BadStatusLine$', 'error_badstatusline', name="error_badstatusline_view"),
-    url(r'error/ResourceNotAvailable$', 'error_resourcenotavailable', name="error_resourcenotavailable_view"),
-    url(r'command/(?P<techno>[a-zA-Z0-9_.-]+)/(?P<address>[a-zA-Z0-9_.-]+)/(?P<command>[a-zA-Z0-9_.-]+)/(?P<values>.*)$', 'rinor_command', name="rinor_command_view"),
-    url(r'state/(?P<device_id>\d+)/(?P<key>[a-zA-Z0-9_.-]+)/last/(?P<nb>\d+)/$', 'rinor_state_last', name="rinor_state_last_view"),
+    url(r'info/$', 'rinor_info'),
+    url(r'command/(?P<techno>[a-zA-Z0-9_.-]+)/(?P<address>[a-zA-Z0-9_.-]+)/(?P<command>[a-zA-Z0-9_.-]+)/(?P<values>.*)$', 'rinor_command'),
+    url(r'state/(?P<device_id>\d+)/(?P<key>[a-zA-Z0-9_.-]+)/last/(?P<nb>\d+)/$', 'rinor_state_last'),
 )

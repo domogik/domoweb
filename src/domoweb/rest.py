@@ -31,46 +31,63 @@ Implements
 @license: GPL(v3)
 @organization: Domogik
 """
-
 from django.db import models
-from domogik.common.configloader import Loader
-from django.conf import settings
+
 from htmlentitydefs import name2codepoint
 import re
 import simplejson
 import dmg_pipes as pipes
+from domoweb.models import Parameters
+from domoweb.exceptions import RinorNotConfigured
 
 def unescape(s):
     "unescape HTML code refs; c.f. http://wiki.python.org/moin/EscapingHtml"
     return re.sub('&(%s);' % '|'.join(name2codepoint),
               lambda m: unichr(name2codepoint[m.group(1)]), s)
 
-class Rest(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/"
+class RinorServer(pipes.DmgPipe) :
+    host = None
+    @staticmethod
+    def set_uri(path):
+        # Generate host if not availble yet
+        if (not RinorServer.host):
+            try:
+                ip = Parameters.objects.get(key='rinor_ip')
+                port = Parameters.objects.get(key='rinor_port')
+                RinorServer.host = "http://%s:%s" % (ip.value, port.value)
+            except Parameters.DoesNotExist:
+                raise RinorNotConfigured
+        RinorServer.uri = RinorServer.host + path
+    
 
+class Rest(RinorServer):
+    path = "/"
     @staticmethod
     def get_info():
+        RinorServer.set_uri(Rest.path)
         resp = Rest.objects.get()
         if resp :
             return resp
-        
+
 class House(object):
     def __init__(self):
         self.config = UIConfigs.get_by_reference('house', '0')
         if self.config.has_key('name') :
             self.name = self.config['name']
 
-class Areas(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/base/area"
+class Areas(RinorServer):
+    path = "/base/area"
 
     @staticmethod
     def get_all():
+        RinorServer.set_uri(Areas.path)
         resp = Areas.objects.get({'parameters':"list"})
         if resp :
             return resp
 
     @staticmethod
     def get_by_id(id):
+        RinorServer.set_uri(Areas.path)
         resp = Areas.objects.get({'parameters':"list/by-id/" + str(id)})
         if resp :
             return resp
@@ -89,29 +106,33 @@ class Areas(pipes.DmgPipe):
                 for room in area.room:
                     room.config = UIConfigs.get_by_reference('room', room.id)
 
-class Rooms(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/base/room"
+class Rooms(RinorServer):
+    path = "/base/room"
 
     @staticmethod
     def get_all():
+        RinorServer.set_uri(Rooms.path)
         resp = Rooms.objects.get({'parameters':"list"})
         if resp :
             return resp
 
     @staticmethod
     def get_by_id(id):
+        RinorServer.set_uri(Rooms.path)
         resp = Rooms.objects.get({'parameters':"list/by-id/" + str(id)})
         if resp :
             return resp
 
     @staticmethod
     def get_by_area(id):
+        RinorServer.set_uri(Rooms.path)
         resp = Rooms.objects.get({'parameters':"list/by-area/" + str(id)})
         if resp :
             return resp
 
     @staticmethod
     def get_without_area():
+        RinorServer.set_uri(Rooms.path)
         resp = Rooms.objects.get({'parameters':"list/by-area//"})
         if resp :
             return resp
@@ -124,11 +145,12 @@ class Rooms(pipes.DmgPipe):
             if hasattr(room, 'area') and (room.area) :
                 room.area.config = UIConfigs.get_by_reference('area', room.area.id)
 
-class Devices(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/base/device"
+class Devices(RinorServer):
+    path = "/base/device"
 
     @staticmethod
     def get_all():
+        RinorServer.set_uri(Devices.path)
         resp = Devices.objects.get({'parameters':"list"})
         if resp :
             return resp
@@ -149,21 +171,23 @@ class Devices(pipes.DmgPipe):
 #                    if (feature.id == association.device_feature_id):
 #                        feature.association = association
 
-class DeviceTechnologies(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/base/device_technology"
+class DeviceTechnologies(RinorServer):
+    path = "/base/device_technology"
 
     @staticmethod
     def get_all():
+        RinorServer.set_uri(DeviceTechnologies.path)
         resp = DeviceTechnologies.objects.get({'parameters':"list"})
         if resp :
             return resp
 
-class DeviceTypes(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/base/device_type"
+class DeviceTypes(RinorServer):
+    path = "/base/device_type"
     _dict = None
     
     @staticmethod
     def get_all():
+        RinorServer.set_uri(DeviceTypes.path)
         resp = DeviceTypes.objects.get({'parameters':"list"})
         if resp :
             return resp
@@ -185,12 +209,13 @@ class DeviceTypes(pipes.DmgPipe):
         dict = DeviceTypes.get_dict()
         return dict[key]
 
-class DeviceUsages(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/base/device_usage"
+class DeviceUsages(RinorServer):
+    path = "/base/device_usage"
     _dict = None
 
     @staticmethod
     def get_all():
+        RinorServer.set_uri(DeviceUsages.path)
         resp = DeviceUsages.objects.get({'parameters':"list"})
         if resp :
             return resp
@@ -212,53 +237,60 @@ class DeviceUsages(pipes.DmgPipe):
         dict = DeviceUsages.get_dict()
         return dict[key]
 
-class Features(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/base/feature"
+class Features(RinorServer):
+    path = "/base/feature"
 
     @staticmethod
     def get_by_id(id):
+        RinorServer.set_uri(Features.path)
         resp = Features.objects.get({'parameters':"list/by-id/" + str(id)})
         if resp :
             return resp
 
     @staticmethod
     def get_by_device(device_id):
+        RinorServer.set_uri(Features.path)
         resp = Features.objects.get({'parameters':"list/by-device_id/" + str(device_id)})
         if resp :
             return resp
 
-class FeatureAssociations(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/base/feature_association"
+class FeatureAssociations(RinorServer):
+    path = "/base/feature_association"
 
     @staticmethod
     def get_by_house():
+        RinorServer.set_uri(FeatureAssociations.path)
         resp = FeatureAssociations.objects.get({'parameters':"list/by-house"})
         if resp :
             return resp
 
     @staticmethod
     def get_by_area(area_id):
+        RinorServer.set_uri(FeatureAssociations.path)
         resp = FeatureAssociations.objects.get({'parameters':"list/by-area/" + str(area_id)})
         if resp :
             return resp
 
     @staticmethod
     def get_by_room(room_id):
+        RinorServer.set_uri(FeatureAssociations.path)
         resp = FeatureAssociations.objects.get({'parameters':"list/by-room/" + str(room_id)})
         if resp :
             return resp
         
     @staticmethod
     def get_by_feature(feature_id):
+        RinorServer.set_uri(FeatureAssociations.path)
         resp = FeatureAssociations.objects.get({'parameters':"list/by-feature/" + str(feature_id)})
         if resp :
             return resp
     
-class UIConfigs(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/base/ui_config"
+class UIConfigs(RinorServer):
+    path = "/base/ui_config"
 
     @staticmethod
     def get_by_key(name, key):
+        RinorServer.set_uri(UIConfigs.path)
         resp = {}
         uiconfigs = UIConfigs.objects.get({'parameters':"list/by-key/" + name + "/" + key})
         if uiconfigs :
@@ -272,6 +304,7 @@ class UIConfigs(pipes.DmgPipe):
 
     @staticmethod
     def get_by_reference(name, reference):
+        RinorServer.set_uri(UIConfigs.path)
         resp = {}
         uiconfigs = UIConfigs.objects.get({'parameters':"list/by-reference/" + name + "/" + str(reference)})
         if uiconfigs :
@@ -283,114 +316,130 @@ class UIConfigs(pipes.DmgPipe):
                         resp[uiconfig.key] = uiconfig.value
             return resp
     
-class Plugins(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/plugin"
+class Plugins(RinorServer):
+    path = "/plugin"
 
     @staticmethod
     def get_all():
+        RinorServer.set_uri(Plugins.path)
         resp = Plugins.objects.get({'parameters':"list"})
         if resp :
             return resp
 
     @staticmethod
     def get_by_name(name):
+        RinorServer.set_uri(Plugins.path)
         resp = Plugins.objects.get({'parameters':"list/by-name/" + name})
         if resp :
             return resp
 
     @staticmethod
     def get_detail(host, name):
+        RinorServer.set_uri(Plugins.path)
         resp = Plugins.objects.get({'parameters':"detail/" + host + "/" + name})
         if resp :
             return resp
 
     @staticmethod
     def enable(host, name, action):
+        RinorServer.set_uri(Plugins.path)
         resp = Plugins.objects.get({'parameters':action + "/" + host + "/" + name})
         if resp :
             return resp
 
-class Accounts(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/account"
+class Accounts(RinorServer):
+    path = "/account"
 
     @staticmethod
     def auth(login, password):
+        RinorServer.set_uri(Accounts.path)
         resp = Accounts.objects.get({'parameters':"auth/" + login + "/" + password})
         if resp :
             return resp
 
     @staticmethod
     def get_user(id):
+        RinorServer.set_uri(Accounts.path)
         resp = Accounts.objects.get({'parameters':"user/list/by-id/" + id})
         if resp :
             return resp
 
     @staticmethod
     def get_all_users():
+        RinorServer.set_uri(Accounts.path)
         resp = Accounts.objects.get({'parameters':"user/list"})
         if resp :
             return resp
 
     @staticmethod
     def get_all_people():
+        RinorServer.set_uri(Accounts.path)
         resp = Accounts.objects.get({'parameters':"person/list"})
         if resp :
             return resp
 
-class Packages(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/package"
+class Packages(RinorServer):
+    path = "/package"
 
     @staticmethod
     def get_list_repo():
+        RinorServer.set_uri(Packages.path)
         resp = Packages.objects.get({'parameters':"list-repo"})
         if resp :
             return resp
     
     @staticmethod
     def get_list():
+        RinorServer.set_uri(Packages.path)
         resp = Packages.objects.get({'parameters':"list"})
         if resp :
             return resp
     
     @staticmethod
     def get_list_installed():
+        RinorServer.set_uri(Packages.path)
         resp = Packages.objects.get({'parameters':"list-installed"})
         if resp :
             return resp
         
     @staticmethod
     def install(host, name, release):
+        RinorServer.set_uri(Packages.path)
         resp = Packages.objects.get({'parameters':"install/" + host + "/" + name + "/" + release})
         if resp :
             return resp
     
     @staticmethod
     def get_mode():
+        RinorServer.set_uri(Packages.path)
         resp = Packages.objects.get({'parameters':"get-mode"})
         if resp :
             return resp 
 
-class Command(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/command"
+class Command(RinorServer):
+    path = "/command"
 
     @staticmethod
     def send(techno, address, command, values):
+        RinorServer.set_uri(Command.path)
         # Change to PUT
         resp = Command.objects.get({'parameters':techno + "/" + address + "/" + command + "/" + values})
         if resp :
             return resp
 
-class State(pipes.DmgPipe):
-    uri = settings.INTERNAL_REST_URL + "/stats"
+class State(RinorServer):
+    path = "/stats"
 
     @staticmethod
     def get_latest(id, key):
+        RinorServer.set_uri(State.path)
         resp = State.objects.get({'parameters':str(id) + "/" + key + "/latest"})
         if resp :
             return resp
 
     @staticmethod
     def get_last(id, key, nb):
+        RinorServer.set_uri(State.path)
         resp = State.objects.get({'parameters':str(id) + "/" + key + "/last/" + nb})
         if resp :
             return resp

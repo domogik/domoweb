@@ -19,7 +19,7 @@
 {% endcomment %}
 {% load i18n %}
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -28,28 +28,25 @@
 
 <link rel="icon shortcut" type="image/png" href="/design/common/images/favicon.png" />
 
-<link href="/design/common/css/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css"/>
-<link href="/design/common/css/jquery.jgrowl.css" rel="stylesheet" type="text/css"/>
-<link href="/design/common/css/ui.general.css" rel="stylesheet" type="text/css" />
+<link href="/design/common.new/css/dmg.global.css" rel="stylesheet" type="text/css"/>
 <link href="/design/common/css/ui-icons.css" rel="stylesheet" type="text/css" />
+<link href="/design/common/css/jquery.jgrowl.css" rel="stylesheet" type="text/css"/>
 <link href="/design/common/css/dmg.notifications.css" rel="stylesheet" type="text/css" />
 
 {% block global_css %}{% endblock %}
 {% block css %}{% endblock %}
 <script type="text/javascript">  
-    var rest_url = "{{ rest_url }}"; 
+    var rest_url = "{{ request.session.rinor_url }}"; 
 </script> 
 <script type="text/javascript" src="/design/common/js/jquery-1.5.1.min.js"></script>
-<script type="text/javascript" src="/design/common/js/jquery-ui-1.8.6.custom.min.js"></script>
-<script type="text/javascript" src="/design/common/js/jquery.qtip-1.0.0-rc3.min.js"></script>
-<script type="text/javascript" src="/design/common/js/jquery.jgrowl_minimized.js"></script>
-<script type="text/javascript" src="/design/common/js/jquery.jsonp-2.1.2.min.js"></script>
-<script type="text/javascript" src="/design/common/js/jquery.ui.subclass.js"></script>
-<script type="text/javascript" src="/design/common/js/main.js"></script>
-<script type="text/javascript" src="/design/common/js/dmg.rest.js"></script>
 <script type="text/javascript" src="/design/common/js/dmg.rinor.js"></script>
-<script type="text/javascript" src="/design/common/js/dmg.notifications.js"></script>
 <script type="text/javascript" src="/design/common/js/dmg.browser.js"></script>
+<script type="text/javascript" src="/design/common/js/jquery.jgrowl_minimized.js"></script>
+<script type="text/javascript" src="/design/common/js/dmg.notifications.js"></script>
+
+<!-- TO REMOVE -->
+<script type="text/javascript" src="/design/common/js/jquery.jsonp-2.1.2.min.js"></script>
+<script type="text/javascript" src="/design/common/js/dmg.rest.js"></script>
 
 {% block global_js_include %}{% endblock %}
 {% block js_include %}{% endblock %}
@@ -65,8 +62,8 @@
 </script>
 <title>{% block title %}Domogik{% endblock %}</title>
 </head>
-<body>
+<body role='application'>
     {% block body %}{% endblock %}
-    <footer>Copyright 2011 Domogik project - GNU/GPL v3 license - DomoWeb [{{ version }}]</footer>
+    <footer>&copy;2011 Domogik - DomoWeb ({{ version }})</footer>
 </body>
 </html>
