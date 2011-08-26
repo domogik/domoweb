@@ -98,10 +98,6 @@ def rinor_isconfigured(function):
         try:
             ip = Parameters.objects.get(key='rinor_ip')
             port = Parameters.objects.get(key='rinor_port')
-            externalip = Parameters.objects.get(key='rinor_external_ip')
-            externalport = Parameters.objects.get(key='rinor_external_port')
-            if not 'rinor_url' in request.session:
-                request.session['rinor_url'] = 'http://' + externalip.value + ':' + externalport.value
             if not 'normal_mode' in request.session:
                 mode = Packages.get_mode()
                 request.session['normal_mode']=(mode.mode[0] == "normal")

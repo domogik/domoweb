@@ -105,8 +105,6 @@ def error_resourcenotavailable(request):
 class DomogikSetupForm(forms.Form):
     ip = forms.IPAddressField(max_length=15, label="Server IP address")
     port = forms.DecimalField(decimal_places=0, min_value=0, label="Server port")
-    externalip = forms.IPAddressField(max_length=15, label="IP address for external access")
-    externalport = forms.DecimalField(decimal_places=0, min_value=0, label="External port")
     
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -119,16 +117,6 @@ class DomogikSetupForm(forms.Form):
                 filehandle = urllib.urlopen(url)
             except IOError:
                 raise forms.ValidationError("Can not connect the Domogik server, please check ip")
-
-        externalip = cleaned_data.get("externalip")
-        externalport = cleaned_data.get("externalport")
-        if externalip and externalport:
-            # Check RINOR Server access
-            url = "http://%s:%s/" % (externalip,externalport)
-            try:
-                filehandle = urllib.urlopen(url)
-            except IOError:
-                raise forms.ValidationError("Can not connect Domogik server from external, please check ip")
 
         # Always return the full collection of cleaned data.
         return cleaned_data
@@ -165,16 +153,12 @@ def config_configserver(request):
             p.save();
             p = Parameters(key='rinor_port', value=cd["port"])
             p.save();
-            p = Parameters(key='rinor_external_ip', value=cd["externalip"])
-            p.save();
-            p = Parameters(key='rinor_external_port', value=cd["externalport"])
-            p.save();
             return redirect('config_testserve_view') # Redirect after POST
     else:
         ip = request.META['HTTP_HOST'].split(':')[0]
         if (not ipFormatChk(ip)) :
             ip = socket.gethostbyname(ip)
-        form = DomogikSetupForm(initial={'ip': ip, 'port': 40405, 'externalip': ip, 'externalport': 40405}) # An unbound form
+        form = DomogikSetupForm(initial={'ip': ip, 'port': 40405}) # An unbound form
     
     return go_to_page(
         request, 'config/configserver.html',

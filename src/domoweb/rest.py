@@ -546,3 +546,16 @@ class Helper(RinorServer):
     def get(parameters):
         RinorServer.set_uri(Helper.path)
         return Helper.objects.get({'parameters': parameters})
+        
+class Events(RinorServer):
+    path = "/events"
+
+    @staticmethod
+    def new(devices):
+        RinorServer.set_uri(Events.path)
+        return Events.objects.get({'parameters': 'request/new/' + devices})
+
+    @staticmethod
+    def get(ticket):
+        RinorServer.set_uri(Events.path)
+        return Events.objects.get({'parameters': 'request/get/' + ticket})

@@ -80,4 +80,7 @@ urlpatterns = patterns('domoweb.rinor.views',
     url(r'base/room/update/id/(?P<id>\d+)/area_id/(?P<area_id>\d+)/$', 'rinor_room_update_area'),
     url(r'base/room/del/(?P<id>\d+)/$', 'rinor_room_del'),
     url(r'package/update-cache/$', 'rinor_package_update_cache'),
+
+    url(r'events/(?P<devices>.*)$', 'rinor_events'),
+
 )

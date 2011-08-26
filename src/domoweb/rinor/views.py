@@ -38,12 +38,12 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 import simplejson
 import datetime
-
+from django.views.decorators.http import condition
 from django_pipes.exceptions import ResourceNotAvailableException
 from httplib import BadStatusLine
 from domoweb.utils import *
 from domoweb.rest import (
-    Command, State, Rest, Accounts, Plugins, FeatureAssociations, UIConfigs, Features, Helper, Areas, Devices, Rooms
+    Command, State, Rest, Accounts, Plugins, FeatureAssociations, UIConfigs, Features, Helper, Areas, Devices, Rooms, Events
 )
 
 class JSONResponse(HttpResponse):
@@ -501,3 +501,31 @@ def rinor_package_update_cache(request):
     except ResourceNotAvailableException:
         return redirect("error_resourcenotavailable_view")
     return JSONResponse(data, 'package')
+
+def g(values):
+#    try:
+    data = Events.new(values)
+#    except BadStatusLine:
+#        pass
+#        return redirect("error_badstatusline_view")
+#    except ResourceNotAvailableException:
+#        pass
+#        return redirect("error_resourcenotavailable_view")
+#    else:
+    print vars(data)
+    event = data.event[0]
+    ticket = event.ticket_id    
+    print "New " + str(event.timestamp)
+    yield 'event: message\ndata: ' + simplejson.dumps(event) + '\n\n'
+    while(True):
+        data = Events.get(ticket)
+        event = data.event[0]
+        print "Get " + str(event.timestamp)
+        yield 'event: message\ndata: ' + simplejson.dumps(event) + '\n\n'
+         
+@rinor_isconfigured
+@condition(etag_func=None)
+def rinor_events(request, devices):
+    data = HttpResponse(g(devices), mimetype="text/event-stream")
+    return data
+    

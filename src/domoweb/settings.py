@@ -181,8 +181,8 @@ INSTALLED_APPS = (
 ### 'django.contrib.sessions.backends.file'
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
-PIPES_CACHE_EXPIRY=1
-PIPES_SOCKET_TIMEOUT=20 # 20 sec
+PIPES_CACHE_EXPIRY=0
+PIPES_SOCKET_TIMEOUT=600 # 600 sec
 
 try:
     from settings_local import *

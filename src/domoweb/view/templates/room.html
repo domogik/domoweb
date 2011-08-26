@@ -26,7 +26,7 @@
     var device_types = {{ device_types|safe }};
     var device_usages = {{ device_usages|safe }};
     $(function() {
-        $.initAssociations('room', {{ room.id }}, device_usages, device_types);
+        $.initAssociations('room', {{ room.id }}, device_usages, device_types);        
     });
 {% endblock %}
 

@@ -65,7 +65,7 @@ d_files = [
         ('/etc/default/', ['src/domogik/examples/default/domoweb'])
 ]
 
-d_files.extend(list_all_files('src/domoweb/home/templates/', '/usr/local/share/domoweb/home/templates/')),
+d_files.extend(list_all_files('src/domoweb/templates/', '/usr/local/share/domoweb/templates/')),
 d_files.extend(list_all_files('src/domoweb/admin/templates/', '/usr/local/share/domoweb/admin/templates/')),
 d_files.extend(list_all_files('src/domoweb/view/templates/', '/usr/local/share/domoweb/view/templates/')),
 d_files.extend(list_all_files('src/domoweb/locale/', '/usr/local/share/domoweb/locale/')),
@@ -103,7 +103,7 @@ setup(
     entry_points = {
         'console_scripts': [
             """
-            dmg_domoweb = domoweb.manage:run_manager
+            dmg_domoweb = domoweb.threadmanage:run_manager
             """
         ],
     },

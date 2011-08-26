@@ -1,5 +1,5 @@
 $(function(){
-	$(window).bind('beforeunload', function () { $.cancelRequest(); });
+	$(window).bind('beforeunload', function () {  $.eventsource("close", "rinor-events"); });
 });
 
 (function($) {    
@@ -68,58 +68,18 @@ $(function(){
                         $.notification('error', jqXHR.responseText);
                 });
         },
-
-        cancelRequest: function() {
-            if (this.request_ticketid)
-                $.eventCancel(this.request_ticketid);
-        },
         
-        eventRequest: function(devices) {
-            url = rest_url + '/events/request/new/' + devices.join('/') + '/';
-            rest.jsonp(url,
-                function (data) {
-                    var status = (data.status).toLowerCase();
-                    if (status == 'ok') {
-                        // Free the ticket when page unload
-                        this.request_ticketid = data.event[0].ticket_id;
-                        $(document).trigger('dmg_event', [data.event[0]]);
-                        $.eventUpdate(data.event[0].ticket_id);
-                    } else {
-                        $.notification('error', 'Event request  : ' + data.description);
-                    }
+        eventRequest: function(devices) {            
+            $.eventsource({
+                label: "rinor-events",
+                url: "/rinor/events/" + devices.join('/') + '/',
+                dataType: "json",
+                open: function() {        
                 },
-                function (xOptions, textStatus) {
-                    $.notification('error', 'Event request : Lost REST server connection');
+                message: function( data ) {
+                        $(document).trigger('dmg_event', data);
                 }
-            );
-        },
-        
-        eventUpdate: function(ticket) {
-            url = rest_url + '/events/request/get/' + ticket + '/';
-            rest.jsonp(url,
-                function (data) {
-                    var status = (data.status).toLowerCase();
-                    if (status == 'ok') {
-                        $(document).trigger('dmg_event', [data.event[0]]);
-                        $.eventUpdate(ticket);
-                    } else {
-                        $.notification('error', 'Event update : ' + data.description);
-                    }
-                },
-                function (xOptions, textStatus) {
-                    $.notification('error', 'Event request : Lost REST server connection');
-                }
-            );
-        },
-        
-        eventCancel: function(ticket) {
-            url = rest_url + '/events/request/free/' + ticket + '/';
-            $.jsonp({
-                cache: false,
-                type: "GET",
-                url: url,
-                dataType: "jsonp"
-            });
+            });   
         },
         
         stringToJSON: function(string) {
