@@ -14,64 +14,59 @@ $(function(){
             } else { // room
                 options = ['base', 'feature_association', 'list', 'by-room', page_id];
             }
-            rest.get(options,
-                function(data) {
-                    var status = (data.status).toLowerCase();
-                    if (status == 'ok') {
-                        $.each(data.feature_association, function(index, association) {
-                            devices.push(association.device_feature.device_id);
-                            rest.get(['base', 'ui_config', 'list', 'by-reference', 'association', association.id],
-                                function(data) {
-                                    var status = (data.status).toLowerCase();
-                                    if (status == 'ok') {
-                                        var widget = null;
-                                        var place = null;
-                                        $.each(data.ui_config, function(index, item) {
-                                            if (item.key == 'widget') widget = item.value;
-                                            if (item.key == 'place') place = item.value;
+
+            rinor.get(options)
+                .success(function(data, status, xhr){
+                    $.each(data, function(index, association) {
+                        devices.push(association.device_feature.device_id);
+                        rinor.get(['base', 'ui_config', 'list', 'by-reference', 'association', association.id])
+                            .success(function(data, status, xhr){
+                                var widget = null;
+                                var place = null;
+                                $.each(data, function(index, item) {
+                                    if (item.key == 'widget') widget = item.value;
+                                    if (item.key == 'place') place = item.value;
+                                });
+                                if (association.place_type == page_type || (association.place_type != page_type && place != 'otheractions')) {
+                                    rinor.get(['base', 'feature', 'list', 'by-id', association.device_feature_id])
+                                        .success(function(data, status, xhr){
+                                            var feature = data[0];
+                                            var parameters_usage = $.stringToJSON(device_usages[feature.device.device_usage_id].default_options);
+                                            var parameters_type = $.stringToJSON(feature.device_feature_model.parameters);
+                                            var div = $("<div id='widget_" + association.id + "' role='listitem'></div>");
+                                            var options = {
+                                                usage: feature.device.device_usage_id,
+                                                devicename: feature.device.name,
+                                                featurename: feature.device_feature_model.name,
+                                                devicetechnology: device_types[feature.device.device_type_id].device_technology_id,
+                                                deviceaddress: feature.device.address,
+                                                featureconfirmation: feature.device_feature_model.return_confirmation,
+                                                deviceid: feature.device_id,
+                                                key: feature.device_feature_model.stat_key,
+                                                usage_parameters: parameters_usage[feature.device_feature_model.feature_type][feature.device_feature_model.value_type],
+                                                model_parameters: parameters_type
+                                            }
+                                            $("#" + association.place_type + "_" + association.place_id + " ." + place).append(div);
+                                            eval("$('#widget_" + association.id + "')." + widget + "(options)");
+                                        })
+                                        .error(function(jqXHR, status, error){
+                                            if (jqXHR.status == 400)
+                                                $.notification('error', jqXHR.responseText);
                                         });
-                                        if (association.place_type == page_type || (association.place_type != page_type && place != 'otheractions')) {
-                                            rest.get(['base', 'feature', 'list', 'by-id', association.device_feature_id],
-                                                function(data) {
-                                                    var status = (data.status).toLowerCase();
-                                                    if (status == 'ok') {
-                                                        var feature = data.feature[0];
-                                                        var parameters_usage = $.stringToJSON(device_usages[feature.device.device_usage_id].default_options);
-                                                        var parameters_type = $.stringToJSON(feature.device_feature_model.parameters);
-                                                        var div = $("<div id='widget_" + association.id + "' role='listitem'></div>");
-                                                        var options = {
-                                                            usage: feature.device.device_usage_id,
-                                                            devicename: feature.device.name,
-                                                            featurename: feature.device_feature_model.name,
-                                                            devicetechnology: device_types[feature.device.device_type_id].device_technology_id,
-                                                            deviceaddress: feature.device.address,
-                                                            featureconfirmation: feature.device_feature_model.return_confirmation,
-                                                            deviceid: feature.device_id,
-                                                            key: feature.device_feature_model.stat_key,
-                                                            usage_parameters: parameters_usage[feature.device_feature_model.feature_type][feature.device_feature_model.value_type],
-                                                            model_parameters: parameters_type
-                                                        }
-                                                        $("#" + association.place_type + "_" + association.place_id + " ." + place).append(div);
-                                                        eval("$('#widget_" + association.id + "')." + widget + "(options)");
-                                                    } else {
-                                                        $.notification('error', data.description);                                          
-                                                    }
-                                                }
-                                            );
-                                        }
-                                    } else {
-                                        $.notification('error', data.description);                                          
-                                    }
                                 }
-                            );
-                        });
-                        devices = unique(devices);
-                        if (devices.length > 0) $.eventRequest(devices);
-                    } else {
-                        $.notification('error', data.description);                                          
-                    }
-                }
-            );
+                            })
+                            .error(function(jqXHR, status, error){
+                                if (jqXHR.status == 400)
+                                    $.notification('error', jqXHR.responseText);
+                            });
+                    });
+                    devices = unique(devices);
+                    if (devices.length > 0) $.eventRequest(devices);
+                })
+                .error(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', jqXHR.responseText);
+                });
         },
 
         cancelRequest: function() {

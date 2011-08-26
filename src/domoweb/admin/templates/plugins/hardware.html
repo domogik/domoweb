@@ -33,29 +33,26 @@ $(function(){
     {% endifequal %}
     
     /* Get the list of configuration items */
-    rest.get(['plugin', 'detail', '{{ plugin.host }}', '{{ plugin.name }}'],
-        function(data) {
-            var status = (data.status).toLowerCase();
-            if (status == 'ok') {
-                // Check configuration items
-                var num_items = data.plugin[0].configuration.length;
-                var options = data.plugin[0].configuration.sort(sortOptions);
-                $.each(options, function(index, item) {
-                    var iid = item.id;
-                    var ikey = item.key;
-                    var ivalue = item.value;
-                    $("#configuration_items tbody").append("<tr id='" + item.id + "'></tr>");
-                    var tr = $("tr#"+iid);
-                    tr.append("<td>" +  ikey + "</td>");
-                    tr.append("<td>" + ivalue + "</td>");
-                });
-                
-            } else {
-                /* Error to get plugin default config */
-                $.notification(data.status, data.description);
-            }
-        }
-    );
+    rinor.get(['plugin', 'detail', '{{ plugin.host }}', '{{ plugin.name }}'])
+        .success(function(data, status, xhr){
+            // Check configuration items
+            var num_items = data[0].configuration.length;
+            var options = data[0].configuration.sort(sortOptions);
+            $.each(options, function(index, item) {
+                var iid = item.id;
+                var ikey = item.key;
+                var ivalue = item.value;
+                $("#configuration_items tbody").append("<tr id='" + item.id + "'></tr>");
+                var tr = $("tr#"+iid);
+                tr.append("<td>" +  ikey + "</td>");
+                tr.append("<td>" + ivalue + "</td>");
+            });
+        })
+        .error(function(jqXHR, status, error){
+            self.cancel();
+            if (jqXHR.status == 400)
+                $.notification('error', jqXHR.responseText);
+        });
 
     function setStatus(status) {
         if (status) { //active
@@ -86,20 +83,20 @@ $(function(){
             .unbind('click')
             .click(function() {
             $("#buttonstatus").attr('className', 'button icon16-action-processing_f6f6f6');
-            rest.get(['plugin', btaction, '{{ plugin.host }}', '{{ plugin.name }}'],
-                function(data) {
-                    var status = (data.status).toLowerCase();
+            rinor.get(['plugin', btaction, '{{ plugin.host }}', '{{ plugin.name }}'])
+                .complete(function(){
                     $("#buttonstatus").removeClass('icon16-action-processing_f6f6f6');
-                    if (status == 'ok') {
-                        $.notification('ok', btokmsg);
-                        getPluginsList();
-                        setStatus(btstatus);
-                    } else {
-                        $.notification('error', bterrormsg + ' (' + data.description + ')');
+                })
+                .success(function(data, status, xhr){
+                    $.notification('ok', btokmsg);
+                    getPluginsList();
+                    setStatus(btstatus);
+                })
+                .error(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', bterrormsg + ' (' + jqXHR.responseText + ')');
                         setStatus(!btstatus);
-                    }
-                }
-            );
+                });
         });
 */
 

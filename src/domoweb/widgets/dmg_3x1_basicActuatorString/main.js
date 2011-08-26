@@ -40,17 +40,15 @@
                 var params = ['command', o.devicetechnology, o.deviceaddress];
                 if (o.model_parameters.command) params.push(o.model_parameters.command);
                 params.push(this.input.val());
-                rest.get(params,
-                    function(data) {
-                        var status = (data.status).toLowerCase();
-                        if (status == 'ok') {
-                            self.valid(o.featureconfirmation);
-                        } else {
-                            /* Error */
-                            self.cancel();
-                        }
-                    }
-                );                
+                rinor.get(params)
+                    .success(function(data, status, xhr){
+                        self.valid(o.featureconfirmation);
+                    })
+                    .error(function(jqXHR, status, error){
+                        self.cancel();
+                        if (jqXHR.status == 400)
+                            $.notification('error', jqXHR.responseText);
+                    });
             }
         },
 

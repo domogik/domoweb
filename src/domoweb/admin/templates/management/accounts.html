@@ -61,16 +61,14 @@
             button: "#addaccountButton",
             onok: function(values) {
                 // Submit form
-                rest.get(['account', 'user', 'add', 'login', values.adduserlogin, 'password', values.adduserpassword, 'is_admin', values.adduseradmin, 'skin_used', '', 'first_name', values.adduserfirstname, 'last_name', values.adduserlastname],
-                    function(data) {
-                        var status = (data.status).toLowerCase();
-                        if (status == 'ok') {
-                            $.reloadPage({'status': 'ok', 'msg': '{% trans "New account added" %} \'' + data.account[0].login + '\''});
-                        } else {
-                            $.notification('error', '{% trans "Account not created" %} (' + data.description + ')');
-                        }
-                    }
-                );
+                rinor.get(['account', 'user', 'add', 'login', values.adduserlogin, 'password', values.adduserpassword, 'is_admin', values.adduseradmin, 'first_name', values.adduserfirstname, 'last_name', values.adduserlastname])
+                    .success(function(data, status, xhr){
+                        $.reloadPage({'status': 'ok', 'msg': '{% trans "New account added" %} \'' + data[0].login + '\''});
+                    })
+                    .error(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', '{% trans "Account not created" %} (' + jqXHR.responseText + ')');
+                    });
             }
         });
         
@@ -80,16 +78,14 @@
             button: "#addpersonButton",
             onok: function(values) {
                 // Submit form
-                rest.get(['account', 'person', 'add', 'first_name', values.personfirstname, 'last_name', values.personlastname],
-                    function(data) {
-                        var status = (data.status).toLowerCase();
-                        if (status == 'ok') {
-                            $.reloadPage({'status': 'ok', 'msg': '{% trans "New person added" %} \'' + data.person[0].first_name + ' ' + data.person[0].last_name + '\''});
-                        } else {
-                            $.notification('error', '{% trans "Person not created" %} (' + data.description + ')');
-                        }
-                    }
-                );
+                rinor.get(['account', 'person', 'add', 'first_name', values.personfirstname, 'last_name', values.personlastname])
+                    .success(function(data, status, xhr){
+                        $.reloadPage({'status': 'ok', 'msg': '{% trans "New person added" %} \'' + data[0].first_name + ' ' + data[0].last_name + '\''});
+                    })
+                    .error(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', '{% trans "Person not created" %} (' + jqXHR.responseText + ')');
+                    });
             }
         });
         
@@ -150,16 +146,14 @@
                             button: "#delaccount{{ account.id }}",
                             name: "'{{ account.login }}'",
                             onok: function() {
-                                rest.get(['account', 'user', 'del', '{{ account.id }}'],
-                                    function(data) {
-                                        var status = (data.status).toLowerCase();
-                                        if (status == 'ok') {
-                                            $.reloadPage({'status': 'ok', 'msg': '{% trans "Account" %} \'' + data.account[0].login + '\' {% trans "successfully deleted" %}'});
-                                        } else {
-                                            $.notification('error', '{% trans "Account not deleted" %} (' + data.description + ')');
-                                        }
-                                    }
-                                );
+                                rinor.get(['account', 'user', 'del', '{{ account.id }}'])
+                                    .success(function(data, status, xhr){
+                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Account" %} \'' + data[0].login + '\' {% trans "successfully deleted" %}'});
+                                    })
+                                    .error(function(jqXHR, status, error){
+                                        if (jqXHR.status == 400)
+                                            $.notification('error', '{% trans "Account not deleted" %} (' + jqXHR.responseText + ')');
+                                    });
                             }
                         });
 
@@ -170,16 +164,14 @@
                             values: {upduserlogin : "{{ account.login }}", upduserfirstname: "{{account.person.first_name}}", upduserlastname: "{{account.person.last_name}}", upduseradmin : {{ account.is_admin|lower }} },
                             onok: function(values) {
                                 // Submit form
-                                rest.get(['account', 'user', 'update', 'id', '{{ account.id }}', 'login', values.upduserlogin, 'is_admin', values.upduseradmin, 'skin_used', '', 'first_name', values.upduserfirstname, 'last_name', values.upduserlastname],
-                                    function(data) {
-                                        var status = (data.status).toLowerCase();
-                                        if (status == 'ok') {
-                                            $.reloadPage({'status': 'ok', 'msg': '{% trans "Account" %} \'' + data.account[0].login + '\' {% trans "successfully updated" %}'});
-                                        } else {
-                                            $.notification('error', '{% trans "Account not updated" %} (' + data.description + ')');
-                                        }
-                                    }
-                                );
+                                rinor.get(['account', 'user', 'update', 'id', '{{ account.id }}', 'login', values.upduserlogin, 'is_admin', values.upduseradmin, 'first_name', values.upduserfirstname, 'last_name', values.upduserlastname])
+                                    .success(function(data, status, xhr){
+                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Account" %} \'' + data[0].login + '\' {% trans "successfully updated" %}'});
+                                    })
+                                    .error(function(jqXHR, status, error){
+                                        if (jqXHR.status == 400)
+                                            $.notification('error', '{% trans "Account not updated" %} (' + jqXHR.responseText + ')');
+                                    });
                             }
                         });
 
@@ -189,16 +181,14 @@
                             button: "#password{{ account.id }}",
                             onok: function(values) {
                                 // Submit form
-                                rest.get(['account', 'user', 'password', 'id', '{{ account.id }}', 'old', values.oldpassword, 'new', values.newpassword],
-                                    function(data) {
-                                        var status = (data.status).toLowerCase();
-                                        if (status == 'ok') {
-                                            $.reloadPage({'status': 'ok', 'msg': data.account[0].login + '\' {% trans "Password" %} {% trans "successfully updated" %}'});
-                                        } else {
-                                            $.notification('error', '{% trans "Password not updated" %} (' + data.description + ')');
-                                        }
-                                    }
-                                );
+                                rinor.get(['account', 'user', 'password', 'id', '{{ account.id }}', 'old', values.oldpassword, 'new', values.newpassword])
+                                    .success(function(data, status, xhr){
+                                        $.reloadPage({'status': 'ok', 'msg': data[0].login + '\' {% trans "Password" %} {% trans "successfully updated" %}'});
+                                    })
+                                    .error(function(jqXHR, status, error){
+                                        if (jqXHR.status == 400)
+                                            $.notification('error', '{% trans "Password not updated" %} (' + jqXHR.responseText + ')');
+                                    });
                             }
                         });
                     });
@@ -208,7 +198,6 @@
                     <td>{{ account.login }}</td>
                     <td>{{ account.person.first_name }} {{ account.person.last_name }}</td>
                     <td><div class='icon16-text icon16-status-{{ account.is_admin|lower }}'><span class='offscreen'>{{ account.is_admin }}</span></div></td>
-                    <td>{{ account.skin_used }}</td>
                     <td>
                         <ul class="actions">
                             <li><button id='delaccount{{ account.id }}' class='icon16-action-del buttonicon' title="{% trans "Delete" %} '{{ account.login }}'"><span class='offscreen'>{% trans "Delete" %} {{ account.login }}</span></button></li>
@@ -242,16 +231,14 @@
                             button: "#delperson{{ person.id }}",
                             name: "'{{ person.first_name }} {{ person.last_name }}'",
                             onok: function() {
-                                rest.get(['account', 'person', 'del', '{{ person.id }}'],
-                                    function(data) {
-                                        var status = (data.status).toLowerCase();
-                                        if (status == 'ok') {
-                                            $.reloadPage({'status': 'ok', 'msg': '{% trans "Person" %} \'' + data.person[0].first_name + ' ' + data.person[0].last_name + '\' {% trans "successfully deleted" %}'});
-                                        } else {
-                                            $.notification('error', '{% trans "Person not deleted" %} (' + data.description + ')');
-                                        }
-                                    }
-                                );
+                                rinor.get(['account', 'person', 'del', '{{ person.id }}'])
+                                    .success(function(data, status, xhr){
+                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Person" %} \'' + data[0].first_name + ' ' + data[0].last_name + '\' {% trans "successfully deleted" %}'});
+                                    })
+                                    .error(function(jqXHR, status, error){
+                                        if (jqXHR.status == 400)
+                                            $.notification('error', '{% trans "Person not deleted" %} (' + jqXHR.responseText + ')');
+                                    });
                             }
                         });
                         
@@ -262,16 +249,14 @@
                             values: {personfirstname : '{{ person.first_name }}', personlastname : '{{ person.last_name }}' },
                             onok: function(values) {
                                 // Submit form
-                                rest.get(['account', 'person', 'update', 'id', '{{ person.id }}', 'first_name', values.personfirstname, 'last_name', values.personlastname],
-                                    function(data) {
-                                        var status = (data.status).toLowerCase();
-                                        if (status == 'ok') {
-                                            $.reloadPage({'status': 'ok', 'msg': '{% trans "Person " %} \'' + data.person[0].first_name + ' ' + data.person[0].last_name + '\' updated'});
-                                        } else {
-                                            $.notification('error', '{% trans "Person not updated" %} (' + data.description + ')');
-                                        }
-                                    }
-                                );
+                                rinor.get(['account', 'person', 'update', 'id', '{{ person.id }}', 'first_name', values.personfirstname, 'last_name', values.personlastname])
+                                    .success(function(data, status, xhr){
+                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Person " %} \'' + data[0].first_name + ' ' + data[0].last_name + '\' updated'});
+                                    })
+                                    .error(function(jqXHR, status, error){
+                                        if (jqXHR.status == 400)
+                                            $.notification('error', '{% trans "Person not updated" %} (' + jqXHR.responseText + ')');
+                                    });
                             }
                         });
                     });

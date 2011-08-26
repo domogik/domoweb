@@ -37,17 +37,14 @@
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:4});
         
         $("#update_cache").click(function() {
-            rest.get(['package','update-cache'],
-                function(data) {
-                    var status = (data.status).toLowerCase();
-                    if (status == 'ok') {
-                        $.notification(status, "Package cache updated");
-                    } else {
-                        /* Error retreving plugin config */
-                        $.notification(status, data.description);
-                    }
-                }
-            );
+            rinor.get(['package','update-cache'])
+                .success(function(data, status, xhr){
+                    $.notification('ok', "Package cache updated");
+                })
+                .error(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', jqXHR.responseText);
+                });
         });
     });
 {% endblock %}

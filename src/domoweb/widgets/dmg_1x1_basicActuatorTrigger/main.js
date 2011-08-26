@@ -50,8 +50,8 @@
             } else {
                 restcommand = ['command', o.devicetechnology, o.deviceaddress, o.model_parameters.command];
             }
-            
-            rest.get(restcommand)
+
+            rinor.get(restcommand)
                 .success(function(data, status, xhr){
                     if (self.sequence) {
                         self._value.html(self.sequence[self.sequenceIndex]['key']);

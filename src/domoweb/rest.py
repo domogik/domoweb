@@ -65,9 +65,7 @@ class Rest(RinorServer):
     @staticmethod
     def get_info():
         RinorServer.set_uri(Rest.path)
-        resp = Rest.objects.get()
-        if resp :
-            return resp
+        return Rest.objects.get()
 
 class House(object):
     def __init__(self):
@@ -81,16 +79,27 @@ class Areas(RinorServer):
     @staticmethod
     def get_all():
         RinorServer.set_uri(Areas.path)
-        resp = Areas.objects.get({'parameters':"list"})
-        if resp :
-            return resp
+        return Areas.objects.get({'parameters':"list"})
 
     @staticmethod
     def get_by_id(id):
         RinorServer.set_uri(Areas.path)
-        resp = Areas.objects.get({'parameters':"list/by-id/" + str(id)})
-        if resp :
-            return resp
+        return Areas.objects.get({'parameters':"list/by-id/" + str(id)})
+
+    @staticmethod
+    def add(name, description):
+        RinorServer.set_uri(Areas.path)
+        return Areas.objects.get({'parameters':"add/name/" + name + "/description/" + description})
+
+    @staticmethod
+    def update(id, name, description):
+        RinorServer.set_uri(Areas.path)
+        return Areas.objects.get({'parameters':"update/id/" + str(id) + "/name/" + name + "/description/" + description})
+
+    @staticmethod
+    def del_by_id(id):
+        RinorServer.set_uri(Areas.path)
+        return Areas.objects.get({'parameters':"del/" + str(id)})
 
     def merge_rooms(self):
         for area in self.area:
@@ -112,30 +121,42 @@ class Rooms(RinorServer):
     @staticmethod
     def get_all():
         RinorServer.set_uri(Rooms.path)
-        resp = Rooms.objects.get({'parameters':"list"})
-        if resp :
-            return resp
+        return Rooms.objects.get({'parameters':"list"})
 
     @staticmethod
     def get_by_id(id):
         RinorServer.set_uri(Rooms.path)
-        resp = Rooms.objects.get({'parameters':"list/by-id/" + str(id)})
-        if resp :
-            return resp
+        return Rooms.objects.get({'parameters':"list/by-id/" + str(id)})
 
     @staticmethod
     def get_by_area(id):
         RinorServer.set_uri(Rooms.path)
-        resp = Rooms.objects.get({'parameters':"list/by-area/" + str(id)})
-        if resp :
-            return resp
+        return Rooms.objects.get({'parameters':"list/by-area/" + str(id)})
 
     @staticmethod
     def get_without_area():
         RinorServer.set_uri(Rooms.path)
-        resp = Rooms.objects.get({'parameters':"list/by-area//"})
-        if resp :
-            return resp
+        return Rooms.objects.get({'parameters':"list/by-area//"})
+
+    @staticmethod
+    def add(name, description):
+        RinorServer.set_uri(Rooms.path)
+        return Rooms.objects.get({'parameters':"add/name/" + name + "/description/" + description})
+
+    @staticmethod
+    def update(id, name, description):
+        RinorServer.set_uri(Rooms.path)
+        return Rooms.objects.get({'parameters':"update/id/" + str(id) + "/name/" + name + "/description/" + description})
+
+    @staticmethod
+    def update_area(id, area_id):
+        RinorServer.set_uri(Rooms.path)
+        return Rooms.objects.get({'parameters':"update/id/" + str(id) + "/area_id/" + str(area_id)})
+
+    @staticmethod
+    def del_by_id(id):
+        RinorServer.set_uri(Rooms.path)
+        return Rooms.objects.get({'parameters':"del/" + str(id)})
 
     def merge_uiconfig(self):
         for room in self.room:
@@ -151,9 +172,23 @@ class Devices(RinorServer):
     @staticmethod
     def get_all():
         RinorServer.set_uri(Devices.path)
-        resp = Devices.objects.get({'parameters':"list"})
-        if resp :
-            return resp
+        return Devices.objects.get({'parameters':"list"})
+
+    @staticmethod
+    def add(name, address, type_id, usage_id, description, reference):
+        RinorServer.set_uri(Devices.path)
+        return Devices.objects.get({'parameters':"add/name/" + name + "/address/" + address + "/type_id/" + type_id + "/usage_id/" + usage_id + "/description/" + description + "/reference/" + reference})
+
+    @staticmethod
+    def update(id, name, address, usage_id, description, reference):
+        RinorServer.set_uri(Devices.path)
+        return Devices.objects.get({'parameters':"update/id/" + str(id) + "/name/" + name + "/address/" + address + "/usage_id/" + usage_id + "/description/" + description + "/reference/" + reference})
+
+    @staticmethod
+    def del_by_id(id):
+        RinorServer.set_uri(Devices.path)
+        return Devices.objects.get({'parameters':"del/" + str(id)})
+
 
     def merge_uiconfig(self):
         for device in self.device:
@@ -165,11 +200,6 @@ class Devices(RinorServer):
         for device in self.device:
             features = Features.get_by_device(device.id)
             device.features = features.feature
-#            associations = FeatureAssociations.get_by_feature(feature.id)
-#            for feature in device.feature:
-#                for association in associations.feature_association:
-#                    if (feature.id == association.device_feature_id):
-#                        feature.association = association
 
 class DeviceTechnologies(RinorServer):
     path = "/base/device_technology"
@@ -177,9 +207,7 @@ class DeviceTechnologies(RinorServer):
     @staticmethod
     def get_all():
         RinorServer.set_uri(DeviceTechnologies.path)
-        resp = DeviceTechnologies.objects.get({'parameters':"list"})
-        if resp :
-            return resp
+        return DeviceTechnologies.objects.get({'parameters':"list"})
 
 class DeviceTypes(RinorServer):
     path = "/base/device_type"
@@ -188,10 +216,8 @@ class DeviceTypes(RinorServer):
     @staticmethod
     def get_all():
         RinorServer.set_uri(DeviceTypes.path)
-        resp = DeviceTypes.objects.get({'parameters':"list"})
-        if resp :
-            return resp
-        
+        return DeviceTypes.objects.get({'parameters':"list"})
+
     @staticmethod
     def get_dict():
         if DeviceTypes._dict is None:
@@ -216,9 +242,7 @@ class DeviceUsages(RinorServer):
     @staticmethod
     def get_all():
         RinorServer.set_uri(DeviceUsages.path)
-        resp = DeviceUsages.objects.get({'parameters':"list"})
-        if resp :
-            return resp
+        return DeviceUsages.objects.get({'parameters':"list"})
     
     @staticmethod
     def get_dict():
@@ -243,16 +267,12 @@ class Features(RinorServer):
     @staticmethod
     def get_by_id(id):
         RinorServer.set_uri(Features.path)
-        resp = Features.objects.get({'parameters':"list/by-id/" + str(id)})
-        if resp :
-            return resp
+        return Features.objects.get({'parameters':"list/by-id/" + str(id)})
 
     @staticmethod
     def get_by_device(device_id):
         RinorServer.set_uri(Features.path)
-        resp = Features.objects.get({'parameters':"list/by-device_id/" + str(device_id)})
-        if resp :
-            return resp
+        return Features.objects.get({'parameters':"list/by-device_id/" + str(device_id)})
 
 class FeatureAssociations(RinorServer):
     path = "/base/feature_association"
@@ -260,30 +280,47 @@ class FeatureAssociations(RinorServer):
     @staticmethod
     def get_by_house():
         RinorServer.set_uri(FeatureAssociations.path)
-        resp = FeatureAssociations.objects.get({'parameters':"list/by-house"})
-        if resp :
-            return resp
+        return FeatureAssociations.objects.get({'parameters':"list/by-house"})
+
+    @staticmethod
+    def get_by_house_deep():
+        RinorServer.set_uri(FeatureAssociations.path)
+        return FeatureAssociations.objects.get({'parameters':"listdeep/by-house"})
 
     @staticmethod
     def get_by_area(area_id):
         RinorServer.set_uri(FeatureAssociations.path)
-        resp = FeatureAssociations.objects.get({'parameters':"list/by-area/" + str(area_id)})
-        if resp :
-            return resp
+        return FeatureAssociations.objects.get({'parameters':"list/by-area/" + str(area_id)})
+
+    @staticmethod
+    def get_by_area_deep(area_id):
+        RinorServer.set_uri(FeatureAssociations.path)
+        return FeatureAssociations.objects.get({'parameters':"listdeep/by-area/" + str(area_id)})
 
     @staticmethod
     def get_by_room(room_id):
         RinorServer.set_uri(FeatureAssociations.path)
-        resp = FeatureAssociations.objects.get({'parameters':"list/by-room/" + str(room_id)})
-        if resp :
-            return resp
+        return FeatureAssociations.objects.get({'parameters':"list/by-room/" + str(room_id)})
         
     @staticmethod
     def get_by_feature(feature_id):
         RinorServer.set_uri(FeatureAssociations.path)
-        resp = FeatureAssociations.objects.get({'parameters':"list/by-feature/" + str(feature_id)})
-        if resp :
-            return resp
+        return FeatureAssociations.objects.get({'parameters':"list/by-feature/" + str(feature_id)})
+
+    @staticmethod
+    def del_by_id(association_id):
+        RinorServer.set_uri(FeatureAssociations.path)
+        return FeatureAssociations.objects.get({'parameters':"del/id/" + str(association_id)})
+
+    @staticmethod
+    def del_by_association(association_type, association_id):
+        RinorServer.set_uri(FeatureAssociations.path)
+        return FeatureAssociations.objects.get({'parameters':"del/association_type/" + association_type + "/association_id/" + str(association_id)})
+
+    @staticmethod
+    def add(feature_id, association_type, association_id):
+        RinorServer.set_uri(FeatureAssociations.path)
+        return FeatureAssociations.objects.get({'parameters':"add/feature_id/" + str(feature_id) + "/association_type/" + association_type + "/association_id/" + str(association_id)})
     
 class UIConfigs(RinorServer):
     path = "/base/ui_config"
@@ -315,6 +352,21 @@ class UIConfigs(RinorServer):
                     else :
                         resp[uiconfig.key] = uiconfig.value
             return resp
+
+    @staticmethod
+    def list_by_reference(name, reference):
+        RinorServer.set_uri(UIConfigs.path)
+        return UIConfigs.objects.get({'parameters':"list/by-reference/" + name + "/" + str(reference)})
+        
+    @staticmethod
+    def del_by_reference(name, reference):
+        RinorServer.set_uri(UIConfigs.path)
+        return UIConfigs.objects.get({'parameters':"del/by-reference/" + name + "/" + reference})
+    
+    @staticmethod
+    def set(name, reference, key, value):
+        RinorServer.set_uri(UIConfigs.path)
+        return UIConfigs.objects.get({'parameters':"set/name/" + name + "/reference/" + reference + "/key/" + key + "/value/" + value})
     
 class Plugins(RinorServer):
     path = "/plugin"
@@ -322,30 +374,52 @@ class Plugins(RinorServer):
     @staticmethod
     def get_all():
         RinorServer.set_uri(Plugins.path)
-        resp = Plugins.objects.get({'parameters':"list"})
-        if resp :
-            return resp
+        return Plugins.objects.get({'parameters':"list"})
 
     @staticmethod
     def get_by_name(name):
         RinorServer.set_uri(Plugins.path)
-        resp = Plugins.objects.get({'parameters':"list/by-name/" + name})
-        if resp :
-            return resp
+        return Plugins.objects.get({'parameters':"list/by-name/" + name})
 
     @staticmethod
     def get_detail(host, name):
         RinorServer.set_uri(Plugins.path)
-        resp = Plugins.objects.get({'parameters':"detail/" + host + "/" + name})
-        if resp :
-            return resp
+        return Plugins.objects.get({'parameters':"detail/" + host + "/" + name})
 
     @staticmethod
     def enable(host, name, action):
         RinorServer.set_uri(Plugins.path)
-        resp = Plugins.objects.get({'parameters':action + "/" + host + "/" + name})
-        if resp :
-            return resp
+        return Plugins.objects.get({'parameters':action + "/" + host + "/" + name})
+
+    @staticmethod
+    def get_config(host, name):
+        RinorServer.set_uri(Plugins.path)
+        return Plugins.objects.get({'parameters':"config/list/by-name/" + host + "/" + name})
+
+    @staticmethod
+    def get_config_bykey(host, name, key):
+        RinorServer.set_uri(Plugins.path)
+        return Plugins.objects.get({'parameters':"config/list/by-name/" + host + "/" + name + "/by-key/" + key})
+
+    @staticmethod
+    def del_config(host, name):
+        RinorServer.set_uri(Plugins.path)
+        return Plugins.objects.get({'parameters':"config/del/" + host + "/" + name})
+
+    @staticmethod
+    def del_config_bykey(host, name, key):
+        RinorServer.set_uri(Plugins.path)
+        return Plugins.objects.get({'parameters':"config/del/" + host + "/" + name + "/by-key/" + key})
+
+    @staticmethod
+    def set_config(host, name, key, value):
+        RinorServer.set_uri(Plugins.path)
+        return Plugins.objects.get({'parameters':"config/set/hostname/" + host + "/name/" + name + "/key/" + key + "/value/" + value})
+
+    @staticmethod
+    def command(command, host, name):
+        RinorServer.set_uri(Plugins.path)
+        return Plugins.objects.get({'parameters': command+ "/" + host + "/" + name})
 
 class Accounts(RinorServer):
     path = "/account"
@@ -353,68 +427,90 @@ class Accounts(RinorServer):
     @staticmethod
     def auth(login, password):
         RinorServer.set_uri(Accounts.path)
-        resp = Accounts.objects.get({'parameters':"auth/" + login + "/" + password})
-        if resp :
-            return resp
+        return Accounts.objects.get({'parameters':"auth/" + login + "/" + password})
 
     @staticmethod
     def get_user(id):
         RinorServer.set_uri(Accounts.path)
-        resp = Accounts.objects.get({'parameters':"user/list/by-id/" + id})
-        if resp :
-            return resp
+        return Accounts.objects.get({'parameters':"user/list/by-id/" + id})
 
     @staticmethod
     def get_all_users():
         RinorServer.set_uri(Accounts.path)
-        resp = Accounts.objects.get({'parameters':"user/list"})
-        if resp :
-            return resp
+        return Accounts.objects.get({'parameters':"user/list"})
 
     @staticmethod
     def get_all_people():
         RinorServer.set_uri(Accounts.path)
-        resp = Accounts.objects.get({'parameters':"person/list"})
-        if resp :
-            return resp
+        return Accounts.objects.get({'parameters':"person/list"})
+
+    @staticmethod
+    def add_user(login, password, is_admin, first_name, last_name):
+        RinorServer.set_uri(Accounts.path)
+        return Accounts.objects.get({'parameters':"user/add/login/" + login + "/password/" + password + "/is_admin/" + is_admin + "/skin_used//first_name/" + first_name + "/last_name/" + last_name})
+
+    @staticmethod
+    def update_user(id, login, password, is_admin, first_name, last_name):
+        RinorServer.set_uri(Accounts.path)
+        return Accounts.objects.get({'parameters':"user/update/id/" + str(id) + "/login/" + login + "/password/" + password + "/is_admin/" + is_admin + "/skin_used//first_name/" + first_name + "/last_name/" + last_name})
+
+    @staticmethod
+    def password_user(id, old, new):
+        RinorServer.set_uri(Accounts.path)
+        return Accounts.objects.get({'parameters':"user/password/id/" + str(id) + "/old/" + old + "/new/" + new})
+
+    @staticmethod
+    def del_user(id):
+        RinorServer.set_uri(Accounts.path)
+        return Accounts.objects.get({'parameters':"user/del/" + str(id)})
+
+    @staticmethod
+    def add_person(first_name, last_name):
+        RinorServer.set_uri(Accounts.path)
+        return Accounts.objects.get({'parameters':"person/add/first_name/" + first_name + "/last_name/" + last_name})
+
+    @staticmethod
+    def update_person(id, first_name, last_name):
+        RinorServer.set_uri(Accounts.path)
+        return Accounts.objects.get({'parameters':"person/update/id/" + str(id) + "/first_name/" + first_name + "/last_name/" + last_name})
+
+    @staticmethod
+    def del_person(id):
+        RinorServer.set_uri(Accounts.path)
+        return Accounts.objects.get({'parameters':"person/del/" + str(id)})
 
 class Packages(RinorServer):
     path = "/package"
 
     @staticmethod
+    def update_cache():
+        RinorServer.set_uri(Packages.path)
+        return Packages.objects.get({'parameters':"update-cache"})
+
+    @staticmethod
     def get_list_repo():
         RinorServer.set_uri(Packages.path)
-        resp = Packages.objects.get({'parameters':"list-repo"})
-        if resp :
-            return resp
+        return Packages.objects.get({'parameters':"list-repo"})
     
     @staticmethod
     def get_list():
         RinorServer.set_uri(Packages.path)
-        resp = Packages.objects.get({'parameters':"list"})
-        if resp :
-            return resp
+        return Packages.objects.get({'parameters':"list"})
     
     @staticmethod
     def get_list_installed():
         RinorServer.set_uri(Packages.path)
-        resp = Packages.objects.get({'parameters':"list-installed"})
-        if resp :
-            return resp
+        return Packages.objects.get({'parameters':"list-installed"})
         
     @staticmethod
     def install(host, name, release):
         RinorServer.set_uri(Packages.path)
-        resp = Packages.objects.get({'parameters':"install/" + host + "/" + name + "/" + release})
-        if resp :
-            return resp
+        return Packages.objects.get({'parameters':"install/" + host + "/" + name + "/" + release})
     
     @staticmethod
     def get_mode():
         RinorServer.set_uri(Packages.path)
-        resp = Packages.objects.get({'parameters':"get-mode"})
-        if resp :
-            return resp 
+        return Packages.objects.get({'parameters':"get-mode"})
 
 class Command(RinorServer):
     path = "/command"
@@ -423,9 +519,7 @@ class Command(RinorServer):
     def send(techno, address, command, values):
         RinorServer.set_uri(Command.path)
         # Change to PUT
-        resp = Command.objects.get({'parameters':techno + "/" + address + "/" + command + "/" + values})
-        if resp :
-            return resp
+        return Command.objects.get({'parameters':techno + "/" + address + "/" + command + "/" + values})
 
 class State(RinorServer):
     path = "/stats"
@@ -433,13 +527,22 @@ class State(RinorServer):
     @staticmethod
     def get_latest(id, key):
         RinorServer.set_uri(State.path)
-        resp = State.objects.get({'parameters':str(id) + "/" + key + "/latest"})
-        if resp :
-            return resp
+        return State.objects.get({'parameters':str(id) + "/" + key + "/latest"})
 
     @staticmethod
     def get_last(id, key, nb):
         RinorServer.set_uri(State.path)
-        resp = State.objects.get({'parameters':str(id) + "/" + key + "/last/" + nb})
-        if resp :
-            return resp
+        return State.objects.get({'parameters':str(id) + "/" + key + "/last/" + nb})
+
+    @staticmethod
+    def get_interval(id, key, fromtime, totime, interval, selector):
+        RinorServer.set_uri(State.path)
+        return State.objects.get({'parameters':str(id) + "/" + key + "/from/" + fromtime + "/to/" + totime + "/interval/" + interval + "/selector/" + selector})
+
+class Helper(RinorServer):
+    path = "/helper"
+
+    @staticmethod
+    def get(parameters):
+        RinorServer.set_uri(Helper.path)
+        return Helper.objects.get({'parameters': parameters})

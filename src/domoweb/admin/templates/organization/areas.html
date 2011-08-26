@@ -62,16 +62,14 @@
             button: "#addDialogButton",
             onok: function(values) {
                 // Submit form
-                rest.get(['base', 'area', 'add', 'name', values.areaname, 'description', values.areadescription],
-                    function(data) {
-                        var status = (data.status).toLowerCase();
-                        if (status == 'ok') {
-                            $.reloadPage({'status': 'ok', 'msg': '{% trans "New area added" %} \'' + data.area[0].name + '\'', 'id': data.area[0].id});
-                        } else {
-                            $.notification('error', '{% trans "Area not created" %} (' + data.description + ')');
-                        }
-                    }
-                );
+                rinor.get(['base', 'area', 'add', 'name', values.areaname, 'description', values.areadescription])
+                    .success(function(data, status, xhr){
+                        $.reloadPage({'status': 'ok', 'msg': '{% trans "New area added" %} \'' + data[0].name + '\'', 'id': data[0].id});
+                    })
+                    .error(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', '{% trans "Area not created" %} (' + jqXHR.responseText + ')');
+                    });
             }
         });
     });
@@ -103,59 +101,48 @@
                             button: "#del{{ area.id }}",
                             name: "'{{ area.name }}'",
                             onok: function() {
-                                rest.get(['base', 'ui_config', 'del', 'by-reference', 'area', '{{ area.id }}'],
-                                    function(data) {
-                                        var status = (data.status).toLowerCase();
-                                        if (status == 'ok') {
-                                            // delete ui_config associations
-                                            rest.get(['base', 'feature_association', 'list', 'by-area', '{{ area.id }}'],
-                                                function(data) {
-                                                    var status = (data.status).toLowerCase();
-                                                    if (status == 'ok') {
-                                                        // Delete ui_config
-                                                        $.each(data.feature_association, function(index, association){
-                                                            rest.get(['base', 'ui_config', 'del', 'by-reference', 'association', association.id],
-                                                                function(data) {
-                                                                    var status = (data.status).toLowerCase();
-                                                                    if (status == 'ok') {
-                                                                    } else {
-                                                                        $.notification('error', '{% trans "ui-config for Area features not deleted" %} (' + data.description + ')');                                                                      
-                                                                    }
-                                                                }
-                                                            );
+                                rinor.get(['base', 'ui_config', 'del', 'by-reference', 'area', '{{ area.id }}'])
+                                    .success(function(data, status, xhr){
+                                        // delete ui_config associations
+                                        rinor.get(['base', 'feature_association', 'list', 'by-area', '{{ area.id }}'])
+                                            .success(function(data, status, xhr){
+                                                // Delete ui_config
+                                                $.each(data, function(index, association){
+                                                    rinor.get(['base', 'ui_config', 'del', 'by-reference', 'association', association.id])
+                                                        .error(function(jqXHR, status, error){
+                                                            if (jqXHR.status == 400)
+                                                                $.notification('error', '{% trans "ui-config for Area features not deleted" %} (' + jqXHR.responseText + ')');
                                                         });
-
-                                                        // Delete associated features
-                                                        rest.get(['base', 'feature_association', 'del', 'association_type', 'area', 'association_id', '{{ area.id }}'],
-                                                            function(data) {
-                                                                var status = (data.status).toLowerCase();
-                                                                if (status == 'ok') {
-                                                                    // Delete area
-                                                                    rest.get(['base', 'area', 'del', '{{ area.id }}'],
-                                                                        function(data) {
-                                                                            var status = (data.status).toLowerCase();
-                                                                            if (status == 'ok') {
-                                                                                $.reloadPage({'status': 'ok', 'msg': '{% trans "Area" %}\'' + data.area[0].name + '\' {% trans "successfully deleted" %}'});
-                                                                            } else {
-                                                                                $.notification('error', '{% trans "Area not deleted" %} (' + data.description + ')');
-                                                                            }
-                                                                        }
-                                                                    );
-                                                                } else {
-                                                                    $.notification('error', '{% trans "features associations for Area not deleted" %} (' + data.description + ')');                                                                      
-                                                                }
-                                                            }
-                                                        );
-                                                    } else {
-                                                        $.notification('error', '{% trans "Get features associations for Area" %} (' + data.description + ')');                                                                      
-                                                    }
-                                                }
-                                            );
-                                        } else {
-                                            $.notification('error', '{% trans "ui_config for Area not deleted" %} (' + data.description + ')');
-                                        }
-                                    }
-                                );
+                                                });
+                                                
+                                                // Delete associated features
+                                                rinor.get(['base', 'feature_association', 'del', 'association_type', 'area', 'association_id', '{{ area.id }}'])
+                                                    .success(function(data, status, xhr){
+                                                        // Delete area
+                                                        rinor.get(['base', 'area', 'del', '{{ area.id }}'])
+                                                            .success(function(data, status, xhr){
+                                                                $.reloadPage({'status': 'ok', 'msg': '{% trans "Area" %}\'' + data[0].name + '\' {% trans "successfully deleted" %}'});
+                                                            })
+                                                            .error(function(jqXHR, status, error){
+                                                                self.cancel();
+                                                                if (jqXHR.status == 400)
+                                                                    $.notification('error', '{% trans "Area not deleted" %} (' + jqXHR.responseText + ')');
+                                                            });
+                                                    })
+                                                    .error(function(jqXHR, status, error){
+                                                        if (jqXHR.status == 400)
+                                                            $.notification('error', '{% trans "features associations for Area not deleted" %} (' + jqXHR.responseText + ')');
+                                                    });
+                                            })
+                                            .error(function(jqXHR, status, error){
+                                                if (jqXHR.status == 400)
+                                                    $.notification('error', '{% trans "Get features associations for Area" %} (' + jqXHR.responseText + ')');
+                                            });
+                                    })
+                                    .error(function(jqXHR, status, error){
+                                        if (jqXHR.status == 400)
+                                            $.notification('error', '{% trans "ui_config for Area not deleted" %} (' + jqXHR.responseText + ')');
+                                    });
                             }
                         });
                                                 
@@ -165,20 +152,20 @@
                             icon: '{{ area.config.icon }}',
                             validCallback: function(self, icon) {
                                 $('#icon{{ area.id }}').processing('start');
-                                rest.get(['base', 'ui_config', 'set', 'name', 'area', 'reference', '{{ area.id }}', 'key', 'icon', 'value', icon],
-                                    function(data) {
+                                rinor.get(['base', 'ui_config', 'set', 'name', 'area', 'reference', '{{ area.id }}', 'key', 'icon', 'value', icon])
+                                    .complete(function(){
                                         $('#icon{{ area.id }}').processing('stop');
-                                        var status = (data.status).toLowerCase();
-                                        if (status == 'ok') {
-                                            self.valid();
-                                            $("#tab{{ area.id }}").removeClass();
-                                            $("#tab{{ area.id }}").addClass("icon16-area-" + icon);
-                                        } else {
-                                            self.cancel();
-                                            $.notification('error', '{% trans "Icon not updated" %} (' + data.description + ')');
-                                        }
-                                    }
-                                )
+                                    })
+                                    .success(function(data, status, xhr){
+                                        self.valid();
+                                        $("#tab{{ area.id }}").removeClass();
+                                        $("#tab{{ area.id }}").addClass("icon16-area-" + icon);
+                                    })
+                                    .error(function(jqXHR, status, error){
+                                        self.cancel();
+                                        if (jqXHR.status == 400)
+                                            $.notification('error', '{% trans "Icon not updated" %} (' + jqXHR.responseText + ')');
+                                    });
                             }
                         });
                         
@@ -191,16 +178,14 @@
                             values: {areaname : '{{ area.name }}', areadescription : '{{ area.description }}'},
                             onok: function(values) {
                                 // Submit form
-                                rest.get(['base', 'area', 'update', 'id', '{{ area.id }}', 'name', values.areaname, 'description', values.areadescription],
-                                    function(data) {
-                                        var status = (data.status).toLowerCase();
-                                        if (status == 'ok') {
-                                            $.reloadPage({'status': 'ok', 'msg': '{% trans "Area" %} \'' + data.area[0].name + '\' {% trans "successfully updated" %}'});
-                                        } else {
-                                            $.notification('error', '{% trans "Area not updated" %} (' + data.description + ')');
-                                        }
-                                    }
-                                );
+                                rinor.get(['base', 'area', 'update', 'id', '{{ area.id }}', 'name', values.areaname, 'description', values.areadescription])
+                                    .success(function(data, status, xhr){
+                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Area" %} \'' + data[0].name + '\' {% trans "successfully updated" %}'});
+                                    })
+                                    .error(function(jqXHR, status, error){
+                                        if (jqXHR.status == 400)
+                                            $.notification('error', '{% trans "Area not updated" %} (' + jqXHR.responseText + ')');
+                                    });
                             }
                         });
                     });

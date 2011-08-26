@@ -46,28 +46,27 @@
 				var commandarray = commandline.split(' ')
 				var command = ['helper'];
 				command = command.concat(commandarray);
-                send_id = rest.get(command,
-                    function(data) {
-                        var status = (data.status).toLowerCase();
+                rinor.get(command)
+                    .complete(function(){
                         $("#commandsubmit").show();
                         $("#commandstop").hide();
                         $("#commandline").removeAttr('disabled');
-						if (status == 'ok') {
-							$.each(data.helper, function(index, value) {
-								var text = $("<div/>").text(value).html();
-								li = $("<li>" + text + "</li>");
-								last.after(li);
-								last = li;						
-							});
-						} else {
-							var text = $("<div/>").text(data.description).html()
-							li = $("<li>" + text + "</li>");
-							li.addClass('error');
-							last.after(li);
-							last = li;						
-						}
-                    }
-                );
+                    })
+                    .success(function(data, status, xhr){
+                        $.each(data, function(index, value) {
+                            var text = $("<div/>").text(value).html();
+                            li = $("<li>" + text + "</li>");
+                            last.after(li);
+                            last = li;						
+                        });
+                    })
+                    .error(function(jqXHR, status, error){
+                        var text = $("<div/>").text(jqXHR.responseText).html()
+                        li = $("<li>" + text + "</li>");
+                        li.addClass('error');
+                        last.after(li);
+                        last = li;						
+                    });                
             }
         }
 

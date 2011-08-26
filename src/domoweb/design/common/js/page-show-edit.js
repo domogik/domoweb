@@ -51,7 +51,7 @@ $(function(){
         if (helper == 'clone') {
             item = $(ui.helper).clone();
             item.removeAttr('style');
-            $(this).append(item);
+            $(this).append(event);
             item.widget_shape({
                 widgetid: ui.draggable.data('widgetid'),
                 featureid: ui.draggable.data('featureid'),
@@ -109,25 +109,21 @@ $(function(){
                 .find('button').click(function(){
                         var association = self.data('associationid');
                         if (association) {
-                            rest.get(['base', 'feature_association', 'del', 'id', association],
-                                function(data) {
-                                    var status = (data.status).toLowerCase();
-                                    if (status == 'ok') {
-                                        rest.get(['base', 'ui_config', 'del', 'by-reference', 'association', association],
-                                            function(data) {
-                                                var status = (data.status).toLowerCase();
-                                                if (status == 'ok') {
-                                                    self.remove();                    
-                                                } else {
-                                                    $.notification('error', data.description);                                          
-                                                }
-                                            }
-                                        );
-                                    } else {
-                                        $.notification('error', data.description);                                          
-                                    }
-                                }
-                            );
+                            rinor.get(['base', 'feature_association', 'del', 'id', association])
+                                .success(function(data, status, xhr){
+                                    rinor.get(['base', 'ui_config', 'del', 'by-reference', 'association', association])
+                                        .success(function(data, status, xhr){
+                                            self.remove();                    
+                                        })
+                                        .error(function(jqXHR, status, error){
+                                            if (jqXHR.status == 400)
+                                                $.notification('error', jqXHR.responseText);
+                                        });
+                                })
+                                .error(function(jqXHR, status, error){
+                                    if (jqXHR.status == 400)
+                                        $.notification('error', jqXHR.responseText);
+                                });
                         }
                 });
         }
@@ -219,6 +215,7 @@ $(function(){
         },
 
         _init: function() {
+            console.log(this);
             var self = this, o = this.options;
             var woptions = get_widgets_options(o.widgetid)
             if (woptions) {
@@ -229,6 +226,7 @@ $(function(){
             this.element.attr('role', 'listitem');
 			this.element.addClass('size' + o.width + 'x' + o.height);
             this.element.attr("tabindex", 0);
+            this.element.empty();
             this.element.append("<div class='sizetext'>" + o.width + 'x' + o.height + "</div>");
             this.element.data({
                 'devicename':o.devicename,
@@ -252,35 +250,29 @@ $(function(){
             var place_id = zone.data('place');
             var widget_id = model.data('widgetid');
             var feature_id = model.data('featureid');
-            rest.get(['base', 'feature_association', 'add', 'feature_id', feature_id, 'association_type', page_type, 'association_id', page_id],
-                function(data) {
-                    var status = (data.status).toLowerCase();
-                    if (status == 'ok') {
-                        var id = data.feature_association[0].id;
-                        rest.get(['base', 'ui_config', 'set', 'name', 'association', 'reference', id, 'key', 'widget', 'value', widget_id],
-                            function(data) {
-                                var status = (data.status).toLowerCase();
-                                if (status == 'ok') {
-                                    rest.get(['base', 'ui_config', 'set', 'name', 'association', 'reference', id, 'key', 'place', 'value', place_id],
-                                        function(data) {
-                                            var status = (data.status).toLowerCase();
-                                            if (status == 'ok') {
-                                                model.data('associationid', id);
-                                            } else {
-                                                $.notification('error', data.description);                                          
-                                            }
-                                        }
-                                    );
-                                } else {
-                                    $.notification('error', data.description);                                          
-                                }
-                            }
-                        );
-                    } else {
-                        $.notification('error', data.description);                                          
-                    }
-                }
-            );
+            rinor.get(['base', 'feature_association', 'add', 'feature_id', feature_id, 'association_type', page_type, 'association_id', page_id])
+                .success(function(data, status, xhr){
+                    var id = data[0].id;
+                    rinor.get(['base', 'ui_config', 'set', 'name', 'association', 'reference', id, 'key', 'widget', 'value', widget_id])
+                        .success(function(data, status, xhr){
+                            rinor.get(['base', 'ui_config', 'set', 'name', 'association', 'reference', id, 'key', 'place', 'value', place_id])
+                                .success(function(data, status, xhr){
+                                    model.data('associationid', id);
+                                })
+                                .error(function(jqXHR, status, error){
+                                    if (jqXHR.status == 400)
+                                        $.notification('error', jqXHR.responseText);
+                                });
+                        })
+                        .error(function(jqXHR, status, error){
+                            if (jqXHR.status == 400)
+                                $.notification('error', jqXHR.responseText);
+                        });
+                })
+                .error(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', jqXHR.responseText);
+                });
         },
         
         initAssociations: function(page_type, page_id) {
@@ -321,58 +313,53 @@ $(function(){
             } else {
                 options = ['base', 'feature_association', 'list', 'by-' + page_type, page_id];
             }
-            rest.get(options,
-                function(data) {
-                    var status = (data.status).toLowerCase();
-                    if (status == 'ok') {
-                        $.each(data.feature_association, function(index, association) {
-                            rest.get(['base', 'ui_config', 'list', 'by-reference', 'association', association.id],
-                                function(data) {
-                                    var status = (data.status).toLowerCase();
-                                    if (status == 'ok') {
-                                        var widget = null;
-                                        var place = null;
-                                        $.each(data.ui_config, function(index, item) {
-                                            if (item.key == 'widget') widget = item.value;
-                                            if (item.key == 'place') place = item.value;
+            
+            rinor.get(options)
+                .success(function(data, status, xhr){
+                    $.each(data, function(index, association) {
+                        rinor.get(['base', 'ui_config', 'list', 'by-reference', 'association', association.id])
+                            .success(function(data, status, xhr){
+                                var widget = null;
+                                var place = null;
+                                $.each(data, function(index, item) {
+                                    if (item.key == 'widget') widget = item.value;
+                                    if (item.key == 'place') place = item.value;
+                                });
+                                rinor.get(['base', 'feature', 'list', 'by-id', association.device_feature_id])
+                                    .success(function(data, status, xhr){
+                                        var model = $("<div id='" + association.id + "' role='listitem'></div>");
+                                        model.widget_shape({
+                                            widgetid: widget,
+                                            featureid: association.device_feature_id,
+                                            featurename: data[0].device_feature_model.name,
+                                            devicename: data[0].device.name,
+                                            associationid: association.id,
+                                            draggable: {
+                                                helper: false,
+                                                revert: 'invalid',
+                                                drag: ondrag,
+                                                stop: onstop
+                                            },
+                                            deletable: true
                                         });
-                                        rest.get(['base', 'feature', 'list', 'by-id', association.device_feature_id],
-                                            function(data) {
-                                                var status = (data.status).toLowerCase();
-                                                if (status == 'ok') {
-                                                    var model = $("<div id='" + association.id + "' role='listitem'></div>");
-                                                    model.widget_shape({
-                                                        widgetid: widget,
-                                                        featureid: association.device_feature_id,
-//                                                            featuremodel: data.feature[0].device_feature_model.id,
-                                                        featurename: data.feature[0].device_feature_model.name,
-                                                        devicename: data.feature[0].device.name,
-                                                        associationid: association.id,
-                                                        draggable: {
-                                                            helper: false,
-                                                            revert: 'invalid',
-                                                            drag: ondrag,
-                                                            stop: onstop
-                                                        },
-                                                        deletable: true
-                                                    });
-                                                    $("." + place).append(model);
-                                                } else {
-                                                    $.notification('error', data.description);                                          
-                                                }
-                                            }
-                                        );
-                                    } else {
-                                        $.notification('error', data.description);                                          
-                                    }
-                                }
-                            );
-                        });
-                    } else {
-                        $.notification('error', data.description);                                          
-                    }
-                }
-            );
+                                        $("." + place).append(model);
+                                    })
+                                    .error(function(jqXHR, status, error){
+                                        self.cancel();
+                                        if (jqXHR.status == 400)
+                                            $.notification('error', jqXHR.responseText);
+                                    });
+                            })
+                            .error(function(jqXHR, status, error){
+                                if (jqXHR.status == 400)
+                                    $.notification('error', jqXHR.responseText);
+                            });
+                    });
+                })
+                .error(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', jqXHR.responseText);
+                });                
         }
     });
     

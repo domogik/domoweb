@@ -57,17 +57,15 @@
             keeptrace: true,
             dropcallback: function(self, element, target) {
                 var subelement = element.split('-');
-                rest.get(['base', 'feature_association', 'del', 'device_id', subelement[1], 'feature_id', subelement[2]],
-                    function(data) {
-                        var status = (data.status).toLowerCase();
-                        if (status == 'ok') {
-                            self.valid();
-                        } else {
-                            self.cancel();
-                            $.notification('error', data.description);                                          
-                        }
-                    }
-                );
+                rinor.get(['base', 'feature_association', 'del', 'device_id', subelement[1], 'feature_id', subelement[2]])
+                    .success(function(data, status, xhr){
+                        self.valid();
+                    })
+                    .error(function(jqXHR, status, error){
+                        self.cancel();
+                        if (jqXHR.status == 400)
+                            $.notification('error', jqXHR.responseText);
+                    });
             }            
         });
 
@@ -80,27 +78,23 @@
             dropcallback: function(self, element, target) {
                 var subelement = element.split('-');
                 var subtarget = target.split('-');
-                rest.get(['base', 'feature_association', 'del', 'device_id', subelement[1], 'feature_id', subelement[2]],
-                    function(data) {
-                        var status = (data.status).toLowerCase();
-                        if (status == 'ok') {
-                            rest.get(['base', 'feature_association', 'add', 'device_id', subelement[1], 'feature_id', subelement[2], 'association_type', subtarget[0], 'association_id', subtarget[1]],
-                                function(data) {
-                                    var status = (data.status).toLowerCase();
-                                    if (status == 'ok') {
-                                        self.valid();
-                                    } else {
-                                        self.cancel();
-                                        $.notification('error', data.description);                                          
-                                    }
-                                }
-                            );
-                        } else {
-                            self.cancel();
-                            $.notification('error', data.description);                                          
-                        }
-                    }
-                );
+                rinor.get(['base', 'feature_association', 'del', 'device_id', subelement[1], 'feature_id', subelement[2]])
+                    .success(function(data, status, xhr){
+                        rinor.get(['base', 'feature_association', 'add', 'feature_id', subelement[2], 'association_type', subtarget[0], 'association_id', subtarget[1]])
+                            .success(function(data, status, xhr){
+                                self.valid();
+                            })
+                            .error(function(jqXHR, status, error){
+                                self.cancel();
+                                if (jqXHR.status == 400)
+                                    $.notification('error', jqXHR.responseText);
+                            });
+                    })
+                    .error(function(jqXHR, status, error){
+                        self.cancel();
+                        if (jqXHR.status == 400)
+                            $.notification('error', jqXHR.responseText);
+                    });
             }
         });
 

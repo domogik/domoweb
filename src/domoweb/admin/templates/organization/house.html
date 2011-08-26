@@ -34,19 +34,17 @@
         $("#generalsubmit").click(function(){
             var name = $("#housename").val();
             if (name) {
-                rest.get(['base', 'ui_config', 'set', 'name', 'house', 'reference', '0', 'key', 'name', 'value', name],
-                    function(data) {
-                        var status = (data.status).toLowerCase();
-                        if (status == 'ok') {
-                            $("#housename").removeClass('icon16-status-false');
-                            $("#housename").addClass('icon16-status-true');
-                        } else {
-                            $("#housename").removeClass('icon16-status-true');
-                            $("#housename").addClass('icon16-status-false');
-                            $.notification('error', '{% trans "house name not updated" %} (' + data.description + ')');                                                                      
-                        }
-                    }
-                );            
+                rinor.get(['base', 'ui_config', 'set', 'name', 'house', 'reference', '0', 'key', 'name', 'value', name])
+                    .success(function(data, status, xhr){
+                        $("#housename").removeClass('icon16-status-false');
+                        $("#housename").addClass('icon16-status-true');
+                    })
+                    .error(function(jqXHR, status, error){
+                        $("#housename").removeClass('icon16-status-true');
+                        $("#housename").addClass('icon16-status-false');
+                        if (jqXHR.status == 400)
+                            $.notification('error', '{% trans "house name not updated" %} (' + jqXHR.responseText + ')');
+                    });
             } else {
                 $("#housename").removeClass('icon16-status-true');
                 $("#housename").addClass('icon16-status-false');  
