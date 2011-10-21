@@ -30,8 +30,8 @@
         },
         
         _statsHandler: function(stats) {
-            if (stats && stats.length > 0) {
-                this.setValue(stats[0].value);
+            if (stats && stats) {
+                this.setValue(stats.value);
             } else {
                 this.setValue(null);
             }

@@ -8,57 +8,36 @@ $(function(){
             var devices = [];
             var options = null;
             if (page_type == 'house') {
-                options = ['base', 'feature_association', 'listdeep', 'by-house']
+                options = ['api', 'association', 'house', 'deep']
             } else if (page_type == 'area') {
-                options = ['base', 'feature_association', 'listdeep', 'by-area', page_id];
+                options = ['api', 'association', 'area', 'deep', page_id];
             } else { // room
-                options = ['base', 'feature_association', 'list', 'by-room', page_id];
+                options = ['api', 'association', 'room', page_id];
             }
 
             rinor.get(options)
                 .success(function(data, status, xhr){
-                    $.each(data, function(index, association) {
-                        devices.push(association.device_feature.device_id);
-                        rinor.get(['base', 'ui_config', 'list', 'by-reference', 'association', association.id])
-                            .success(function(data, status, xhr){
-                                var widget = null;
-                                var place = null;
-                                $.each(data, function(index, item) {
-                                    if (item.key == 'widget') widget = item.value;
-                                    if (item.key == 'place') place = item.value;
-                                });
-                                if (association.place_type == page_type || (association.place_type != page_type && place != 'otheractions')) {
-                                    rinor.get(['base', 'feature', 'list', 'by-id', association.device_feature_id])
-                                        .success(function(data, status, xhr){
-                                            var feature = data[0];
-                                            var parameters_usage = $.stringToJSON(device_usages[feature.device.device_usage_id].default_options);
-                                            var parameters_type = $.stringToJSON(feature.device_feature_model.parameters);
-                                            var div = $("<div id='widget_" + association.id + "' role='listitem'></div>");
-                                            var options = {
-                                                usage: feature.device.device_usage_id,
-                                                devicename: feature.device.name,
-                                                featurename: feature.device_feature_model.name,
-                                                devicetechnology: device_types[feature.device.device_type_id].device_technology_id,
-                                                deviceaddress: feature.device.address,
-                                                featureconfirmation: feature.device_feature_model.return_confirmation,
-                                                deviceid: feature.device_id,
-                                                key: feature.device_feature_model.stat_key,
-                                                usage_parameters: parameters_usage[feature.device_feature_model.feature_type][feature.device_feature_model.value_type],
-                                                model_parameters: parameters_type
-                                            }
-                                            $("#" + association.place_type + "_" + association.place_id + " ." + place).append(div);
-                                            eval("$('#widget_" + association.id + "')." + widget + "(options)");
-                                        })
-                                        .error(function(jqXHR, status, error){
-                                            if (jqXHR.status == 400)
-                                                $.notification('error', jqXHR.responseText);
-                                        });
-                                }
-                            })
-                            .error(function(jqXHR, status, error){
-                                if (jqXHR.status == 400)
-                                    $.notification('error', jqXHR.responseText);
-                            });
+                    $.each(data.objects, function(index, association) {
+                        devices.push(association.feature.device_id);
+                        if (association.place_type == page_type || (association.place_type != page_type && association.place != 'otheractions')) {
+                            var parameters_usage = $.stringToJSON(device_usages[association.feature.device.device_usage_id].default_options);
+                            var parameters_type = $.stringToJSON(association.feature.device_feature_model.parameters);
+                            var div = $("<div id='widget_" + association.id + "' role='listitem'></div>");
+                            var options = {
+                                usage: association.feature.device.device_usage_id,
+                                devicename: association.feature.device.name,
+                                featurename: association.feature.device_feature_model.name,
+                                devicetechnology: device_types[association.feature.device.device_type_id].device_technology_id,
+                                deviceaddress: association.feature.device.address,
+                                featureconfirmation: association.feature.device_feature_model.return_confirmation,
+                                deviceid: association.feature.device_id,
+                                key: association.feature.device_feature_model.stat_key,
+                                usage_parameters: parameters_usage[association.feature.device_feature_model.feature_type][association.feature.device_feature_model.value_type],
+                                model_parameters: parameters_type
+                            }
+                            $("#" + association.place_type + "_" + association.place_id + " ." + association.place).append(div);
+                            eval("$('#widget_" + association.id + "')." + association.widget + "(options)");
+                        }
                     });
                     devices = unique(devices);
                     if (devices.length > 0) $.eventRequest(devices);
@@ -79,7 +58,7 @@ $(function(){
                 message: function( data ) {
                         $(document).trigger('dmg_event', data);
                 }
-            });   
+            });
         },
         
         stringToJSON: function(string) {

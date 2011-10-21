@@ -22,24 +22,18 @@ along with Domogik. If not, see U{http://www.gnu.org/licenses}.
 Module purpose
 ==============
 
-
-
 Implements
 ==========
 
 
-@author: Domogik project
-@copyright: (C) 2007-2009 Domogik project
+@author: Cédric Trévisan <cedric@domogik.org>
+@copyright: (C) 2007-2011 Domogik project
 @license: GPL(v3)
 @organization: Domogik
 """
 
 from django.conf.urls.defaults import *
 from django.conf import settings
-
-# Uncomment the next two lines to enable the admin:
-#from django.contrib import admin
-#admin.autodiscover()
 
 urlpatterns = patterns('domoweb.views',
     url(r'^$', 'index', name="index_view"),
@@ -49,7 +43,7 @@ urlpatterns = patterns('domoweb.views',
     url(r'^config/configserver$', 'config_configserver', name="config_configserver_view"),
     url(r'^config/testserver$', 'config_testserver', name="config_testserve_view"),
 )
-urlpatterns += patterns('',    
+urlpatterns += patterns('',
     (r'^view/', include('domoweb.view.urls')),
     (r'^admin/', include('domoweb.admin.urls')),
     (r'^rinor/', include('domoweb.rinor.urls')),

@@ -69,8 +69,8 @@ const auto_send = 3000; // 3 seconds
         },
 
         _statsHandler: function(stats) {
-            if (stats && stats.length > 0) {
-                this.setValue(parseInt(stats[0].value));
+            if (stats) {
+                this.setValue(parseInt(stats.value));
             } else {
                 this.setValue(null);
             }

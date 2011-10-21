@@ -111,12 +111,11 @@
             onok: function(values) {
                 var self = this;
                 // Submit form
-                rinor.get(['base', 'device', 'add', 'name', values.adddevicename, 'address', values.adddeviceaddress, 'type_id', values.adddevicetype, 'usage_id', values.adddeviceusage, 'description', values.adddevicedescription, 'reference', values.adddevicereference])
+                rinor.post(['api', 'device'], {'name': values.adddevicename, 'address': values.adddeviceaddress, 'type_id': values.adddevicetype, 'usage_id': values.adddeviceusage, 'description': values.adddevicedescription, 'reference': values.adddevicereference})
                     .success(function(data, status, xhr){
-                        $.reloadPage({'status': 'ok', 'msg': '{% trans "New device added" %} \'' + data[0].name + '\'', 'id': data[0].device_usage_id});                                   
+                        $.reloadPage({'status': 'ok', 'msg': '{% trans "New device added" %} \'' + data.name + '\'', 'id': data.device_usage_id});                                   
                     })
                     .error(function(jqXHR, status, error){
-                        self.cancel();
                         if (jqXHR.status == 400)
                             $.notification('error', '{% trans "device not created" %} (' + jqXHR.responseText + ')');
                     });
@@ -167,19 +166,28 @@
                                 button: "#del{{ device.id }}",
                                 name: "'{{ device.name }}'",
                                 onok: function() {
-                                    rinor.get(['base', 'feature', 'list', 'by-device_id', '{{ device.id }}'])
+                                    rinor.delete(['api', 'device', '{{ device.id }}'])
+                                        .success(function(data, status, xhr){
+                                            $.reloadPage({'status': 'ok', 'msg': '{% trans "Device" %}\'' + data.name + '\' {% trans "successfully deleted" %}'});
+                                        })
+                                        .error(function(jqXHR, status, error){
+                                            if (jqXHR.status == 400)
+                                                $.notification('error', '{% trans "Device not deleted" %} (' + jqXHR.responseText + ')');
+                                        });
+/*                                
+//                                    rinor.get(['base', 'feature', 'list', 'by-device_id', '{{ device.id }}'])
                                         .success(function(data, status, xhr){
                                             $.each(data, function(index, feature){
-                                                rinor.get(['base', 'feature_association', 'list', 'by-feature', feature.id])
+//                                                rinor.get(['base', 'feature_association', 'list', 'by-feature', feature.id])
                                                     .success(function(data, status, xhr){
                                                         $.each(data, function(index, association){
-                                                            rinor.get(['base', 'ui_config', 'del', 'by-reference', 'association', association.id])
+//                                                            rinor.get(['base', 'ui_config', 'del', 'by-reference', 'association', association.id])
                                                                 .error(function(jqXHR, status, error){
                                                                     if (jqXHR.status == 400)
                                                                         $.notification('error', '{% trans "ui-config for features not deleted" %} (' + jqXHR.responseText + ')');
                                                                 });
                                                         });
-                                                        rinor.get(['base', 'feature_association', 'del', 'feature_id', feature.id])
+//                                                        rinor.get(['base', 'feature_association', 'del', 'feature_id', feature.id])
                                                             .error(function(jqXHR, status, error){
                                                                 if (jqXHR.status == 400)
                                                                     $.notification('error', '{% trans "feature_association not deleted" %} (' + jqXHR.responseText + ')');
@@ -203,7 +211,7 @@
                                         .error(function(jqXHR, status, error){
                                             if (jqXHR.status == 400)
                                                 $.notification('error', '{% trans "Device not deleted" %} (' + jqXHR.responseText + ')');
-                                        });
+                                        });*/
                                 }
                             });
                             
@@ -214,9 +222,9 @@
                                 values: {upddevicename : '{{ device.name }}', upddevicedescription : '{{ device.description }}', upddeviceaddress : '{{ device.address }}', upddevicereference : '{{ device.reference }}', upddeviceusage : '{{ device.device_usage_id }}'},
                                 onok: function(values) {
                                     // Submit form
-                                    rinor.get(['base', 'device', 'update', 'id', '{{ device.id }}', 'name', values.upddevicename, 'address', values.upddeviceaddress, 'usage_id', values.upddeviceusage, 'description', values.upddevicedescription, 'reference', values.upddevicereference])
+                                    rinor.put(['api', 'device', '{{ device.id }}'], {'name': values.upddevicename, 'address': values.upddeviceaddress, 'usage_id': values.upddeviceusage, 'description': values.upddevicedescription, 'reference': values.upddevicereference})
                                         .success(function(data, status, xhr){
-                                            $.reloadPage({'status': 'ok', 'msg': '{% trans "Device" %} \'' + data[0].name + '\' {% trans "successfully updated" %}'});
+                                            $.reloadPage({'status': 'ok', 'msg': '{% trans "Device" %} \'' + data.name + '\' {% trans "successfully updated" %}'});
                                         })
                                         .error(function(jqXHR, status, error){
                                             if (jqXHR.status == 400)

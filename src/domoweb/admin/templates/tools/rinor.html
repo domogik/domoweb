@@ -42,10 +42,10 @@
         refresh();
         $('body').everyTime('10s', function() {refresh()});
         function refresh() {
-            rinor.get(['info'])
+            rinor.get(['api', 'info'])
                 .success(function(data, status, xhr){
                     // Queues
-                    $.each(data[0].queue, function(index, value) {
+                    $.each(data.queue, function(index, value) {
                         var avalue = value.split('/');
                         var valuewidth = avalue[0] * 100 / avalue[1];
                         $("#" + index + " .indicator .valuetxt")
@@ -56,13 +56,13 @@
                     
                     // Events {{rest.event.Number_of_requests}} / {{rest.event.Max_size_for_request_queues}}
                     $("#request_number").empty();
-                    $("#request_number").append("<li><span class='label'>Number of Domogik requests: </span>" + data[0].event.Number_of_Domogik_events_requests + "</li>")
-                    $("#request_number").append("<li><span class='label'>Number of devices requests: </span>" + data[0].event.Number_of_devices_events_requests + "</li>")
-                    $("#request_number").append("<li><span class='label'>Max size for request queues: </span>" + data[0].event.Max_size_for_request_queues + "</li>")
+                    $("#request_number").append("<li><span class='label'>Number of Domogik requests: </span>" + data.event.Number_of_Domogik_events_requests + "</li>")
+                    $("#request_number").append("<li><span class='label'>Number of devices requests: </span>" + data.event.Number_of_devices_events_requests + "</li>")
+                    $("#request_number").append("<li><span class='label'>Max size for request queues: </span>" + data.event.Max_size_for_request_queues + "</li>")
                     
                     // Domogik Request list
                     $('table#domogik_request_list tbody').empty();
-                    $.each(data[0].event.Domogik_requests, function(index, request) {
+                    $.each(data.event.Domogik_requests, function(index, request) {
                         var creation_date = new Date(request.creation_date * 1000);
                         var last_access_date = new Date(request.last_access_date * 1000);
                         $('table#domogik_request_list tbody').append("<tr><td>"
@@ -78,7 +78,7 @@
     
                     // Devices Request list
                     $('table#devices_request_list tbody').empty();
-                    $.each(data[0].event.Devices_requests, function(index, request) {
+                    $.each(data.event.Devices_requests, function(index, request) {
                         var creation_date = new Date(request.creation_date * 1000);
                         var last_access_date = new Date(request.last_access_date * 1000);
                         $('table#devices_request_list tbody').append("<tr><td>"

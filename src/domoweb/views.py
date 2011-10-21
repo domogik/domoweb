@@ -45,9 +45,7 @@ from django import forms
 from domoweb.utils import *
 import socket
 import urllib
-from domoweb.rest import (
-    House, Areas, Rooms, DeviceUsages, DeviceTypes
-)
+from domoweb.rinor.pipes import *
 
 from django_pipes.exceptions import ResourceNotAvailableException
 from httplib import BadStatusLine
@@ -66,17 +64,13 @@ def index(request):
     widgets_list = settings.WIDGETS_LIST
 
     try:
-        device_types =  DeviceTypes.get_dict()
-        device_usages =  DeviceUsages.get_dict()
+        usageDict = DeviceUsagePipe().get_dict()
+        typeDict = DeviceTypePipe().get_dict()
 
-        result_all_areas = Areas.get_all()
-        result_all_areas.merge_rooms()
-        result_all_areas.merge_uiconfig()
+        areas = AreaExtendedPipe().get_list()
+        rooms = RoomExtendedPipe().get_list_noarea()
 
-        result_house = House()
-
-        result_house_rooms = Rooms.get_without_area()
-        result_house_rooms.merge_uiconfig()
+        house = UiConfigPipe().get_filtered(name='house')[0]
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
@@ -88,11 +82,11 @@ def index(request):
         page_title,
         page_messages,
         widgets=widgets_list,
-        device_types=device_types,
-        device_usages=device_usages,
-        areas_list=result_all_areas.area,
-        rooms_list=result_house_rooms.room,
-        house=result_house
+        device_types=typeDict,
+        device_usages=usageDict,
+        areas_list=areas,
+        rooms_list=rooms,
+        house_name=house.value
     )
 
 def error_badstatusline(request):

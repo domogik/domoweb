@@ -4,7 +4,7 @@ $(function() {
 });
 
 function openlogin(path) {
-    rinor.get(['account', 'user', 'list'])
+    rinor.get(['api', 'user'])
         .success(function(data, status, xhr){
             var dialog = $("<div id='login' title='Identification'></div>");
             $('body').append(dialog);
@@ -18,7 +18,7 @@ function openlogin(path) {
 
             var form = $("<form id='loginForm' method='POST' action='/admin/login/?next=" + path + "'></form>");
             form.append("<div class='columnleft'><h2>1. Select a user</h2><div id='resetLogin' class='buttontext'>Change User</div><input id='loginname' name='login' type='text' /><ul id='users'></ul></div>");
-            $.each(data, function() {
+            $.each(data.objects, function() {
                 var account = this;
                 $('#users', form).append("<li><a href='#' id='id" + account.login + "'><img src='/design/common/images/userid.jpg' alt='' width='64' height='64' />" + account.person.first_name + "</a></li>");
                 $('#id' + account.login, form).click(function(){chooseUser('id' + account.login, account.login);});
@@ -29,7 +29,7 @@ function openlogin(path) {
             initLogin();
         })
         .error(function(jqXHR, status, error){
-            self.cancel();
+//            self.cancel();
             if (jqXHR.status == 400)
                 $.notification('error', 'Impossible to list Accounts (' + jqXHR.responseText + ')');
         });

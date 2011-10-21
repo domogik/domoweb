@@ -37,7 +37,7 @@
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:4});
         
         $("#update_cache").click(function() {
-            rinor.get(['package','update-cache'])
+            rinor.put(['api', 'package'], {'action':'refresh'})
                 .success(function(data, status, xhr){
                     $.notification('ok', "Package cache updated");
                 })

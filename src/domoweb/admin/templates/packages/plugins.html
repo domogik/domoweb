@@ -52,11 +52,11 @@
 {% block right %}
     <div id="tabs">
         <ul>
-            {% for host in hosts %}
-            <li><a href="#tabs-{{forloop.counter}}">{{host.host}}</a></li>
+            {% for host in packages %}
+            <li><a href="#tabs-{{forloop.counter}}">{{host}}</a></li>
             {% endfor %}
         </ul>
-        {% for host in hosts %}
+        {% for host, items in packages.items %}        
         <div id="tabs-{{forloop.counter}}">
             <section class="subsection">
                 <h2>{% trans "Installed" %}</h2>
@@ -67,18 +67,18 @@
                             <th>{% trans "Action" %}</th></tr>
                     </thead>
                     <tbody>
-                    {% for package in host.installed.packages %}
-                        <tr><td>{{package.name}}</td>
+                    {% for name, package in items.installed.items %}
+                        <tr><td>{{name}}</td>
                             <td>{{package.release}}
                             {% if package.installed_version_error %}<div class='error'>Incorrect version number</div>{% endif %}                         
                             </td>
                             <td class='actions'>{% if package.enabled %}
-                                    <a class='buttontext' href='{% url admin_packages_enable_view host.host package.name 'disable' %}'>Disable</a>
+                                    <a class='buttontext' href='{% url admin_packages_enable_view host package.name 'disable' %}'>Disable</a>
                                 {% else %}
-                                    <a class='buttontext' href='{% url admin_packages_enable_view host.host package.name 'enable' %}'>Enable</a>
+                                    <a class='buttontext' href='{% url admin_packages_enable_view host package.name 'enable' %}'>Enable</a>
                                 {% endif %}
                                 {% if package.update_available %}
-                                    <a class='buttontext' href='{% url admin_packages_install_view host.host package.fullname package.update_available %}'>Update Package</a>
+                                    <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.update_available %}'>Update Package</a>
                                 {% endif %}
                             </td></tr>
                     {% endfor %}
@@ -97,8 +97,8 @@
                             <th>{% trans "Action" %}</th></tr>
                     </thead>
                     <tbody>
-                    {% for package in host.available %}
-                        <tr class='package'><td><a href='{{package.doc}}' target='_blank'>{{package.name}}</a></td>
+                    {% for name, package in items.available.items %}
+                        <tr class='package'><td><a href='{{package.doc}}' target='_blank'>{{name}}</a></td>
                             <td>{{package.techno}}</td>
                             <td class='release'><span title='{{package.package_url}}'>{{package.release}}</span>
                             {% if package.version_error %}<div class='error'>Incorrect version number</div>{% endif %}                         
@@ -110,9 +110,9 @@
                                 {% else %}{% if package.upgrade_require and package.update %}
                                     Upgrade domogik, to version package["domogik-min-release"], in order to update
                                     {% else %}{% if package.install %}
-                                        <a class='buttontext' href='{% url admin_packages_install_view host.host package.fullname package.release %}'>Install Package</a>
+                                        <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Install Package</a>
                                         {% else %}
-                                        <a class='buttontext' href='{% url admin_packages_install_view host.host package.fullname package.release %}'>Update Package</a>
+                                        <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Update Package</a>
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}

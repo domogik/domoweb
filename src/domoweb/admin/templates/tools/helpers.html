@@ -44,7 +44,7 @@
 				$("#result").prepend(li);
 				$("#commandline").val('');
 				var commandarray = commandline.split(' ')
-				var command = ['helper'];
+				var command = ['api', 'helper'];
 				command = command.concat(commandarray);
                 rinor.get(command)
                     .complete(function(){

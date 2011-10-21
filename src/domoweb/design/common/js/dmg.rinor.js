@@ -9,28 +9,53 @@ function RINOR() {
     this.processing = new Array();
 }
 
-RINOR.prototype.get = function(parameters) {
+RINOR.prototype.send = function(type, parameters, data) {
     var self = this;
+    var data_str = null;
     url = '/rinor/';
     // Build the RINOR url
     $.each(parameters, function(){
         url += encodeURIComponent(this) + '/';     
     });
+    
+    if (data) data_str = JSON.stringify(data);
     return $.ajax({
-            type: 'GET',
+            type: type,
             url: url,
-            data: null,
+            data: data_str,
+            processData:  false,
+            contentType:  'application/json',
             dataType: "json",
             beforeSend: function(jqXHR, settings) {
                 self.uid = self.register(jqXHR);
             }
         }).error(function(jqXHR, status, error){
-            if (jqXHR.status == 500)
-                $.notification('error', 'RINOR : ' + jqXHR.responseText + ' (' + url + ')');
+            if (jqXHR.status == 500) {
+                if (jqXHR.responseText[0] == "{")
+                    response = JSON.parse(jqXHR.responseText).error_message;
+                else
+                    response = jqXHR.responseText
+                $.notification('error', 'RINOR : ' + response + ' (' + url + ')');
+            }
         }).complete(function(jqXHR, textStatus) {
             self.unregister(self.uid);
         });
+}
 
+RINOR.prototype.get = function(parameters) {
+    return this.send('GET', parameters, null);
+}
+
+RINOR.prototype.put = function(parameters, data) {
+    return this.send('PUT', parameters, data);
+}
+
+RINOR.prototype.post = function(parameters, data) {
+    return this.send('POST', parameters, data);
+}
+
+RINOR.prototype.delete = function(parameters) {
+    return this.send('DELETE', parameters, null);
 }
 
 RINOR.prototype.register = function(jqXHR) {

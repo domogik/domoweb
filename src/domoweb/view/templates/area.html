@@ -40,7 +40,7 @@
 {% block title %}{% trans page_title %}{% endblock %}
 
 {% block breadcrumb %}
-	<li><a href='{% url view_house_view %}' class='house'>{{ house.name|default:'House' }}</a></li>
+	<li><a href='{% url view_house_view %}' class='house'>{{ house_name|default:'House' }}</a></li>
 	<li id='customize'><a href='{% url edit_area_view area.id 'page' %}' class='icon16-action-customize{% if not is_user_connected %} admin_required{% endif %}'>{% trans 'Customize' %}</a></li>
 {% endblock %}
 
@@ -48,7 +48,7 @@
     <section id="mainsection">
         <div id='area_{{ area.id }}'>
             <header>
-			    <h1 class="ident icon64-area-{{ area.config.icon }}"><span class="title">{{ area.name }}</span></h1>
+			    <h1 class="ident icon64-area-{{ area.icon }}"><span class="title">{{ area.name }}</span></h1>
                 <div class="maininfo" role='list'></div>
             </header>
             <div class='actions'>
@@ -60,7 +60,7 @@
 {% endblock %}
 
 {% block contentright %}
-    {% for room in rooms_list %}
+    {% for room in area.rooms %}
 	    <div id='room_{{ room.id }}' class='block subsection'>
             <h2 class='header icon64-room-{{ room.config.icon }}'>
                 <a href='{% url view_room_view room.id %}' class="ident">

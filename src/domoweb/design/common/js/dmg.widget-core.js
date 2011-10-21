@@ -79,9 +79,8 @@ function get_widgets_options(id) {
         
         _initValues: function(nb) {
             var self = this, o = this.options;
-            rinor.get(['state', o.deviceid, o.key, 'last', nb])
+            rinor.get(['api', 'state', 'last', nb, o.deviceid, o.key])
                 .success(function(data, status, xhr){
-                    console.log(data)
                     self._statsHandler(data);
                 })
                 .error(function(jqXHR, status, error){

@@ -40,14 +40,8 @@ from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.conf import settings
-from distutils2.version import *
-from distutils2.version import IrrationalVersionError
 from domoweb.utils import *
-
-from domoweb.rest import (
-    House, Areas, Rooms, Devices, DeviceUsages, DeviceTechnologies, DeviceTypes,
-    Features, FeatureAssociations, Plugins, Accounts, Rest, Packages
-)
+from domoweb.rinor.pipes import *
 
 from django_pipes.exceptions import ResourceNotAvailableException
 from httplib import BadStatusLine
@@ -64,10 +58,10 @@ def login(request):
     page_title = _("Login page")
     page_messages = []
     if request.method == 'POST':
-        return auth(request, next)
+        return _auth(request, next)
     else:
         try:
-            result_all_accounts = Accounts.get_all_users()
+            users = UserPipe().get_list()
         except BadStatusLine:
             return redirect("error_badstatusline_view")
         except ResourceNotAvailableException:
@@ -77,7 +71,7 @@ def login(request):
             page_title,
             page_messages,
             next=next,
-            account_list=result_all_accounts.account
+            account_list=users
         )
 
 def logout(request):
@@ -90,18 +84,17 @@ def logout(request):
     return HttpResponseRedirect('/')
 
 @rinor_isconfigured
-def auth(request, next):
+def _auth(request, next):
     # An action was submitted => login action
     user_login = request.POST.get("login",'')
     user_password = request.POST.get("password",'')
     try:
-        result_auth = Accounts.auth(user_login, user_password)
+        account = UserPipe().get_auth(user_login, user_password)
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
         return redirect("error_resourcenotavailable_view")
-    if result_auth.status == 'OK':
-        account = result_auth.account[0]
+    if account:
         request.session['user'] = {
             'login': account.login,
             'is_admin': (account.is_admin == "True"),
@@ -130,8 +123,8 @@ def admin_management_accounts(request):
     page_title = _("Accounts management")
     page_messages = []
     try:
-        result_all_accounts = Accounts.get_all_users()
-        result_all_people = Accounts.get_all_people()
+        users = UserPipe().get_list()
+        people = PersonPipe().get_list()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -142,8 +135,8 @@ def admin_management_accounts(request):
         page_messages,
         nav1_admin = "selected",
         nav2_management_accounts = "selected",
-        accounts_list=result_all_accounts.account,
-        people_list=result_all_people.person
+        accounts_list=users,
+        people_list=people
     )
 
 @rinor_isconfigured
@@ -160,10 +153,9 @@ def admin_organization_devices(request):
 
     id = request.GET.get('id', 0)
     try:
-        result_all_devices = Devices.get_all()
-        result_all_devices.merge_uiconfig()
-        result_all_usages = DeviceUsages.get_all()
-        result_all_types = DeviceTypes.get_all()
+        devices = DeviceExtendedPipe().get_list()
+        usages = DeviceUsagePipe().get_list()
+        types = DeviceTypePipe().get_list()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -176,9 +168,9 @@ def admin_organization_devices(request):
         nav1_admin = "selected",
         nav2_organization_devices = "selected",
         id=id,
-        devices_list=result_all_devices.device,
-        usages_list=result_all_usages.device_usage,
-        types_list=result_all_types.device_type
+        devices_list=devices,
+        usages_list=usages,
+        types_list=types
     )
 
 @rinor_isconfigured
@@ -195,13 +187,9 @@ def admin_organization_rooms(request):
 
     id = request.GET.get('id', 0)
     try:
-        result_all_rooms = Rooms.get_all()
-        result_all_rooms.merge_uiconfig()
-        result_house_rooms = Rooms.get_without_area()
-        result_house_rooms.merge_uiconfig()
-        result_all_areas = Areas.get_all()
-        result_all_areas.merge_rooms()
-        result_all_areas.merge_uiconfig()
+        rooms = RoomExtendedPipe().get_list()
+        house_rooms = RoomExtendedPipe().get_list_noarea()
+        areas = AreaExtendedPipe().get_list()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -214,9 +202,9 @@ def admin_organization_rooms(request):
         nav1_admin = "selected",
         nav2_organization_rooms = "selected",
         id=id,
-        rooms_list=result_all_rooms.room,
-        house_rooms=result_house_rooms.room,
-        areas_list=result_all_areas.area
+        rooms_list=rooms,
+        house_rooms=house_rooms,
+        areas_list=areas
     )
 
 @rinor_isconfigured
@@ -233,8 +221,7 @@ def admin_organization_areas(request):
 
     id = request.GET.get('id', 0)
     try:
-        result_all_areas = Areas.get_all()
-        result_all_areas.merge_uiconfig()
+        areas = AreaExtendedPipe().get_list()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -247,7 +234,7 @@ def admin_organization_areas(request):
         nav1_admin = "selected",
         nav2_organization_areas = "selected",
         id=id,
-        areas_list=result_all_areas.area
+        areas_list=areas
     )
 
 @rinor_isconfigured
@@ -263,7 +250,7 @@ def admin_organization_house(request):
     page_messages = []
 
     try:
-        result_house = House()
+        house = UiConfigPipe().get_filtered(name='house')[0]
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -275,7 +262,7 @@ def admin_organization_house(request):
         page_messages,
         nav1_admin = "selected",
         nav2_organization_house = "selected",
-        house=result_house
+        house_name=house.value
     )
 
 @rinor_isconfigured
@@ -291,10 +278,8 @@ def admin_organization_widgets(request):
     page_messages = []
 
     try:
-        result_all_rooms = Rooms.get_all()
-        result_all_rooms.merge_uiconfig()
-        result_all_areas = Areas.get_all()
-        result_all_areas.merge_uiconfig()
+        rooms = RoomExtendedPipe().get_list()
+        areas = AreaExtendedPipe().get_list()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -306,8 +291,8 @@ def admin_organization_widgets(request):
         page_messages,
         nav1_admin = "selected",
         nav2_organization_widgets = "selected",
-        areas_list=result_all_areas.area,
-        rooms_list=result_all_rooms.room
+        areas_list=areas,
+        rooms_list=rooms
     )
 
 @rinor_isconfigured
@@ -322,8 +307,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_name, plugin_type):
     page_messages = []
 
     try:
-        result_plugin_detail = Plugins.get_detail(plugin_host, plugin_name)
-        result_all_plugins = Plugins.get_all()
+        plugin = PluginPipe().get_detail(plugin_host, plugin_name)
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -336,8 +320,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_name, plugin_type):
             page_messages,
             nav1_admin = "selected",
             nav2_plugins_plugin = "selected",
-            plugins_list=result_all_plugins.plugin,
-            plugin=result_plugin_detail.plugin[0]
+            plugin=plugin
         )
     if plugin_type == "hardware":
         page_title = _("Hardware")
@@ -347,8 +330,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_name, plugin_type):
             page_messages,
             nav1_admin = "selected",
             nav2_plugins_plugin = "selected",
-            plugins_list=result_all_plugins.plugin,
-            plugin=result_plugin_detail.plugin[0]
+            plugin=plugin
         )
 
 @rinor_isconfigured
@@ -384,7 +366,7 @@ def admin_tools_rinor(request):
     page_messages = []
 
     try:
-        rinor_result = Rest.get_info()
+        info = InfoPipe().get_info()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -395,7 +377,7 @@ def admin_tools_rinor(request):
         page_messages,
         nav1_admin = "selected",
         nav2_tools_rinor = "selected",
-        rinor=rinor_result.rest[0]
+        rinor=info
     )
 
 @rinor_isconfigured
@@ -411,12 +393,12 @@ def admin_packages_repositories(request):
     page_messages = []
     
     try:
-        repositories_result = Packages.get_list_repo()
-        if (repositories_result.status == 'OK'):
-            repositories=repositories_result.repository
-        else:
-            repositories=None
-            page_messages.append({'status':'error', 'msg':repositories_result.description})
+        repositories = RepositoryPipe().get_list()
+#        if (repositories_result.status == 'OK'):
+#            repositories=repositories_result.repository
+#        else:
+#            repositories=None
+#            page_messages.append({'status':'error', 'msg':repositories_result.description})
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -430,68 +412,6 @@ def admin_packages_repositories(request):
         repositories=repositories
     )
 
-def __get_packages(type, page_messages, dmg_version):
-    packages_result = Packages.get_list()
-    installed_result = Packages.get_list_installed()
-    plugins_result = Plugins.get_all()
-    if (installed_result.status == 'OK'):
-        for host in installed_result.package:
-            installed = {}
-            # List enabled plugins
-            if (type == 'plugin'):
-                enabled_list = None
-                if plugins_result.plugin:
-                    for host2 in plugins_result.plugin:
-                        if host2.host == host.host:
-                            enabled_list = host2.list
-                if not enabled_list:
-                    page_messages.append({'status':'warning', 'msg':'No plugin enabled'})
-            
-            # Generate the installed package list
-            if type in host.installed:
-                host.installed.packages = host.installed[type]
-                for package in host.installed.packages:
-                    installed[package.name] = package
-                    try:
-                        installed[package.name]['NormalizedVersion'] = NormalizedVersion(package.release)
-                    except IrrationalVersionError:
-                        package.installed_version_error = True
-                        installed[package.name]['NormalizedVersion'] = None
-                    #find enabled plugins
-                    if type == 'plugin' and enabled_list:
-                        for plugin in enabled_list:
-                            if (plugin.name == package.name):
-                                package.enabled = True
-    
-            host.available = []
-            if (packages_result.package) :
-                for package in packages_result.package[0][type]:
-                    package_min_version = NormalizedVersion(suggest_normalized_version(package.domogik_min_release))
-                    try:
-                        package_version = NormalizedVersion(package.release)
-                        package.version_error = False
-                    except IrrationalVersionError:
-                        package.version_error = True
-                    if (dmg_version) :
-                        package.upgrade_require = (package_min_version > dmg_version)
-    
-                    if package.name not in installed:
-                        package.install = True
-                        host.available.append(package)
-                    # Check if update can be done
-                    elif installed[package.name]['NormalizedVersion'] and not package.version_error:
-                        if (installed[package.name]['NormalizedVersion'] < package_version):
-                            installed[package.name]['update_available'] = package_version
-                            package.update = True
-                            host.available.append(package)
-                    elif not installed[package.name]['NormalizedVersion'] and not package.version_error:
-                            installed[package.name]['update_available'] = package_version
-                            package.update = True
-                            host.available.append(package)
-    else :
-        page_messages.append({'status':'error', 'msg':installed_result.description})
-    return installed_result.package, page_messages
-
 @rinor_isconfigured
 @admin_required
 def admin_packages_plugins(request):
@@ -504,14 +424,7 @@ def admin_packages_plugins(request):
     page_title = _("Plugins packages")
     page_messages = []
     try:
-        rest_info = Rest.get_info()
-        if hasattr(rest_info.rest[0].info, 'Domogik_release'):
-            dmg_version = NormalizedVersion(suggest_normalized_version(rest_info.rest[0].info.Domogik_release))
-        else:
-            page_messages.append({'status':'error', 'msg':'Domogik version number not available'})
-            dmg_version = None
-
-        packages, page_messages = __get_packages('plugin', page_messages, dmg_version)
+        packages = PackageExtendedPipe().get_list_plugin()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -523,7 +436,7 @@ def admin_packages_plugins(request):
         page_messages,
         nav1_admin = "selected",
         nav2_packages_plugins = "selected",
-        hosts=packages
+        packages=packages
     )
 
 @rinor_isconfigured
@@ -537,33 +450,22 @@ def admin_packages_hardwares(request):
 
     page_title = _("Hardwares packages")
     page_messages = []
-
     try:
-        rest_info = Rest.get_info()
-        if hasattr(rest_info.rest[0].info, 'Domogik_release'):
-            dmg_version = NormalizedVersion(suggest_normalized_version(rest_info.rest[0].info.Domogik_release))
-        else:
-            page_messages.append({'status':'error', 'msg':'Domogik version number not available'})
-            dmg_version = None
-
-        packages, page_messages = __get_packages('hardware', page_messages, dmg_version)
+        packages = PackageExtendedPipe().get_list_external()
+        rinor = InfoPipe().get_info()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
         return redirect("error_resourcenotavailable_view")
 
-    host = None
-    for h in packages:
-        print "%s %", (h.host, rest_info.rest[0].info.Host)
-        if (h.host == rest_info.rest[0].info.Host) :
-            host = h
     return go_to_page(
         request, 'packages/hardwares.html',
         page_title,
         page_messages,
         nav1_admin = "selected",
         nav2_packages_hardwares = "selected",
-        host=host
+        packages=packages,
+        host=rinor.info.Host
     )
 
 @rinor_isconfigured
@@ -575,7 +477,7 @@ def admin_packages_install(request, package_host, package_name, package_release)
     @return an HttpResponse object
     """
     try:
-        packages_result = Packages.install(package_host, package_name, package_release)
+        PackagePipe.put_install(package_host, package_name, package_release)
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -592,7 +494,7 @@ def admin_packages_enable(request, package_host, package_name, action):
     @return an HttpResponse object
     """
     try:
-        plugins_result = Plugins.enable(package_host, package_name, action)
+        PluginPipe.command_detail(package_host, package_name, action)
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:

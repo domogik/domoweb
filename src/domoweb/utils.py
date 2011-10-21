@@ -8,9 +8,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from domoweb.models import Parameters
 from django.shortcuts import redirect
-from domoweb.rest import (
-    Packages, Rest
-)
+from domoweb.rinor.pipes import InfoPipe
 
 def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
     """
@@ -99,8 +97,8 @@ def rinor_isconfigured(function):
             ip = Parameters.objects.get(key='rinor_ip')
             port = Parameters.objects.get(key='rinor_port')
             if not 'normal_mode' in request.session:
-                mode = Packages.get_mode()
-                request.session['normal_mode']=(mode.mode[0] == "normal")
+                mode = InfoPipe().get_mode()
+                request.session['normal_mode']=(mode == "normal")
         except Parameters.DoesNotExist:
             return redirect("config_welcome_view")
         else:

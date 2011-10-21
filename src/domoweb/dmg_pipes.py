@@ -43,7 +43,7 @@ from django.utils import simplejson
 import django_pipes as pipes
 from django_pipes import debug_stats
 from django_pipes.main import PipeBase
-from django_pipes.main import PipeResultSet
+#from django_pipes.main import PipeResultSet
 from django_pipes.main import _log
 
 from django_pipes.exceptions import ResourceNotAvailableException
@@ -52,6 +52,50 @@ if hasattr(settings, "PIPES_CACHE_EXPIRY"):
     default_cache_expiry = settings.PIPES_CACHE_EXPIRY
 else:
     default_cache_expiry = 60
+
+class PipeResultSet(list):
+    """all() and filter() on the PipeManager class return an instance of this class."""
+    def __init__(self, pipe_cls, items):
+        super(PipeResultSet, self).__init__(self)
+        if isinstance(items, dict) and hasattr(pipe_cls, '__call__'):
+            print pipe_cls
+            obj = pipe_cls.__call__()
+            obj.items.update(_objectify_json(items))
+            self.append(obj)
+        elif isinstance(items, list):
+            print "B"
+            for item in items:
+                if isinstance(item, dict) and hasattr(pipe_cls, '__call__'):
+                    # let's go ahead and create instances of the user-defined Pipe class
+                    obj = pipe_cls.__call__()
+                    obj.items.update(_objectify_json(item))
+                    self.append(obj)
+        else:
+            print "C"
+            self.append(items)
+
+def _objectify_json(i):
+    if isinstance(i, dict):
+        transformed_dict = JSONDict()
+        for key, val in i.iteritems():
+            transformed_dict[key] = _objectify_json(val)
+        return transformed_dict
+    elif isinstance(i, list):
+        for idx in range(len(i)):
+            i[idx] = _objectify_json(i[idx])
+    return i
+
+def _log(msg):
+    if settings.DEBUG:
+        print msg
+
+class JSONDict(dict):
+    def __getattr__(self, attrname):
+        if self.has_key(attrname):
+            return self[attrname]
+        else:
+            raise AttributeError
+
 
 class DmgPipeManager(pipes.PipeManager):
 

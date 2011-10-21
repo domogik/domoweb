@@ -83,20 +83,20 @@ $(function(){
             var itype = item.type;
             var iprefix = item.prefix;
 
-            rinor.get(['plugin', 'config', 'list', 'by-name', '{{ plugin.host }}', '{{ plugin.name }}' , 'by-key', ikey])
+            rinor.get(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.name }}', ikey])
                 .success(function(data, status, xhr){
                     var td = $("tr#" + ikey +" .value");
                     if (itype == 'boolean') {
-                        if (data.length > 0) { // If already configured
-                            if (data[0].value  == "True") {
+                        if (data) { // If already configured
+                            if (data.value  == "True") {
                                 $("input", td).attr('checked', true);
                             }
                         } else {
                             td.setNotConfigured();
                         }
                     } else {    
-                        if (data.length > 0) { // If already configured
-                            $("input", td).val(data[0].value);
+                        if (data) { // If already configured
+                            $("input", td).val(data.value);
                         } else { // If not configured
                             if (idefault == "None")
                                 idefault = null;
@@ -133,7 +133,7 @@ $(function(){
     });
     
     function deleteConfigKey(host, name, key) {
-        rinor.get(['plugin', 'config', 'del', host, name, 'by-key', key])
+        rinor.delete(['api', 'pluginconfig', host, name, key])
             .error(function(jqXHR, status, error){
                 if (jqXHR.status == 400)
                     $.notification('error', jqXHR.responseText);
@@ -141,7 +141,7 @@ $(function(){
     }
     
     function deleteConfig(host, name) {
-        rinor.get(['plugin', 'config', 'del', host, name])
+        rinor.delete(['api', 'pluginconfig', host, name])
             .success(function(data, status, xhr){
                 $.reloadPage({'status': 'ok', 'msg': '{% trans "Configuration deleted" %}'});
             })
@@ -160,7 +160,7 @@ $(function(){
             } else {
                 value = $('#value_' + item.key).val();
             }
-            rinor.get(['plugin', 'config', 'set', 'hostname', host, 'name', name, 'key', item.key, 'value', value])
+            rinor.put(['api', 'pluginconfig', host, name, item.key], {'value': value})
                 .success(function(data, status, xhr){
                     $('#value_' + item.key).parent().attr('class', 'value icon16-status-true');
                     itemSaved++;
@@ -176,7 +176,7 @@ $(function(){
                 });
         });
         if (nbInterface != undefined) {
-            rinor.get(['plugin', 'config', 'set', 'hostname', host, 'name', name, 'key', 'nb-int', 'value', nbInterface])
+            rinor.put(['api', 'pluginconfig', host, name, 'nb-int'], {'value': nbInterface})
                 .error(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);
@@ -188,11 +188,11 @@ $(function(){
     $('#simple_configuration_items').createConfigurationTable('configuration_items');
 
     /* Get the list of configuration items */
-    rinor.get(['plugin', 'detail', '{{ plugin.host }}', '{{ plugin.name }}'])
+    rinor.get(['api', 'plugindetail', '{{ plugin.host }}', '{{ plugin.name }}'])
         .success(function(data, status, xhr){
             // Check configuration items
-            var num_items = data[0].configuration.length;
-            var options = data[0].configuration.sort(sortOptions);
+            var num_items = data.configuration.length;
+            var options = data.configuration.sort(sortOptions);
             var pluginCfg = [];
             var nbPluginCfg = 0;
             var nbInterface;
@@ -212,10 +212,10 @@ $(function(){
                     $('#group_buttons').append(delInterfaceButton);
 
                     // get number of registered interfaces
-                    rinor.get(['plugin', 'config', 'list', 'by-name', '{{ plugin.host }}', '{{ plugin.name }}' , 'by-key', 'nb-int'])
+                    rinor.get(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.name }}', 'nb-int'])
                         .success(function(data, status, xhr){
-                            if (data.length > 0)  // If already configured
-                                nbInterface = data[0].value;
+                            if (data)  // If already configured
+                                nbInterface = data.value;
                             else
                                 nbInterface = 1;
                             // display interfaces
@@ -298,7 +298,7 @@ $(function(){
                             
                         // save new nbInterface
                         nbInterface--;
-                        rinor.get(['plugin', 'config', 'set', 'hostname', '{{ plugin.host }}', 'name', '{{ plugin.name }}', 'key', 'nb-int', 'value', nbInterface])
+                        rinor.put(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.name }}', 'nb-int'], {'value': nbInterface})
                             .error(function(jqXHR, status, error){
                                 if (jqXHR.status == 400)
                                     $.notification('error', jqXHR.responseText);
@@ -315,7 +315,7 @@ $(function(){
                  
             });
             
-            rinor.get(['plugin', 'config', 'list' ,'by-name', '{{ plugin.host }}', '{{ plugin.name }}'])
+            rinor.get(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.name }}'])
                 .success(function(data, status, xhr){
                     var never_configured = num_items - data.length;
                     if (never_configured > 0) {
@@ -370,7 +370,7 @@ $(function(){
             .unbind('click')
             .click(function() {
             $("#buttonstatus").attr('className', 'button icon16-action-processing_f6f6f6');
-            rinor.get(['plugin', btaction, '{{ plugin.host }}', '{{ plugin.name }}'])
+            rinor.put(['api','plugin', '{{ plugin.host }}', '{{ plugin.name }}'], {'command':btaction})
                 .complete(function(){
                     $("#buttonstatus").removeClass('icon16-action-processing_f6f6f6');
                 })

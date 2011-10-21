@@ -42,11 +42,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.conf import settings
 from domoweb.utils import *
-
-from domoweb.rest import (
-    House, Areas, Rooms, Devices, DeviceUsages, DeviceTechnologies, DeviceTypes,
-    Features, FeatureAssociations, Plugins, Accounts, Rest, Packages
-)
+from domoweb.rinor.pipes import *
 
 from django_pipes.exceptions import ResourceNotAvailableException
 from httplib import BadStatusLine
@@ -65,16 +61,13 @@ def house(request):
     widgets_list = settings.WIDGETS_LIST
 
     try:
-        device_types =  DeviceTypes.get_dict()
-        device_usages =  DeviceUsages.get_dict()
-        
-        result_all_areas = Areas.get_all()
-        result_all_areas.merge_uiconfig()
+        usageDict = DeviceUsagePipe().get_dict()
+        typeDict = DeviceTypePipe().get_dict()
 
-        result_house = House()
+        areas = AreaExtendedPipe().get_list()
+        rooms = RoomExtendedPipe().get_list_noarea()
 
-        result_house_rooms = Rooms.get_without_area()
-        result_house_rooms.merge_uiconfig()
+        house = UiConfigPipe().get_filtered(name='house')[0]
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
@@ -86,11 +79,11 @@ def house(request):
         page_messages,
         widgets=widgets_list,
         nav1_show = "selected",
-        device_types=device_types,
-        device_usages=device_usages,
-        areas_list=result_all_areas.area,
-        rooms_list=result_house_rooms.room,
-        house=result_house
+        device_types=typeDict,
+        device_usages=usageDict,
+        areas_list=areas,
+        rooms_list=rooms,
+        house_name=house.value
     )
 
 @admin_required
@@ -107,12 +100,8 @@ def house_edit(request, from_page):
     widgets_list = settings.WIDGETS_LIST
 
     try:
-        result_house = House()
-
-        result_all_devices = Devices.get_all()
-        result_all_devices.merge_uiconfig()
-        result_all_devices.merge_features()
-
+        house = UiConfigPipe().get_filtered(name='house')[0]
+        devices = DeviceExtendedPipe().get_list()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
@@ -124,8 +113,8 @@ def house_edit(request, from_page):
         widgets=widgets_list,
         nav1_show = "selected",
         from_page = from_page,
-        house=result_house,
-        devices_list=result_all_devices.device
+        house_name=house.value,
+        devices_list=devices
     )
 
 @rinor_isconfigured
@@ -141,34 +130,29 @@ def area(request, area_id):
     widgets_list = settings.WIDGETS_LIST
 
     try:
-        device_types =  DeviceTypes.get_dict()
-        device_usages =  DeviceUsages.get_dict()
+        usageDict = DeviceUsagePipe().get_dict()
+        typeDict = DeviceTypePipe().get_dict()
 
-        result_area_by_id = Areas.get_by_id(area_id)
-        result_area_by_id.merge_uiconfig()
+        area = AreaExtendedPipe().get_pk(area_id)
 
-        result_rooms_by_area = Rooms.get_by_area(area_id)
-        result_rooms_by_area.merge_uiconfig()
-
-        result_house = House()
+        house = UiConfigPipe().get_filtered(name='house')[0]
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
         return redirect("error_resourcenotavailable_view")
 
-    page_title = _("View ") + result_area_by_id.area[0].name
+    page_title = _("View ") + area.name
     return go_to_page(
         request, 'area.html',
         page_title,
         page_messages,
         widgets=widgets_list,
         nav1_show = "selected",
-        device_types=device_types,
-        device_usages=device_usages,
-        area=result_area_by_id.area[0],
-        rooms_list=result_rooms_by_area.room,
-        house=result_house
+        device_types=typeDict,
+        device_usages=usageDict,
+        area=area,
+        house_name=house.value
     )
 
 @rinor_isconfigured
@@ -184,21 +168,16 @@ def area_edit(request, area_id, from_page):
     widgets_list = settings.WIDGETS_LIST
 
     try:
-        result_area_by_id = Areas.get_by_id(area_id)
-        result_area_by_id.merge_uiconfig()
-
-        result_house = House()
-
-        result_all_devices = Devices.get_all()
-        result_all_devices.merge_uiconfig()
-        result_all_devices.merge_features()
+        area = AreaExtendedPipe().get_pk(area_id)
+        house = UiConfigPipe().get_filtered(name='house')[0]        
+        devices = DeviceExtendedPipe().get_list()
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
         return redirect("error_resourcenotavailable_view")
 
-    page_title = _("Edit ") + result_area_by_id.area[0].name
+    page_title = _("Edit ") + area.name
     return go_to_page(
         request, 'area.edit.html',
         page_title,
@@ -206,9 +185,9 @@ def area_edit(request, area_id, from_page):
         widgets=widgets_list,
         nav1_show = "selected",
         from_page = from_page,
-        area=result_area_by_id.area[0],
-        house=result_house,
-        devices_list=result_all_devices.device
+        area=area,
+        house_name=house.value,
+        devices_list=devices
     )
 
 @rinor_isconfigured
@@ -223,30 +202,29 @@ def room(request, room_id):
     widgets_list = settings.WIDGETS_LIST
 
     try:
-        device_types =  DeviceTypes.get_dict()
-        device_usages =  DeviceUsages.get_dict()
+        usageDict = DeviceUsagePipe().get_dict()
+        typeDict = DeviceTypePipe().get_dict()
 
-        result_room_by_id = Rooms.get_by_id(room_id)
-        result_room_by_id.merge_uiconfig()
+        room = RoomExtendedPipe().get_pk(room_id)
 
-        result_house = House()
+        house = UiConfigPipe().get_filtered(name='house')[0]        
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
         return redirect("error_resourcenotavailable_view")
 
-    page_title = _("View ") + result_room_by_id.room[0].name
+    page_title = _("View ") + room.name
     return go_to_page(
         request, 'room.html',
         page_title,
         page_messages,
         widgets=widgets_list,
         nav1_show = "selected",
-        device_types=device_types,
-        device_usages=device_usages,
-        room=result_room_by_id.room[0],
-        house=result_house
+        device_types=typeDict,
+        device_usages=usageDict,
+        room=room,
+        house=house.value
     )
 
 @rinor_isconfigured
@@ -262,21 +240,16 @@ def room_edit(request, room_id, from_page):
     widgets_list = settings.WIDGETS_LIST
 
     try:
-        result_room_by_id = Rooms.get_by_id(room_id)
-        result_room_by_id.merge_uiconfig()
-
-        result_house = House()
-
-        result_all_devices = Devices.get_all()
-        result_all_devices.merge_uiconfig()
-        result_all_devices.merge_features()
+        room = RoomExtendedPipe().get_pk(room_id)
+        house = UiConfigPipe().get_filtered(name='house')[0]        
+        devices = DeviceExtendedPipe().get_list()
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except ResourceNotAvailableException:
         return redirect("error_resourcenotavailable_view")
 
-    page_title = _("Edit ") + result_room_by_id.room[0].name
+    page_title = _("Edit ") + room.name
     return go_to_page(
         request, 'room.edit.html',
         page_title,
@@ -284,7 +257,7 @@ def room_edit(request, room_id, from_page):
         widgets=widgets_list,
         nav1_show = "selected",
         from_page = from_page,
-        room=result_room_by_id.room[0],
-        house=result_house,
-        devices_list=result_all_devices.device
+        room=room,
+        house_name=house.value,
+        devices_list=devices
     )

@@ -167,7 +167,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'django_pipes', # Used to create Django's model using REST
+    'tastypie',
+#    'django_pipes', # Used to create Django's model using REST
     'domoweb',
     'domoweb.view',
     'domoweb.admin',
@@ -183,6 +184,9 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 PIPES_CACHE_EXPIRY=0
 PIPES_SOCKET_TIMEOUT=600 # 600 sec
+
+#Tastypie
+API_LIMIT_PER_PAGE = 0
 
 try:
     from settings_local import *

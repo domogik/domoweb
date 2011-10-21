@@ -1,9 +1,9 @@
 function getPluginsList() {
 	$("#plugins_list li").remove();
     
-    rinor.get(['plugin', 'list'])
+    rinor.get(['api', 'plugin'])
         .success(function(data, status, xhr){
-            $.each(data, function() {
+            $.each(data.objects, function() {
                 if (this.list.length > 0) { // If a least 1 plugin is enabled
                     var host = this.host;
                     $.each(this.list, function() {
@@ -17,8 +17,8 @@ function getPluginsList() {
                             .attr('title', this.description)
                             .tooltip_right();
                         var status = $("<div><div class='host'>" + host + "</div>" + this.name + "</div>");
+                        status.addClass("menu-indicator")
                         if (this.name != 'rest') {
-                            status.addClass("menu-indicator")
                             if (this.status == 'ON') {
                                 if (this.type == 'plugin') {
                                     status.addClass("icon16-status-software-up");

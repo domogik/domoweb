@@ -30,11 +30,11 @@
     $(function(){
         // Accordion
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:0});
-        $("#housename").val($("<div/>").html('{{ house.name }}').text());
+        $("#housename").val($("<div/>").html('{{ house_name }}').text());
         $("#generalsubmit").click(function(){
             var name = $("#housename").val();
             if (name) {
-                rinor.get(['base', 'ui_config', 'set', 'name', 'house', 'reference', '0', 'key', 'name', 'value', name])
+                rinor.post(['api', 'uiconfig'], {"name":"house", "reference":"0", "key":"name", "value":name})
                     .success(function(data, status, xhr){
                         $("#housename").removeClass('icon16-status-false');
                         $("#housename").addClass('icon16-status-true');

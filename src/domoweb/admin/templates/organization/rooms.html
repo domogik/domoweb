@@ -55,7 +55,7 @@
                 ui.draggable.dmg_draggable("option", "waitValidation", true);
                 var itemid = ui.draggable.attr('ddvalue');
                 var targetid = $(this).attr('ddvalue');
-                rinor.get(['base', 'room', 'update', 'id', itemid, 'area_id', targetid])
+                rinor.put(['api', 'room', itemid], {'area_id': targetid})
                     .success(function(data, status, xhr){
                         ui.draggable.dmg_draggable('end');
                         
@@ -120,9 +120,9 @@
             button: "#addDialogButton",
             onok: function(values) {
                 // Submit form
-                rinor.get(['base', 'room', 'add', 'name', values.roomname, 'description', values.roomdescription])
+                rinor.post(['api', 'room'], {'name': values.roomname, 'description': values.roomdescription})
                     .success(function(data, status, xhr){
-                        $.reloadPage({'status': 'ok', 'msg': '{% trans "New room added" %} \'' + data[0].name + '\'', 'id': data[0].id});                                   
+                        $.reloadPage({'status': 'ok', 'msg': '{% trans "New room added" %} \'' + data.name + '\'', 'id': data.id});                                   
                     })
                     .error(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
@@ -147,7 +147,7 @@
             {% spaceless %}
                 <ul>
                     {% for room in rooms_list %}
-                        <li><a id="tab{{ room.id }}" href="#element{{ room.id }}" class="icon16-room-{{ room.config.icon }}">{{ room.name }}</a></li>
+                        <li><a id="tab{{ room.id }}" href="#element{{ room.id }}" class="icon16-room-{{ room.icon }}">{{ room.name }}</a></li>
                     {% endfor %}
                 </ul>
             {% endspaceless %}
@@ -161,6 +161,16 @@
                             button: "#del{{ room.id }}",
                             name: "'{{ room.name }}'",
                             onok: function() {
+                                rinor.delete(['api', 'room', '{{ room.id }}'])
+                                    .success(function(data, status, xhr){
+                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Room" %}\'' + data.name + '\' {% trans "successfully deleted" %}'});
+                                    })
+                                    .error(function(jqXHR, status, error){
+                                        self.cancel();
+                                        if (jqXHR.status == 400)
+                                            $.notification('error', '{% trans "Room not deleted" %} (' + jqXHR.responseText + ')');
+                                    });
+/*
                                 // Delete ui configuration
                                 rinor.get(['base', 'ui_config', 'del', 'by-reference', 'room', '{{ room.id }}'])
                                     .success(function(data, status, xhr){
@@ -203,17 +213,17 @@
                                     .error(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
                                             $.notification('error', '{% trans "ui-config for Room not deleted" %} (' + jqXHR.responseText + ')');
-                                    });
+                                    });*/
                             }
                         });
                         
                         $('#icon{{ room.id }}').editable_icon({
                             type: "room",
                             list: room_icons,
-                            icon: "{{ room.config.icon }}",
+                            icon: "{{ room.icon }}",
                             validCallback: function(self, icon) {
                                 $('#icon{{ room.id }}').processing('start');
-                                rinor.get(['base', 'ui_config', 'set', 'name', 'room', 'reference', '{{ room.id }}', 'key', 'icon', 'value', icon])
+                                rinor.post(['api', 'uiconfig'], {"name":"room", "reference":'{{ room.id }}', "key":"icon", "value":icon})
                                     .complete(function(){
                                         $('#icon{{ room.id }}').processing('stop');
                                     })
@@ -240,12 +250,11 @@
                             values: {roomname : '{{ room.name }}', roomdescription : '{{ room.description }}'},
                             onok: function(values) {
                                 // Submit form
-                                rinor.get(['base', 'room', 'update', 'id', '{{ room.id }}', 'name', values.roomname, 'description', values.roomdescription])
+                                rinor.put(['api', 'room', '{{ room.id }}'], {'name': values.roomname, 'description': values.roomdescription})
                                     .success(function(data, status, xhr){
-                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Room" %} \'' + data[0].name + '\' {% trans "successfully updated" %}'});                                   
+                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Room" %} \'' + data.name + '\' {% trans "successfully updated" %}'});                                   
                                     })
                                     .error(function(jqXHR, status, error){
-                                        self.cancel();
                                         if (jqXHR.status == 400)
                                             $.notification('error', '{% trans "Room not updated" %} (' + jqXHR.responseText + ')');
                                     });
@@ -278,7 +287,7 @@
             <legend class='icon16-house-default'>{% trans "House" %}</legend>
             <ul class="roomslist">
                 {% for room in house_rooms %}
-                <li class="roomitem icon32-room-{{ room.config.icon }}" ddvalue="{{ room.id }}" ddname='{{ room.description }}'>{{ room.name }}<span class="description">{{ room.description }}</span></li>
+                <li class="roomitem icon32-room-{{ room.icon }}" ddvalue="{{ room.id }}" ddname='{{ room.description }}'>{{ room.name }}<span class="description">{{ room.description }}</span></li>
                 {% empty %}
                 <li class="empty">{% trans "Empty" %}</li>
                 {% endfor %}
@@ -288,8 +297,8 @@
         <fieldset class="targetdrop" ddvalue='{{ area.id }}' ddname='{{ area.name }}'>
             <legend class="icon16-area-{{ area.config.icon }}">{{ area.name }}</legend>
             <ul class="roomslist">
-                {% for room in area.room %}
-                <li class="roomitem icon32-room-{{ room.config.icon }}" ddvalue="{{ room.id }}" ddname='{{ room.description }}'>{{ room.name }}<span class="description">{{ room.description }}</span></li>
+                {% for room in area.rooms %}
+                <li class="roomitem icon32-room-{{ room.icon }}" ddvalue="{{ room.id }}" ddname='{{ room.description }}'>{{ room.name }}<span class="description">{{ room.description }}</span></li>
                 {% empty %}
                 <li class="empty">{% trans "Empty" %}</li>
                 {% endfor %}
