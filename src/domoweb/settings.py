@@ -168,7 +168,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'tastypie',
-#    'django_pipes', # Used to create Django's model using REST
     'domoweb',
     'domoweb.view',
     'domoweb.admin',
