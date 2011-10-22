@@ -43,7 +43,6 @@ from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 
-from django_pipes.exceptions import ResourceNotAvailableException
 from httplib import BadStatusLine
 
 @rinor_isconfigured

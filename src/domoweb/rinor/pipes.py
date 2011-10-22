@@ -1,3 +1,4 @@
+from django.conf import settings
 from domoweb.rinor.rinorPipe import RinorPipe
 from domoweb.exceptions import RinorError
 from distutils2.version import *
@@ -51,7 +52,26 @@ class InfoPipe(RinorPipe):
             return _data['mode'][0]
         else:
             return None
-        
+    
+    def get_info_extended(self):
+        _data = self.get_info()
+        if (_data):
+            try:
+                _data.info['rinor_version'] = NormalizedVersion(_data.info.REST_API_release)
+                _data.info['min_version'] = NormalizedVersion(settings.RINOR_MIN_API)
+                _data.info['rinor_version_superior'] = (_data.info['rinor_version'] > _data.info['min_version'])
+                _data.info['rinor_version_inferior'] = (_data.info['rinor_version'] < _data.info['min_version'])
+            except IrrationalVersionError:
+                _data.info['rinor_version'] = '?'
+                _data.info['min_version'] = '?'
+                _data.info['rinor_version_superior'] = False
+                _data.info['rinor_version_inferior'] = False
+            _data.info['dmg_version'] = _data.info.Domogik_release
+            _data.info['dmg_min_version'] = settings.DMG_MIN_VERSION
+            return _data
+        else:
+            return None
+
 class HelperPipe(RinorPipe):
     cache_expiry = 0
     list_path = "/helper"

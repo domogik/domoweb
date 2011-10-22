@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import re
 from django.utils.http import urlquote
-from django.utils.http import urlquote
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -31,9 +30,7 @@ def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
         
     response_attr_list = {}
     response_attr_list['page_title'] = page_title
-    response_attr_list['page_messages'] = page_messages
-    
-#    response_attr_list['rest_url'] = settings.EXTERNAL_REST_URL
+    response_attr_list['page_messages'] = page_messages    
     response_attr_list['version'] = settings.PACKAGE_VERSION
     response_attr_list['is_user_connected'] = __is_user_connected(request)
     for attribute in attribute_list:
@@ -94,11 +91,17 @@ def rinor_isconfigured(function):
     """
     def _dec(request, *args, **kwargs):
         try:
-            ip = Parameters.objects.get(key='rinor_ip')
-            port = Parameters.objects.get(key='rinor_port')
+            _ip = Parameters.objects.get(key='rinor_ip')
+            _port = Parameters.objects.get(key='rinor_port')
+            if not 'rinor_api_version'  in request.session:
+                _info = InfoPipe().get_info_extended()
+                if (not _info.info.rinor_version_superior and not _info.info.rinor_version_inferior):
+                    request.session['rinor_api_version'] = _info.info.rinor_version                    
+                else:
+                    return redirect("error_baddomogikversion_view")
             if not 'normal_mode' in request.session:
                 mode = InfoPipe().get_mode()
-                request.session['normal_mode']=(mode == "normal")
+                request.session['normal_mode'] = (mode == "normal")
         except Parameters.DoesNotExist:
             return redirect("config_welcome_view")
         else:

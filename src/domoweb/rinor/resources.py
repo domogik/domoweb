@@ -394,7 +394,7 @@ class InfoResource(RinorResource):
         return self.dispatch('info', request, **kwargs)
     
     def obj_get_info(self, request, **kwargs):
-        _data = self._meta.rinor_pipe.get_info()
+        _data = self._meta.rinor_pipe.get_info_extended()
         if not(_data):
             raise ObjectDoesNotExist()
         return _data

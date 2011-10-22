@@ -47,7 +47,6 @@ import socket
 import urllib
 from domoweb.rinor.pipes import *
 
-from django_pipes.exceptions import ResourceNotAvailableException
 from httplib import BadStatusLine
 
 @rinor_isconfigured
@@ -94,6 +93,19 @@ def error_badstatusline(request):
         
 def error_resourcenotavailable(request):
     return render_to_response('error/ResourceNotAvailable.html')
+
+def error_baddomogikversion(request):
+    page_title = _("Error - Bad Domogik Version")
+    page_messages = []
+
+    _rinor_info = InfoPipe().get_info_extended()
+    
+    return go_to_page(
+        request, 'error/BadDomogikVersion.html',
+        page_title,
+        page_messages,
+        rinor_info=_rinor_info,
+    )
 
 ### Domogik Server configuration form
 class DomogikSetupForm(forms.Form):
@@ -161,7 +173,6 @@ def config_configserver(request):
         form=form,
     )
 
-@rinor_isconfigured
 def config_testserver(request):
     """
     @param request : the HTTP request

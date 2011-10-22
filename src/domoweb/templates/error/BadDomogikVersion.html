@@ -29,8 +29,12 @@
 
 {% block content %}
     <div id="error">
-        <h1>{% trans "Interface Server has crashed" %}</h1>
-        <p>A bug is probably causing the REST server to crash on this url.</p>
-        <p><a href="http://tracker.domogik.org/">Please fill a bug report, with maximum details</a></p>
+        <p><strong>
+        {% if rinor_info.info.rinor_version_inferior %}
+            Your Domogik version is too old {{rinor_info.info.dmg_version}}, please upgrade Domogik to >= {{rinor_info.info.dmg_min_version}}
+        {% else %}
+            Your Domoweb version is too old for this new version of Domogik {{rinor_info.info.dmg_version}}, please upgrade Domoweb      
+        {% endif %}
+        </strong></p>
     </div>
 {% endblock %}

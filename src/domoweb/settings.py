@@ -45,7 +45,7 @@ PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-RINOR_MIN_API = 0.2
+RINOR_MIN_API = '0.2'
 DMG_MIN_VERSION = '0.1.0-alpha1'
 
 ADMINS = (
