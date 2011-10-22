@@ -82,7 +82,6 @@ setup(
                       'django == 1.3.1',
                       'simplejson >= 1.9.2',
                       'httplib2 >= 0.6.0', 
-                      'django-pipes >= 0.2', 
                       'Distutils2'],
     zip_safe = False,
     license = 'GPL v3',

@@ -85,25 +85,9 @@ function copy_sample_files {
         chown $d_user $dmg_home
     fi
 
-    # Check for old version when .domogik.cfg was in $HOME
-    if [ -f $d_home/.domoweb.cfg ];then
-        mv $d_home/.domoweb.cfg $dmg_home/domoweb.cfg
-        chown $d_user $dmg_home/domoweb.cfg
-    fi
     if [ ! -f $dmg_home/domoweb.cfg ];then
         cp -f src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
         chown $d_user: src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
-    else
-        keep="y"
-        already_cfg=1
-        read -p "You already have DomoWeb configuration files. Do you want to keep them ? [Y/n]" keep
-        if [ "x$keep" = "x" ];then
-            keep="y"
-        fi
-        if [ "$keep" = "n" -o "$keep" = "N" ];then
-            cp -f src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
-            chown $d_user: src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
-        fi
     fi
     if [ -d "/etc/default/" ];then
         if [ "$keep" = "n" -o "$keep" = "N" ];then
@@ -156,6 +140,11 @@ function create_log_dir {
     chown -R $d_user: /var/log/domogik 
 }
 
+function init_django_db {
+    python ./src/domoweb/manage.py syncdb --noinput
+    chown $d_user: $dmg_home/domoweb.db
+}
+
 #Main part
 if [ $UID -ne 0 ];then
     echo "Please restart this script as root!"
@@ -188,9 +177,8 @@ fi
 run_setup_py $MODE
 copy_sample_files
 update_default_config
+init_django_db
 create_log_dir
-
-#python manage.py syncdb
 
 echo "Everything seems to be good, DomoWeb should be installed correctly."
 echo "I will start the test_config.py script to check it."

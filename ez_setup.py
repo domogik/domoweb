@@ -157,41 +157,6 @@ and place it in this directory before rerunning this script.)
             if dst: dst.close()
     return os.path.realpath(saveto)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def main(argv, version=DEFAULT_VERSION):
     """Install or upgrade setuptools and EasyInstall"""
     try:
