@@ -138,7 +138,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'domoweb.urls'
-STATIC_URL = 'django_socketio.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or
@@ -173,7 +172,6 @@ INSTALLED_APPS = (
     'domoweb.view',
     'domoweb.admin',
     'domoweb.rinor',
-    'django_socketio',
 )
 
 
