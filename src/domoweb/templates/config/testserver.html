@@ -46,9 +46,9 @@
     $(function(){
         $('a.next').click(function(event) {event.preventDefault();}).addClass('disabled');
 
-        rinor.get(['info'])
+        rinor.get(['api','info'])
             .success(function(data, status, xhr){
-                $('#internal').attr('class', 'success_message icon32-status-true').html('Successfully connected Domogik v' + data[0].info.Domogik_release + ' on ' + data[0].info.Host + ' <div class="build">' + data[0].info.Sources_release + '</div>');
+                $('#internal').attr('class', 'success_message icon32-status-true').html('Successfully connected Domogik v' + data.info.Domogik_release + ' on ' + data.info.Host + ' <div class="build">' + data.info.Sources_release + '</div>');
                 $('a.next').unbind('click').removeClass('disabled');
             })
             .error(function(jqXHR, status, error){

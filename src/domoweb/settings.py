@@ -46,6 +46,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 RINOR_MIN_API = 0.2
+DMG_MIN_VERSION = '0.1.0-alpha1'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
