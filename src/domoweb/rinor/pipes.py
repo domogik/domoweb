@@ -2,10 +2,32 @@ from domoweb.rinor.rinorPipe import RinorPipe
 from domoweb.exceptions import RinorError
 from distutils2.version import *
 from distutils2.version import IrrationalVersionError
+import simplejson
 
 def select_sublist(list_of_dicts, **kwargs):
     return [d for d in list_of_dicts 
             if all(d.get(k)==kwargs[k] for k in kwargs)]
+
+class EventPipe(RinorPipe):
+    cache_expiry = 0
+    new_path = '/events/request/new'
+    get_path = '/events/request/get'
+    index = 'event'
+    
+    def get_event(self):
+        # Get all the devices ids
+        _devices_list = DevicePipe().get_dict().keys()
+        _devices = '/'.join(str(id) for id in _devices_list)
+        _data = self._get_data("%s/%s/" % (self.new_path, _devices))               
+        _event = _data.event[0]
+        _ticket = _event.ticket_id    
+        print "New " + str(_event.timestamp)
+        yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'
+        while(True):
+            _data = self._get_data("%s/%s/" % (self.get_path, _ticket))               
+            _event = _data.event[0]
+            print "Get " + str(_event.timestamp)
+            yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'        
 
 class InfoPipe(RinorPipe):
     cache_expiry = 0

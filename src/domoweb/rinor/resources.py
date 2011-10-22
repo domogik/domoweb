@@ -453,3 +453,19 @@ class PackageResource(RinorResource):
         else:
             return None
 
+class EventResource(RinorResource):
+    class Meta:
+        resource_name = 'event'
+        authentication = Authentication()
+        authorization = Authorization()
+        rinor_pipe = EventPipe()
+
+    def obj_get_list(self, request, **kwargs):
+        return self._meta.rinor_pipe.get_event()
+    
+    def get_list(self, request, **kwargs):
+        try:
+            objects = self.obj_get_list(request=request, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return HttpNotFound()
+        return HttpResponse(objects, mimetype="text/event-stream")

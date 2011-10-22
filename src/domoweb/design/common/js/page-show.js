@@ -1,11 +1,11 @@
 $(function(){
 	$(window).bind('beforeunload', function () {  $.eventsource("close", "rinor-events"); });
+    $.eventRequest();
 });
 
 (function($) {    
     $.extend({
         initAssociations: function(page_type, page_id, device_usages, device_types) {
-            var devices = [];
             var options = null;
             if (page_type == 'house') {
                 options = ['api', 'association', 'house', 'deep']
@@ -18,7 +18,6 @@ $(function(){
             rinor.get(options)
                 .success(function(data, status, xhr){
                     $.each(data.objects, function(index, association) {
-                        devices.push(association.feature.device_id);
                         if (association.place_type == page_type || (association.place_type != page_type && association.place != 'otheractions')) {
                             var parameters_usage = $.stringToJSON(device_usages[association.feature.device.device_usage_id].default_options);
                             var parameters_type = $.stringToJSON(association.feature.device_feature_model.parameters);
@@ -39,8 +38,6 @@ $(function(){
                             eval("$('#widget_" + association.id + "')." + association.widget + "(options)");
                         }
                     });
-                    devices = unique(devices);
-                    if (devices.length > 0) $.eventRequest(devices);
                 })
                 .error(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
@@ -48,15 +45,15 @@ $(function(){
                 });
         },
         
-        eventRequest: function(devices) {            
+        eventRequest: function() {            
             $.eventsource({
                 label: "rinor-events",
-                url: "/rinor/events/" + devices.join('/') + '/',
+                url: "/rinor/api/event/",
                 dataType: "json",
                 open: function() {        
                 },
                 message: function( data ) {
-                        $(document).trigger('dmg_event', data);
+                    $(document).trigger('dmg_event', data);
                 }
             });
         },

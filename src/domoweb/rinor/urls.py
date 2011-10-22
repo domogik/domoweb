@@ -54,6 +54,7 @@ rinor_api.register(PersonResource())
 rinor_api.register(InfoResource())
 rinor_api.register(HelperResource())
 rinor_api.register(PackageResource())
+rinor_api.register(EventResource())
 
 urlpatterns = patterns('',
     (r'', include(rinor_api.urls)),
