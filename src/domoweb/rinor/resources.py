@@ -106,28 +106,17 @@ class StateResource(RinorResource):
         authorization = Authorization()
         rinor_pipe = StatePipe()
         last_allowed_methods = ['get']
-        fromto_allowed_methods = ['get']
 
-    def base_urls(self):
+    def override_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/last/(?P<last>\d+)/(?P<device>\d+)/(?P<key>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_last'), name="api_dispatch_last"),
-            url(r"^(?P<resource_name>%s)/from/(?P<from>\d+)/to/(?P<to>\d+)/interval/(?P<interval>(year|month|week|day|hour|minute|second))/selector/(?P<selector>(min|max|avg|first|last))/(?P<device>\d+)/(?P<key>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_fromto'), name="api_dispatch_fromto"),
         ]
     
     def dispatch_last(self, request, **kwargs):
         return self.dispatch('last', request, **kwargs)
-
-    def dispatch_fromto(self, request, **kwargs):
-        return self.dispatch('fromto', request, **kwargs)
     
     def obj_get_last(self, request, **kwargs):
         _data = self._meta.rinor_pipe.get_last(kwargs['last'], kwargs['device'], kwargs['key'])
-        if not(_data):
-            raise ObjectDoesNotExist()
-        return _data
-
-    def obj_get_fromto(self, request, **kwargs):
-        _data = self._meta.rinor_pipe.get_fromto(kwargs['from'], kwargs['to'], kwargs['interval'], kwargs['selector'], kwargs['device'], kwargs['key'])
         if not(_data):
             raise ObjectDoesNotExist()
         return _data
@@ -135,13 +124,6 @@ class StateResource(RinorResource):
     def get_last(self, request, **kwargs):
         try:
             obj = self.obj_get_last(request=request, **self.remove_api_resource_names(kwargs))
-        except ObjectDoesNotExist:
-            return HttpNotFound()
-        return self.create_response(request, obj)
-
-    def get_fromto(self, request, **kwargs):
-        try:
-            obj = self.obj_get_fromto(request=request, **self.remove_api_resource_names(kwargs))
         except ObjectDoesNotExist:
             return HttpNotFound()
         return self.create_response(request, obj)

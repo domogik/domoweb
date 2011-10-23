@@ -390,17 +390,7 @@ class StatePipe(RinorPipe):
     index = 'stats'
     
     def get_last(self, last, device, key):
-        _path = "%s/%s/%s/last/%s/" % (self.list_path, device, key, last)
-        _data = self._get_data(_path)
-        if _data.status == "ERROR":
-            raise RinorError(data.code, data.description)        
-        if len(_data[self.index]) > 0:
-            return _data[self.index][0]
-        else:
-            return None
-
-    def get_fromto(self, fromTime, toTime, interval, selector, device, key):
-        _path = "%s/%s/%s/from/%s/to/%s/interval/%s/selector/%s/" % (self.list_path, device, key, fromTime, toTime, interval, selector)
+        _path = "%s/%s/%s/%s/%s/" % (self.list_path, device, key, 'last', last)
         _data = self._get_data(_path)
         if _data.status == "ERROR":
             raise RinorError(data.code, data.description)        
