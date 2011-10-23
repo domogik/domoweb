@@ -55,9 +55,10 @@ ADMINS = (
 MANAGERS = ADMINS
 
 ### Get DomoWeb Version
-SOURCES_VERSION =  commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev} ({latesttag}) - {date|isodate}' -b" % PROJECT_PATH)
-PACKAGE_VERSION = '0.2.0'
-print SOURCES_VERSION
+# Change to static number on package 
+DOMOWEB_FULL_VERSION =  commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev} ({latesttag}) - {date|isodate}' -b" % PROJECT_PATH)
+DOMOWEB_VERSION = commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{latesttag} ({branch})' -b" % PROJECT_PATH)
+print DOMOWEB_FULL_VERSION
 
 ### Find User home
 if os.path.isfile("/etc/default/domoweb"):
@@ -211,9 +212,7 @@ for t_path in (PROJECT_PATH, '/usr/local/share/domoweb/',):
                     WIDGETS_LIST.append(file)
         break
 
-
 # For login Auth
-AUTHENTICATION_BACKENDS = ('domoweb.backends.RestBackend',)
 LOGIN_URL = '/admin/login'
 LOGOUT_URL = '/admin/logout'
 LOGIN_REDIRECT_URL = '/admin/'

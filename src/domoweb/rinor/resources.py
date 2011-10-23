@@ -37,7 +37,6 @@ from django.http import HttpResponse
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource
-from domoweb.models import Person
 from domoweb.rinor.rinorResource import RinorResource
 from domoweb.rinor.pipes import *
 from tastypie import fields
