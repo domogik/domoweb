@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REVISION=27b13bbf11e0
+REVISION=5b360dc336cd
 RELEASE=0.2.0-alpha1-$REVISION
 SHORT_RELEASE=0.2.0-alpha1  # for base directory
 

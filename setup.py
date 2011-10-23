@@ -61,8 +61,8 @@ def list_all_files(path, dst):
 arch = platform.architecture()
 
 d_files = [
-        ('/etc/init.d/', ['src/domogik/examples/init/domoweb']),
-        ('/etc/default/', ['src/domogik/examples/default/domoweb'])
+        ('/etc/init.d/', ['src/examples/init/domoweb']),
+        ('/etc/default/', ['src/examples/default/domoweb'])
 ]
 
 d_files.extend(list_all_files('src/domoweb/templates/', '/usr/local/share/domoweb/templates/')),
