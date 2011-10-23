@@ -237,50 +237,49 @@
                     var d = null;
                     switch(type) {
                         case '24h':
-                            d = data[0].values; //self.get_graph_24h(data[0].values);
+                            d = data.values; //self.get_graph_24h(data[0].values);
                             break;
                         case '7d':
-                            d = self.get_graph_7d(data[0].values);
+                            d = self.get_graph_7d(data.values);
                             break;
                         case 'month':
-                            d = self.get_graph_month(data[0].values);
+                            d = self.get_graph_month(data.values);
                             break;
                         case 'year':
-                            d = self.get_graph_year(data[0].values);
+                            d = self.get_graph_year(data.values);
                             break;
                     }
                     self.graph.yAxis[0].addPlotLine({
-                        value: data[0].global_values.avg,
+                        value: data.global_values.avg,
                         color: '#660099',
                         width: 1,
                         label:{
-                                 text: 'Avg: ' + Highcharts.numberFormat(data[0].global_values.avg, 2) +" " + o.model_parameters.unit,
+                                 text: 'Avg: ' + Highcharts.numberFormat(data.global_values.avg, 2) +" " + o.model_parameters.unit,
                                  align: 'right'
                              }
                     });
                     self.graph.yAxis[0].addPlotLine({
-                        value: data[0].global_values.min,
+                        value: data.global_values.min,
                         color: '#0000cc',
                         width: 1,
                         label:{
-                                 text: 'Min: ' + Highcharts.numberFormat(data[0].global_values.min, 2) +" " + o.model_parameters.unit,
+                                 text: 'Min: ' + Highcharts.numberFormat(data.global_values.min, 2) +" " + o.model_parameters.unit,
                                  align: 'right'
                              }
                     });
                     self.graph.yAxis[0].addPlotLine({
-                        value: data[0].global_values.max,
+                        value: data.global_values.max,
                         color: '#cc0000',
                         width: 1,
                         label:{
-                                 text: 'Max: ' + Highcharts.numberFormat(data[0].global_values.max, 2) +" " + o.model_parameters.unit,
+                                 text: 'Max: ' + Highcharts.numberFormat(data.global_values.max, 2) +" " + o.model_parameters.unit,
                                  align: 'right'
                              }
                     });                        self.graph.addSeries({name:o.featurename,data: d});
                     self.graph.addSeries({data: [0]}); // for min
-                    self.graph.addSeries({data: [data[0].global_values.max]}); // for max
+                    self.graph.addSeries({data: [data.global_values.max]}); // for max
                 })
                 .error(function(jqXHR, status, error){
-                    self.cancel();
                     if (jqXHR.status == 400)
                         $.notification('error', 'data creation failed (' + jqXHR.responseText + ')');
                 }).complete(function(){
@@ -305,7 +304,7 @@
 			                return Highcharts.dateFormat('%d/%m/%Y %Hh%M', this.x) +'<br/>'
                                 + "<strong>" + Highcharts.numberFormat(this.y, 2, ',') +" " + o.model_parameters.unit + "</strong>";
                         };
-            return ['state', o.deviceid, o.key, 'from', Math.round(from.getTime() / 1000), 'to', Math.round(to.getTime() / 1000),'interval', 'minute', 'selector', 'avg'];
+            return ['api','state', 'from', Math.round(from.getTime() / 1000), 'to', Math.round(to.getTime() / 1000),'interval', 'minute', 'selector', 'avg', o.deviceid, o.key];
         },
         
         get_graph_24h: function(values) {
@@ -331,7 +330,7 @@
 			                return Highcharts.dateFormat('%d/%m/%Y %Hh', this.x) +'<br/>'
                                 + "<strong>" + Highcharts.numberFormat(this.y, 2, ',') +" " + o.model_parameters.unit + "</strong>";
                         };
-            return ['state', o.deviceid, o.key, 'from', Math.round(from.getTime() / 1000), 'to', Math.round(to.getTime() / 1000),'interval', 'hour', 'selector', 'avg'];
+            return ['api', 'state', 'from', Math.round(from.getTime() / 1000), 'to', Math.round(to.getTime() / 1000),'interval', 'hour', 'selector', 'avg', o.deviceid, o.key];
         },
 
         get_graph_7d: function(values) {
@@ -359,7 +358,7 @@
 			                return Highcharts.dateFormat('%d/%m/%Y', this.x) +'<br/>'
                                 + "<strong>" + Highcharts.numberFormat(this.y, 2, ',') +" " + o.model_parameters.unit + "</strong>";
                         };
-            return ['state', o.deviceid, o.key, 'from', Math.round(from.getTime() / 1000), 'to', Math.round(to.getTime() / 1000),'interval', 'day', 'selector', 'avg'];
+            return ['api', 'state', 'from', Math.round(from.getTime() / 1000), 'to', Math.round(to.getTime() / 1000),'interval', 'day', 'selector', 'avg', o.deviceid, o.key];
         },
 
         get_graph_month: function(values) {
@@ -385,7 +384,7 @@
 			                return Highcharts.dateFormat('%d/%m/%Y', this.x) +'<br/>'
                                 + "<strong>" + Highcharts.numberFormat(this.y, 2, ',') +" " + o.model_parameters.unit + "</strong>";
                         };
-            return ['state', o.deviceid, o.key, 'from', Math.round(from.getTime() / 1000), 'to', Math.round(to.getTime() / 1000),'interval', 'day', 'selector', 'avg'];
+            return ['api', 'state', 'from', Math.round(from.getTime() / 1000), 'to', Math.round(to.getTime() / 1000),'interval', 'day', 'selector', 'avg', o.deviceid, o.key];
         },
 
         get_graph_year: function(values) {
