@@ -55,7 +55,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 ### Get DomoWeb Version
-SOURCES_VERSION =  commands.getoutput("cd %s ; hg log -r tip --template '{branch}.{rev} ({latesttag}) - {date|isodate}'" % PROJECT_PATH)
+SOURCES_VERSION =  commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev} ({latesttag}) - {date|isodate}' -b" % PROJECT_PATH)
 PACKAGE_VERSION = '0.2.0'
 print SOURCES_VERSION
 
