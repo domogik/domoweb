@@ -10,7 +10,6 @@ function generate_pkg() {
     echo "Generate package..."
     hg archive \
     -p domoweb-$SHORT_RELEASE \
-    -r $REVISION \
     -X re:package.*.sh \
     -X .hgignore  \
     -X .hg_archival.txt \
