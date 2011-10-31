@@ -80,7 +80,7 @@ setup(
     author_email = 'domogik-general@lists.labs.libre-entreprise.org',
     install_requires=['setuptools', 
                       'django == 1.3.1',
-                      'django-tastypie == 0.9.9'
+                      'django-tastypie == 0.9.9',
                       'simplejson >= 1.9.2',
                       'httplib2 >= 0.6.0', 
                       'Distutils2',
