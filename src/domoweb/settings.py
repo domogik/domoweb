@@ -38,7 +38,7 @@ import os
 import pwd
 import commands
 
-from common.configloader import Loader
+from domoweb.tools.configloader import Loader
 
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 
