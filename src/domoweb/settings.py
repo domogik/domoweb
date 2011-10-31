@@ -56,8 +56,11 @@ MANAGERS = ADMINS
 
 ### Get DomoWeb Version
 # Change to static number on package 
-DOMOWEB_FULL_VERSION =  commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev} ({latesttag}) - {date|isodate}' -b" % PROJECT_PATH)
-DOMOWEB_VERSION = commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{latesttag} ({branch})' -b" % PROJECT_PATH)
+#DOMOWEB_FULL_VERSION =  commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev} ({latesttag}) - {date|isodate}' -b" % PROJECT_PATH)
+#DOMOWEB_VERSION = commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{latesttag} ({branch})' -b" % PROJECT_PATH)
+DOMOWEB_FULL_VERSION =  "0.2.0-alpha1"
+DOMOWEB_VERSION = "0.2.0-alpha1"
+
 print DOMOWEB_FULL_VERSION
 
 ### Find User home
