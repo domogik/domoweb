@@ -87,7 +87,7 @@ setup(
     license = 'GPL v3',
     # namespace_packages = ['domogik', 'mpris', 'tools'],
     # include_package_data = True,
-#    packages = find_packages('src', exclude=["mpris"]),
+    packages = find_packages('src'),
     package_dir = {'': 'src'},
 #    test_suite = 'domogik.tests',
     # Include all files of the ui/djangodomo directory
