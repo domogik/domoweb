@@ -41,6 +41,7 @@ import os
 from setuptools import setup, find_packages
 import platform
 
+import sys
 def list_all_files(path, dst):
     """
     List all files and subdirectories contained in a path
@@ -68,6 +69,7 @@ d_files = [
 d_files.extend(list_all_files('src/domoweb/templates/', '/usr/local/share/domoweb/templates/')),
 d_files.extend(list_all_files('src/domoweb/admin/templates/', '/usr/local/share/domoweb/admin/templates/')),
 d_files.extend(list_all_files('src/domoweb/view/templates/', '/usr/local/share/domoweb/view/templates/')),
+d_files.extend(list_all_files('src/domoweb/design/', '/usr/local/share/domoweb/design/')),
 d_files.extend(list_all_files('src/domoweb/locale/', '/usr/local/share/domoweb/locale/')),
 d_files.extend(list_all_files('src/domoweb/apache/', '/usr/local/share/doc/domoweb/examples/apache/')),
 
@@ -103,7 +105,13 @@ setup(
     entry_points = {
         'console_scripts': [
             """
-            dmg_domoweb = domoweb.threadmanage:run_manager
+            dmg_domoweb = domoweb.manage_install:run_manager
+            """
+        ],
+    } if (sys.argv[1] == 'install') else {
+        'console_scripts': [
+            """
+            dmg_domoweb = domoweb.manage_develop:run_manager
             """
         ],
     },

@@ -4,16 +4,13 @@
 # http://nedbatchelder.com/blog/201103/quick_and_dirty_multithreaded_django_dev_server.html
 import os, sys
 from django.core.management import execute_manager
+
 try:
-    import settings # Assumed to be in the same directory.
+    import settings_install # Assumed to be in the same directory.
+    settings = settings_install
 except ImportError:
-    sys.stderr.write(
-        "Error: Can't find the file 'settings.py' in the directory containing %r. "
-        "It appears you've customized things.\n"
-        "You'll have to run django-admin.py, passing it your settings module.\n"
-        "(If the file settings.py does indeed exist, it's causing an ImportError somehow.)\n" 
-        % __file__
-        )
+    import sys
+    sys.stderr.write("Error: Can't find the file 'settings_install.py' in the directory containing %r.\n" % __file__)
     sys.exit(1)
 
 def monkey_patch_for_multi_threaded():

@@ -141,7 +141,7 @@ function create_log_dir {
 }
 
 function init_django_db {
-    python ./src/domoweb/manage.py syncdb --noinput
+    python ./src/domoweb/manage_develop.py syncdb --noinput
     chown $d_user: $dmg_home/domoweb.db
 }
 

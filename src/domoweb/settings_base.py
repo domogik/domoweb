@@ -40,8 +40,6 @@ import commands
 
 from domoweb.tools.configloader import Loader
 
-PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
-
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -144,21 +142,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'domoweb.urls'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or
-    # "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    '%s/templates/' % PROJECT_PATH,
-    '%s/view/templates/' % PROJECT_PATH,
-    '%s/admin/templates/' % PROJECT_PATH,
-    '%s/rinor/templates/' % PROJECT_PATH,
-    '/usr/local/share/domoweb/templates/',
-    '/usr/local/share/domoweb/view/templates/',
-    '/usr/local/share/domoweb/admin/templates/',
-    '/usr/local/share/domoweb/rinor/templates/',
-)
-
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.auth',
     'django.core.context_processors.debug',
@@ -191,29 +174,6 @@ PIPES_SOCKET_TIMEOUT=600 # 600 sec
 
 #Tastypie
 API_LIMIT_PER_PAGE = 0
-
-try:
-    from settings_local import *
-except ImportError:
-    pass
-
-# List the availables widgets
-WIDGETS_LIST = []
-STATIC_WIDGETS_ROOT = None
-#STATIC_DESIGN_ROOT = None 
-
-#Only loads the widgets from the FIRST existing directory in TEMPLATE_DIRS
-for t_path in (PROJECT_PATH, '/usr/local/share/domoweb/',):
-    if os.path.isdir(t_path):
-        STATIC_DESIGN_ROOT = '%s/design' % t_path
-        w_path = os.path.join(t_path, "widgets")
-        STATIC_WIDGETS_ROOT = w_path
-        if os.path.isdir(w_path):
-            for file in os.listdir(w_path):
-                main = os.path.join(w_path, file, "main.js")
-                if os.path.isfile(main):
-                    WIDGETS_LIST.append(file)
-        break
 
 # For login Auth
 LOGIN_URL = '/admin/login'
