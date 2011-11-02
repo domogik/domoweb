@@ -67,7 +67,7 @@ def house(request):
         areas = AreaExtendedPipe().get_list()
         rooms = RoomExtendedPipe().get_list_noarea()
 
-        house = UiConfigPipe().get_filtered(name='house')[0]
+        house_name = UiConfigPipe().get_house()
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
@@ -83,7 +83,7 @@ def house(request):
         device_usages=usageDict,
         areas_list=areas,
         rooms_list=rooms,
-        house_name=house.value
+        house_name=house_name
     )
 
 @admin_required
@@ -100,7 +100,7 @@ def house_edit(request, from_page):
     widgets_list = settings.WIDGETS_LIST
 
     try:
-        house = UiConfigPipe().get_filtered(name='house')[0]
+        house_name = UiConfigPipe().get_house()
         devices = DeviceExtendedPipe().get_list()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
@@ -113,7 +113,7 @@ def house_edit(request, from_page):
         widgets=widgets_list,
         nav1_show = "selected",
         from_page = from_page,
-        house_name=house.value,
+        house_name=house_name,
         devices_list=devices
     )
 
@@ -135,7 +135,7 @@ def area(request, area_id):
 
         area = AreaExtendedPipe().get_pk(area_id)
 
-        house = UiConfigPipe().get_filtered(name='house')[0]
+        house_name = UiConfigPipe().get_house()
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
@@ -152,7 +152,7 @@ def area(request, area_id):
         device_types=typeDict,
         device_usages=usageDict,
         area=area,
-        house_name=house.value
+        house_name=house_name
     )
 
 @rinor_isconfigured
@@ -169,7 +169,7 @@ def area_edit(request, area_id, from_page):
 
     try:
         area = AreaExtendedPipe().get_pk(area_id)
-        house = UiConfigPipe().get_filtered(name='house')[0]        
+        house_name = UiConfigPipe().get_house()    
         devices = DeviceExtendedPipe().get_list()
 
     except BadStatusLine:
@@ -186,7 +186,7 @@ def area_edit(request, area_id, from_page):
         nav1_show = "selected",
         from_page = from_page,
         area=area,
-        house_name=house.value,
+        house_name=house_name,
         devices_list=devices
     )
 
@@ -207,7 +207,7 @@ def room(request, room_id):
 
         room = RoomExtendedPipe().get_pk(room_id)
 
-        house = UiConfigPipe().get_filtered(name='house')[0]        
+        house_name = UiConfigPipe().get_house()    
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
@@ -224,7 +224,7 @@ def room(request, room_id):
         device_types=typeDict,
         device_usages=usageDict,
         room=room,
-        house=house.value
+        house=house_name
     )
 
 @rinor_isconfigured
@@ -241,7 +241,7 @@ def room_edit(request, room_id, from_page):
 
     try:
         room = RoomExtendedPipe().get_pk(room_id)
-        house = UiConfigPipe().get_filtered(name='house')[0]        
+        house_name = UiConfigPipe().get_house()     
         devices = DeviceExtendedPipe().get_list()
 
     except BadStatusLine:
@@ -258,6 +258,6 @@ def room_edit(request, room_id, from_page):
         nav1_show = "selected",
         from_page = from_page,
         room=room,
-        house_name=house.value,
+        house_name=house_name,
         devices_list=devices
     )

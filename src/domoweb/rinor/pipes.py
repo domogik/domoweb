@@ -184,7 +184,15 @@ class UiConfigPipe(RinorPipe):
             return _data[self.index][0]
         else:
             return None
-        
+    
+    def get_house(self):
+        house = UiConfigPipe().get_filtered(name='house')
+        if (len(house) > 0):
+            return house[0].value
+        else:
+            return None
+
+    
 class DevicePipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/device/list"

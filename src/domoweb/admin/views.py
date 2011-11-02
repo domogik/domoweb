@@ -250,7 +250,7 @@ def admin_organization_house(request):
     page_messages = []
 
     try:
-        house = UiConfigPipe().get_filtered(name='house')[0]
+        house_name = UiConfigPipe().get_house()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except RinorNotAvailable:
@@ -262,7 +262,7 @@ def admin_organization_house(request):
         page_messages,
         nav1_admin = "selected",
         nav2_organization_house = "selected",
-        house_name=house.value
+        house_name=house_name
     )
 
 @rinor_isconfigured

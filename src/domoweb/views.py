@@ -72,7 +72,7 @@ def index(request):
         areas = AreaExtendedPipe().get_list()
         rooms = RoomExtendedPipe().get_list_noarea()
 
-        house = UiConfigPipe().get_filtered(name='house')[0]
+        house_name = UiConfigPipe().get_house()
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
@@ -88,7 +88,7 @@ def index(request):
         device_usages=usageDict,
         areas_list=areas,
         rooms_list=rooms,
-        house_name=house.value
+        house_name=house_name
     )
 
 def error_badstatusline(request):
