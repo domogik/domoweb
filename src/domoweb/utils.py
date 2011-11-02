@@ -8,6 +8,8 @@ from django.template import RequestContext
 from domoweb.models import Parameters
 from django.shortcuts import redirect
 from domoweb.rinor.pipes import InfoPipe
+from domoweb.exceptions import RinorNotAvailable, RinorError
+from httplib import BadStatusLine
 
 def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
     """
@@ -94,13 +96,24 @@ def rinor_isconfigured(function):
             _ip = Parameters.objects.get(key='rinor_ip')
             _port = Parameters.objects.get(key='rinor_port')
             if not 'rinor_api_version'  in request.session:
-                _info = InfoPipe().get_info_extended()
+                try:
+                    _info = InfoPipe().get_info_extended()
+                except BadStatusLine:
+                    return redirect("error_badstatusline_view")
+                except RinorNotAvailable:
+                    return redirect("error_resourcenotavailable_view")
                 if (not _info.info.rinor_version_superior and not _info.info.rinor_version_inferior):
                     request.session['rinor_api_version'] = _info.info.rinor_version                    
                 else:
                     return redirect("error_baddomogikversion_view")
             if not 'normal_mode' in request.session:
-                mode = InfoPipe().get_mode()
+                try:
+                    mode = InfoPipe().get_mode()
+                except BadStatusLine:
+                    return redirect("error_badstatusline_view")
+                except RinorNotAvailable:
+                    return redirect("error_resourcenotavailable_view")
+
                 request.session['normal_mode'] = (mode == "normal")
         except Parameters.DoesNotExist:
             return redirect("config_welcome_view")

@@ -33,6 +33,9 @@ Implements
 @license: GPL(v3)
 @organization: Domogik
 """
+import socket
+import urllib
+
 from django.utils.http import urlquote
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -42,10 +45,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.conf import settings
 from django import forms
+from domoweb.models import Parameters
 from domoweb.utils import *
-import socket
-import urllib
 from domoweb.rinor.pipes import *
+from domoweb.exceptions import RinorNotAvailable
 
 from httplib import BadStatusLine
 
@@ -73,7 +76,7 @@ def index(request):
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
-    except ResourceNotAvailableException:
+    except RinorNotAvailable:
         return redirect("error_resourcenotavailable_view")
 
     return go_to_page(
@@ -92,7 +95,18 @@ def error_badstatusline(request):
     return render_to_response('error/BadStatusLine.html')
         
 def error_resourcenotavailable(request):
-    return render_to_response('error/ResourceNotAvailable.html')
+    page_title = _("Error - Rinor not available")
+    page_messages = []
+
+    _ip = Parameters.objects.get(key='rinor_ip')
+    _port = Parameters.objects.get(key='rinor_port')
+    
+    return go_to_page(
+        request, 'error/ResourceNotAvailable.html',
+        page_title,
+        page_messages,
+        rinor_url="http://%s:%s" % (_ip.value, _port.value),
+    )
 
 def error_baddomogikversion(request):
     page_title = _("Error - Bad Domogik Version")

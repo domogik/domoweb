@@ -43,6 +43,7 @@ from django.utils.translation import ugettext
 from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
+from domoweb.exceptions import RinorNotAvailable
 
 from httplib import BadStatusLine
 
@@ -70,7 +71,7 @@ def house(request):
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
-    except ResourceNotAvailableException:
+    except RinorNotAvailable:
         return redirect("error_resourcenotavailable_view")
     return go_to_page(
         request, 'house.html',
@@ -103,7 +104,7 @@ def house_edit(request, from_page):
         devices = DeviceExtendedPipe().get_list()
     except BadStatusLine:
         return redirect("error_badstatusline_view")
-    except ResourceNotAvailableException:
+    except RinorNotAvailable:
         return redirect("error_resourcenotavailable_view")
     return go_to_page(
         request, 'house.edit.html',
@@ -138,7 +139,7 @@ def area(request, area_id):
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
-    except ResourceNotAvailableException:
+    except RinorNotAvailable:
         return redirect("error_resourcenotavailable_view")
 
     page_title = _("View ") + area.name
@@ -173,7 +174,7 @@ def area_edit(request, area_id, from_page):
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
-    except ResourceNotAvailableException:
+    except RinorNotAvailable:
         return redirect("error_resourcenotavailable_view")
 
     page_title = _("Edit ") + area.name
@@ -210,7 +211,7 @@ def room(request, room_id):
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
-    except ResourceNotAvailableException:
+    except RinorNotAvailable:
         return redirect("error_resourcenotavailable_view")
 
     page_title = _("View ") + room.name
@@ -245,7 +246,7 @@ def room_edit(request, room_id, from_page):
 
     except BadStatusLine:
         return redirect("error_badstatusline_view")
-    except ResourceNotAvailableException:
+    except RinorNotAvailable:
         return redirect("error_resourcenotavailable_view")
 
     page_title = _("Edit ") + room.name
