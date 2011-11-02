@@ -57,7 +57,10 @@ class InfoPipe(RinorPipe):
         _data = self.get_info()
         if (_data):
             try:
-                _data.info['rinor_version'] = NormalizedVersion(_data.info.REST_API_release)
+                if ("REST_API_release" in _data.info):
+                    _data.info['rinor_version'] = NormalizedVersion(_data.info.REST_API_release)
+                else:    
+                    _data.info['rinor_version'] = NormalizedVersion('0.1')
                 _data.info['min_version'] = NormalizedVersion(settings.RINOR_MIN_API)
                 _data.info['rinor_version_superior'] = (_data.info['rinor_version'] > _data.info['min_version'])
                 _data.info['rinor_version_inferior'] = (_data.info['rinor_version'] < _data.info['min_version'])
@@ -66,7 +69,10 @@ class InfoPipe(RinorPipe):
                 _data.info['min_version'] = '?'
                 _data.info['rinor_version_superior'] = False
                 _data.info['rinor_version_inferior'] = False
-            _data.info['dmg_version'] = _data.info.Domogik_release
+            if ("Domogik_release" in _data.info):
+                _data.info['dmg_version'] = _data.info.Domogik_release
+            else:
+                _data.info['dmg_version'] = '0.1'                
             _data.info['dmg_min_version'] = settings.DMG_MIN_VERSION
             return _data
         else:

@@ -53,7 +53,7 @@
                 } else if (data.info.rinor_version_superior) {
                     $('#internal').attr('class', 'success_message icon32-status-false').html('Successfully connected, but your Domoweb version is too old for this new version of Domogik (' + data.info.dmg_version + '), please upgrade Domoweb on ' + data.info.Host + ' <div class="build">' + data.info.Sources_release + '</div>');                                
                 } else {
-                    $('#internal').attr('class', 'success_message icon32-status-true').html('Successfully connected Domogik v' + data.info.Domogik_release + ' on ' + data.info.Host + ' <div class="build">' + data.info.Sources_release + '</div>');
+                    $('#internal').attr('class', 'success_message icon32-status-true').html('Successfully connected Domogik v' + data.info.dmg_version + ' on ' + data.info.Host + ' <div class="build">' + data.info.Sources_release + '</div>');
                     $('a.next').unbind('click').removeClass('disabled');                
                 }
             })
