@@ -58,18 +58,19 @@ function set_release_number() {
         exit 1
     fi
     echo "setup.py : release number updated"
-    FILE2=$POST_PROCESSING/domoweb-$SHORT_RELEASE/src/domoweb/settings_base.py
-    sed -i "s/DOMOWEB_FULL_VERSION = .*/DOMOWEB_FULL_VERSION = '$FULL_RELEASE'/" $FILE2
+    FILE2=$POST_PROCESSING/domoweb-$SHORT_RELEASE/src/domoweb/settings_develop.py
+    FILE3=$POST_PROCESSING/domoweb-$SHORT_RELEASE/src/domoweb/settings_install.py
+    sed -i "s/DOMOWEB_FULL_VERSION = .*/DOMOWEB_FULL_VERSION = '$FULL_RELEASE'/" $FILE2 $FILE3
     if [ $? -ne 0 ] ; then
         echo "Error... exiting"
         exit 1
     fi
-    sed -i "s/DOMOWEB_VERSION = .*/DOMOWEB_VERSION = '$RELEASE'/" $FILE2
+    sed -i "s/DOMOWEB_VERSION = .*/DOMOWEB_VERSION = '$RELEASE'/" $FILE2 $FILE3
     if [ $? -ne 0 ] ; then
         echo "Error... exiting"
         exit 1
     fi
-    echo "setting_base.py : release number updated"
+    echo "settings: release number updated"
 }
 
 function create_final_pkg() {
