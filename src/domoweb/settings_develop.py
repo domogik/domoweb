@@ -38,6 +38,11 @@ from settings_base import *
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 print PROJECT_PATH
 
+### Get DomoWeb Version
+DOMOWEB_FULL_VERSION = commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev} ({latesttag}) - {date|isodate}' -b" % PROJECT_PATH)
+DOMOWEB_VERSION = commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev}' -b" % PROJECT_PATH)
+print DOMOWEB_FULL_VERSION
+
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or
     # "C:/www/django/templates".
