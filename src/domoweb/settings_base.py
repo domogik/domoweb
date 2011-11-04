@@ -43,21 +43,15 @@ from domoweb.tools.configloader import Loader
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-RINOR_MIN_API = '0.2'
-DMG_MIN_VERSION = '0.1.1-alpha1'
+RINOR_MIN_API = '0.1'
+RINOR_MAX_API = '0.2' #included
+DMG_MIN_VERSION = '0.1.0-alpha1'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
 
 MANAGERS = ADMINS
-
-### Get DomoWeb Version
-# Change to static number on package 
-DOMOWEB_FULL_VERSION = commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev} ({latesttag}) - {date|isodate}' -b" % PROJECT_PATH)
-DOMOWEB_VERSION = commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev}' -b" % PROJECT_PATH)
-
-print DOMOWEB_FULL_VERSION
 
 ### Find User home
 if os.path.isfile("/etc/default/domoweb"):

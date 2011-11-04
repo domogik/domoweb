@@ -93,4 +93,4 @@ extract
 force_install_mode
 set_release_number
 create_final_pkg
-#clean
+clean
