@@ -58,7 +58,7 @@ class Loader():
         Load the configuration for a part of the Domogik system
         @param plugin_name name of the plugin to load config from
         '''
-        self.main_conf_name = "domogik.cfg"
+        self.main_conf_name = "domoweb.cfg"
         self.valid_files = None
         self.plugin_name = plugin_name
 
@@ -107,7 +107,7 @@ class Loader():
             files = self.__class__.config.read([custom_path, 
                 self.config_file])
             self.__class__.valid_files = files
-        result = self.__class__.config.items('domogik')
+        result = self.__class__.config.items('domoweb')
         main_result = {}
         for k, v in result:
             main_result[k] = v
