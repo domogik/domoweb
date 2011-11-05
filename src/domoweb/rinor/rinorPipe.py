@@ -1,3 +1,4 @@
+import urllib
 import urllib2
 from django.core.cache import cache
 from django.utils import simplejson
@@ -65,6 +66,7 @@ def _get_json(path):
     try:
         ip = Parameters.objects.get(key='rinor_ip')
         port = Parameters.objects.get(key='rinor_port')
+        path = urllib.quote(path.encode('utf8'))
         uri = "http://%s:%s%s" % (ip.value, port.value, path)
     except Parameters.DoesNotExist:
         raise RinorNotConfigured
