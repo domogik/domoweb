@@ -4,7 +4,7 @@ function getPluginsList() {
     rinor.get(['api', 'plugin'])
         .success(function(data, status, xhr){
             $.each(data.objects, function() {
-                if (this.list.length > 0) { // If a least 1 plugin is enabled
+                if (this.list && this.list.length > 0) { // If a least 1 plugin is enabled
                     var host = this.host;
                     $.each(this.list, function() {
                         var technology = this.technology.replace(' ', '');
