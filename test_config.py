@@ -161,7 +161,7 @@ def get_django_url():
     config = ConfigParser.ConfigParser()
     config.read("%s/.domogik/domoweb.cfg" % user_home)
     django = dict(config.items('django'))
-    return "http://%s:%s/" % (django['django_server_ip'], django['django_server_port'])
+    return "http://127.0.0.1:%s/" % (django['django_server_port'])
      
 try:
     am_i_root()
