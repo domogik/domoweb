@@ -79,7 +79,7 @@
             <ul>
                 <li><a href="{% url view_index_view %}" class="{{ nav1_show_class }}" title="{% trans "View, Control your house" %}">{% trans "Visualization" %}</a></li>
                 <li><a href="{% url admin_index_view %}" class="{% if not is_user_connected %}admin_required{% endif %}" title="{% trans "Configure, Manage" %}">{% trans "Administration" %}</a></li>
-				<li class='help'><a href="http://wiki.domogik.org/tiki-index.php?page=EndUserDocumentation&bl=y" title="{% trans "External Wiki page" %}" target='_blank'>{% trans "Help" %}</a></li>
+				<li class='help'><a href="http://wiki.domogik.org/End_user_documentation" title="{% trans "External Wiki page" %}" target='_blank'>{% trans "Help" %}</a></li>
                 <li class="login">
                     {% if not is_user_connected %}
                         <a href="{% url login_view %}" title="{% trans "Identify yourself" %}">{% trans "Log in" %}</a>
