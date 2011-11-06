@@ -27,6 +27,7 @@
 {% block title %}{% trans page_title %}{% endblock %}
 
 {% block content %}
+    <p>{% trans "Please enter the your RINOR server parameters. (This should be the local address from the Domoweb service, not the remote address from the Browser)" %}</p>
     <form action="{% url config_welcome_view %}" method="post">{% csrf_token %}
     {{ form.non_field_errors }}
     {% for field in form %}
