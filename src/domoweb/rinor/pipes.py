@@ -239,23 +239,23 @@ class AssociationPipe(RinorPipe):
     def get_list(self, type, id=None, deep=False):
         if deep:
             if (type=='house'):
-                data = self._get_data("%s/by-house/" % self.listdeep_path)
+                _data = self._get_data("%s/by-house/" % self.listdeep_path)
             else:
-                data = self._get_data("%s/by-%s/%s/" % (self.listdeep_path, type, id))               
+                _data = self._get_data("%s/by-%s/%s/" % (self.listdeep_path, type, id))               
         else:
             if (type=='house'):
-                data = self._get_data("%s/by-house/" % self.list_path)
+                _data = self._get_data("%s/by-house/" % self.list_path)
             else:
-                data = self._get_data("%s/by-%s/%s/" % (self.list_path, type, id))               
-        if data.status == "ERROR":
-            raise RinorError(data.code, data.description)
-        return data[self.index]
+                _data = self._get_data("%s/by-%s/%s/" % (self.list_path, type, id))               
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)
+        return _data[self.index]
 
     def post_list(self, feature_id, page_type, page_id):
-        data = self._post_data("%s/feature_id/%s/association_type/%s/association_id/%s/" % (self.add_path, feature_id, page_type, page_id))
-        if data.status == "ERROR":
-            raise RinorError(data.code, data.description)
-        return data[self.index][0]
+        _data = self._post_data("%s/feature_id/%s/association_type/%s/association_id/%s/" % (self.add_path, feature_id, page_type, page_id))
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, data.description)
+        return _data[self.index][0]
 
     def delete_detail(self, id):
         _data = self._delete_data("%s/id/%s/" % (self.delete_path, id))
@@ -408,7 +408,7 @@ class StatePipe(RinorPipe):
         _path = "%s/%s/%s/last/%s/" % (self.list_path, device, key, last)
         _data = self._get_data(_path)
         if _data.status == "ERROR":
-            raise RinorError(data.code, data.description)        
+            raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:
             return _data[self.index][0]
         else:
@@ -418,7 +418,7 @@ class StatePipe(RinorPipe):
         _path = "%s/%s/%s/from/%s/to/%s/interval/%s/selector/%s/" % (self.list_path, device, key, fromTime, toTime, interval, selector)
         _data = self._get_data(_path)
         if _data.status == "ERROR":
-            raise RinorError(data.code, data.description)        
+            raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:
             return _data[self.index][0]
         else:
@@ -437,7 +437,7 @@ class UserPipe(RinorPipe):
         _path = "/account/auth/%s/%s/" % (login, password)
         _data = self._get_data(_path)
         if _data.status == "ERROR":
-            raise RinorError(data.code, data.description)        
+            raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:
             return _data[self.index][0]
         else:

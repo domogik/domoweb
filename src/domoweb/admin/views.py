@@ -90,11 +90,6 @@ def _auth(request, next):
     user_password = request.POST.get("password",'')
     try:
         account = UserPipe().get_auth(user_login, user_password)
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
-    if account:
         request.session['user'] = {
             'login': account.login,
             'is_admin': (account.is_admin == "True"),
@@ -106,7 +101,12 @@ def _auth(request, next):
             return HttpResponseRedirect(next)
         else:
             return HttpResponseRedirect('/view/')
-    else:
+
+    except BadStatusLine:
+        return redirect("error_badstatusline_view")
+    except RinorNotAvailable:
+        return redirect("error_resourcenotavailable_view")
+    except RinorError:
         # User not found, ask again to log in
         error_msg = ugettext(u"Sorry unable to log in. Please check login name / password and try again.")
         return HttpResponseRedirect('/admin/login/?status=error&msg=%s' % error_msg)
