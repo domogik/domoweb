@@ -33,6 +33,7 @@ Implements
 @license: GPL(v3)
 @organization: Domogik
 """
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
@@ -43,6 +44,7 @@ from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.exceptions import RinorNotAvailable
+import pyinfo
 
 from httplib import BadStatusLine
 

@@ -76,3 +76,12 @@ table.tablesorter thead tr .headerSortDown {
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
 background-color: #8dbdd8;
 }
+
+
+table.info { border-collapse: collapse; width: 100%; }
+table.info td, table.info th { border: solid 1px black; }
+table.info th { font-size: large; }
+table.info .e { background-color: #ccccff; font-weight: bold; padding-left: .25em; padding-right: .25em; white-space: nowrap; width: 20%; }
+table.info .h { background-color: #9999cc; font-weight: bold; }
+table.info .v { background-color: #cccccc; padding-left: .25em; }
+table.info .version { font-size: 150%; padding: .5em; text-align: center; }
