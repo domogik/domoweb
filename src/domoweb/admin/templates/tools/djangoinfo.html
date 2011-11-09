@@ -1,0 +1,130 @@
+{% extends "layouts/base_admin.html" %}
+{% comment %}
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Cédric Trévisan <cedric@domogik.org>
+{% endcomment %}
+
+
+{% load i18n %}
+{% load text %}
+
+{% block css %}
+    <link href="/design/common/css/page-admin-tools.css" rel="stylesheet" type="text/css" />
+    <link href="/design/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block js_include %}
+{% endblock %}
+{% block js_script %}
+
+    $(function(){
+        // Accordion
+        $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:3});
+    });
+{% endblock %}
+{% block title %}{% trans page_title %}{% endblock %}
+
+{% block banner %}
+    <h1 class="ident"><span class="title">{% trans "Django Informations" %}</span></h1>
+{% endblock %}
+
+{% block right %}
+  <section class="subsection">
+      <table class="info">
+    <thead>
+      <tr>
+          <th class="h" colspan="2">Django</th>
+      </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td class='e'>Django Version:</td>
+      <td class="code v">{{ django_version_info }}</td>
+    </tr>
+    <tr>
+      <td class='e'>Python Executable:</td>
+      <td class="code v">{{ sys_executable|escape }}</td>
+    </tr>
+    <tr>
+      <td class='e'>Python Version:</td>
+      <td class="code v">{{ sys_version_info }}</td>
+    </tr>
+    <tr>
+      <td class='e'>Python Path:</td>
+      <td class="code v">{{ sys_path|pprint }}</td>
+    </tr>
+    </tbody>
+  </table>
+<br />
+  <table class="info">
+    <thead>
+      <tr>
+          <th class="h" colspan="2">Settings</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for var in settings.items|dictsort:"0" %}
+        <tr>
+            <td class='e'>{{ var.0 }}</td>
+            <td class="code v">{{ var.1|pprint }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+<br />
+{% if request %}
+  {% if request.COOKIES %}
+    <table class="info">
+      <thead>
+        <tr>
+          <th class="h" colspan="2">COOKIES</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for var in request.COOKIES.items %}
+          <tr>
+            <td class='e'>{{ var.0 }}</td>
+            <td class="code v">{{ var.1|pprint }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No cookie data</p>
+  {% endif %}
+<br />
+  <table class="info">
+    <thead>
+      <tr>
+          <th class="h" colspan="2">META</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for var in request.META.items|dictsort:"0" %}
+        <tr>
+            <td class='e'>{{ var.0 }}</td>
+            <td class="code v">{{ var.1|pprint }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>Request data not supplied</p>
+{% endif %}
+
+  </section>
+{% endblock %}

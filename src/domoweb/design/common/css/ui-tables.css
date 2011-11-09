@@ -85,3 +85,8 @@ table.info .e { background-color: #ccccff; font-weight: bold; padding-left: .25e
 table.info .h { background-color: #9999cc; font-weight: bold; }
 table.info .v { background-color: #cccccc; padding-left: .25em; }
 table.info .version { font-size: 150%; padding: .5em; text-align: center; }
+table.info td.code pre {
+    overflow: hidden;
+    font-size: 100%;
+    font-family: monospace;
+}
