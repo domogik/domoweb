@@ -105,6 +105,8 @@
                 <ul>
                     <li><a href="{% url admin_tools_helpers_view %}" class='icon32-menu-helpers {{ nav2_tools_helpers }}'>{% trans "Helpers" %}</a></li>
                     <li><a href="{% url admin_tools_rinor_view %}" class='icon32-menu-rinor {{ nav2_tools_rinor }}'>{% trans "RINOR" %}</a></li>
+                    <li><a href="{% url admin_tools_pyinfo_view %}" class='icon32-menu-pyinfo {{ nav2_tools_pyinfo }}'>{% trans "Python" %}</a></li>
+                    <li><a href="{% url admin_tools_djangoinfo_view %}" class='icon32-menu-djangoinfo {{ nav2_tools_djangoinfo }}'>{% trans "Django" %}</a></li>
                 </ul>
                 {% if request.session.normal_mode %}
                 <div class="subnav2"><a href="#">{% trans "Packages" %}</a></div>
