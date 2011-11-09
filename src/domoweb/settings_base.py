@@ -43,9 +43,9 @@ from domoweb.tools.configloader import Loader
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-RINOR_MIN_API = '0.1'
+RINOR_MIN_API = '0.2'
 RINOR_MAX_API = '0.2' #included
-DMG_MIN_VERSION = '0.1.0-alpha1'
+DMG_MIN_VERSION = '0.2.0-alpha1'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
