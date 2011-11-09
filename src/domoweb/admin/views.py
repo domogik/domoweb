@@ -383,6 +383,84 @@ def admin_tools_rinor(request):
 
 @rinor_isconfigured
 @admin_required
+def admin_tools_pyinfo(request):
+    """
+    Method called when the admin Python info page is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+
+    page_title = _("Python informations")
+    page_messages = []
+    
+    return go_to_page(
+        request, 'tools/pyinfo.html',
+        page_title,
+        page_messages,
+        nav1_admin = "selected",
+        nav2_tools_pyinfo = "selected",
+        pyinfo=pyinfo.foo.fullText()
+    )
+    
+HIDDEN_SETTINGS = re.compile('SECRET|PASSWORD|PROFANITIES_LIST|SIGNATURE')
+CLEANSED_SUBSTITUTE = u'********************'
+
+def cleanse_setting(key, value):
+    """Cleanse an individual setting key/value of sensitive content.
+
+    If the value is a dictionary, recursively cleanse the keys in
+    that dictionary.
+    """
+    try:
+        if HIDDEN_SETTINGS.search(key):
+            cleansed = CLEANSED_SUBSTITUTE
+        else:
+            if isinstance(value, dict):
+                cleansed = dict((k, cleanse_setting(k, v)) for k,v in value.items())
+            else:
+                cleansed = value
+    except TypeError:
+        # If the key isn't regex-able, just return as-is.
+        cleansed = value
+    return cleansed
+
+def get_safe_settings():
+    "Returns a dictionary of the settings module, with sensitive settings blurred out."
+    settings_dict = {}
+    for k in dir(settings):
+        if k.isupper():
+            settings_dict[k] = cleanse_setting(k, getattr(settings, k))
+    return settings_dict
+
+@rinor_isconfigured
+@admin_required
+def admin_tools_djangoinfo(request):
+    """
+    Method called when the admin Django Info page is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+    from django import get_version
+    import sys
+    
+    page_title = _("Django informations")
+    page_messages = []
+    
+    return go_to_page(
+        request, 'tools/djangoinfo.html',
+        page_title,
+        page_messages,
+        nav1_admin = "selected",
+        nav2_tools_djangoinfo = "selected",
+        settings=get_safe_settings(),
+        sys_executable=sys.executable,
+        sys_version_info='%d.%d.%d' % sys.version_info[0:3],
+        django_version_info=get_version(),
+        sys_path=sys.path,
+    )
+
+@rinor_isconfigured
+@admin_required
 def admin_packages_repositories(request):
     """
     Method called when the admin repositories page is accessed
