@@ -34,10 +34,16 @@ Implements
 
 from tastypie.resources import Resource
 from tastypie.bundle import Bundle
+from django.core.exceptions import ObjectDoesNotExist
 from tastypie.exceptions import NotFound, ImmediateHttpResponse
 from tastypie.http import HttpBadRequest
 from tastypie.utils import dict_strip_unicode_keys
 from domoweb.exceptions import RinorError
+from django.http import HttpResponse
+
+# Missing from tastypie 0.9.9
+class HttpNotFound(HttpResponse):
+    status_code = 404
 
 class RinorResource(Resource):
     
@@ -60,11 +66,11 @@ class RinorResource(Resource):
         # inner get of object list... this is where you'll need to
         # fetch the data from what ever data source
         try:
-            data = self._meta.rinor_pipe.get_list()
+            _data = self._meta.rinor_pipe.get_list()
         except RinorError, e:
             raise ImmediateHttpResponse(response=HttpBadRequest(e.reason))
         else:
-            return data
+            return _data
 
     def get_object_pk(self, request, pk):
         # inner get of object list... this is where you'll need to
@@ -105,6 +111,13 @@ class RinorResource(Resource):
     def delete_detail(self, request, **kwargs):
         deleted_bundle = self.obj_delete(request=request, **self.remove_api_resource_names(kwargs))
         return self.create_response(request, deleted_bundle)
+
+    def get_detail(self, request, **kwargs):
+        try:
+            _obj = self.obj_get(request=request, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return HttpNotFound()
+        return self.create_response(request, _obj)
 
     def obj_get_list(self, request = None, **kwargs):
         # outer get of object list... this calls get_object_list and

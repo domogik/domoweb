@@ -246,7 +246,10 @@ class PluginConfigResource(RinorResource):
         return self._meta.rinor_pipe.get_list(kwargs['hostname'], kwargs['name'])
 
     def obj_get(self, request, **kwargs):
-        return self._meta.rinor_pipe.get_detail(kwargs['hostname'], kwargs['name'], kwargs['key'])
+        _data = self._meta.rinor_pipe.get_detail(kwargs['hostname'], kwargs['name'], kwargs['key'])
+        if not(_data):
+            raise ObjectDoesNotExist()
+        return _data
 
     def obj_delete_list(self, request=None, **kwargs):
         return self._meta.rinor_pipe.delete_list(kwargs['hostname'], kwargs['name'])    

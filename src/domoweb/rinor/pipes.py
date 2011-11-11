@@ -534,14 +534,15 @@ class PluginConfigPipe(RinorPipe):
         if len(_data[self.index]) > 0:
             return _data[self.index]
         else:
-            return None
+            return []
     
     def get_detail(self, hostname, name, key):
         _data = None
         _configs = self.get_list(hostname, name)
-        for _config in _configs:
-            if _config.key == key:
-                _data = _config
+        if _configs:
+            for _config in _configs:
+                if _config.key == key:
+                    _data = _config
         return _data
 
     def delete_list(self, hostname, name):

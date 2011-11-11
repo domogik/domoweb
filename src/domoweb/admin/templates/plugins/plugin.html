@@ -82,31 +82,30 @@ $(function(){
             var idefault = item['default'];
             var itype = item.type;
             var iprefix = item.prefix;
+            var td = $("tr#" + ikey +" .value");
 
             rinor.get(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.name }}', ikey])
                 .success(function(data, status, xhr){
-                    var td = $("tr#" + ikey +" .value");
                     if (itype == 'boolean') {
-                        if (data) { // If already configured
-                            if (data.value  == "True") {
-                                $("input", td).attr('checked', true);
-                            }
-                        } else {
-                            td.setNotConfigured();
+                        if (data.value  == "True") {
+                            $("input", td).attr('checked', true);
                         }
                     } else {    
-                        if (data) { // If already configured
-                            $("input", td).val(data.value);
-                        } else { // If not configured
-                            if (idefault == "None")
-                                idefault = null;
-                            td.setNotConfigured(idefault);
-                        }
+                        $("input", td).val(data.value);
                     }
                 })
                 .error(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);
+                    if (jqXHR.status == 404) { // If not configured
+                        if (itype == 'boolean') {
+                            td.setNotConfigured();
+                        } else {
+                            if (idefault == "None")
+                                idefault = null;
+                            td.setNotConfigured(idefault);
+                        }
+                    }
                 });
         },
         
