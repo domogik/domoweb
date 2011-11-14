@@ -185,7 +185,7 @@ $(function(){
 
     /* init table for simple configuration items */
     $('#simple_configuration_items').createConfigurationTable('configuration_items');
-
+    
     /* Get the list of configuration items */
     rinor.get(['api', 'plugindetail', '{{ plugin.host }}', '{{ plugin.name }}'])
         .success(function(data, status, xhr){
@@ -213,10 +213,9 @@ $(function(){
                     // get number of registered interfaces
                     rinor.get(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.name }}', 'nb-int'])
                         .success(function(data, status, xhr){
-                            if (data)  // If already configured
-                                nbInterface = data.value;
-                            else
-                                nbInterface = 1;
+                            // If already configured
+                            nbInterface = data.value;
+
                             // display interfaces
                             for(i=1;i<=nbInterface;i++) {
                                 $('#grouped_configuration_items').createConfigurationTable('configuration_items_'+i);
@@ -238,6 +237,25 @@ $(function(){
                         .error(function(jqXHR, status, error){
                             if (jqXHR.status == 400)
                                 $.notification('error', jqXHR.responseText);
+                            if (jqXHR.status == 404) {
+                                nbInterface = 1;
+                                // display interfaces
+                                for(i=1;i<=nbInterface;i++) {
+                                    $('#grouped_configuration_items').createConfigurationTable('configuration_items_'+i);
+                                    var options = item.elements.sort(sortOptions);
+                                    $.each(options, function(group_index, group_item) {
+                                        if (i == 1)
+                                            group_item.prefix = group_item.key;
+                                        group_item.key = group_item.prefix + "-" + i;
+                                        group_item.nbInterface = nbInterface
+                                        pluginCfg[nbPluginCfg] = clone(group_item);
+                                        nbPluginCfg++;
+                                        $('#configuration_items_' + i).createItemContent(group_item); 
+                                        $('#configuration_items_' + i).configureItemContent(group_item); 
+                                    });
+                                }
+                                delInterfaceButton.hide();
+                            }
                         });
 
                     addInterfaceButton.click( function() {
