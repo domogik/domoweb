@@ -546,7 +546,7 @@ class PluginConfigPipe(RinorPipe):
         return _data
 
     def delete_list(self, hostname, name):
-        _data = self._delete_data("%s/by-name/%s/%s/" % (self.delete_path, hostname, name))
+        _data = self._delete_data("%s/%s/%s/" % (self.delete_path, hostname, name))
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -555,7 +555,7 @@ class PluginConfigPipe(RinorPipe):
             return None
 
     def delete_detail(self, hostname, name, key):
-        _data = self._delete_data("%s/by-name/%s/%s/by-key/%s/" % (self.delete_path, hostname, name, key))
+        _data = self._delete_data("%s/%s/%s/by-key/%s/" % (self.delete_path, hostname, name, key))
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:

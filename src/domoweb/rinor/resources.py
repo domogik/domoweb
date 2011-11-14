@@ -230,7 +230,7 @@ class PluginConfigResource(RinorResource):
     class Meta:
         resource_name = 'pluginconfig'
         list_allowed_methods = ['get', 'delete']
-        detail_allowed_methods = ['get', 'delete']
+        detail_allowed_methods = ['get', 'delete', 'put']
         authentication = Authentication()
         authorization = Authorization()
         rinor_pipe = PluginConfigPipe()

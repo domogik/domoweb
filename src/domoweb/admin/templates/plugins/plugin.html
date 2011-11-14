@@ -297,7 +297,8 @@ $(function(){
                     delInterfaceButton.click( function() {
                         // delete config data
                         $('tr', '#configuration_items_' + nbInterface).each(function(index, item) {
-                            deleteConfigKey('{{ plugin.host }}', '{{ plugin.name }}', item.id);
+                            if (item.id)
+                                deleteConfigKey('{{ plugin.host }}', '{{ plugin.name }}', item.id);
                         });
                         // delete elements from pluginCfg
                         var k = 0;
