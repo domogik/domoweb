@@ -206,12 +206,14 @@ class DevicePipe(RinorPipe):
         _data = self._post_data("%s/name/%s/address/%s/type_id/%s/usage_id/%s/description/%s/reference/%s/" % (self.add_path, name, address, type_id, usage_id, description, reference))
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
+        FeaturePipe.clear_cache();
         return _data[self.index][0]
 
     def put_detail(self, id, name, address, usage_id, description, reference):
         _data = self._put_data("%s/id/%s/name/%s/address/%s/usage_id/%s/description/%s/reference/%s/" % (self.update_path, id, name, address, usage_id, description, reference))
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
+        FeaturePipe.clear_cache();
         return _data[self.index][0]
         
     def delete_detail(self, id):

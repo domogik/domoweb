@@ -225,7 +225,6 @@ $(function(){
         },
 
         _init: function() {
-            console.log(this);
             var self = this, o = this.options;
             var woptions = get_widgets_options(o.widgetid)
             if (woptions) {

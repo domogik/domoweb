@@ -25,19 +25,19 @@ class RinorPipe():
  
     def _post_data(self, path):
         # Invalidate cache
-        cache.delete(self.list_path)
+        self.clear_cache()
         print "GET %s" % path
         return _get_json(path)
 
     def _put_data(self, path):
         # Invalidate cache
-        cache.delete(self.list_path)
+        self.clear_cache()
         print "GET %s" % path
         return _get_json(path)
 
     def _delete_data(self, path):
         # Invalidate cache
-        cache.delete(self.list_path)
+        self.clear_cache()
         print "GET %s" % path
         return _get_json(path)
         
@@ -61,7 +61,10 @@ class RinorPipe():
             if (obj.id == int(pk)):
                 return obj
         raise RinorError(404, "PK Not found")
-        
+    
+    def clear_cache(self):
+        cache.delete(self.list_path)
+
 def _get_json(path):
     try:
         ip = Parameters.objects.get(key='rinor_ip')
