@@ -67,6 +67,7 @@ class AssociationResource(RinorResource):
 
     def base_urls(self):
         return [
+            url(r"^(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
             url(r"^(?P<resource_name>%s)/(?P<type>(house))%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), {'deep': False, 'pk': None}, name="api_dispatch_list"),
             url(r"^(?P<resource_name>%s)/(?P<type>(house))/deep%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), {'deep': True, 'pk': None}, name="api_dispatch_list"),
             url(r"^(?P<resource_name>%s)/(?P<type>(area|room))/(?P<pk>\d*)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), {'deep': False}, name="api_dispatch_list"),
@@ -162,14 +163,10 @@ class UiConfigResource(RinorResource):
     def base_urls(self):
         return [
             url(r"^(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/(?P<pk>\d*)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
 
     def obj_create(self, bundle, request=None, **kwargs):
         return self._meta.rinor_pipe.post_list(bundle["name"], bundle["reference"], bundle["key"], bundle["value"])
-
-    def obj_delete(self, request=None, **kwargs):
-        return self._meta.rinor_pipe.delete_reference(kwargs["pk"])
 
 class PluginResource(RinorResource):
     # fields must map to the attributes in the Row class

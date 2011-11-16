@@ -51,7 +51,7 @@ $(function(){
         if (helper == 'clone') {
             item = $(ui.helper).clone();
             item.removeAttr('style');
-            $(this).append(event);
+            $(this).append(item);
             item.widget_shape({
                 widgetid: ui.draggable.data('widgetid'),
                 featureid: ui.draggable.data('featureid'),
@@ -69,12 +69,13 @@ $(function(){
                 },
                 deletable: true
             });            
+            $.addAssociation(item, $(this));            
         } else {
             item = ui.draggable.detach();
             item.removeAttr('style');
             $(this).append(item);
+            $.moveAssociation(item, $(this));            
         }
-        $.addAssociation(item, $(this));            
         return false;
     }
     
@@ -117,23 +118,6 @@ $(function(){
                                     if (jqXHR.status == 400)
                                         $.notification('error', jqXHR.responseText);
                                 });
-                            
-/*                            rinor.get(['base', 'feature_association', 'del', 'id', association])
-                                .success(function(data, status, xhr){
-                                    rinor.get(['base', 'ui_config', 'del', 'by-reference', 'association', association])
-                                        .success(function(data, status, xhr){
-                                            self.remove();                    
-                                        })
-                                        .error(function(jqXHR, status, error){
-                                            if (jqXHR.status == 400)
-                                                $.notification('error', jqXHR.responseText);
-                                        });
-                                })
-                                .error(function(jqXHR, status, error){
-                                    if (jqXHR.status == 400)
-                                        $.notification('error', jqXHR.responseText);
-                                });
-*/
                         }
                 });
         }
@@ -262,6 +246,18 @@ $(function(){
             rinor.post(['api', 'association'], {"page_type":page_type, "feature_id":feature_id, "page_id":page_id, "widget_id":widget_id, "place_id":place_id})
                 .success(function(data, status, xhr){
                     model.data('associationid', data.id);
+                })
+                .error(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', jqXHR.responseText);
+                });
+        },
+
+        moveAssociation: function(model, zone) {
+            var place_id = zone.data('place');
+            var association_id = model.data('associationid');
+            rinor.post(['api', 'uiconfig'], {"name":"association", "reference":association_id, "key":"place", "value":place_id})
+                .success(function(data, status, xhr){
                 })
                 .error(function(jqXHR, status, error){
                     if (jqXHR.status == 400)

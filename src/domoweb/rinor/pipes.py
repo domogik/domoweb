@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.cache import cache
 from domoweb.rinor.rinorPipe import RinorPipe
 from domoweb.exceptions import RinorError
 from distutils2.version import *
@@ -14,7 +15,8 @@ class EventPipe(RinorPipe):
     new_path = '/events/request/new'
     get_path = '/events/request/get'
     index = 'event'
-    
+    paths = []
+
     def get_event(self):
         # Get all the devices ids
         _devices_list = DevicePipe().get_dict().keys()
@@ -34,6 +36,7 @@ class InfoPipe(RinorPipe):
     cache_expiry = 0
     list_path = "/"
     index = 'rest'
+    paths = []
 
     def get_info(self):
         _data = self._get_data("%s" % (self.list_path))               
@@ -83,6 +86,7 @@ class HelperPipe(RinorPipe):
     cache_expiry = 0
     list_path = "/helper"
     index = 'helper'
+    paths = []
 
     def get_info(self, command):
         _data = self._get_data("%s/%s/" % (self.list_path, command))               
@@ -97,6 +101,7 @@ class RoomPipe(RinorPipe):
     update_path = "/base/room/update"
     delete_path = "/base/room/del"
     index = 'room'
+    paths = []
 
     def post_list(self, name, description):
         _data = self._post_data("%s/name/%s/description/%s/" % (self.add_path, name, description))
@@ -129,6 +134,7 @@ class AreaPipe(RinorPipe):
     update_path = "/base/area/update"
     delete_path = "/base/area/del"
     index = 'area'
+    paths = []
 
     def post_list(self, name, description):
         _data = self._post_data("%s/name/%s/description/%s/" % (self.add_path, name, description))
@@ -155,18 +161,22 @@ class DeviceTypePipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/device_type/list"
     index = 'device_type'
+    paths = []
 
 class DeviceUsagePipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/device_usage/list"
     index = 'device_usage'
-    
+    paths = []
+
 class UiConfigPipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/ui_config/list"
     set_path = "/base/ui_config/set"
     delete_path = "/base/ui_config/del"
-    index = 'ui_config'    
+    index = 'ui_config'
+    paths = []
+
     def get_filtered(self, **kwargs):
         _list = self.get_list()
         return select_sublist(_list, **kwargs)
@@ -201,6 +211,7 @@ class DevicePipe(RinorPipe):
     update_path = "/base/device/update"
     delete_path = "/base/device/del"
     index = 'device'
+    paths = []
 
     def post_list(self, name, address, type_id, usage_id, description, reference):
         _data = self._post_data("%s/name/%s/address/%s/type_id/%s/usage_id/%s/description/%s/reference/%s/" % (self.add_path, name, address, type_id, usage_id, description, reference))
@@ -229,6 +240,7 @@ class FeaturePipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/feature/list"
     index = 'feature'
+    paths = []
 
 class AssociationPipe(RinorPipe):
     cache_expiry = 3600
@@ -237,6 +249,7 @@ class AssociationPipe(RinorPipe):
     add_path = "/base/feature_association/add"
     delete_path = "/base/feature_association/del"
     index = 'feature_association'
+    paths = []
 
     def get_list(self, type, id=None, deep=False):
         if deep:
@@ -285,10 +298,11 @@ class AssociationPipe(RinorPipe):
             return _data[self.index][0]
         else:
             return None
-        
+
 class AssociationExtendedPipe(RinorPipe):
     cache_expiry = 3600
-    
+    paths = []
+
     def get_list(self, type, id=None, deep=False):
         _associations = AssociationPipe().get_list(type, id=id, deep=deep)
         _uiconfigs = UiConfigPipe().get_filtered(name='association')
@@ -315,6 +329,8 @@ class AssociationExtendedPipe(RinorPipe):
     
 class AreaExtendedPipe(RinorPipe):
     cache_expiry = 3600
+    paths = []
+
     def get_list(self):
         _areas = AreaPipe().get_list()
         _uiconfigs = UiConfigPipe().get_filtered(name='area')
@@ -343,6 +359,8 @@ class AreaExtendedPipe(RinorPipe):
     
 class RoomExtendedPipe(RinorPipe):
     cache_expiry = 3600
+    paths = []
+
     def get_list(self):
         _rooms = RoomPipe().get_list()
         _uiconfigs = UiConfigPipe().get_filtered(name='room')
@@ -373,6 +391,8 @@ class RoomExtendedPipe(RinorPipe):
     
 class DeviceExtendedPipe(RinorPipe):
     cache_expiry = 3600
+    paths = []
+
     def get_list(self):
         _devices = DevicePipe().get_list()
         _features = FeaturePipe().get_list()
@@ -405,7 +425,8 @@ class StatePipe(RinorPipe):
     cache_expiry = 0
     list_path = "/stats"
     index = 'stats'
-    
+    paths = []
+
     def get_last(self, last, device, key):
         _path = "%s/%s/%s/last/%s/" % (self.list_path, device, key, last)
         _data = self._get_data(_path)
@@ -434,6 +455,7 @@ class UserPipe(RinorPipe):
     delete_path = "/account/user/del"
     password_path = "/account/user/password"
     index = 'account'
+    paths = []
 
     def get_auth(self, login, password):
         _path = "/account/auth/%s/%s/" % (login, password)
@@ -479,6 +501,7 @@ class PersonPipe(RinorPipe):
     update_path = "/account/person/update"
     delete_path = "/account/person/del"
     index = 'person'
+    paths = []
 
     def post_list(self, firstname, lastname):
         _data = self._post_data("%s/first_name/%s/last_name/%s/" % (self.add_path, firstname, lastname))
@@ -506,6 +529,7 @@ class PluginPipe(RinorPipe):
     list_path = "/plugin/list"
     detail_path = "/plugin/detail"
     index = 'plugin'
+    paths = []
 
     def get_detail(self, hostname, name):
         _data = self._get_data("%s/%s/%s/" % (self.detail_path, hostname, name))
@@ -528,6 +552,7 @@ class PluginConfigPipe(RinorPipe):
     delete_path = "/plugin/config/del"
     set_path = "/plugin/config/set"
     index = 'config'
+    paths = []
 
     def get_list(self, hostname, name):
         _data = self._get_data("%s/by-name/%s/%s/" % (self.list_path, hostname, name))
@@ -578,6 +603,7 @@ class RepositoryPipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/package/list-repo"
     index = 'repository'
+    paths = []
 
 class PackagePipe(RinorPipe):
     cache_expiry = 3600
@@ -586,7 +612,8 @@ class PackagePipe(RinorPipe):
     installed_path = "/package/list-installed"
     install_path = "/package/install"
     index = 'package'
-    
+    paths = []
+
     def refresh_list(self):
         _data = self._put_data("%s/" % (self.refresh_path))
         if _data.status == "ERROR":
@@ -619,7 +646,8 @@ class PackagePipe(RinorPipe):
 
 class PackageExtendedPipe(RinorPipe):
     cache_expiry = 3600
-    
+    paths = []
+
     def get_list_installed(self, hostname, type):
         _packages = {}
         _enabled = {}

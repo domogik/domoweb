@@ -9,7 +9,8 @@ class RinorPipe():
     cache_expiry = 3600
     list_path = None
     index = None
-
+    paths = None    
+    
     def _get_data(self, path):
         print "GET %s" % path
         # Try the cache first
@@ -20,25 +21,29 @@ class RinorPipe():
             print "Rinor Resource Not found in cache. Downloading..."
             data = _get_json(path)
             if (self.cache_expiry and self.cache_expiry > 0):
-                cache.set(path, data, self.cache_expiry)
+                try:
+                    self.paths.index(path)
+                except ValueError:
+                    self.paths.append(path)
+                    cache.set(path, data, self.cache_expiry)
         return data
  
     def _post_data(self, path):
+        print "GET %s" % path
         # Invalidate cache
         self.clear_cache()
-        print "GET %s" % path
         return _get_json(path)
 
     def _put_data(self, path):
+        print "GET %s" % path
         # Invalidate cache
         self.clear_cache()
-        print "GET %s" % path
         return _get_json(path)
 
     def _delete_data(self, path):
+        print "GET %s" % path
         # Invalidate cache
         self.clear_cache()
-        print "GET %s" % path
         return _get_json(path)
         
     def get_list(self):
@@ -63,7 +68,11 @@ class RinorPipe():
         raise RinorError(404, "PK Not found")
     
     def clear_cache(self):
-        cache.delete(self.list_path)
+        print "--"
+        for path in self.paths:
+            print "Clear %s" % path
+            cache.delete(path)
+        print "--"
 
 def _get_json(path):
     try:
