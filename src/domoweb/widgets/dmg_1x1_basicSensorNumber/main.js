@@ -237,7 +237,7 @@
                     var d = null;
                     switch(type) {
                         case '24h':
-                            d = data.values; //self.get_graph_24h(data[0].values);
+                            d = self.get_graph_24h(data.values);
                             break;
                         case '7d':
                             d = self.get_graph_7d(data.values);
@@ -249,6 +249,7 @@
                             d = self.get_graph_year(data.values);
                             break;
                     }
+
                     self.graph.yAxis[0].addPlotLine({
                         value: data.global_values.avg,
                         color: '#660099',
