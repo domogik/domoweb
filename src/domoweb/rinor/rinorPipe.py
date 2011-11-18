@@ -67,6 +67,7 @@ class RinorPipe():
                 return obj
         raise RinorError(404, "PK Not found")
     
+    @classmethod
     def clear_cache(self):
         for path in self.paths:
             print "Clear %s" % path
