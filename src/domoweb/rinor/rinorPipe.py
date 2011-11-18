@@ -11,40 +11,52 @@ class RinorPipe():
     index = None
     paths = None    
     
-    def _get_data(self, path):
-        print "GET %s" % path
+    def _clean_url(self, path, data=None):
+        if (data):
+            _data = '/'.join([urllib.quote(d, '') for d in data])
+            _path = "%s/%s/" % (path, _data)
+        else:
+            _path = "%s/" % path
+        return _path
+        
+    def _get_data(self, path, data=None):
+        _path = self._clean_url(path, data)
+        print "GET %s" % _path
         # Try the cache first
-        data = cache.get(path)
-        if data:
+        _data = cache.get(_path)
+        if _data:
             print "Rinor Resource Found in cache."
         else:
             print "Rinor Resource Not found in cache. Downloading..."
-            data = _get_json(path)
+            _data = _get_json(_path)
             if (self.cache_expiry and self.cache_expiry > 0):
                 try:
-                    self.paths.index(path)
+                    self.paths.index(_path)
                 except ValueError:
                     self.paths.append(path)
-                    cache.set(path, data, self.cache_expiry)
-        return data
+                    cache.set(_path, _data, self.cache_expiry)
+        return _data
  
-    def _post_data(self, path):
-        print "GET %s" % path
+    def _post_data(self, path, data=None):
+        _path = self._clean_url(path, data)
+        print "GET %s" % _path
         # Invalidate cache
         self.clear_cache()
-        return _get_json(path)
+        return _get_json(_path)
 
-    def _put_data(self, path):
-        print "GET %s" % path
+    def _put_data(self, path, data=None):
+        _path = self._clean_url(path, data)
+        print "GET %s" % _path
         # Invalidate cache
         self.clear_cache()
-        return _get_json(path)
+        return _get_json(_path)
 
-    def _delete_data(self, path):
-        print "GET %s" % path
+    def _delete_data(self, path, data=None):
+        _path = self._clean_url(path, data)
+        print "GET %s" % _path
         # Invalidate cache
         self.clear_cache()
-        return _get_json(path)
+        return _get_json(_path)
         
     def get_list(self):
         data = self._get_data(self.list_path)
@@ -77,7 +89,6 @@ def _get_json(path):
     try:
         ip = Parameters.objects.get(key='rinor_ip')
         port = Parameters.objects.get(key='rinor_port')
-        path = urllib.quote(path.encode('utf8'))
         uri = "http://%s:%s%s" % (ip.value, port.value, path)
     except Parameters.DoesNotExist:
         raise RinorNotConfigured

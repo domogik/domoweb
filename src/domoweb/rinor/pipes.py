@@ -20,26 +20,26 @@ class EventPipe(RinorPipe):
     def get_event(self):
         # Get all the devices ids
         _devices_list = DevicePipe().get_dict().keys()
-        _devices = '/'.join(str(id) for id in _devices_list)
-        _data = self._get_data("%s/%s/" % (self.new_path, _devices))               
+        _devices = [str(id) for id in _devices_list]
+        _data = self._get_data(self.new_path, _devices)               
         _event = _data.event[0]
         _ticket = _event.ticket_id    
         print "New " + str(_event.timestamp)
         yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'
         while(True):
-            _data = self._get_data("%s/%s/" % (self.get_path, _ticket))               
+            _data = self._get_data(self.get_path, [_ticket])               
             _event = _data.event[0]
             print "Get " + str(_event.timestamp)
             yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'        
 
 class InfoPipe(RinorPipe):
     cache_expiry = 0
-    list_path = "/"
+    list_path = ""
     index = 'rest'
     paths = []
 
     def get_info(self):
-        _data = self._get_data("%s" % (self.list_path))               
+        _data = self._get_data(self.list_path)               
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -48,7 +48,7 @@ class InfoPipe(RinorPipe):
             return None
 
     def get_mode(self):
-        _data = self._get_data("/package/get-mode/")               
+        _data = self._get_data("/package/get-mode")               
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data['mode']) > 0:
@@ -89,7 +89,7 @@ class HelperPipe(RinorPipe):
     paths = []
 
     def get_info(self, command):
-        _data = self._get_data("%s/%s/" % (self.list_path, command))               
+        _data = self._get_data(self.list_path, [command])               
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index]
@@ -104,22 +104,22 @@ class RoomPipe(RinorPipe):
     paths = []
 
     def post_list(self, name, description):
-        _data = self._post_data("%s/name/%s/description/%s/" % (self.add_path, name, description))
+        _data = self._post_data(self.add_path, ['name', name, 'description', description])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
 
     def put_detail(self, id, name, description, area_id):
         if (area_id):
-            _data = self._put_data("%s/id/%s/area_id/%s/" % (self.update_path, id, area_id))
+            _data = self._put_data(self.update_path, ['id', id, 'area_id', area_id])
         else:
-            _data = self._put_data("%s/id/%s/name/%s/description/%s/" % (self.update_path, id, name, description))
+            _data = self._put_data(self.update_path, ['id', id, 'name', name, 'description', description])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
         
     def delete_detail(self, id):
-        _data = self._delete_data("%s/%s/" % (self.delete_path, id))
+        _data = self._delete_data(self.delete_path, [id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -137,19 +137,19 @@ class AreaPipe(RinorPipe):
     paths = []
 
     def post_list(self, name, description):
-        _data = self._post_data("%s/name/%s/description/%s/" % (self.add_path, name, description))
+        _data = self._post_data(self.add_path, ['name', name, 'description', description])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
 
     def put_detail(self, id, name, description):
-        _data = self._put_data("%s/id/%s/name/%s/description/%s/" % (self.update_path, id, name, description))
+        _data = self._put_data(self.update_path, ['id', id, 'name', name, 'description', description])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
         
     def delete_detail(self, id):
-        _data = self._delete_data("%s/%s/" % (self.delete_path, id))
+        _data = self._delete_data(self.delete_path, [id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -182,13 +182,13 @@ class UiConfigPipe(RinorPipe):
         return select_sublist(_list, **kwargs)
 
     def post_list(self, name, reference, key, value):
-        _data = self._post_data("%s/name/%s/reference/%s/key/%s/value/%s/" % (self.set_path, name, reference, key, value))
+        _data = self._post_data(self.set_path, ['name', name, 'reference', reference, 'key', key, 'value', value])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
 
     def delete_reference(self, name, reference):
-        _data = self._delete_data("%s/by-reference/%s/%s/" % (self.delete_path, name, reference))
+        _data = self._delete_data(self.delete_path, ['by-reference', name, reference])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -214,21 +214,21 @@ class DevicePipe(RinorPipe):
     paths = []
 
     def post_list(self, name, address, type_id, usage_id, description, reference):
-        _data = self._post_data("%s/name/%s/address/%s/type_id/%s/usage_id/%s/description/%s/reference/%s/" % (self.add_path, name, address, type_id, usage_id, description, reference))
+        _data = self._post_data(self.add_path, ['name', name, 'address', address, 'type_id', type_id, 'usage_id', usage_id, 'description', description, 'reference', reference])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         FeaturePipe.clear_cache();
         return _data[self.index][0]
 
     def put_detail(self, id, name, address, usage_id, description, reference):
-        _data = self._put_data("%s/id/%s/name/%s/address/%s/usage_id/%s/description/%s/reference/%s/" % (self.update_path, id, name, address, usage_id, description, reference))
+        _data = self._put_data(self.update_path, ['id', id, 'name', name, 'address', address, 'usage_id', usage_id, 'description', description, 'reference', reference])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         FeaturePipe.clear_cache();
         return _data[self.index][0]
         
     def delete_detail(self, id):
-        _data = self._delete_data("%s/%s/" % (self.delete_path, id))
+        _data = self._delete_data(self.delete_path, [id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -254,26 +254,26 @@ class AssociationPipe(RinorPipe):
     def get_list(self, type, id=None, deep=False):
         if deep:
             if (type=='house'):
-                _data = self._get_data("%s/by-house/" % self.listdeep_path)
+                _data = self._get_data(self.listdeep_path, ['by-house'])
             else:
-                _data = self._get_data("%s/by-%s/%s/" % (self.listdeep_path, type, id))               
+                _data = self._get_data(self.listdeep_path, [('by-%s' % type), id])               
         else:
             if (type=='house'):
-                _data = self._get_data("%s/by-house/" % self.list_path)
+                _data = self._get_data(self.list_path, ['by-house'])
             else:
-                _data = self._get_data("%s/by-%s/%s/" % (self.list_path, type, id))               
+                _data = self._get_data(self.list_path, [('by-%s' % type), id])               
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index]
 
     def post_list(self, feature_id, page_type, page_id):
-        _data = self._post_data("%s/feature_id/%s/association_type/%s/association_id/%s/" % (self.add_path, feature_id, page_type, page_id))
+        _data = self._post_data(self.add_path, ['feature_id', feature_id, 'page_type', page_type, 'page_id', page_id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, data.description)
         return _data[self.index][0]
 
     def delete_detail(self, id):
-        _data = self._delete_data("%s/id/%s/" % (self.delete_path, id))
+        _data = self._delete_data(self.delete_path, ['id', id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -282,7 +282,7 @@ class AssociationPipe(RinorPipe):
             return None
 
     def delete_type(self, type, id=None):
-        _data = self._delete_data("%s/association_type/%s/association_id/%s/" % (self.delete_path, type, id))
+        _data = self._delete_data(self.delete_path, ['association_type', type, 'association_id', id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -291,7 +291,7 @@ class AssociationPipe(RinorPipe):
             return None
 
     def delete_feature(self, id):
-        _data = self._delete_data("%s/feature_id/%s/" % (self.delete_path, id))
+        _data = self._delete_data(self.delete_path, ['feature_id', id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -428,8 +428,7 @@ class StatePipe(RinorPipe):
     paths = []
 
     def get_last(self, last, device, key):
-        _path = "%s/%s/%s/last/%s/" % (self.list_path, device, key, last)
-        _data = self._get_data(_path)
+        _data = self._get_data(self.list_path, [device, key, 'last', last])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:
@@ -438,8 +437,7 @@ class StatePipe(RinorPipe):
             return None
 
     def get_fromto(self, fromTime, toTime, interval, selector, device, key):
-        _path = "%s/%s/%s/from/%s/to/%s/interval/%s/selector/%s/" % (self.list_path, device, key, fromTime, toTime, interval, selector)
-        _data = self._get_data(_path)
+        _data = self._get_data(self.list_path, [device, key, 'from', fromTime, 'to', toTime, 'interval', interval, 'selector', selector])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:
@@ -458,8 +456,7 @@ class UserPipe(RinorPipe):
     paths = []
 
     def get_auth(self, login, password):
-        _path = "/account/auth/%s/%s/" % (login, password)
-        _data = self._get_data(_path)
+        _data = self._get_data("/account/auth", [login, password])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:
@@ -468,25 +465,25 @@ class UserPipe(RinorPipe):
             return None
 
     def post_list(self, login, password, is_admin, firstname, lastname):
-        _data = self._post_data("%s/login/%s/password/%s/is_admin/%s/skin_used//first_name/%s/last_name/%s/" % (self.add_path, login, password, is_admin, firstname, lastname))
+        _data = self._post_data(self.add_path, ['login', login, 'password', password, 'is_admin', is_admin, 'skin_used', '', 'first_name', firstname, 'last_name', lastname])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
 
     def put_detail(self, id, login, is_admin, firstname, lastname):
-        _data = self._put_data("%s/id/%s/login/%s/is_admin/%s/skin_used//first_name/%s/last_name/%s/" % (self.update_path, id, login, is_admin, firstname, lastname))
+        _data = self._put_data(self.update_path, ['id', id, 'login', login, 'is_admin', is_admin, 'skin_used', '', 'first_name', firstname, 'last_name', lastname])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
 
     def put_detail_password(self, id, old, new):
-        _data = self._put_data("%s/id/%s/old/%s/new/%s/" % (self.password_path, id, old, new))
+        _data = self._put_data(self.password_path, ['id', id, 'old', old, 'new', new])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
 
     def delete_detail(self, id):
-        _data = self._delete_data("%s/%s/" % (self.delete_path, id))
+        _data = self._delete_data(self.delete_path, [id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -504,19 +501,19 @@ class PersonPipe(RinorPipe):
     paths = []
 
     def post_list(self, firstname, lastname):
-        _data = self._post_data("%s/first_name/%s/last_name/%s/" % (self.add_path, firstname, lastname))
+        _data = self._post_data(self.add_path, ['first_name', firstname, 'last_name', lastname])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
 
     def put_detail(self, id, firstname, lastname):
-        _data = self._put_data("%s/id/%s/first_name/%s/last_name/%s/" % (self.update_path, id, firstname, lastname))
+        _data = self._put_data(self.update_path, ['id', id, 'first_name', firstname, 'last_name', lastname])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
 
     def delete_detail(self, id):
-        _data = self._delete_data("%s/%s/" % (self.delete_path, id))
+        _data = self._delete_data(self.delete_path, [id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -532,7 +529,7 @@ class PluginPipe(RinorPipe):
     paths = []
 
     def get_detail(self, hostname, name):
-        _data = self._get_data("%s/%s/%s/" % (self.detail_path, hostname, name))
+        _data = self._get_data(self.detail_path, [hostname, name])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -541,7 +538,7 @@ class PluginPipe(RinorPipe):
             return None
 
     def command_detail(self, hostname, name, command):
-        _data = self._put_data("/plugin/%s/%s/%s/" % (command, hostname, name))
+        _data = self._put_data("/plugin", [command, hostname, name])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return None
@@ -555,7 +552,7 @@ class PluginConfigPipe(RinorPipe):
     paths = []
 
     def get_list(self, hostname, name):
-        _data = self._get_data("%s/by-name/%s/%s/" % (self.list_path, hostname, name))
+        _data = self._get_data(self.list_path, ['by-name', hostname, name])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -573,7 +570,7 @@ class PluginConfigPipe(RinorPipe):
         return _data
 
     def delete_list(self, hostname, name):
-        _data = self._delete_data("%s/%s/%s/" % (self.delete_path, hostname, name))
+        _data = self._delete_data(self.delete_path, [hostname, name])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -582,7 +579,7 @@ class PluginConfigPipe(RinorPipe):
             return None
 
     def delete_detail(self, hostname, name, key):
-        _data = self._delete_data("%s/%s/%s/by-key/%s/" % (self.delete_path, hostname, name, key))
+        _data = self._delete_data(self.delete_path, [hostname, name, 'by-key', key])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -591,7 +588,7 @@ class PluginConfigPipe(RinorPipe):
             return None
 
     def set_detail(self, hostname, name, key, value):
-        _data = self._put_data("%s/hostname/%s/name/%s/key/%s/value/%s/" % (self.set_path, hostname, name, key, value))
+        _data = self._put_data(self.set_path, ['hostname', hostname, 'name', name, 'key', key, 'value', value])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -615,13 +612,13 @@ class PackagePipe(RinorPipe):
     paths = []
 
     def refresh_list(self):
-        _data = self._put_data("%s/" % (self.refresh_path))
+        _data = self._put_data(self.refresh_path)
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return None
 
     def get_installed(self):
-        _data = self._get_data("%s/" % (self.installed_path))
+        _data = self._get_data(self.installed_path)
         if _data.status == "ERROR":
             raise RinorError(data.code, data.description)        
         if len(_data[self.index]) > 0:
@@ -630,7 +627,7 @@ class PackagePipe(RinorPipe):
             return None
 
     def get_list(self):
-        _data = self._get_data("%s/" % (self.list_path))
+        _data = self._get_data(self.list_path)
         if _data.status == "ERROR":
             raise RinorError(data.code, data.description)        
         if len(_data[self.index]) > 0:
@@ -639,7 +636,7 @@ class PackagePipe(RinorPipe):
             return None
 
     def put_install(self, host, package, release):
-        _data = self._put_data("%s/%s/%s/%s/" % (self.install_path, host, package, release))
+        _data = self._put_data(self.install_path, [host, package, release])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return None
@@ -741,9 +738,9 @@ class CommandPipe(RinorPipe):
 
     def put_detail(self, member, address, command, value=None):
         if (value): 
-            _data = self._put_data("%s/%s/%s/%s/%s/" % (self.update_path, member, address, command, value))
+            _data = self._put_data(self.update_path, [member, address, command, value])
         else:
-            _data = self._put_data("%s/%s/%s/%s/" % (self.update_path, member, address, command))
+            _data = self._put_data(self.update_path, [member, address, command])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
