@@ -46,12 +46,12 @@
             var restcommand = null;
             this.element.startProcessingState();
             if (this.sequence) {
-                restcommand = ['command', o.devicetechnology, o.deviceaddress, o.model_parameters.command, this.sequence[this.sequenceIndex]['value']]
+                restcommand = {"command":o.model_parameters.command, "value":this.sequence[this.sequenceIndex]['value']};
             } else {
-                restcommand = ['command', o.devicetechnology, o.deviceaddress, o.model_parameters.command];
+                restcommand = {"command":o.model_parameters.command};
             }
 
-            rinor.get(restcommand)
+            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], restcommand)
                 .success(function(data, status, xhr){
                     if (self.sequence) {
                         self._value.html(self.sequence[self.sequenceIndex]['key']);

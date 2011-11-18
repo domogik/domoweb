@@ -37,10 +37,14 @@
             var self = this, o = this.options;
             if (this.input.val()) {
                 this.element.startProcessingState();
-                var params = ['command', o.devicetechnology, o.deviceaddress];
-                if (o.model_parameters.command) params.push(o.model_parameters.command);
-                params.push(this.input.val());
-                rinor.get(params)
+                var params = {};
+                if (o.model_parameters.command) {
+                    params["command"] = o.model_parameters.command;
+                    params["value"] = this.input.val();                    
+                } else {
+                    params["command"] = this.input.val();                    
+                }
+                rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], params)
                     .success(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
                     })

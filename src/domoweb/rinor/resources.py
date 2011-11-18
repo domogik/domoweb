@@ -486,3 +486,29 @@ class EventResource(RinorResource):
         except ObjectDoesNotExist:
             return HttpNotFound()
         return HttpResponse(objects, mimetype="text/event-stream")
+
+class CommandResource(RinorResource):
+    # fields must map to the attributes in the Row class
+#    name = fields.CharField(attribute = 'name')
+#    reference = fields.CharField(attribute = 'reference')
+#    key = fields.CharField(attribute = 'key')
+#    value = fields.CharField(attribute = 'value')
+
+    class Meta:
+        resource_name = 'command'
+        detail_allowed_methods = ['put']
+        authentication = Authentication()
+        authorization = Authorization()
+        rinor_pipe = CommandPipe()
+
+    def base_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<member>[\w\d_-]+)/(?P<address>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+        ]
+
+    def obj_update(self, bundle, request=None, **kwargs):
+        if ('value' in bundle):
+            _data = self._meta.rinor_pipe.put_detail(kwargs['member'], kwargs['address'], bundle["command"], bundle["value"])
+        else:
+            _data = self._meta.rinor_pipe.put_detail(kwargs['member'], kwargs['address'], bundle["command"])
+        return _data

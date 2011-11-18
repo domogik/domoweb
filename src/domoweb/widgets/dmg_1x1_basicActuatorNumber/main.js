@@ -76,7 +76,7 @@
         action: function() {
             var self = this, o = this.options;
             self._startProcessingState();
-            rinor.get(['command', o.devicetechnology, o.deviceaddress, o.model_parameters.command, self.value])
+            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":self.value})
                 .success(function(data, status, xhr){
                 })
                 .error(function(jqXHR, status, error){

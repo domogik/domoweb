@@ -42,7 +42,7 @@
         
         action: function(command_code) {
             var self = this, o = this.options;
-            rinor.get(['command', o.devicetechnology, o.deviceaddress, command_code])
+            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":command_code})
                 .success(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })

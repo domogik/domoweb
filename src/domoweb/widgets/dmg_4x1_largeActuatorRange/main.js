@@ -105,7 +105,7 @@ const auto_send = 3000; // 3 seconds
             var self = this, o = this.options;
             if (this._processingValue != this.currentValue) {
                 this._startProcessingState();
-                rinor.get(['command', o.devicetechnology, o.deviceaddress, o.model_parameters.command, this._processingValue])
+                rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":this._processingValue})
                     .success(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
                     })

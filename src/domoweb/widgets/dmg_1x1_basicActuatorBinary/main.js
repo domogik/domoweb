@@ -50,7 +50,7 @@
                 // Suppose the switch currently off
                 this.processingValue = 1;
             }
-            rinor.get(['command', o.devicetechnology, o.deviceaddress, this.values[this.processingValue]])
+            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":this.values[this.processingValue]})
                 .success(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })

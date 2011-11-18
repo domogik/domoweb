@@ -46,7 +46,7 @@
                 currentValue = "off";
             }
             if ((currentValue == "off") || (currentValue == "#000000")) {
-                rinor.get(['command', o.devicetechnology, o.deviceaddress, 'setcolor', 'on'])
+                rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":'setcolor', "value":'on'})
                     .success(function(data, status, xhr){
                         $('#colorpicker').show();
                         $('#preview').show();
@@ -59,7 +59,7 @@
                     });
             }
             else {
-                rinor.get(['command', o.devicetechnology, o.deviceaddress, 'setcolor', 'off'])
+                rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":'setcolor', "value":'off'})
                     .success(function(data, status, xhr){
                         $('#colorpicker').hide();
                         $('#preview').hide();
@@ -92,7 +92,7 @@
             $.farbtastic('#colorpicker').setColor(color);
             // call command
             if (dontCallCmd != 1) {
-                rinor.get(['command', o.devicetechnology, o.deviceaddress, 'setcolor', color])
+                rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":'setcolor', "value":color})
                     .success(function(data, status, xhr){
                         $('#colorpicker').show();
                         $('#preview').show();

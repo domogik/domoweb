@@ -68,11 +68,9 @@ class RinorPipe():
         raise RinorError(404, "PK Not found")
     
     def clear_cache(self):
-        print "--"
         for path in self.paths:
             print "Clear %s" % path
             cache.delete(path)
-        print "--"
 
 def _get_json(path):
     try:

@@ -732,3 +732,18 @@ class PackageExtendedPipe(RinorPipe):
         _packages['available'] = self.get_list_available('hardware', _packages['installed'])
             
         return _packages
+
+class CommandPipe(RinorPipe):
+    cache_expiry = 0
+    update_path = "/command"
+    index = 'response'
+    paths = []
+
+    def put_detail(self, member, address, command, value=None):
+        if (value): 
+            _data = self._put_data("%s/%s/%s/%s/%s/" % (self.update_path, member, address, command, value))
+        else:
+            _data = self._put_data("%s/%s/%s/%s/" % (self.update_path, member, address, command))
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)
+        return _data[self.index][0]
