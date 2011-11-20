@@ -5,9 +5,6 @@ from domoweb.exceptions import RinorError
 from distutils2.version import *
 from distutils2.version import IrrationalVersionError
 import simplejson
-import django.dispatch
-
-index_updated = django.dispatch.Signal(providing_args=["index"])
 
 def select_sublist(list_of_dicts, **kwargs):
     return [d for d in list_of_dicts 
@@ -19,7 +16,6 @@ class EventPipe(RinorPipe):
     get_path = '/events/request/get'
     index = 'event'
     paths = []
-    dependencies = []
 
     def get_event(self):
         # Get all the devices ids
@@ -221,14 +217,12 @@ class DevicePipe(RinorPipe):
         _data = self._post_data(self.add_path, ['name', name, 'address', address, 'type_id', type_id, 'usage_id', usage_id, 'description', description, 'reference', reference])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
-        FeaturePipe.clear_cache();
         return _data[self.index][0]
 
     def put_detail(self, id, name, address, usage_id, description, reference):
         _data = self._put_data(self.update_path, ['id', id, 'name', name, 'address', address, 'usage_id', usage_id, 'description', description, 'reference', reference])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
-        FeaturePipe.clear_cache();
         return _data[self.index][0]
         
     def delete_detail(self, id):
@@ -245,6 +239,7 @@ class FeaturePipe(RinorPipe):
     list_path = "/base/feature/list"
     index = 'feature'
     paths = []
+    dependencies = ['device']
 
 class AssociationPipe(RinorPipe):
     cache_expiry = 3600

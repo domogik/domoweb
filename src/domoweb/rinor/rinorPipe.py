@@ -4,16 +4,23 @@ from django.core.cache import cache
 from django.utils import simplejson
 from domoweb.models import Parameters
 from domoweb.exceptions import RinorNotConfigured, RinorNotAvailable, RinorError
-    
+import django.dispatch
+
+index_updated = django.dispatch.Signal(providing_args=["index"])
+
 class RinorPipe():
     cache_expiry = 3600
     list_path = None
     index = None
     paths = None    
+    dependencies = None
     
-    request_finished.connect(my_callback, dispatch_uid=self.index)
-    def my_callback(sender, **kwargs):
-       print "Request finished!"
+    def __init__(self):
+        index_updated.connect(self.index_signal, dispatch_uid=self.index)
+
+    def index_signal(self, sender, **kwargs):
+        if (self.dependencies and kwargs['index'] in self.dependencies):
+            print "%s Received Cache signal from %s" % (self.__class__.__name__, kwargs['index'])
     
     def _clean_url(self, path, data=None):
         if (data):
@@ -21,7 +28,6 @@ class RinorPipe():
             _path = "%s/%s/" % (path, _data)
         else:
             _path = "%s/" % path
-        index_updated.send(sender=self, index=self.index)
         return _path
         
     def _get_data(self, path, data=None):
@@ -38,7 +44,7 @@ class RinorPipe():
                 try:
                     self.paths.index(_path)
                 except ValueError:
-                    self.paths.append(path)
+                    self.paths.append(_path)
                     cache.set(_path, _data, self.cache_expiry)
         return _data
  
@@ -87,8 +93,9 @@ class RinorPipe():
     @classmethod
     def clear_cache(self):
         for path in self.paths:
-            print "Clear %s" % path
             cache.delete(path)
+            print "Cleared cache %s" % path
+        index_updated.send(sender=self, index=self.index)
 
 def _get_json(path):
     try:
