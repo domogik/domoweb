@@ -5,6 +5,9 @@ from domoweb.exceptions import RinorError
 from distutils2.version import *
 from distutils2.version import IrrationalVersionError
 import simplejson
+import django.dispatch
+
+index_updated = django.dispatch.Signal(providing_args=["index"])
 
 def select_sublist(list_of_dicts, **kwargs):
     return [d for d in list_of_dicts 
@@ -16,6 +19,7 @@ class EventPipe(RinorPipe):
     get_path = '/events/request/get'
     index = 'event'
     paths = []
+    dependencies = []
 
     def get_event(self):
         # Get all the devices ids

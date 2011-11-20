@@ -11,12 +11,17 @@ class RinorPipe():
     index = None
     paths = None    
     
+    request_finished.connect(my_callback, dispatch_uid=self.index)
+    def my_callback(sender, **kwargs):
+       print "Request finished!"
+    
     def _clean_url(self, path, data=None):
         if (data):
             _data = '/'.join([urllib.quote(str(d).encode('utf8'), '') for d in data])
             _path = "%s/%s/" % (path, _data)
         else:
             _path = "%s/" % path
+        index_updated.send(sender=self, index=self.index)
         return _path
         
     def _get_data(self, path, data=None):
