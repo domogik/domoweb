@@ -32,13 +32,12 @@ class RinorPipe():
         
     def _get_data(self, path, data=None):
         _path = self._clean_url(path, data)
-        print "GET %s" % _path
         # Try the cache first
         _data = cache.get(_path)
         if _data:
-            print "Rinor Resource Found in cache."
+            print "RINOR GET %s [Found in cache]" % _path
         else:
-            print "Rinor Resource Not found in cache. Downloading..."
+            print "RINOR GET %s [Not Found in cache] Downloading..." % _path
             _data = _get_json(_path)
             if (self.cache_expiry and self.cache_expiry > 0):
                 try:
@@ -50,21 +49,21 @@ class RinorPipe():
  
     def _post_data(self, path, data=None):
         _path = self._clean_url(path, data)
-        print "GET %s" % _path
+        print "RINOR POST %s" % _path
         # Invalidate cache
         self.clear_cache()
         return _get_json(_path)
 
     def _put_data(self, path, data=None):
         _path = self._clean_url(path, data)
-        print "GET %s" % _path
+        print "RINOR PUT %s" % _path
         # Invalidate cache
         self.clear_cache()
         return _get_json(_path)
 
     def _delete_data(self, path, data=None):
         _path = self._clean_url(path, data)
-        print "GET %s" % _path
+        print "RINOR DELETE %s" % _path
         # Invalidate cache
         self.clear_cache()
         return _get_json(_path)
@@ -92,9 +91,10 @@ class RinorPipe():
     
     @classmethod
     def clear_cache(self):
-        for path in self.paths:
-            cache.delete(path)
-            print "Cleared cache %s" % path
+        while len(self.paths) > 0:
+            _path = self.paths.pop()
+            cache.delete(_path)
+            print "RINOR CACHE Cleared %s" % _path
         index_updated.send(sender=self, index=self.index)
 
 def _get_json(path):

@@ -266,7 +266,7 @@ class AssociationPipe(RinorPipe):
         return _data[self.index]
 
     def post_list(self, feature_id, page_type, page_id):
-        _data = self._post_data(self.add_path, ['feature_id', feature_id, 'page_type', page_type, 'page_id', page_id])
+        _data = self._post_data(self.add_path, ['feature_id', feature_id, 'association_type', page_type, 'association_id', page_id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, data.description)
         return _data[self.index][0]
