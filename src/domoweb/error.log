@@ -1,0 +1,592 @@
+[22/Nov/2011:09:20:48] ENGINE Listening for SIGHUP.
+[22/Nov/2011:09:20:48] ENGINE Listening for SIGTERM.
+[22/Nov/2011:09:20:48] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:09:20:48] ENGINE Bus STARTING
+[22/Nov/2011:09:20:48] ENGINE Error in 'start' listener <bound method DjangoAppPlugin.start of <__main__.DjangoAppPlugin object at 0xb7385ccc>>
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 197, in publish
+    output.append(listener(*args, **kwargs))
+  File "webserver.py", line 91, in start
+    settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
+ImportError: No module named settings
+
+[22/Nov/2011:09:20:48] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:09:20:49] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:09:20:49] ENGINE Shutting down due to error in start listener:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 235, in start
+    self.publish('start')
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 215, in publish
+    raise exc
+ChannelFailures: ImportError('No module named settings',)
+
+[22/Nov/2011:09:20:49] ENGINE Bus STOPPING
+[22/Nov/2011:09:20:49] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:09:20:49] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:09:20:49] ENGINE Bus STOPPED
+[22/Nov/2011:09:20:49] ENGINE Bus EXITING
+[22/Nov/2011:09:20:49] ENGINE Bus EXITED
+[22/Nov/2011:09:22:54] ENGINE Listening for SIGHUP.
+[22/Nov/2011:09:22:54] ENGINE Listening for SIGTERM.
+[22/Nov/2011:09:22:54] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:09:22:54] ENGINE Bus STARTING
+[22/Nov/2011:09:22:54] ENGINE Error in 'start' listener <bound method DjangoAppPlugin.start of <__main__.DjangoAppPlugin object at 0x8718dcc>>
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 197, in publish
+    output.append(listener(*args, **kwargs))
+  File "webserver.py", line 92, in start
+    settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
+ImportError: No module named settings
+
+[22/Nov/2011:09:22:54] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:09:22:54] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:09:22:54] ENGINE Shutting down due to error in start listener:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 235, in start
+    self.publish('start')
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 215, in publish
+    raise exc
+ChannelFailures: ImportError('No module named settings',)
+
+[22/Nov/2011:09:22:54] ENGINE Bus STOPPING
+[22/Nov/2011:09:22:54] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:09:22:54] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:09:22:54] ENGINE Bus STOPPED
+[22/Nov/2011:09:22:54] ENGINE Bus EXITING
+[22/Nov/2011:09:22:54] ENGINE Bus EXITED
+[22/Nov/2011:09:29:39] ENGINE Listening for SIGHUP.
+[22/Nov/2011:09:29:39] ENGINE Listening for SIGTERM.
+[22/Nov/2011:09:29:39] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:09:29:39] ENGINE Bus STARTING
+[22/Nov/2011:09:29:40] ENGINE Error in 'start' listener <bound method DjangoAppPlugin.start of <__main__.DjangoAppPlugin object at 0xb73fbccc>>
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 197, in publish
+    output.append(listener(*args, **kwargs))
+  File "webserver.py", line 94, in start
+    dir=os.path.split(settings.STATIC_ROOT)[1],
+AttributeError: 'module' object has no attribute 'STATIC_ROOT'
+
+[22/Nov/2011:09:29:40] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:09:29:41] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:09:29:41] ENGINE Shutting down due to error in start listener:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 235, in start
+    self.publish('start')
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 215, in publish
+    raise exc
+ChannelFailures: AttributeError("'module' object has no attribute 'STATIC_ROOT'",)
+
+[22/Nov/2011:09:29:41] ENGINE Bus STOPPING
+[22/Nov/2011:09:29:41] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:09:29:41] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:09:29:41] ENGINE Bus STOPPED
+[22/Nov/2011:09:29:41] ENGINE Bus EXITING
+[22/Nov/2011:09:29:41] ENGINE Bus EXITED
+[22/Nov/2011:09:30:59] ENGINE Listening for SIGHUP.
+[22/Nov/2011:09:30:59] ENGINE Listening for SIGTERM.
+[22/Nov/2011:09:30:59] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:09:30:59] ENGINE Bus STARTING
+[22/Nov/2011:09:31:00] ENGINE Error in 'start' listener <bound method DjangoAppPlugin.start of <__main__.DjangoAppPlugin object at 0xb7513ccc>>
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 197, in publish
+    output.append(listener(*args, **kwargs))
+  File "webserver.py", line 97, in start
+    cherrypy.tree.mount(static_handler, settings.STATIC_URL)
+AttributeError: 'module' object has no attribute 'STATIC_URL'
+
+[22/Nov/2011:09:31:00] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:09:31:00] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:09:31:00] ENGINE Shutting down due to error in start listener:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 235, in start
+    self.publish('start')
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 215, in publish
+    raise exc
+ChannelFailures: AttributeError("'module' object has no attribute 'STATIC_URL'",)
+
+[22/Nov/2011:09:31:00] ENGINE Bus STOPPING
+[22/Nov/2011:09:31:00] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:09:31:00] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:09:31:00] ENGINE Bus STOPPED
+[22/Nov/2011:09:31:00] ENGINE Bus EXITING
+[22/Nov/2011:09:31:00] ENGINE Bus EXITED
+[22/Nov/2011:09:31:40] ENGINE Listening for SIGHUP.
+[22/Nov/2011:09:31:40] ENGINE Listening for SIGTERM.
+[22/Nov/2011:09:31:40] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:09:31:40] ENGINE Bus STARTING
+[22/Nov/2011:09:31:42] ENGINE Error in 'start' listener <bound method DjangoAppPlugin.start of <__main__.DjangoAppPlugin object at 0xb74c4ccc>>
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 197, in publish
+    output.append(listener(*args, **kwargs))
+  File "webserver.py", line 97, in start
+    cherrypy.tree.mount(static_handler, settings.STATIC_URL)
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/_cptree.py", line 192, in mount
+    "The 'script_name' argument may not be None. Application "
+TypeError: The 'script_name' argument may not be None. Application objects may, however, possess a script_name of None (in order to inpect the WSGI environ for SCRIPT_NAME upon each request). You cannot mount such Applications on this Tree; you must pass them to a WSGI server interface directly.
+
+[22/Nov/2011:09:31:42] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:09:31:42] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:09:31:42] ENGINE Shutting down due to error in start listener:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 235, in start
+    self.publish('start')
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 215, in publish
+    raise exc
+ChannelFailures: TypeError("The 'script_name' argument may not be None. Application objects may, however, possess a script_name of None (in order to inpect the WSGI environ for SCRIPT_NAME upon each request). You cannot mount such Applications on this Tree; you must pass them to a WSGI server interface directly.",)
+
+[22/Nov/2011:09:31:42] ENGINE Bus STOPPING
+[22/Nov/2011:09:31:42] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:09:31:42] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:09:31:42] ENGINE Bus STOPPED
+[22/Nov/2011:09:31:42] ENGINE Bus EXITING
+[22/Nov/2011:09:31:42] ENGINE Bus EXITED
+[22/Nov/2011:09:32:01] ENGINE Listening for SIGHUP.
+[22/Nov/2011:09:32:01] ENGINE Listening for SIGTERM.
+[22/Nov/2011:09:32:01] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:09:32:01] ENGINE Bus STARTING
+[22/Nov/2011:09:32:02] ENGINE Error in 'start' listener <bound method DjangoAppPlugin.start of <__main__.DjangoAppPlugin object at 0xb74e6ccc>>
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 197, in publish
+    output.append(listener(*args, **kwargs))
+  File "webserver.py", line 97, in start
+    cherrypy.tree.mount(static_handler, settings.STATIC_URL)
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/_cptree.py", line 199, in mount
+    script_name = script_name.rstrip("/")
+AttributeError: 'list' object has no attribute 'rstrip'
+
+[22/Nov/2011:09:32:02] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:09:32:02] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:09:32:02] ENGINE Shutting down due to error in start listener:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 235, in start
+    self.publish('start')
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 215, in publish
+    raise exc
+ChannelFailures: AttributeError("'list' object has no attribute 'rstrip'",)
+
+[22/Nov/2011:09:32:02] ENGINE Bus STOPPING
+[22/Nov/2011:09:32:02] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:09:32:02] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:09:32:02] ENGINE Bus STOPPED
+[22/Nov/2011:09:32:02] ENGINE Bus EXITING
+[22/Nov/2011:09:32:02] ENGINE Bus EXITED
+[22/Nov/2011:09:33:38] ENGINE Listening for SIGHUP.
+[22/Nov/2011:09:33:38] ENGINE Listening for SIGTERM.
+[22/Nov/2011:09:33:38] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:09:33:38] ENGINE Bus STARTING
+[22/Nov/2011:09:33:40] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:09:33:40] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:09:33:40] ENGINE Bus STARTED
+[22/Nov/2011:12:08:51] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:12:08:51] ENGINE Bus STOPPING
+[22/Nov/2011:12:18:35]  Traceback (most recent call last):
+  File "webserver.py", line 114, in __call__
+    self.access(environ, response)
+  File "webserver.py", line 132, in access
+    'b': str(len(response.content)),
+  File "/usr/lib/python2.7/site-packages/Django-1.3.1-py2.7.egg/django/http/__init__.py", line 601, in _get_content
+    return smart_str(''.join(self._container), self._charset)
+  File "/domoweb/repository/src/domoweb/rinor/pipes.py", line 30, in get_event
+    _data = self._get_data(self.get_path, [_ticket])
+  File "/domoweb/repository/src/domoweb/rinor/rinorPipe.py", line 40, in _get_data
+    print "RINOR GET %s [Not Found in cache] Downloading..." % _path
+IOError: [Errno 11] Resource temporarily unavailable
+
+[22/Nov/2011:14:26:27]  Traceback (most recent call last):
+  File "webserver.py", line 114, in __call__
+    self.access(environ, response)
+  File "webserver.py", line 132, in access
+    'b': str(len(response.content)),
+  File "/usr/lib/python2.7/site-packages/Django-1.3.1-py2.7.egg/django/http/__init__.py", line 601, in _get_content
+    return smart_str(''.join(self._container), self._charset)
+  File "/domoweb/repository/src/domoweb/rinor/pipes.py", line 32, in get_event
+    print "RECEIVED EVENT " + str(_event.timestamp)
+IOError: [Errno 0] Error
+
+[22/Nov/2011:14:26:27] ENGINE Caught signal SIGHUP.
+[22/Nov/2011:14:26:27] ENGINE SIGHUP caught while daemonized. Restarting.
+[22/Nov/2011:14:26:27] ENGINE Bus STOPPING
+[22/Nov/2011:14:36:01]  Traceback (most recent call last):
+  File "webserver.py", line 114, in __call__
+    self.access(environ, response)
+  File "webserver.py", line 132, in access
+    'b': str(len(response.content)),
+  File "/usr/lib/python2.7/site-packages/Django-1.3.1-py2.7.egg/django/http/__init__.py", line 601, in _get_content
+    return smart_str(''.join(self._container), self._charset)
+  File "/domoweb/repository/src/domoweb/rinor/pipes.py", line 30, in get_event
+    _data = self._get_data(self.get_path, [_ticket])
+  File "/domoweb/repository/src/domoweb/rinor/rinorPipe.py", line 40, in _get_data
+    print "RINOR GET %s [Not Found in cache] Downloading..." % _path
+IOError: [Errno 11] Resource temporarily unavailable
+
+[22/Nov/2011:14:38:21]  Traceback (most recent call last):
+  File "webserver.py", line 114, in __call__
+    self.access(environ, response)
+  File "webserver.py", line 132, in access
+    'b': str(len(response.content)),
+  File "/usr/lib/python2.7/site-packages/Django-1.3.1-py2.7.egg/django/http/__init__.py", line 601, in _get_content
+    return smart_str(''.join(self._container), self._charset)
+  File "/domoweb/repository/src/domoweb/rinor/pipes.py", line 30, in get_event
+    _data = self._get_data(self.get_path, [_ticket])
+  File "/domoweb/repository/src/domoweb/rinor/rinorPipe.py", line 40, in _get_data
+    print "RINOR GET %s [Not Found in cache] Downloading..." % _path
+IOError: [Errno 11] Resource temporarily unavailable
+
+[22/Nov/2011:14:57:14]  Traceback (most recent call last):
+  File "webserver.py", line 114, in __call__
+    self.access(environ, response)
+  File "webserver.py", line 132, in access
+    'b': str(len(response.content)),
+  File "/usr/lib/python2.7/site-packages/Django-1.3.1-py2.7.egg/django/http/__init__.py", line 601, in _get_content
+    return smart_str(''.join(self._container), self._charset)
+  File "/domoweb/repository/src/domoweb/rinor/pipes.py", line 32, in get_event
+    print "RECEIVED EVENT " + str(_event.timestamp)
+IOError: [Errno 0] Error
+
+[22/Nov/2011:15:07:17]  Traceback (most recent call last):
+  File "webserver.py", line 114, in __call__
+    self.access(environ, response)
+  File "webserver.py", line 132, in access
+    'b': str(len(response.content)),
+  File "/usr/lib/python2.7/site-packages/Django-1.3.1-py2.7.egg/django/http/__init__.py", line 601, in _get_content
+    return smart_str(''.join(self._container), self._charset)
+  File "/domoweb/repository/src/domoweb/rinor/pipes.py", line 30, in get_event
+    _data = self._get_data(self.get_path, [_ticket])
+  File "/domoweb/repository/src/domoweb/rinor/rinorPipe.py", line 40, in _get_data
+    print "RINOR GET %s [Not Found in cache] Downloading..." % _path
+IOError: [Errno 11] Resource temporarily unavailable
+
+[22/Nov/2011:20:41:45] ENGINE Listening for SIGHUP.
+[22/Nov/2011:20:41:45] ENGINE Listening for SIGTERM.
+[22/Nov/2011:20:41:45] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:20:41:45] ENGINE Bus STARTING
+[22/Nov/2011:20:41:46] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:20:41:47] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:20:41:47] ENGINE Bus STARTED
+[22/Nov/2011:20:46:38] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:20:46:38] ENGINE Bus STOPPING
+[22/Nov/2011:20:51:19] ENGINE Listening for SIGHUP.
+[22/Nov/2011:20:51:19] ENGINE Listening for SIGTERM.
+[22/Nov/2011:20:51:19] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:20:51:19] ENGINE Bus STARTING
+[22/Nov/2011:20:51:20] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:20:51:20] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:20:51:20] ENGINE Bus STARTED
+[22/Nov/2011:21:01:09] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:21:01:09] ENGINE Bus STOPPING
+[22/Nov/2011:21:01:09] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:21:01:09] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:21:01:09] ENGINE Bus STOPPED
+[22/Nov/2011:21:01:09] ENGINE Bus EXITING
+[22/Nov/2011:21:01:09] ENGINE Bus EXITED
+[22/Nov/2011:21:01:09] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:21:01:16] ENGINE Listening for SIGHUP.
+[22/Nov/2011:21:01:16] ENGINE Listening for SIGTERM.
+[22/Nov/2011:21:01:16] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:21:01:16] ENGINE Bus STARTING
+[22/Nov/2011:21:01:17] ENGINE Error in 'start' listener <bound method DjangoAppPlugin.start of <__main__.DjangoAppPlugin object at 0xb734cccc>>
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 197, in publish
+    output.append(listener(*args, **kwargs))
+  File "webserver.py", line 99, in start
+    static_handler = cherrypy.tools.staticdir.handler(section="/", dir=os.path.join(PROJECT_PATH, "design"))
+NameError: global name 'PROJECT_PATH' is not defined
+
+[22/Nov/2011:21:01:17] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:21:01:17] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:21:01:17] ENGINE Shutting down due to error in start listener:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 235, in start
+    self.publish('start')
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 215, in publish
+    raise exc
+ChannelFailures: NameError("global name 'PROJECT_PATH' is not defined",)
+
+[22/Nov/2011:21:01:17] ENGINE Bus STOPPING
+[22/Nov/2011:21:01:18] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:21:01:18] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:21:01:18] ENGINE Bus STOPPED
+[22/Nov/2011:21:01:18] ENGINE Bus EXITING
+[22/Nov/2011:21:01:18] ENGINE Bus EXITED
+[22/Nov/2011:21:01:33] ENGINE Listening for SIGHUP.
+[22/Nov/2011:21:01:33] ENGINE Listening for SIGTERM.
+[22/Nov/2011:21:01:33] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:21:01:33] ENGINE Bus STARTING
+[22/Nov/2011:21:01:34] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:21:01:34] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:21:01:34] ENGINE Bus STARTED
+[22/Nov/2011:21:02:32] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:21:02:32] ENGINE Bus STOPPING
+[22/Nov/2011:21:02:32] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:21:02:32] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:21:02:32] ENGINE Bus STOPPED
+[22/Nov/2011:21:02:32] ENGINE Bus EXITING
+[22/Nov/2011:21:02:32] ENGINE Bus EXITED
+[22/Nov/2011:21:02:32] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:21:03:17] ENGINE Listening for SIGHUP.
+[22/Nov/2011:21:03:17] ENGINE Listening for SIGTERM.
+[22/Nov/2011:21:03:17] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:21:03:17] ENGINE Bus STARTING
+[22/Nov/2011:21:03:19] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:21:03:19] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:21:03:19] ENGINE Bus STARTED
+[22/Nov/2011:21:04:04] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:21:04:04] ENGINE Bus STOPPING
+[22/Nov/2011:21:04:04] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:21:04:04] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:21:04:04] ENGINE Bus STOPPED
+[22/Nov/2011:21:04:04] ENGINE Bus EXITING
+[22/Nov/2011:21:04:04] ENGINE Bus EXITED
+[22/Nov/2011:21:04:04] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:21:04:07] ENGINE Listening for SIGHUP.
+[22/Nov/2011:21:04:07] ENGINE Listening for SIGTERM.
+[22/Nov/2011:21:04:07] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:21:04:07] ENGINE Bus STARTING
+[22/Nov/2011:21:04:09] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:21:04:09] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:21:04:09] ENGINE Bus STARTED
+[22/Nov/2011:21:04:15] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:21:04:15] ENGINE Bus STOPPING
+[22/Nov/2011:21:04:15] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:21:04:15] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:21:04:15] ENGINE Bus STOPPED
+[22/Nov/2011:21:04:15] ENGINE Bus EXITING
+[22/Nov/2011:21:04:15] ENGINE Bus EXITED
+[22/Nov/2011:21:04:15] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:21:06:36] ENGINE Listening for SIGHUP.
+[22/Nov/2011:21:06:36] ENGINE Listening for SIGTERM.
+[22/Nov/2011:21:06:36] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:21:06:36] ENGINE Bus STARTING
+[22/Nov/2011:21:06:37] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:21:06:38] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:21:06:38] ENGINE Bus STARTED
+[22/Nov/2011:21:10:00] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:21:10:00] ENGINE Bus STOPPING
+[22/Nov/2011:21:10:00] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:21:10:00] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:21:10:00] ENGINE Bus STOPPED
+[22/Nov/2011:21:10:00] ENGINE Bus EXITING
+[22/Nov/2011:21:10:00] ENGINE Bus EXITED
+[22/Nov/2011:21:10:00] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:21:10:04] ENGINE Listening for SIGHUP.
+[22/Nov/2011:21:10:04] ENGINE Listening for SIGTERM.
+[22/Nov/2011:21:10:04] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:21:10:04] ENGINE Bus STARTING
+[22/Nov/2011:21:10:05] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:21:10:05] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:21:10:05] ENGINE Bus STARTED
+[22/Nov/2011:21:10:18] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:21:10:18] ENGINE Bus STOPPING
+[22/Nov/2011:21:10:22] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:21:10:22] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:21:10:22] ENGINE Bus STOPPED
+[22/Nov/2011:21:10:22] ENGINE Bus EXITING
+[22/Nov/2011:21:10:22] ENGINE Bus EXITED
+[22/Nov/2011:21:10:22] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:21:12:07] ENGINE Listening for SIGHUP.
+[22/Nov/2011:21:12:07] ENGINE Listening for SIGTERM.
+[22/Nov/2011:21:12:07] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:21:12:07] ENGINE Bus STARTING
+[22/Nov/2011:21:12:09] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:21:12:09] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:21:12:09] ENGINE Bus STARTED
+[22/Nov/2011:21:12:15] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:21:12:15] ENGINE Bus STOPPING
+[22/Nov/2011:21:12:20] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:21:12:20] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:21:12:20] ENGINE Bus STOPPED
+[22/Nov/2011:21:12:20] ENGINE Bus EXITING
+[22/Nov/2011:21:12:20] ENGINE Bus EXITED
+[22/Nov/2011:21:12:20] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:21:12:40] ENGINE Listening for SIGHUP.
+[22/Nov/2011:21:12:40] ENGINE Listening for SIGTERM.
+[22/Nov/2011:21:12:40] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:21:12:40] ENGINE Bus STARTING
+[22/Nov/2011:21:12:42] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:21:12:42] ENGINE Serving on 0.0.0.0:40406
+[22/Nov/2011:21:12:42] ENGINE Bus STARTED
+[22/Nov/2011:21:23:33] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:21:23:33] ENGINE Bus STOPPING
+[22/Nov/2011:21:23:34] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40406)) shut down
+[22/Nov/2011:21:23:34] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:21:23:34] ENGINE Bus STOPPED
+[22/Nov/2011:21:23:34] ENGINE Bus EXITING
+[22/Nov/2011:21:23:34] ENGINE Bus EXITED
+[22/Nov/2011:21:23:34] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:21:23:34] ENGINE Waiting for thread CP Server Thread-8.
+[22/Nov/2011:21:39:31] ENGINE Listening for SIGHUP.
+[22/Nov/2011:21:39:31] ENGINE Listening for SIGTERM.
+[22/Nov/2011:21:39:31] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:21:39:31] ENGINE Bus STARTING
+[22/Nov/2011:21:39:31] ENGINE Error in 'start' listener <bound method DjangoAppPlugin.start of <__main__.DjangoAppPlugin object at 0xb7344ccc>>
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 197, in publish
+    output.append(listener(*args, **kwargs))
+  File "webserver.py", line 117, in start
+    settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
+  File "/domoweb/repository/src/domoweb/settings.py", line 57, in <module>
+    DATABASE_NAME = "%s/.domogik/domoweb.db" % user_home
+NameError: name 'user_home' is not defined
+
+[22/Nov/2011:21:39:31] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:21:39:31] ENGINE Serving on 0.0.0.0:40404
+[22/Nov/2011:21:39:31] ENGINE Shutting down due to error in start listener:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 235, in start
+    self.publish('start')
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 215, in publish
+    raise exc
+ChannelFailures: NameError("name 'user_home' is not defined",)
+
+[22/Nov/2011:21:39:31] ENGINE Bus STOPPING
+[22/Nov/2011:21:39:31] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[22/Nov/2011:21:39:31] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:21:39:31] ENGINE Bus STOPPED
+[22/Nov/2011:21:39:31] ENGINE Bus EXITING
+[22/Nov/2011:21:39:31] ENGINE Bus EXITED
+[22/Nov/2011:21:49:13] ENGINE Listening for SIGHUP.
+[22/Nov/2011:21:49:13] ENGINE Listening for SIGTERM.
+[22/Nov/2011:21:49:13] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:21:49:13] ENGINE Bus STARTING
+[22/Nov/2011:21:49:13] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:21:49:13] ENGINE Serving on 0.0.0.0:40404
+[22/Nov/2011:21:49:13] ENGINE Bus STARTED
+[22/Nov/2011:21:49:18] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:21:49:18] ENGINE Bus STOPPING
+[22/Nov/2011:21:49:18] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[22/Nov/2011:21:49:18] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:21:49:18] ENGINE Bus STOPPED
+[22/Nov/2011:21:49:18] ENGINE Bus EXITING
+[22/Nov/2011:21:49:18] ENGINE Bus EXITED
+[22/Nov/2011:21:49:18] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:22:01:58] ENGINE Listening for SIGHUP.
+[22/Nov/2011:22:01:58] ENGINE Listening for SIGTERM.
+[22/Nov/2011:22:01:58] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:22:01:58] ENGINE Bus STARTING
+[22/Nov/2011:22:01:58] ENGINE Error in 'start' listener <bound method DjangoAppPlugin.start of <__main__.DjangoAppPlugin object at 0xb74f7ccc>>
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 197, in publish
+    output.append(listener(*args, **kwargs))
+  File "webserver.py", line 92, in start
+    settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
+ImportError: No module named settings_develops
+
+[22/Nov/2011:22:01:58] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:22:01:58] ENGINE Serving on 0.0.0.0:40404
+[22/Nov/2011:22:01:58] ENGINE Shutting down due to error in start listener:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 235, in start
+    self.publish('start')
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 215, in publish
+    raise exc
+ChannelFailures: ImportError('No module named settings_develops',)
+
+[22/Nov/2011:22:01:58] ENGINE Bus STOPPING
+[22/Nov/2011:22:01:58] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[22/Nov/2011:22:01:58] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:22:01:58] ENGINE Bus STOPPED
+[22/Nov/2011:22:01:58] ENGINE Bus EXITING
+[22/Nov/2011:22:01:58] ENGINE Bus EXITED
+[22/Nov/2011:22:02:53] ENGINE Listening for SIGHUP.
+[22/Nov/2011:22:02:53] ENGINE Listening for SIGTERM.
+[22/Nov/2011:22:02:53] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:22:02:53] ENGINE Bus STARTING
+[22/Nov/2011:22:02:53] ENGINE Error in 'start' listener <bound method DjangoAppPlugin.start of <__main__.DjangoAppPlugin object at 0xb7515ccc>>
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 197, in publish
+    output.append(listener(*args, **kwargs))
+  File "webserver.py", line 93, in start
+    settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
+ImportError: No module named settings_develops
+
+[22/Nov/2011:22:02:53] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:22:02:53] ENGINE Serving on 0.0.0.0:40404
+[22/Nov/2011:22:02:53] ENGINE Shutting down due to error in start listener:
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 235, in start
+    self.publish('start')
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/process/wspbus.py", line 215, in publish
+    raise exc
+ChannelFailures: ImportError('No module named settings_develops',)
+
+[22/Nov/2011:22:02:53] ENGINE Bus STOPPING
+[22/Nov/2011:22:02:53] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[22/Nov/2011:22:02:53] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:22:02:53] ENGINE Bus STOPPED
+[22/Nov/2011:22:02:53] ENGINE Bus EXITING
+[22/Nov/2011:22:02:53] ENGINE Bus EXITED
+[22/Nov/2011:22:03:23] ENGINE Listening for SIGHUP.
+[22/Nov/2011:22:03:23] ENGINE Listening for SIGTERM.
+[22/Nov/2011:22:03:23] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:22:03:23] ENGINE Bus STARTING
+[22/Nov/2011:22:03:23] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:22:03:23] ENGINE Serving on 0.0.0.0:40404
+[22/Nov/2011:22:03:23] ENGINE Bus STARTED
+[22/Nov/2011:22:03:27] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:22:03:27] ENGINE Bus STOPPING
+[22/Nov/2011:22:03:27] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[22/Nov/2011:22:03:27] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:22:03:27] ENGINE Bus STOPPED
+[22/Nov/2011:22:03:27] ENGINE Bus EXITING
+[22/Nov/2011:22:03:27] ENGINE Bus EXITED
+[22/Nov/2011:22:03:27] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:22:08:58] ENGINE Listening for SIGHUP.
+[22/Nov/2011:22:08:58] ENGINE Listening for SIGTERM.
+[22/Nov/2011:22:08:58] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:22:08:58] ENGINE Bus STARTING
+[22/Nov/2011:22:08:58] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:22:08:58] ENGINE Serving on 0.0.0.0:40404
+[22/Nov/2011:22:08:58] ENGINE Bus STARTED
+[22/Nov/2011:22:09:01] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:22:09:01] ENGINE Bus STOPPING
+[22/Nov/2011:22:09:01] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[22/Nov/2011:22:09:01] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:22:09:01] ENGINE Bus STOPPED
+[22/Nov/2011:22:09:01] ENGINE Bus EXITING
+[22/Nov/2011:22:09:01] ENGINE Bus EXITED
+[22/Nov/2011:22:09:01] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:22:09:11] ENGINE Listening for SIGHUP.
+[22/Nov/2011:22:09:11] ENGINE Listening for SIGTERM.
+[22/Nov/2011:22:09:11] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:22:09:11] ENGINE Bus STARTING
+[22/Nov/2011:22:09:11] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:22:09:11] ENGINE Serving on 0.0.0.0:40404
+[22/Nov/2011:22:09:11] ENGINE Bus STARTED
+[22/Nov/2011:22:09:20] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:22:09:20] ENGINE Bus STOPPING
+[22/Nov/2011:22:09:20] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[22/Nov/2011:22:09:20] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:22:09:20] ENGINE Bus STOPPED
+[22/Nov/2011:22:09:20] ENGINE Bus EXITING
+[22/Nov/2011:22:09:20] ENGINE Bus EXITED
+[22/Nov/2011:22:09:20] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:22:09:25] ENGINE Listening for SIGHUP.
+[22/Nov/2011:22:09:25] ENGINE Listening for SIGTERM.
+[22/Nov/2011:22:09:25] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:22:09:25] ENGINE Bus STARTING
+[22/Nov/2011:22:09:25] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:22:09:25] ENGINE Serving on 0.0.0.0:40404
+[22/Nov/2011:22:09:25] ENGINE Bus STARTED
+[22/Nov/2011:22:10:15] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:22:10:15] ENGINE Bus STOPPING
+[22/Nov/2011:22:10:20] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[22/Nov/2011:22:10:20] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:22:10:20] ENGINE Bus STOPPED
+[22/Nov/2011:22:10:20] ENGINE Bus EXITING
+[22/Nov/2011:22:10:20] ENGINE Bus EXITED
+[22/Nov/2011:22:10:20] ENGINE Waiting for child threads to terminate...
+[22/Nov/2011:22:22:16] ENGINE Listening for SIGHUP.
+[22/Nov/2011:22:22:16] ENGINE Listening for SIGTERM.
+[22/Nov/2011:22:22:16] ENGINE Listening for SIGUSR1.
+[22/Nov/2011:22:22:16] ENGINE Bus STARTING
+[22/Nov/2011:22:22:16] ENGINE Started monitor thread '_TimeoutMonitor'.
+[22/Nov/2011:22:22:16] ENGINE Serving on 0.0.0.0:40404
+[22/Nov/2011:22:22:16] ENGINE Bus STARTED
+[22/Nov/2011:22:22:48] ENGINE Keyboard Interrupt: shutting down bus
+[22/Nov/2011:22:22:48] ENGINE Bus STOPPING
+[22/Nov/2011:22:22:48] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[22/Nov/2011:22:22:48] ENGINE Stopped thread '_TimeoutMonitor'.
+[22/Nov/2011:22:22:48] ENGINE Bus STOPPED
+[22/Nov/2011:22:22:48] ENGINE Bus EXITING
+[22/Nov/2011:22:22:48] ENGINE Bus EXITED
+[22/Nov/2011:22:22:48] ENGINE Waiting for child threads to terminate...

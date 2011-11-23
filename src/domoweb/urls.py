@@ -57,9 +57,9 @@ urlpatterns += patterns('',
     #(r'^admin/', include(admin.site.urls)),
     # TODO : change this, only used in development environment
     # See : http://docs.djangoproject.com/en/dev/howto/static-files/
-    (r'^design/(?P<path>.*)$', 'django.views.static.serve',
-        {'document_root': settings.STATIC_DESIGN_ROOT}),
-    (r'^widgets/(?P<path>.*)$', 'django.views.static.serve',
-        {'document_root': settings.STATIC_WIDGETS_ROOT}),
+#    (r'^design/(?P<path>.*)$', 'django.views.static.serve',
+#        {'document_root': settings.STATIC_DESIGN_ROOT}),
+#    (r'^widgets/(?P<path>.*)$', 'django.views.static.serve',
+#        {'document_root': settings.STATIC_WIDGETS_ROOT}),
 )
 

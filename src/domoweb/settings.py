@@ -35,10 +35,7 @@ Implements
 """
 
 import os
-import pwd
 import commands
-
-from domoweb.tools.configloader import Loader
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -47,41 +44,21 @@ RINOR_MIN_API = '0.2'
 RINOR_MAX_API = '0.2' #included
 DMG_MIN_VERSION = '0.2.0-alpha1'
 
-ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
-)
+ADMINS = ()
 
 MANAGERS = ADMINS
 
-### Find User home
-if os.path.isfile("/etc/default/domoweb"):
-    file = "/etc/default/domoweb"
-else:
-    file = "/etc/conf.d/domoweb"
-f = open(file,"r")
-r = f.readlines()
-lines = filter(lambda x: not x.startswith('#') and x != '\n',r)
-f.close()
-for line in lines:
-    item,value = line.strip().split("=")
-    if item.strip() == "DOMOWEB_USER":
-        user = value
-    else:
-        raise KeyError("Unknown config value in the main config file : %s" % item)
-try:
-    user_entry = pwd.getpwnam(user)
-except KeyError:
-    raise KeyError("The user %s does not exists, you MUST create it or change the DOMOWEB_USER parameter in %s. Please report this as a bug if you used install.sh." % (user, file))
-user_home = user_entry.pw_dir
+PROJECT_PATH = os.environ['DOMOWEB_PATH']
+print PROJECT_PATH
+
+### Get DomoWeb Version
+DOMOWEB_FULL_VERSION = commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev} ({latesttag}) - {date|isodate}' -b" % PROJECT_PATH)
+DOMOWEB_VERSION = commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev}' -b" % PROJECT_PATH)
+print DOMOWEB_FULL_VERSION
 
 ### UI Database settings
 DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = "%s/.domogik/domoweb.db" % user_home
-
-### Rest settings
-cfg_rest = Loader('django')
-config_django = cfg_rest.load()
-conf_django = dict(config_django[1])
+DATABASE_NAME = "%s/.domogik/domoweb.db" % os.environ['DOMOWEB_USER_HOME']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -99,20 +76,6 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
-
-# Absolute path to the directory that holds media.
-# Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-# Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
-
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'i#=g$uo$$qn&0qtz!sbimt%#d+lb!stt#12hr@%vp-u)yw3s+b'
@@ -154,7 +117,6 @@ INSTALLED_APPS = (
     'domoweb.rinor',
 )
 
-
 # Session stuff
 # Other options are :
 ### 'django.contrib.sessions.backends.db'
@@ -171,3 +133,23 @@ API_LIMIT_PER_PAGE = 0
 LOGIN_URL = '/admin/login'
 LOGOUT_URL = '/admin/logout'
 LOGIN_REDIRECT_URL = '/admin/'
+
+TEMPLATE_DIRS = (
+    # Put strings here, like "/home/html/django_templates" or
+    # "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    '%s/templates/' % PROJECT_PATH,
+    '%s/view/templates/' % PROJECT_PATH,
+    '%s/admin/templates/' % PROJECT_PATH,
+    '%s/rinor/templates/' % PROJECT_PATH,
+)
+
+# List the availables widgets
+WIDGETS_LIST = []
+STATIC_WIDGETS_ROOT = os.environ['DOMOWEB_STATIC_WIDGETS']
+if os.path.isdir(STATIC_WIDGETS_ROOT):
+    for file in os.listdir(STATIC_WIDGETS_ROOT):
+        main = os.path.join(STATIC_WIDGETS_ROOT, file, "main.js")
+        if os.path.isfile(main):
+            WIDGETS_LIST.append(file)

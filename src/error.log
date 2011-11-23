@@ -1,0 +1,17 @@
+[23/Nov/2011:10:22:44] ENGINE Listening for SIGHUP.
+[23/Nov/2011:10:22:44] ENGINE Listening for SIGTERM.
+[23/Nov/2011:10:22:44] ENGINE Listening for SIGUSR1.
+[23/Nov/2011:10:22:44] ENGINE Bus STARTING
+[23/Nov/2011:10:22:44] ENGINE Mounting the Django application
+[23/Nov/2011:10:22:44] ENGINE Setting up the static directory to be served
+[23/Nov/2011:10:22:44] ENGINE Started monitor thread '_TimeoutMonitor'.
+[23/Nov/2011:10:22:44] ENGINE Serving on 0.0.0.0:40404
+[23/Nov/2011:10:22:44] ENGINE Bus STARTED
+[23/Nov/2011:10:22:54] ENGINE Keyboard Interrupt: shutting down bus
+[23/Nov/2011:10:22:54] ENGINE Bus STOPPING
+[23/Nov/2011:10:22:54] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[23/Nov/2011:10:22:54] ENGINE Stopped thread '_TimeoutMonitor'.
+[23/Nov/2011:10:22:54] ENGINE Bus STOPPED
+[23/Nov/2011:10:22:54] ENGINE Bus EXITING
+[23/Nov/2011:10:22:54] ENGINE Bus EXITED
+[23/Nov/2011:10:22:54] ENGINE Waiting for child threads to terminate...

@@ -86,7 +86,8 @@ setup(
                       'django-tastypie == 0.9.9',
                       'simplejson >= 1.9.2',
                       'httplib2 >= 0.6.0', 
-                      'Distutils2',],
+                      'Distutils2',
+                      'CherryPy'],
     zip_safe = False,
     license = 'GPL v3',
     # namespace_packages = ['domogik', 'mpris', 'tools'],
@@ -106,13 +107,13 @@ setup(
     entry_points = {
         'console_scripts': [
             """
-            dmg_domoweb = domoweb.manage_install:run_manager
+            dmg_domoweb = domoweb.runserver:runinstall
             """
         ],
     } if (sys.argv[1] == 'install') else {
         'console_scripts': [
             """
-            dmg_domoweb = domoweb.manage_develop:run_manager
+            dmg_domoweb = domoweb.runserver:rundevelop
             """
         ],
     },

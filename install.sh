@@ -88,7 +88,19 @@ function copy_sample_files {
     if [ ! -f $dmg_home/domoweb.cfg ];then
         cp -f src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
         chown $d_user: src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
+    else
+        keep="y"
+        already_cfg=1
+        read -p "You already have Domoweb configuration files. Do you want to keep them ? [Y/n]" keep
+        if [ "x$keep" = "x" ];then
+            keep="y"
+        fi
+        if [ "$keep" = "n" -o "$keep" = "N" ];then
+            cp -f src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
+            chown $d_user: src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
+        fi
     fi
+    
     if [ -d "/etc/default/" ];then
         if [ "$keep" = "n" -o "$keep" = "N" ];then
             cp src/examples/default/domoweb /etc/default/
@@ -141,7 +153,7 @@ function create_log_dir {
 }
 
 function init_django_db {
-    python ./src/domoweb/manage_develop.py syncdb --noinput
+    python ./src/domoweb/manage.py syncdb --noinput
     chown $d_user: $dmg_home/domoweb.db
 }
 

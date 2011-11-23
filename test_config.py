@@ -131,15 +131,9 @@ def test_user_config_file(user_home, user_entry):
     config = ConfigParser.ConfigParser()
     config.read("%s/.domogik/domoweb.cfg" % user_home)
     
-    #check [domogik] section
-    django = dict(config.items('django'))
+    #check [global] section
+    django = dict(config.items('global'))
     ok("Config file correctly loaded")
-
-#    parent_conn, child_conn = Pipe()
-#    p = Process(target=_test_user_can_write, args=(child_conn, dmg['log_dir_path'],user_entry,))
-#    p.start()
-#    p.join()
-#    assert parent_conn.recv(), "The directory %s for log does not exist or does not have right permissions" % dmg['log_dir_path']
 
 def test_init():
     info("Check init.d / rc.d")
@@ -160,8 +154,8 @@ def get_django_url():
     import ConfigParser
     config = ConfigParser.ConfigParser()
     config.read("%s/.domogik/domoweb.cfg" % user_home)
-    django = dict(config.items('django'))
-    return "http://127.0.0.1:%s/" % (django['django_server_port'])
+    cherrypy = dict(config.items('global'))
+    return "http://127.0.0.1:%s/" % (cherrypy['server.socket_port'])
      
 try:
     am_i_root()
