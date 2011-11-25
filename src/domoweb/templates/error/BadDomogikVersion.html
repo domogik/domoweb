@@ -31,7 +31,7 @@
     <div id="error">
         <p><strong>
         {% if rinor_info.info.rinor_version_inferior %}
-            Your Domogik version is too old {{rinor_info.info.dmg_version}}, please upgrade Domogik to >= {{rinor_info.info.dmg_min_version}}
+            Your Domogik version is too old {{rinor_info.info.dmg_version}}, please upgrade Domogik to >= {{dmg_min_version}}
         {% else %}
             Your Domoweb version is too old for this new version of Domogik {{rinor_info.info.dmg_version}}, please upgrade Domoweb      
         {% endif %}

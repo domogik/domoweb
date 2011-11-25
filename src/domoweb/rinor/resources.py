@@ -470,6 +470,7 @@ class PackageResource(RinorResource):
         else:
             return None
 
+'''
 class EventResource(RinorResource):
     class Meta:
         resource_name = 'event'
@@ -486,6 +487,7 @@ class EventResource(RinorResource):
         except ObjectDoesNotExist:
             return HttpNotFound()
         return HttpResponse(objects, mimetype="text/event-stream")
+'''
 
 class CommandResource(RinorResource):
     # fields must map to the attributes in the Row class

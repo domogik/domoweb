@@ -48,7 +48,7 @@ $(function(){
         eventRequest: function() {            
             $.eventsource({
                 label: "rinor-events",
-                url: "/rinor/api/event/",
+                url: "/events/",
                 dataType: "json",
                 open: function() {        
                 },

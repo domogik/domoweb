@@ -10,6 +10,8 @@ from django.shortcuts import redirect
 from domoweb.rinor.pipes import InfoPipe
 from domoweb.exceptions import RinorNotAvailable, RinorError
 from httplib import BadStatusLine
+from distutils2.version import *
+from distutils2.version import IrrationalVersionError
 
 def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
     """
@@ -35,6 +37,11 @@ def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
     response_attr_list['page_messages'] = page_messages    
     response_attr_list['version'] = settings.DOMOWEB_VERSION
     response_attr_list['is_user_connected'] = __is_user_connected(request)
+    
+    response_attr_list['rinor_min_version'] = settings.RINOR_MIN_API
+    response_attr_list['rinor_max_version'] = settings.RINOR_MAX_API
+    response_attr_list['dmg_min_version'] = settings.DMG_MIN_VERSION
+
     for attribute in attribute_list:
         response_attr_list[attribute] = attribute_list[attribute]
     response = render_to_response(html_page, response_attr_list,
@@ -102,6 +109,7 @@ def rinor_isconfigured(function):
                     return redirect("error_badstatusline_view")
                 except RinorNotAvailable:
                     return redirect("error_resourcenotavailable_view")
+                
                 if (not _info.info.rinor_version_superior and not _info.info.rinor_version_inferior):
                     request.session['rinor_api_version'] = _info.info.rinor_version                    
                 else:

@@ -67,3 +67,6 @@ ChannelFailures: AttributeError("'module' object has no attribute 'STATIC_DESIGN
 [23/Nov/2011:21:44:49] ENGINE Started monitor thread '_TimeoutMonitor'.
 [23/Nov/2011:21:44:49] ENGINE Serving on 0.0.0.0:40404
 [23/Nov/2011:21:44:49] ENGINE Bus STARTED
+[23/Nov/2011:22:35:48] ENGINE Caught signal SIGHUP.
+[23/Nov/2011:22:35:48] ENGINE SIGHUP caught while daemonized. Restarting.
+[23/Nov/2011:22:35:48] ENGINE Bus STOPPING

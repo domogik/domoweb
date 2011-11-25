@@ -57,6 +57,9 @@ from cherrypy.process import wspbus, plugins
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 from django.http import HttpResponseServerError
+from domoweb.rinor.events import *
+
+os.environ['DJANGO_SETTINGS_MODULE']='domoweb.settings'
 
 class Server(object):
     def run(self, PROJECT_PATH):
@@ -125,6 +128,8 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         self.bus.log("Setting up the static directory to be served")
         settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
 
+        cherrypy.tree.mount(Events(), '/events')
+
         for (url, root) in self.STATICS.items():
             static_handler = cherrypy.tools.staticdir.handler(
                 section="/",
@@ -189,13 +194,11 @@ class HTTPLogger(_cplogging.LogManager):
 def rundevelop():
     PROJECT_PATH=os.path.dirname(os.path.abspath(__file__))
     os.environ['DOMOWEB_PATH']=PROJECT_PATH
-    os.environ['DJANGO_SETTINGS_MODULE']='domoweb.settings'
     Server().run(PROJECT_PATH)
 
 def runinstall():
     PROJECT_PATH='/usr/local/share/domoweb'
     os.environ['DOMOWEB_PATH']=PROJECT_PATH
-    os.environ['DJANGO_SETTINGS_MODULE']='domoweb.settings'
     Server().run(PROJECT_PATH)
     
 if __name__ == '__main__':

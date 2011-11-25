@@ -48,18 +48,5 @@ urlpatterns += patterns('',
     (r'^view/', include('domoweb.view.urls')),
     (r'^admin/', include('domoweb.admin.urls')),
     (r'^rinor/', include('domoweb.rinor.urls')),
-
-    # Uncomment the admin/doc line below and add 'django.contrib.admindocs'
-    # to INSTALLED_APPS to enable admin documentation:
-    # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    #(r'^admin/', include(admin.site.urls)),
-    # TODO : change this, only used in development environment
-    # See : http://docs.djangoproject.com/en/dev/howto/static-files/
-#    (r'^design/(?P<path>.*)$', 'django.views.static.serve',
-#        {'document_root': settings.STATIC_DESIGN_ROOT}),
-#    (r'^widgets/(?P<path>.*)$', 'django.views.static.serve',
-#        {'document_root': settings.STATIC_WIDGETS_ROOT}),
+    (r'^commands$', 'rpc4django.views.serve_rpc_request'),
 )
-

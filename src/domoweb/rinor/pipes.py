@@ -59,25 +59,26 @@ class InfoPipe(RinorPipe):
     def get_info_extended(self):
         _data = self.get_info()
         if (_data):
-            try:
-                if ("REST_API_release" in _data.info):
-                    _data.info['rinor_version'] = NormalizedVersion(_data.info.REST_API_release)
-                else:    
-                    _data.info['rinor_version'] = NormalizedVersion('0.1')
-                _data.info['min_version'] = NormalizedVersion(settings.RINOR_MIN_API)
-                _data.info['max_version'] = NormalizedVersion(settings.RINOR_MAX_API)
-                _data.info['rinor_version_superior'] = (_data.info['rinor_version'] > _data.info['max_version'])
-                _data.info['rinor_version_inferior'] = (_data.info['rinor_version'] < _data.info['min_version'])
-            except IrrationalVersionError:
-                _data.info['rinor_version'] = '?'
-                _data.info['min_version'] = '?'
-                _data.info['rinor_version_superior'] = False
-                _data.info['rinor_version_inferior'] = False
+            if ("REST_API_release" in _data.info):
+                _data.info['rinor_version'] = _data.info.REST_API_release
+            else:    
+                _data.info['rinor_version'] = '0.1'
+
             if ("Domogik_release" in _data.info):
                 _data.info['dmg_version'] = _data.info.Domogik_release
             else:
-                _data.info['dmg_version'] = '0.1'                
-            _data.info['dmg_min_version'] = settings.DMG_MIN_VERSION
+                _data.info['dmg_version'] = '0.1'             
+
+            try:
+                _data.info['rinor_version_superior'] = (NormalizedVersion(_data.info['rinor_version']) > NormalizedVersion(settings.RINOR_MAX_API))
+            except IrrationalVersionError:
+                _data.info['rinor_version_superior'] = False
+
+            try:
+                _data.info['rinor_version_inferior'] = (NormalizedVersion(_data.info['rinor_version']) < NormalizedVersion(settings.RINOR_MIN_API))
+            except IrrationalVersionError:
+                _data.info['rinor_version_inferior'] = False
+
             return _data
         else:
             return None

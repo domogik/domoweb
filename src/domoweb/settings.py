@@ -111,6 +111,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'tastypie',
+    'rpc4django',
     'domoweb',
     'domoweb.view',
     'domoweb.admin',

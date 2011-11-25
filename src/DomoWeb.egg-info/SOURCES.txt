@@ -9,6 +9,7 @@ src/DomoWeb.egg-info/requires.txt
 src/DomoWeb.egg-info/top_level.txt
 src/domoweb/__init__.py
 src/domoweb/exceptions.py
+src/domoweb/jsonrpcserver.py
 src/domoweb/manage.py
 src/domoweb/models.py
 src/domoweb/runserver.py
