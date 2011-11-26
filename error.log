@@ -70,3 +70,20 @@ ChannelFailures: AttributeError("'module' object has no attribute 'STATIC_DESIGN
 [23/Nov/2011:22:35:48] ENGINE Caught signal SIGHUP.
 [23/Nov/2011:22:35:48] ENGINE SIGHUP caught while daemonized. Restarting.
 [23/Nov/2011:22:35:48] ENGINE Bus STOPPING
+[25/Nov/2011:17:31:07] ENGINE Listening for SIGHUP.
+[25/Nov/2011:17:31:07] ENGINE Listening for SIGTERM.
+[25/Nov/2011:17:31:07] ENGINE Listening for SIGUSR1.
+[25/Nov/2011:17:31:07] ENGINE Bus STARTING
+[25/Nov/2011:17:31:07] ENGINE Mounting the Django application
+[25/Nov/2011:17:31:07] ENGINE Setting up the static directory to be served
+[25/Nov/2011:17:31:07] ENGINE Started monitor thread '_TimeoutMonitor'.
+[25/Nov/2011:17:31:07] ENGINE Serving on 0.0.0.0:40404
+[25/Nov/2011:17:31:07] ENGINE Bus STARTED
+[25/Nov/2011:23:16:38] ENGINE Keyboard Interrupt: shutting down bus
+[25/Nov/2011:23:16:38] ENGINE Bus STOPPING
+[25/Nov/2011:23:16:38] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[25/Nov/2011:23:16:38] ENGINE Stopped thread '_TimeoutMonitor'.
+[25/Nov/2011:23:16:38] ENGINE Bus STOPPED
+[25/Nov/2011:23:16:38] ENGINE Bus EXITING
+[25/Nov/2011:23:16:38] ENGINE Bus EXITED
+[25/Nov/2011:23:16:38] ENGINE Waiting for child threads to terminate...
