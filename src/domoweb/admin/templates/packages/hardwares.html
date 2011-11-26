@@ -49,7 +49,7 @@
 {% endblock %}
 
 {% block right %}
-    <section class="subsection">
+    <section class="subsection ui-widget-content">
         <h2>{% trans "Installed" %}</h2>
         <table id='installed_list' class='tablesorter'>
             <thead>
@@ -68,7 +68,7 @@
             </tbody>
         </table>
     </section>
-    <section class="subsection">
+    <section class="subsection ui-widget-content">
         <h2>{% trans "Available" %}</h2>
         <table id='available_list' class='tablesorter'>
             <thead>
@@ -93,9 +93,9 @@
                         {% else %}{% if package.upgrade_require and package.update %}
                             Upgrade domogik, to version package["domogik-min-release"], in order to update
                             {% else %}{% if package.install %}
-                                <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Install Package</a>
+                                <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Install</a>
                                 {% else %}
-                                <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Update Package</a>
+                                <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Update</a>
                                 {% endif %}
                             {% endif %}
                         {% endif %}

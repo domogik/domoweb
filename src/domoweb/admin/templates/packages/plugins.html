@@ -78,7 +78,7 @@
                                     <a class='buttontext' href='{% url admin_packages_enable_view host package.name 'enable' %}'>Enable</a>
                                 {% endif %}
                                 {% if package.update_available %}
-                                    <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.update_available %}'>Update Package</a>
+                                    <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.update_available %}'>Update</a>
                                 {% endif %}
                             </td></tr>
                     {% endfor %}
@@ -110,9 +110,9 @@
                                 {% else %}{% if package.upgrade_require and package.update %}
                                     Upgrade domogik, to version package["domogik-min-release"], in order to update
                                     {% else %}{% if package.install %}
-                                        <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Install Package</a>
+                                        <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Install</a>
                                         {% else %}
-                                        <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Update Package</a>
+                                        <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Update</a>
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
