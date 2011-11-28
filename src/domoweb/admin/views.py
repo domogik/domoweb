@@ -298,7 +298,7 @@ def admin_organization_widgets(request):
 
 @rinor_isconfigured
 @admin_required
-def admin_plugins_plugin(request, plugin_host, plugin_name, plugin_type):
+def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     """
     Method called when the admin plugin command page is accessed
     @param request : HTTP request
@@ -308,7 +308,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_name, plugin_type):
     page_messages = []
 
     try:
-        plugin = PluginPipe().get_detail(plugin_host, plugin_name)
+        plugin = PluginPipe().get_detail(plugin_host, plugin_id)
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except RinorNotAvailable:

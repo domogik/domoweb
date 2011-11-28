@@ -528,8 +528,8 @@ class PluginPipe(RinorPipe):
     index = 'plugin'
     paths = []
 
-    def get_detail(self, hostname, name):
-        _data = self._get_data(self.detail_path, [hostname, name])
+    def get_detail(self, hostname, id):
+        _data = self._get_data(self.detail_path, [hostname, id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -537,8 +537,8 @@ class PluginPipe(RinorPipe):
         else:
             return None
 
-    def command_detail(self, hostname, name, command):
-        _data = self._put_data("/plugin", [command, hostname, name])
+    def command_detail(self, hostname, id, command):
+        _data = self._put_data("/plugin", [command, hostname, id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return None
@@ -551,8 +551,8 @@ class PluginConfigPipe(RinorPipe):
     index = 'config'
     paths = []
 
-    def get_list(self, hostname, name):
-        _data = self._get_data(self.list_path, ['by-name', hostname, name])
+    def get_list(self, hostname, id):
+        _data = self._get_data(self.list_path, ['by-name', hostname, id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -560,17 +560,17 @@ class PluginConfigPipe(RinorPipe):
         else:
             return []
     
-    def get_detail(self, hostname, name, key):
+    def get_detail(self, hostname, id, key):
         _data = None
-        _configs = self.get_list(hostname, name)
+        _configs = self.get_list(hostname, id)
         if _configs:
             for _config in _configs:
                 if _config.key == key:
                     _data = _config
         return _data
 
-    def delete_list(self, hostname, name):
-        _data = self._delete_data(self.delete_path, [hostname, name])
+    def delete_list(self, hostname, id):
+        _data = self._delete_data(self.delete_path, [hostname, id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -578,8 +578,8 @@ class PluginConfigPipe(RinorPipe):
         else:
             return None
 
-    def delete_detail(self, hostname, name, key):
-        _data = self._delete_data(self.delete_path, [hostname, name, 'by-key', key])
+    def delete_detail(self, hostname, id, key):
+        _data = self._delete_data(self.delete_path, [hostname, id, 'by-key', key])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -587,8 +587,8 @@ class PluginConfigPipe(RinorPipe):
         else:
             return None
 
-    def set_detail(self, hostname, name, key, value):
-        _data = self._put_data(self.set_path, ['hostname', hostname, 'name', name, 'key', key, 'value', value])
+    def set_detail(self, hostname, id, key, value):
+        _data = self._put_data(self.set_path, ['hostname', hostname, 'id', id, 'key', key, 'value', value])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         if len(_data[self.index]) > 0:
@@ -655,7 +655,7 @@ class PackageExtendedPipe(RinorPipe):
         for host in _running:
             if (host.host == hostname):
                 for item in host.list:
-                    _enabled[item.name] = item
+                    _enabled[item.id] = item
 
         # Generate installed plugin list
         for host in _installed:

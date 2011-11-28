@@ -84,7 +84,7 @@ $(function(){
             var iprefix = item.prefix;
             var td = $("tr#" + ikey +" .value");
 
-            rinor.get(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.name }}', ikey])
+            rinor.get(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.id }}', ikey])
                 .success(function(data, status, xhr){
                     if (itype == 'boolean') {
                         if (data.value  == "True") {
@@ -187,7 +187,7 @@ $(function(){
     $('#simple_configuration_items').createConfigurationTable('configuration_items');
     
     /* Get the list of configuration items */
-    rinor.get(['api', 'plugindetail', '{{ plugin.host }}', '{{ plugin.name }}'])
+    rinor.get(['api', 'plugindetail', '{{ plugin.host }}', '{{ plugin.id }}'])
         .success(function(data, status, xhr){
             // Check configuration items
             var num_items = data.configuration.length;
@@ -211,7 +211,7 @@ $(function(){
                     $('#group_buttons').append(delInterfaceButton);
 
                     // get number of registered interfaces
-                    rinor.get(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.name }}', 'nb-int'])
+                    rinor.get(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.id }}', 'nb-int'])
                         .success(function(data, status, xhr){
                             // If already configured
                             nbInterface = data.value;
@@ -298,7 +298,7 @@ $(function(){
                         // delete config data
                         $('tr', '#configuration_items_' + nbInterface).each(function(index, item) {
                             if (item.id)
-                                deleteConfigKey('{{ plugin.host }}', '{{ plugin.name }}', item.id);
+                                deleteConfigKey('{{ plugin.host }}', '{{ plugin.id }}', item.id);
                         });
                         // delete elements from pluginCfg
                         var k = 0;
@@ -316,7 +316,7 @@ $(function(){
                             
                         // save new nbInterface
                         nbInterface--;
-                        rinor.put(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.name }}', 'nb-int'], {'value': nbInterface})
+                        rinor.put(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.id }}', 'nb-int'], {'value': nbInterface})
                             .error(function(jqXHR, status, error){
                                 if (jqXHR.status == 400)
                                     $.notification('error', jqXHR.responseText);
@@ -333,7 +333,7 @@ $(function(){
                  
             });
             
-            rinor.get(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.name }}'])
+            rinor.get(['api', 'pluginconfig', '{{ plugin.host }}', '{{ plugin.id }}'])
                 .success(function(data, status, xhr){
                     var never_configured = num_items - data.length;
                     if (never_configured > 0) {
@@ -347,7 +347,7 @@ $(function(){
                 });
             $("#configuration").append("<p><button id='configurationsubmit' class='button icon16-action-save'>{% trans "Save" %}</button></p>");
             $("#configurationsubmit").click(function(event) {
-                saveConfig('{{ plugin.host }}', '{{ plugin.name }}', pluginCfg, nbInterface);
+                saveConfig('{{ plugin.host }}', '{{ plugin.id }}', pluginCfg, nbInterface);
                 event.stopPropagation();
             });
         })
@@ -357,7 +357,7 @@ $(function(){
         });
 
     $("#configurationdelete").click(function(event) {
-        deleteConfig('{{ plugin.host }}', '{{ plugin.name }}');
+        deleteConfig('{{ plugin.host }}', '{{ plugin.id }}');
     });
 
     function setStatus(status) {
@@ -388,7 +388,7 @@ $(function(){
             .unbind('click')
             .click(function() {
             $("#buttonstatus").attr('className', 'button icon16-action-processing_f6f6f6');
-            rinor.put(['api','plugin', '{{ plugin.host }}', '{{ plugin.name }}'], {'command':btaction})
+            rinor.put(['api','plugin', '{{ plugin.host }}', '{{ plugin.id }}'], {'command':btaction})
                 .complete(function(){
                     $("#buttonstatus").removeClass('icon16-action-processing_f6f6f6');
                 })
@@ -435,8 +435,8 @@ function clone(obj){
 {% block title %}{% trans page_title %}{% endblock %}
 
 {% block banner %}
-    <h1 class="ident icon64-plugin-{{ plugin.name }}">
-        <span class="title">{% trans "Plugin" %} '{{ plugin.name }}'</span>
+    <h1 class="ident icon64-plugin-{{ plugin.id }}">
+        <span class="title">{% trans "Plugin" %} '{{ plugin.id }}'</span>
         <br />
         <span class="subtitle">{{ plugin.description }}</span>
     </h1>
@@ -444,7 +444,7 @@ function clone(obj){
         <li><span class='label'>{% trans "Version" %}:</span> {{ plugin.version }}</li>
         <li><span class='label'>{% trans "Documentation" %}:</span> <a href='{{ plugin.documentation }}'>Wiki</a></li>
         <li><span class='label'>{% trans "Host" %}:</span> {{ plugin.host }}</li>
-        {% ifnotequal plugin.name "rest" %}
+        {% ifnotequal plugin.id "rest" %}
             <li><span class='label'>{% trans "Technology" %}:</span> {{ plugin.technology }}</li>
             <li><div id='iconstatus'></div></li>
         {% endifnotequal %}
@@ -464,7 +464,7 @@ function clone(obj){
         <div id="tabs-1">
             <section class="subsection">
                 <h2>{% trans "Basic Control" %}</h2>
-                {% ifnotequal plugin.name "rest" %}
+                {% ifnotequal plugin.id "rest" %}
                     <button id='buttonstatus'></button>
                 {% endifnotequal %}
             </section>

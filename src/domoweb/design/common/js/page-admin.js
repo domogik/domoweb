@@ -13,12 +13,10 @@ function getPluginsList() {
                         }
                         var li = $("<li class='" + this.type + "'></li>");
                         var a = $("<a></a>");
-                        a.attr('href', '/admin/plugin/' + host + "/" + this.name + "/" + this.type)
-                            .attr('title', this.description)
-                            .tooltip_right();
-                        var status = $("<div><div class='host'>" + host + "</div>" + this.name + "</div>");
+                        a.attr('href', '/admin/plugin/' + host + "/" + this.id + "/" + this.type);
+                        var status = $("<div><div class='host'>" + host + "</div>" + this.id + "</div>");
                         status.addClass("menu-indicator")
-                        if (this.name != 'rest') {
+                        if (this.id != 'rest') {
                             if (this.status == 'ON') {
                                 if (this.type == 'plugin') {
                                     status.addClass("icon16-status-software-up");

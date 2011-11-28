@@ -33,7 +33,7 @@ $(function(){
     {% endifequal %}
     
     /* Get the list of configuration items */
-    rinor.get(['api', 'plugindetail', '{{ plugin.host }}', '{{ plugin.name }}'])
+    rinor.get(['api', 'plugindetail', '{{ plugin.host }}', '{{ plugin.id }}'])
         .success(function(data, status, xhr){
             // Check configuration items
             var num_items = data.configuration.length;
@@ -83,7 +83,7 @@ $(function(){
             .unbind('click')
             .click(function() {
             $("#buttonstatus").attr('className', 'button icon16-action-processing_f6f6f6');
-            rinor.put(['api','plugin', '{{ plugin.host }}', '{{ plugin.name }}'], {'command':btaction})
+            rinor.put(['api','plugin', '{{ plugin.host }}', '{{ plugin.id }}'], {'command':btaction})
                 .complete(function(){
                     $("#buttonstatus").removeClass('icon16-action-processing_f6f6f6');
                 })
@@ -116,8 +116,8 @@ function sortOptions(a, b){
 {% block title %}{% trans page_title %}{% endblock %}
 
 {% block banner %}
-    <h1 class="ident icon64-plugin-{{ plugin.name }}">
-        <span class="title">{% trans "Plugin" %} '{{ plugin.name }}'</span>
+    <h1 class="ident icon64-plugin-{{ plugin.id }}">
+        <span class="title">{% trans "Plugin" %} '{{ plugin.id }}'</span>
         <br />
         <span class="subtitle">{{ plugin.description }}</span>
     </h1>
@@ -125,7 +125,7 @@ function sortOptions(a, b){
         <li><span class='label'>{% trans "Version" %}:</span> {{ plugin.version }}</li>
         <li><span class='label'>{% trans "Documentation" %}:</span> <a href='{{ plugin.documentation }}'>Wiki</a></li>
         <li><span class='label'>{% trans "Host" %}:</span> {{ plugin.host }}</li>
-        {% ifnotequal plugin.name "rest" %}
+        {% ifnotequal plugin.id "rest" %}
             <li><span class='label'>{% trans "Technology" %}:</span> {{ plugin.technology }}</li>
             <li><div id='iconstatus'></div></li>
         {% endifnotequal %}

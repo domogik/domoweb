@@ -185,18 +185,18 @@ class PluginResource(RinorResource):
     def base_urls(self):
         return [
             url(r"^(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/(?P<hostname>[\w\d_-]+)/(?P<name>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/(?P<hostname>[\w\d_-]+)/(?P<id>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
 
     def obj_update(self, bundle, request=None, **kwargs):
-        return self._meta.rinor_pipe.command_detail(kwargs['hostname'], kwargs["name"], bundle["command"])
+        return self._meta.rinor_pipe.command_detail(kwargs['hostname'], kwargs["id"], bundle["command"])
 
 class PluginDetailResource(RinorResource):
     # fields must map to the attributes in the Row class
     host = fields.CharField(attribute = 'host')
     status = fields.CharField(attribute = 'status')
     version = fields.CharField(attribute = 'version')
-    name = fields.CharField(attribute = 'name')
+    id = fields.CharField(attribute = 'id')
     documentation = fields.CharField(attribute = 'documentation')
     technology = fields.CharField(attribute = 'technology')
     description = fields.CharField(attribute = 'description')
@@ -211,11 +211,11 @@ class PluginDetailResource(RinorResource):
 
     def base_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<hostname>[\w\d_-]+)/(?P<name>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/(?P<hostname>[\w\d_-]+)/(?P<id>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
 
     def obj_get(self, request, **kwargs):
-        return self._meta.rinor_pipe.get_detail(kwargs['hostname'], kwargs['name'])
+        return self._meta.rinor_pipe.get_detail(kwargs['hostname'], kwargs['id'])
         
 class PluginConfigResource(RinorResource):
     # fields must map to the attributes in the Row class
