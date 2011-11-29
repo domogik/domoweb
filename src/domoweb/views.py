@@ -147,7 +147,7 @@ def config_welcome(request):
     @return an HttpResponse object
     """
 
-    page_title = _("Welcome to Domogik - Free home automation under Linux")
+    page_title = _("Domogik - Free home automation under Linux")
     page_messages = []
 
     return go_to_page(
