@@ -45,17 +45,16 @@ $(function(){
                 });
         },
         
-        eventRequest: function() {            
-            $.eventsource({
-                label: "rinor-events",
-                url: "/events/",
-                dataType: "json",
-                open: function() {        
-                },
-                message: function( data ) {
-                    $(document).trigger('dmg_event', data);
-                }
-            });
+        eventRequest: function() {
+            var es = new EventSource('/events/');
+            es.addEventListener('open', function (event) {
+            }, false);
+            es.addEventListener('message', function (event) {
+                data = jQuery.parseJSON(event.data);
+                $(document).trigger('dmg_event', data);
+            }, true);
+            es.addEventListener('error', function (event) {
+            }, false);
         },
         
         stringToJSON: function(string) {
