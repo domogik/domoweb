@@ -131,16 +131,16 @@ $(function(){
         },
     });
     
-    function deleteConfigKey(host, name, key) {
-        rinor.delete(['api', 'pluginconfig', host, name, key])
+    function deleteConfigKey(host, id, key) {
+        rinor.delete(['api', 'pluginconfig', host, id, key])
             .error(function(jqXHR, status, error){
                 if (jqXHR.status == 400)
                     $.notification('error', jqXHR.responseText);
             });
     }
     
-    function deleteConfig(host, name) {
-        rinor.delete(['api', 'pluginconfig', host, name])
+    function deleteConfig(host, id) {
+        rinor.delete(['api', 'pluginconfig', host, id])
             .success(function(data, status, xhr){
                 $.reloadPage({'status': 'ok', 'msg': '{% trans "Configuration deleted" %}'});
             })
@@ -150,7 +150,7 @@ $(function(){
             });
     }
     
-    function saveConfig(host, name, configuration, nbInterface) {
+    function saveConfig(host, id, configuration, nbInterface) {
         var itemSaved = 0;
         $.each(configuration, function(index, item) {
             var value = null;
@@ -159,7 +159,7 @@ $(function(){
             } else {
                 value = $('#value_' + item.key).val();
             }
-            rinor.put(['api', 'pluginconfig', host, name, item.key], {'value': value})
+            rinor.put(['api', 'pluginconfig', host, id, item.key], {'value': value})
                 .success(function(data, status, xhr){
                     $('#value_' + item.key).parent().attr('class', 'value icon16-status-true');
                     itemSaved++;
@@ -175,7 +175,7 @@ $(function(){
                 });
         });
         if (nbInterface != undefined) {
-            rinor.put(['api', 'pluginconfig', host, name, 'nb-int'], {'value': nbInterface})
+            rinor.put(['api', 'pluginconfig', host, id, 'nb-int'], {'value': nbInterface})
                 .error(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);

@@ -221,7 +221,7 @@ class PluginConfigResource(RinorResource):
     # fields must map to the attributes in the Row class
     key = fields.CharField(attribute = 'key')
     value = fields.CharField(attribute = 'value')
-    name = fields.CharField(attribute = 'name')
+    id = fields.CharField(attribute = 'id')
     hostname = fields.CharField(attribute = 'hostname')
 
     class Meta:
@@ -235,27 +235,27 @@ class PluginConfigResource(RinorResource):
 
     def base_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<hostname>[\w\d_-]+)/(?P<name>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/(?P<hostname>[\w\d_-]+)/(?P<name>[\w\d_-]+)/(?P<key>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/(?P<hostname>[\w\d_-]+)/(?P<id>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/(?P<hostname>[\w\d_-]+)/(?P<id>[\w\d_-]+)/(?P<key>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
 
     def obj_get_list(self, request, **kwargs):
-        return self._meta.rinor_pipe.get_list(kwargs['hostname'], kwargs['name'])
+        return self._meta.rinor_pipe.get_list(kwargs['hostname'], kwargs['id'])
 
     def obj_get(self, request, **kwargs):
-        _data = self._meta.rinor_pipe.get_detail(kwargs['hostname'], kwargs['name'], kwargs['key'])
+        _data = self._meta.rinor_pipe.get_detail(kwargs['hostname'], kwargs['id'], kwargs['key'])
         if not(_data):
             raise ObjectDoesNotExist()
         return _data
 
     def obj_delete_list(self, request=None, **kwargs):
-        return self._meta.rinor_pipe.delete_list(kwargs['hostname'], kwargs['name'])    
+        return self._meta.rinor_pipe.delete_list(kwargs['hostname'], kwargs['id'])    
     
     def obj_delete(self, request=None, **kwargs):
-        return self._meta.rinor_pipe.delete_detail(kwargs['hostname'], kwargs['name'], kwargs['key'])
+        return self._meta.rinor_pipe.delete_detail(kwargs['hostname'], kwargs['id'], kwargs['key'])
 
     def obj_update(self, bundle, request=None, **kwargs):
-        return self._meta.rinor_pipe.set_detail(kwargs['hostname'], kwargs['name'], kwargs['key'], bundle['value'])
+        return self._meta.rinor_pipe.set_detail(kwargs['hostname'], kwargs['id'], kwargs['key'], bundle['value'])
 
 class AreaResource(RinorResource):
     # fields must map to the attributes in the Row class
