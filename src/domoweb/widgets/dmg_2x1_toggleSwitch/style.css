@@ -1,0 +1,38 @@
+.dmg_2x1_toggleSwitch {    
+    text-align:center;
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
+}
+
+.dmg_2x1_toggleSwitch.clickable:hover,
+.dmg_2x1_toggleSwitch.clickable:focus {
+    background:none;    
+}
+
+.dmg_2x1_toggleSwitch .bgd {
+    background: url('images/background.png') 50% 50% no-repeat;
+    width:83px;
+    height:49px;
+}
+
+.dmg_2x1_toggleSwitch .switch {
+    width:49px;
+    height:49px;
+    -webkit-transition: margin-left 0.1s linear;
+    -moz-transition: margin-left 0.1s linear;
+    transition: margin-left 0.1s linear;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+
+.dmg_2x1_toggleSwitch.value_0 .switch {
+    background-image: url('images/off.png');
+    margin: 0;
+    margin-left: 0px;
+}
+
+.dmg_2x1_toggleSwitch.value_1 .switch {
+    background-image: url('images/on.png');
+    margin: 0;
+    margin-left: 34px;
+}

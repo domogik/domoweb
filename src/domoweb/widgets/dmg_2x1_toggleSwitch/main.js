@@ -4,28 +4,24 @@
         options: {
             version: 0.1,
             creator: 'Domogik',
-            id: 'dmg_1x1_basicActuatorBinary',
-            name: 'Basic widget',
-            description: 'Basic widget with border and name',
+            id: 'dmg_2x1_toggleSwitch',
+            name: 'Shiny toggle switch',
+            description: 'Shiny toggle switch using CSS3 animation',
             type: 'actuator.binary',
             height: 1,
-            width: 1,
+            width: 2,
             displayname: true,
-			displayborder: true
+			displayborder: false
         },
 
         _init: function() {
             var self = this, o = this.options;
-            this.element.addClass("icon32-usage-" + o.usage)
-                .addClass('clickable')
-                .processing();
-            this._status = $.getStatus();
-            this.element.append(this._status);
+            this.values = [o.model_parameters.value0, o.model_parameters.value1];
+            this.element.addClass('clickable');
+            this.element.append("<div class='bgd'><div class='switch'></div></div>");
             this.element.click(function (e) {self.action();e.stopPropagation();})
                 .keypress(function (e) {if (e.which == 13 || e.which == 32) {self.action; e.stopPropagation();}});                    
 
-            this.values = [o.model_parameters.value0, o.model_parameters.value1];
-            this.texts = [o.usage_parameters.state0, o.usage_parameters.state1];
             this._initValues(1);
         },
         
@@ -43,13 +39,15 @@
         
         action: function() {
             var self = this, o = this.options;
-            this.element.startProcessingState();
+            this.element.unbind('click');
             if (this.currentValue) {
                 this.processingValue = (this.currentValue == 0)?1:0;                
             } else { // Current state unknown
                 // Suppose the switch currently off
                 this.processingValue = 1;
             }
+            this.displayValue(this.processingValue);
+
             rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":this.values[this.processingValue]})
                 .success(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
@@ -63,23 +61,18 @@
 
         cancel: function() {
             var self = this, o = this.options;
-            this.element.stopProcessingState();
-            this._status.displayStatusError();
+            this.setValue(!this.processingValue);
+            this.element.click(function (e) {self.action();e.stopPropagation();})
+                .keypress(function (e) {if (e.which == 13 || e.which == 32) {self.action; e.stopPropagation();}});
         },
 
         /* Valid the processing state */
         valid: function(confirmed) {
             var self = this, o = this.options;
+            this.currentValue = this.processingValue;
             this.processingValue = null;
-            this.element.stopProcessingState();
-            if (confirmed) {
-                this._status.displayStatusOk();
-                this.element.doTimeout( 'resetStatus', state_reset_status, function(){
-                    self._status.displayResetStatus();
-                });
-            } else {
-                self._status.displayResetStatus();                
-            }
+            this.element.click(function (e) {self.action();e.stopPropagation();})
+                .keypress(function (e) {if (e.which == 13 || e.which == 32) {self.action; e.stopPropagation();}});
         },
         
         setValue: function(value) {
@@ -100,14 +93,10 @@
             var self = this, o = this.options;
             if (value != null) {
                 if (value == 1) {
-                    this.element.displayIcon('value_1');             
+                    this.element.addClass('value_1').removeClass('value_0');             
                 } else {
-                    this.element.displayIcon('value_0');             
+                    this.element.addClass('value_0').removeClass('value_1');             
                 }
-                this._status.writeStatus(this.texts[value]);
-            } else { // Unknown
-                this.element.displayIcon('unknown');                             
-                this._status.writeStatus('---');
             }
         }
     });

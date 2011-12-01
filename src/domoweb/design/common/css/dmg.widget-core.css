@@ -50,6 +50,9 @@
 .size1x1 { width:5em; height:5em;}
 .shape.size1x1 .sizetext { line-height:5em;}
 
+.size2x1 { width:12em; height:5em;}
+.shape.size2x1 .sizetext { line-height:5em;}
+
 .size3x1 { width:19em; height:5em;}
 .shape.size3x1 .sizetext { line-height:5em;}
 
