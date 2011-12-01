@@ -171,7 +171,7 @@
 
         action: function() {
             var self = this, o = this.options;
-            var value = this.rotation * 100 / 359;
+            var value = Math.round(this.rotation * 100 / 359);
 //            this.element.startProcessingState();
             rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":value})
                 .success(function(data, status, xhr){

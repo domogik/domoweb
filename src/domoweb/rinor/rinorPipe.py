@@ -26,10 +26,10 @@ class RinorPipe():
         if (data):
             _tmp = []
             for d in data:
-                if type(d) == int:
-                    d=str(d)
-                else:
+                if type(d) == str:
                     d=urllib.quote(d.encode('utf8'), '')
+                else:
+                    d=str(d)
                 _tmp.append(d)
             _data = '/'.join(_tmp)
             _path = "%s/%s/" % (path, _data)
