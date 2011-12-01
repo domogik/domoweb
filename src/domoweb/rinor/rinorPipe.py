@@ -24,7 +24,14 @@ class RinorPipe():
     
     def _clean_url(self, path, data=None):
         if (data):
-            _data = '/'.join([urllib.quote(str(d).encode('utf8'), '') for d in data])
+            _tmp = []
+            for d in data:
+                if type(d) == int:
+                    d=str(d)
+                else:
+                    d=urllib.quote(d.encode('utf8'), '')
+                _tmp.append(d)
+            _data = '/'.join(_tmp)
             _path = "%s/%s/" % (path, _data)
         else:
             _path = "%s/" % path

@@ -87,3 +87,71 @@ ChannelFailures: AttributeError("'module' object has no attribute 'STATIC_DESIGN
 [25/Nov/2011:23:16:38] ENGINE Bus EXITING
 [25/Nov/2011:23:16:38] ENGINE Bus EXITED
 [25/Nov/2011:23:16:38] ENGINE Waiting for child threads to terminate...
+[01/Dec/2011:16:31:03] ENGINE Listening for SIGHUP.
+[01/Dec/2011:16:31:03] ENGINE Listening for SIGTERM.
+[01/Dec/2011:16:31:03] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:16:31:03] ENGINE Bus STARTING
+[01/Dec/2011:16:31:03] ENGINE Mounting the Django application
+[01/Dec/2011:16:31:03] ENGINE Setting up the static directory to be served
+[01/Dec/2011:16:31:03] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:16:31:03] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:16:31:03] ENGINE Bus STARTED
+[01/Dec/2011:16:32:51] ENGINE Keyboard Interrupt: shutting down bus
+[01/Dec/2011:16:32:51] ENGINE Bus STOPPING
+[01/Dec/2011:16:36:35] ENGINE Listening for SIGHUP.
+[01/Dec/2011:16:36:35] ENGINE Listening for SIGTERM.
+[01/Dec/2011:16:36:35] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:16:36:35] ENGINE Bus STARTING
+[01/Dec/2011:16:36:35] ENGINE Mounting the Django application
+[01/Dec/2011:16:36:35] ENGINE Setting up the static directory to be served
+[01/Dec/2011:16:36:35] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:16:36:35] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:16:36:35] ENGINE Bus STARTED
+[01/Dec/2011:16:38:08] ENGINE Listening for SIGHUP.
+[01/Dec/2011:16:38:08] ENGINE Listening for SIGTERM.
+[01/Dec/2011:16:38:08] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:16:38:08] ENGINE Bus STARTING
+[01/Dec/2011:16:38:08] ENGINE Mounting the Django application
+[01/Dec/2011:16:38:08] ENGINE Setting up the static directory to be served
+[01/Dec/2011:16:38:08] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:16:38:08] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:16:38:08] ENGINE Bus STARTED
+[01/Dec/2011:16:47:33] ENGINE Listening for SIGHUP.
+[01/Dec/2011:16:47:33] ENGINE Listening for SIGTERM.
+[01/Dec/2011:16:47:33] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:16:47:33] ENGINE Bus STARTING
+[01/Dec/2011:16:47:33] ENGINE Mounting the Django application
+[01/Dec/2011:16:47:33] ENGINE Setting up the static directory to be served
+[01/Dec/2011:16:47:33] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:16:47:33] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:16:47:33] ENGINE Bus STARTED
+[01/Dec/2011:16:47:36]  Traceback (most recent call last):
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/_cpwsgi.py", line 169, in trap
+    return func(*args, **kwargs)
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/_cpwsgi.py", line 261, in next
+    return self.iter_response.next()
+  File "/usr/lib/python2.7/site-packages/CherryPy-3.2.2-py2.7.egg/cherrypy/lib/encoding.py", line 71, in encoder
+    for chunk in body:
+  File "/domoweb/repository/src/domoweb/rinor/pipes.py", line 25, in get_event
+    _event = _data.event[0]
+  File "/domoweb/repository/src/domoweb/rinor/rinorPipe.py", line 148, in __getattr__
+    raise AttributeError
+AttributeError
+
+[01/Dec/2011:16:50:57] ENGINE Keyboard Interrupt: shutting down bus
+[01/Dec/2011:16:50:57] ENGINE Bus STOPPING
+[01/Dec/2011:16:50:57] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('0.0.0.0', 40404)) shut down
+[01/Dec/2011:16:50:57] ENGINE Stopped thread '_TimeoutMonitor'.
+[01/Dec/2011:16:50:57] ENGINE Bus STOPPED
+[01/Dec/2011:16:50:57] ENGINE Bus EXITING
+[01/Dec/2011:16:50:57] ENGINE Bus EXITED
+[01/Dec/2011:16:50:57] ENGINE Waiting for child threads to terminate...
+[01/Dec/2011:16:51:01] ENGINE Listening for SIGHUP.
+[01/Dec/2011:16:51:01] ENGINE Listening for SIGTERM.
+[01/Dec/2011:16:51:01] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:16:51:01] ENGINE Bus STARTING
+[01/Dec/2011:16:51:01] ENGINE Mounting the Django application
+[01/Dec/2011:16:51:01] ENGINE Setting up the static directory to be served
+[01/Dec/2011:16:51:01] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:16:51:01] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:16:51:01] ENGINE Bus STARTED
