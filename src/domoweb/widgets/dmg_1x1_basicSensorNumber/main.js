@@ -249,7 +249,6 @@
                             d = self.get_graph_year(data.values);
                             break;
                     }
-
                     self.graph.yAxis[0].addPlotLine({
                         value: data.global_values.avg,
                         color: '#660099',
