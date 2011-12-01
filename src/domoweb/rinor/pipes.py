@@ -90,7 +90,8 @@ class HelperPipe(RinorPipe):
     paths = []
 
     def get_info(self, command):
-        _data = self._get_data(self.list_path, [command])               
+        print command
+        _data = self._get_data(self.list_path, command)               
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index]

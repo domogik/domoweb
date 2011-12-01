@@ -155,3 +155,66 @@ AttributeError
 [01/Dec/2011:16:51:01] ENGINE Started monitor thread '_TimeoutMonitor'.
 [01/Dec/2011:16:51:01] ENGINE Serving on 0.0.0.0:40404
 [01/Dec/2011:16:51:01] ENGINE Bus STARTED
+[01/Dec/2011:17:23:51] ENGINE Listening for SIGHUP.
+[01/Dec/2011:17:23:51] ENGINE Listening for SIGTERM.
+[01/Dec/2011:17:23:51] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:17:23:51] ENGINE Bus STARTING
+[01/Dec/2011:17:23:51] ENGINE Mounting the Django application
+[01/Dec/2011:17:23:51] ENGINE Setting up the static directory to be served
+[01/Dec/2011:17:23:51] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:17:23:51] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:17:23:51] ENGINE Bus STARTED
+[01/Dec/2011:17:24:57] ENGINE Listening for SIGHUP.
+[01/Dec/2011:17:24:57] ENGINE Listening for SIGTERM.
+[01/Dec/2011:17:24:57] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:17:24:57] ENGINE Bus STARTING
+[01/Dec/2011:17:24:57] ENGINE Mounting the Django application
+[01/Dec/2011:17:24:57] ENGINE Setting up the static directory to be served
+[01/Dec/2011:17:24:57] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:17:24:57] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:17:24:57] ENGINE Bus STARTED
+[01/Dec/2011:17:33:00] ENGINE Listening for SIGHUP.
+[01/Dec/2011:17:33:00] ENGINE Listening for SIGTERM.
+[01/Dec/2011:17:33:00] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:17:33:00] ENGINE Bus STARTING
+[01/Dec/2011:17:33:00] ENGINE Mounting the Django application
+[01/Dec/2011:17:33:00] ENGINE Setting up the static directory to be served
+[01/Dec/2011:17:33:00] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:17:33:00] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:17:33:00] ENGINE Bus STARTED
+[01/Dec/2011:17:38:48] ENGINE Listening for SIGHUP.
+[01/Dec/2011:17:38:48] ENGINE Listening for SIGTERM.
+[01/Dec/2011:17:38:48] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:17:38:48] ENGINE Bus STARTING
+[01/Dec/2011:17:38:48] ENGINE Mounting the Django application
+[01/Dec/2011:17:38:48] ENGINE Setting up the static directory to be served
+[01/Dec/2011:17:38:48] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:17:38:48] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:17:38:48] ENGINE Bus STARTED
+[01/Dec/2011:17:43:25] ENGINE Listening for SIGHUP.
+[01/Dec/2011:17:43:25] ENGINE Listening for SIGTERM.
+[01/Dec/2011:17:43:25] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:17:43:25] ENGINE Bus STARTING
+[01/Dec/2011:17:43:25] ENGINE Mounting the Django application
+[01/Dec/2011:17:43:25] ENGINE Setting up the static directory to be served
+[01/Dec/2011:17:43:25] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:17:43:25] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:17:43:25] ENGINE Bus STARTED
+[01/Dec/2011:17:46:15] ENGINE Listening for SIGHUP.
+[01/Dec/2011:17:46:15] ENGINE Listening for SIGTERM.
+[01/Dec/2011:17:46:15] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:17:46:15] ENGINE Bus STARTING
+[01/Dec/2011:17:46:15] ENGINE Mounting the Django application
+[01/Dec/2011:17:46:15] ENGINE Setting up the static directory to be served
+[01/Dec/2011:17:46:15] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:17:46:15] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:17:46:15] ENGINE Bus STARTED
+[01/Dec/2011:17:47:20] ENGINE Listening for SIGHUP.
+[01/Dec/2011:17:47:20] ENGINE Listening for SIGTERM.
+[01/Dec/2011:17:47:20] ENGINE Listening for SIGUSR1.
+[01/Dec/2011:17:47:20] ENGINE Bus STARTING
+[01/Dec/2011:17:47:20] ENGINE Mounting the Django application
+[01/Dec/2011:17:47:20] ENGINE Setting up the static directory to be served
+[01/Dec/2011:17:47:20] ENGINE Started monitor thread '_TimeoutMonitor'.
+[01/Dec/2011:17:47:20] ENGINE Serving on 0.0.0.0:40404
+[01/Dec/2011:17:47:20] ENGINE Bus STARTED

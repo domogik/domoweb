@@ -43,10 +43,8 @@
 				li.focus();
 				$("#result").prepend(li);
 				$("#commandline").val('');
-				var commandarray = commandline.split(' ')
-				var command = ['api', 'helper'];
-				command = command.concat(commandarray);
-                rinor.get(command)
+				var command = commandline.split(' ')
+                rinor.put(['api', 'helper'], {'command':command})
                     .complete(function(){
                         $("#commandsubmit").show();
                         $("#commandstop").hide();

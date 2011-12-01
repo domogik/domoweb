@@ -428,28 +428,25 @@ class HelperResource(RinorResource):
 
     class Meta:
         resource_name = 'helper'
-        info_allowed_methods = ['get']
+        detail_allowed_methods = ['put']
         authentication = Authentication()
         authorization = Authorization()
         rinor_pipe = HelperPipe()
 
     def base_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<command>.*)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_info'), name="api_dispatch_info"),
+            url(r"^(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
-
-    def dispatch_info(self, request, **kwargs):
-        return self.dispatch('info', request, **kwargs)
     
-    def obj_get_info(self, request, **kwargs):
-        _data = self._meta.rinor_pipe.get_info(kwargs['command'])
+    def obj_update(self, bundle, request, **kwargs):
+        _data = self._meta.rinor_pipe.get_info(bundle['command'])
         if not(_data):
             raise ObjectDoesNotExist()
         return _data
         
-    def get_info(self, request, **kwargs):
+    def put_list(self, bundle, request, **kwargs):
         try:
-            obj = self.obj_get_info(request=request, **self.remove_api_resource_names(kwargs))
+            obj = self.obj_put_list(bundle, request=request, **self.remove_api_resource_names(kwargs))
         except ObjectDoesNotExist:
             return HttpNotFound()
         return self.create_response(request, obj)
