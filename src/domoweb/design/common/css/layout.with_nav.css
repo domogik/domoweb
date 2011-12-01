@@ -108,6 +108,11 @@ header#mainheader #subtitle {
 #nav1 .login, #nav1 .help {
     float:none;
 }
+
+#nav2 {
+    font-size:1.2em;
+}
+
 /* Main section */
 
 #content-bgnd {

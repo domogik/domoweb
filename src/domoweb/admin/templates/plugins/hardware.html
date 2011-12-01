@@ -118,8 +118,6 @@ function sortOptions(a, b){
 {% block banner %}
     <h1 class="ident icon64-plugin-{{ plugin.id }}">
         <span class="title">{% trans "Plugin" %} '{{ plugin.id }}'</span>
-        <br />
-        <span class="subtitle">{{ plugin.description }}</span>
     </h1>
     <ul class='infos'>
         <li><span class='label'>{% trans "Version" %}:</span> {{ plugin.version }}</li>
@@ -133,6 +131,11 @@ function sortOptions(a, b){
 {% endblock %}
 
 {% block right %}
+    <section class="subsection">
+        <h2>{% trans "Description" %}</h2>
+        <p>{{ plugin.description|linebreaksbr }}</p>
+    </section>
+
     <section class="subsection">
         <h2>{% trans "Configuration" %}</h2>
         <div id='configuration'>

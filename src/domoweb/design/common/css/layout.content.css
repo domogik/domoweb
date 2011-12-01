@@ -36,6 +36,7 @@
     background-position:top left;
     background-repeat:no-repeat;
     min-height:64px;
+    text-align:left;
 }
 
 #mainsection header .title {
@@ -44,6 +45,7 @@
 
 #mainsection header .subtitle {
     font-style:italic;
+    font-size:0.8em;
     color:#666;
     padding-left:20px;
     background-position:left 50%;
