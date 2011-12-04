@@ -131,6 +131,12 @@
 .icon64-usage-music { background-image:url(../images/device_usage/music/usage_64.png);}
 .icon32-usage-music { background-image:url(../images/device_usage/music/usage_32.png);}
 .icon16-usage-music { background-image:url(../images/device_usage/music/usage_16.png);}
+.icon64-usage-christmas_tree { background-image:url(../images/device_usage/christmas_tree/usage_64.png);}
+.icon32-usage-christmas_tree { background-image:url(../images/device_usage/christmas_tree/usage_32.png);}
+.icon16-usage-christmas_tree { background-image:url(../images/device_usage/christmas_tree/usage_16.png);}
+.icon64-usage-water_tank { background-image:url(../images/device_usage/water_tank/usage_64.png);}
+.icon32-usage-water_tank { background-image:url(../images/device_usage/water_tank/usage_32.png);}
+.icon16-usage-water_tank { background-image:url(../images/device_usage/water_tank/usage_16.png);}
 
 /* State icons */
 .icon32-usage-light.actuator.binary.unknown { background-image:url(../images/device_usage/light/undefined_32.png);}
@@ -449,6 +455,47 @@
 .icon32-usage-music.sensor.number.known { background-image:url(../images/device_usage/music/100_32.png);}
 .icon32-usage-music.sensor.string.unknown { background-image:url(../images/device_usage/music/undefined_32.png);}
 .icon32-usage-music.sensor.string.known { background-image:url(../images/device_usage/music/100_32.png);}
+
+.icon32-usage-water_tank.actuator.binary.unknown { background-image:url(../images/device_usage/water_tank/undefined_32.png);}
+.icon32-usage-water_tank.actuator.binary.value_0 { background-image:url(../images/device_usage/water_tank/0_32.png);}
+.icon32-usage-water_tank.actuator.binary.value_1 { background-image:url(../images/device_usage/water_tank/100_32.png);}
+.icon32-usage-water_tank.actuator.trigger { background-image:url(../images/device_usage/water_tank/undefined_32.png);}
+.icon32-usage-water_tank.actuator.number { background-image:url(../images/device_usage/water_tank/100_32.png);}
+.icon32-usage-water_tank.actuator.range.unknown { background-image:url(../images/device_usage/water_tank/undefined_32.png);}
+.icon32-usage-water_tank.actuator.range.value_0 { background-image:url(../images/device_usage/water_tank/0_32.png);}
+.icon32-usage-water_tank.actuator.range.value_10 { background-image:url(../images/device_usage/water_tank/10_32.png);}
+.icon32-usage-water_tank.actuator.range.value_20 { background-image:url(../images/device_usage/water_tank/20_32.png);}
+.icon32-usage-water_tank.actuator.range.value_30 { background-image:url(../images/device_usage/water_tank/30_32.png);}
+.icon32-usage-water_tank.actuator.range.value_40 { background-image:url(../images/device_usage/water_tank/40_32.png);}
+.icon32-usage-water_tank.actuator.range.value_50 { background-image:url(../images/device_usage/water_tank/50_32.png);}
+.icon32-usage-water_tank.actuator.range.value_60 { background-image:url(../images/device_usage/water_tank/60_32.png);}
+.icon32-usage-water_tank.actuator.range.value_70 { background-image:url(../images/device_usage/water_tank/70_32.png);}
+.icon32-usage-water_tank.actuator.range.value_80 { background-image:url(../images/device_usage/water_tank/80_32.png);}
+.icon32-usage-water_tank.actuator.range.value_90 { background-image:url(../images/device_usage/water_tank/90_32.png);}
+.icon32-usage-water_tank.actuator.range.value_100 { background-image:url(../images/device_usage/water_tank/100_32.png);}
+.icon32-usage-water_tank.sensor.boolean.unknown { background-image:url(../images/device_usage/water_tank/undefined_32.png);}
+.icon32-usage-water_tank.sensor.boolean.value_true { background-image:url(../images/device_usage/water_tank/100_32.png);}
+.icon32-usage-water_tank.sensor.boolean.value_false { background-image:url(../images/device_usage/water_tank/0_32.png);}
+.icon32-usage-water_tank.sensor.number.unknown { background-image:url(../images/device_usage/water_tank/undefined_32.png);}
+.icon32-usage-water_tank.sensor.number.known { background-image:url(../images/device_usage/water_tank/100_32.png);}
+.icon32-usage-water_tank.sensor.string.unknown { background-image:url(../images/device_usage/water_tank/undefined_32.png);}
+.icon32-usage-water_tank.sensor.string.known { background-image:url(../images/device_usage/water_tank/100_32.png);}
+
+.icon32-usage-christmas_tree.actuator.binary.unknown { background-image:url(../images/device_usage/christmas_tree/undefined_32.png);}
+.icon32-usage-christmas_tree.actuator.binary.value_0 { background-image:url(../images/device_usage/christmas_tree/0_32.png);}
+.icon32-usage-christmas_tree.actuator.binary.value_1 { background-image:url(../images/device_usage/christmas_tree/100_32.png);}
+.icon32-usage-christmas_tree.actuator.trigger { background-image:url(../images/device_usage/christmas_tree/undefined_32.png);}
+.icon32-usage-christmas_tree.actuator.number { background-image:url(../images/device_usage/christmas_tree/100_32.png);}
+.icon32-usage-christmas_tree.actuator.range.unknown { background-image:url(../images/device_usage/christmas_tree/undefined_32.png);}
+.icon32-usage-christmas_tree.actuator.range.value_0 { background-image:url(../images/device_usage/christmas_tree/0_32.png);}
+.icon32-usage-christmas_tree.actuator.range.value_100 { background-image:url(../images/device_usage/christmas_tree/100_32.png);}
+.icon32-usage-christmas_tree.sensor.boolean.unknown { background-image:url(../images/device_usage/christmas_tree/undefined_32.png);}
+.icon32-usage-christmas_tree.sensor.boolean.value_true { background-image:url(../images/device_usage/christmas_tree/100_32.png);}
+.icon32-usage-christmas_tree.sensor.boolean.value_false { background-image:url(../images/device_usage/christmas_tree/0_32.png);}
+.icon32-usage-christmas_tree.sensor.number.unknown { background-image:url(../images/device_usage/christmas_tree/undefined_32.png);}
+.icon32-usage-christmas_tree.sensor.number.known { background-image:url(../images/device_usage/christmas_tree/100_32.png);}
+.icon32-usage-christmas_tree.sensor.string.unknown { background-image:url(../images/device_usage/christmas_tree/undefined_32.png);}
+.icon32-usage-christmas_tree.sensor.string.known { background-image:url(../images/device_usage/christmas_tree/100_32.png);}
 
 /* Menu */
 .icon32-menu-helpers { background-image:url(../images/menu/terminal_32.png);}
