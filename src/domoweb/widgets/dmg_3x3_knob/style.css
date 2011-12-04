@@ -4,6 +4,11 @@
     background-repeat: no-repeat;
 }
 
+.dmg_3x3_knob.clickable:hover,
+.dmg_3x3_knob.clickable:focus {
+    background:none;    
+}
+
 /*----------------------------
 	Color Bars
 -----------------------------*/

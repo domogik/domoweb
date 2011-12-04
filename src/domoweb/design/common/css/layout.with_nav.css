@@ -28,7 +28,7 @@ header#mainheader {
 header#mainheader #title {
     color: #EEEBE2;
     font-size:3em;
-    font-family: 'Anton', sans-serif;
+    font-family: 'Expletus Sans', cursive;
 }
 
 header#mainheader #subtitle {
@@ -63,7 +63,7 @@ header#mainheader #subtitle {
 }
 
 #nav1 li a {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Expletus Sans', cursive;
     font-size:2em;
     display:inline-block;
     text-decoration:none;
