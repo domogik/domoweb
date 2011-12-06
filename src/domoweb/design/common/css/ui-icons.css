@@ -497,6 +497,39 @@
 .icon32-usage-christmas_tree.sensor.string.unknown { background-image:url(../images/device_usage/christmas_tree/undefined_32.png);}
 .icon32-usage-christmas_tree.sensor.string.known { background-image:url(../images/device_usage/christmas_tree/100_32.png);}
 
+.icon32-usage-surveillance_camera.actuator.binary.unknown { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
+.icon32-usage-surveillance_camera.actuator.binary.value_0 { background-image:url(../images/device_usage/surveillance_camera/0_32.png);}
+.icon32-usage-surveillance_camera.actuator.binary.value_1 { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
+.icon32-usage-surveillance_camera.actuator.trigger { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
+.icon32-usage-surveillance_camera.actuator.number { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
+.icon32-usage-surveillance_camera.actuator.range.unknown { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
+.icon32-usage-surveillance_camera.actuator.range.value_0 { background-image:url(../images/device_usage/surveillance_camera/0_32.png);}
+.icon32-usage-surveillance_camera.actuator.range.value_100 { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
+.icon32-usage-surveillance_camera.sensor.boolean.unknown { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
+.icon32-usage-surveillance_camera.sensor.boolean.value_true { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
+.icon32-usage-surveillance_camera.sensor.boolean.value_false { background-image:url(../images/device_usage/surveillance_camera/0_32.png);}
+.icon32-usage-surveillance_camera.sensor.number.unknown { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
+.icon32-usage-surveillance_camera.sensor.number.known { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
+.icon32-usage-surveillance_camera.sensor.string.unknown { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
+.icon32-usage-surveillance_camera.sensor.string.known { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
+
+.icon32-usage-portal.actuator.binary.unknown { background-image:url(../images/device_usage/portal/undefined_32.png);}
+.icon32-usage-portal.actuator.binary.value_0 { background-image:url(../images/device_usage/portal/0_32.png);}
+.icon32-usage-portal.actuator.binary.value_1 { background-image:url(../images/device_usage/portal/100_32.png);}
+.icon32-usage-portal.actuator.trigger { background-image:url(../images/device_usage/portal/undefined_32.png);}
+.icon32-usage-portal.actuator.number { background-image:url(../images/device_usage/portal/100_32.png);}
+.icon32-usage-portal.actuator.range.unknown { background-image:url(../images/device_usage/portal/undefined_32.png);}
+.icon32-usage-portal.actuator.range.value_0 { background-image:url(../images/device_usage/portal/0_32.png);}
+.icon32-usage-portal.actuator.range.value_50 { background-image:url(../images/device_usage/portal/50_32.png);}
+.icon32-usage-portal.actuator.range.value_100 { background-image:url(../images/device_usage/portal/100_32.png);}
+.icon32-usage-portal.sensor.boolean.unknown { background-image:url(../images/device_usage/portal/undefined_32.png);}
+.icon32-usage-portal.sensor.boolean.value_true { background-image:url(../images/device_usage/portal/100_32.png);}
+.icon32-usage-portal.sensor.boolean.value_false { background-image:url(../images/device_usage/portal/0_32.png);}
+.icon32-usage-portal.sensor.number.unknown { background-image:url(../images/device_usage/portal/undefined_32.png);}
+.icon32-usage-portal.sensor.number.known { background-image:url(../images/device_usage/portal/100_32.png);}
+.icon32-usage-portal.sensor.string.unknown { background-image:url(../images/device_usage/portal/undefined_32.png);}
+.icon32-usage-portal.sensor.string.known { background-image:url(../images/device_usage/portal/100_32.png);}
+
 /* Menu */
 .icon32-menu-helpers { background-image:url(../images/menu/terminal_32.png);}
 

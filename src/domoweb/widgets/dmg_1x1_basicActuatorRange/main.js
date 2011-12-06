@@ -11,7 +11,8 @@
             height: 1,
             width: 1,
             displayname: true,
-			displayborder: true        },
+			displayborder: true
+        },
 
         _init: function() {
             var self = this, o = this.options;

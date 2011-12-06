@@ -62,7 +62,7 @@
 {% block contentright %}
     {% for room in area.rooms %}
 	    <div id='room_{{ room.id }}' class='block subsection'>
-            <h2 class='header icon64-room-{{ room.config.icon }}'>
+            <h2 class='header icon64-room-{{ room.icon }}'>
                 <a href='{% url view_room_view room.id %}' class="ident">
                     <span class="title">{{ room.name }}</span>
                     <br />
