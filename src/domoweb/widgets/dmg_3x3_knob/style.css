@@ -15,19 +15,18 @@
 
 
 .dmg_3x3_knob .bars{
-	height: 19em;
+	height: 198px;
 	margin: 0 auto;
 	position: relative;
-	width: 19em;
+	width: 198px;
 }
 
 .dmg_3x3_knob .control{
-	width:90px;
-	height:90px;
+	width:83px;
+	height:83px;
 	position:absolute;
-	top:50%;
-	left:50%;
-	margin:-45px 0 0 -45px;
+	top:57px;
+	left:57px;
 }
 
 .dmg_3x3_knob .colorBar{
@@ -91,6 +90,60 @@
 	border-radius: 50%;
 	cursor:default !important;
 	box-shadow: 0 0 1px #5a5a5a inset;
+}
+
+@-moz-keyframes green {
+	0%   {  	background-color:#77FF00;  }
+	90%   {  	background-color:#77FF00;  }
+	100%   {  	background-color:#666;  }
+}
+
+.dmg_3x3_knob.valid .knob .top:after {
+	animation-name: green;
+	-moz-animation-name: green;
+	-webkit-animation-name: green;
+	animation-duration: 5s;
+	-moz-animation-duration: 5s;
+	-webkit-animation-duration: 5s;
+	animation-iteration-count: 1;
+	-moz-animation-iteration-count: 1;
+	-webkit-animation-iteration-count: 1;
+}
+
+@-moz-keyframes red {
+	0%   {  	background-color:#FF1400;  }
+	90%   {  	background-color:#FF1400;  }
+	100%   {  	background-color:#666;  }
+}
+
+.dmg_3x3_knob.error .knob .top:after {
+	animation-name: red;
+	-moz-animation-name: red;
+	-webkit-animation-name: red;
+	animation-duration: 5s;
+	-moz-animation-duration: 5s;
+	-webkit-animation-duration: 5s;
+	animation-iteration-count: 1;
+	-moz-animation-iteration-count: 1;
+	-webkit-animation-iteration-count: 1;
+}
+
+@-moz-keyframes blue {
+	0%   {  	background-color:#666;  }
+	50%   {  	background-color:#00E4FF;  }
+	0%   {  	background-color:#666;  }
+}
+
+.dmg_3x3_knob.processing .knob .top:after {
+	animation-name: blue;
+	-moz-animation-name: blue;
+	-webkit-animation-name: blue;
+	animation-duration: 2s;
+	-moz-animation-duration: 2s;
+	-webkit-animation-duration: 2s;
+	animation-iteration-count: infinite;
+	-moz-animation-iteration-count: infinite;
+	-webkit-animation-iteration-count: infinite;
 }
 
 .knob [draggable] {

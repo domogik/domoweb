@@ -19,7 +19,7 @@
             creator: 'Domogik',
             id: 'dmg_3x3_knob',
             name: 'Shiny Knob control',
-            description: 'https://github.com/martinaglv/KnobKnob',
+            description: 'Based on https://github.com/martinaglv/KnobKnob',
             type: 'actuator.range',
             height: 3,
             width: 3,
@@ -40,6 +40,9 @@
         
         _init: function() {
             var self = this, o = this.options;
+            this.min_value = parseInt(o.model_parameters.valueMin);
+            this.max_value = parseInt(o.model_parameters.valueMax);
+
            	var bars = $("<div class='bars'></div>");
 
            	for(var i=0;i<colors.length;i++){		
@@ -49,8 +52,8 @@
                 $('<div class="colorBar">').css({
                     backgroundColor: '#'+colors[i],
                     transform:'rotate('+deg+'deg)',
-                    top: -Math.sin(deg/rad2deg)*80+90,
-                    left: Math.cos((180 - deg)/rad2deg)*80+90,
+                    top: -Math.sin(deg/rad2deg)*80+95,
+                    left: Math.cos((180 - deg)/rad2deg)*80+89,
                 }).appendTo(bars);
             }
            	this.colorBars = bars.find('.colorBar');
@@ -171,9 +174,9 @@
 
         action: function() {
             var self = this, o = this.options;
-            var value = Math.round(this.rotation * 100 / 359);
-//            this.element.startProcessingState();
-            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":value})
+            this.processingValue = Math.round((this.rotation * this.max_value / 359) + this.min_value);
+            this.element.removeClass('error valid').addClass('processing');
+            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":this.processingValue})
                 .success(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })
@@ -187,9 +190,9 @@
         setValue: function(value) {
             var self = this, o = this.options;
             if (value != null) {
-                if(value >= 0 && value <= 100){
+                if(value >= this.min_value && value <= this.max_value){
                     this.previousValue = value;
-                    value = value * 359 / 100; // % to degree
+                    value = (value - this.min_value) * 359 / this.max_value; // to degree
                     this.rotation = this.currentDeg = value;
                     this.knobTop.css('transform','rotate('+(this.currentDeg)+'deg)');
                     this._turn(this.currentDeg/359);
@@ -201,16 +204,18 @@
         cancel: function() {
             var self = this, o = this.options;
             this.setValue(this.previousValue);
+            this.element.removeClass('processing').addClass('error');
         },
 
         /* Valid the processing state */
         valid: function(confirmed) {
             var self = this, o = this.options;
-//            this.element.stopProcessingState();
+            this.element.removeClass('processing').addClass('valid');
+
             if (confirmed) {
 //                this.element.displayStatusOk();
-                var value = this.rotation * 100 / 359;
-                this.previousValue = value;
+                this.previousValue = this.processingValue;
+                this.processingValue = null;
             }
         }
     });
