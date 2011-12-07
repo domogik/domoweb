@@ -1,6 +1,15 @@
 $(function(){
-	$(window).bind('beforeunload', function () {  $.eventsource("close", "rinor-events"); });
-    $.eventRequest();
+    var es = new EventSource('/events/');
+    es.addEventListener('open', function (event) {
+    }, false);
+    es.addEventListener('message', function (event) {
+        data = jQuery.parseJSON(event.data);
+        $(document).trigger('dmg_event', data);
+    }, true);
+    es.addEventListener('error', function (event) {
+    }, false);
+    
+	$(window).bind('beforeunload', function () {  es.close(); });
 });
 
 (function($) {    
@@ -44,19 +53,7 @@ $(function(){
                         $.notification('error', jqXHR.responseText);
                 });
         },
-        
-        eventRequest: function() {
-            var es = new EventSource('/events/');
-            es.addEventListener('open', function (event) {
-            }, false);
-            es.addEventListener('message', function (event) {
-                data = jQuery.parseJSON(event.data);
-                $(document).trigger('dmg_event', data);
-            }, true);
-            es.addEventListener('error', function (event) {
-            }, false);
-        },
-        
+
         stringToJSON: function(string) {
             var str = string;
             if (str) {

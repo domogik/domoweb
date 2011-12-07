@@ -48,7 +48,7 @@
            	for(var i=0;i<colors.length;i++){		
                 deg = i*12;
                 // Create the colorbars
-                
+                console.log('rotate('+deg+'deg)');
                 $('<div class="colorBar">').css({
                     backgroundColor: '#'+colors[i],
                     transform:'rotate('+deg+'deg)',
