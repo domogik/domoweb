@@ -73,9 +73,9 @@
                             {% if package.installed_version_error %}<div class='error'>Incorrect version number</div>{% endif %}                         
                             </td>
                             <td class='actions'>{% if package.enabled %}
-                                    <a class='buttontext' href='{% url admin_packages_enable_view host package.name 'disable' %}'>Disable</a>
+                                    <a class='buttontext' href='{% url admin_packages_enable_view host package.id 'disable' %}'>Disable</a>
                                 {% else %}
-                                    <a class='buttontext' href='{% url admin_packages_enable_view host package.name 'enable' %}'>Enable</a>
+                                    <a class='buttontext' href='{% url admin_packages_enable_view host package.id 'enable' %}'>Enable</a>
                                 {% endif %}
                                 {% if package.update_available %}
                                     <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.update_available %}'>Update</a>

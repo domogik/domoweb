@@ -663,14 +663,14 @@ class PackageExtendedPipe(RinorPipe):
                 for type, packages in host.installed.iteritems():
                     for package in packages:
                         # Check if the plugin is enabled
-                        if (package.name in _enabled):
+                        if (package.id in _enabled):
                             package.enabled = True
                         try:
                             package.normalizedVersion = NormalizedVersion(package.release)
                         except IrrationalVersionError:
                             package.installed_version_error = True
                             package.normalizedVersion = None
-                        _packages[package.name] = package
+                        _packages[package.id] = package
         return _packages
     
     def get_list_available(self, type, installed):
@@ -694,19 +694,19 @@ class PackageExtendedPipe(RinorPipe):
                 package.upgrade_require = (_package_min_version > _dmg_version)
 
             # Check if already installed
-            if package.name not in installed:
+            if package.id not in installed:
                 package.install = True
-                _packages[package.name] = package
+                _packages[package.id] = package
             # Check if update can be done
-            elif installed[package.name].normalizedVersion and not package.version_error:
-                if (installed[package.name].normalizedVersion < package_version):
-                    installed[package.name]['update_available'] = package_version
+            elif installed[package.id].normalizedVersion and not package.version_error:
+                if (installed[package.id].normalizedVersion < package_version):
+                    installed[package.id]['update_available'] = package_version
                     package.update = True
-                    _packages[package.name] = package
-            elif not installed[package.name].normalizedVersion and not package.version_error:
-                    installed[package.name]['update_available'] = package_version
+                    _packages[package.id] = package
+            elif not installed[package.id].normalizedVersion and not package.version_error:
+                    installed[package.id]['update_available'] = package_version
                     package.update = True
-                    _packages[package.name] = package
+                    _packages[package.id] = package
         return _packages
 
     def get_list_plugin(self):
