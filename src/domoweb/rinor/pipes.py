@@ -78,7 +78,6 @@ class InfoPipe(RinorPipe):
                 _data.info['rinor_version_inferior'] = (NormalizedVersion(_data.info['rinor_version']) < NormalizedVersion(settings.RINOR_MIN_API))
             except IrrationalVersionError:
                 _data.info['rinor_version_inferior'] = False
-
             return _data
         else:
             return None

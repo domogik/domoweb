@@ -102,6 +102,12 @@ class RinorResource(Resource):
         updated_bundle = self.obj_create(bundle, request=request, **self.remove_api_resource_names(kwargs))
         return self.create_response(request, updated_bundle)
 
+    def put_list(self, request, **kwargs):
+        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        bundle = dict_strip_unicode_keys(deserialized)
+        updated_bundle = self.obj_update_list(bundle, request=request, **self.remove_api_resource_names(kwargs))
+        return self.create_response(request, updated_bundle)
+        
     def put_detail(self, request, **kwargs):
         deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         bundle = dict_strip_unicode_keys(deserialized)
