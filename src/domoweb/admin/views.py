@@ -556,7 +556,7 @@ def admin_packages_install(request, package_host, package_name, package_release)
     @return an HttpResponse object
     """
     try:
-        PackagePipe.put_install(package_host, package_name, package_release)
+        PackagePipe().put_install(package_host, package_name, package_release)
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except RinorNotAvailable:
@@ -573,7 +573,7 @@ def admin_packages_enable(request, package_host, package_name, action):
     @return an HttpResponse object
     """
     try:
-        PluginPipe.command_detail(package_host, package_name, action)
+        PluginPipe().command_detail(package_host, package_name, action)
     except BadStatusLine:
         return redirect("error_badstatusline_view")
     except RinorNotAvailable:

@@ -683,30 +683,31 @@ class PackageExtendedPipe(RinorPipe):
             # Domogik version number not available
             _dmg_version = None
 
-        for package in _available[type]:
-            _package_min_version = NormalizedVersion(suggest_normalized_version(package.domogik_min_release))
-            try:
-                package_version = NormalizedVersion(package.release)
-                package.version_error = False
-            except IrrationalVersionError:
-                package.version_error = True
-            if (_dmg_version) :
-                package.upgrade_require = (_package_min_version > _dmg_version)
-
-            # Check if already installed
-            if package.id not in installed:
-                package.install = True
-                _packages[package.id] = package
-            # Check if update can be done
-            elif installed[package.id].normalizedVersion and not package.version_error:
-                if (installed[package.id].normalizedVersion < package_version):
-                    installed[package.id]['update_available'] = package_version
-                    package.update = True
+        if (type in _available):
+            for package in _available[type]:
+                _package_min_version = NormalizedVersion(suggest_normalized_version(package.domogik_min_release))
+                try:
+                    package_version = NormalizedVersion(package.release)
+                    package.version_error = False
+                except IrrationalVersionError:
+                    package.version_error = True
+                if (_dmg_version) :
+                    package.upgrade_require = (_package_min_version > _dmg_version)
+    
+                # Check if already installed
+                if package.id not in installed:
+                    package.install = True
                     _packages[package.id] = package
-            elif not installed[package.id].normalizedVersion and not package.version_error:
-                    installed[package.id]['update_available'] = package_version
-                    package.update = True
-                    _packages[package.id] = package
+                # Check if update can be done
+                elif installed[package.id].normalizedVersion and not package.version_error:
+                    if (installed[package.id].normalizedVersion < package_version):
+                        installed[package.id]['update_available'] = package_version
+                        package.update = True
+                        _packages[package.id] = package
+                elif not installed[package.id].normalizedVersion and not package.version_error:
+                        installed[package.id]['update_available'] = package_version
+                        package.update = True
+                        _packages[package.id] = package
         return _packages
 
     def get_list_plugin(self):
