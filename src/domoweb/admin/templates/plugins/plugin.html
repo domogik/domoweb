@@ -381,7 +381,7 @@ $(function(){
         btstatus = !status;
 
         $("#iconstatus").empty()
-            .attr('class', "icon16-text-right icon16-status-software-" + strstatus)
+            .attr('class', "icon16-text-right icon16-status-plugin-" + strstatus)
             .html("<span class='label'>{% trans "Status" %}:</span><span class='offscreen'>" + textstatus + "</span>");
         $("#buttonstatus").attr('class', 'button icon16-status-' + btstrstatus)
             .text(bttextstatus)

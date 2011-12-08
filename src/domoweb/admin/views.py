@@ -323,10 +323,10 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
             nav2_plugins_plugin = "selected",
             plugin=plugin
         )
-    if plugin_type == "hardware":
-        page_title = _("Hardware")
+    if plugin_type == "external":
+        page_title = _("External Member")
         return go_to_page(
-            request, 'plugins/hardware.html',
+            request, 'plugins/external.html',
             page_title,
             page_messages,
             nav1_admin = "selected",
@@ -520,14 +520,14 @@ def admin_packages_plugins(request):
 
 @rinor_isconfigured
 @admin_required
-def admin_packages_hardwares(request):
+def admin_packages_externals(request):
     """
-    Method called when the admin hardwares page is accessed
+    Method called when the admin externals page is accessed
     @param request : HTTP request
     @return an HttpResponse object
     """
 
-    page_title = _("Hardwares packages")
+    page_title = _("External member packages")
     page_messages = []
     try:
         packages = PackageExtendedPipe().get_list_external()
@@ -538,11 +538,11 @@ def admin_packages_hardwares(request):
         return redirect("error_resourcenotavailable_view")
 
     return go_to_page(
-        request, 'packages/hardwares.html',
+        request, 'packages/externals.html',
         page_title,
         page_messages,
         nav1_admin = "selected",
-        nav2_packages_hardwares = "selected",
+        nav2_packages_externals = "selected",
         packages=packages,
         host=rinor.info.Host
     )

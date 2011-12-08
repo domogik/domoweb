@@ -19,19 +19,19 @@ function getPluginsList() {
                         if (this.id != 'rest') {
                             if (this.status == 'ON') {
                                 if (this.type == 'plugin') {
-                                    status.addClass("icon16-status-software-up");
-                                    status.append("<span class='offscreen'>Software Running</span>");                                    
-                                } else { // hardware
-                                    status.addClass("icon16-status-hardware-up");
-                                    status.append("<span class='offscreen'>Hardware Running</span>");                                                                        
+                                    status.addClass("icon16-status-plugin-up");
+                                    status.append("<span class='offscreen'>Plugin Running</span>");                                    
+                                } else { // external
+                                    status.addClass("icon16-status-external-up");
+                                    status.append("<span class='offscreen'>External member Running</span>");                                                                        
                                 }
                             } else {
                                 if (this.type == 'plugin') {
-                                    status.addClass("icon16-status-software-down");
-                                    status.append("<span class='offscreen'>Software Stopped</span>");
-                                } else { // hardware
-                                    status.addClass("icon16-status-hardware-down");
-                                    status.append("<span class='offscreen'>Hardware Stopped</span>");
+                                    status.addClass("icon16-status-plugin-down");
+                                    status.append("<span class='offscreen'>Plugin Stopped</span>");
+                                } else { // external
+                                    status.addClass("icon16-status-external-down");
+                                    status.append("<span class='offscreen'>External member Stopped</span>");
                                 }
                             }
                         }

@@ -725,8 +725,8 @@ class PackageExtendedPipe(RinorPipe):
         _rinor = InfoPipe().get_info()
 
         _packages = {}
-        _packages['installed'] = self.get_list_installed(_rinor.info.Host, 'hardware')
-        _packages['available'] = self.get_list_available('hardware', _packages['installed'])
+        _packages['installed'] = self.get_list_installed(_rinor.info.Host, 'external')
+        _packages['available'] = self.get_list_available('external', _packages['installed'])
             
         return _packages
 
