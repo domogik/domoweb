@@ -5,7 +5,7 @@ from httplib import BadStatusLine
 from domoweb.models import Parameters
 from domoweb.rinor.pipes import InfoPipe
 
-class ExceptionMiddleware(object):
+class RinorMiddleware(object):
 
     def process_request(self, request):
         """

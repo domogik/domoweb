@@ -93,7 +93,7 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'domoweb.middleware.ExceptionMiddleware',
+    'domoweb.middleware.RinorMiddleware',
 )
 
 ROOT_URLCONF = 'domoweb.urls'
