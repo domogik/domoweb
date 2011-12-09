@@ -48,9 +48,11 @@
     // <![CDATA[
     {% block js_script %}{% endblock %}
     $(function(){
-        {% for message in page_messages %}
-        $.notification("{{message.status}}", "{{message.msg}}");
+    {% if messages %}
+        {% for message in messages %}
+        $.notification("{{ message.tags }}", "{{ message }}");
         {% endfor %}
+    {% endif %}
     });
     // ]]>
 </script>

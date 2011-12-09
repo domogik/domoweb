@@ -15,12 +15,12 @@ div.jGrowl div.message {
     padding-left:1em;
 }
 
-div.jGrowl div.ok div.header {
+div.jGrowl div.success div.header {
     background-image: url(../images/status/check_32.png);
     color: #5FE400;
 }
 
-div.jGrowl div.ok div.message {
+div.jGrowl div.success div.message {
     border-left-color: #5FE400;
 }
 
@@ -49,4 +49,13 @@ div.jGrowl div.error div.header {
 
 div.jGrowl div.error div.message {
     border-left-color: #E40800;
+}
+
+div.jGrowl div.debug div.header {
+    background-image: url(../images/status/info_32.png);
+    color: #00ABE4;
+}
+
+div.jGrowl div.debug div.message {
+    border-left-color: #00ABE4;
 }

@@ -2,6 +2,7 @@ from domoweb.exceptions import RinorError, RinorNotAvailable, BadDomogikVersion
 from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpResponseServerError
 from django.template import Context, loader
+from django.contrib import messages
 from httplib import BadStatusLine
 from domoweb.models import Parameters, Widget
 from domoweb.rinor.pipes import InfoPipe
@@ -30,10 +31,27 @@ class RinorMiddleware(object):
                     request.session['normal_mode'] = (mode == "normal")
             except Parameters.DoesNotExist:
                 return redirect("config_welcome_view")
+        
+        """
+        Check if has message
+        """
+        _tag = request.GET.get('status')
+        _message = request.GET.get('msg')
+        if (_tag):
+            if (_tag == 'success'):
+                messages.success(request, _message)
+            elif (_tag == 'error'):
+                messages.error(request, _message)
+            elif (_tag == 'warning'):
+                messages.warning(request, _message)
+            elif (_tag == 'info'):
+                messages.info(request, _message)
+            elif (_tag == 'debug'):
+                messages.debug(request, _message)
         return
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-#        kwargs = {'version': settings.DOMOWEB_VERSION}
+#        view_kwargs = {'version': settings.DOMOWEB_VERSION}
         return view_func(request, *view_args, **view_kwargs)
 
     def process_exception(self, request, exception):

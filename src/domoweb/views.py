@@ -57,7 +57,6 @@ def index(request):
     """
 
     page_title = _("Domogik")
-    page_messages = []
 
     widgets_list = Widget.objects.all()
     usageDict = DeviceUsagePipe().get_dict()
@@ -71,7 +70,6 @@ def index(request):
     return go_to_page(
         request, 'index.html',
         page_title,
-        page_messages,
         widgets=widgets_list,
         device_types=typeDict,
         device_usages=usageDict,
@@ -107,12 +105,10 @@ def config_welcome(request):
     """
 
     page_title = _("Domogik - Free home automation under Linux")
-    page_messages = []
 
     return go_to_page(
         request, 'config/welcome.html',
         page_title,
-        page_messages,
     )
 
 def config_configserver(request):
@@ -122,7 +118,6 @@ def config_configserver(request):
     """
 
     page_title = _("1. Domogik server configuration")
-    page_messages = []
 
     if request.method == 'POST': # If the form has been submitted...
         form = DomogikSetupForm(request.POST) # A form bound to the POST data
@@ -142,7 +137,6 @@ def config_configserver(request):
     return go_to_page(
         request, 'config/configserver.html',
         page_title,
-        page_messages,
         form=form,
     )
 
@@ -153,10 +147,8 @@ def config_testserver(request):
     """
 
     page_title = _("2. Testing Domogik server")
-    page_messages = []
     
     return go_to_page(
         request, 'config/testserver.html',
         page_title,
-        page_messages,
     )

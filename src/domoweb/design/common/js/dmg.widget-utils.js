@@ -77,17 +77,17 @@ $(function(){
         },
 
         displayStatusError: function() {
-            this.removeClass('ok');
+            this.removeClass('success');
             this.addClass('error');
         },
 
         displayStatusOk: function() {
-            this.addClass('ok');
+            this.addClass('success');
             this.removeClass('error');
         },
 
         displayResetStatus: function() {
-            this.removeClass('ok');
+            this.removeClass('success');
             this.removeClass('error');
         }
     });

@@ -8,7 +8,7 @@ from django.template import RequestContext
 from domoweb.models import Parameters
 from django.shortcuts import redirect
 
-def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
+def go_to_page(request, html_page, page_title, **attribute_list):
     """
     Common method called to go to an html page
     @param request : HTTP request
@@ -18,18 +18,8 @@ def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
            put in the HTTP response
     @return an HttpResponse object
     """
-    
-    if (not page_messages) :
-        page_messages = []
-        
-    status = request.GET.get('status', None)
-    msg = request.GET.get('msg', None)
-    if (msg):
-        page_messages.append({'status':status, 'msg':msg })
-        
     response_attr_list = {}
     response_attr_list['page_title'] = page_title
-    response_attr_list['page_messages'] = page_messages    
     response_attr_list['is_user_connected'] = __is_user_connected(request)
 
     for attribute in attribute_list:

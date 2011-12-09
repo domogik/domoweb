@@ -56,7 +56,6 @@ def login(request):
     next = request.GET.get('next', '')
 
     page_title = _("Login page")
-    page_messages = []
     if request.method == 'POST':
         return _auth(request, next)
     else:
@@ -64,7 +63,6 @@ def login(request):
         return go_to_page(
             request, 'login.html',
             page_title,
-            page_messages,
             next=next,
             account_list=users
         )
@@ -112,13 +110,11 @@ def admin_management_accounts(request):
     """
     
     page_title = _("Accounts management")
-    page_messages = []
     users = UserPipe().get_list()
     people = PersonPipe().get_list()
     return go_to_page(
         request, 'management/accounts.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_management_accounts = "selected",
         accounts_list=users,
@@ -135,7 +131,6 @@ def admin_organization_devices(request):
     """
 
     page_title = _("Devices organization")
-    page_messages = []
 
     id = request.GET.get('id', 0)
     devices = DeviceExtendedPipe().get_list()
@@ -145,7 +140,6 @@ def admin_organization_devices(request):
     return go_to_page(
         request, 'organization/devices.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_organization_devices = "selected",
         id=id,
@@ -164,7 +158,6 @@ def admin_organization_rooms(request):
     """
 
     page_title = _("Rooms organization")
-    page_messages = []
 
     id = request.GET.get('id', 0)
     rooms = RoomExtendedPipe().get_list()
@@ -174,7 +167,6 @@ def admin_organization_rooms(request):
     return go_to_page(
         request, 'organization/rooms.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_organization_rooms = "selected",
         id=id,
@@ -193,7 +185,6 @@ def admin_organization_areas(request):
     """
 
     page_title = _("Areas organization")
-    page_messages = []
 
     id = request.GET.get('id', 0)
     areas = AreaExtendedPipe().get_list()
@@ -201,7 +192,6 @@ def admin_organization_areas(request):
     return go_to_page(
         request, 'organization/areas.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_organization_areas = "selected",
         id=id,
@@ -218,14 +208,12 @@ def admin_organization_house(request):
     """
     
     page_title = _("House organization")
-    page_messages = []
 
     house_name = UiConfigPipe().get_house()
 
     return go_to_page(
         request, 'organization/house.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_organization_house = "selected",
         house_name=house_name
@@ -241,7 +229,6 @@ def admin_organization_widgets(request):
     """
 
     page_title = _("Widgets organization")
-    page_messages = []
 
     rooms = RoomExtendedPipe().get_list()
     areas = AreaExtendedPipe().get_list()
@@ -249,7 +236,6 @@ def admin_organization_widgets(request):
     return go_to_page(
         request, 'organization/widgets.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_organization_widgets = "selected",
         areas_list=areas,
@@ -265,7 +251,6 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     @return an HttpResponse object
     """
 
-    page_messages = []
 
     plugin = PluginPipe().get_detail(plugin_host, plugin_id)
     if plugin_type == "plugin":
@@ -273,7 +258,6 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
         return go_to_page(
             request, 'plugins/plugin.html',
             page_title,
-            page_messages,
             nav1_admin = "selected",
             nav2_plugins_plugin = "selected",
             plugin=plugin
@@ -283,7 +267,6 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
         return go_to_page(
             request, 'plugins/external.html',
             page_title,
-            page_messages,
             nav1_admin = "selected",
             nav2_plugins_plugin = "selected",
             plugin=plugin
@@ -299,12 +282,10 @@ def admin_tools_helpers(request):
     """
 
     page_title = _("Helpers tools")
-    page_messages = []
 
     return go_to_page(
         request, 'tools/helpers.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_tools_helpers = "selected",
     )
@@ -319,13 +300,11 @@ def admin_tools_rinor(request):
     """
 
     page_title = _("RINOR informations")
-    page_messages = []
 
     info = InfoPipe().get_info()
     return go_to_page(
         request, 'tools/rinor.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_tools_rinor = "selected",
         rinor=info
@@ -341,12 +320,10 @@ def admin_tools_pyinfo(request):
     """
 
     page_title = _("Python informations")
-    page_messages = []
     
     return go_to_page(
         request, 'tools/pyinfo.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_tools_pyinfo = "selected",
         pyinfo=pyinfo.foo.fullText()
@@ -394,12 +371,10 @@ def admin_tools_djangoinfo(request):
     import sys
     
     page_title = _("Django informations")
-    page_messages = []
     
     return go_to_page(
         request, 'tools/djangoinfo.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_tools_djangoinfo = "selected",
         settings=get_safe_settings(),
@@ -419,13 +394,11 @@ def admin_packages_repositories(request):
     """
 
     page_title = _("Packages repositories")
-    page_messages = []
     
     repositories = RepositoryPipe().get_list()
     return go_to_page(
         request, 'packages/repositories.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_packages_repositories = "selected",
         repositories=repositories
@@ -441,13 +414,11 @@ def admin_packages_plugins(request):
     """
 
     page_title = _("Plugins packages")
-    page_messages = []
     packages = PackageExtendedPipe().get_list_plugin()
     
     return go_to_page(
         request, 'packages/plugins.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_packages_plugins = "selected",
         packages=packages
@@ -463,14 +434,12 @@ def admin_packages_externals(request):
     """
 
     page_title = _("External member packages")
-    page_messages = []
     packages = PackageExtendedPipe().get_list_external()
     rinor = InfoPipe().get_info()
 
     return go_to_page(
         request, 'packages/externals.html',
         page_title,
-        page_messages,
         nav1_admin = "selected",
         nav2_packages_externals = "selected",
         packages=packages,

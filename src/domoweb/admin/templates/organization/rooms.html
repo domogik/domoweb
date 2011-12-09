@@ -122,7 +122,7 @@
                 // Submit form
                 rinor.post(['api', 'room'], {'name': values.roomname, 'description': values.roomdescription})
                     .success(function(data, status, xhr){
-                        $.reloadPage({'status': 'ok', 'msg': '{% trans "New room added" %} \'' + data.name + '\'', 'id': data.id});                                   
+                        $.reloadPage({'status': 'success', 'msg': '{% trans "New room added" %} \'' + data.name + '\'', 'id': data.id});                                   
                     })
                     .error(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
@@ -163,7 +163,7 @@
                             onok: function() {
                                 rinor.delete(['api', 'room', '{{ room.id }}'])
                                     .success(function(data, status, xhr){
-                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Room" %}\'' + data.name + '\' {% trans "successfully deleted" %}'});
+                                        $.reloadPage({'status': 'success', 'msg': '{% trans "Room" %}\'' + data.name + '\' {% trans "successfully deleted" %}'});
                                     })
                                     .error(function(jqXHR, status, error){
                                         self.cancel();
@@ -192,7 +192,7 @@
                                                         // Delete room
                                                         rinor.get(['base', 'room', 'del', '{{ room.id }}'])
                                                             .success(function(data, status, xhr){
-                                                                $.reloadPage({'status': 'ok', 'msg': '{% trans "Room" %} \'' + data[0].name + '\' {% trans "successfully deleted" %}'});                                   
+                                                                $.reloadPage({'status': 'success', 'msg': '{% trans "Room" %} \'' + data[0].name + '\' {% trans "successfully deleted" %}'});                                   
                                                             })
                                                             .error(function(jqXHR, status, error){
                                                                 self.cancel();
@@ -252,7 +252,7 @@
                                 // Submit form
                                 rinor.put(['api', 'room', '{{ room.id }}'], {'name': values.roomname, 'description': values.roomdescription})
                                     .success(function(data, status, xhr){
-                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Room" %} \'' + data.name + '\' {% trans "successfully updated" %}'});                                   
+                                        $.reloadPage({'status': 'success', 'msg': '{% trans "Room" %} \'' + data.name + '\' {% trans "successfully updated" %}'});                                   
                                     })
                                     .error(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)

@@ -113,7 +113,7 @@
                 // Submit form
                 rinor.post(['api', 'device'], {'name': values.adddevicename, 'address': values.adddeviceaddress, 'type_id': values.adddevicetype, 'usage_id': values.adddeviceusage, 'description': values.adddevicedescription, 'reference': values.adddevicereference})
                     .success(function(data, status, xhr){
-                        $.reloadPage({'status': 'ok', 'msg': '{% trans "New device added" %} \'' + data.name + '\'', 'id': data.device_usage_id});                                   
+                        $.reloadPage({'status': 'success', 'msg': '{% trans "New device added" %} \'' + data.name + '\'', 'id': data.device_usage_id});                                   
                     })
                     .error(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
@@ -168,7 +168,7 @@
                                 onok: function() {
                                     rinor.delete(['api', 'device', '{{ device.id }}'])
                                         .success(function(data, status, xhr){
-                                            $.reloadPage({'status': 'ok', 'msg': '{% trans "Device" %}\'' + data.name + '\' {% trans "successfully deleted" %}'});
+                                            $.reloadPage({'status': 'success', 'msg': '{% trans "Device" %}\'' + data.name + '\' {% trans "successfully deleted" %}'});
                                         })
                                         .error(function(jqXHR, status, error){
                                             if (jqXHR.status == 400)
@@ -206,7 +206,7 @@
 
                                     rinor.get(['base', 'device', 'del', '{{ device.id }}'])
                                         .success(function(data, status, xhr){
-                                            $.reloadPage({'status': 'ok', 'msg': '{% trans "Device" %}\'' + data.device[0].name + '\' {% trans "successfully deleted" %}'});
+                                            $.reloadPage({'status': 'success', 'msg': '{% trans "Device" %}\'' + data.device[0].name + '\' {% trans "successfully deleted" %}'});
                                         })
                                         .error(function(jqXHR, status, error){
                                             if (jqXHR.status == 400)
@@ -224,7 +224,7 @@
                                     // Submit form
                                     rinor.put(['api', 'device', '{{ device.id }}'], {'name': values.upddevicename, 'address': values.upddeviceaddress, 'usage_id': values.upddeviceusage, 'description': values.upddevicedescription, 'reference': values.upddevicereference})
                                         .success(function(data, status, xhr){
-                                            $.reloadPage({'status': 'ok', 'msg': '{% trans "Device" %} \'' + data.name + '\' {% trans "successfully updated" %}'});
+                                            $.reloadPage({'status': 'success', 'msg': '{% trans "Device" %} \'' + data.name + '\' {% trans "successfully updated" %}'});
                                         })
                                         .error(function(jqXHR, status, error){
                                             if (jqXHR.status == 400)

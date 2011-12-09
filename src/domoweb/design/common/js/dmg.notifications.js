@@ -8,8 +8,8 @@
             var sticky = false;
             var msgformated = msg.replace( /\n/g, '<br />\n' );
             switch (theme) {
-                case 'ok':
-                    header = "Confirmation";
+                case 'success':
+                    header = "Success";
                     break;
                 case 'info':
                     header = "Information";
@@ -21,6 +21,9 @@
                     break;
                 case 'warning':
                     header = "Warning";
+                    break;
+                case 'debug':
+                    header = "Debug";
                     break;
             }    
             $.jGrowl(msgformated, { header: header, sticky: sticky, theme: theme });

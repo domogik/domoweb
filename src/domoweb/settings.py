@@ -93,6 +93,7 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'domoweb.middleware.LaunchMiddleware',
     'domoweb.middleware.RinorMiddleware',
 )
@@ -104,6 +105,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.debug',
     'django.core.context_processors.i18n',
     'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
     'domoweb.context_processors.rinor',
 )
 
@@ -111,6 +113,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.messages',
     'django.contrib.sites',
     'django.contrib.admin',
     'tastypie',
@@ -126,6 +129,8 @@ INSTALLED_APPS = (
 ### 'django.contrib.sessions.backends.db'
 ### 'django.contrib.sessions.backends.file'
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 PIPES_CACHE_EXPIRY=0
 PIPES_SOCKET_TIMEOUT=600 # 600 sec

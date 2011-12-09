@@ -53,7 +53,6 @@ def house(request):
     """
 
     page_title = _("View House")
-    page_messages = []
 
     widgets_list = Widget.objects.all()
 
@@ -68,7 +67,6 @@ def house(request):
     return go_to_page(
         request, 'house.html',
         page_title,
-        page_messages,
         widgets=widgets_list,
         nav1_show = "selected",
         device_types=typeDict,
@@ -87,7 +85,6 @@ def house_edit(request, from_page):
     """
 
     page_title = _("Edit House")
-    page_messages = []
 
     widgets_list = Widget.objects.all()
 
@@ -96,7 +93,6 @@ def house_edit(request, from_page):
     return go_to_page(
         request, 'house.edit.html',
         page_title,
-        page_messages,
         widgets=widgets_list,
         nav1_show = "selected",
         from_page = from_page,
@@ -112,8 +108,6 @@ def area(request, area_id):
     @return an HttpResponse object
     """
 
-    page_messages = []
-
     widgets_list = Widget.objects.all()
 
     usageDict = DeviceUsagePipe().get_dict()
@@ -127,7 +121,6 @@ def area(request, area_id):
     return go_to_page(
         request, 'area.html',
         page_title,
-        page_messages,
         widgets=widgets_list,
         nav1_show = "selected",
         device_types=typeDict,
@@ -145,7 +138,6 @@ def area_edit(request, area_id, from_page):
     @return an HttpResponse object
     """
 
-    page_messages = []
     widgets_list = Widget.objects.all()
 
     area = AreaExtendedPipe().get_pk(area_id)
@@ -156,7 +148,6 @@ def area_edit(request, area_id, from_page):
     return go_to_page(
         request, 'area.edit.html',
         page_title,
-        page_messages,
         widgets=widgets_list,
         nav1_show = "selected",
         from_page = from_page,
@@ -173,7 +164,6 @@ def room(request, room_id):
     @return an HttpResponse object
     """
     
-    page_messages = []
     widgets_list = Widget.objects.all()
 
     usageDict = DeviceUsagePipe().get_dict()
@@ -187,7 +177,6 @@ def room(request, room_id):
     return go_to_page(
         request, 'room.html',
         page_title,
-        page_messages,
         widgets=widgets_list,
         nav1_show = "selected",
         device_types=typeDict,
@@ -205,7 +194,6 @@ def room_edit(request, room_id, from_page):
     @return an HttpResponse object
     """
 
-    page_messages = []
     widgets_list = Widget.objects.all()
 
     room = RoomExtendedPipe().get_pk(room_id)
@@ -216,7 +204,6 @@ def room_edit(request, room_id, from_page):
     return go_to_page(
         request, 'room.edit.html',
         page_title,
-        page_messages,
         widgets=widgets_list,
         nav1_show = "selected",
         from_page = from_page,

@@ -64,7 +64,7 @@
                 // Submit form
                 rinor.post(['api', 'area'], {'name': values.areaname, 'description': values.areadescription})
                     .success(function(data, status, xhr){
-                        $.reloadPage({'status': 'ok', 'msg': '{% trans "New area added" %} \'' + data.name + '\'', 'id': data.id});
+                        $.reloadPage({'status': 'success', 'msg': '{% trans "New area added" %} \'' + data.name + '\'', 'id': data.id});
                     })
                     .error(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
@@ -103,7 +103,7 @@
                             onok: function() {
                                 rinor.delete(['api', 'area', '{{ area.id }}'])
                                     .success(function(data, status, xhr){
-                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Area" %}\'' + data.name + '\' {% trans "successfully deleted" %}'});
+                                        $.reloadPage({'status': 'success', 'msg': '{% trans "Area" %}\'' + data.name + '\' {% trans "successfully deleted" %}'});
                                     })
                                     .error(function(jqXHR, status, error){
                                         self.cancel();
@@ -146,7 +146,7 @@
                                 // Submit form
                                 rinor.put(['api', 'area', '{{ area.id }}'], {'name': values.areaname, 'description': values.areadescription})
                                     .success(function(data, status, xhr){
-                                        $.reloadPage({'status': 'ok', 'msg': '{% trans "Area" %} \'' + data.name + '\' {% trans "successfully updated" %}'});
+                                        $.reloadPage({'status': 'success', 'msg': '{% trans "Area" %} \'' + data.name + '\' {% trans "successfully updated" %}'});
                                     })
                                     .error(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
