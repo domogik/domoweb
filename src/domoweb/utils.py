@@ -7,9 +7,6 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from domoweb.models import Parameters
 from django.shortcuts import redirect
-from domoweb.rinor.pipes import InfoPipe
-from distutils2.version import *
-from distutils2.version import IrrationalVersionError
 
 def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
     """
@@ -33,9 +30,8 @@ def go_to_page(request, html_page, page_title, page_messages, **attribute_list):
     response_attr_list = {}
     response_attr_list['page_title'] = page_title
     response_attr_list['page_messages'] = page_messages    
-    response_attr_list['version'] = settings.DOMOWEB_VERSION
     response_attr_list['is_user_connected'] = __is_user_connected(request)
-    
+    response_attr_list['version'] = settings.DOMOWEB_VERSION    
     response_attr_list['rinor_min_version'] = settings.RINOR_MIN_API
     response_attr_list['rinor_max_version'] = settings.RINOR_MAX_API
     response_attr_list['dmg_min_version'] = settings.DMG_MIN_VERSION

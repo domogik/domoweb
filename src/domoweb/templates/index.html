@@ -34,7 +34,7 @@
     <link href="/design/common/css/page-home.css" rel="stylesheet" type="text/css" />
     <link href="/widgets/dmg_4x3_colorPicker/farbtastic.css" rel="stylesheet" type="text/css" />
 	{% for widget in widgets %}
-    <link href="/widgets/{{ widget }}/style.css" rel="stylesheet" type="text/css" />
+    <link href="/widgets/{{ widget.id }}/style.css" rel="stylesheet" type="text/css" />
     {% endfor %}
 
 {% endblock %}
@@ -51,7 +51,7 @@
     <script type="text/javascript" src="/widgets/dmg_4x3_colorPicker/farbtastic.js"></script>
 
 	{% for widget in widgets %}
-    <script type="text/javascript" src="/widgets/{{ widget }}/main.js"></script>	
+    <script type="text/javascript" src="/widgets/{{ widget.id }}/main.js"></script>	
     {% endfor %}
 {% endblock %}
 {% block js_script %}

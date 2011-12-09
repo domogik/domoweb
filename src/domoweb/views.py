@@ -45,7 +45,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.conf import settings
 from django import forms
-from domoweb.models import Parameters
+from domoweb.models import Parameters, Widget
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 
@@ -59,8 +59,7 @@ def index(request):
     page_title = _("Domogik")
     page_messages = []
 
-    widgets_list = settings.WIDGETS_LIST
-
+    widgets_list = Widget.objects.all()
     usageDict = DeviceUsagePipe().get_dict()
     typeDict = DeviceTypePipe().get_dict()
 

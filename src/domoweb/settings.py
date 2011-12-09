@@ -93,6 +93,7 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'domoweb.middleware.LaunchMiddleware',
     'domoweb.middleware.RinorMiddleware',
 )
 
@@ -146,12 +147,3 @@ TEMPLATE_DIRS = (
     '%s/admin/templates/' % PROJECT_PATH,
     '%s/rinor/templates/' % PROJECT_PATH,
 )
-
-# List the availables widgets
-WIDGETS_LIST = []
-STATIC_WIDGETS_ROOT = os.environ['DOMOWEB_STATIC_WIDGETS']
-if os.path.isdir(STATIC_WIDGETS_ROOT):
-    for file in os.listdir(STATIC_WIDGETS_ROOT):
-        main = os.path.join(STATIC_WIDGETS_ROOT, file, "main.js")
-        if os.path.isfile(main):
-            WIDGETS_LIST.append(file)

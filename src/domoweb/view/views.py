@@ -43,7 +43,7 @@ from django.utils.translation import ugettext
 from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-
+from domoweb.models import Widget
 
 def house(request):
     """
@@ -55,7 +55,7 @@ def house(request):
     page_title = _("View House")
     page_messages = []
 
-    widgets_list = settings.WIDGETS_LIST
+    widgets_list = Widget.objects.all()
 
     usageDict = DeviceUsagePipe().get_dict()
     typeDict = DeviceTypePipe().get_dict()
@@ -89,7 +89,7 @@ def house_edit(request, from_page):
     page_title = _("Edit House")
     page_messages = []
 
-    widgets_list = settings.WIDGETS_LIST
+    widgets_list = Widget.objects.all()
 
     house_name = UiConfigPipe().get_house()
     devices = DeviceExtendedPipe().get_list()
@@ -114,7 +114,7 @@ def area(request, area_id):
 
     page_messages = []
 
-    widgets_list = settings.WIDGETS_LIST
+    widgets_list = Widget.objects.all()
 
     usageDict = DeviceUsagePipe().get_dict()
     typeDict = DeviceTypePipe().get_dict()
@@ -146,7 +146,7 @@ def area_edit(request, area_id, from_page):
     """
 
     page_messages = []
-    widgets_list = settings.WIDGETS_LIST
+    widgets_list = Widget.objects.all()
 
     area = AreaExtendedPipe().get_pk(area_id)
     house_name = UiConfigPipe().get_house()    
@@ -174,7 +174,7 @@ def room(request, room_id):
     """
     
     page_messages = []
-    widgets_list = settings.WIDGETS_LIST
+    widgets_list = Widget.objects.all()
 
     usageDict = DeviceUsagePipe().get_dict()
     typeDict = DeviceTypePipe().get_dict()
@@ -206,7 +206,7 @@ def room_edit(request, room_id, from_page):
     """
 
     page_messages = []
-    widgets_list = settings.WIDGETS_LIST
+    widgets_list = Widget.objects.all()
 
     room = RoomExtendedPipe().get_pk(room_id)
     house_name = UiConfigPipe().get_house()     

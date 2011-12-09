@@ -1,9 +1,12 @@
 from domoweb.exceptions import RinorError, RinorNotAvailable, BadDomogikVersion
+from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpResponseServerError
 from django.template import Context, loader
 from httplib import BadStatusLine
-from domoweb.models import Parameters
+from domoweb.models import Parameters, Widget
 from domoweb.rinor.pipes import InfoPipe
+from django.conf import settings
+import os
 
 class RinorMiddleware(object):
 
@@ -29,6 +32,10 @@ class RinorMiddleware(object):
                 return redirect("config_welcome_view")
         return
 
+    def process_view(self, request, view_func, view_args, view_kwargs):
+#        kwargs = {'version': settings.DOMOWEB_VERSION}
+        return view_func(request, *view_args, **view_kwargs)
+
     def process_exception(self, request, exception):
         if isinstance(exception, RinorError):
             t = loader.get_template('error/RinorError.html')
@@ -50,3 +57,16 @@ class RinorMiddleware(object):
             c = Context({'rinor_info':_rinor_info})
             return HttpResponseServerError(t.render(c))
         return
+
+class LaunchMiddleware:
+    def __init__(self):
+        # List the availables widgets
+        Widget.objects.all().delete()
+        STATIC_WIDGETS_ROOT = os.environ['DOMOWEB_STATIC_WIDGETS']
+        if os.path.isdir(STATIC_WIDGETS_ROOT):
+            for file in os.listdir(STATIC_WIDGETS_ROOT):
+                main = os.path.join(STATIC_WIDGETS_ROOT, file, "main.js")
+                if os.path.isfile(main):
+                    w = Widget(id=file)
+                    w.save();
+        raise MiddlewareNotUsed
