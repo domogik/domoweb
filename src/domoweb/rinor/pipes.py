@@ -23,7 +23,7 @@ class EventPipe(RinorPipe):
         _devices = [str(id) for id in _devices_list]
         _data = self._get_data(self.new_path, _devices)               
         _event = _data.event[0]
-        _ticket = _event.ticket_id    
+        _ticket = _event.ticket_id
         print "NEW EVENT " + str(_event.timestamp)
         yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'
         while(True):
