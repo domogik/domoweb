@@ -48,9 +48,6 @@ from django import forms
 from domoweb.models import Parameters
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.exceptions import RinorNotAvailable
-
-from httplib import BadStatusLine
 
 @rinor_isconfigured
 def index(request):
@@ -65,19 +62,13 @@ def index(request):
 
     widgets_list = settings.WIDGETS_LIST
 
-    try:
-        usageDict = DeviceUsagePipe().get_dict()
-        typeDict = DeviceTypePipe().get_dict()
+    usageDict = DeviceUsagePipe().get_dict()
+    typeDict = DeviceTypePipe().get_dict()
 
-        areas = AreaExtendedPipe().get_list()
-        rooms = RoomExtendedPipe().get_list_noarea()
+    areas = AreaExtendedPipe().get_list()
+    rooms = RoomExtendedPipe().get_list_noarea()
 
-        house_name = UiConfigPipe().get_house()
-
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    house_name = UiConfigPipe().get_house()
 
     return go_to_page(
         request, 'index.html',
@@ -89,23 +80,6 @@ def index(request):
         areas_list=areas,
         rooms_list=rooms,
         house_name=house_name
-    )
-
-def error_badstatusline(request):
-    return render_to_response('error/BadStatusLine.html')
-        
-def error_resourcenotavailable(request):
-    page_title = _("Error - Rinor not available")
-    page_messages = []
-
-    _ip = Parameters.objects.get(key='rinor_ip')
-    _port = Parameters.objects.get(key='rinor_port')
-    
-    return go_to_page(
-        request, 'error/ResourceNotAvailable.html',
-        page_title,
-        page_messages,
-        rinor_url="http://%s:%s" % (_ip.value, _port.value),
     )
 
 def error_baddomogikversion(request):

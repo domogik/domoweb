@@ -43,9 +43,8 @@ from django.utils.translation import ugettext
 from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.exceptions import RinorNotAvailable
 import pyinfo
-from httplib import BadStatusLine
+from domoweb.exceptions import RinorError
 
 @rinor_isconfigured
 def login(request):
@@ -61,12 +60,7 @@ def login(request):
     if request.method == 'POST':
         return _auth(request, next)
     else:
-        try:
-            users = UserPipe().get_list()
-        except BadStatusLine:
-            return redirect("error_badstatusline_view")
-        except RinorNotAvailable:
-            return redirect("error_resourcenotavailable_view")
+        users = UserPipe().get_list()
         return go_to_page(
             request, 'login.html',
             page_title,
@@ -103,10 +97,6 @@ def _auth(request, next):
         else:
             return HttpResponseRedirect('/view/')
 
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
     except RinorError:
         # User not found, ask again to log in
         error_msg = ugettext(u"Sorry unable to log in. Please check login name / password and try again.")
@@ -123,13 +113,8 @@ def admin_management_accounts(request):
     
     page_title = _("Accounts management")
     page_messages = []
-    try:
-        users = UserPipe().get_list()
-        people = PersonPipe().get_list()
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    users = UserPipe().get_list()
+    people = PersonPipe().get_list()
     return go_to_page(
         request, 'management/accounts.html',
         page_title,
@@ -153,14 +138,9 @@ def admin_organization_devices(request):
     page_messages = []
 
     id = request.GET.get('id', 0)
-    try:
-        devices = DeviceExtendedPipe().get_list()
-        usages = DeviceUsagePipe().get_list()
-        types = DeviceTypePipe().get_list()
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    devices = DeviceExtendedPipe().get_list()
+    usages = DeviceUsagePipe().get_list()
+    types = DeviceTypePipe().get_list()
 
     return go_to_page(
         request, 'organization/devices.html',
@@ -187,14 +167,9 @@ def admin_organization_rooms(request):
     page_messages = []
 
     id = request.GET.get('id', 0)
-    try:
-        rooms = RoomExtendedPipe().get_list()
-        house_rooms = RoomExtendedPipe().get_list_noarea()
-        areas = AreaExtendedPipe().get_list()
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    rooms = RoomExtendedPipe().get_list()
+    house_rooms = RoomExtendedPipe().get_list_noarea()
+    areas = AreaExtendedPipe().get_list()
 
     return go_to_page(
         request, 'organization/rooms.html',
@@ -221,12 +196,7 @@ def admin_organization_areas(request):
     page_messages = []
 
     id = request.GET.get('id', 0)
-    try:
-        areas = AreaExtendedPipe().get_list()
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    areas = AreaExtendedPipe().get_list()
 
     return go_to_page(
         request, 'organization/areas.html',
@@ -250,12 +220,7 @@ def admin_organization_house(request):
     page_title = _("House organization")
     page_messages = []
 
-    try:
-        house_name = UiConfigPipe().get_house()
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    house_name = UiConfigPipe().get_house()
 
     return go_to_page(
         request, 'organization/house.html',
@@ -278,13 +243,8 @@ def admin_organization_widgets(request):
     page_title = _("Widgets organization")
     page_messages = []
 
-    try:
-        rooms = RoomExtendedPipe().get_list()
-        areas = AreaExtendedPipe().get_list()
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    rooms = RoomExtendedPipe().get_list()
+    areas = AreaExtendedPipe().get_list()
 
     return go_to_page(
         request, 'organization/widgets.html',
@@ -307,12 +267,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
 
     page_messages = []
 
-    try:
-        plugin = PluginPipe().get_detail(plugin_host, plugin_id)
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    plugin = PluginPipe().get_detail(plugin_host, plugin_id)
     if plugin_type == "plugin":
         page_title = _("Plugin")
         return go_to_page(
@@ -366,12 +321,7 @@ def admin_tools_rinor(request):
     page_title = _("RINOR informations")
     page_messages = []
 
-    try:
-        info = InfoPipe().get_info()
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    info = InfoPipe().get_info()
     return go_to_page(
         request, 'tools/rinor.html',
         page_title,
@@ -471,17 +421,7 @@ def admin_packages_repositories(request):
     page_title = _("Packages repositories")
     page_messages = []
     
-    try:
-        repositories = RepositoryPipe().get_list()
-#        if (repositories_result.status == 'OK'):
-#            repositories=repositories_result.repository
-#        else:
-#            repositories=None
-#            page_messages.append({'status':'error', 'msg':repositories_result.description})
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    repositories = RepositoryPipe().get_list()
     return go_to_page(
         request, 'packages/repositories.html',
         page_title,
@@ -502,12 +442,7 @@ def admin_packages_plugins(request):
 
     page_title = _("Plugins packages")
     page_messages = []
-    try:
-        packages = PackageExtendedPipe().get_list_plugin()
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    packages = PackageExtendedPipe().get_list_plugin()
     
     return go_to_page(
         request, 'packages/plugins.html',
@@ -529,13 +464,8 @@ def admin_packages_externals(request):
 
     page_title = _("External member packages")
     page_messages = []
-    try:
-        packages = PackageExtendedPipe().get_list_external()
-        rinor = InfoPipe().get_info()
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    packages = PackageExtendedPipe().get_list_external()
+    rinor = InfoPipe().get_info()
 
     return go_to_page(
         request, 'packages/externals.html',
@@ -555,12 +485,7 @@ def admin_packages_install(request, package_host, package_name, package_release)
     @param request : HTTP request
     @return an HttpResponse object
     """
-    try:
-        PackagePipe().put_install(package_host, package_name, package_release)
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    PackagePipe().put_install(package_host, package_name, package_release)
 
     return redirect('admin_packages_plugins_view')
 
@@ -572,11 +497,6 @@ def admin_packages_enable(request, package_host, package_name, action):
     @param request : HTTP request
     @return an HttpResponse object
     """
-    try:
-        PluginPipe().command_detail(package_host, package_name, action)
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    PluginPipe().command_detail(package_host, package_name, action)
 
     return redirect('admin_packages_plugins_view')

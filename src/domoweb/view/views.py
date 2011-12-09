@@ -43,9 +43,6 @@ from django.utils.translation import ugettext
 from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.exceptions import RinorNotAvailable
-
-from httplib import BadStatusLine
 
 @rinor_isconfigured
 def house(request):
@@ -60,19 +57,14 @@ def house(request):
 
     widgets_list = settings.WIDGETS_LIST
 
-    try:
-        usageDict = DeviceUsagePipe().get_dict()
-        typeDict = DeviceTypePipe().get_dict()
+    usageDict = DeviceUsagePipe().get_dict()
+    typeDict = DeviceTypePipe().get_dict()
 
-        areas = AreaExtendedPipe().get_list()
-        rooms = RoomExtendedPipe().get_list_noarea()
+    areas = AreaExtendedPipe().get_list()
+    rooms = RoomExtendedPipe().get_list_noarea()
 
-        house_name = UiConfigPipe().get_house()
+    house_name = UiConfigPipe().get_house()
 
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
     return go_to_page(
         request, 'house.html',
         page_title,
@@ -99,13 +91,8 @@ def house_edit(request, from_page):
 
     widgets_list = settings.WIDGETS_LIST
 
-    try:
-        house_name = UiConfigPipe().get_house()
-        devices = DeviceExtendedPipe().get_list()
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    house_name = UiConfigPipe().get_house()
+    devices = DeviceExtendedPipe().get_list()
     return go_to_page(
         request, 'house.edit.html',
         page_title,
@@ -129,18 +116,12 @@ def area(request, area_id):
 
     widgets_list = settings.WIDGETS_LIST
 
-    try:
-        usageDict = DeviceUsagePipe().get_dict()
-        typeDict = DeviceTypePipe().get_dict()
+    usageDict = DeviceUsagePipe().get_dict()
+    typeDict = DeviceTypePipe().get_dict()
 
-        area = AreaExtendedPipe().get_pk(area_id)
+    area = AreaExtendedPipe().get_pk(area_id)
 
-        house_name = UiConfigPipe().get_house()
-
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    house_name = UiConfigPipe().get_house()
 
     page_title = _("View ") + area.name
     return go_to_page(
@@ -167,15 +148,9 @@ def area_edit(request, area_id, from_page):
     page_messages = []
     widgets_list = settings.WIDGETS_LIST
 
-    try:
-        area = AreaExtendedPipe().get_pk(area_id)
-        house_name = UiConfigPipe().get_house()    
-        devices = DeviceExtendedPipe().get_list()
-
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    area = AreaExtendedPipe().get_pk(area_id)
+    house_name = UiConfigPipe().get_house()    
+    devices = DeviceExtendedPipe().get_list()
 
     page_title = _("Edit ") + area.name
     return go_to_page(
@@ -201,18 +176,12 @@ def room(request, room_id):
     page_messages = []
     widgets_list = settings.WIDGETS_LIST
 
-    try:
-        usageDict = DeviceUsagePipe().get_dict()
-        typeDict = DeviceTypePipe().get_dict()
+    usageDict = DeviceUsagePipe().get_dict()
+    typeDict = DeviceTypePipe().get_dict()
 
-        room = RoomExtendedPipe().get_pk(room_id)
+    room = RoomExtendedPipe().get_pk(room_id)
 
-        house_name = UiConfigPipe().get_house()    
-
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    house_name = UiConfigPipe().get_house()    
 
     page_title = _("View ") + room.name
     return go_to_page(
@@ -239,15 +208,9 @@ def room_edit(request, room_id, from_page):
     page_messages = []
     widgets_list = settings.WIDGETS_LIST
 
-    try:
-        room = RoomExtendedPipe().get_pk(room_id)
-        house_name = UiConfigPipe().get_house()     
-        devices = DeviceExtendedPipe().get_list()
-
-    except BadStatusLine:
-        return redirect("error_badstatusline_view")
-    except RinorNotAvailable:
-        return redirect("error_resourcenotavailable_view")
+    room = RoomExtendedPipe().get_pk(room_id)
+    house_name = UiConfigPipe().get_house()     
+    devices = DeviceExtendedPipe().get_list()
 
     page_title = _("Edit ") + room.name
     return go_to_page(
