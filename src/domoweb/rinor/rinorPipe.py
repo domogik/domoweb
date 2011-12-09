@@ -26,7 +26,7 @@ class RinorPipe():
         if (data):
             _tmp = []
             for d in data:
-                if type(d) == str:
+                if type(d) == str or type(d) == unicode:
                     d=urllib.quote(d.encode('utf8'), '')
                 else:
                     d=str(d)
