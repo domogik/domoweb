@@ -44,7 +44,7 @@ from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 
-@rinor_isconfigured
+
 def house(request):
     """
     Method called when the show index page is accessed
@@ -104,7 +104,7 @@ def house_edit(request, from_page):
         devices_list=devices
     )
 
-@rinor_isconfigured
+
 def area(request, area_id):
     """
     Method called when the show area page is accessed
@@ -136,7 +136,7 @@ def area(request, area_id):
         house_name=house_name
     )
 
-@rinor_isconfigured
+
 @admin_required
 def area_edit(request, area_id, from_page):
     """
@@ -165,7 +165,7 @@ def area_edit(request, area_id, from_page):
         devices_list=devices
     )
 
-@rinor_isconfigured
+
 def room(request, room_id):
     """
     Method called when the show room page is accessed
@@ -196,7 +196,7 @@ def room(request, room_id):
         house=house_name
     )
 
-@rinor_isconfigured
+
 @admin_required
 def room_edit(request, room_id, from_page):
     """

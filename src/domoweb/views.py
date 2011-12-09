@@ -49,7 +49,6 @@ from domoweb.models import Parameters
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 
-@rinor_isconfigured
 def index(request):
     """
     Method called when the main page is accessed
@@ -80,19 +79,6 @@ def index(request):
         areas_list=areas,
         rooms_list=rooms,
         house_name=house_name
-    )
-
-def error_baddomogikversion(request):
-    page_title = _("Error - Bad Domogik Version")
-    page_messages = []
-
-    _rinor_info = InfoPipe().get_info_extended()
-    
-    return go_to_page(
-        request, 'error/BadDomogikVersion.html',
-        page_title,
-        page_messages,
-        rinor_info=_rinor_info,
     )
 
 ### Domogik Server configuration form

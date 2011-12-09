@@ -25,10 +25,11 @@
 {% endblock %}
 {% block js_include %}
 {% endblock %}
-{% block title %}{% trans "Error" %}{% endblock %}
+{% block title %}{% trans "Error - Bad Domogik Version" %}{% endblock %}
 
 {% block content %}
     <div id="error">
+        <h1>{% trans "Bad Domogik Version" %}</h1>
         <p><strong>
         {% if rinor_info.info.rinor_version_inferior %}
             Your Domogik version is too old {{rinor_info.info.dmg_version}}, please upgrade Domogik to >= {{dmg_min_version}}

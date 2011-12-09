@@ -92,30 +92,6 @@ def __is_user_admin(request):
     user = __get_user_connected(request)
     return user is not None and user['is_admin']
 
-def rinor_isconfigured(function):
-    """
-    Check if rinor is configured
-    """
-    def _dec(request, *args, **kwargs):
-        try:
-            _ip = Parameters.objects.get(key='rinor_ip')
-            _port = Parameters.objects.get(key='rinor_port')
-            if not 'rinor_api_version'  in request.session:
-                _info = InfoPipe().get_info_extended()
-                
-                if (not _info.info.rinor_version_superior and not _info.info.rinor_version_inferior):
-                    request.session['rinor_api_version'] = _info.info.rinor_version                    
-                else:
-                    return redirect("error_baddomogikversion_view")
-            if not 'normal_mode' in request.session:
-                mode = InfoPipe().get_mode()
-                request.session['normal_mode'] = (mode == "normal")
-        except Parameters.DoesNotExist:
-            return redirect("config_welcome_view")
-        else:
-            return function(request, *args, **kwargs)
-    return _dec
-
 def ipFormatChk(ip_str):
    pattern = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
    if re.match(pattern, ip_str):

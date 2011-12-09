@@ -46,7 +46,7 @@ from domoweb.rinor.pipes import *
 import pyinfo
 from domoweb.exceptions import RinorError
 
-@rinor_isconfigured
+
 def login(request):
     """
     Login process
@@ -78,7 +78,7 @@ def logout(request):
     request.session.clear()
     return HttpResponseRedirect('/')
 
-@rinor_isconfigured
+
 def _auth(request, next):
     # An action was submitted => login action
     user_login = request.POST.get("login",'')
@@ -102,7 +102,7 @@ def _auth(request, next):
         error_msg = ugettext(u"Sorry unable to log in. Please check login name / password and try again.")
         return HttpResponseRedirect('/admin/login/?status=error&msg=%s' % error_msg)
 
-@rinor_isconfigured
+
 @admin_required
 def admin_management_accounts(request):
     """
@@ -125,7 +125,7 @@ def admin_management_accounts(request):
         people_list=people
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_organization_devices(request):
     """
@@ -154,7 +154,7 @@ def admin_organization_devices(request):
         types_list=types
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_organization_rooms(request):
     """
@@ -183,7 +183,7 @@ def admin_organization_rooms(request):
         areas_list=areas
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_organization_areas(request):
     """
@@ -208,7 +208,7 @@ def admin_organization_areas(request):
         areas_list=areas
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_organization_house(request):
     """
@@ -231,7 +231,7 @@ def admin_organization_house(request):
         house_name=house_name
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_organization_widgets(request):
     """
@@ -256,7 +256,7 @@ def admin_organization_widgets(request):
         rooms_list=rooms
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     """
@@ -289,7 +289,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
             plugin=plugin
         )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_tools_helpers(request):
     """
@@ -309,7 +309,7 @@ def admin_tools_helpers(request):
         nav2_tools_helpers = "selected",
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_tools_rinor(request):
     """
@@ -331,7 +331,7 @@ def admin_tools_rinor(request):
         rinor=info
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_tools_pyinfo(request):
     """
@@ -382,7 +382,7 @@ def get_safe_settings():
             settings_dict[k] = cleanse_setting(k, getattr(settings, k))
     return settings_dict
 
-@rinor_isconfigured
+
 @admin_required
 def admin_tools_djangoinfo(request):
     """
@@ -409,7 +409,7 @@ def admin_tools_djangoinfo(request):
         sys_path=sys.path,
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_packages_repositories(request):
     """
@@ -431,7 +431,7 @@ def admin_packages_repositories(request):
         repositories=repositories
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_packages_plugins(request):
     """
@@ -453,7 +453,7 @@ def admin_packages_plugins(request):
         packages=packages
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_packages_externals(request):
     """
@@ -477,7 +477,7 @@ def admin_packages_externals(request):
         host=rinor.info.Host
     )
 
-@rinor_isconfigured
+
 @admin_required
 def admin_packages_install(request, package_host, package_name, package_release):
     """
@@ -489,7 +489,7 @@ def admin_packages_install(request, package_host, package_name, package_release)
 
     return redirect('admin_packages_plugins_view')
 
-@rinor_isconfigured
+
 @admin_required
 def admin_packages_enable(request, package_host, package_name, action):
     """
