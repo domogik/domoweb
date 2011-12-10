@@ -83,14 +83,19 @@ def index(request):
 class DomogikSetupForm(forms.Form):
     ip = forms.IPAddressField(max_length=15, label="Server IP address")
     port = forms.DecimalField(decimal_places=0, min_value=0, label="Server port")
-    
+    prefix = forms.CharField(max_length=50, label="Url prefix (without '/')", required=False)
+                             
     def clean(self):
         cleaned_data = self.cleaned_data
         ip = cleaned_data.get("ip")
         port = cleaned_data.get("port")
+        prefix = cleaned_data.get("prefix")
         if ip and port:
             # Check RINOR Server access
-            url = "http://%s:%s/" % (ip,port)
+            if prefix:
+                url = "http://%s:%s/%s/" % (ip, port, prefix)
+            else:
+                url = "http://%s:%s/" % (ip, port)
             try:
                 filehandle = urllib.urlopen(url)
             except IOError:
@@ -125,9 +130,14 @@ def config_configserver(request):
         if form.is_valid(): # All validation rules pass
             cd = form.cleaned_data
             p = Parameter(key='rinor_ip', value=cd["ip"])
-            p.save();
+            p.save()
             p = Parameter(key='rinor_port', value=cd["port"])
-            p.save();
+            p.save()
+            p = Parameter.objects.get(key='rinor_prefix')
+            p.delete()
+            if cd["prefix"]:
+                p = Parameter(key='rinor_prefix', value=cd["prefix"])
+                p.save()
             rinor_changed.send(sender='config_configserver')
             return redirect('config_testserve_view') # Redirect after POST
     else:

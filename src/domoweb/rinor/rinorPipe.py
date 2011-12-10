@@ -114,10 +114,16 @@ def _get_json(path):
     try:
         ip = Parameter.objects.get(key='rinor_ip')
         port = Parameter.objects.get(key='rinor_port')
-        uri = "http://%s:%s%s" % (ip.value, port.value, path)
     except Parameter.DoesNotExist:
         raise RinorNotConfigured
     else:
+        try:
+            prefix = Parameter.objects.get(key='rinor_prefix')
+        except Parameter.DoesNotExist:
+            uri = "http://%s:%s%s" % (ip.value, port.value, path)
+        else:
+            uri = "http://%s:%s/%s%s" % (ip.value, port.value, prefix.value, path)
+    
         retries = 0
         attempts = 0
         while True:
