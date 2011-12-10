@@ -77,6 +77,9 @@
 {% endblock %}
 
 {% block body %}
+    {% if we %}
+        {% include 'we.html' %}
+    {% endif %}
     <div id="mainbar">
         <nav id="nav1">
             <ul>

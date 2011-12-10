@@ -1,0 +1,210 @@
+	<div id="snowdrift"><!-- Happy Christmas everyone! --></div>
+
+	<style type="text/css" media="screen">
+		.snowflake {
+			position: absolute;
+			text-align: center;
+			z-index: 9999;
+			top: -100px;
+			width: 1em;
+			height: 1em;
+			color: white;
+			font-size: 16px;
+			text-shadow: rgba(0, 0, 0, 0.7) 1px 1px 2px;
+			/* We use the following properties to apply the fade and drop animations to each snowflake.
+			   Each of these properties takes two values. These values respectively match a setting
+			   for fade and drop.
+			*/
+			-webkit-animation-iteration-count: infinite, 20;
+			-webkit-animation-direction: normal, normal;
+			-webkit-animation-timing-function: linear, ease-in;
+			-moz-animation-iteration-count: infinite, 20;
+			-moz-animation-direction: normal, normal;
+			-moz-animation-timing-function: linear, ease-in;
+		}
+
+		.snowflake span {
+			position: absolute;
+			display: block;
+			width: 1em;
+			height: 1em;
+			/* We use the following properties to adjust the clockwiseSpin or counterclockwiseSpin
+			   animations on each snowflake.
+			   The createASnowflake function determines whether a flake has the 
+			   clockwiseSpin or counterclockwiseSpin animation.
+			*/
+			-webkit-animation-iteration-count: infinite;
+			-webkit-animation-direction: alternate;
+			-webkit-animation-timing-function: ease-in-out;
+			-webkit-transform-origin: 50% -100%;
+			-moz-animation-iteration-count: infinite;
+			-moz-animation-direction: alternate;
+			-moz-animation-timing-function: ease-in-out;
+			-moz-transform-origin: 50% -100%;
+		}
+
+		.snowflake.tiny {
+			font-size: 0.5em;
+		}
+
+		.snowflake.small {
+			font-size: 1em;
+		}
+
+		.snowflake.medium {
+			font-size: 2em;
+		}
+
+		.snowflake.large {
+			font-size: 3em;
+		}
+
+		.snowflake.massive {
+			font-size: 7em;
+		}
+
+		/* Hides a snowflake towards the very end of the animation */
+		@-webkit-keyframes fade {
+			/* Show a snowflake while into or below 85 percent of the animation and hide it, otherwise */
+			0%   { opacity: 1; }
+			85%  { opacity: 1; }
+			100% { opacity: 0; }
+		}
+
+		@-moz-keyframes fade {
+			/* Show a snowflake while into or below 85 percent of the animation and hide it, otherwise */
+			0%   { opacity: 1; }
+			85%  { opacity: 1; }
+			100% { opacity: 0; }
+		}
+		
+		/* Makes a snowflake fall from -50px to 650px pixels in the y-axis */
+		@-webkit-keyframes drop {
+			0%   { -webkit-transform: translate(0px, -50px); }
+			100% { -webkit-transform: translate(0px, 650px); }
+		}
+
+		@-moz-keyframes drop {
+			0%   { -moz-transform: translate(0px, -50px); }
+			100% { -moz-transform: translate(0px, 650px); }
+		}
+		/* Rotates a snowflake from -50 to 50 degrees in 2D space */
+		@-webkit-keyframes clockwiseSpin {
+			0%   { -webkit-transform: rotate(-50deg); }
+			100% { -webkit-transform: rotate(50deg); }
+		}
+		@-moz-keyframes clockwiseSpin {
+			0%   { -moz-transform: rotate(-50deg); }
+			100% { -moz-transform: rotate(50deg); }
+		}
+
+		/* Rotates it from 50 to -50 degrees in 2D space */
+		@-webkit-keyframes counterclockwiseSpin  {
+			0%   { -webkit-transform: rotate(50deg); }
+			100% { -webkit-transform: rotate(-50deg); }
+		}
+		@-moz-keyframes counterclockwiseSpin  {
+			0%   { -moz-transform: rotate(50deg); }
+			100% { -moz-transform: rotate(-50deg); }
+		}
+
+	</style>
+	
+	
+	
+	<script>
+	/* Define the number of snowflakes to be used in the animation */
+	const SNOWFLAKES = 10;
+
+	function init() {
+		
+		/* Fill the empty container with freshly driven snow */
+		var first = true;
+		for (var i = 0; i < SNOWFLAKES; i++) {
+			document.body.appendChild(createASnowflake(first));
+			first = false;
+		}
+	}
+
+	/*
+		Receives the lowest and highest values of a range and
+		returns a random integer that falls within that range.
+	*/
+	function randomInteger(low, high) {
+		return low + Math.floor(Math.random() * (high - low));
+	}
+
+	/*
+	   Receives the lowest and highest values of a range and
+	   returns a random float that falls within that range.
+	*/
+	function randomFloat(low, high) {
+		return low + Math.random() * (high - low);
+	}
+
+	function randomItem(items) {
+		return items[randomInteger(0, items.length - 1)]
+	}
+
+	/* Returns a duration value for the falling animation.*/
+	function durationValue(value) {
+		return value + 's';
+	}
+
+	function createASnowflake(is_first) {
+		var flakes = ['2746', '2745', '2744', '2733'];
+		var superFlakes = ['2746', '2745', '2744', 'fc7', '274b', '2749', '2747', '2746', '273c', '273b', '2734', '2733', '2732', '2731', '2725'];
+		var sizes = ['tiny', 'tiny', 'tiny', 'small', 'small', 'small', 'small', 'medium', 'medium', 'medium', 'medium', 'medium', 'medium', 'large', 'massive'];
+
+		/* Start by creating a wrapper div, and an empty span  */
+		var snowflakeElement = document.createElement('div');
+		snowflakeElement.className = 'snowflake ' + randomItem(sizes);
+
+		var snowflake = document.createElement('span');
+		snowflake.innerHTML = '&#x' + randomItem(flakes) + ';';
+
+		snowflakeElement.appendChild(snowflake);
+
+		/* Randomly choose a spin animation */
+		var spinAnimationName = (Math.random() < 0.5) ? 'clockwiseSpin' : 'counterclockwiseSpin';
+
+		 /* Randomly choose a side to anchor to, keeps the middle more dense and fits liquid layout */
+		 var anchorSide = (Math.random() < 0.5) ? 'left' : 'right';
+
+		/* Figure out a random duration for the fade and drop animations */
+		var fadeAndDropDuration = durationValue(randomFloat(5, 11));
+
+		/* Figure out another random duration for the spin animation */
+		var spinDuration = durationValue(randomFloat(4, 8));
+
+		// how long to wait before the flakes arrive
+		var flakeDelay = is_first ? 0 : durationValue(randomFloat(0, 10));
+
+		snowflakeElement.style.webkitAnimationName = 'fade, drop';
+		snowflakeElement.style.webkitAnimationDuration = fadeAndDropDuration + ', ' + fadeAndDropDuration;
+		snowflakeElement.style.webkitAnimationDelay = flakeDelay;
+
+		snowflakeElement.style.mozAnimationName = 'fade, drop';
+		snowflakeElement.style.mozAnimationDuration = fadeAndDropDuration + ', ' + fadeAndDropDuration;
+		snowflakeElement.style.mozAnimationDelay = flakeDelay;
+
+		/* Position the snowflake at a random location along the screen, anchored to either the left or the right*/
+		snowflakeElement.style[anchorSide] = randomInteger(0, 60) + '%';
+
+		snowflake.style.webkitAnimationName = spinAnimationName;
+		snowflake.style.webkitAnimationDuration = spinDuration;
+		snowflake.style.mozAnimationName = spinAnimationName;
+		snowflake.style.mozAnimationDuration = spinDuration;
+
+		/* Return this snowflake element so it can be added to the document */
+		return snowflakeElement;
+	}
+
+
+
+	window.onload = init;
+
+	
+	</script>
+
+<div class="snowflake medium" style="-moz-animation-name: fade, drop; -moz-animation-duration: 10.152740255463868s, 10.152740255463868s; -moz-animation-delay: 0ms; left: 43%; -webkit-animation-name: fade, drop; -webkit-animation-duration: 10.152740255463868s, 10.152740255463868s; -webkit-animation-delay: 0ms; left: 43%; "><span style="-webkit-animation-name: counterclockwiseSpin; -webkit-animation-duration: 7.607190861366689s;-moz-animation-name: counterclockwiseSpin; -moz-animation-duration: 7.607190861366689s; ">❆</span></div><div class="snowflake large" style="-webkit-animation-name: fade, drop; -webkit-animation-duration: 9.094843840226531s, 9.094843840226531s; -webkit-animation-delay: 3.8328862166963518s; right: 53%; -moz-animation-name: fade, drop; -moz-animation-duration: 9.094843840226531s, 9.094843840226531s; -moz-animation-delay: 3.8328862166963518s; right: 53%; "><span style="-webkit-animation-name: counterclockwiseSpin; -webkit-animation-duration: 4.893163688480854s;-moz-animation-name: counterclockwiseSpin; -moz-animation-duration: 4.893163688480854s; ">❆</span></div><div class="snowflake small" style="-webkit-animation-name: fade, drop; -webkit-animation-duration: 9.356271503958851s, 9.356271503958851s; -webkit-animation-delay: 2.1528514963574708s; left: 51%;-moz-animation-name: fade, drop; -moz-animation-duration: 9.356271503958851s, 9.356271503958851s; -moz-animation-delay: 2.1528514963574708s; left: 51%; "><span style="-webkit-animation-name: clockwiseSpin; -webkit-animation-duration: 7.695300825871527s; -moz-animation-name: clockwiseSpin; -moz-animation-duration: 7.695300825871527s;">❄</span></div><div class="snowflake tiny" style="-webkit-animation-name: fade, drop; -webkit-animation-duration: 9.533015098422766s, 9.533015098422766s; -webkit-animation-delay: 2.3207574035041034s; left: 50%; -moz-animation-name: fade, drop; -moz-animation-duration: 9.533015098422766s, 9.533015098422766s; -moz-animation-delay: 2.3207574035041034s; left: 50%;"><span style="-webkit-animation-name: clockwiseSpin; -webkit-animation-duration: 5.704890206456184s; -moz-animation-name: clockwiseSpin; -moz-animation-duration: 5.704890206456184s;">❆</span></div><div class="snowflake tiny" style="-webkit-animation-name: fade, drop; -webkit-animation-duration: 9.89467906858772s, 9.89467906858772s; -webkit-animation-delay: 8.675004688557237s; right: 5%;-moz-animation-name: fade, drop; -moz-animation-duration: 9.89467906858772s, 9.89467906858772s; -moz-animation-delay: 8.675004688557237s; right: 5%; "><span style="-webkit-animation-name: counterclockwiseSpin; -webkit-animation-duration: 6.1760214259848s; -moz-animation-name: counterclockwiseSpin; -moz-animation-duration: 6.1760214259848s;">❆</span></div><div class="snowflake tiny" style="-webkit-animation-name: fade, drop; -webkit-animation-duration: 6.459702942986041s, 6.459702942986041s; -webkit-animation-delay: 2.190193012356758s; left: 25%; -moz-animation-name: fade, drop; -moz-animation-duration: 6.459702942986041s, 6.459702942986041s; -moz-animation-delay: 2.190193012356758s; left: 25%;"><span style="-webkit-animation-name: clockwiseSpin; -webkit-animation-duration: 6.441703042015433s; -moz-animation-name: clockwiseSpin; -moz-animation-duration: 6.441703042015433s;">❆</span></div><div class="snowflake medium" style="-webkit-animation-name: fade, drop; -webkit-animation-duration: 9.5517683243379s, 9.5517683243379s; -webkit-animation-delay: 0.982644131872803s; right: 1%;-moz-animation-name: fade, drop; -moz-animation-duration: 9.5517683243379s, 9.5517683243379s; -moz-animation-delay: 0.982644131872803s; right: 1%; "><span style="-webkit-animation-name: counterclockwiseSpin; -webkit-animation-duration: 6.27062698174268s; -moz-animation-name: counterclockwiseSpin; -moz-animation-duration: 6.27062698174268s;">❅</span></div><div class="snowflake medium" style="-webkit-animation-name: fade, drop; -webkit-animation-duration: 8.584984671790153s, 8.584984671790153s; -webkit-animation-delay: 4.3736479501239955s; right: 7%; -moz-animation-name: fade, drop; -moz-animation-duration: 8.584984671790153s, 8.584984671790153s; -moz-animation-delay: 4.3736479501239955s; right: 7%;"><span style="-webkit-animation-name: counterclockwiseSpin; -webkit-animation-duration: 4.140784141607583s; -moz-animation-name: counterclockwiseSpin; -moz-animation-duration: 4.140784141607583s;">❄</span></div><div class="snowflake medium" style="-webkit-animation-name: fade, drop; -webkit-animation-duration: 6.997200501151383s, 6.997200501151383s; -webkit-animation-delay: 7.415206169243902s; left: 2%; -moz-animation-name: fade, drop; -moz-animation-duration: 6.997200501151383s, 6.997200501151383s; -moz-animation-delay: 7.415206169243902s; left: 2%;"><span style="-webkit-animation-name: counterclockwiseSpin; -webkit-animation-duration: 6.422217175364494s; -moz-animation-name: counterclockwiseSpin; -moz-animation-duration: 6.422217175364494s;">❄</span></div><div class="snowflake small" style="-webkit-animation-name: fade, drop; -webkit-animation-duration: 10.449776403605938s, 10.449776403605938s; -webkit-animation-delay: 9.969570094253868s; right: 6%; -moz-animation-name: fade, drop; -moz-animation-duration: 10.449776403605938s, 10.449776403605938s; -moz-animation-delay: 9.969570094253868s; right: 6%;"><span style="-webkit-animation-name: counterclockwiseSpin; -webkit-animation-duration: 5.583334054797888s;-moz-animation-name: counterclockwiseSpin; -moz-animation-duration: 5.583334054797888s; ">❅</span></div>
