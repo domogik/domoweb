@@ -3,6 +3,7 @@ from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpResponseServerError
 from django.template import Context, loader
 from django.contrib import messages
+from django.shortcuts import redirect
 from httplib import BadStatusLine
 from domoweb.models import Parameter, Widget
 from domoweb.rinor.pipes import InfoPipe
