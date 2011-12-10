@@ -2,7 +2,7 @@ import urllib
 import urllib2
 from django.core.cache import cache
 from django.utils import simplejson
-from domoweb.models import Parameters
+from domoweb.models import Parameter
 from domoweb.exceptions import RinorNotConfigured, RinorNotAvailable, RinorError
 import django.dispatch
 
@@ -106,10 +106,10 @@ class RinorPipe():
 
 def _get_json(path):
     try:
-        ip = Parameters.objects.get(key='rinor_ip')
-        port = Parameters.objects.get(key='rinor_port')
+        ip = Parameter.objects.get(key='rinor_ip')
+        port = Parameter.objects.get(key='rinor_port')
         uri = "http://%s:%s%s" % (ip.value, port.value, path)
-    except Parameters.DoesNotExist:
+    except Parameter.DoesNotExist:
         raise RinorNotConfigured
     else:
         retries = 0

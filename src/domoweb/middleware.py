@@ -4,7 +4,7 @@ from django.http import HttpResponseServerError
 from django.template import Context, loader
 from django.contrib import messages
 from httplib import BadStatusLine
-from domoweb.models import Parameters, Widget
+from domoweb.models import Parameter, Widget
 from domoweb.rinor.pipes import InfoPipe
 from django.conf import settings
 import os
@@ -17,8 +17,8 @@ class RinorMiddleware(object):
         """
         if not request.path.startswith('/config/'):
             try:
-                _ip = Parameters.objects.get(key='rinor_ip')
-                _port = Parameters.objects.get(key='rinor_port')
+                _ip = Parameter.objects.get(key='rinor_ip')
+                _port = Parameter.objects.get(key='rinor_port')
                 if not 'rinor_api_version'  in request.session:
                     _info = InfoPipe().get_info_extended()
                     
@@ -29,7 +29,7 @@ class RinorMiddleware(object):
                 if not 'normal_mode' in request.session:
                     mode = InfoPipe().get_mode()
                     request.session['normal_mode'] = (mode == "normal")
-            except Parameters.DoesNotExist:
+            except Parameter.DoesNotExist:
                 return redirect("config_welcome_view")
         
         """
@@ -64,8 +64,8 @@ class RinorMiddleware(object):
             c = Context()
             return HttpResponseServerError(t.render(c))
         elif isinstance(exception, RinorNotAvailable):
-            _ip = Parameters.objects.get(key='rinor_ip')
-            _port = Parameters.objects.get(key='rinor_port')
+            _ip = Parameter.objects.get(key='rinor_ip')
+            _port = Parameter.objects.get(key='rinor_port')
             t = loader.get_template('error/BadStatusLine.html')
             c = Context({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
             return HttpResponseServerError(t.render(c))

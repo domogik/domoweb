@@ -45,7 +45,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
 from django.conf import settings
 from django import forms
-from domoweb.models import Parameters, Widget
+from domoweb.models import Parameter, Widget
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 
@@ -123,9 +123,9 @@ def config_configserver(request):
         form = DomogikSetupForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             cd = form.cleaned_data
-            p = Parameters(key='rinor_ip', value=cd["ip"])
+            p = Parameter(key='rinor_ip', value=cd["ip"])
             p.save();
-            p = Parameters(key='rinor_port', value=cd["port"])
+            p = Parameter(key='rinor_port', value=cd["port"])
             p.save();
             return redirect('config_testserve_view') # Redirect after POST
     else:

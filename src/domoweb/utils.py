@@ -5,7 +5,7 @@ from django.utils.http import urlquote
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from domoweb.models import Parameters
+from domoweb.models import Parameter
 from django.shortcuts import redirect
 
 def go_to_page(request, html_page, page_title, **attribute_list):
