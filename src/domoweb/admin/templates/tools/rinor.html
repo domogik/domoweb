@@ -25,19 +25,21 @@
 
 {% block css %}
     <link href="/design/common/css/page-admin-tools.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
+    <link href="/design/libraries/jquery.dataTables-1.8.2/css/page.css" rel="stylesheet" type="text/css" />
+    <link href="/design/libraries/jquery.dataTables-1.8.2/css/table.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
-    <script type="text/javascript" src="/design/common/js/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
 {% endblock %}
 {% block js_script %}
 
     $(function(){
         // Accordion
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:3});
-        $.tablesorter.defaults.headers = { 3:{sorter: false} }; 
-        $("#domogik_request_list").tablesorter();
-        $("#devices_request_list").tablesorter();
+        $("#domogik_request_list, #devices_request_list").dataTable({
+            "sPaginationType": "full_numbers",
+            "sDom": 'lrt<"bottom"ip>'
+        });
         $("#force_refresh").click(function() {refresh()});
         refresh();
         $('body').everyTime('10s', function() {refresh()});
@@ -61,37 +63,35 @@
                     $("#request_number").append("<li><span class='label'>Max size for request queues: </span>" + data.event.Max_size_for_request_queues + "</li>")
                     
                     // Domogik Request list
-                    $('table#domogik_request_list tbody').empty();
+                    $("#domogik_request_list").dataTable().fnClearTable();
                     $.each(data.event.Domogik_requests, function(index, request) {
                         var creation_date = new Date(request.creation_date * 1000);
                         var last_access_date = new Date(request.last_access_date * 1000);
-                        $('table#domogik_request_list tbody').append("<tr><td>"
-                            + index + "</td><td>"
-                            + creation_date.toLocaleString() + "</td><td>"
-                            + last_access_date.toLocaleString() + "</td><td>"
-                            + request.queue_size + "</td><td>"
-                            + request.instance.unfinished_tasks + "</td><td>"
-                            + request.instance.maxsize + "</td></tr>");
+                        $("#domogik_request_list").dataTable().fnAddData( [
+                            index,
+                            creation_date.toLocaleString(),
+                            last_access_date.toLocaleString(),
+                            request.queue_size,
+                            request.instance.unfinished_tasks,
+                            request.instance.maxsize
+                        ]);
                     });
-                    $('#domogik_request_list').trigger("update");
-                    $('#domogik_request_list').trigger("sorton", [[[0,0]]]);
     
                     // Devices Request list
-                    $('table#devices_request_list tbody').empty();
+                    $("#devices_request_list").dataTable().fnClearTable();
                     $.each(data.event.Devices_requests, function(index, request) {
                         var creation_date = new Date(request.creation_date * 1000);
                         var last_access_date = new Date(request.last_access_date * 1000);
-                        $('table#devices_request_list tbody').append("<tr><td>"
-                            + index + "</td><td>"
-                            + creation_date.toLocaleString() + "</td><td>"
-                            + last_access_date.toLocaleString() + "</td><td>"
-                            + request.device_id_list + "</td><td>"
-                            + request.queue_size + "</td><td>"
-                            + request.instance.unfinished_tasks + "</td><td>"
-                            + request.instance.maxsize + "</td></tr>");
+                        $("#devices_request_list").dataTable().fnAddData( [
+                            index,
+                            creation_date.toLocaleString(),
+                            last_access_date.toLocaleString(),
+                            request.device_id_list,
+                            request.queue_size,
+                            request.instance.unfinished_tasks,
+                            request.instance.maxsize
+                        ]);
                     });
-                    $('#devices_request_list').trigger("update");
-                    $('#devices_request_list').trigger("sorton", [[[0,0]]]);
                 })
                 .error(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
@@ -169,7 +169,7 @@
         <h3>{% trans "Requests" %}</h3>
         <ul id='request_number'></ul>
         <br />
-        <table id='domogik_request_list' class='tablesorter' cellspacing="1">
+        <table id='domogik_request_list' class='display' cellpadding="0" cellspacing="0" border="0">
             <thead>
                 <tr>
                     <th scope='col'>ID</th>
@@ -181,10 +181,18 @@
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td>ID</td>
+                    <td>Created</td>
+                    <td>Last access</td>
+                    <td>Queue size</td>                    
+                    <td>Instance Unfinished Tasks</td>
+                    <td>Instance Max size</td>
+                </tr>
             </tbody>
         </table>
         <br />
-        <table id='devices_request_list' class='tablesorter' cellspacing="1">
+        <table id='devices_request_list' class='display' cellpadding="0" cellspacing="0" border="0">
             <thead>
                 <tr>
                     <th scope='col'>ID</th>

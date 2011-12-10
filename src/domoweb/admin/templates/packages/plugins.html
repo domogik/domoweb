@@ -25,10 +25,11 @@
 
 {% block css %}
     <link href="/design/common/css/page-admin-packages.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
+    <link href="/design/libraries/jquery.dataTables-1.8.2/css/page.css" rel="stylesheet" type="text/css" />
+    <link href="/design/libraries/jquery.dataTables-1.8.2/css/table.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
-    <script type="text/javascript" src="/design/common/js/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
 {% endblock %}
 {% block js_script %}
 
@@ -36,10 +37,10 @@
         // Accordion
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:4});
 		$("#tabs").tabs();
-        $.tablesorter.defaults.headers = { 1:{sorter: false},  2:{sorter: false} }; 
-        $("#installed_list").tablesorter();
-        $.tablesorter.defaults.headers = { 2:{sorter: false},  3:{sorter: false},  5:{sorter: false} }; 
-        $("#available_list").tablesorter();
+        $("#installed_list, #available_list").dataTable({
+            "sPaginationType": "full_numbers",
+            "sDom": 'lrt<"bottom"ip>'
+        });
         $('.package .release span[title]').tooltip_right();
     });
 {% endblock %}
@@ -60,7 +61,7 @@
         <div id="tabs-{{forloop.counter}}">
             <section class="subsection">
                 <h2>{% trans "Installed" %}</h2>
-                <table id='installed_list' class='tablesorter'>
+                <table id='installed_list' class='display' cellpadding="0" cellspacing="0" border="0">
                     <thead>
                         <tr><th>{% trans "Name" %}</th>
                             <th>{% trans "Release" %}</th>
@@ -87,7 +88,7 @@
             </section>
             <section class="subsection">
                 <h2>{% trans "Available" %}</h2>
-                <table id='available_list' class='tablesorter'>
+                <table id='available_list' class='display' cellpadding="0" cellspacing="0" border="0">
                     <thead>
                         <tr><th>{% trans "Name" %}</th>
                             <th>{% trans "Techno" %}</th>
