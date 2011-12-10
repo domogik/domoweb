@@ -4,10 +4,7 @@ from django.core.cache import cache
 from django.utils import simplejson
 from domoweb.models import Parameter
 from domoweb.exceptions import RinorNotConfigured, RinorNotAvailable, RinorError
-import django.dispatch
-
-index_updated = django.dispatch.Signal(providing_args=["index"])
-rinor_changed = django.dispatch.Signal()
+from domoweb.signals import index_updated, rinor_changed
 
 class RinorPipe():
     cache_expiry = 3600
@@ -18,7 +15,7 @@ class RinorPipe():
     
     def __init__(self):
         index_updated.connect(self.index_signal, dispatch_uid=self.index)
-        rinor_changed.connect(self.rinor_signal)
+        rinor_changed.connect(self.rinor_signal, dispatch_uid=self.index)
 
     def index_signal(self, sender, **kwargs):
         if (self.dependencies and kwargs['index'] in self.dependencies):
@@ -27,7 +24,7 @@ class RinorPipe():
             self.clear_cache()
 
     def rinor_signal(self, sender, **kwargs):
-        print "%s Received Rinor Changed signal"
+        print "%s Received Rinor Changed signal" % (self.__class__.__name__)
         # Invalidate cache
         self.clear_cache()
             

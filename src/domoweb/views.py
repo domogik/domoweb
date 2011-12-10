@@ -48,6 +48,7 @@ from django import forms
 from domoweb.models import Parameter, Widget
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
+from domoweb.signals import rinor_changed
 
 def index(request):
     """
@@ -127,6 +128,7 @@ def config_configserver(request):
             p.save();
             p = Parameter(key='rinor_port', value=cd["port"])
             p.save();
+            rinor_changed.send(sender='config_configserver')
             return redirect('config_testserve_view') # Redirect after POST
     else:
         ip = request.META['HTTP_HOST'].split(':')[0]
