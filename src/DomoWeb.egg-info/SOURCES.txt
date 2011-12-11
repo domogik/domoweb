@@ -16,6 +16,7 @@ src/domoweb/models.py
 src/domoweb/runserver.py
 src/domoweb/settings.py
 src/domoweb/settings_db.py
+src/domoweb/signals.py
 src/domoweb/urls.py
 src/domoweb/utils.py
 src/domoweb/views.py

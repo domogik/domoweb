@@ -50,6 +50,7 @@ from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.signals import rinor_changed
 
+
 def index(request):
     """
     Method called when the main page is accessed
@@ -133,8 +134,12 @@ def config_configserver(request):
             p.save()
             p = Parameter(key='rinor_port', value=cd["port"])
             p.save()
-            p = Parameter.objects.get(key='rinor_prefix')
-            p.delete()
+            try:
+                p = Parameter.objects.get(key='rinor_prefix')
+            except Parameter.DoesNotExist:
+                pass
+            else:
+                p.delete()
             if cd["prefix"]:
                 p = Parameter(key='rinor_prefix', value=cd["prefix"])
                 p.save()
