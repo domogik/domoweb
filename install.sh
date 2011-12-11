@@ -127,12 +127,6 @@ function update_default_config {
         exit 8
     fi
     [ -f /etc/default/domoweb ] &&  sed -i "s;^DOMOWEB_USER.*$;DOMOWEB_USER=$d_user;" /etc/default/domoweb
-
-    if [ "$MODE" = "develop" ];then
-        arch=$(python -c 'import platform;print platform.architecture()[0]')
-        d_custom_path=$PWD/src/domogik/xpl/tools/$arch/
-        [ -f /etc/default/domogik ] &&  sed -i "s;^CUSTOM_PATH.*$;CUSTOM_PATH=$d_custom_path;" /etc/default/domogik
-    fi
 }
 
 function check_python {
