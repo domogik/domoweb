@@ -104,7 +104,7 @@
                             <td class='release'><span title='{{package.package_url}}'>{{package.release}}</span>
                             {% if package.version_error %}<div class='error'>Incorrect version number</div>{% endif %}                         
                             </td>
-                            <td>{{package.desc}}</td>
+                            <td>{{package.desc|linebreaksbr}}</td>
                             <td>{{package.author}}</td>
                             <td class='actions'>{% if package.upgrade_require and package.install %}
                                 Upgrade domogik, to version package["domogik-min-release"], in order to install
