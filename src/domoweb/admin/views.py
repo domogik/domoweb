@@ -40,6 +40,7 @@ from django.shortcuts import redirect
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.contrib import messages
 from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
@@ -454,8 +455,12 @@ def admin_packages_install(request, package_host, package_name, package_release)
     @param request : HTTP request
     @return an HttpResponse object
     """
-    PackagePipe().put_install(package_host, package_name, package_release)
-
+    try:
+        PackagePipe().put_install(package_host, package_name, package_release)
+    except RinorError  as (code, reason):
+        messages.error(request, reason)
+    else:
+        messages.success(request, "Package %s %s installed" % (package_name, package_release))
     return redirect('admin_packages_plugins_view')
 
 
@@ -466,6 +471,11 @@ def admin_packages_enable(request, package_host, package_name, action):
     @param request : HTTP request
     @return an HttpResponse object
     """
-    PluginPipe().command_detail(package_host, package_name, action)
+    try:
+        PluginPipe().command_detail(package_host, package_name, action)
+    except RinorError  as (code, reason):
+        messages.error(request, reason)
+    else:
+        messages.success(request, "Package %s %sd" % (package_name, action))
 
     return redirect('admin_packages_plugins_view')
