@@ -52,8 +52,8 @@ PROJECT_PATH = os.environ['DOMOWEB_PATH']
 print PROJECT_PATH
 
 ### Get DomoWeb Version
-DOMOWEB_FULL_VERSION = commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev} ({latesttag}) - {date|isodate}' -b" % PROJECT_PATH)
-DOMOWEB_VERSION = commands.getoutput("cd %s ; hg branch | xargs hg log -l1 --template '{branch}.{rev}' -b" % PROJECT_PATH)
+DOMOWEB_FULL_VERSION = commands.getoutput("cd %s ; hg branch 2>/dev/null | xargs hg log -l1 --template '{branch}.{rev} ({latesttag}) - {date|isodate}' -b 2>/dev/null" % PROJECT_PATH)
+DOMOWEB_VERSION = commands.getoutput("cd %s ; hg branch 2>/dev/null | xargs hg log -l1 --template '{branch}.{rev}' -b 2>/dev/null" % PROJECT_PATH)
 print DOMOWEB_FULL_VERSION
 
 ### UI Database settings
