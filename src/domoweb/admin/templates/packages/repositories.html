@@ -39,7 +39,7 @@
         $("#update_cache").click(function() {
             rinor.put(['api', 'package'], {'action':'refresh'})
                 .success(function(data, status, xhr){
-                    $.notification('ok', "Package cache updated");
+                    $.notification('success', "Package cache updated");
                 })
                 .error(function(jqXHR, status, error){
                     if (jqXHR.status == 400)

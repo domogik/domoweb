@@ -164,7 +164,7 @@ $(function(){
                     $('#value_' + item.key).parent().attr('class', 'value icon16-status-true');
                     itemSaved++;
                     if (itemSaved == configuration.length) { // All saved without error
-                        $.notification('ok', "Configuration saved successfully");
+                        $.notification('success', "Configuration saved successfully");
                         $("#buttonstatus").attr('disabled', false);
                     }
                 })
@@ -393,7 +393,7 @@ $(function(){
                     $("#buttonstatus").removeClass('icon16-action-processing_f6f6f6');
                 })
                 .success(function(data, status, xhr){
-                    $.notification('ok', btokmsg);
+                    $.notification('success', btokmsg);
                     $.doTimeout( 'list', 5000, function(){
                         getPluginsList();
                     });

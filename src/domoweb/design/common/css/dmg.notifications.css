@@ -1,61 +1,61 @@
-body > div.jGrowl.top-right {
+body > .jGrowl.top-right {
     top:10px;
 }
 
-div.jGrowl div.header {
+.jGrowl .jGrowl-header {
     background-position: center left;
     background-repeat: no-repeat;
     padding-left: 32px;
     line-height:32px;
 }
 
-div.jGrowl div.message {
+.jGrowl .jGrowl-message {
     border-left-width: 2px;
     border-left-style: solid;
     padding-left:1em;
 }
 
-div.jGrowl div.success div.header {
+.jGrowl .success .jGrowl-header {
     background-image: url(../images/status/check_32.png);
     color: #5FE400;
 }
 
-div.jGrowl div.success div.message {
+.jGrowl .success .jGrowl-message {
     border-left-color: #5FE400;
 }
 
-div.jGrowl div.info div.header {
+.jGrowl .info .jGrowl-header {
     background-image: url(../images/status/info_32.png);
     color: #00ABE4;
 }
 
-div.jGrowl div.info div.message {
+.jGrowl .info .jGrowl-message {
     border-left-color: #00ABE4;
 }
 
-div.jGrowl div.warning div.header {
+.jGrowl .warning .jGrowl-header {
     background-image: url(../images/status/warning_32.png);
     color: #E48200;
 }
 
-div.jGrowl div.warning div.message {
+.jGrowl .warning .jGrowl-message {
     border-left-color: #E48200;
 }
 
-div.jGrowl div.error div.header {
+.jGrowl .error .jGrowl-header {
     background-image: url(../images/status/wrong_32.png);
     color: #E40800;
 }
 
-div.jGrowl div.error div.message {
+.jGrowl .error .jGrowl-message {
     border-left-color: #E40800;
 }
 
-div.jGrowl div.debug div.header {
+.jGrowl .debug .jGrowl-header {
     background-image: url(../images/status/info_32.png);
     color: #00ABE4;
 }
 
-div.jGrowl div.debug div.message {
+.jGrowl .debug .jGrowl-message {
     border-left-color: #00ABE4;
 }

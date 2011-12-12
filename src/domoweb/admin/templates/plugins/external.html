@@ -88,7 +88,7 @@ $(function(){
                     $("#buttonstatus").removeClass('icon16-action-processing_f6f6f6');
                 })
                 .success(function(data, status, xhr){
-                    $.notification('ok', btokmsg);
+                    $.notification('success', btokmsg);
                     getPluginsList();
                     setStatus(btstatus);
                 })
