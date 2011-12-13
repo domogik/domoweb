@@ -36,15 +36,11 @@
         // Accordion
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:4});
         
-        $("#update_cache").click(function() {
-            rinor.put(['api', 'package'], {'action':'refresh'})
-                .success(function(data, status, xhr){
-                    $.notification('success', "Package cache updated");
-                })
-                .error(function(jqXHR, status, error){
-                    if (jqXHR.status == 400)
-                        $.notification('error', jqXHR.responseText);
-                });
+        $("#update_cache").ajaxButton({
+            'url':['api', 'package'],
+            'data':{'action':'refresh'},
+            'successMsg':"Package cache updated",
+            'icon':'icon16-action-reset',
         });
     });
 {% endblock %}
@@ -52,7 +48,7 @@
 
 {% block banner %}
     <h1 class="ident"><span class="title">{{page_title}}</span></h1>
-    <button id='update_cache' class='button icon16-action-reset'>{% trans "Update cache" %}</button>
+    <button id='update_cache'>{% trans "Update cache" %}</button>
 {% endblock %}
 
 {% block right %}

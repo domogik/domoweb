@@ -29,12 +29,6 @@ $(function(){
 
     // Tabs
     $("#tabs").tabs();
-    
-    {% ifequal plugin.status "ON" %}
-        setStatus(true);
-    {% else %}
-        setStatus(false);
-    {% endifequal %}
 
     $.fn.extend({
         createItemContent: function (item) {
@@ -361,51 +355,46 @@ $(function(){
     });
 
     function setStatus(status) {
-        if (status) { //active
-            strstatus = 'up';
+        if (status=='up') { //active
             textstatus = '{% trans "Running" %}';
-            btstrstatus = 'inactive';
-            bttextstatus = '{% trans "Stop plugin" %}';
-            btaction = 'stop';
-            btokmsg = '{% trans "Plugin successfully stopped" %}';
-            bterrormsg = '{% trans "Plugin not stopped" %}';
         } else { //inactive
-            strstatus = 'down';
             textstatus = '{% trans "Stopped" %}';
-            btstrstatus = 'active';
-            bttextstatus = '{% trans "Start plugin" %}';
-            btaction = 'start';
-            btokmsg = '{% trans "Plugin successfully started" %}';
-            bterrormsg = '{% trans "Plugin not started" %}';
         }
-        btstatus = !status;
-
         $("#iconstatus").empty()
-            .attr('class', "icon16-text-right icon16-status-plugin-" + strstatus)
+            .attr('class', "icon16-text-right icon16-status-plugin-" + status)
             .html("<span class='label'>{% trans "Status" %}:</span><span class='offscreen'>" + textstatus + "</span>");
-        $("#buttonstatus").attr('class', 'button icon16-status-' + btstrstatus)
-            .text(bttextstatus)
-            .unbind('click')
-            .click(function() {
-            $("#buttonstatus").attr('className', 'button icon16-action-processing_f6f6f6');
-            rinor.put(['api','plugin', '{{ plugin.host }}', '{{ plugin.id }}'], {'command':btaction})
-                .complete(function(){
-                    $("#buttonstatus").removeClass('icon16-action-processing_f6f6f6');
-                })
-                .success(function(data, status, xhr){
-                    $.notification('success', btokmsg);
-                    $.doTimeout( 'list', 5000, function(){
-                        getPluginsList();
-                    });
-                    setStatus(btstatus);
-                })
-                .error(function(jqXHR, status, error){
-                    setStatus(!btstatus);
-                    if (jqXHR.status == 400)
-                        $.notification('error', bterrormsg + ' (' + jqXHR.responseText + ')');
-                });
-        });
     }
+    
+    $("#buttonstatus").ajaxSwitch({
+        'url':['api','plugin', '{{ plugin.host }}', '{{ plugin.id }}'],
+        'successFct':function(state, status, xhr){
+                $.doTimeout( 'list', 5000, function(){
+                    getPluginsList();
+                });
+                setStatus(state.id);
+            },
+        'states':[{
+                'id':'up',
+                'text':'{% trans "Stop plugin" %}',
+                'data':{'command':'stop'},
+                'successMsg':'{% trans "Plugin successfully stopped" %}',
+                'icon':'icon16-status-inactive',
+            },{
+                'id':'down',
+                'text':'{% trans "Start plugin" %}',
+                'data':{'command':'start'},
+                'successMsg':'{% trans "Plugin successfully started" %}',
+                'icon':'icon16-status-active',
+            }]
+        });
+        
+    {% ifequal plugin.status "ON" %}
+        setStatus('up');
+        $("#buttonstatus").ajaxSwitch('run', 'up');
+    {% else %}
+        setStatus('down');
+        $("#buttonstatus").ajaxSwitch('run', 'down');
+    {% endifequal %}
 });
 
 function sortOptions(a, b){

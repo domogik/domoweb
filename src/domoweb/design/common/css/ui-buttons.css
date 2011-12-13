@@ -20,12 +20,12 @@ input::-moz-focus-inner { border: 0; }
 	-moz-border-radius: 1.4em;
     -webkit-border-radius: 1.4em;
 	background-color:#f6f6f6;
-	background-position: left 50%;
+	background-position: 5% 50%;
 	background-repeat: no-repeat;
 	outline:none;
 	cursor: pointer;
 	text-decoration:none;
-    padding:0.2em 0.5em 0.2em 18px;
+    padding:0.2em 0.5em 0.2em 25px;
     margin:0;
     display:inline-block;
 	font-size: 1em;
