@@ -2,7 +2,7 @@ function getPluginsList() {
 	$("#plugins_list li").remove();
     
     rinor.get(['api', 'plugin'])
-        .success(function(data, status, xhr){
+        .done(function(data, status, xhr){
             $.each(data.objects, function() {
                 if (this.list && this.list.length > 0) { // If a least 1 plugin is enabled
                     var host = this.host;
@@ -50,7 +50,7 @@ function getPluginsList() {
                 }                    
             });
         })
-        .error(function(jqXHR, status, error){
+        .fail(function(jqXHR, status, error){
             var li = $("<li></li>");
             var a = $("<a>" + jqXHR.responseText + " <br />Click to reload</a>");
             a.attr('href', '#');

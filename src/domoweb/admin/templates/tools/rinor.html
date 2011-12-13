@@ -45,7 +45,7 @@
         $('body').everyTime('10s', function() {refresh()});
         function refresh() {
             rinor.get(['api', 'info'])
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                     // Queues
                     $.each(data.queue, function(index, value) {
                         var avalue = value.split('/');
@@ -93,7 +93,7 @@
                         ]);
                     });
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);
                 });

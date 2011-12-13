@@ -63,10 +63,10 @@
             onok: function(values) {
                 // Submit form
                 rinor.post(['api', 'area'], {'name': values.areaname, 'description': values.areadescription})
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         $.reloadPage({'status': 'success', 'msg': '{% trans "New area added" %} \'' + data.name + '\'', 'id': data.id});
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
                             $.notification('error', '{% trans "Area not created" %} (' + jqXHR.responseText + ')');
                     });
@@ -102,10 +102,10 @@
                             name: "'{{ area.name }}'",
                             onok: function() {
                                 rinor.delete(['api', 'area', '{{ area.id }}'])
-                                    .success(function(data, status, xhr){
+                                    .done(function(data, status, xhr){
                                         $.reloadPage({'status': 'success', 'msg': '{% trans "Area" %}\'' + data.name + '\' {% trans "successfully deleted" %}'});
                                     })
-                                    .error(function(jqXHR, status, error){
+                                    .fail(function(jqXHR, status, error){
                                         self.cancel();
                                         if (jqXHR.status == 400)
                                             $.notification('error', '{% trans "Area not deleted" %} (' + jqXHR.responseText + ')');
@@ -120,15 +120,15 @@
                             validCallback: function(self, icon) {
                                 $('#icon{{ area.id }}').processing('start');
                                 rinor.post(['api', 'uiconfig'], {"name":"area", "reference":'{{ area.id }}', "key":"icon", "value":icon})
-                                    .complete(function(){
+                                    .always(function(){
                                         $('#icon{{ area.id }}').processing('stop');
                                     })
-                                    .success(function(data, status, xhr){
+                                    .done(function(data, status, xhr){
                                         self.valid();
                                         $("#tab{{ area.id }}").removeClass();
                                         $("#tab{{ area.id }}").addClass("icon16-area-" + icon);
                                     })
-                                    .error(function(jqXHR, status, error){
+                                    .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
                                             $.notification('error', '{% trans "Icon not updated" %} (' + jqXHR.responseText + ')');
                                     });
@@ -145,10 +145,10 @@
                             onok: function(values) {
                                 // Submit form
                                 rinor.put(['api', 'area', '{{ area.id }}'], {'name': values.areaname, 'description': values.areadescription})
-                                    .success(function(data, status, xhr){
+                                    .done(function(data, status, xhr){
                                         $.reloadPage({'status': 'success', 'msg': '{% trans "Area" %} \'' + data.name + '\' {% trans "successfully updated" %}'});
                                     })
-                                    .error(function(jqXHR, status, error){
+                                    .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
                                             $.notification('error', '{% trans "Area not updated" %} (' + jqXHR.responseText + ')');
                                     });

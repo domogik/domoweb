@@ -233,7 +233,7 @@
             this.graph.showLoading();
 
             rinor.get(restparams)
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                     var d = null;
                     switch(type) {
                         case '24h':
@@ -279,10 +279,10 @@
                     self.graph.addSeries({data: [0]}); // for min
                     self.graph.addSeries({data: [data.global_values.max]}); // for max
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', 'data creation failed (' + jqXHR.responseText + ')');
-                }).complete(function(){
+                }).always(function(){
                     self.graph.hideLoading();
                     $('#dialog-nav button').removeAttr('disabled');
                     if (shift == 0) $('#dialog-nav li.next button').attr('disabled', 'disabled');

@@ -35,11 +35,11 @@
             var name = $("#housename").val();
             if (name) {
                 rinor.post(['api', 'uiconfig'], {"name":"house", "reference":"0", "key":"name", "value":name})
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         $("#housename").removeClass('icon16-status-false');
                         $("#housename").addClass('icon16-status-true');
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         $("#housename").removeClass('icon16-status-true');
                         $("#housename").addClass('icon16-status-false');
                         if (jqXHR.status == 400)

@@ -34,7 +34,7 @@ $(function(){
     
     /* Get the list of configuration items */
     rinor.get(['api', 'plugindetail', '{{ plugin.host }}', '{{ plugin.id }}'])
-        .success(function(data, status, xhr){
+        .done(function(data, status, xhr){
             // Check configuration items
             var num_items = data.configuration.length;
             var options = data.configuration.sort(sortOptions);
@@ -48,7 +48,7 @@ $(function(){
                 tr.append("<td>" + ivalue + "</td>");
             });
         })
-        .error(function(jqXHR, status, error){
+        .fail(function(jqXHR, status, error){
             self.cancel();
             if (jqXHR.status == 400)
                 $.notification('error', jqXHR.responseText);
@@ -84,15 +84,15 @@ $(function(){
             .click(function() {
             $("#buttonstatus").attr('className', 'button icon16-action-processing_f6f6f6');
             rinor.put(['api','plugin', '{{ plugin.host }}', '{{ plugin.id }}'], {'command':btaction})
-                .complete(function(){
+                .always(function(){
                     $("#buttonstatus").removeClass('icon16-action-processing_f6f6f6');
                 })
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                     $.notification('success', btokmsg);
                     getPluginsList();
                     setStatus(btstatus);
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', bterrormsg + ' (' + jqXHR.responseText + ')');
                         setStatus(!btstatus);

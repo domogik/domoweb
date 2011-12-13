@@ -112,10 +112,10 @@
                 var self = this;
                 // Submit form
                 rinor.post(['api', 'device'], {'name': values.adddevicename, 'address': values.adddeviceaddress, 'type_id': values.adddevicetype, 'usage_id': values.adddeviceusage, 'description': values.adddevicedescription, 'reference': values.adddevicereference})
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         $.reloadPage({'status': 'success', 'msg': '{% trans "New device added" %} \'' + data.name + '\'', 'id': data.device_usage_id});                                   
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
                             $.notification('error', '{% trans "device not created" %} (' + jqXHR.responseText + ')');
                     });
@@ -167,48 +167,48 @@
                                 name: "'{{ device.name }}'",
                                 onok: function() {
                                     rinor.delete(['api', 'device', '{{ device.id }}'])
-                                        .success(function(data, status, xhr){
+                                        .done(function(data, status, xhr){
                                             $.reloadPage({'status': 'success', 'msg': '{% trans "Device" %}\'' + data.name + '\' {% trans "successfully deleted" %}'});
                                         })
-                                        .error(function(jqXHR, status, error){
+                                        .fail(function(jqXHR, status, error){
                                             if (jqXHR.status == 400)
                                                 $.notification('error', '{% trans "Device not deleted" %} (' + jqXHR.responseText + ')');
                                         });
 /*                                
 //                                    rinor.get(['base', 'feature', 'list', 'by-device_id', '{{ device.id }}'])
-                                        .success(function(data, status, xhr){
+                                        .done(function(data, status, xhr){
                                             $.each(data, function(index, feature){
 //                                                rinor.get(['base', 'feature_association', 'list', 'by-feature', feature.id])
-                                                    .success(function(data, status, xhr){
+                                                    .done(function(data, status, xhr){
                                                         $.each(data, function(index, association){
 //                                                            rinor.get(['base', 'ui_config', 'del', 'by-reference', 'association', association.id])
-                                                                .error(function(jqXHR, status, error){
+                                                                .fail(function(jqXHR, status, error){
                                                                     if (jqXHR.status == 400)
                                                                         $.notification('error', '{% trans "ui-config for features not deleted" %} (' + jqXHR.responseText + ')');
                                                                 });
                                                         });
 //                                                        rinor.get(['base', 'feature_association', 'del', 'feature_id', feature.id])
-                                                            .error(function(jqXHR, status, error){
+                                                            .fail(function(jqXHR, status, error){
                                                                 if (jqXHR.status == 400)
                                                                     $.notification('error', '{% trans "feature_association not deleted" %} (' + jqXHR.responseText + ')');
                                                             });
                                                     })
-                                                    .error(function(jqXHR, status, error){
+                                                    .fail(function(jqXHR, status, error){
                                                         if (jqXHR.status == 400)
                                                             $.notification('error', '{% trans "Can not get feature_association list for feature" %} (' + jqXHR.responseText + ')');
                                                     });
                                             });
                                         })
-                                        .error(function(jqXHR, status, error){
+                                        .fail(function(jqXHR, status, error){
                                             if (jqXHR.status == 400)
                                                 $.notification('error', '{% trans "Can not get feature list for device" %} (' + jqXHR.responseText + ')');
                                         });
 
                                     rinor.get(['base', 'device', 'del', '{{ device.id }}'])
-                                        .success(function(data, status, xhr){
+                                        .done(function(data, status, xhr){
                                             $.reloadPage({'status': 'success', 'msg': '{% trans "Device" %}\'' + data.device[0].name + '\' {% trans "successfully deleted" %}'});
                                         })
-                                        .error(function(jqXHR, status, error){
+                                        .fail(function(jqXHR, status, error){
                                             if (jqXHR.status == 400)
                                                 $.notification('error', '{% trans "Device not deleted" %} (' + jqXHR.responseText + ')');
                                         });*/
@@ -223,10 +223,10 @@
                                 onok: function(values) {
                                     // Submit form
                                     rinor.put(['api', 'device', '{{ device.id }}'], {'name': values.upddevicename, 'address': values.upddeviceaddress, 'usage_id': values.upddeviceusage, 'description': values.upddevicedescription, 'reference': values.upddevicereference})
-                                        .success(function(data, status, xhr){
+                                        .done(function(data, status, xhr){
                                             $.reloadPage({'status': 'success', 'msg': '{% trans "Device" %} \'' + data.name + '\' {% trans "successfully updated" %}'});
                                         })
-                                        .error(function(jqXHR, status, error){
+                                        .fail(function(jqXHR, status, error){
                                             if (jqXHR.status == 400)
                                                 $.notification('error', '{% trans "Device not updated" %} (' + jqXHR.responseText + ')');
                                         });                    

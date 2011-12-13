@@ -77,9 +77,9 @@
             var self = this, o = this.options;
             self._startProcessingState();
             rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":self.value})
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);
                 });

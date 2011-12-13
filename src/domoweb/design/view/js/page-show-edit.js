@@ -111,10 +111,10 @@ $(function(){
                         var association_id = self.data('associationid');
                         if (association_id) {
                             rinor.delete(['api', 'association', association_id])
-                                .success(function(data, status, xhr){
+                                .done(function(data, status, xhr){
                                     self.remove();                    
                                 })
-                                .error(function(jqXHR, status, error){
+                                .fail(function(jqXHR, status, error){
                                     if (jqXHR.status == 400)
                                         $.notification('error', jqXHR.responseText);
                                 });
@@ -244,10 +244,10 @@ $(function(){
             var widget_id = model.data('widgetid');
             var feature_id = model.data('featureid');
             rinor.post(['api', 'association'], {"page_type":page_type, "feature_id":feature_id, "page_id":page_id, "widget_id":widget_id, "place_id":place_id})
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                     model.data('associationid', data.id);
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);
                 });
@@ -257,9 +257,9 @@ $(function(){
             var place_id = zone.data('place');
             var association_id = model.data('associationid');
             rinor.post(['api', 'uiconfig'], {"name":"association", "reference":association_id, "key":"place", "value":place_id})
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);
                 });
@@ -305,7 +305,7 @@ $(function(){
             }
             
             rinor.get(options)
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                     $.each(data.objects, function(index, association) {
                         var model = $("<div id='" + association.id + "' role='listitem'></div>");
                         model.widget_shape({
@@ -325,7 +325,7 @@ $(function(){
                         $("." + association.place).append(model);
                     });
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);
                 });                

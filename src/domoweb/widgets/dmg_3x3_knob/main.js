@@ -176,10 +176,10 @@
             this.processingValue = Math.round((this.rotation * this.max_value / 359) + this.min_value);
             this.element.removeClass('error valid').addClass('processing');
             rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":this.processingValue})
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     self.cancel();
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);

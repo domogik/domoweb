@@ -47,26 +47,26 @@
             }
             if ((currentValue == "off") || (currentValue == "#000000")) {
                 rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":'setcolor', "value":'on'})
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         $('#colorpicker').show();
                         $('#preview').show();
                         $('#colorpicker_off').hide();
                         self.displayValue('on');
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
                             $.notification('error', jqXHR.responseText);
                     });
             }
             else {
                 rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":'setcolor', "value":'off'})
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         $('#colorpicker').hide();
                         $('#preview').hide();
                         $('#colorpicker_off').show();
                         self.displayValue('off');
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
                             $.notification('error', jqXHR.responseText);
                     });
@@ -93,12 +93,12 @@
             // call command
             if (dontCallCmd != 1) {
                 rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":'setcolor', "value":color})
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         $('#colorpicker').show();
                         $('#preview').show();
                         $('#colorpicker_off').hide();
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
                             $.notification('error', jqXHR.responseText);
                     });

@@ -62,10 +62,10 @@
             onok: function(values) {
                 // Submit form
                 rinor.post(['api', 'user'], {'login': values.adduserlogin, 'password': values.adduserpassword, 'is_admin': values.adduseradmin, 'first_name': values.adduserfirstname, 'last_name': values.adduserlastname})
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         $.reloadPage({'status': 'success', 'msg': '{% trans "New account added" %} \'' + data.login + '\''});
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
                             $.notification('error', '{% trans "Account not created" %} (' + jqXHR.responseText + ')');
                     });
@@ -79,10 +79,10 @@
             onok: function(values) {
                 // Submit form
                 rinor.post(['api', 'person'], {'first_name': values.personfirstname, 'last_name': values.personlastname})
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         $.reloadPage({'status': 'success', 'msg': '{% trans "New person added" %} \'' + data.first_name + ' ' + data.last_name + '\''});
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
                             $.notification('error', '{% trans "Person not created" %} (' + jqXHR.responseText + ')');
                     });
@@ -146,10 +146,10 @@
                             name: "'{{ account.login }}'",
                             onok: function() {
                                 rinor.delete(['api', 'user', '{{ account.id }}'])
-                                    .success(function(data, status, xhr){
+                                    .done(function(data, status, xhr){
                                         $.reloadPage({'status': 'success', 'msg': '{% trans "Account" %} \'' + data.login + '\' {% trans "successfully deleted" %}'});
                                     })
-                                    .error(function(jqXHR, status, error){
+                                    .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
                                             $.notification('error', '{% trans "Account not deleted" %} (' + jqXHR.responseText + ')');
                                     });
@@ -164,10 +164,10 @@
                             onok: function(values) {
                                 // Submit form
                                 rinor.put(['api', 'user', '{{ account.id }}'], {'login': values.upduserlogin, 'is_admin': values.upduseradmin, 'first_name': values.upduserfirstname, 'last_name': values.upduserlastname})
-                                    .success(function(data, status, xhr){
+                                    .done(function(data, status, xhr){
                                         $.reloadPage({'status': 'success', 'msg': '{% trans "Account" %} \'' + data.login + '\' {% trans "successfully updated" %}'});
                                     })
-                                    .error(function(jqXHR, status, error){
+                                    .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
                                             $.notification('error', '{% trans "Account not updated" %} (' + jqXHR.responseText + ')');
                                     });
@@ -181,10 +181,10 @@
                             onok: function(values) {
                                 // Submit form
                                 rinor.put(['api', 'user', '{{ account.id }}', 'password'], {'old': values.oldpassword, 'new': values.newpassword})
-                                    .success(function(data, status, xhr){
+                                    .done(function(data, status, xhr){
                                         $.reloadPage({'status': 'success', 'msg': data.login + '\' {% trans "Password" %} {% trans "successfully updated" %}'});
                                     })
-                                    .error(function(jqXHR, status, error){
+                                    .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
                                             $.notification('error', '{% trans "Password not updated" %} (' + jqXHR.responseText + ')');
                                     });
@@ -230,10 +230,10 @@
                             name: "'{{ person.first_name }} {{ person.last_name }}'",
                             onok: function() {
                                 rinor.delete(['api', 'person', '{{ person.id }}'])
-                                    .success(function(data, status, xhr){
+                                    .done(function(data, status, xhr){
                                         $.reloadPage({'status': 'success', 'msg': '{% trans "Person" %} \'' + data.first_name + ' ' + data.last_name + '\' {% trans "successfully deleted" %}'});
                                     })
-                                    .error(function(jqXHR, status, error){
+                                    .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
                                             $.notification('error', '{% trans "Person not deleted" %} (' + jqXHR.responseText + ')');
                                     });
@@ -248,10 +248,10 @@
                             onok: function(values) {
                                 // Submit form
                                 rinor.put(['api', 'person', '{{ person.id }}'], {'first_name': values.personfirstname, 'last_name': values.personlastname})
-                                    .success(function(data, status, xhr){
+                                    .done(function(data, status, xhr){
                                         $.reloadPage({'status': 'success', 'msg': '{% trans "Person " %} \'' + data.first_name + ' ' + data.last_name + '\' updated'});
                                     })
-                                    .error(function(jqXHR, status, error){
+                                    .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
                                             $.notification('error', '{% trans "Person not updated" %} (' + jqXHR.responseText + ')');
                                     });

@@ -43,10 +43,10 @@
         action: function(command_code) {
             var self = this, o = this.options;
             rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":command_code})
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     self.cancel();
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);

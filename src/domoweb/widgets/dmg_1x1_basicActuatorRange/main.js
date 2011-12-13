@@ -85,10 +85,10 @@
             if (this._processingValue != this.currentValue) {
                 this.element.startProcessingState();
                 rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":this._processingValue})
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         self.cancel();
                         if (jqXHR.status == 400)
                             $.notification('error', jqXHR.responseText);

@@ -45,12 +45,12 @@
 				$("#commandline").val('');
 				var command = commandline.split(' ')
                 rinor.put(['api', 'helper'], {'command':command})
-                    .complete(function(){
+                    .always(function(){
                         $("#commandsubmit").show();
                         $("#commandstop").hide();
                         $("#commandline").removeAttr('disabled');
                     })
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         $.each(data, function(index, value) {
                             var text = $("<div/>").text(value).html();
                             li = $("<li>" + text + "</li>");
@@ -58,7 +58,7 @@
                             last = li;						
                         });
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         var text = $("<div/>").text(jqXHR.responseText).html()
                         li = $("<li>" + text + "</li>");
                         li.addClass('error');

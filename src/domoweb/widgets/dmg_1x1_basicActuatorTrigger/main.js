@@ -52,7 +52,7 @@
             }
 
             rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], restcommand)
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                     if (self.sequence) {
                         self._value.html(self.sequence[self.sequenceIndex]['key']);
                         if (self.sequenceIndex == self.sequence.length - 1) {
@@ -63,7 +63,7 @@
                     }
                     self.valid(o.featureconfirmation);
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     self.cancel();
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);

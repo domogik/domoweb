@@ -29,7 +29,7 @@ RINOR.prototype.send = function(type, parameters, data) {
             beforeSend: function(jqXHR, settings) {
                 self.uid = self.register(jqXHR);
             }
-        }).error(function(jqXHR, status, error){
+        }).fail(function(jqXHR, status, error){
             if (jqXHR.status == 500) {
                 if (jqXHR.responseText[0] == "{")
                     response = JSON.parse(jqXHR.responseText).error_message;
@@ -37,7 +37,7 @@ RINOR.prototype.send = function(type, parameters, data) {
                     response = jqXHR.responseText
                 $.notification('error', 'RINOR : ' + response + ' (' + url + ')');
             }
-        }).complete(function(jqXHR, textStatus) {
+        }).always(function(jqXHR, textStatus) {
             self.unregister(self.uid);
         });
 }

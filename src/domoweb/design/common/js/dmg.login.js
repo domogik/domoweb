@@ -5,7 +5,7 @@ $(function() {
 
 function openlogin(path) {
     rinor.get(['api', 'user'])
-        .success(function(data, status, xhr){
+        .done(function(data, status, xhr){
             var dialog = $("<div id='login' title='Identification'></div>");
             $('body').append(dialog);
             dialog.dialog({ width:'40em', resizable: false,
@@ -28,7 +28,7 @@ function openlogin(path) {
             dialog.append(form);
             initLogin();
         })
-        .error(function(jqXHR, status, error){
+        .fail(function(jqXHR, status, error){
 //            self.cancel();
             if (jqXHR.status == 400)
                 $.notification('error', 'Impossible to list Accounts (' + jqXHR.responseText + ')');

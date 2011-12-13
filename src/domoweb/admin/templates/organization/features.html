@@ -58,10 +58,10 @@
             dropcallback: function(self, element, target) {
                 var subelement = element.split('-');
                 rinor.get(['base', 'feature_association', 'del', 'device_id', subelement[1], 'feature_id', subelement[2]])
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         self.valid();
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         self.cancel();
                         if (jqXHR.status == 400)
                             $.notification('error', jqXHR.responseText);
@@ -79,18 +79,18 @@
                 var subelement = element.split('-');
                 var subtarget = target.split('-');
                 rinor.get(['base', 'feature_association', 'del', 'device_id', subelement[1], 'feature_id', subelement[2]])
-                    .success(function(data, status, xhr){
+                    .done(function(data, status, xhr){
                         rinor.get(['base', 'feature_association', 'add', 'feature_id', subelement[2], 'association_type', subtarget[0], 'association_id', subtarget[1]])
-                            .success(function(data, status, xhr){
+                            .done(function(data, status, xhr){
                                 self.valid();
                             })
-                            .error(function(jqXHR, status, error){
+                            .fail(function(jqXHR, status, error){
                                 self.cancel();
                                 if (jqXHR.status == 400)
                                     $.notification('error', jqXHR.responseText);
                             });
                     })
-                    .error(function(jqXHR, status, error){
+                    .fail(function(jqXHR, status, error){
                         self.cancel();
                         if (jqXHR.status == 400)
                             $.notification('error', jqXHR.responseText);

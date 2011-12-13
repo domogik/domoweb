@@ -25,7 +25,7 @@ $(function(){
             }
 
             rinor.get(options)
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                     $.each(data.objects, function(index, association) {
                         if (association.place_type == page_type || (association.place_type != page_type && association.place != 'otheractions')) {
                             var parameters_usage = $.stringToJSON(device_usages[association.feature.device.device_usage_id].default_options);
@@ -48,7 +48,7 @@ $(function(){
                         }
                     });
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);
                 });

@@ -80,10 +80,10 @@ function get_widgets_options(id) {
         _initValues: function(nb) {
             var self = this, o = this.options;
             rinor.get(['api', 'state', 'last', nb, o.deviceid, o.key])
-                .success(function(data, status, xhr){
+                .done(function(data, status, xhr){
                     self._statsHandler(data);
                 })
-                .error(function(jqXHR, status, error){
+                .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', '{% trans "Getting stats failed" %} (' + data.description + ')');
                 });
