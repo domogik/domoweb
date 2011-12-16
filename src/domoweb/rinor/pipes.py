@@ -603,7 +603,7 @@ class RepositoryPipe(RinorPipe):
     paths = []
 
 class PackagePipe(RinorPipe):
-    cache_expiry = 3600
+    cache_expiry = 0
     list_path = "/package/list"
     refresh_path = "/package/update-cache"
     installed_path = "/package/list-installed"
@@ -642,7 +642,7 @@ class PackagePipe(RinorPipe):
         return None
 
 class PackageExtendedPipe(RinorPipe):
-    cache_expiry = 3600
+    cache_expiry = 0
     paths = []
 
     def get_list_installed(self, hostname, type):
