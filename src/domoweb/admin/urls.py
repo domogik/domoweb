@@ -58,5 +58,6 @@ urlpatterns = patterns('domoweb.admin.views',
     url(r'packages/plugins/$', 'admin_packages_plugins', name="admin_packages_plugins_view"),
     url(r'packages/externals/$', 'admin_packages_externals', name="admin_packages_externals_view"),
     url(r'packages/install/(?P<package_host>[a-zA-Z0-9_.-]+)/(?P<package_name>[a-zA-Z0-9_.-]+)/(?P<package_release>[a-zA-Z0-9_.-]+)/$', 'admin_packages_install', name="admin_packages_install_view"),
+    url(r'packages/uninstall/(?P<package_host>[a-zA-Z0-9_.-]+)/(?P<package_name>[a-zA-Z0-9_.-]+)/$', 'admin_packages_uninstall', name="admin_packages_uninstall_view"),
     url(r'packages/enable/(?P<package_host>[a-zA-Z0-9_.-]+)/(?P<package_name>[a-zA-Z0-9_.-]+)/(?P<action>\w+)/$', 'admin_packages_enable', name="admin_packages_enable_view"),
 )

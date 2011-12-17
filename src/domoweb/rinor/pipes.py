@@ -611,6 +611,7 @@ class PackagePipe(RinorPipe):
     refresh_path = "/package/update-cache"
     installed_path = "/package/list-installed"
     install_path = "/package/install"
+    uninstall_path = "/package/uninstall"
     index = 'package'
     paths = []
 
@@ -623,7 +624,7 @@ class PackagePipe(RinorPipe):
     def get_installed(self):
         _data = self._get_data(self.installed_path)
         if _data.status == "ERROR":
-            raise RinorError(data.code, data.description)        
+            raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:
             return _data[self.index]
         else:
@@ -632,7 +633,7 @@ class PackagePipe(RinorPipe):
     def get_list(self):
         _data = self._get_data(self.list_path)
         if _data.status == "ERROR":
-            raise RinorError(data.code, data.description)        
+            raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:
             return _data[self.index][0]
         else:
@@ -644,6 +645,12 @@ class PackagePipe(RinorPipe):
             raise RinorError(_data.code, _data.description)
         return None
 
+    def put_uninstall(self, host, package):
+        _data = self._put_data(self.uninstall_path, [host, package])
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)
+        return None
+    
 class PackageExtendedPipe(RinorPipe):
     cache_expiry = 0
     paths = []

@@ -64,7 +64,9 @@
                     <td>{{package.release}}
                     {% if package.installed_version_error %}<div class='error'>Incorrect version number</div>{% endif %}                         
                     </td>
-                    <td class='actions'></td></tr>
+                    <td class='actions'>
+                        <a class='buttontext' href='{% url admin_packages_uninstall_view host package.fullname %}'>Uninstall</a>
+                    </td></tr>
             {% endfor %}
             </tbody>
         </table>
@@ -93,7 +95,8 @@
                         Upgrade domogik, to version package["domogik-min-release"], in order to install
                         {% else %}{% if package.upgrade_require and package.update %}
                             Upgrade domogik, to version package["domogik-min-release"], in order to update
-                            {% else %}{% if package.install %}
+                            {% else %}
+                                {% if package.install %}
                                 <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Install</a>
                                 {% else %}
                                 <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Update</a>

@@ -463,6 +463,20 @@ def admin_packages_install(request, package_host, package_name, package_release)
         messages.success(request, "Package %s %s installed" % (package_name, package_release))
     return redirect('admin_packages_plugins_view')
 
+@admin_required
+def admin_packages_uninstall(request, package_host, package_name):
+    """
+    Method called for uninstalling a package
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+    try:
+        PackagePipe().put_uninstall(package_host, package_name)
+    except RinorError  as (code, reason):
+        messages.error(request, reason)
+    else:
+        messages.success(request, "Package %s uninstalled" % (package_name))
+    return redirect('admin_packages_plugins_view')
 
 @admin_required
 def admin_packages_enable(request, package_host, package_name, action):
