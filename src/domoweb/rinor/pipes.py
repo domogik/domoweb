@@ -428,7 +428,10 @@ class StatePipe(RinorPipe):
     paths = []
 
     def get_last(self, last, device, key):
-        _data = self._get_data(self.list_path, [device, key, 'last', last])
+        if (last == 1):
+            _data = self._get_data(self.list_path, [device, key, 'lastest'])
+        else:
+            _data = self._get_data(self.list_path, [device, key, 'last', last])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:
