@@ -563,6 +563,8 @@
 .icon32-action-processing_ffffff { background-image:url(../images/action/processing_ffffff_32.gif);}
 .icon64-action-processing_ffffff { background-image:url(../images/action/processing_ffffff_64.gif);}
 
+.icon16-action-remove { background-image:url(../images/action/delete_16.png);}
+
 /* technology icons */
 .icon64-technology-x10 {background-image:url(../images/technologies/x10_64.png);}
 .icon32-technology-x10 {background-image:url(../images/technologies/x10_32.png);}
