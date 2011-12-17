@@ -261,18 +261,15 @@ if imported('ldap') == supported[1]:
 table = []
 
 if imported('socket') == supported[1]:
-	table += "Hostname", socket.gethostname()
-	table += "Hostname (fully qualified)", socket.gethostbyaddr(socket.gethostname())[0]
-	try: table += "IP Address", socket.gethostbyname(socket.gethostname())
-	except: pass
-	table += "IPv6 Support", supported[getattr(socket, "has_ipv6", False)]
-	table += "SSL Support", supported[hasattr(socket, "ssl")]
+    table += "Hostname", socket.gethostname()
+    try: table += "Hostname (fully qualified)", socket.gethostbyaddr(socket.gethostname())[0]
+    except: pass
+    try: table += "IP Address", socket.gethostbyname(socket.gethostname())
+    except: pass
+    table += "IPv6 Support", supported[getattr(socket, "has_ipv6", False)]
+    table += "SSL Support", supported[hasattr(socket, "ssl")]
 
-	print_tc_table("socket", table)
-
-
-
-
+    print_tc_table("socket", table)
 
 #
 # Gather Multimedia Services info
