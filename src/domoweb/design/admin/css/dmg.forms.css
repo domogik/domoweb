@@ -34,7 +34,7 @@ label.required {
     font-weight:bold;    
 }
 
-input[type='text'] {
+input[type='text'], input[type='password'] {
     border:1px solid #999;
     height:1.6em;
     margin: 0 0 0.2em 0;
@@ -44,7 +44,7 @@ input[type='text'] {
     background-repeat:no-repeat;
 }
 
-input[type='text'].default {
+input[type='text'].default, input[type='password'].default {
     color:#767676;
 }
 
@@ -55,12 +55,13 @@ textarea {
 }
 
 input[type='text']:hover, input[type='text']:focus,
+input[type='password']:hover, input[type='password']:focus,
 textarea:hover, textarea:focus {
     color:#000;
     background-color: #BDCB2F;
 }
 
-input[type='text'].medium, textarea.medium  {
+input[type='text'].medium, input[type='password'].medium, textarea.medium  {
     width:20em;
 }
 
@@ -77,10 +78,10 @@ fieldset {
     border:none;
 }
 
-input[type='text'].required {
+input[type='text'].required, input[type='password'].required {
     border:2px solid #000000;
 }
 
-input[type='text'].state-error {
+input[type='text'].state-error, input[type='password'].state-error {
     border:2px solid #991A1A;    
 }

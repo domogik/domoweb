@@ -53,6 +53,10 @@ $(function(){
                 td.append("<input type='checkbox' name='value_" + ikey + "' id='value_" + ikey + "' />");
                 tr.append(td);
                 tr.append("<td></td>");
+            } else if (itype == 'password') {
+                td.append("<input type='password' name='value_" + ikey + "' id='value_" + ikey + "'  class='medium' value='' />");
+                tr.append(td);
+                tr.append("<td></td>");
             } else {
                 td.append("<input type='text' name='value_" + ikey + "' id='value_" + ikey + "' class='medium' value='' />");                                                                            
                 tr.append(td);
