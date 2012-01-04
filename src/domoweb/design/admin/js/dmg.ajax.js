@@ -6,11 +6,28 @@
                 self.addClass('button ' + options.icon);
                 self.unbind('.ajaxButton');
 
-                var clickFunction = function() {
+                var clickFunction = function(event) {
                     self.attr("disabled", "disabled");
                     self.removeClass(options.icon).addClass('icon16-status-loading');
-                    rinor.put(options.url, options.data)
-                        .done(function(data, status, xhr){
+                    if (jQuery.isFunction(options.url))
+                        var url = options.url($(this));
+                    else
+                        var url = options.url;
+                    if (url[0] == 'api') {
+                        if (options.type == 'POST')
+                            var defer = rinor.post(url, options.data);
+                        else
+                            var defer = rinor.put(url, options.data);
+                    } else {
+                        url = '/' + url.join('/') + '/';
+                        var defer = $.ajax({
+                            type: 'GET',
+                            url: url,
+                            data: options.data,
+                            processData:  false
+                        });
+                    }
+                    defer.done(function(data, status, xhr){
                             $.notification('success', options.successMsg);
                             if (options.successFct)
                                 options.successFct(data, status, xhr);

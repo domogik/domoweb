@@ -86,7 +86,7 @@ header#mainheader #subtitle {
 
 #nav1 li a.selected {
     color: #28281E;
-    background: url(../images/decoration/nav1_selector_black.png) 50% 100% no-repeat;
+    background: url(../../common/images/decoration/nav1_selector_black.png) 50% 100% no-repeat;
 }
 
 #nav1 li a.selected .description {

@@ -145,7 +145,7 @@ class RinorResource(Resource):
 #            return self.apply_authorization_limits(request, base_object_list)
         except ValueError, e:
             raise BadRequest("Invalid resource lookup data provided (mismatched type).")
-        '''            
+        '''
         return self.get_object_list(request)
 
     def obj_get(self, request = None, **kwargs):

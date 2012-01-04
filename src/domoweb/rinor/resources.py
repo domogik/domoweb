@@ -451,22 +451,77 @@ class HelperResource(RinorResource):
             return HttpNotFound()
         return self.create_response(request, obj)
 
-class PackageResource(RinorResource):
+class PackageInstalledResource(RinorResource):
     # fields must map to the attributes in the Row class
+    id = fields.CharField(attribute = 'id')
+    release = fields.CharField(attribute = 'release')
+    enabled = fields.CharField(attribute = 'enabled')
+    type = fields.CharField(attribute = 'type')
+    source = fields.CharField(attribute = 'source')
+    fullname = fields.CharField(attribute = 'fullname')
+    updates = fields.ListField(attribute = 'updates')
 
     class Meta:
-        resource_name = 'package'
+        resource_name = 'package-installed'
         list_allowed_methods = ['get', 'put']
         authentication = Authentication()
         authorization = Authorization()
         rinor_pipe = PackagePipe()
    
-    def obj_update_list(self, bundle, request=None, **kwargs):
-        if (('action' in bundle) and (bundle['action'] == 'refresh')):
-            return self._meta.rinor_pipe.refresh_list()
-        else:
-            return None
+    def base_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<host>[\w\d_-]+)/(?P<type>(plugin|external))%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+        ]
 
+    def obj_get_list(self, request = None, **kwargs):
+        return self._meta.rinor_pipe.get_installed(kwargs['host'], kwargs['type'])
+
+    def obj_update_list(self, bundle, request, **kwargs):
+        if (bundle['command'] == 'uninstall'):
+            _data = self._meta.rinor_pipe.put_uninstall(kwargs['host'], kwargs['type'], bundle['package'])
+        return _data
+
+class PackageAvailableResource(RinorResource):
+    # fields must map to the attributes in the Row class
+    id = fields.CharField(attribute = 'id')
+    release = fields.CharField(attribute = 'release')
+    type = fields.CharField(attribute = 'type')
+    fullname = fields.CharField(attribute = 'fullname')
+    techno = fields.CharField(attribute = 'techno')
+    package_url = fields.CharField(attribute = 'package_url')
+    techno = fields.CharField(attribute = 'techno')
+    desc = fields.CharField(attribute = 'desc')
+    techno = fields.CharField(attribute = 'techno')
+    changelog = fields.CharField(attribute = 'changelog')
+    doc = fields.CharField(attribute = 'doc')
+    techno = fields.CharField(attribute = 'techno')
+    author = fields.CharField(attribute = 'author')
+    email = fields.CharField(attribute = 'email')
+    techno = fields.CharField(attribute = 'techno')
+    priority = fields.CharField(attribute = 'priority')
+    dependencies = fields.ListField(attribute = 'dependencies')
+    domogik_min_release = fields.CharField(attribute = 'domogik_min_release')
+
+    class Meta:
+        resource_name = 'package-available'
+        list_allowed_methods = ['get', 'put']
+        authentication = Authentication()
+        authorization = Authorization()
+        rinor_pipe = PackagePipe()
+   
+    def base_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<host>[\w\d_-]+)/(?P<type>(plugin|external))%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+        ]
+
+    def obj_get_list(self, request = None, **kwargs):
+        return self._meta.rinor_pipe.get_available(kwargs['host'], kwargs['type'])
+    
+    def obj_update_list(self, bundle, request, **kwargs):
+        if (bundle['command'] == 'install' or bundle['command'] == 'install'):
+            _data = self._meta.rinor_pipe.put_install(kwargs['host'], kwargs['type'], bundle['package'], bundle['release'])
+        return _data
+    
 class CommandResource(RinorResource):
     # fields must map to the attributes in the Row class
 #    name = fields.CharField(attribute = 'name')
@@ -492,3 +547,29 @@ class CommandResource(RinorResource):
         else:
             _data = self._meta.rinor_pipe.put_detail(kwargs['member'], kwargs['address'], bundle["command"])
         return _data
+
+class RepositoryResource(RinorResource):
+    # fields must map to the attributes in the Row class
+    class Meta:
+        resource_name = 'repository'
+        list_allowed_methods = ['put']
+        authentication = Authentication()
+        authorization = Authorization()
+        rinor_pipe = PackagePipe()
+    
+    def obj_update_list(self, bundle, request=None, **kwargs):
+        if (('action' in bundle) and (bundle['action'] == 'refresh')):
+           return self._meta.rinor_pipe.refresh_list()
+        else:
+           return None
+   
+class HostResource(RinorResource):
+    # fields must map to the attributes in the Row class
+    id = fields.CharField(attribute = 'id')
+    primary = fields.CharField(attribute = 'primary')
+
+    class Meta:
+        resource_name = 'host'
+        authentication = Authentication()
+        authorization = Authorization()
+        rinor_pipe = HostPipe()

@@ -607,9 +607,9 @@ class RepositoryPipe(RinorPipe):
 
 class PackagePipe(RinorPipe):
     cache_expiry = 0
-    list_path = "/package/list"
     refresh_path = "/package/update-cache"
-    installed_path = "/package/list-installed"
+    installed_path = "/package/installed"
+    available_path = "/package/available"
     install_path = "/package/install"
     uninstall_path = "/package/uninstall"
     index = 'package'
@@ -621,125 +621,29 @@ class PackagePipe(RinorPipe):
             raise RinorError(_data.code, _data.description)
         return None
 
-    def get_installed(self):
-        _data = self._get_data(self.installed_path)
+    def get_installed(self, host, type):
+        _data = self._get_data("%s/%s/%s" % (self.installed_path, host, type))
         if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)        
-        if len(_data[self.index]) > 0:
-            return _data[self.index]
-        else:
-            return None
+            raise RinorError(_data.code, _data.description)
+        return _data[self.index]
 
-    def get_list(self):
-        _data = self._get_data(self.list_path)
+    def get_available(self, host, type):
+        _data = self._get_data("%s/%s/%s" % (self.available_path, host, type))
         if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)        
-        if len(_data[self.index]) > 0:
-            return _data[self.index][0]
-        else:
-            return None
-
-    def put_install(self, host, package, release):
-        _data = self._put_data(self.install_path, [host, package, release])
+            raise RinorError(_data.code, _data.description)
+        return _data[self.index]
+    
+    def put_install(self, host, type, package, release):
+        _data = self._put_data(self.install_path, [host, type, package, release])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return None
 
-    def put_uninstall(self, host, package):
-        _data = self._put_data(self.uninstall_path, [host, package])
+    def put_uninstall(self, host, type, package):
+        _data = self._put_data(self.uninstall_path, [host, type, package])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return None
-    
-class PackageExtendedPipe(RinorPipe):
-    cache_expiry = 0
-    paths = []
-
-    def get_list_installed(self, hostname, type):
-        _packages = {}
-        _enabled = {}
-        _installed = PackagePipe().get_installed()
-        _running = PluginPipe().get_list()
-
-        # Generate enabled plugin list
-        for host in _running:
-            if (host.host == hostname):
-                for item in host.list:
-                    _enabled[item.id] = item
-
-        # Generate installed plugin list
-        for host in _installed:
-            if (host.host == hostname):        
-                for type, packages in host.installed.iteritems():
-                    for package in packages:
-                        # Check if the plugin is enabled
-                        if (package.id in _enabled):
-                            package.enabled = True
-                        try:
-                            package.normalizedVersion = NormalizedVersion(package.release)
-                        except IrrationalVersionError:
-                            package.installed_version_error = True
-                            package.normalizedVersion = None
-                        _packages[package.id] = package
-        return _packages
-    
-    def get_list_available(self, type, installed):
-        _packages = {}
-        _available = PackagePipe().get_list()
-        _rinor = InfoPipe().get_info()
-        if hasattr(_rinor.info, 'Domogik_release'):
-            _dmg_version = NormalizedVersion(suggest_normalized_version(_rinor.info.Domogik_release))
-        else:
-            # Domogik version number not available
-            _dmg_version = None
-
-        if (type in _available):
-            for package in _available[type]:
-                _package_min_version = NormalizedVersion(suggest_normalized_version(package.domogik_min_release))
-                try:
-                    package_version = NormalizedVersion(package.release)
-                    package.version_error = False
-                except IrrationalVersionError:
-                    package.version_error = True
-                if (_dmg_version) :
-                    package.upgrade_require = (_package_min_version > _dmg_version)
-    
-                # Check if already installed
-                if package.id not in installed:
-                    package.install = True
-                    _packages[package.id] = package
-                # Check if update can be done
-                elif installed[package.id].normalizedVersion and not package.version_error:
-                    if (installed[package.id].normalizedVersion < package_version):
-                        installed[package.id]['update_available'] = package_version
-                        package.update = True
-                        _packages[package.id] = package
-                elif not installed[package.id].normalizedVersion and not package.version_error:
-                        installed[package.id]['update_available'] = package_version
-                        package.update = True
-                        _packages[package.id] = package
-        return _packages
-
-    def get_list_plugin(self):
-        _packages = {}
-        _hosts = PackagePipe().get_installed()
-
-        for host in _hosts:
-            _packages[host.host] = {}
-            _packages[host.host]['installed'] = self.get_list_installed(host.host, 'plugin')
-            _packages[host.host]['available'] = self.get_list_available('plugin', _packages[host.host]['installed'])
-            
-        return _packages
-
-    def get_list_external(self):
-        _packages = {}
-        _rinor = InfoPipe().get_info()
-
-        _packages = {}
-        _packages['installed'] = self.get_list_installed(_rinor.info.Host, 'external')
-        _packages['available'] = self.get_list_available('external', _packages['installed'])
-            
-        return _packages
 
 class CommandPipe(RinorPipe):
     cache_expiry = 0
@@ -755,3 +659,18 @@ class CommandPipe(RinorPipe):
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
+
+class HostPipe(RinorPipe):
+    cache_expiry = 3600
+    list_path = "/host"
+    index = 'host'
+    paths = []
+    
+    def get_detail(self, id):
+        _data = self._get_data("%s/%s" % (self.list_path, id))
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)        
+        if len(_data[self.index]) > 0:
+            return _data[self.index][0]
+        else:
+            return None

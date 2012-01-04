@@ -1,0 +1,314 @@
+{% extends "layouts/base_admin.html" %}
+{% comment %}
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Cédric Trévisan <cedric@domogik.org>
+{% endcomment %}
+
+
+{% load i18n %}
+{% load text %}
+
+{% block css %}
+    <link href="/design/admin/css/page-admin-hosts.css" rel="stylesheet" type="text/css" />
+    <link href="/design/libraries/jquery.dataTables-1.8.2/css/page.css" rel="stylesheet" type="text/css" />
+    <link href="/design/libraries/jquery.dataTables-1.8.2/css/table.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block js_include %}
+    <script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/fnReloadAjax.js"></script>
+{% endblock %}
+{% block js_script %}
+    $(function(){    
+        // Accordion
+        $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:3});
+		$("#tabs").tabs();
+
+        $('.package .release span[title]').tooltip_right();
+
+        var tableInstalledPlugins, tableAvailablePlugins
+        var tableInstalledPlugins = $('#installed_plugins').dataTable( {
+            "bProcessing": true,
+            "sAjaxSource": '/rinor/api/package-installed/{{host.id}}/plugin/',
+            "sAjaxDataProp": "objects",
+            "sPaginationType": "full_numbers",
+            "sDom": 'lrt<"bottom"ip>',
+            "aoColumns": [
+                { "mDataProp": "id" },
+                { "mDataProp": "release" },
+                {
+                    "fnRender": function ( oObj ) {
+                        var str = "";
+                        if (oObj.aData['enabled'] == 'True')
+                            str += "<button class='disable'>{% trans "Disable" %}</button>";
+                        else
+                            str += "<button class='enable'>{% trans "Enable" %}</button>";
+                        str+= "<button class='uninstall'>{% trans "Uninstall" %}</button>";
+                        return str;
+                    },
+                    "sClass": "center"
+                },
+            ],
+            "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+                /* Append the grade to the default row class name */
+                $("button.uninstall", nRow).ajaxButton({
+                    'url':['api', 'package-installed', '{{host.id}}', aData['type']],
+                    'data':{command : 'uninstall', package : aData['id']},
+                    'successMsg':"Package uninstalled",
+                    'icon':'icon16-action-del',
+                    'successFct':function(data, status, xhr) {tableInstalledPlugins.fnReloadAjax()}
+                });
+                $("button.enable", nRow).ajaxButton({
+                    'url':['api', 'plugin', '{{host.id}}', aData['type'] + '-' + aData['id']],
+                    'data':{command : 'enable'},
+                    'successMsg':"Package enabled",
+                    'icon':'icon16-status-active',
+                    'successFct':function(data, status, xhr) {tableInstalledPlugins.fnReloadAjax()}
+                });
+        
+                $("button.disable", nRow).ajaxButton({
+                    'url':['api', 'plugin', '{{host.id}}', aData['type'] + '-' + aData['id']],
+                    'data':{command : 'disable'},
+                    'successMsg':"Package disabled",
+                    'icon':'icon16-status-inactive',
+                    'successFct':function(data, status, xhr) {tableInstalledPlugins.fnReloadAjax()}
+                });
+                return nRow;
+            },
+        });
+        var tableAvailablePlugins = $('#available_plugins').dataTable( {
+            "bProcessing": true,
+            "sAjaxSource": '/rinor/api/package-available/{{host.id}}/plugin/',
+            "sAjaxDataProp": "objects",
+            "sPaginationType": "full_numbers",
+            "sDom": 'lrt<"bottom"ip>',
+            "aoColumns": [
+                {
+                    "fnRender": function ( oObj ) {
+                        return "<a href='" + oObj.aData['doc'] + "' target='_blank'>" + oObj.aData['id'] + "</a>";
+                    },
+                },
+                { "mDataProp": "techno" },
+                {
+                    "fnRender": function ( oObj ) {
+                        return "<span title='" + oObj.aData['package_url'] + "'>" + oObj.aData['release'] + "</span>";
+                    },
+                },
+                { "mDataProp": "desc" },
+                { "mDataProp": "author" },
+                {
+                    "fnRender": function ( oObj ) {
+                        var str = "";
+                        str += "<button class='install'>{% trans "Install" %}</button>";
+                        return str;
+                    },
+                    "sClass": "center"
+                },
+
+            ],
+            "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+                $("button.install", nRow).ajaxButton({
+                    'url':['api', 'package-available', '{{host.id}}', aData['type']],
+                    'data':{command : 'install', package : aData['id'], release : aData['release']},
+                    'successMsg':"Package installed",
+                    'icon':'icon16-action-add',
+                    'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax()}
+                });
+                $("button.update", nRow).ajaxButton({
+                    'url':['api', 'package-available', '{{host.id}}', aData['type']],
+                    'data':{command : 'update', package : aData['id'], release : aData['release']},
+                    'successMsg':"Package updated",
+                    'icon':'icon16-action-refresh',
+                    'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax()}
+                });
+                return nRow;
+            },
+        });
+        var tableInstalledExternals, tableAvailableExternals
+        var tableInstalledExternals = $('#installed_externals').dataTable( {
+            "bProcessing": true,
+            "sAjaxSource": '/rinor/api/package-installed/{{host.id}}/external/',
+            "sAjaxDataProp": "objects",
+            "sPaginationType": "full_numbers",
+            "sDom": 'lrt<"bottom"ip>',
+            "aoColumns": [
+                { "mDataProp": "id" },
+                { "mDataProp": "release" },
+                {
+                    "fnRender": function ( oObj ) {
+                        var str = "";
+                        if (oObj.aData['enabled'] == 'True')
+                            str += "<button class='disable'>{% trans "Disable" %}</button>";
+                        else
+                            str += "<button class='enable'>{% trans "Enable" %}</button>";
+                        str+= "<button class='uninstall'>{% trans "Uninstall" %}</button>";
+                        return str;
+                    },
+                    "sClass": "center"
+                },
+            ],
+            "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+                /* Append the grade to the default row class name */
+                $("button.uninstall", nRow).ajaxButton({
+                    'url':['api', 'package-installed', '{{host.id}}', aData['type']],
+                    'data':{command : 'uninstall', package : aData['id']},
+                    'successMsg':"Package uninstalled",
+                    'icon':'icon16-action-del',
+                    'successFct':function(data, status, xhr) {tableInstalledExternals.fnReloadAjax()}
+                });
+                $("button.enable", nRow).ajaxButton({
+                    'url':['api', 'plugin', '{{host.id}}', aData['type'] + '-' + aData['id']],
+                    'data':{command : 'enable'},
+                    'successMsg':"Package enabled",
+                    'icon':'icon16-status-active',
+                    'successFct':function(data, status, xhr) {tableInstalledExternals.fnReloadAjax()}
+                });
+        
+                $("button.disable", nRow).ajaxButton({
+                    'url':['api', 'plugin', '{{host.id}}', aData['type'] + '-' + aData['id']],
+                    'data':{command : 'disable'},
+                    'successMsg':"Package disabled",
+                    'icon':'icon16-status-inactive',
+                    'successFct':function(data, status, xhr) {tableInstalledExternals.fnReloadAjax()}
+                });
+                return nRow;
+            },
+        });
+        var tableAvailableExternals = $('#available_externals').dataTable( {
+            "bProcessing": true,
+            "sAjaxSource": '/rinor/api/package-available/{{host.id}}/external/',
+            "sAjaxDataProp": "objects",
+            "sPaginationType": "full_numbers",
+            "sDom": 'lrt<"bottom"ip>',
+            "aoColumns": [
+                {
+                    "fnRender": function ( oObj ) {
+                        return "<a href='" + oObj.aData['doc'] + "' target='_blank'>" + oObj.aData['id'] + "</a>";
+                    },
+                },
+                { "mDataProp": "techno" },
+                {
+                    "fnRender": function ( oObj ) {
+                        return "<span title='" + oObj.aData['package_url'] + "'>" + oObj.aData['release'] + "</span>";
+                    },
+                },
+                { "mDataProp": "desc" },
+                { "mDataProp": "author" },
+                {
+                    "fnRender": function ( oObj ) {
+                        var str = "";
+                        str += "<button class='install'>{% trans "Install" %}</button>";
+                        return str;
+                    },
+                    "sClass": "center"
+                },
+
+            ],
+            "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+                $("button.install", nRow).ajaxButton({
+                    'url':['api', 'package-available', '{{host.id}}', aData['type']],
+                    'data':{command : 'install', package : aData['id'], release : aData['release']},
+                    'successMsg':"Package installed",
+                    'icon':'icon16-action-add',
+                    'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax()}
+                });
+                $("button.update", nRow).ajaxButton({
+                    'url':['api', 'package-available', '{{host.id}}', aData['type']],
+                    'data':{command : 'update', package : aData['id'], release : aData['release']},
+                    'successMsg':"Package updated",
+                    'icon':'icon16-action-refresh',
+                    'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax()}
+                });
+                return nRow;
+            },
+        });
+    });
+{% endblock %}
+{% block title %}{% trans page_title %}{% endblock %}
+
+{% block banner %}
+    <h1 class="ident"><span class="title">{{page_title}}</span></h1>
+{% endblock %}
+
+{% block right %}
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-plugins">Plugins</a></li>
+            <li><a href="#tabs-externals">External members</a></li>
+        </ul>
+        <div id="tabs-plugins">
+            <section class="subsection">
+                <h2>{% trans "Installed" %}</h2>
+                    <table id='installed_plugins' class='display' cellpadding="0" cellspacing="0" border="0">
+                    <thead>
+                        <tr><th>{% trans "Name" %}</th>
+                            <th>{% trans "Release" %}</th>
+                            <th>{% trans "Action" %}</th></tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </section>
+            <section class="subsection">
+                <h2>{% trans "Available" %}</h2>
+                <table id='available_plugins' class='display' cellpadding="0" cellspacing="0" border="0">
+                    <thead>
+                        <tr><th>{% trans "Name" %}</th>
+                            <th>{% trans "Techno" %}</th>
+                            <th>{% trans "Release" %}</th>
+                            <th>{% trans "Description" %}</th>
+                            <th>{% trans "Author" %}</th>
+                            <th>{% trans "Action" %}</th></tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    {% if host.primary == "True" %}
+        <div id="tabs-externals">
+            <section class="subsection">
+                <h2>{% trans "Installed" %}</h2>
+                    <table id='installed_externals' class='display' cellpadding="0" cellspacing="0" border="0">
+                    <thead>
+                        <tr><th>{% trans "Name" %}</th>
+                            <th>{% trans "Release" %}</th>
+                            <th>{% trans "Action" %}</th></tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </section>
+            <section class="subsection">
+                <h2>{% trans "Available" %}</h2>
+                <table id='available_externals' class='display' cellpadding="0" cellspacing="0" border="0">
+                    <thead>
+                        <tr><th>{% trans "Name" %}</th>
+                            <th>{% trans "Techno" %}</th>
+                            <th>{% trans "Release" %}</th>
+                            <th>{% trans "Description" %}</th>
+                            <th>{% trans "Author" %}</th>
+                            <th>{% trans "Action" %}</th></tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    {% endif %}
+    </div>
+{% endblock %}

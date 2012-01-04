@@ -54,6 +54,7 @@
         // <![CDATA[
         $(document).ready(function(){
             getPluginsList();
+            getHostsList();
             $('#plugins_list li a[title]').tooltip_right();
             
         {% if not request.session.normal_mode %}
@@ -110,6 +111,9 @@
                 <div class="subnav2"><a href="#">{% trans "Plugins" %}</a></div>
                 <ul id="plugins_list">
                 </ul>
+                <div class="subnav2"><a href="#">{% trans "Hosts" %}</a></div>
+                <ul id="hosts_list">
+                </ul>
                 <div class="subnav2"><a href="#">{% trans "Tools" %}</a></div>
                 <ul>
                     <li><a href="{% url admin_tools_helpers_view %}" class='icon32-menu-helpers {{ nav2_tools_helpers }}'>{% trans "Helpers" %}</a></li>
@@ -121,8 +125,6 @@
                 <div class="subnav2"><a href="#">{% trans "Packages" %}</a></div>
                 <ul>
                     <li><a href="{% url admin_packages_repositories_view %}" class='{{ nav2_packages_repositories }}'>{% trans "Repositories" %}</a></li>
-                    <li><a href="{% url admin_packages_plugins_view %}" class='{{ nav2_packages_plugins }}'>{% trans "Plugins" %}</a></li>
-                    <li><a href="{% url admin_packages_externals_view %}" class='{{ nav2_packages_externals }}'>{% trans "External members" %}</a></li>
                 </ul>
                 {% endif %}
             </nav>

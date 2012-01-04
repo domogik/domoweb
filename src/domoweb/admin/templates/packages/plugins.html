@@ -30,18 +30,16 @@
 {% endblock %}
 {% block js_include %}
     <script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/fnReloadAjax.js"></script>
 {% endblock %}
 {% block js_script %}
-
-    $(function(){
+    $(function(){    
         // Accordion
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:4});
 		$("#tabs").tabs();
-        $("#installed_list, #available_list").dataTable({
-            "sPaginationType": "full_numbers",
-            "sDom": 'lrt<"bottom"ip>'
-        });
+
         $('.package .release span[title]').tooltip_right();
+
     });
 {% endblock %}
 {% block title %}{% trans page_title %}{% endblock %}
@@ -53,43 +51,27 @@
 {% block right %}
     <div id="tabs">
         <ul>
-            {% for host in packages %}
-            <li><a href="#tabs-{{forloop.counter}}">{{host}}</a></li>
+            {% for host in hosts %}
+            <li><a href="#tabs-{{forloop.counter}}">{{host.name}}</a></li>
             {% endfor %}
         </ul>
-        {% for host, items in packages.items %}        
+        {% for host in hosts %}        
         <div id="tabs-{{forloop.counter}}">
             <section class="subsection">
                 <h2>{% trans "Installed" %}</h2>
-                <table id='installed_list' class='display' cellpadding="0" cellspacing="0" border="0">
+                    <table id='installed_list_{{host.name}}' class='display' cellpadding="0" cellspacing="0" border="0">
                     <thead>
                         <tr><th>{% trans "Name" %}</th>
                             <th>{% trans "Release" %}</th>
                             <th>{% trans "Action" %}</th></tr>
                     </thead>
                     <tbody>
-                    {% for name, package in items.installed.items %}
-                        <tr><td>{{name}}</td>
-                            <td>{{package.release}}
-                            {% if package.installed_version_error %}<div class='error'>Incorrect version number</div>{% endif %}                         
-                            </td>
-                            <td class='actions'>{% if package.enabled %}
-                                    <a class='buttontext' href='{% url admin_packages_enable_view host package.id 'disable' %}'>Disable</a>
-                                {% else %}
-                                    <a class='buttontext' href='{% url admin_packages_enable_view host package.id 'enable' %}'>Enable</a>
-                                {% endif %}
-                                {% if package.update_available %}
-                                    <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.update_available %}'>Update</a>
-                                {% endif %}
-                                <a class='buttontext' href='{% url admin_packages_uninstall_view host package.fullname %}'>Uninstall</a>
-                            </td></tr>
-                    {% endfor %}
                     </tbody>
                 </table>
             </section>
             <section class="subsection">
                 <h2>{% trans "Available" %}</h2>
-                <table id='available_list' class='display' cellpadding="0" cellspacing="0" border="0">
+                <table id='available_list_{{host.name}}' class='display' cellpadding="0" cellspacing="0" border="0">
                     <thead>
                         <tr><th>{% trans "Name" %}</th>
                             <th>{% trans "Techno" %}</th>
@@ -99,23 +81,29 @@
                             <th>{% trans "Action" %}</th></tr>
                     </thead>
                     <tbody>
+                    </tbody>
+                </table>
+                
+                <table id='available_lists' class='display' cellpadding="0" cellspacing="0" border="0">
+                    <thead>
+                        <tr><th>{% trans "Name" %}</th>
+                            <th>{% trans "Techno" %}</th>
+                            <th>{% trans "Release" %}</th>
+                            <th>{% trans "Description" %}</th>
+                            <th>{% trans "Author" %}</th>
+                            <th>{% trans "Action" %}</th></tr>
+                    </thead>
+                    <tbody id="available_list_tbody">
                     {% for name, package in items.available.items %}
-                        <tr class='package'><td><a href='{{package.doc}}' target='_blank'>{{name}}</a></td>
-                            <td>{{package.techno}}</td>
-                            <td class='release'><span title='{{package.package_url}}'>{{package.release}}</span>
-                            {% if package.version_error %}<div class='error'>Incorrect version number</div>{% endif %}                         
-                            </td>
-                            <td>{{package.desc|linebreaksbr}}</td>
-                            <td>{{package.author}}</td>
                             <td class='actions'>{% if package.upgrade_require and package.install %}
                                 Upgrade domogik, to version package["domogik-min-release"], in order to install
                                 {% else %}{% if package.upgrade_require and package.update %}
                                     Upgrade domogik, to version package["domogik-min-release"], in order to update
                                     {% else %}
                                         {% if package.install %}
-                                        <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Install</a>
+                                        <button class='install' package_host='{{host}}' package_name='{{package.id}}' package_release='{{package.release}}'>{% trans "Install" %}</button>
                                         {% else %}
-                                        <a class='buttontext' href='{% url admin_packages_install_view host package.fullname package.release %}'>Update</a>
+                                        <button class='update' package_host='{{host}}' package_name='{{package.id}}' package_release='{{package.release}}'>{% trans "Update" %}</button>
                                         {% endif %}
                                     {% endif %}
                                 {% endif %}
@@ -125,6 +113,106 @@
                 </table>
             </section>
         </div>
+        <script type="text/javascript">
+        $(function(){
+            var tableInstalled{{host.name}}, tableAvailable{{host.name}}
+            var tableInstalled{{host.name}} = $('#installed_list_{{host.name}}').dataTable( {
+                "bProcessing": true,
+                "sAjaxSource": '/rinor/api/package/installed/{{host.name}}/',
+                "sAjaxDataProp": "installed",
+                "sPaginationType": "full_numbers",
+                "sDom": 'lrt<"bottom"ip>',
+                "aoColumns": [
+                    { "mDataProp": "id" },
+                    { "mDataProp": "release" },
+                    {
+                        "fnRender": function ( oObj ) {
+                            var str = "";
+                            if (oObj.aData['enabled'])
+                                str += "<button class='disable'>{% trans "Disable" %}</button>";
+                            else
+                                str += "<button class='enable'>{% trans "Enable" %}</button>";
+                            str+= "<button class='uninstall'>{% trans "Uninstall" %}</button>";
+                            return str;
+                        },
+                        "sClass": "center"
+                    },
+                ],
+                "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+                    /* Append the grade to the default row class name */
+                    $("button.uninstall", nRow).ajaxButton({
+                        'url':['admin', 'packages', 'uninstall', aData['host'], aData['id']],
+                        'successMsg':"Package uninstalled",
+                        'icon':'icon16-action-del',
+                        'successFct':function(data, status, xhr) {tableInstalled{{host.name}}.fnReloadAjax()}
+                    });
+                    $("button.enable", nRow).ajaxButton({
+                        'url':['admin', 'packages', 'enable', aData['host'], aData['type'] + '-' + aData['id']],
+                        'successMsg':"Package enabled",
+                        'icon':'icon16-status-active',
+                        'successFct':function(data, status, xhr) {tableInstalled{{host.name}}.fnReloadAjax()}
+                    });
+            
+                    $("button.disable", nRow).ajaxButton({
+                        'url':['admin', 'packages', 'disable', aData['host'], aData['id']],
+                        'successMsg':"Package disabled",
+                        'icon':'icon16-status-inactive',
+                        'successFct':function(data, status, xhr) {tableInstalled{{host.name}}.fnReloadAjax()}
+                    });
+                    return nRow;
+                },
+            });
+            var tableAvailable{{host.name}} = $('#available_list_{{host.name}}').dataTable( {
+                "bProcessing": true,
+                "sAjaxSource": '/rinor/api/package/available/{{host.name}}/',
+                "sAjaxDataProp": "available",
+                "sPaginationType": "full_numbers",
+                "sDom": 'lrt<"bottom"ip>',
+                "aoColumns": [
+                    {
+                        "fnRender": function ( oObj ) {
+                            return "<a href='" + oObj.aData['doc'] + "' target='_blank'>" + oObj.aData['id'] + "</a>";
+                        },
+                    },
+                    { "mDataProp": "techno" },
+                    {
+                        "fnRender": function ( oObj ) {
+                            return "<span title='" + oObj.aData['package_url'] + "'>" + oObj.aData['release'] + "</span>";
+                        },
+                    },
+                    { "mDataProp": "desc" },
+                    { "mDataProp": "author" },
+                    {
+                        "fnRender": function ( oObj ) {
+                            var str = "";
+                            if (oObj.aData['update'])
+                                str += "<button class='update'>{% trans "Update" %}</button>";
+                            else
+                                str += "<button class='install'>{% trans "Install" %}</button>";
+                            return str;
+                        },
+                        "sClass": "center"
+                    },
+
+                ],
+                "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+                    $("button.install", nRow).ajaxButton({
+                        'url':['admin', 'packages', 'install', aData['host'], aData['type'], aData['id'], aData['release']],
+                        'successMsg':"Package installed",
+                        'icon':'icon16-action-add',
+                        'successFct':function(data, status, xhr) {tableAvailable{{host.name}}.fnReloadAjax()}
+                    });
+                    $("button.update", nRow).ajaxButton({
+                        'url':['admin', 'packages', 'install', aData['host'], aData['type'], aData['id'], aData['release']],
+                        'successMsg':"Package updated",
+                        'icon':'icon16-action-refresh',
+                        'successFct':function(data, status, xhr) {tableAvailable{{host.name}}.fnReloadAjax()}
+                    });
+                    return nRow;
+                },
+            });
+        });
+        </script>
         {% endfor %}
     </div>
 {% endblock %}

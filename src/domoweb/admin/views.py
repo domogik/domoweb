@@ -405,91 +405,22 @@ def admin_packages_repositories(request):
         repositories=repositories
     )
 
-
-@admin_required
-def admin_packages_plugins(request):
+#@admin_required
+def admin_host(request, id):
     """
     Method called when the admin plugins page is accessed
     @param request : HTTP request
     @return an HttpResponse object
     """
 
-    page_title = _("Plugins packages")
-    packages = PackageExtendedPipe().get_list_plugin()
+    host = HostPipe().get_detail(id)
+    page_title = _("Host %s" % id)
     
     return go_to_page(
-        request, 'packages/plugins.html',
+        request, 'hosts/host.html',
         page_title,
         nav1_admin = "selected",
-        nav2_packages_plugins = "selected",
-        packages=packages
+        nav2_hosts_host = "selected",
+        id=id,
+        host=host
     )
-
-
-@admin_required
-def admin_packages_externals(request):
-    """
-    Method called when the admin externals page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    page_title = _("External member packages")
-    packages = PackageExtendedPipe().get_list_external()
-    rinor = InfoPipe().get_info()
-
-    return go_to_page(
-        request, 'packages/externals.html',
-        page_title,
-        nav1_admin = "selected",
-        nav2_packages_externals = "selected",
-        packages=packages,
-        host=rinor.info.Host
-    )
-
-
-@admin_required
-def admin_packages_install(request, package_host, package_name, package_release):
-    """
-    Method called for installing a package
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-    try:
-        PackagePipe().put_install(package_host, package_name, package_release)
-    except RinorError  as (code, reason):
-        messages.error(request, reason)
-    else:
-        messages.success(request, "Package %s %s installed" % (package_name, package_release))
-    return redirect('admin_packages_plugins_view')
-
-@admin_required
-def admin_packages_uninstall(request, package_host, package_name):
-    """
-    Method called for uninstalling a package
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-    try:
-        PackagePipe().put_uninstall(package_host, package_name)
-    except RinorError  as (code, reason):
-        messages.error(request, reason)
-    else:
-        messages.success(request, "Package %s uninstalled" % (package_name))
-    return redirect('admin_packages_plugins_view')
-
-@admin_required
-def admin_packages_enable(request, package_host, package_name, action):
-    """
-    Method called for installing a package
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-    try:
-        PluginPipe().command_detail(package_host, package_name, action)
-    except RinorError  as (code, reason):
-        messages.error(request, reason)
-    else:
-        messages.success(request, "Package %s %sd" % (package_name, action))
-
-    return redirect('admin_packages_plugins_view')
