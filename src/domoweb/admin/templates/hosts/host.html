@@ -70,7 +70,7 @@
                     'data':{command : 'uninstall', package : aData['id']},
                     'successMsg':"Package uninstalled",
                     'icon':'icon16-action-del',
-                    'successFct':function(data, status, xhr) {tableInstalledPlugins.fnReloadAjax()}
+                    'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax();tableInstalledPlugins.fnReloadAjax();}
                 });
                 $("button.enable", nRow).ajaxButton({
                     'url':['api', 'plugin', '{{host.id}}', aData['type'] + '-' + aData['id']],
@@ -126,14 +126,14 @@
                     'data':{command : 'install', package : aData['id'], release : aData['release']},
                     'successMsg':"Package installed",
                     'icon':'icon16-action-add',
-                    'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax()}
+                    'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax();tableInstalledPlugins.fnReloadAjax();}
                 });
                 $("button.update", nRow).ajaxButton({
                     'url':['api', 'package-available', '{{host.id}}', aData['type']],
                     'data':{command : 'update', package : aData['id'], release : aData['release']},
                     'successMsg':"Package updated",
                     'icon':'icon16-action-refresh',
-                    'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax()}
+                    'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax();tableInstalledPlugins.fnReloadAjax();}
                 });
                 return nRow;
             },
@@ -168,7 +168,7 @@
                     'data':{command : 'uninstall', package : aData['id']},
                     'successMsg':"Package uninstalled",
                     'icon':'icon16-action-del',
-                    'successFct':function(data, status, xhr) {tableInstalledExternals.fnReloadAjax()}
+                    'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax();tableInstalledExternals.fnReloadAjax();}
                 });
                 $("button.enable", nRow).ajaxButton({
                     'url':['api', 'plugin', '{{host.id}}', aData['type'] + '-' + aData['id']],
@@ -224,14 +224,14 @@
                     'data':{command : 'install', package : aData['id'], release : aData['release']},
                     'successMsg':"Package installed",
                     'icon':'icon16-action-add',
-                    'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax()}
+                    'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax();tableInstalledExternals.fnReloadAjax();}
                 });
                 $("button.update", nRow).ajaxButton({
                     'url':['api', 'package-available', '{{host.id}}', aData['type']],
                     'data':{command : 'update', package : aData['id'], release : aData['release']},
                     'successMsg':"Package updated",
                     'icon':'icon16-action-refresh',
-                    'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax()}
+                    'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax();tableInstalledExternals.fnReloadAjax();}
                 });
                 return nRow;
             },
@@ -271,7 +271,7 @@
                             <th>{% trans "Techno" %}</th>
                             <th>{% trans "Release" %}</th>
                             <th>{% trans "Description" %}</th>
-                            <th>{% trans "Author" %}</th>
+                            <th>{% trans "Authors" %}</th>
                             <th>{% trans "Action" %}</th></tr>
                     </thead>
                     <tbody>
@@ -301,7 +301,7 @@
                             <th>{% trans "Techno" %}</th>
                             <th>{% trans "Release" %}</th>
                             <th>{% trans "Description" %}</th>
-                            <th>{% trans "Author" %}</th>
+                            <th>{% trans "Authors" %}</th>
                             <th>{% trans "Action" %}</th></tr>
                     </thead>
                     <tbody>

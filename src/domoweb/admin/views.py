@@ -405,7 +405,7 @@ def admin_packages_repositories(request):
         repositories=repositories
     )
 
-#@admin_required
+@admin_required
 def admin_host(request, id):
     """
     Method called when the admin plugins page is accessed
