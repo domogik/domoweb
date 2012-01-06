@@ -73,7 +73,7 @@
                     'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax();tableInstalledPlugins.fnReloadAjax();}
                 });
                 $("button.enable", nRow).ajaxButton({
-                    'url':['api', 'plugin', '{{host.id}}', aData['type'] + '-' + aData['id']],
+                    'url':['api', 'plugin', '{{host.id}}', aData['id']],
                     'data':{command : 'enable'},
                     'successMsg':"Package enabled",
                     'icon':'icon16-status-active',
@@ -81,7 +81,7 @@
                 });
         
                 $("button.disable", nRow).ajaxButton({
-                    'url':['api', 'plugin', '{{host.id}}', aData['type'] + '-' + aData['id']],
+                    'url':['api', 'plugin', '{{host.id}}', aData['id']],
                     'data':{command : 'disable'},
                     'successMsg':"Package disabled",
                     'icon':'icon16-status-inactive',
@@ -165,21 +165,6 @@
                     'successMsg':"Package uninstalled",
                     'icon':'icon16-action-del',
                     'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax();tableInstalledExternals.fnReloadAjax();}
-                });
-                $("button.enable", nRow).ajaxButton({
-                    'url':['api', 'plugin', '{{host.id}}', aData['type'] + '-' + aData['id']],
-                    'data':{command : 'enable'},
-                    'successMsg':"Package enabled",
-                    'icon':'icon16-status-active',
-                    'successFct':function(data, status, xhr) {tableInstalledExternals.fnReloadAjax()}
-                });
-        
-                $("button.disable", nRow).ajaxButton({
-                    'url':['api', 'plugin', '{{host.id}}', aData['type'] + '-' + aData['id']],
-                    'data':{command : 'disable'},
-                    'successMsg':"Package disabled",
-                    'icon':'icon16-status-inactive',
-                    'successFct':function(data, status, xhr) {tableInstalledExternals.fnReloadAjax()}
                 });
                 return nRow;
             },
