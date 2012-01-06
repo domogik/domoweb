@@ -137,6 +137,12 @@
 .icon64-usage-water_tank { background-image:url(../images/device_usage/water_tank/usage_64.png);}
 .icon32-usage-water_tank { background-image:url(../images/device_usage/water_tank/usage_32.png);}
 .icon16-usage-water_tank { background-image:url(../images/device_usage/water_tank/usage_16.png);}
+.icon64-usage-portal { background-image:url(../images/device_usage/portal/usage_64.png);}
+.icon32-usage-portal { background-image:url(../images/device_usage/portal/usage_32.png);}
+.icon16-usage-portal { background-image:url(../images/device_usage/portal/usage_16.png);}
+.icon64-usage-security_camera { background-image:url(../images/device_usage/security_camera/usage_64.png);}
+.icon32-usage-security_camera { background-image:url(../images/device_usage/security_camera/usage_32.png);}
+.icon16-usage-security_camera { background-image:url(../images/device_usage/security_camera/usage_16.png);}
 
 /* State icons */
 .icon32-usage-light.actuator.binary.unknown { background-image:url(../images/device_usage/light/undefined_32.png);}
@@ -497,21 +503,21 @@
 .icon32-usage-christmas_tree.sensor.string.unknown { background-image:url(../images/device_usage/christmas_tree/undefined_32.png);}
 .icon32-usage-christmas_tree.sensor.string.known { background-image:url(../images/device_usage/christmas_tree/100_32.png);}
 
-.icon32-usage-surveillance_camera.actuator.binary.unknown { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
-.icon32-usage-surveillance_camera.actuator.binary.value_0 { background-image:url(../images/device_usage/surveillance_camera/0_32.png);}
-.icon32-usage-surveillance_camera.actuator.binary.value_1 { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
-.icon32-usage-surveillance_camera.actuator.trigger { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
-.icon32-usage-surveillance_camera.actuator.number { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
-.icon32-usage-surveillance_camera.actuator.range.unknown { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
-.icon32-usage-surveillance_camera.actuator.range.value_0 { background-image:url(../images/device_usage/surveillance_camera/0_32.png);}
-.icon32-usage-surveillance_camera.actuator.range.value_100 { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
-.icon32-usage-surveillance_camera.sensor.boolean.unknown { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
-.icon32-usage-surveillance_camera.sensor.boolean.value_true { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
-.icon32-usage-surveillance_camera.sensor.boolean.value_false { background-image:url(../images/device_usage/surveillance_camera/0_32.png);}
-.icon32-usage-surveillance_camera.sensor.number.unknown { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
-.icon32-usage-surveillance_camera.sensor.number.known { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
-.icon32-usage-surveillance_camera.sensor.string.unknown { background-image:url(../images/device_usage/surveillance_camera/undefined_32.png);}
-.icon32-usage-surveillance_camera.sensor.string.known { background-image:url(../images/device_usage/surveillance_camera/100_32.png);}
+.icon32-usage-security_camera.actuator.binary.unknown { background-image:url(../images/device_usage/security_camera/undefined_32.png);}
+.icon32-usage-security_camera.actuator.binary.value_0 { background-image:url(../images/device_usage/security_camera/0_32.png);}
+.icon32-usage-security_camera.actuator.binary.value_1 { background-image:url(../images/device_usage/security_camera/100_32.png);}
+.icon32-usage-security_camera.actuator.trigger { background-image:url(../images/device_usage/security_camera/undefined_32.png);}
+.icon32-usage-security_camera.actuator.number { background-image:url(../images/device_usage/security_camera/100_32.png);}
+.icon32-usage-security_camera.actuator.range.unknown { background-image:url(../images/device_usage/security_camera/undefined_32.png);}
+.icon32-usage-security_camera.actuator.range.value_0 { background-image:url(../images/device_usage/security_camera/0_32.png);}
+.icon32-usage-security_camera.actuator.range.value_100 { background-image:url(../images/device_usage/security_camera/100_32.png);}
+.icon32-usage-security_camera.sensor.boolean.unknown { background-image:url(../images/device_usage/security_camera/undefined_32.png);}
+.icon32-usage-security_camera.sensor.boolean.value_true { background-image:url(../images/device_usage/security_camera/100_32.png);}
+.icon32-usage-security_camera.sensor.boolean.value_false { background-image:url(../images/device_usage/security_camera/0_32.png);}
+.icon32-usage-security_camera.sensor.number.unknown { background-image:url(../images/device_usage/security_camera/undefined_32.png);}
+.icon32-usage-security_camera.sensor.number.known { background-image:url(../images/device_usage/security_camera/100_32.png);}
+.icon32-usage-security_camera.sensor.string.unknown { background-image:url(../images/device_usage/security_camera/undefined_32.png);}
+.icon32-usage-security_camera.sensor.string.known { background-image:url(../images/device_usage/security_camera/100_32.png);}
 
 .icon32-usage-portal.actuator.binary.unknown { background-image:url(../images/device_usage/portal/undefined_32.png);}
 .icon32-usage-portal.actuator.binary.value_0 { background-image:url(../images/device_usage/portal/0_32.png);}

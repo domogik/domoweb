@@ -22,7 +22,7 @@ range['nanoztag'] = [0, 100];
 range['music'] = [0, 100];
 range['christmas_tree'] = [0, 100];
 range['water_tank'] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-range['surveillance_camera'] = [0, 100];
+range['security_camera'] = [0, 100];
 range['portal'] = [0, 50, 100];
 
 
