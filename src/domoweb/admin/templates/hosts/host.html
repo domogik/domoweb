@@ -151,10 +151,6 @@
                 {
                     "fnRender": function ( oObj ) {
                         var str = "";
-                        if (oObj.aData['enabled'] == 'True')
-                            str += "<button class='disable'>{% trans "Disable" %}</button>";
-                        else
-                            str += "<button class='enable'>{% trans "Enable" %}</button>";
                         str+= "<button class='uninstall'>{% trans "Uninstall" %}</button>";
                         return str;
                     },
