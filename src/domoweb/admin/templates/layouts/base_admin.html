@@ -54,7 +54,9 @@
         // <![CDATA[
         $(document).ready(function(){
             getPluginsList();
+            {% if request.session.normal_mode %}
             getHostsList();
+            {% endif %}
             $('#plugins_list li a[title]').tooltip_right();
             
         {% if not request.session.normal_mode %}
@@ -111,9 +113,11 @@
                 <div class="subnav2"><a href="#">{% trans "Plugins" %}</a></div>
                 <ul id="plugins_list">
                 </ul>
+                {% if request.session.normal_mode %}
                 <div class="subnav2"><a href="#">{% trans "Hosts" %}</a></div>
                 <ul id="hosts_list">
                 </ul>
+                {% endif %}
                 <div class="subnav2"><a href="#">{% trans "Tools" %}</a></div>
                 <ul>
                     <li><a href="{% url admin_tools_helpers_view %}" class='icon32-menu-helpers {{ nav2_tools_helpers }}'>{% trans "Helpers" %}</a></li>
@@ -121,12 +125,6 @@
                     <li><a href="{% url admin_tools_pyinfo_view %}" class='icon32-menu-pyinfo {{ nav2_tools_pyinfo }}'>{% trans "Python" %}</a></li>
                     <li><a href="{% url admin_tools_djangoinfo_view %}" class='icon32-menu-djangoinfo {{ nav2_tools_djangoinfo }}'>{% trans "Django" %}</a></li>
                 </ul>
-                {% if request.session.normal_mode %}
-                <div class="subnav2"><a href="#">{% trans "Packages" %}</a></div>
-                <ul>
-                    <li><a href="{% url admin_packages_repositories_view %}" class='{{ nav2_packages_repositories }}'>{% trans "Repositories" %}</a></li>
-                </ul>
-                {% endif %}
             </nav>
         </div>
         <div class="columnright">

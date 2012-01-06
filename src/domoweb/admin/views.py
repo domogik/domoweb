@@ -385,26 +385,6 @@ def admin_tools_djangoinfo(request):
         sys_path=sys.path,
     )
 
-
-@admin_required
-def admin_packages_repositories(request):
-    """
-    Method called when the admin repositories page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    page_title = _("Packages repositories")
-    
-    repositories = RepositoryPipe().get_list()
-    return go_to_page(
-        request, 'packages/repositories.html',
-        page_title,
-        nav1_admin = "selected",
-        nav2_packages_repositories = "selected",
-        repositories=repositories
-    )
-
 @admin_required
 def admin_host(request, id):
     """
@@ -414,6 +394,8 @@ def admin_host(request, id):
     """
 
     host = HostPipe().get_detail(id)
+    repositories = RepositoryPipe().get_list()
+        
     page_title = _("Host %s" % id)
     
     return go_to_page(
@@ -421,6 +403,7 @@ def admin_host(request, id):
         page_title,
         nav1_admin = "selected",
         nav2_hosts_host = "selected",
+        repositories=repositories,
         id=id,
         host=host
     )

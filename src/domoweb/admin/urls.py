@@ -54,6 +54,5 @@ urlpatterns = patterns('domoweb.admin.views',
     url(r'tools/rinor/$', 'admin_tools_rinor', name="admin_tools_rinor_view"),
     url(r'tools/pyinfo/$', 'admin_tools_pyinfo', name="admin_tools_pyinfo_view"),
     url(r'tools/djangoinfo/$', 'admin_tools_djangoinfo', name="admin_tools_djangoinfo_view"),
-    url(r'packages/repositories/$', 'admin_packages_repositories', name="admin_packages_repositories_view"),
     url(r'host/(?P<id>[a-zA-Z0-9_.-]+)/$', 'admin_host', name="admin_host_view"),
 )
