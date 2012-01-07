@@ -116,7 +116,11 @@
                         return "<span title='" + oObj.aData['package_url'] + "'>" + oObj.aData['release'] + "</span>";
                     },
                 },
-                { "mDataProp": "desc" },
+                {
+                    "fnRender": function ( oObj ) {
+                        return oObj.aData['desc'].replace(/\n/g, '<br />');
+                    },
+                },
                 { "mDataProp": "author" },
                 {
                     "fnRender": function ( oObj ) {
@@ -196,7 +200,11 @@
                         return "<span title='" + oObj.aData['package_url'] + "'>" + oObj.aData['release'] + "</span>";
                     },
                 },
-                { "mDataProp": "desc" },
+                {
+                    "fnRender": function ( oObj ) {
+                        return oObj.aData['desc'].replace(/\n/g, '<br />');
+                    },
+                },
                 { "mDataProp": "author" },
                 {
                     "fnRender": function ( oObj ) {
