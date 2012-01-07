@@ -98,6 +98,7 @@
             },
         });
         var tableAvailablePlugins = $('#available_plugins').dataTable( {
+            "iDisplayLength": 50,
             "bProcessing": true,
             "sAjaxSource": '/rinor/api/package-available/{{host.id}}/plugin/',
             "sAjaxDataProp": "objects",
@@ -177,6 +178,7 @@
             },
         });
         var tableAvailableExternals = $('#available_externals').dataTable( {
+            "iDisplayLength": 50,
             "bProcessing": true,
             "sAjaxSource": '/rinor/api/package-available/{{host.id}}/external/',
             "sAjaxDataProp": "objects",
