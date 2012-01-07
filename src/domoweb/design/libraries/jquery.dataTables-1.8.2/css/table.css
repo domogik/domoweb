@@ -67,9 +67,9 @@
 }
 
 .dataTables_paginate {
-	width: 44px;
+/*	width: 44px;
 	* width: 50px;
-	float: right;
+	float: right;*/
 	text-align: right;
 }
 
@@ -237,7 +237,7 @@ tr.even {
 }
 
 .top, .bottom {
-	padding: 15px;
+	padding: 0.2em;
 	background-color: #F5F5F5;
 	border: 1px solid #CCCCCC;
 }
@@ -281,7 +281,7 @@ td.details {
 }
 
 .paging_full_numbers {
-	width: 400px;
+/*	width: 400px;*/
 	height: 22px;
 	line-height: 22px;
 }
