@@ -18,6 +18,7 @@ class EventPipe(RinorPipe):
     paths = []
 
     def get_event(self):
+        yield 'event: message\ndata: {}\n\n'
         # Get all the devices ids
         _devices_list = DevicePipe().get_dict().keys()
         _devices = [str(id) for id in _devices_list]
