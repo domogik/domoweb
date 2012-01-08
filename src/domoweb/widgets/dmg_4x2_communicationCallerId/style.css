@@ -30,8 +30,8 @@
     background:rgba(0,0,0,0.8);
     -moz-border-radius: 0.8em;
     -webkit-border-radius: 0.8em;
-    display:table-cell;
     vertical-align:middle;
+    position:absolute;
 }
 
 .dmg_4x2_communicationCallerId .new {
@@ -47,5 +47,5 @@
     background-position: 5px 50%;
     background-repeat: no-repeat;
     background-image: url(images/phone_16.png);
-    margin:auto;
+    margin:15% auto 0 auto;
 }
