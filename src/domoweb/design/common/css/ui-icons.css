@@ -681,6 +681,12 @@
 .ui-state-highlight .ui-icon {background-image: url(../images/action/ui-icons_222222_256x240.png); }
 .ui-state-error .ui-icon, .ui-state-error-text .ui-icon {background-image: url(../images/action/ui-icons_222222_256x240.png); }
 
+a.external-link {
+    background-position: 100% 0%;
+    background-repeat:no-repeat;
+    background-image: url(../images/external-link-icon.gif);
+    padding-right: 16px;
+}
 
 /* positioning */
 
