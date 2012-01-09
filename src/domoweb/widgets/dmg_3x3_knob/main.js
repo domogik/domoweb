@@ -160,8 +160,8 @@
         },
         
         _statsHandler: function(stats) {
-            if (stats) {
-                this.setValue(parseInt(stats.value));
+            if (stats && stats.length > 0) {
+                this.setValue(parseInt(stats[0].value));
             } else {
                 this.setValue(null);
             }

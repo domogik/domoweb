@@ -436,10 +436,7 @@ class StatePipe(RinorPipe):
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:
-            if (last == 1):
-                return _data[self.index][0]
-            else:
-                return _data[self.index]                
+            return _data[self.index]                
         else:
             return None
 
