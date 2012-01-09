@@ -30,6 +30,7 @@
 {% endblock %}
 {% block js_include %}
     <script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.rowGrouping.js"></script>
     <script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/fnReloadAjax.js"></script>
 {% endblock %}
 {% block js_script %}
@@ -104,18 +105,19 @@
             "sAjaxDataProp": "objects",
             "sPaginationType": "full_numbers",
             "sDom": 'flrt<"bottom"p>',
+            "bAutoWidth": false,
             "aoColumns": [
                 {
                     "fnRender": function ( oObj ) {
                         return "<a href='" + oObj.aData['doc'] + "' target='_blank'>" + oObj.aData['id'] + "</a>";
                     },
                 },
-                { "mDataProp": "techno" },
                 {
                     "fnRender": function ( oObj ) {
                         return "<span title='" + oObj.aData['package_url'] + "'>" + oObj.aData['release'] + "</span>";
                     },
                 },
+                { "mDataProp": "techno" },
                 {
                     "fnRender": function ( oObj ) {
                         return oObj.aData['desc'].replace(/\n/g, '<br />');
@@ -149,7 +151,8 @@
                 });
                 return nRow;
             },
-        });
+        }).rowGrouping();
+    
         var tableInstalledExternals, tableAvailableExternals
         var tableInstalledExternals = $('#installed_externals').dataTable( {
             "bProcessing": true,
@@ -188,18 +191,19 @@
             "sAjaxDataProp": "objects",
             "sPaginationType": "full_numbers",
             "sDom": 'flrt<"bottom"p>',
+            "bAutoWidth": false,
             "aoColumns": [
                 {
                     "fnRender": function ( oObj ) {
                         return "<a href='" + oObj.aData['doc'] + "' target='_blank'>" + oObj.aData['id'] + "</a>";
                     },
                 },
-                { "mDataProp": "techno" },
                 {
                     "fnRender": function ( oObj ) {
                         return "<span title='" + oObj.aData['package_url'] + "'>" + oObj.aData['release'] + "</span>";
                     },
                 },
+                { "mDataProp": "techno" },
                 {
                     "fnRender": function ( oObj ) {
                         return oObj.aData['desc'].replace(/\n/g, '<br />');
@@ -233,7 +237,7 @@
                 });
                 return nRow;
             },
-        });
+        }).rowGrouping();
     });
 {% endblock %}
 {% block title %}{% trans page_title %}{% endblock %}
