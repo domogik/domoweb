@@ -251,8 +251,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     @param request : HTTP request
     @return an HttpResponse object
     """
-
-
+    
     plugin = PluginPipe().get_detail(plugin_host, plugin_id)
     if plugin_type == "plugin":
         page_title = _("Plugin")
@@ -275,7 +274,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
 
 
 @admin_required
-def admin_tools_helpers(request):
+def admin_core_helpers(request):
     """
     Method called when the admin helpers tool page is accessed
     @param request : HTTP request
@@ -288,12 +287,12 @@ def admin_tools_helpers(request):
         request, 'tools/helpers.html',
         page_title,
         nav1_admin = "selected",
-        nav2_tools_helpers = "selected",
+        nav2_core_helpers = "selected",
     )
 
 
 @admin_required
-def admin_tools_rinor(request):
+def admin_core_rinor(request):
     """
     Method called when the admin Python Info page is accessed
     @param request : HTTP request
@@ -303,17 +302,23 @@ def admin_tools_rinor(request):
     page_title = _("RINOR informations")
 
     info = InfoPipe().get_info()
+    hosts = HostPipe().get_list()
+    host = ''
+    for h in hosts:
+        if h.primary == 'True':
+            host = h.id
     return go_to_page(
-        request, 'tools/rinor.html',
+        request, 'core/rinor.html',
         page_title,
         nav1_admin = "selected",
-        nav2_tools_rinor = "selected",
-        rinor=info
+        nav2_core_rinor = "selected",
+        rinor=info,
+        host=host
     )
 
 
 @admin_required
-def admin_tools_pyinfo(request):
+def admin_core_pyinfo(request):
     """
     Method called when the admin Python info page is accessed
     @param request : HTTP request
@@ -323,10 +328,10 @@ def admin_tools_pyinfo(request):
     page_title = _("Python informations")
     
     return go_to_page(
-        request, 'tools/pyinfo.html',
+        request, 'core/pyinfo.html',
         page_title,
         nav1_admin = "selected",
-        nav2_tools_pyinfo = "selected",
+        nav2_core_pyinfo = "selected",
         pyinfo=pyinfo.foo.fullText()
     )
     
@@ -362,7 +367,7 @@ def get_safe_settings():
 
 
 @admin_required
-def admin_tools_djangoinfo(request):
+def admin_core_djangoinfo(request):
     """
     Method called when the admin Django Info page is accessed
     @param request : HTTP request
@@ -374,10 +379,10 @@ def admin_tools_djangoinfo(request):
     page_title = _("Django informations")
     
     return go_to_page(
-        request, 'tools/djangoinfo.html',
+        request, 'core/djangoinfo.html',
         page_title,
         nav1_admin = "selected",
-        nav2_tools_djangoinfo = "selected",
+        nav2_core_djangoinfo = "selected",
         settings=get_safe_settings(),
         sys_executable=sys.executable,
         sys_version_info='%d.%d.%d' % sys.version_info[0:3],

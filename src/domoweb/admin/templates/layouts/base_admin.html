@@ -118,12 +118,12 @@
                 <ul id="hosts_list">
                 </ul>
                 {% endif %}
-                <div class="subnav2"><a href="#">{% trans "Tools" %}</a></div>
+                <div class="subnav2"><a href="#">{% trans "Core" %}</a></div>
                 <ul>
-                    <li><a href="{% url admin_tools_helpers_view %}" class='icon32-menu-helpers {{ nav2_tools_helpers }}'>{% trans "Helpers" %}</a></li>
-                    <li><a href="{% url admin_tools_rinor_view %}" class='icon32-menu-rinor {{ nav2_tools_rinor }}'>{% trans "RINOR" %}</a></li>
-                    <li><a href="{% url admin_tools_pyinfo_view %}" class='icon32-menu-pyinfo {{ nav2_tools_pyinfo }}'>{% trans "Python" %}</a></li>
-                    <li><a href="{% url admin_tools_djangoinfo_view %}" class='icon32-menu-djangoinfo {{ nav2_tools_djangoinfo }}'>{% trans "Django" %}</a></li>
+                    <li><a href="{% url admin_core_helpers_view %}" class='icon32-menu-helpers {{ nav2_tools_helpers }}'>{% trans "Helpers" %}</a></li>
+                    <li><a href="{% url admin_core_rinor_view %}" class='icon32-menu-rinor {{ nav2_tools_rinor }}'>{% trans "RINOR" %}</a></li>
+                    <li><a href="{% url admin_core_pyinfo_view %}" class='icon32-menu-pyinfo {{ nav2_tools_pyinfo }}'>{% trans "Python" %}</a></li>
+                    <li><a href="{% url admin_core_djangoinfo_view %}" class='icon32-menu-djangoinfo {{ nav2_tools_djangoinfo }}'>{% trans "Django" %}</a></li>
                 </ul>
             </nav>
         </div>
