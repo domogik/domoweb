@@ -24,7 +24,7 @@
 {% load text %}
 
 {% block css %}
-    <link href="/design/admin/css/page-admin-hosts.css" rel="stylesheet" type="text/css" />
+    <link href="/design/admin/css/page-admin-host.css" rel="stylesheet" type="text/css" />
     <link href="/design/libraries/jquery.dataTables-1.8.2/css/page.css" rel="stylesheet" type="text/css" />
     <link href="/design/libraries/jquery.dataTables-1.8.2/css/table.css" rel="stylesheet" type="text/css" />
 {% endblock %}
@@ -112,9 +112,16 @@
                         return "<a href='" + oObj.aData['doc'] + "' target='_blank' class='external-link'>" + oObj.aData['id'] + "</a>";
                     },
                 },
+                { "mDataProp": "release" },
                 {
                     "fnRender": function ( oObj ) {
-                        return "<span title='" + oObj.aData['package_url'] + "'>" + oObj.aData['release'] + "</span>";
+                        source = oObj.aData['source'];
+                        if (source.charAt(source.length-1)) {
+                            source = source.substr(0, source.length-1);
+                        }
+                        array_source = source.split('/');
+                        repository = array_source.pop();
+                        return "<span class='icon-repository' style='background-image:url(" + source + "/icon)'/>" + repository + "</span>";
                     },
                 },
                 { "mDataProp": "techno" },
@@ -198,9 +205,16 @@
                         return "<a href='" + oObj.aData['doc'] + "' target='_blank' class='external-link'>" + oObj.aData['id'] + "</a>";
                     },
                 },
+                { "mDataProp": "release" },
                 {
                     "fnRender": function ( oObj ) {
-                        return "<span title='" + oObj.aData['package_url'] + "'>" + oObj.aData['release'] + "</span>";
+                        source = oObj.aData['source'];
+                        if (source.charAt(source.length-1)) {
+                            source = source.substr(0, source.length-1);
+                        }
+                        array_source = source.split('/');
+                        repository = array_source.pop();
+                        return "<span class='icon-repository' style='background-image:url(" + source + "/icon)'/>" + repository + "</span>";
                     },
                 },
                 { "mDataProp": "techno" },
@@ -293,8 +307,9 @@
                 <table id='available_plugins' class='display' cellpadding="0" cellspacing="0" border="0">
                     <thead>
                         <tr><th>{% trans "Name" %}</th>
-                            <th>{% trans "Techno" %}</th>
                             <th>{% trans "Release" %}</th>
+                            <th>{% trans "Repository" %}</th>
+                            <th>{% trans "Techno" %}</th>
                             <th>{% trans "Description" %}</th>
                             <th>{% trans "Authors" %}</th>
                             <th>{% trans "Action" %}</th></tr>
@@ -323,8 +338,9 @@
                 <table id='available_externals' class='display' cellpadding="0" cellspacing="0" border="0">
                     <thead>
                         <tr><th>{% trans "Name" %}</th>
-                            <th>{% trans "Techno" %}</th>
                             <th>{% trans "Release" %}</th>
+                            <th>{% trans "Repository" %}</th>
+                            <th>{% trans "Techno" %}</th>
                             <th>{% trans "Description" %}</th>
                             <th>{% trans "Authors" %}</th>
                             <th>{% trans "Action" %}</th></tr>

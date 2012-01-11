@@ -501,6 +501,7 @@ class PackageAvailableResource(RinorResource):
     priority = fields.CharField(attribute = 'priority')
     dependencies = fields.ListField(attribute = 'dependencies')
     domogik_min_release = fields.CharField(attribute = 'domogik_min_release')
+    source = fields.CharField(attribute = 'source')
 
     class Meta:
         resource_name = 'package-available'
