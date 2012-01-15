@@ -284,7 +284,7 @@ def admin_core_helpers(request):
     page_title = _("Helpers tools")
 
     return go_to_page(
-        request, 'tools/helpers.html',
+        request, 'core/helpers.html',
         page_title,
         nav1_admin = "selected",
         nav2_core_helpers = "selected",
