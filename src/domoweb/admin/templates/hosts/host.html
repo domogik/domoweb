@@ -41,15 +41,23 @@
 
         $('.package .release span[title]').tooltip_right();
 
+        var tableInstalledPlugins, tableAvailablePlugins
+        var tableInstalledExternals, tableAvailableExternals
+
         $("#update_cache").ajaxButton({
             'url':['api', 'repository'],
             'data':{'action':'refresh'},
             'successMsg':"Package cache updated",
             'icon':'icon16-action-reset',
+            'successFct':function(data, status, xhr) {
+                tableAvailablePlugins.fnReloadAjax();
+                tableInstalledPlugins.fnReloadAjax();
+                tableAvailableExternals.fnReloadAjax();
+                tableInstalledExternals.fnReloadAjax();
+            }
         });
         
-        var tableInstalledPlugins, tableAvailablePlugins
-        var tableInstalledPlugins = $('#installed_plugins').dataTable( {
+        tableInstalledPlugins = $('#installed_plugins').dataTable( {
             "oLanguage": {
                 "sEmptyTable": "No plugin installed"
             },
@@ -101,7 +109,7 @@
                 return nRow;
             },
         });
-        var tableAvailablePlugins = $('#available_plugins').dataTable( {
+        tableAvailablePlugins = $('#available_plugins').dataTable( {
             "iDisplayLength": 50,
             "oLanguage": {
                 "sEmptyTable": "No plugin available to install"
@@ -166,8 +174,7 @@
             },
         }).rowGrouping();
     
-        var tableInstalledExternals, tableAvailableExternals
-        var tableInstalledExternals = $('#installed_externals').dataTable( {
+        tableInstalledExternals = $('#installed_externals').dataTable( {
             "bProcessing": true,
             "oLanguage": {
                 "sEmptyTable": "No external member installed"
@@ -200,7 +207,7 @@
                 return nRow;
             },
         });
-        var tableAvailableExternals = $('#available_externals').dataTable( {
+        tableAvailableExternals = $('#available_externals').dataTable( {
             "iDisplayLength": 50,
             "oLanguage": {
                 "sEmptyTable": "No external member available to install"
