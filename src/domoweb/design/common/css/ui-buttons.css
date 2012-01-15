@@ -13,7 +13,12 @@ a:hover, a:active, a:focus {
 button::-moz-focus-inner { border: 0; }
 input::-moz-focus-inner { border: 0; }
 
+
 /* Button */
+button {
+    
+}
+
 .button {
 	border: 1px solid #cccccc;
 	height:2em;
@@ -26,9 +31,11 @@ input::-moz-focus-inner { border: 0; }
 	cursor: pointer;
 	text-decoration:none;
     padding:0.2em 0.5em 0.2em 25px;
-    margin:0;
-    display:inline-block;
+    margin:1px;
+    display:table-cell;
 	font-size: 1em;
+    color:#000000;
+    vertical-align: middle;
 }
 
 .buttontext {
@@ -42,9 +49,10 @@ input::-moz-focus-inner { border: 0; }
 	cursor: pointer;
 	text-decoration:none;
     padding:0.2em 0.5em 0.2em 0.5em;
-    margin:0;
+    margin:1px;
     display:inline-block;
 	font-size: 1em;
+    color:#000000;
 }
 
 .button:hover, .buttontext:hover {

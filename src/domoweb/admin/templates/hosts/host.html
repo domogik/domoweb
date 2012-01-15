@@ -109,7 +109,7 @@
             "aoColumns": [
                 {
                     "fnRender": function ( oObj ) {
-                        return "<a href='" + oObj.aData['doc'] + "' target='_blank' class='external-link'>" + oObj.aData['id'] + "</a>";
+                        return oObj.aData['id'];
                     },
                 },
                 { "mDataProp": "release" },
@@ -134,7 +134,7 @@
                 {
                     "fnRender": function ( oObj ) {
                         var str = "";
-                        str += "<button class='install'>{% trans "Install" %}</button>";
+                        str += "<button class='install'>{% trans "Install" %}</button><a href='" + oObj.aData['doc'] + "' target='_blank' class='button external-button'>{% trans "Documentation" %}</a>";
                         return str;
                     },
                     "sClass": "center"
@@ -158,7 +158,7 @@
                 });
                 return nRow;
             },
-        }).rowGrouping();
+        }).rowGrouping({iGroupingColumnIndex:0,sGroupBy: "name"});
     
         var tableInstalledExternals, tableAvailableExternals
         var tableInstalledExternals = $('#installed_externals').dataTable( {

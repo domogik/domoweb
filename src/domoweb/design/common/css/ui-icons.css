@@ -688,6 +688,13 @@ a.external-link {
     padding-right: 16px;
 }
 
+a.external-button {
+    background-position: 1% 50%;
+    background-repeat:no-repeat;
+    background-image: url(../images/external-link-icon.gif);
+    padding-right: 16px;
+}
+
 /* positioning */
 
 .ui-icon-carat-1-n { background-position: 0 0; }
