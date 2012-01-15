@@ -50,6 +50,9 @@
         
         var tableInstalledPlugins, tableAvailablePlugins
         var tableInstalledPlugins = $('#installed_plugins').dataTable( {
+            "oLanguage": {
+                "sEmptyTable": "No plugin installed"
+            },
             "bProcessing": true,
             "sAjaxSource": '/rinor/api/package-installed/{{host.id}}/plugin/',
             "sAjaxDataProp": "objects",
@@ -100,6 +103,9 @@
         });
         var tableAvailablePlugins = $('#available_plugins').dataTable( {
             "iDisplayLength": 50,
+            "oLanguage": {
+                "sEmptyTable": "No plugin available to install"
+            },
             "bProcessing": true,
             "sAjaxSource": '/rinor/api/package-available/{{host.id}}/plugin/',
             "sAjaxDataProp": "objects",
@@ -163,6 +169,9 @@
         var tableInstalledExternals, tableAvailableExternals
         var tableInstalledExternals = $('#installed_externals').dataTable( {
             "bProcessing": true,
+            "oLanguage": {
+                "sEmptyTable": "No external member installed"
+            },
             "sAjaxSource": '/rinor/api/package-installed/{{host.id}}/external/',
             "sAjaxDataProp": "objects",
             "sPaginationType": "full_numbers",
@@ -193,6 +202,9 @@
         });
         var tableAvailableExternals = $('#available_externals').dataTable( {
             "iDisplayLength": 50,
+            "oLanguage": {
+                "sEmptyTable": "No external member available to install"
+            },
             "bProcessing": true,
             "sAjaxSource": '/rinor/api/package-available/{{host.id}}/external/',
             "sAjaxDataProp": "objects",

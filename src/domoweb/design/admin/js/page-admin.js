@@ -37,8 +37,8 @@ function getPluginsList() {
     
     rinor.get(['api', 'plugin'])
         .done(function(data, status, xhr){
-            $.each(data.objects, function() {
-                if (this.list && this.list.length > 0) { // If a least 1 plugin is enabled
+            if (data.objects && data.objects.length > 0) { // If a least 1 plugin is enabled
+                $.each(data.objects, function() {
                     var host = this.host;
                     $.each(this.list, function() {
                         var technology = this.technology.replace(' ', '');
@@ -73,16 +73,16 @@ function getPluginsList() {
                         li.append(a);
                         $("#plugins_list ul#menu_" + technology).append(li);	
                     });
-                } else {
-                    var li = $("<li></li>");
-                    var a = $("<a>No plugin enabled yet<br />Click to reload</a>");
-                    a.attr('href', '#');
-                    a.addClass("icon16-status-error");
-                    a.click(function(){getPluginsList();})
-                    li.append(a);
-                    $("#plugins_list").append(li);
-                }                    
-            });
+                });
+            } else {
+                var li = $("<li></li>");
+                var a = $("<a>No plugin enabled or installed<br />Click to reload</a>");
+                a.attr('href', '#');
+                a.addClass("icon16-status-error");
+                a.click(function(){getPluginsList();})
+                li.append(a);
+                $("#plugins_list").append(li);
+            }                    
         })
         .fail(function(jqXHR, status, error){
             var li = $("<li></li>");
