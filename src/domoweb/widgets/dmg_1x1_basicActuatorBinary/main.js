@@ -86,7 +86,7 @@
             if (value != null) {
                 if (value == 1 || (typeof(value) == 'string' && value.toLowerCase() == this.values[1])) {
                     this.currentValue = 1;
-                } else {
+                } else if (value == 0 || (typeof(value) == 'string' && value.toLowerCase() == this.values[0])) {
                     this.currentValue = 0;
                 }                
             } else { // Unknown
