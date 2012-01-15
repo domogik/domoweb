@@ -1,4 +1,4 @@
-from domoweb.exceptions import RinorError, RinorNotAvailable, BadDomogikVersion
+from domoweb.exceptions import RinorError, RinorNotAvailable
 from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpResponseServerError
 from django.template import Context, loader
@@ -20,18 +20,26 @@ class RinorMiddleware(object):
             try:
                 _ip = Parameter.objects.get(key='rinor_ip')
                 _port = Parameter.objects.get(key='rinor_port')
-                if not 'rinor_api_version'  in request.session:
-                    _info = InfoPipe().get_info_extended()
-                    
-                    if (not _info.info.rinor_version_superior and not _info.info.rinor_version_inferior):
-                        request.session['rinor_api_version'] = _info.info.rinor_version                    
-                    else:
-                        raise BadDomogikVersion
-                if not 'normal_mode' in request.session:
-                    mode = InfoPipe().get_mode()
-                    request.session['normal_mode'] = (mode == "normal")
             except Parameter.DoesNotExist:
                 return redirect("config_welcome_view")
+
+            if not 'rinor_api_version'  in request.session:
+                try:
+                    _info = InfoPipe().get_info_extended()
+                except RinorNotAvailable:
+                    t = loader.get_template('error/RinorNotAvailable.html')
+                    c = Context({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
+                    return HttpResponseServerError(t.render(c))
+
+                if (not _info.info.rinor_version_superior and not _info.info.rinor_version_inferior):
+                    request.session['rinor_api_version'] = _info.info.rinor_version                    
+                else:
+                    t = loader.get_template('error/BadDomogikVersion.html')
+                    c = Context({'rinor_info':_info})
+                    return HttpResponseServerError(t.render(c))
+            if not 'normal_mode' in request.session:
+                mode = InfoPipe().get_mode()
+                request.session['normal_mode'] = (mode == "normal")
         
         """
         Check if has message
@@ -51,9 +59,9 @@ class RinorMiddleware(object):
                 messages.debug(request, _message)
         return
 
-    def process_view(self, request, view_func, view_args, view_kwargs):
+#    def process_view(self, request, view_func, view_args, view_kwargs):
 #        view_kwargs = {'version': settings.DOMOWEB_VERSION}
-        return view_func(request, *view_args, **view_kwargs)
+#        return view_func(request, *view_args, **view_kwargs)
 
     def process_exception(self, request, exception):
         if isinstance(exception, RinorError):
@@ -67,13 +75,8 @@ class RinorMiddleware(object):
         elif isinstance(exception, RinorNotAvailable):
             _ip = Parameter.objects.get(key='rinor_ip')
             _port = Parameter.objects.get(key='rinor_port')
-            t = loader.get_template('error/BadStatusLine.html')
+            t = loader.get_template('error/RinorNotAvailable.html')
             c = Context({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
-            return HttpResponseServerError(t.render(c))
-        elif isinstance(exception, BadDomogikVersion):
-            _rinor_info = InfoPipe().get_info_extended()
-            t = loader.get_template('error/BadDomogikVersion.html')
-            c = Context({'rinor_info':_rinor_info})
             return HttpResponseServerError(t.render(c))
         return
 
@@ -88,4 +91,8 @@ class LaunchMiddleware:
                 if os.path.isfile(main):
                     w = Widget(id=file)
                     w.save();
-        raise MiddlewareNotUsed
+        print "A1"
+#        raise MiddlewareNotUsed
+    
+    def process_request(self, request):
+        print "A2"

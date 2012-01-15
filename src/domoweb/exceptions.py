@@ -52,6 +52,3 @@ class RinorNotAvailable(DomoWebBaseException):
 
 class RinorError(DomoWebBaseException):
     pass
-
-class BadDomogikVersion(DomoWebBaseException):
-    pass
