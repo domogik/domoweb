@@ -40,8 +40,8 @@ import commands
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-RINOR_MIN_API = '0.4'
-RINOR_MAX_API = '0.4' #included
+RINOR_MIN_API = '0.5'
+RINOR_MAX_API = '0.5' #included
 DMG_MIN_VERSION = '0.2.0-alpha1'
 
 ADMINS = ()
