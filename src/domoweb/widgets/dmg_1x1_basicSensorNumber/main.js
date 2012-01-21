@@ -46,14 +46,14 @@
 
         _statsHandler: function(stats) {
             if (stats && stats.length > 0) {
-                this.setValue(stats[0].value);
+                this.setValue(parseFloat(stats[0].value));
             } else {
                 this.setValue(null);
             }
         },
         
         _eventHandler: function(timestamp, value) {
-            this.setValue(value);
+            this.setValue(parseFloat(value));
         },
 
         setValue: function(value) {
