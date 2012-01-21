@@ -394,6 +394,7 @@ class InfoResource(RinorResource):
     info = fields.DictField(attribute = 'info')
     queue = fields.DictField(attribute = 'queue')
     stats = fields.DictField(attribute = 'stats')
+    configuration = fields.DictField(attribute = 'configuration')
 
     class Meta:
         resource_name = 'info'

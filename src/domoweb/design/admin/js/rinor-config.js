@@ -154,7 +154,7 @@ $(function(){
     $('#simple_configuration_items').createConfigurationTable('configuration_items');
     
     /* Get the list of configuration items */
-    rinor.get(['api', 'plugindetail', plugin_host, plugin_id])
+    rinor.get(['api', 'info'])
         .done(function(data, status, xhr){
             // Check configuration items
             var num_items = data.configuration.length;
