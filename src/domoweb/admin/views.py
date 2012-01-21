@@ -33,6 +33,9 @@ Implements
 @license: GPL(v3)
 @organization: Domogik
 """
+import urllib
+import urllib2
+import mimetypes
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -45,7 +48,8 @@ from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 import pyinfo
-from domoweb.exceptions import RinorError
+from domoweb.exceptions import RinorError, RinorNotConfigured
+from domoweb.models import Parameter
 
 
 def login(request):
@@ -412,3 +416,43 @@ def admin_host(request, id):
         id=id,
         host=host
     )
+
+@admin_required
+def admin_resource_icon_package_installed(request, type, id):
+    try:
+        ip = Parameter.objects.get(key='rinor_ip')
+        port = Parameter.objects.get(key='rinor_port')
+    except Parameter.DoesNotExist:
+        raise RinorNotConfigured
+    else:
+        try:
+            prefix = Parameter.objects.get(key='rinor_prefix')
+        except Parameter.DoesNotExist:
+            uri = "http://%s:%s/package/icon/installed/%s/%s" % (ip.value, port.value, type, id)
+        else:
+            uri = "http://%s:%s/%s/package/icon/installed/%s/%s" % (ip.value, port.value, prefix.value, type, id)
+
+    contents = urllib2.urlopen(uri).read()
+    mimetype = mimetypes.guess_type(uri)
+    response = HttpResponse(contents, mimetype=mimetype)
+    return response
+
+@admin_required
+def admin_resource_icon_package_available(request, type, id, version):
+    try:
+        ip = Parameter.objects.get(key='rinor_ip')
+        port = Parameter.objects.get(key='rinor_port')
+    except Parameter.DoesNotExist:
+        raise RinorNotConfigured
+    else:
+        try:
+            prefix = Parameter.objects.get(key='rinor_prefix')
+        except Parameter.DoesNotExist:
+            uri = "http://%s:%s/package/icon/available/%s/%s/%s" % (ip.value, port.value, type, id, version)
+        else:
+            uri = "http://%s:%s/%s/package/icon/available/%s/%s/%s" % (ip.value, port.value, prefix.value, type, id, version)
+
+    contents = urllib2.urlopen(uri).read()
+    mimetype = mimetypes.guess_type(uri)
+    response = HttpResponse(contents, mimetype=mimetype)
+    return response

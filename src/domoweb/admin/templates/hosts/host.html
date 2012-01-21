@@ -67,7 +67,11 @@
             "sPaginationType": "full_numbers",
             "sDom": 'flrt<"bottom"p>',
             "aoColumns": [
-                { "mDataProp": "id" },
+                {
+                    "fnRender": function ( oObj ) {
+                        return "<span class='icon-package' style='background-image:url(/admin/resource/icon/package/installed/plugin/" + oObj.aData['id'] + ")'/>" + oObj.aData['id'] + "</span>";
+                    }
+                },
                 { "mDataProp": "release" },
                 {
                     "fnRender": function ( oObj ) {
@@ -126,7 +130,11 @@
                         return oObj.aData['id'];
                     },
                 },
-                { "mDataProp": "release" },
+                {
+                    "fnRender": function ( oObj ) {
+                        return "<span class='icon-package' style='background-image:url(/admin/resource/icon/package/available/plugin/" + oObj.aData['id'] + "/" + oObj.aData['release'] + ")'/>" + oObj.aData['release'] + "</span>";
+                    }
+                },
                 {
                     "fnRender": function ( oObj ) {
                         source = oObj.aData['source'];
@@ -184,7 +192,11 @@
             "sPaginationType": "full_numbers",
             "sDom": 'flrt<"bottom"p>',
             "aoColumns": [
-                { "mDataProp": "id" },
+                {
+                    "fnRender": function ( oObj ) {
+                        return "<span class='icon-package' style='background-image:url(/admin/resource/icon/package/installed/external/" + oObj.aData['id'] + ")'/>" + oObj.aData['id'] + "</span>";
+                    }
+                },
                 { "mDataProp": "release" },
                 {
                     "fnRender": function ( oObj ) {
@@ -224,7 +236,11 @@
                         return oObj.aData['id'];
                     },
                 },
-                { "mDataProp": "release" },
+                {
+                    "fnRender": function ( oObj ) {
+                        return "<span class='icon-package' style='background-image:url(/admin/resource/icon/package/available/external/" + oObj.aData['id'] + "/" + oObj.aData['release'] + ")'/>" + oObj.aData['release'] + "</span>";
+                    }
+                },
                 {
                     "fnRender": function ( oObj ) {
                         source = oObj.aData['source'];

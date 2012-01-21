@@ -1,10 +1,14 @@
-.icon-repository {
+.icon-repository, .icon-package {
     display:inline-block;
     background-position: 0% 50%;
     background-repeat:no-repeat;
-    min-height:72px;
-    padding-left:75px;
-    line-height:72px;
+    min-height:32px;
+    padding-left:32px;
+    line-height:32px;
+    -webkit-background-size: 32px auto;
+    -o-background-size: 32px auto;
+    -moz-background-size: 32px auto;
+    background-size: 32px auto;
 }
 
 .group {
