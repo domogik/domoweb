@@ -667,6 +667,14 @@
     padding-left:34px;
     line-height:32px;
 }
+
+.icon64-resize {
+    -webkit-background-size: auto 64px;
+    -o-background-size: auto 64px;
+    -moz-background-size: auto 64px;
+    background-size: auto 64px;
+}
+
 /* JQUERY ICONS */
 
 /* states and images */

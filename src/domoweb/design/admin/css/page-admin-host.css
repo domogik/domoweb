@@ -5,10 +5,10 @@
     min-height:32px;
     padding-left:32px;
     line-height:32px;
-    -webkit-background-size: 32px auto;
-    -o-background-size: 32px auto;
-    -moz-background-size: 32px auto;
-    background-size: 32px auto;
+    -webkit-background-size: auto 32px;
+    -o-background-size: auto 32px;
+    -moz-background-size: auto 32px;
+    background-size: auto 32px;
 }
 
 .group {
