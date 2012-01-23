@@ -1,14 +1,22 @@
-.icon-repository, .icon-package {
+.repository, .package {
     display:inline-block;
+    min-height:32px;
+    line-height:32px;
+    white-space:nowrap;
+}
+
+.repository .icon, .package .icon {
+    float:left;
     background-position: 0% 50%;
     background-repeat:no-repeat;
-    min-height:32px;
-    padding-left:32px;
-    line-height:32px;
+    height:32px;
+    width:32px;
     -webkit-background-size: auto 32px;
     -o-background-size: auto 32px;
     -moz-background-size: auto 32px;
     background-size: auto 32px;
+    border:1px solid #9D9B9B;
+    margin-right:1em;
 }
 
 .group {
