@@ -60,7 +60,7 @@
                     'data':{command : 'enable'},
                     'successMsg':"Package enabled",
                     'icon':'icon16-status-active',
-                    'successFct':function(data, status, xhr) {tableInstalledPlugins.fnReloadAjax()}
+                    'successFct':function(data, status, xhr) {tableInstalledPlugins.fnReloadAjax();getPluginsList();}
                 });
         
                 $("button.disable", nRow).ajaxButton({
@@ -68,7 +68,7 @@
                     'data':{command : 'disable'},
                     'successMsg':"Package disabled",
                     'icon':'icon16-status-inactive',
-                    'successFct':function(data, status, xhr) {tableInstalledPlugins.fnReloadAjax()}
+                    'successFct':function(data, status, xhr) {tableInstalledPlugins.fnReloadAjax();getPluginsList();}
                 });
                 return nRow;
             },
