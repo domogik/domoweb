@@ -36,7 +36,8 @@
 {% endblock %}
 {% block js_script %}
     var host_id = '{{host.id}}';
-
+    var config_url = '{% url admin_plugins_plugin_view host.id 'plugin_id' 'plugin_type' %}';
+    
     $(function(){    
         // Accordion
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:3});

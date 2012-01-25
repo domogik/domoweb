@@ -36,6 +36,8 @@
                         var str = "";
                         if (oObj.aData['enabled'] == 'True') {
                             str += "<button class='disable'>Disable</button>";
+                            url = config_url.replace('plugin_id', oObj.aData['id']).replace('plugin_type', 'plugin');
+                            str += "<a href='" + url + "' class='button icon16-action-customize'>Configure</a>";
                         }
                         else {
                             str += "<button class='enable'>Enable</button>";

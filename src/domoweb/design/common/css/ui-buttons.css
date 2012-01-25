@@ -15,8 +15,11 @@ input::-moz-focus-inner { border: 0; }
 
 
 /* Button */
-button {
-    
+a.button {
+    display:inline-block;
+    height:1.5em;
+    line-height:1.5em;
+    color:#000000;
 }
 
 .button {
@@ -32,7 +35,6 @@ button {
 	text-decoration:none;
     padding:0.2em 0.5em 0.2em 25px;
     margin:1px;
-    display:table-cell;
 	font-size: 1em;
     color:#000000;
     vertical-align: middle;
