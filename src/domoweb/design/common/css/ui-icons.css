@@ -603,6 +603,7 @@
 .icon64-status-info {background-image:url(../images/status/info_64.png);}
 .icon64-status-warning {background-image:url(../images/status/warning_64.png);}
 .icon64-status-debug {background-image:url(../images/status/info_64.png);}
+.icon64-status-primary {background-image:url(../images/status/star_64.png);}
 
 .icon32-status-true {background-image:url(../images/status/check_32.png);}
 .icon32-status-false {background-image:url(../images/status/wrong_32.png);}
@@ -614,6 +615,7 @@
 .icon32-status-info {background-image:url(../images/status/info_32.png);}
 .icon32-status-warning {background-image:url(../images/status/warning_32.png);}
 .icon32-status-debug {background-image:url(../images/status/info_32.png);}
+.icon32-status-primary {background-image:url(../images/status/star_32.png);}
 
 .icon16-status-true {background-image:url(../images/status/check_16.png);}
 .icon16-status-false {background-image:url(../images/status/wrong_16.png);}
@@ -625,6 +627,7 @@
 .icon16-status-info {background-image:url(../images/status/info_16.png);}
 .icon16-status-warning {background-image:url(../images/status/warning_16.png);}
 .icon16-status-debug {background-image:url(../images/status/info_16.png);}
+.icon16-status-primary {background-image:url(../images/status/star_16.png);}
 
 .icon16-status-plugin-up {background-image:url(../images/status/plugin_up_16.png);}
 .icon16-status-plugin-down {background-image:url(../images/status/plugin_down_16.png);}

@@ -8,6 +8,8 @@ function getHostsList() {
                         var li = $("<li></li>");
                         var a = $("<a>" + this.id + "</a>");
                         a.attr('href', '/admin/host/' + this.id);
+                        if (this.primary == "True")
+                            a.addClass('icon16-status-primary');
                         li.append(a);
                         $("#hosts_list").append(li);	
                     });
