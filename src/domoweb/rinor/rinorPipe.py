@@ -4,6 +4,7 @@ from django.core.cache import cache
 from django.utils import simplejson
 from domoweb.models import Parameter
 from domoweb.exceptions import RinorNotConfigured, RinorNotAvailable, RinorError
+from httplib import BadStatusLine
 from domoweb.signals import index_updated, rinor_changed
 
 class RinorPipe():
@@ -138,6 +139,8 @@ def _get_json(path):
                     continue
                 else:
                     raise RinorNotAvailable(reason=e.reason)
+            except BadStatusLine:
+                raise RinorError(reason="No response for '%s'" % uri)
         resp = respObj.read()
         resp_obj = simplejson.loads(resp)
     return _objectify_json(resp_obj)

@@ -44,6 +44,10 @@
 		$("#tabs").tabs();
 
         $('.package .release span[title]').tooltip_right();
+        $('#dialog_dependency').dialog({
+                autoOpen: false,
+                modal: true
+            });
     });
 {% endblock %}
 {% block title %}{% trans page_title %}{% endblock %}
@@ -144,4 +148,5 @@
         </div>
     {% endif %}
     </div>
+    <div id='dialog_dependency'></div>
 {% endblock %}

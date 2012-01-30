@@ -523,7 +523,32 @@ class PackageAvailableResource(RinorResource):
         if (bundle['command'] == 'install' or bundle['command'] == 'install'):
             _data = self._meta.rinor_pipe.put_install(kwargs['host'], kwargs['type'], bundle['package'], bundle['release'])
         return _data
-    
+
+class PackageDependencyResource(RinorResource):
+    # fields must map to the attributes in the Row class
+    id = fields.CharField(attribute = 'id')
+    type = fields.CharField(attribute = 'type')
+    installed = fields.CharField(attribute = 'installed')
+    release = fields.CharField(attribute = 'release')
+    cmdline = fields.CharField(attribute = 'cmd-line')
+    candidate = fields.CharField(attribute = 'candidate')
+    error = fields.CharField(attribute = 'error')
+
+    class Meta:
+        resource_name = 'package-dependency'
+        list_allowed_methods = ['get']
+        authentication = Authentication()
+        authorization = Authorization()
+        rinor_pipe = DependencyPipe()
+   
+    def base_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<host>[\w\d_-]+)/(?P<type>(plugin|external))/(?P<id>[\w\d_-]+)/(?P<version>[.\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+        ]
+
+    def obj_get_list(self, request = None, **kwargs):
+        return self._meta.rinor_pipe.get_list(kwargs['host'], kwargs['type'], kwargs['id'], kwargs['version'])
+        
 class CommandResource(RinorResource):
     # fields must map to the attributes in the Row class
 #    name = fields.CharField(attribute = 'name')

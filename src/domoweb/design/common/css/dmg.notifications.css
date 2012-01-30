@@ -59,3 +59,10 @@ body > .jGrowl.top-right {
 .jGrowl .debug .jGrowl-message {
     border-left-color: #00ABE4;
 }
+
+.jGrowl .jGrowl-message .url {
+    display:block;
+    font-size:0.8em;
+    font-style: italic;
+    margin-top:1em;
+}

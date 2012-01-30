@@ -633,7 +633,7 @@ class PackagePipe(RinorPipe):
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index]
-    
+
     def put_install(self, host, type, package, release):
         _data = self._put_data(self.install_path, [host, type, package, release])
         if _data.status == "ERROR":
@@ -646,6 +646,18 @@ class PackagePipe(RinorPipe):
             raise RinorError(_data.code, _data.description)
         return None
 
+class DependencyPipe(RinorPipe):
+    cache_expiry = 0
+    list_path = "/package/dependency"
+    index = 'dependency'
+    paths = []
+    
+    def get_list(self, host, type, id, release):
+        _data = self._get_data("%s/%s/%s/%s/%s" % (self.list_path, host, type, id, release))
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)
+        return _data[self.index]
+    
 class CommandPipe(RinorPipe):
     cache_expiry = 0
     update_path = "/command"

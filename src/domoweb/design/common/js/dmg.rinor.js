@@ -35,7 +35,7 @@ RINOR.prototype.send = function(type, parameters, data) {
                     response = JSON.parse(jqXHR.responseText).error_message;
                 else
                     response = jqXHR.responseText
-                $.notification('error', 'RINOR : ' + response + ' (' + url + ')');
+                $.notification('error', 'RINOR : ' + response + ' <span class="url">(' + url + ')</span>');
             }
         }).always(function(jqXHR, textStatus) {
             self.unregister(self.uid);

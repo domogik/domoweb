@@ -6,9 +6,7 @@
                 self.addClass('button ' + options.icon);
                 self.unbind('.ajaxButton');
 
-                var clickFunction = function(event) {
-                    self.attr("disabled", "disabled");
-                    self.removeClass(options.icon).addClass('icon16-status-loading');
+                var processFunction = function(options) {
                     if (jQuery.isFunction(options.url))
                         var url = options.url($(this));
                     else
@@ -19,7 +17,7 @@
                         else
                             var defer = rinor.put(url, options.data);
                     } else {
-                        url = '/' + url.join('/') + '/';
+                        url = '/rinor/' + url.join('/') + '/';
                         var defer = $.ajax({
                             type: 'GET',
                             url: url,
@@ -42,7 +40,17 @@
                             self.addClass(options.icon).removeClass('icon16-status-loading');
                             self.removeAttr("disabled");
                         });
-        
+                }
+                
+                var clickFunction = function(event) {
+                    var preResult = true;
+                    self.attr("disabled", "disabled");
+                    self.removeClass(options.icon).addClass('icon16-status-loading');
+                    if (options.preFct) {
+                        options.preFct(self, options, processFunction);
+                    } else {
+                        processFunction(options);                        
+                    }
                 };
                 self.bind('click.ajaxButton', clickFunction);
             });

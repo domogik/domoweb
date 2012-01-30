@@ -131,7 +131,48 @@
                     'data':{command : 'install', package : aData['id'], release : aData['release']},
                     'successMsg':"Package installed",
                     'icon':'icon16-action-add',
-                    'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax();tableInstalledPlugins.fnReloadAjax();}
+                    'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax();tableInstalledPlugins.fnReloadAjax();},
+                    'preFct':function(self, options, processFunction) {
+                        rinor.get(['api', 'package-dependency', host_id, aData['type'], aData['id'], aData['release']])
+                            .done(function(data, status, xhr){
+                                var missing = false;
+                                var dialog_html = '';
+                                $.each(data.objects, function(index, dependency) {
+                                    dialog_html += "<li>" + dependency.id
+                                    if (dependency.installed == 'False') {
+                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-false'>Missing</div>"                                                                                
+                                        if (dependency.error)
+                                            dialog_html += "<p class='code'>" + dependency.error + "</p>";
+                                        if (dependency.cmdline)
+                                            dialog_html += "<p class='code'>" + dependency.cmdline + "</p>";
+                                    } else {
+                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-true'>Installed</div>"                                        
+                                    }
+                                    dialog_html += "</li>";
+                                    if (dependency.installed == 'False') {
+                                        missing = true;
+                                    }
+                                });
+                                if (missing) {
+                                    self.addClass(options.icon).removeClass('icon16-status-loading');
+                                    self.removeAttr("disabled");
+                                    // Display alert windows
+                                    $('#dialog_dependency').dialog('option', 'title', 'Missing dependency');
+                                    $('#dialog_dependency').html(dialog_html);
+                                    $('#dialog_dependency').dialog('open');
+                                } else {
+                                    // Process with install request
+                                    processFunction(options);
+                                }
+                            })
+                            .fail(function(jqXHR, status, error){
+                                self.addClass(options.icon).removeClass('icon16-status-loading');
+                                self.removeAttr("disabled");
+                                if (jqXHR.status == 400)
+                                    $.notification('error', jqXHR.responseText);                                    
+                            })
+                        return false;
+                    }
                 });
                 $("button.update", nRow).ajaxButton({
                     'url':['api', 'package-available', host_id, aData['type']],
