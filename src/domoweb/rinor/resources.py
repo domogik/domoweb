@@ -441,8 +441,8 @@ class HelperResource(RinorResource):
     
     def obj_update(self, bundle, request, **kwargs):
         _data = self._meta.rinor_pipe.get_info(bundle['command'])
-        if not(_data):
-            raise ObjectDoesNotExist()
+#        if not(_data):
+#            raise ObjectDoesNotExist()
         return _data
         
     def put_list(self, bundle, request, **kwargs):
