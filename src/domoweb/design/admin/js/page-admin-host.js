@@ -136,15 +136,15 @@
                         rinor.get(['api', 'package-dependency', host_id, aData['type'], aData['id'], aData['release']])
                             .done(function(data, status, xhr){
                                 var missing = false;
-                                var dialog_html = '';
+                                var dialog_html = "<ul class='dependencies'>";
                                 $.each(data.objects, function(index, dependency) {
                                     dialog_html += "<li>" + dependency.id
                                     if (dependency.installed == 'False') {
                                         dialog_html += "<div style='float:right' class='icon16-text icon16-status-false'>Missing</div>"                                                                                
                                         if (dependency.error)
-                                            dialog_html += "<p class='code'>" + dependency.error + "</p>";
+                                            dialog_html += "<p class='error'>" + dependency.error + "</p>";
                                         if (dependency.cmdline)
-                                            dialog_html += "<p class='code'>" + dependency.cmdline + "</p>";
+                                            dialog_html += "<code>" + dependency.cmdline + "</code>";
                                     } else {
                                         dialog_html += "<div style='float:right' class='icon16-text icon16-status-true'>Installed</div>"                                        
                                     }
@@ -153,6 +153,8 @@
                                         missing = true;
                                     }
                                 });
+                                dialog_html += '</ul>';
+
                                 if (missing) {
                                     self.addClass(options.icon).removeClass('icon16-status-loading');
                                     self.removeAttr("disabled");
