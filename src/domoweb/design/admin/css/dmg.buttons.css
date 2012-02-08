@@ -6,6 +6,7 @@ input[type='submit'], .button {
     border:none;
     text-decoration:none;
     display:block;
+    white-space:nowrap;
 }
 
 input[type='submit']:hover, .button:hover, input[type='submit']:focus, .button:focus {

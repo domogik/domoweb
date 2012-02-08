@@ -43,6 +43,9 @@
                             str += "<button class='enable'>Enable</button>";
                         }
                         str+= "<button class='uninstall'>Uninstall</button>";
+                        $.each(oObj.aData['updates'], function(index, update) {
+                            str+= "<button class='update' release='" + update.release + "'>Update&nbsp;(" + update.release + ")</button>";
+                        });
                         return str;
                     },
                     "sClass": "center"
@@ -71,6 +74,57 @@
                     'successMsg':"Package disabled",
                     'icon':'icon16-status-inactive',
                     'successFct':function(data, status, xhr) {tableInstalledPlugins.fnReloadAjax();getPluginsList();}
+                });
+                
+                $("button.update", nRow).ajaxButton({
+                    'url':['api', 'package-available', host_id, aData['type']],
+                    'data':{command : 'install', package : aData['id'], release : $("button.update", nRow).attr('release')},
+                    'successMsg':"Package installed",
+                    'icon':'icon16-action-add',
+                    'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax();tableInstalledPlugins.fnReloadAjax();},
+                    'preFct':function(self, options, processFunction) {
+                        rinor.get(['api', 'package-dependency', host_id, aData['type'], aData['id'], self.attr('release')])
+                            .done(function(data, status, xhr){
+                                var missing = false;
+                                var dialog_html = "<ul class='dependencies'>";
+                                $.each(data.objects, function(index, dependency) {
+                                    dialog_html += "<li>" + dependency.id
+                                    if (dependency.installed == 'False') {
+                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-false'>Missing</div>"                                                                                
+                                        if (dependency.error)
+                                            dialog_html += "<p class='error'>" + dependency.error + "</p>";
+                                        if (dependency.cmdline)
+                                            dialog_html += "<code>" + dependency.cmdline + "</code>";
+                                    } else {
+                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-true'>Installed</div>"                                        
+                                    }
+                                    dialog_html += "</li>";
+                                    if (dependency.installed == 'False') {
+                                        missing = true;
+                                    }
+                                });
+                                dialog_html += '</ul>';
+
+                                if (missing) {
+                                    self.addClass(options.icon).removeClass('icon16-status-loading');
+                                    self.removeAttr("disabled");
+                                    // Display alert windows
+                                    $('#dialog_dependency').dialog('option', 'title', 'Missing dependency');
+                                    $('#dialog_dependency').html(dialog_html);
+                                    $('#dialog_dependency').dialog('open');
+                                } else {
+                                    // Process with install request
+                                    processFunction(options);
+                                }
+                            })
+                            .fail(function(jqXHR, status, error){
+                                self.addClass(options.icon).removeClass('icon16-status-loading');
+                                self.removeAttr("disabled");
+                                if (jqXHR.status == 400)
+                                    $.notification('error', jqXHR.responseText);                                    
+                            })
+                        return false;
+                    }
                 });
                 return nRow;
             },
@@ -176,13 +230,6 @@
                         return false;
                     }
                 });
-                $("button.update", nRow).ajaxButton({
-                    'url':['api', 'package-available', host_id, aData['type']],
-                    'data':{command : 'update', package : aData['id'], release : aData['release']},
-                    'successMsg':"Package updated",
-                    'icon':'icon16-action-refresh',
-                    'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax();tableInstalledPlugins.fnReloadAjax();}
-                });
                 return nRow;
             },
         }).rowGrouping();
@@ -207,6 +254,9 @@
                     "fnRender": function ( oObj ) {
                         var str = "";
                         str+= "<button class='uninstall'>Uninstall</button>";
+                        $.each(oObj.aData['updates'], function(index, update) {
+                            str+= "<button class='update' release='" + update.release + "'>Update&nbsp;(" + update.release + ")</button>";
+                        });
                         return str;
                     },
                     "sClass": "center"
@@ -221,6 +271,14 @@
                     'icon':'icon16-action-del',
                     'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax();tableInstalledExternals.fnReloadAjax();}
                 });
+                $("button.update", nRow).ajaxButton({
+                    'url':['api', 'package-available', host_id, aData['type']],
+                    'data':{command : 'install', package : aData['id'], release : $("button.update", nRow).attr('release')},
+                    'successMsg':"Package installed",
+                    'icon':'icon16-action-add',
+                    'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax();tableInstalledExternals.fnReloadAjax();}
+                });
+
                 return nRow;
             },
         });
@@ -280,13 +338,6 @@
                     'data':{command : 'install', package : aData['id'], release : aData['release']},
                     'successMsg':"Package installed",
                     'icon':'icon16-action-add',
-                    'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax();tableInstalledExternals.fnReloadAjax();}
-                });
-                $("button.update", nRow).ajaxButton({
-                    'url':['api', 'package-available', host_id, aData['type']],
-                    'data':{command : 'update', package : aData['id'], release : aData['release']},
-                    'successMsg':"Package updated",
-                    'icon':'icon16-action-refresh',
                     'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax();tableInstalledExternals.fnReloadAjax();}
                 });
                 return nRow;
