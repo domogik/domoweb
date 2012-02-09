@@ -259,12 +259,16 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     plugin = PluginPipe().get_detail(plugin_host, plugin_id)
     if plugin_type == "plugin":
         page_title = _("Plugin")
+        dependencies = PluginDependencyPipe().get_list(plugin_host, plugin_id)
+        udevrules = PluginUdevrulePipe().get_list(plugin_host, plugin_id)
         return go_to_page(
             request, 'plugins/plugin.html',
             page_title,
             nav1_admin = "selected",
             nav2_plugins_plugin = "selected",
-            plugin=plugin
+            plugin=plugin,
+            dependencies=dependencies,
+            udevrules=udevrules
         )
     if plugin_type == "external":
         page_title = _("External Member")

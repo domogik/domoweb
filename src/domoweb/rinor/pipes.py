@@ -646,7 +646,7 @@ class PackagePipe(RinorPipe):
             raise RinorError(_data.code, _data.description)
         return None
 
-class DependencyPipe(RinorPipe):
+class PackageDependencyPipe(RinorPipe):
     cache_expiry = 0
     list_path = "/package/dependency"
     index = 'dependency'
@@ -657,7 +657,31 @@ class DependencyPipe(RinorPipe):
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index]
+
+class PluginDependencyPipe(RinorPipe):
+    cache_expiry = 0
+    list_path = "/plugin/dependency"
+    index = 'dependency'
+    paths = []
     
+    def get_list(self, host, id):
+        _data = self._get_data("%s/%s/%s" % (self.list_path, host, id))
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)
+        return _data[self.index]
+
+class PluginUdevrulePipe(RinorPipe):
+    cache_expiry = 0
+    list_path = "/plugin/udev-rule"
+    index = 'udev-rule'
+    paths = []
+    
+    def get_list(self, host, id):
+        _data = self._get_data("%s/%s/%s" % (self.list_path, host, id))
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)
+        return _data[self.index]
+        
 class CommandPipe(RinorPipe):
     cache_expiry = 0
     update_path = "/command"

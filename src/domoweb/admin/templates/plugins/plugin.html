@@ -97,11 +97,8 @@
     <div id="tabs">
         <ul>
             <li><a href="#tabs-1">{% trans "Informations" %}</a></li>
-            <li><a href="#tabs-2">{% trans "Configuration" %}</a></li>
-            <!-- for next releases 
-            <li><a href="#tabs-2">{% trans "Helpers" %}</a></li>
-            <li><a href="#tabs-3">{% trans "Resources" %}</a></li>
-            -->
+            <li><a href="#tabs-2">{% trans "Requirements" %}</a></li>
+            <li><a href="#tabs-3">{% trans "Configuration" %}</a></li>
         </ul>
         <div id="tabs-1">
             <section class="subsection">
@@ -122,6 +119,39 @@
         </div>
         <div id="tabs-2">
             <section class="subsection">
+                <h2>{% trans "Dependencies" %}</h2>
+                <ul class='dependencies'>
+                    {% for dependency in dependencies %}
+                        <li>{{dependency.id}}
+                        {% if dependency.installed == 'False' %}
+                            <div style='float:right' class='icon16-text icon16-status-false'>Missing</div>                                                                            
+                            {% if dependency.error %}
+                                <p class='error'>{{ dependency.error }}</p>
+                            {% endif %}
+                            {% if dependency.cmdline %}
+                                <code>{{ dependency.cmdline }}</code>
+                            {% endif %}
+                        {% else %}
+                            <div style='float:right' class='icon16-text icon16-status-true'>Installed</div>                                   
+                        {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </section>
+            <section class="subsection">
+                <h2>{% trans "UDEV Rules" %}</h2>
+                <ul class='udevrules'>
+                    {% for udevrule in udevrules %}
+                    <li><strong>{{ udevrule.model }}</strong>: {{ udevrule.description }}</p>
+                        <p>{{ udevrule.filename }}:
+                        <code>{{ udevrule.rule }}</code></p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+        <div id="tabs-3">
+            <section class="subsection">
                 <h2>{% trans "Configuration" %}</h2>
                 <div id='configuration'>
                     <p><button id='configurationdelete' class='button icon16-action-del'>{% trans 'Delete configuration' %}</button></p>
@@ -133,13 +163,5 @@
                 </div>
             </section>
         </div>
-        <!-- for next releases 
-        <div id="tabs-2">
-            Helpers
-        </div>
-        <div id="tabs-3">
-            Resources
-        </div>
-        -->
     </div>
 {% endblock %}

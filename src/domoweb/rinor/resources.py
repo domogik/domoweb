@@ -539,7 +539,7 @@ class PackageDependencyResource(RinorResource):
         list_allowed_methods = ['get']
         authentication = Authentication()
         authorization = Authorization()
-        rinor_pipe = DependencyPipe()
+        rinor_pipe = PackageDependencyPipe()
    
     def base_urls(self):
         return [
