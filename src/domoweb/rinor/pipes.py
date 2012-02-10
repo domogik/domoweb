@@ -689,10 +689,16 @@ class CommandPipe(RinorPipe):
     paths = []
 
     def put_detail(self, member, address, command, value=None):
-        if (value): 
-            _data = self._put_data(self.update_path, [member, address, command, value])
-        else:
-            _data = self._put_data(self.update_path, [member, address, command])
+        if (command and len(command) > 0):
+            if (value): 
+                _data = self._put_data(self.update_path, [member, address, command, value])
+            else:
+                _data = self._put_data(self.update_path, [member, address, command])
+        else: # Ignore value if empty
+            if (value): 
+                _data = self._put_data(self.update_path, [member, address, value])
+            else:
+                raise RinorError('999', 'No command or value provided')
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
