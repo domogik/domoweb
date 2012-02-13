@@ -1,0 +1,21 @@
+.dmg_1x1_basicActuatorHVACMode {
+    text-align:center;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+
+.dmg_1x1_basicActuatorHVACMode .indicator {
+	position:absolute;
+    top:0;
+    left:0;
+}
+
+.dmg_1x1_basicActuatorHVACMode .command.Building_protec {background-image: url("images/nofreeze.gif");}
+.dmg_1x1_basicActuatorHVACMode .command.economy {background-image: url("images/eco.png");}
+.dmg_1x1_basicActuatorHVACMode .command.confort {background-image: url("images/confort.png");}
+.dmg_1x1_basicActuatorHVACMode .command.stop {background-image: url("images/stop.gif");}
+
+.dmg_1x1_basicActuatorHVACMode .command.close {
+    background-color:transparent;
+    background-image: url("images/close_36.png");
+}
