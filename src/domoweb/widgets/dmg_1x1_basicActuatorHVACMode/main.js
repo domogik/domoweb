@@ -20,7 +20,12 @@
             this.element.addClass("icon32-usage-" + o.usage)
                 .addClass('clickable')
                 .processing();
-                
+
+            this._value =  $("<div class='value'></div>");
+            this.element.append(this._value);                
+            this._status = $.getStatus();
+            this.element.append(this._status);
+
             this._panel = $.getPanel({width:190, height:190, circle: {start:140, end:90}});
             this.element.append(this._panel);
             this._panel.panelAddCommand({label:'Building protection', showlabel: false, className:'Building_protec', r:70, deg:20, rotate:true, click:function(e){self.building_protec();e.stopPropagation();}});
@@ -33,8 +38,6 @@
             this._indicator = $("<canvas class='indicator' width='190' height='190'></canvas>");
             this._panel.prepend(this._indicator);
 
-            this._status = $.getStatus();
-            this.element.append(this._status);
 
             this.element.click(function (e) {self._onclick();e.stopPropagation();})
                 .keypress(function (e) {if (e.which == 13 || e.which == 32) {self._onclick(); e.stopPropagation();}
@@ -66,14 +69,14 @@
 
         _statsHandler: function(stats) {
             if (stats && stats.length > 0) {
-                this.setValue(stats[0].value);
+                this.setValue(parseFloat(stats[0].value));
             } else {
                 this.setValue(null);
             }
         },
-        
+
         _eventHandler: function(timestamp, value) {
-            this.setValue((value));
+            this.setValue(parseFloat(value));
         },
 
         _onclick: function() {
@@ -157,16 +160,41 @@
 		},   
 
         
-	 _displayValue: function(value) {
+        setValue: function(value) {
             var self = this, o = this.options;
-            if (value != null) {
-    			this._status.writeStatus(value);                
+            if (value) {
+                this.element.displayIcon('known');             
+                if (this.previousValue) {
+                    if (value == 1) {
+                        this._status.html("Comfort");
+                    } else if (value==4 ) {
+                        this._status.html("No-Frezze");
+                    } else if (value==3) {
+                        this._status.html("Economy");
+                    } else if (value==2){
+                        this._status.html("Standby");
+                    }
+                }
             } else { // Unknown
-    			this._status.writeStatus('---');                                
+                this.element.displayIcon('unknown');      
+                this._status.html("Unknow");       
+                this._value.html('---')
+            }
+            this.previousValue = value;
+            this._status.html(value); 
+            if (value == 1) {
+               this._status.html("Comfort");
+            } else if (value==4 ) {
+               this._status.html("No-Frezze");
+            } else if (value==3) {
+               this._status.html("Economy");
+            } else if (value==2){
+               this._status.html("Standby");
             }
         },
 
-     
+
+
         cancel: function() {
             var self = this, o = this.options;
             this.element.stopProcessingState();
