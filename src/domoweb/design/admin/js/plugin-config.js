@@ -8,6 +8,10 @@ $(function(){
             var itype = item.type;
             var iprefix = item.prefix;
             var ioptionnal = item.optionnal;
+            var ioptions = {}
+            if (item.options != undefined && item.options != '' ) {
+                ioptions = item.options.split(",");
+            }
             var tr = $("<tr id='" + item.key + "'></tr>");
             tr.attr('key_prefix', iprefix);
             if (ioptionnal == "yes") {
@@ -24,6 +28,15 @@ $(function(){
                 tr.append("<td></td>");
             } else if (itype == 'password') {
                 td.append("<input type='password' name='value_" + ikey + "' id='value_" + ikey + "'  class='medium' value='' />");
+                tr.append(td);
+                tr.append("<td></td>");
+            } else if (itype == 'enum' && item.options != undefined) {
+                var b = "<select name='value_" + ikey + "' id='value_" + ikey + "'  class='medium'>";
+		for ( x in ioptions ) {
+                	b += "<option value='" + ioptions[x] + "'>" + ioptions[x] + "</option>";
+                }
+                b += "</select>";
+                td.append(b);
                 tr.append(td);
                 tr.append("<td></td>");
             } else {
@@ -57,6 +70,14 @@ $(function(){
                         if (data.value  == "True") {
                             $("input", td).attr('checked', true);
                         }
+                    } else if (itype == 'enum') {
+			$("input > option", td).each(function() {
+				if ( data.value == this.value ) {
+					this.attr('selected','selected')
+				}
+			});
+
+			alert("todo");
                     } else {    
                         $("input", td).val(data.value);
                     }
