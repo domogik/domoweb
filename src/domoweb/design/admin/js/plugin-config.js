@@ -76,8 +76,6 @@ $(function(){
 					this.attr('selected','selected')
 				}
 			});
-
-			alert("todo");
                     } else {    
                         $("input", td).val(data.value);
                     }
