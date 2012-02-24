@@ -71,11 +71,7 @@ $(function(){
                             $("input", td).attr('checked', true);
                         }
                     } else if (itype == 'enum') {
-			$("input > option", td).each(function() {
-				if ( data.value == this.value ) {
-					this.attr('selected','selected')
-				}
-			});
+			$("select", td).val(data.value);
                     } else {    
                         $("input", td).val(data.value);
                     }
