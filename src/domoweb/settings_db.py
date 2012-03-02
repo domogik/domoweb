@@ -45,30 +45,11 @@ ADMINS = ()
 
 MANAGERS = ADMINS
 
-### Find User home
-if os.path.isfile("/etc/default/domoweb"):
-    file = "/etc/default/domoweb"
-else:
-    file = "/etc/conf.d/domoweb"
-f = open(file,"r")
-r = f.readlines()
-lines = filter(lambda x: not x.startswith('#') and x != '\n',r)
-f.close()
-for line in lines:
-    item,value = line.strip().split("=")
-    if item.strip() == "DOMOWEB_USER":
-        user = value
-    else:
-        raise KeyError("Unknown config value in the main config file : %s" % item)
-try:
-    user_entry = pwd.getpwnam(user)
-except KeyError:
-    raise KeyError("The user %s does not exists, you MUST create it or change the DOMOWEB_USER parameter in %s. Please report this as a bug if you used install.sh." % (user, file))
-user_home = user_entry.pw_dir
+LIB_PATH = '/var/lib/domoweb'
 
 ### UI Database settings
 DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = "%s/.domogik/domoweb.db" % user_home
+DATABASE_NAME = "%s/domoweb.db" % LIB_PATH
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

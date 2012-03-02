@@ -31,7 +31,8 @@
 #@license: GPL(v3)
 #@organization: Domogik
 
-DMG_HOME=
+DMW_ETC=/etc/domoweb
+DMW_LIB=/var/lib/domoweb
 
 function run_setup_py {
     MODE=$1
@@ -76,18 +77,25 @@ function copy_sample_files {
             exit 9
         fi
     fi
-    d_home=$(getent passwd $d_user |cut -d ':' -f 6)
-    dmg_home=$d_home/.domogik
+
     keep="n"
     already_cfg=
-    if [ ! -d $dmg_home ];then
-        mkdir $dmg_home
-        chown $d_user $dmg_home
+    
+    # create /etc/domoweb entry
+    if [ ! -d $DMW_ETC ];then
+        mkdir $DMW_ETC
+        chown $d_user:root $DMW_ETC
+        chmod 755 $DMW_ETC
+    fi
+    # create /var/lib/domoweb
+    if [ ! -d $DMW_LIB ];then
+        mkdir $DMW_LIB
+        chown $d_user:root $DMW_LIB
     fi
 
-    if [ ! -f $dmg_home/domoweb.cfg ];then
-        cp -f src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
-        chown $d_user: src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
+    if [ ! -f $DMW_ETC/domoweb.cfg ];then
+        cp -f src/examples/config/domoweb.cfg $DMW_ETC/domoweb.cfg
+        chown $d_user: src/examples/config/domoweb.cfg $DMW_ETC/domoweb.cfg
     else
         keep="y"
         already_cfg=1
@@ -96,8 +104,8 @@ function copy_sample_files {
             keep="y"
         fi
         if [ "$keep" = "n" -o "$keep" = "N" ];then
-            cp -f src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
-            chown $d_user: src/examples/config/domoweb.cfg $dmg_home/domoweb.cfg
+            cp -f src/examples/config/domoweb.cfg $DMW_ETC/domoweb.cfg
+            chown $d_user: src/examples/config/domoweb.cfg $DMW_ETC/domoweb.cfg
         fi
     fi
     
@@ -148,7 +156,7 @@ function create_log_dir {
 
 function init_django_db {
     python ./src/domoweb/manage.py syncdb --noinput
-    chown $d_user: $dmg_home/domoweb.db
+    chown $d_user: $DMW_LIB/domoweb.db
 }
 
 #Main part

@@ -63,28 +63,8 @@ os.environ['DJANGO_SETTINGS_MODULE']='domoweb.settings'
 
 class Server(object):
     def run(self, PROJECT_PATH):
-        ### Find User home
-        if os.path.isfile("/etc/default/domoweb"):
-            file = "/etc/default/domoweb"
-        else:
-            file = "/etc/conf.d/domoweb"
-        f = open(file,"r")
-        r = f.readlines()
-        lines = filter(lambda x: not x.startswith('#') and x != '\n',r)
-        f.close()
-        for line in lines:
-            item,value = line.strip().split("=")
-            if item.strip() == "DOMOWEB_USER":
-                user = value
-            else:
-                raise KeyError("Unknown config value in the main config file : %s" % item)
-        try:
-            user_entry = pwd.getpwnam(user)
-        except KeyError:
-            raise KeyError("The user %s does not exists, you MUST create it or change the DOMOWEB_USER parameter in %s. Please report this as a bug if you used install.sh." % (user, file))
-        USER_HOME = user_entry.pw_dir
-        os.environ['DOMOWEB_USER_HOME'] = USER_HOME
-        SERVER_CONFIG = '%s/.domogik/domoweb.cfg' % USER_HOME
+        ETC_PATH = '/etc/domoweb'
+        SERVER_CONFIG = '%s/domoweb.cfg' % ETC_PATH
 
         # Set static content
         STATIC_DESIGN_URL = "/design"
@@ -100,7 +80,7 @@ class Server(object):
         try:
             cherrypy.config.update(SERVER_CONFIG)
         except IOError:
-            sys.stderr.write("Error: Can't find the file './domogik/domoweb.cfg'\n")
+            sys.stderr.write("Error: Can't find the file '%s/domoweb.cfg'\n" % ETC_PATH)
             sys.exit(1)
         engine = cherrypy.engine
         DjangoAppPlugin(engine, STATICS).subscribe()
