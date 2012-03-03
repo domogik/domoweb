@@ -160,9 +160,9 @@ const auto_send = 3000; // 3 seconds
         _displayValue: function(value) {
             var self = this, o = this.options;
             if (value != null) {
-                this.value.text(value + this.unit);                
+                this.value.html(value + this.unit);                
             } else { // Unknown
-                this.value.text('---' + this.unit);                                
+                this.value.html('---' + this.unit);                                
             }
         },
         
