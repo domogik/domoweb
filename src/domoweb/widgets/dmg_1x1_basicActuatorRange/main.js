@@ -70,21 +70,35 @@
 
         _statsHandler: function(stats) {
             if (stats && stats.length > 0) {
-                this.setValue(parseInt(stats[0].value));
+                value = this._value2Percent(parseInt(stats[0].value));
+                this.setValue(value);
             } else {
                 this.setValue(null);
             }
         },
         
         _eventHandler: function(timestamp, value) {
-            this.setValue(parseInt(value));
+            value = this._value2Percent(parseInt(value));
+            this.setValue(value);
         },
+
+        _value2Percent: function(value) {
+            console.log('value2Percent : ' + value + ' - ' + Math.round((value - this.min_value) * 100 / this.max_value));
+            return Math.round((value - this.min_value) * 100 / this.max_value);
+        },
+        
+        _percent2Value: function(value) {
+            console.log('percent2Value : ' + value + ' - ' + Math.round((value * this.max_value / 100) + this.min_value));
+            return Math.round((value * this.max_value / 100) + this.min_value);
+        },
+
 
         action: function() {
             var self = this, o = this.options;
             if (this._processingValue != this.currentValue) {
                 this.element.startProcessingState();
-                rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":this._processingValue})
+                value = this._percent2Value(this._processingValue);
+                rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":value})
                     .done(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
                     })
@@ -129,16 +143,15 @@
         setValue: function(value) {
             var self = this, o = this.options;
             if (value != null) {
-                if (value >= this.min_value && value <= this.max_value) {
+                if (value >= 0 && value <= 100) {
                     this.currentValue = value;
-                } else if (value < this.min_value) {
-                    this.currentValue = this.min_value;
-                } else if (value > this.max_value) {
-                    this.currentValue = this.max_value
+                } else if (value < 0) {
+                    this.currentValue = 0;
+                } else if (value > 100) {
+                    this.currentValue = 100;
                 }
                 this._processingValue = this.currentValue;
-                var percent = (this.currentValue / (this.max_value - this.min_value)) * 100;
-                this.element.displayIcon('value_' + findRangeIcon(o.usage, percent));
+                this.element.displayIcon('value_' + findRangeIcon(o.usage, this.currentValue));
                 this._displayValue(this.currentValue);
             } else { // unknown
                 this._processingValue = 0;
@@ -149,14 +162,14 @@
 
 		plus_range: function() {
             var self = this, o = this.options;
-			var value = ((this._processingValue + this.step) / this.step) * this.step;
+			var value = this._processingValue + this.step;
       		this._resetAutoClose();
 			this._setProcessingValue(value);
 		},
 		
 		minus_range: function() {
             var self = this, o = this.options;
-			var value = ((this._processingValue - this.step) / this.step) * this.step;
+			var value = this._processingValue - this.step;
       		this._resetAutoClose();
 			this._setProcessingValue(value);
 		},
@@ -164,13 +177,13 @@
 		max_range: function() {
             var self = this, o = this.options;
       		this._resetAutoClose();
-			this._setProcessingValue(this.max_value);
+			this._setProcessingValue(100);
 		},
 		
 		min_range: function() {
             var self = this, o = this.options;
       		this._resetAutoClose();
-			this._setProcessingValue(this.min_value);
+			this._setProcessingValue(0);
 		},
 		
 		_resetAutoClose: function() {
@@ -184,24 +197,23 @@
         _displayValue: function(value) {
             var self = this, o = this.options;
             if (value != null) {
-    			this._status.writeStatus(value + this.unit);                
+    			this._status.writeStatus(value + '%');                
             } else { // Unknown
-    			this._status.writeStatus('---' + this.unit);                                
+    			this._status.writeStatus('---%');                                
             }
         },
         
 		_setProcessingValue: function(value) {
             var self = this, o = this.options;
-			if (value >= this.min_value && value <= this.max_value) {
+			if (value >= 0 && value <= 100) {
 				this._processingValue = value;
-			} else if (value < this.min_value) {
-				this._processingValue = this.min_value;
-			} else if (value > this.max_value) {
-				this._processingValue = this.max_value
+			} else if (value < 0) {
+				this._processingValue = 0;
+			} else if (value > 100) {
+				this._processingValue = 100;
 			}
-			var percent = (this._processingValue / (this.max_value - this.min_value)) * 100;
-            $('.value', this._panel).text(this._processingValue + this.unit);
-            this._displayProcessingRange(percent);
+            $('.value', this._panel).text(this._processingValue + '%');
+            this._displayProcessingRange(this._processingValue);
 		},
 
         _displayProcessingRange: function(percent) {
