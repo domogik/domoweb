@@ -47,6 +47,7 @@ DMG_MIN_VERSION = '0.2.0-alpha1'
 ADMINS = ()
 
 MANAGERS = ADMINS
+LIB_PATH = '/var/lib/domoweb'
 
 PROJECT_PATH = os.environ['DOMOWEB_PATH']
 print PROJECT_PATH
@@ -58,7 +59,7 @@ print DOMOWEB_FULL_VERSION
 
 ### UI Database settings
 DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = "%s/.domogik/domoweb.db" % os.environ['DOMOWEB_USER_HOME']
+DATABASE_NAME = "%s/domoweb.db" % LIB_PATH
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -117,7 +118,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'tastypie',
-    'rpc4django',
     'domoweb',
     'domoweb.view',
     'domoweb.admin',

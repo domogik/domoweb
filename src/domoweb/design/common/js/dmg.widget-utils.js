@@ -73,7 +73,7 @@ $(function(){
         
         /* Status */
         writeStatus: function(text) {
-            this.text(text);
+            this.html(text);
         },
 
         displayStatusError: function() {

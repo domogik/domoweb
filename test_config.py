@@ -46,7 +46,8 @@ WARNING = '\033[93m'
 FAIL = '\033[91m'
 ENDC = '\033[0m'
 
-user = ''
+DMW_ETC = '/etc/domoweb'
+DMW_LIB = '/var/lib/domoweb'
 
 def info(msg):
     print "%s [ %s ] %s" % (BLUE,msg,ENDC)
@@ -90,6 +91,7 @@ def test_config_files():
     assert not (os.path.isfile("/etc/conf.d/domoweb") and os.path.isfile("/etc/default/domoweb")), \
             "Global config file found at 2 locations. Please put it only at /etc/default/domoweb or \
             /etc/conf.d/domoweb then restart test_config.py as root"
+    
     if os.path.isfile("/etc/default/domoweb"):
         file = "/etc/default/domoweb"
     else:
@@ -109,27 +111,17 @@ def test_config_files():
     info("Test user / config file")
 
     #Check user config file
-    try:
-        user_entry = pwd.getpwnam(user)
-    except KeyError:
-        raise KeyError("The user %s does not exists, you MUST create it or change the DOMOWEB_USER parameter in %s. Please report this as a bug if you used install.sh." % (user, file))
-    user_home = user_entry.pw_dir
-    assert os.path.isfile("%s/.domogik/domoweb.cfg" % user_home), "The domogik config file %s/.domogik/domoweb.cfg does not exist. Please report this as a bug if you used install.sh." % user_home
+
+    assert os.path.isfile("%s/domoweb.cfg" % DMW_ETC), "The domogik config file %s/domoweb.cfg does not exist. Please report this as a bug if you used install.sh." % DMW_ETC
     ok("Domogik's user exists and has a config file")
     
-    test_user_config_file(user_home, user_entry)
+    test_user_config_file()
 
-def _test_user_can_write(conn, path, user_entry):
-    os.setgid(user_entry.pw_gid)
-    os.setuid(user_entry.pw_uid)
-    conn.send(os.access(path, os.W_OK))
-    conn.close()
-
-def test_user_config_file(user_home, user_entry):
+def test_user_config_file():
     info("Check user config file contents")
     import ConfigParser
     config = ConfigParser.ConfigParser()
-    config.read("%s/.domogik/domoweb.cfg" % user_home)
+    config.read("%s/domoweb.cfg" % DMW_ETC)
     
     #check [global] section
     django = dict(config.items('global'))
@@ -149,11 +141,9 @@ def test_version():
     ok("Python version is >= 2.6")
 
 def get_django_url():
-    user_entry = pwd.getpwnam(user)
-    user_home = user_entry.pw_dir
     import ConfigParser
     config = ConfigParser.ConfigParser()
-    config.read("%s/.domogik/domoweb.cfg" % user_home)
+    config.read("%s/domoweb.cfg" % DMW_ETC)
     cherrypy = dict(config.items('global'))
     return "http://127.0.0.1:%s/" % (cherrypy['server.socket_port'])
      

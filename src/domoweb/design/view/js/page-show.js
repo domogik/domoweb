@@ -57,7 +57,8 @@ $(function(){
         stringToJSON: function(string) {
             var str = string;
             if (str) {
-                str = string.replace(/&quot;/g,'"');
+                // Decode HTML entites
+                str = $('<div />').html(string).text();
             } else {
                 str = '{}';
             }

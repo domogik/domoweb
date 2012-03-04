@@ -69,14 +69,14 @@
 
         _statsHandler: function(stats) {
             if (stats && stats.length > 0) {
-                this.setValue(parseFloat(stats[0].value));
+                this.setValue(stats[0].value);
             } else {
                 this.setValue(null);
             }
         },
 
         _eventHandler: function(timestamp, value) {
-            this.setValue(parseFloat(value));
+            this.setValue(value);
         },
 
         _onclick: function() {
@@ -161,39 +161,19 @@
 
         
         setValue: function(value) {
-            var self = this, o = this.options;
-            if (value) {
-                this.element.displayIcon('known');             
-                if (this.previousValue) {
-                    if (value == 1) {
-                        this._status.html("Comfort");
-                    } else if (value==4 ) {
-                        this._status.html("No-Frezze");
-                    } else if (value==3) {
-                        this._status.html("Economy");
-                    } else if (value==2){
-                        this._status.html("Standby");
-                    }
-                }
-            } else { // Unknown
-                this.element.displayIcon('unknown');      
-                this._status.html("Unknow");       
-                this._value.html('---')
-            }
+            var self = this, o = this.options;         
             this.previousValue = value;
-            this._status.html(value); 
-            if (value == 1) {
-               this._status.html("Comfort");
-            } else if (value==4 ) {
-               this._status.html("No-Frezze");
-            } else if (value==3) {
-               this._status.html("Economy");
-            } else if (value==2){
-               this._status.html("Standby");
+            if (value ==o.model_parameters.commandValues[3].toLowerCase()) {
+               value="Comfort";
+            } else if (value==o.model_parameters.commandValues[1].toLowerCase() ) {
+               value="No-Frezze";
+            } else if (value==o.model_parameters.commandValues[2].toLowerCase()) {
+               value="Economy";
+            } else if (value==o.model_parameters.commandValues[0].toLowerCase()){
+               value="Standby";
             }
+	    this._status.html(value); 
         },
-
-
 
         cancel: function() {
             var self = this, o = this.options;

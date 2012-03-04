@@ -45,5 +45,4 @@ urlpatterns += patterns('',
     (r'^view/', include('domoweb.view.urls')),
     (r'^admin/', include('domoweb.admin.urls')),
     (r'^rinor/', include('domoweb.rinor.urls')),
-    (r'^commands$', 'rpc4django.views.serve_rpc_request'),
 )

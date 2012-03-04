@@ -530,7 +530,7 @@ class PackageDependencyResource(RinorResource):
     type = fields.CharField(attribute = 'type')
     installed = fields.CharField(attribute = 'installed')
     release = fields.CharField(attribute = 'release')
-    cmdline = fields.CharField(attribute = 'cmd-line')
+    cmdline = fields.CharField(attribute = 'cmd_line')
     candidate = fields.CharField(attribute = 'candidate')
     error = fields.CharField(attribute = 'error')
 

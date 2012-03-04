@@ -58,7 +58,7 @@
 
         setValue: function(value) {
             var self = this, o = this.options;
-            if (value) {
+            if (value !== null && value !== '') {
                 this.element.displayIcon('known');             
                 this._value.html(value + '<br />' + o.model_parameters.unit)
                 if (this.previousValue) {
