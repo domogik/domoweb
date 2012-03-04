@@ -161,20 +161,18 @@
 
         
         setValue: function(value) {
-            var self = this, o = this.options;
+            var self = this, o = this.options;         
             this.previousValue = value;
             if (value ==o.model_parameters.commandValues[3].toLowerCase()) {
-               valeur="Comfort";
+               value="Comfort";
             } else if (value==o.model_parameters.commandValues[1].toLowerCase() ) {
-               valeur="No-Frezze";
+               value="No-Frezze";
             } else if (value==o.model_parameters.commandValues[2].toLowerCase()) {
-               valeur="Economy";
+               value="Economy";
             } else if (value==o.model_parameters.commandValues[0].toLowerCase()){
-               valeur="Standby";
-            } else{
-               valeur="";
+               value="Standby";
             }
-	    this._status.html(valeur); 
+	    this._status.html(value); 
         },
 
         cancel: function() {
