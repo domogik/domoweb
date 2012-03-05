@@ -33,6 +33,7 @@
 
 DMW_ETC=/etc/domoweb
 DMW_LIB=/var/lib/domoweb
+DMW_LOG=/var/log/domoweb
 
 function run_setup_py {
     MODE=$1
@@ -91,6 +92,11 @@ function copy_sample_files {
     if [ ! -d $DMW_LIB ];then
         mkdir $DMW_LIB
         chown $d_user:root $DMW_LIB
+    fi
+    # create /var/log/domoweb
+    if [ ! -d $DMW_LOG ];then
+        mkdir $DMW_LOG
+        chown $d_user:root $DMW_LOG
     fi
 
     if [ ! -f $DMW_ETC/domoweb.cfg ];then
