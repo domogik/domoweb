@@ -206,9 +206,8 @@ const auto_send = 3000; // 3 seconds
             }
         },
         
-        _displayRangeIndicator: function(percent) {
-            var self = this, o = this.options;
-            this.indicator.width((23*percent)/(this.displayMax-this.displayMin) + "em");
+        _displayRangeIndicator: function(value) {
+            this.indicator.width((23*(value-this.displayMin))/(this.displayMax-this.displayMin) + "em");
         },
         
         cancel: function() {

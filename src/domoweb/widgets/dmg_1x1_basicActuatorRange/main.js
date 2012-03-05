@@ -269,7 +269,7 @@
                 if (this._processing_percent_current > 0) {
                     ctx.lineWidth = 11;
                     ctx.strokeStyle = "#BDCB2F";
-                    var deg = ((this._processing_percent_current * 360) / (this.displayMax-this.displayMin)) - 90;
+                    var deg = (((this._processing_percent_current-this.displayMin) * 360) / (this.displayMax-this.displayMin)) - 90;
                     var angle = (Math.PI/180) * deg; // radian
                     ctx.arc(95,95,46,(Math.PI/2),-angle, true);
                     ctx.stroke();                
