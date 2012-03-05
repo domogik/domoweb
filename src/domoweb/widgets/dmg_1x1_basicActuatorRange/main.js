@@ -179,24 +179,24 @@
 
 		plus_range: function() {
             var self = this, o = this.options;
-            if (this.modePercent) {
+            if (this.step) {
                 step = this.step;
             } else {
                 step = 1;
             }
-  			var value = this._processingValue + step;
+  			var value = parseInt(this._processingValue) + step;
       		this._resetAutoClose();
 			this._setProcessingValue(value);
 		},
 		
 		minus_range: function() {
             var self = this, o = this.options;
-            if (this.modePercent) {
+            if (this.step) {
                 step = this.step;
             } else {
                 step = 1;
             }
-			var value = this._processingValue - step;
+			var value = parseInt(this._processingValue) - step;
       		this._resetAutoClose();
 			this._setProcessingValue(value);
 		},
@@ -239,7 +239,7 @@
 			} else if (value > this.displayMax) {
 				this._processingValue = this.displayMax;
 			}
-            $('.value', this._panel).text(this._processingValue + this.unit);
+            $('.value', this._panel).html(this._processingValue + this.unit);
             this._displayProcessingRange(this._processingValue);
 		},
 
@@ -269,7 +269,7 @@
                 if (this._processing_percent_current > 0) {
                     ctx.lineWidth = 11;
                     ctx.strokeStyle = "#BDCB2F";
-                    var deg = ((this._processing_percent_current * 360) / 100) - 90;
+                    var deg = ((this._processing_percent_current * 360) / (this.displayMax-this.displayMin)) - 90;
                     var angle = (Math.PI/180) * deg; // radian
                     ctx.arc(95,95,46,(Math.PI/2),-angle, true);
                     ctx.stroke();                

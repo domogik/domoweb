@@ -150,24 +150,24 @@ const auto_send = 3000; // 3 seconds
         
         plus_range: function() {
             var self = this, o = this.options;
-            if (this.modePercent) {
+            if (this.step) {
                 step = this.step;
             } else {
                 step = 1;
             }
-  			var value = this._processingValue + step;
+  			var value = parseInt(this._processingValue) + step;
 			this._setProcessingValue(value);
             this._resetAutoSend();
 		},
 		
 		minus_range: function() {
             var self = this, o = this.options;
-            if (this.modePercent) {
+            if (this.step) {
                 step = this.step;
             } else {
                 step = 1;
             }
-  			var value = this._processingValue - step;
+  			var value = parseInt(this._processingValue) - step;
 			this._setProcessingValue(value);
             this._resetAutoSend();
 		},
@@ -208,7 +208,7 @@ const auto_send = 3000; // 3 seconds
         
         _displayRangeIndicator: function(percent) {
             var self = this, o = this.options;
-            this.indicator.width((23*percent)/100 + "em");
+            this.indicator.width((23*percent)/(this.displayMax-this.displayMin) + "em");
         },
         
         cancel: function() {
