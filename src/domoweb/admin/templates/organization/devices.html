@@ -174,44 +174,6 @@
                                             if (jqXHR.status == 400)
                                                 $.notification('error', '{% trans "Device not deleted" %} (' + jqXHR.responseText + ')');
                                         });
-/*                                
-//                                    rinor.get(['base', 'feature', 'list', 'by-device_id', '{{ device.id }}'])
-                                        .done(function(data, status, xhr){
-                                            $.each(data, function(index, feature){
-//                                                rinor.get(['base', 'feature_association', 'list', 'by-feature', feature.id])
-                                                    .done(function(data, status, xhr){
-                                                        $.each(data, function(index, association){
-//                                                            rinor.get(['base', 'ui_config', 'del', 'by-reference', 'association', association.id])
-                                                                .fail(function(jqXHR, status, error){
-                                                                    if (jqXHR.status == 400)
-                                                                        $.notification('error', '{% trans "ui-config for features not deleted" %} (' + jqXHR.responseText + ')');
-                                                                });
-                                                        });
-//                                                        rinor.get(['base', 'feature_association', 'del', 'feature_id', feature.id])
-                                                            .fail(function(jqXHR, status, error){
-                                                                if (jqXHR.status == 400)
-                                                                    $.notification('error', '{% trans "feature_association not deleted" %} (' + jqXHR.responseText + ')');
-                                                            });
-                                                    })
-                                                    .fail(function(jqXHR, status, error){
-                                                        if (jqXHR.status == 400)
-                                                            $.notification('error', '{% trans "Can not get feature_association list for feature" %} (' + jqXHR.responseText + ')');
-                                                    });
-                                            });
-                                        })
-                                        .fail(function(jqXHR, status, error){
-                                            if (jqXHR.status == 400)
-                                                $.notification('error', '{% trans "Can not get feature list for device" %} (' + jqXHR.responseText + ')');
-                                        });
-
-                                    rinor.get(['base', 'device', 'del', '{{ device.id }}'])
-                                        .done(function(data, status, xhr){
-                                            $.reloadPage({'status': 'success', 'msg': '{% trans "Device" %}\'' + data.device[0].name + '\' {% trans "successfully deleted" %}'});
-                                        })
-                                        .fail(function(jqXHR, status, error){
-                                            if (jqXHR.status == 400)
-                                                $.notification('error', '{% trans "Device not deleted" %} (' + jqXHR.responseText + ')');
-                                        });*/
                                 }
                             });
                             
@@ -232,7 +194,6 @@
                                         });                    
                                 }
                             });
-
                         });
                         // ]]>
                     </script>

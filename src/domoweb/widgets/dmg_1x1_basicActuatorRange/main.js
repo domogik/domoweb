@@ -21,6 +21,15 @@
             this.max_value = parseInt(o.model_parameters.valueMax);
             this.step = parseInt(o.usage_parameters.step);
             this.unit = o.usage_parameters.unit
+            if (this.unit == '%') {
+                this.modePercent = true;
+                this.displayMin = 0;
+                this.displayMax = 100;
+            } else {
+                this.modePercent = false;
+                this.displayMin = this.min_value;
+                this.displayMax = this.max_value;            
+            }
             this.element.addClass("icon32-usage-" + o.usage)
                 .addClass('clickable')
                 .processing();
@@ -70,7 +79,11 @@
 
         _statsHandler: function(stats) {
             if (stats && stats.length > 0) {
-                value = this._value2Percent(parseInt(stats[0].value));
+                if (this.modePercent) {
+                    value = this._value2Percent(parseInt(stats[0].value));
+                } else {
+                    value = stats[0].value;
+                }
                 this.setValue(value);
             } else {
                 this.setValue(null);
@@ -78,17 +91,17 @@
         },
         
         _eventHandler: function(timestamp, value) {
-            value = this._value2Percent(parseInt(value));
+            if (this.modePercent) {
+                value = this._value2Percent(parseInt(value));
+            }
             this.setValue(value);
         },
 
         _value2Percent: function(value) {
-            console.log('value2Percent : ' + value + ' - ' + Math.round((value - this.min_value) * 100 / this.max_value));
             return Math.round((value - this.min_value) * 100 / this.max_value);
         },
         
         _percent2Value: function(value) {
-            console.log('percent2Value : ' + value + ' - ' + Math.round((value * this.max_value / 100) + this.min_value));
             return Math.round((value * this.max_value / 100) + this.min_value);
         },
 
@@ -97,7 +110,11 @@
             var self = this, o = this.options;
             if (this._processingValue != this.currentValue) {
                 this.element.startProcessingState();
-                value = this._percent2Value(this._processingValue);
+                if (this.modePercent) {
+                    value = this._percent2Value(this._processingValue);
+                } else {
+                    value = this._processingValue;
+                }
                 rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":value})
                     .done(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
@@ -143,12 +160,12 @@
         setValue: function(value) {
             var self = this, o = this.options;
             if (value != null) {
-                if (value >= 0 && value <= 100) {
+                if (value >= this.displayMin && value <= this.displayMax) {
                     this.currentValue = value;
-                } else if (value < 0) {
-                    this.currentValue = 0;
-                } else if (value > 100) {
-                    this.currentValue = 100;
+                } else if (value < this.displayMin) {
+                    this.currentValue = this.displayMin;
+                } else if (value > this.displayMax) {
+                    this.currentValue = this.displayMax;
                 }
                 this._processingValue = this.currentValue;
                 this.element.displayIcon('value_' + findRangeIcon(o.usage, this.currentValue));
@@ -162,14 +179,24 @@
 
 		plus_range: function() {
             var self = this, o = this.options;
-			var value = this._processingValue + this.step;
+            if (this.modePercent) {
+                step = this.step;
+            } else {
+                step = 1;
+            }
+  			var value = this._processingValue + step;
       		this._resetAutoClose();
 			this._setProcessingValue(value);
 		},
 		
 		minus_range: function() {
             var self = this, o = this.options;
-			var value = this._processingValue - this.step;
+            if (this.modePercent) {
+                step = this.step;
+            } else {
+                step = 1;
+            }
+			var value = this._processingValue - step;
       		this._resetAutoClose();
 			this._setProcessingValue(value);
 		},
@@ -177,13 +204,13 @@
 		max_range: function() {
             var self = this, o = this.options;
       		this._resetAutoClose();
-			this._setProcessingValue(100);
+			this._setProcessingValue(this.displayMax);
 		},
 		
 		min_range: function() {
             var self = this, o = this.options;
       		this._resetAutoClose();
-			this._setProcessingValue(0);
+			this._setProcessingValue(this.displayMin);
 		},
 		
 		_resetAutoClose: function() {
@@ -197,22 +224,22 @@
         _displayValue: function(value) {
             var self = this, o = this.options;
             if (value != null) {
-    			this._status.writeStatus(value + '%');                
+    			this._status.writeStatus(value + this.unit);                
             } else { // Unknown
-    			this._status.writeStatus('---%');                                
+    			this._status.writeStatus('---' + this.unit);                                
             }
         },
         
 		_setProcessingValue: function(value) {
             var self = this, o = this.options;
-			if (value >= 0 && value <= 100) {
+			if (value >= this.displayMin && value <= this.displayMax) {
 				this._processingValue = value;
-			} else if (value < 0) {
-				this._processingValue = 0;
-			} else if (value > 100) {
-				this._processingValue = 100;
+			} else if (value < this.displayMin) {
+				this._processingValue = this.displayMin;
+			} else if (value > this.displayMax) {
+				this._processingValue = this.displayMax;
 			}
-            $('.value', this._panel).text(this._processingValue + '%');
+            $('.value', this._panel).text(this._processingValue + this.unit);
             this._displayProcessingRange(this._processingValue);
 		},
 

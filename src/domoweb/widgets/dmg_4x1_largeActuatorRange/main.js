@@ -22,6 +22,15 @@ const auto_send = 3000; // 3 seconds
             this.max_value = parseInt(o.model_parameters.valueMax);
             this.step = parseInt(o.usage_parameters.step);
             this.unit = o.usage_parameters.unit
+            if (this.unit == '%') {
+                this.modePercent = true;
+                this.displayMin = 0;
+                this.displayMax = 100;
+            } else {
+                this.modePercent = false;
+                this.displayMin = this.min_value;
+                this.displayMax = this.max_value;            
+            }
 
             var ident = $("<div class='ident'>" + o.devicename + " - " + o.featurename + "</div>");
             this.element.append(ident);
@@ -70,15 +79,21 @@ const auto_send = 3000; // 3 seconds
 
         _statsHandler: function(stats) {
             if (stats && stats.length > 0) {
-                value = this._value2Percent(parseInt(stats[0].value));
+                if (this.modePercent) {
+                    value = this._value2Percent(parseInt(stats[0].value));
+                } else {
+                    value = stats[0].value;
+                }
                 this.setValue(value);
             } else {
                 this.setValue(null);
             }
         },
         
-        _eventHandler: function(date, value) {
-            value = this._value2Percent(parseInt(value));
+        _eventHandler: function(timestamp, value) {
+            if (this.modePercent) {
+                value = this._value2Percent(parseInt(value));
+            }
             this.setValue(value);
         },
 
@@ -95,12 +110,12 @@ const auto_send = 3000; // 3 seconds
         setValue: function(value) {
             var self = this, o = this.options;
             if (value != null) {
-                if (value >= 0 && value <= 100) {
+               if (value >= this.displayMin && value <= this.displayMax) {
                     this.currentValue = value;
-                } else if (value < 0) {
-                    this.currentValue = 0;
-                } else if (value > 100) {
-                    this.currentValue = 100;
+                } else if (value < this.displayMin) {
+                    this.currentValue = this.displayMin;
+                } else if (value > this.displayMax) {
+                    this.currentValue = this.displayMax;
                 }
                 this._processingValue = this.currentValue;
                 this._displayValue(this.currentValue);
@@ -116,7 +131,11 @@ const auto_send = 3000; // 3 seconds
             var self = this, o = this.options;
             if (this._processingValue != this.currentValue) {
                 this._startProcessingState();
-                value = this._percent2Value(this._processingValue);
+                if (this.modePercent) {
+                    value = this._percent2Value(this._processingValue);
+                } else {
+                    value = this._processingValue;
+                }
                 rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":value})
                     .done(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
@@ -131,38 +150,48 @@ const auto_send = 3000; // 3 seconds
         
         plus_range: function() {
             var self = this, o = this.options;
-			var value = this._processingValue + this.step;
+            if (this.modePercent) {
+                step = this.step;
+            } else {
+                step = 1;
+            }
+  			var value = this._processingValue + step;
 			this._setProcessingValue(value);
             this._resetAutoSend();
 		},
 		
 		minus_range: function() {
             var self = this, o = this.options;
-			var value = this._processingValue - this.step;
+            if (this.modePercent) {
+                step = this.step;
+            } else {
+                step = 1;
+            }
+  			var value = this._processingValue - step;
 			this._setProcessingValue(value);
             this._resetAutoSend();
 		},
 		
 		max_range: function() {
             var self = this, o = this.options;
-			this._setProcessingValue(100);
+			this._setProcessingValue(this.displayMax);
             this._resetAutoSend();
 		},
 		
 		min_range: function() {
             var self = this, o = this.options;
-			this._setProcessingValue(0);
+			this._setProcessingValue(this.displayMin);
             this._resetAutoSend();
 		},
         
         _setProcessingValue: function(value) {
             var self = this, o = this.options;
-			if (value >= 0 && value <= 100) {
+			if (value >= this.displayMin && value <= this.displayMax) {
 				this._processingValue = value;
-			} else if (value < 0) {
-				this._processingValue = 0;
-			} else if (value > 100) {
-				this._processingValue = 100;
+			} else if (value < this.displayMin) {
+				this._processingValue = this.displayMin;
+			} else if (value > this.displayMax) {
+				this._processingValue = this.displayMax;
 			}
             this._displayValue(this._processingValue);
             this._displayRangeIndicator(this._processingValue);
@@ -171,9 +200,9 @@ const auto_send = 3000; // 3 seconds
         _displayValue: function(value) {
             var self = this, o = this.options;
             if (value != null) {
-                this.value.html(value + '%');                
+                this.value.html(value + this.unit);                
             } else { // Unknown
-                this.value.html('---%');                                
+                this.value.html('---' + this.unit);                                
             }
         },
         
