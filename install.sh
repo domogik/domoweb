@@ -93,11 +93,13 @@ function copy_sample_files {
     if [ ! -d $DMW_LIB ];then
         mkdir $DMW_LIB
         chown $d_user:root $DMW_LIB
+        chmod 755 $DMW_LIB
     fi
     # create /var/log/domoweb
     if [ ! -d $DMW_LOG ];then
         mkdir $DMW_LOG
         chown $d_user:root $DMW_LOG
+        chmod 755 $DMW_LOG
     fi
 
     if [ ! -f $DMW_ETC/domoweb.cfg ];then
