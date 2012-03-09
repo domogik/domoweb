@@ -66,12 +66,12 @@ d_files = [
         ('/etc/default/', ['src/examples/default/domoweb'])
 ]
 
-d_files.extend(list_all_files('src/domoweb/templates/', '/usr/local/share/domoweb/templates/')),
-d_files.extend(list_all_files('src/domoweb/admin/templates/', '/usr/local/share/domoweb/admin/templates/')),
-d_files.extend(list_all_files('src/domoweb/view/templates/', '/usr/local/share/domoweb/view/templates/')),
-d_files.extend(list_all_files('src/domoweb/design/', '/usr/local/share/domoweb/design/')),
-d_files.extend(list_all_files('src/domoweb/widgets/', '/usr/local/share/domoweb/widgets/')),
-d_files.extend(list_all_files('src/domoweb/locale/', '/usr/local/share/domoweb/locale/')),
+d_files.extend(list_all_files('src/domoweb/templates/', '/usr/share/domoweb/templates/')),
+d_files.extend(list_all_files('src/domoweb/admin/templates/', '/usr/share/domoweb/admin/templates/')),
+d_files.extend(list_all_files('src/domoweb/view/templates/', '/usr/share/domoweb/view/templates/')),
+d_files.extend(list_all_files('src/domoweb/design/', '/usr/share/domoweb/design/')),
+d_files.extend(list_all_files('src/domoweb/widgets/', '/usr/share/domoweb/widgets/')),
+d_files.extend(list_all_files('src/domoweb/locale/', '/usr/share/domoweb/locale/')),
 
 setup(
     name = 'DomoWeb',
@@ -82,7 +82,7 @@ setup(
     author_email = 'domogik-general@lists.labs.libre-entreprise.org',
     install_requires=['setuptools', 
                       'django == 1.3.1',
-                      'django-tastypie == 0.9.9',
+                      'django-tastypie >= 0.9.9',
                       'simplejson >= 1.9.2',
                       'httplib2 >= 0.6.0', 
                       'Distutils2',

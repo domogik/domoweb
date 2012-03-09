@@ -34,6 +34,7 @@
 DMW_ETC=/etc/domoweb
 DMW_LIB=/var/lib/domoweb
 DMW_LOG=/var/log/domoweb
+DMW_BIN=/usr/sbin
 
 function run_setup_py {
     MODE=$1
@@ -41,7 +42,7 @@ function run_setup_py {
         develop|install)
             if [ -f "setup.py" ];then
                 python ./ez_setup.py
-                python ./setup.py $MODE
+                python ./setup.py $MODE --script-dir=$DMW_BIN
                 if [ "x$?" != "x0" ];then
                     echo "setup.py script exists with a non 0 return value : $?"
                     exit 13
@@ -66,8 +67,8 @@ function test_sources {
 }
 
 function copy_sample_files {
-    read -p "Which user will run domogik, it will be created if it does not exist yet? (default : domogik) " d_user
-    d_user=${d_user:-domogik}
+    read -p "Which user will run domogik, it will be created if it does not exist yet? (default : domoweb) " d_user
+    d_user=${d_user:-domoweb}
     if ! getent passwd $d_user >/dev/null;then
         echo "I can't find informations about this user !"
         read -p "Do you want to create it ? (y/n) " create

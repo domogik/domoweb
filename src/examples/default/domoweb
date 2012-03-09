@@ -1,4 +1,4 @@
 # This file defines config parameters for domoweb
 
 #Start domogik daemon under this user
-DOMOWEB_USER=domogik
+DOMOWEB_USER=domoweb

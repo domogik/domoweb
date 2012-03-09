@@ -177,7 +177,7 @@ def rundevelop():
     Server().run(PROJECT_PATH)
 
 def runinstall():
-    PROJECT_PATH='/usr/local/share/domoweb'
+    PROJECT_PATH='/usr/share/domoweb'
     os.environ['DOMOWEB_PATH']=PROJECT_PATH
     Server().run(PROJECT_PATH)
     
