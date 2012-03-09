@@ -2,11 +2,13 @@
     //background-position: 5px 5px;
     //background-repeat: no-repeat;
     background-color:#ffffff;
-    padding: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
 }
 
 .dmg_4x3_colorPicker .switch {
     position: absolute;
+    margin-top: 1em;
     border: 1px solid red;
     background-position: 5px 5px;
     background-repeat: no-repeat;
@@ -16,8 +18,8 @@
 
 .dmg_4x3_colorPicker .preview {
     width: 4em;
-    height: 14em;
-    margin-top: 5em;
+    height: 12em;
+    margin-top: 6em;
 }
 
 .dmg_4x3_colorPicker .colorpicker {
