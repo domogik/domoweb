@@ -33,6 +33,9 @@
             this.element.append(this._preview);
             $('#colorpicker').farbtastic('#colorpicker');
             $.farbtastic('#colorpicker').linkTo(function(color, dontCallCmd){self.resetTimerSetColor(color, dontCallCmd)});
+            $('#colorpicker').hide();
+            $('#preview').hide();
+            $('#colorpicker_off').show();
             this._initValues(1);
         },
 
@@ -78,6 +81,7 @@
             this.element.doTimeout('timeout', 
                                    timer_on_command,
                                    function() {
+                                       //console.log("from resetTimerSetColor");
                                        self.setColor(color, dontCallCmd);
                                    });
 
@@ -92,6 +96,7 @@
             $.farbtastic('#colorpicker').setColor(color);
             // call command
             if (dontCallCmd != 1) {
+                //console.log("#1");
                 rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":'setcolor', "value":color})
                     .done(function(data, status, xhr){
                         $('#colorpicker').show();
@@ -121,6 +126,7 @@
                         $('#colorpicker_off').hide();
                         $('#colorpicker').show();
                         $('#preview').show();
+                        //console.log("from _statsHandler");
                         self.setColor(stat.value, 1);
                     }
                 });
@@ -139,6 +145,7 @@
                 $('#colorpicker_off').hide();
                 $('#colorpicker').show();
                 $('#preview').show();
+                //console.log("from _eventHandler");
                 self.setColor(value, 1);
             }
         },
