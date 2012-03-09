@@ -11,7 +11,7 @@
             height: 3,
             width: 4,
             displayname: true,
-			displayborder: true
+            displayborder: true
         },
 
         _init: function() {
@@ -81,7 +81,7 @@
             this.element.doTimeout('timeout', 
                                    timer_on_command,
                                    function() {
-                                       //console.log("from resetTimerSetColor");
+                                       //console.log("from resetTimerSetColor"+dontCallCmd);
                                        self.setColor(color, dontCallCmd);
                                    });
 
@@ -94,6 +94,10 @@
                 backgroundColor: color
             });
             $.farbtastic('#colorpicker').setColor(color);
+            // dirty fix : we should find why dontCallCmd is undefined!
+            if (dontCallCmd == undefined) {
+                dontCallCmd = 1;
+            }
             // call command
             if (dontCallCmd != 1) {
                 //console.log("#1");
