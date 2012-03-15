@@ -32,6 +32,7 @@
             this.element.append(this._picker);
             this.element.append(this._preview);
             $('#colorpicker').farbtastic('#colorpicker');
+            dontCallCmd = 1;
             $.farbtastic('#colorpicker').linkTo(function(color, dontCallCmd){self.resetTimerSetColor(color, dontCallCmd)});
             $('#colorpicker').hide();
             $('#preview').hide();
@@ -95,10 +96,11 @@
             });
             $.farbtastic('#colorpicker').setColor(color);
             // dirty fix : we should find why dontCallCmd is undefined!
-            if (dontCallCmd == undefined) {
-                dontCallCmd = 1;
-            }
+            //if (dontCallCmd == undefined) {
+            //    dontCallCmd = 1;
+            //}
             // call command
+            //console.log("contcallcmd="+dontCallCmd);
             if (dontCallCmd != 1) {
                 //console.log("#1");
                 rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":'setcolor', "value":color})

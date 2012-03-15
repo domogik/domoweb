@@ -91,6 +91,7 @@ jQuery._farbtastic = function (container, callback) {
   /*** DOMOGIK ADAPTATION ***/
   //fb.setColor = function (color) {
   fb.setColor = function (color, dontMakeAction) {
+    //console.log("mets le couleur!!!!");
   /**************************/
     var unpack = fb.unpack(color);
     if (fb.color != color && unpack) {
@@ -98,6 +99,7 @@ jQuery._farbtastic = function (container, callback) {
       fb.rgb = unpack;
       fb.hsl = fb.RGBToHSL(fb.rgb);
       fb.updateDisplay(dontMakeAction);
+      //console.log("yop la boom");
     }
     return this;
   }
@@ -226,6 +228,7 @@ jQuery._farbtastic = function (container, callback) {
   /*** DOMOGIK ADAPTATION ***/
   //$fb.updateDisplay = function () {
   fb.updateDisplay = function (dontMakeAction) {
+    //console.log("hips don't lie");
   /**************************/
     // Markers
     var angle = fb.hsl[0] * 6.28;
@@ -245,6 +248,7 @@ jQuery._farbtastic = function (container, callback) {
     // Linked elements or callback
     if (typeof fb.callback == 'object') {
       // Set background/foreground color
+      //console.log("ici ?");
       $(fb.callback).css({
         /*** DOMOGIK ADAPTATION ***/
         //backgroundColor: fb.color,
@@ -255,12 +259,14 @@ jQuery._farbtastic = function (container, callback) {
       // Change linked value
       $(fb.callback).each(function() {
         if (this.value && this.value != fb.color) {
+          //console.log("ou la ?");
           this.value = fb.color;
         }
       });
     }
     /*** DOMOGIK ADAPATATION ***/
     else if (typeof fb.callback == 'function') {
+      //console.log("move your body!");
       fb.callback.call(fb, fb.color, dontMakeAction);
     }
     /***************************/
