@@ -83,6 +83,7 @@ class Server(object):
             sys.stderr.write("Error: Can't find the file '%s/domoweb.cfg'\n" % ETC_PATH)
             sys.exit(1)
         engine = cherrypy.engine
+        plugins.PIDFile(engine, "/var/run/domoweb/domoweb.pid").subscribe()
         DjangoAppPlugin(engine, STATICS).subscribe()
         engine.signal_handler.subscribe()
         if hasattr(engine, "console_control_handler"):

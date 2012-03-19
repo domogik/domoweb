@@ -86,21 +86,23 @@ function copy_sample_files {
     # create /etc/domoweb entry
     if [ ! -d $DMW_ETC ];then
         mkdir $DMW_ETC
-        chown $d_user:root $DMW_ETC
-        chmod 755 $DMW_ETC
     fi
+    chown $d_user:root $DMW_ETC
+    chmod 755 $DMW_ETC
+
     # create /var/lib/domoweb
     if [ ! -d $DMW_LIB ];then
         mkdir $DMW_LIB
-        chown $d_user:root $DMW_LIB
-        chmod 755 $DMW_LIB
     fi
+    chown $d_user:root $DMW_LIB
+    chmod 755 $DMW_LIB
+
     # create /var/log/domoweb
     if [ ! -d $DMW_LOG ];then
         mkdir $DMW_LOG
-        chown $d_user:root $DMW_LOG
-        chmod 755 $DMW_LOG
     fi
+    chown $d_user:root $DMW_LOG
+    chmod 755 $DMW_LOG
 
     if [ ! -f $DMW_ETC/domoweb.cfg ];then
         cp -f src/examples/config/domoweb.cfg $DMW_ETC/domoweb.cfg

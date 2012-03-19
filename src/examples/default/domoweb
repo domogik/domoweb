@@ -1,4 +1,7 @@
 # This file defines config parameters for domoweb
 
-#Start domogik daemon under this user
+#Start domoweb daemon under this user
 DOMOWEB_USER=domoweb
+
+#Should we start domoweb at startup (Ubuntu/Debian)
+RUN=yes
