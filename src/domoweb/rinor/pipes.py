@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.cache import cache
 from domoweb.rinor.rinorPipe import RinorPipe
-from domoweb.exceptions import RinorError
+from domoweb.exceptions import RinorError, RinorNotConfigured
 from distutils2.version import *
 from distutils2.version import IrrationalVersionError
 import simplejson
@@ -20,19 +20,25 @@ class EventPipe(RinorPipe):
     def get_event(self):
         yield 'event: message\ndata: {}\n\n'
         # Get all the devices ids
-        _devices_list = DevicePipe().get_dict().keys()
-        _devices = [str(id) for id in _devices_list]
-        _data = self._get_data(self.new_path, _devices)               
-        _event = _data.event[0]
-        _ticket = _event.ticket_id
-        print "NEW EVENT " + str(_event.timestamp)
-        yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'
-        while(True):
-            _data = self._get_data(self.get_path, [_ticket])               
-            _event = _data.event[0]
-            print "RECEIVED EVENT " + str(_event.timestamp)
-            yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'        
-
+        try:
+            _devices_list = DevicePipe().get_dict().keys()
+        except RinorNotConfigured:
+            print "EVENTS : Rinor not configured yet"
+        else:
+            if (len(_devices_list) > 0):
+                _devices = [str(id) for id in _devices_list]
+                _data = self._get_data(self.new_path, _devices)               
+                _event = _data.event[0]
+                _ticket = _event.ticket_id
+                print "EVENTS : NEW " + str(_event.timestamp)
+                yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'
+                while(True):
+                    _data = self._get_data(self.get_path, [_ticket])               
+                    _event = _data.event[0]
+                    print "EVENTS : RECEIVED " + str(_event.timestamp)
+                    yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'        
+            else:
+                print "EVENTS : No devices yet"
 class InfoPipe(RinorPipe):
     cache_expiry = 0
     list_path = ""
