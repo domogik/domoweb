@@ -25,9 +25,7 @@ PIDFILE=/var/run/domoweb/domoweb.pid
 
 test -x $DAEMON || exit 0
 
-#Should we start domoweb at startup (Ubuntu/Debian)
 RUN=no
-
 DOMOWEB_USER=domoweb
 
 DIETIME=1               # Time to wait for the server to die, in seconds
@@ -35,7 +33,7 @@ DIETIME=1               # Time to wait for the server to die, in seconds
                         # let some servers to die gracefully and
                         # 'restart' will not work
 
-STARTTIME=3             # Time to wait for the server to start, in seconds
+STARTTIME=4             # Time to wait for the server to start, in seconds
                         # If this value is set each time the server is
                         # started (on start or restart) the script will
                         # stall to try to determine if it is running
@@ -54,7 +52,6 @@ if [ "x$RUN" != "xyes" ] ; then
     echo "$NAME disabled; edit /etc/default/domoweb"
     exit 0
 fi
-
 
 start_server() {
     /bin/su - ${DOMOWEB_USER} -c "$DAEMON >>$LOGFILE 2>&1 &"
@@ -98,7 +95,7 @@ case "$1" in
   start)
 		[ ! -d /var/run/domoweb ] && \
 			/bin/mkdir /var/run/domoweb && \
-			/bin/chown -Rf domoweb:root /var/run/domoweb
+			/bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
         log_daemon_msg "Starting $DESC " "$NAME"
         if [ "$(running)" = "y" ] ; then
                 log_progress_msg "apparently already running"
