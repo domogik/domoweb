@@ -9,3 +9,44 @@
     max-height:32.8em;
     max-width:39.8em;
 }
+
+.dmg_6x5_IPcamhedenfoscamMJPEG .command {
+  height:2.8em;
+  line-height: 3em;
+  width:5.5em;
+  -moz-border-radius: .8em;
+  -webkit-border-radius: .8em;
+  position:absolute;
+  bottom:0;
+  -moz-box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  background-color:rgba(0,0,0,0.8);
+  color: #fff;
+  cursor: pointer;
+}
+
+.dmg_6x5_IPcamhedenfoscamMJPEG .command:hover {
+  border:2px solid #ffffff;
+  line-height: 2.6em;
+}
+
+.dmg_6x5_IPcamhedenfoscamMJPEG .up {
+  left: 1.4em;
+}
+
+.dmg_6x5_IPcamhedenfoscamMJPEG .down {
+  left: 8em;
+}
+
+.dmg_6x5_IPcamhedenfoscamMJPEG .right {
+  right: 1.4em;
+}
+
+.dmg_6x5_IPcamhedenfoscamMJPEG .left {
+  right: 8em;
+}
+
+.dmg_6x5_IPcamhedenfoscamMJPEG .home {
+  right: 14.4em;
+}
+

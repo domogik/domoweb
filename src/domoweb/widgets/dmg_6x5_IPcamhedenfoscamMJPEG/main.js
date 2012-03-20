@@ -31,21 +31,24 @@
                   }
                  
                this.image =$('<img src="'+addressimg+'"/>');
-               this.buttondown=$('<INPUT type="Button" value="Down">');
+               this.buttondown=$('<div class="command down">Down</div>');
                this.buttondown.click(function (e){self.actionstep(addressip,2,userpwd);});
-               this.buttonup=$('<INPUT type="Button" value="Up">');
+               this.buttonup=$('<div class="command up">Up</div>');
                this.buttonup.click(function (e){self.actionstep(addressip,0,userpwd);});
-               this.buttonleft=$('<INPUT type="Button" value="left">');
+               this.buttonleft=$('<div class="command left">Left</div>');
                this.buttonleft.click(function (e){self.actionstep(addressip,4,userpwd);});
-               this.buttonright=$('<INPUT type="Button" value="right">');
+               this.buttonright=$('<div class="command right">Right</div>');
                this.buttonright.click(function (e){self.actionstep(addressip,6,userpwd);});
+               this.buttonhome=$('<div class="command home">Test</div>');
+               this.buttonhome.click(function (e){self.action(addressip,26,userpwd);});
+
                this.image =$('<img src="'+addressimg+'"/>');
                this.element.append(this.image);
                this.element.append(this.buttonup);
                this.element.append(this.buttondown);
                this.element.append(this.buttonleft);
                this.element.append(this.buttonright);
-
+//               this.element.append(this.buttonhome);
             } else {
                this.image =$('<img src="'+ o.deviceaddress +'"/>');
                this.element.append(this.image);
@@ -60,6 +63,20 @@
            xhr.open("POST", addresscmd ,true);
            xhr.send(null);
         },
+        _statsHandler: function(stats) {
+        },
+
+
+        action: function(address,command,userpwd) {
+//comand,function=[0,UP][1,stopUp][2,Down][3,stopdown][4,left][5,stoplef][6,ritht][7,stopRight][25,Home position][26,Vertical Patrol][27,StopVertical Patrol]
+           var self = this, o = this.options;
+           var xhr=null;
+           addresscmd= address + "decoder_control.cgi?"+userpwd+"&command="+command
+           xhr=new XMLHttpRequest();
+           xhr.open("POST", addresscmd ,true);
+           xhr.send(null);
+        },
+
         _statsHandler: function(stats) {
         },
 
