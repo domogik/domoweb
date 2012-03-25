@@ -87,8 +87,8 @@ running() {
 case "$1" in
   start)
 		[ ! -d /var/run/domoweb ] && \
-			/bin/mkdir /var/run/domoweb && \
-			/bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
+			/bin/mkdir /var/run/domoweb
+		/bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
         log_daemon_msg "Starting $DESC " "$NAME"
         if [ "$(running)" = "y" ] ; then
                 log_progress_msg "apparently already running"
