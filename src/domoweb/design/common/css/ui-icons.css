@@ -591,6 +591,9 @@
 .icon64-technology-rfxcom {background-image:url(../images/technologies/rfxcom_64.png);}
 .icon32-technology-rfxcom {background-image:url(../images/technologies/rfxcom_32.png);}
 .icon16-technology-rfxcom {background-image:url(../images/technologies/rfxcom_16.png);}
+.icon64-technology-knx {background-image:url(../images/technologies/knx_64.png);}
+.icon32-technology-knx {background-image:url(../images/technologies/knx_32.png);}
+.icon16-technology-knx {background-image:url(../images/technologies/knx_16.png);}
 
 /* Status icons */
 .icon64-status-true {background-image:url(../images/status/check_64.png);}
