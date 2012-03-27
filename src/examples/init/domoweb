@@ -23,7 +23,10 @@ DESC="Domoweb UI"
 LOGFILE=/var/log/domoweb/console.log
 PIDFILE=/var/run/domoweb/domoweb.pid
 
-test -x $DAEMON || exit 0
+if [ -x $DAEMON ] ; then
+    echo "Can't find $DAEMON"
+    exit 0
+fi
 
 #Don't update these values.
 #Use /etc/default/domoweb instead
