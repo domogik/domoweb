@@ -23,7 +23,7 @@ DESC="Domoweb UI"
 LOGFILE=/var/log/domoweb/console.log
 PIDFILE=/var/run/domoweb/domoweb.pid
 
-if [ -x $DAEMON ] ; then
+if [ ! -x $DAEMON ] ; then
     echo "Can't find $DAEMON"
     exit 0
 fi
