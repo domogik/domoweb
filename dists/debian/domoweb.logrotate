@@ -1,0 +1,10 @@
+/var/log/domoweb/*.log {
+        daily
+        missingok
+        rotate 7
+        copytruncate
+        compress
+        notifempty
+        create 640 domogik domogik
+}
+

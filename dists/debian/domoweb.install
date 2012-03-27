@@ -1,0 +1,6 @@
+etc/init.d
+etc/domoweb
+etc/default
+usr/lib
+usr/share
+usr/bin/* usr/sbin/

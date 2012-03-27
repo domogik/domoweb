@@ -1,0 +1,58 @@
+#!/bin/sh -e
+#
+# summary of how this script can be called:
+#        * <new-preinst> install
+#        * <new-preinst> install <old-version>
+#        * <new-preinst> upgrade <old-version>
+#        * <old-preinst> abort-upgrade <new-version>
+#
+
+export PATH=$PATH:/sbin:/usr/sbin:/bin:/usr/bin
+
+case "$1" in
+  install)
+	# If we use NIS then errors should be tolerated. It's up to the
+	# user to ensure that the mysql user is correctly setup.
+	# Beware that there are two ypwhich one of them needs the 2>/dev/null!
+	if test -n "`which ypwhich 2>/dev/null`"  &&  ypwhich >/dev/null 2>&1; then
+	  set +e
+	fi
+
+	# creating domoweb user if he isn't already there
+	if ! getent passwd domoweb >/dev/null; then
+		# Adding system user: domoweb.
+		#  --no-create-home
+		#  --disabled-login
+		adduser \
+		  --system \
+		  --disabled-password \
+		  --group \
+		  --home /var/lib/domoweb \
+		  --gecos "Domoweb Server" \
+		  --shell /bin/bash \
+		  domoweb  >/dev/null 2>&1
+		  set +e
+		  /bin/cp /etc/skel/* /var/lib/domoweb/ >/dev/null 2>&1
+		  /bin/cp /etc/skel/.* /var/lib/domoweb/ >/dev/null 2>&1
+		  echo PATH=\"\/usr/sbin:\$PATH\" >> /var/lib/domoweb/.profile
+		  set -e
+	fi
+	set -e
+	# end of NIS tolerance zone
+  ;;
+
+  upgrade)
+  ;;
+
+  abort-upgrade|abort-remove|abort-configure)
+  ;;
+
+  *)
+    echo "postinst called with unknown argument '$1'" 1>&2
+    exit 1
+  ;;
+esac
+
+#DEBHELPER#
+
+exit 0

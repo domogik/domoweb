@@ -1,0 +1,27 @@
+#!/bin/sh -e
+
+case "$1" in
+  upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+  ;;
+  remove)
+      set +e
+      /usr/sbin/deluser --quiet domoweb
+      /usr/sbin/delgroup --quiet domoweb
+      set -e
+  ;;
+  purge)
+      set +e
+      /bin/rm -Rf /var/lib/domoweb
+      /bin/rm -Rf /var/log/domoweb
+      /bin/rm -Rf /var/run/domoweb
+      set -e
+  ;;
+  *)
+    echo "postrm called with unknown argument '$1'" 1>&2
+    exit 1
+  ;;
+esac
+
+#DEBHELPER#
+
+exit 0

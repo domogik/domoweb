@@ -1,0 +1,11 @@
+diff -Nru domoweb-0.1.99.orig/src/domoweb/runserver.py domoweb-0.1.99/src/domoweb/runserver.py
+--- domoweb-0.1.99.orig/src/domoweb/runserver.py	2012-03-17 22:20:43.000000000 +0100
++++ domoweb-0.1.99/src/domoweb/runserver.py	2012-03-17 22:21:31.000000000 +0100
+@@ -83,6 +83,7 @@
+             sys.stderr.write("Error: Can't find the file '%s/domoweb.cfg'\n" % ETC_PATH)
+             sys.exit(1)
+         engine = cherrypy.engine
++        plugins.PIDFile(engine, "/var/run/domoweb/domoweb.pid").subscribe()
+         DjangoAppPlugin(engine, STATICS).subscribe()
+         engine.signal_handler.subscribe()
+         if hasattr(engine, "console_control_handler"):

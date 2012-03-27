@@ -1,0 +1,25 @@
+#!/bin/sh -e
+
+case "$1" in
+  configure | upgrade)
+        /usr/bin/python /usr/share/pyshared/domoweb/manage.py syncdb --noinput
+        /bin/chown -Rf domoweb:domoweb /var/lib/domoweb
+        /bin/chown -Rf domoweb:adm /var/log/domoweb
+        /bin/chown -Rf domoweb:root /var/run/domoweb
+        /bin/chown domoweb:root /etc/domoweb
+        /bin/chown root:root /etc/default/domoweb
+        /bin/chmod -Rf 664 /var/lib/domoweb/*
+  ;;
+
+  abort-upgrade|abort-remove|abort-configure)
+  ;;
+
+  *)
+    echo "postinst called with unknown argument '$1'" 1>&2
+    exit 1
+  ;;
+esac
+
+#DEBHELPER#
+
+exit 0

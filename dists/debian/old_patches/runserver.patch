@@ -1,0 +1,16 @@
+diff -Nru domoweb-0.1.99-20120305.orig/src/domoweb/runserver.py domoweb-0.1.99-20120305/src/domoweb/runserver.py
+--- domoweb-0.1.99-20120305.orig/src/domoweb/runserver.py	2012-03-05 00:04:13.000000000 +0100
++++ domoweb-0.1.99-20120305/src/domoweb/runserver.py	2012-03-05 00:04:45.000000000 +0100
+@@ -177,9 +177,9 @@
+     Server().run(PROJECT_PATH)
+ 
+ def runinstall():
+-    PROJECT_PATH='/usr/local/share/domoweb'
++    PROJECT_PATH='/usr/share/domoweb'
+     os.environ['DOMOWEB_PATH']=PROJECT_PATH
+     Server().run(PROJECT_PATH)
+     
+ if __name__ == '__main__':
+-    rundevelop()
+\ Pas de fin de ligne à la fin du fichier.
++    rundevelop()

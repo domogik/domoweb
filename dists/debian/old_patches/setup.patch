@@ -1,0 +1,21 @@
+--- domoweb-0.1.99-20120304.orig/setup.py	2012-03-04 21:55:37.000000000 +0100
++++ domoweb-0.1.99-20120304/setup.py	2012-03-04 21:57:22.000000000 +0100
+@@ -66,12 +66,12 @@
+         ('/etc/default/', ['src/examples/default/domoweb'])
+ ]
+ 
+-d_files.extend(list_all_files('src/domoweb/templates/', '/usr/local/share/domoweb/templates/')),
+-d_files.extend(list_all_files('src/domoweb/admin/templates/', '/usr/local/share/domoweb/admin/templates/')),
+-d_files.extend(list_all_files('src/domoweb/view/templates/', '/usr/local/share/domoweb/view/templates/')),
+-d_files.extend(list_all_files('src/domoweb/design/', '/usr/local/share/domoweb/design/')),
+-d_files.extend(list_all_files('src/domoweb/widgets/', '/usr/local/share/domoweb/widgets/')),
+-d_files.extend(list_all_files('src/domoweb/locale/', '/usr/local/share/domoweb/locale/')),
++d_files.extend(list_all_files('src/domoweb/templates/', '/usr/share/domoweb/templates/')),
++d_files.extend(list_all_files('src/domoweb/admin/templates/', '/usr/share/domoweb/admin/templates/')),
++d_files.extend(list_all_files('src/domoweb/view/templates/', '/usr/share/domoweb/view/templates/')),
++d_files.extend(list_all_files('src/domoweb/design/', '/usr/share/domoweb/design/')),
++d_files.extend(list_all_files('src/domoweb/widgets/', '/usr/share/domoweb/widgets/')),
++d_files.extend(list_all_files('src/domoweb/locale/', '/usr/share/domoweb/locale/')),
+ 
+ setup(
+     name = 'DomoWeb',

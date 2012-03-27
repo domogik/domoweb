@@ -1,0 +1,21 @@
+diff -Nru domoweb-0.1.99.orig/src/examples/init/domoweb domoweb-0.1.99/src/examples/init/domoweb
+--- domoweb-0.1.99.orig/src/examples/init/domoweb	2012-03-07 14:52:21.000000000 +0100
++++ domoweb-0.1.99/src/examples/init/domoweb	2012-03-07 14:54:37.000000000 +0100
+@@ -41,7 +41,7 @@
+ 
+ function start_django {
+     echo -n " * Starting DomoWeb..."
+-    /bin/su - ${DOMOWEB_USER} -c "dmg_domoweb >/var/log/domoweb/domoweb.log 2>&1 &"
++    /bin/su - ${DOMOWEB_USER} -c "/usr/sbin/dmg_domoweb >/var/log/domoweb/domoweb.log 2>&1 &"
+     if [ $? -gt 0 ]; then
+         echo " An error occured during DomoWeb startup."
+         exit 1
+@@ -52,7 +52,7 @@
+ 
+ function stop_django {
+     echo -n " * Stopping DomoWeb..."
+-    for pid in `ps ax | grep "dmg_domoweb" | grep -v grep | awk '{print $1}'`; do
++    for pid in `ps ax | grep "/usr/sbin/dmg_domoweb" | grep -v grep | awk '{print $1}'`; do
+         kill -9 $pid 2>/dev/null 1>&2
+     done
+     echo " Done."

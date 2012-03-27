@@ -1,0 +1,4 @@
+/etc/domoweb
+/var/lib/domoweb
+/var/log/domoweb
+/var/run/domoweb

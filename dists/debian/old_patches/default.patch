@@ -1,0 +1,12 @@
+diff -Nru domoweb-0.1.99.orig/src/examples/default/domoweb domoweb-0.1.99/src/examples/default/domoweb
+--- domoweb-0.1.99.orig/src/examples/default/domoweb	2012-03-14 23:34:15.000000000 +0100
++++ domoweb-0.1.99/src/examples/default/domoweb	2012-03-14 23:38:05.000000000 +0100
+@@ -1,4 +1,7 @@
+ # This file defines config parameters for domoweb
+ 
+-#Start domogik daemon under this user
++#Start domoweb daemon under this user
+ DOMOWEB_USER=domoweb
++
++#Should we start domoweb at startup
++RUN=yes

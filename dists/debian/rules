@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ install --with python2 --script-dir=/usr/sbin
+
+#override_dh_auto_test:
+#	echo "not running make check"
+
+override_dh_auto_install:
+	#dh_auto_install
+	set -ex; for python in $(shell pyversions -r); do \
+		$$python setup.py install --root=$(CURDIR)/debian/tmp --install-layout=deb; \
+	done;
+
+override_dh_install:
+	/bin/mkdir -p debian/tmp/etc/domoweb/
+	/usr/bin/install -c -p -m 640 src/examples/config/domoweb.cfg debian/tmp/etc/domoweb/
+	/bin/mkdir -p debian/tmp/etc/default/
+	/usr/bin/install -c -p -m 644 src/examples/default/domoweb debian/tmp/etc/default/
+	#/bin/mkdir -p debian/tmp/etc/init.d/
+	#/usr/bin/install -c -p -m 640 src/examples/init/domoweb debian/tmp/etc/init.d/
+	/bin/mkdir -p debian/tmp/etc/apache2/sites-available/
+	/usr/bin/install -c -p -m 644 debian/domoweb.apache2 debian/tmp/etc/apache2/sites-available/domoweb
+	dh_install --sourcedir=debian/tmp
+	#dh_python2 -p zeitgeist-core usr/share/zeitgeist/fts-python

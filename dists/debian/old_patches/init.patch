@@ -1,0 +1,29 @@
+diff -Nru domoweb-0.1.99.orig/src/examples/default/domoweb domoweb-0.1.99/src/examples/default/domoweb
+--- domoweb-0.1.99.orig/src/examples/default/domoweb	2012-03-05 11:51:48.000000000 +0100
++++ domoweb-0.1.99/src/examples/default/domoweb	2012-03-05 11:52:57.000000000 +0100
+@@ -1,4 +1,4 @@
+ # This file defines config parameters for domoweb
+ 
+ #Start domogik daemon under this user
+-DOMOWEB_USER=domogik
+\ Pas de fin de ligne à la fin du fichier.
++DOMOWEB_USER=domoweb
+diff -Nru domoweb-0.1.99.orig/src/examples/init/domoweb domoweb-0.1.99/src/examples/init/domoweb
+--- domoweb-0.1.99.orig/src/examples/init/domoweb	2012-03-05 11:51:48.000000000 +0100
++++ domoweb-0.1.99/src/examples/init/domoweb	2012-03-05 11:52:34.000000000 +0100
+@@ -5,7 +5,7 @@
+ # Required-Start:    $local_fs $network
+ # Required-Stop:     $local_fs $network
+ # Default-Start:     2 3 4 5
+-# Default-Stop:      1
++# Default-Stop:      0 1 6
+ # Short-Description: Start DomoWeb UI for Domogik
+ ### END INIT INFO
+ 
+@@ -73,4 +73,4 @@
+     *)
+     echo "usage: $0 {start|stop|restart}"
+ esac
+-exit 0
+\ Pas de fin de ligne à la fin du fichier.
++exit 0
