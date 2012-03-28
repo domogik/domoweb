@@ -35,7 +35,8 @@ CUSTOM_PATH=""
 
 
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$CUSTOM_PATH:
-DAEMON=$(which dmg_domoweb)
+NAME=dmg_domoweb
+DAEMON=$(which $NAME)
 LOGFILE=/var/log/domoweb/console.log
 PIDFILE=/var/run/domoweb/domoweb.pid
 
@@ -46,6 +47,12 @@ fi
 
 function start_django {
     echo -n " * Starting DomoWeb..."
+	[ ! -d /var/run/domoweb ] && \
+		/bin/mkdir /var/run/domoweb
+	/bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
+	[ ! -d /var/log/domoweb ] && \
+		/bin/mkdir /var/log/domoweb
+	/bin/chown -Rf ${DOMOWEB_USER}:root /var/log/domoweb
     /bin/su - ${DOMOWEB_USER} -c "$DAEMON >$LOGFILE 2>&1 &"
     if [ $? -gt 0 ]; then
         echo " An error occured during DomoWeb startup."
@@ -60,33 +67,40 @@ function stop_django {
     #for pid in `ps ax | grep "$DAEMON" | grep -v grep | awk '{print $1}'`; do
     #    kill -9 $pid 2>/dev/null 1>&2
     #done
-    kill $(cat $PIDFILE)
+    kill $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
     sleep 1
-    kill -9 $(cat $PIDFILE)
+    [ -f $PIDFILE ] && kill -9 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
+    [ -f $PIDFILE ] && rm $PIDFILE
+    echo " Done."
+}
+
+function killall  {
+    echo -n " * Killing all DomoWeb..."
+    #for pid in `ps ax | grep "$DAEMON" | grep -v grep | awk '{print $1}'`; do
+    #    kill -9 $pid 2>/dev/null 1>&2
+    #done
+    killall $NAME >/dev/null 2>&1
+    sleep 1
+    [ -f $PIDFILE ] && kill -9 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
     [ -f $PIDFILE ] && rm $PIDFILE
     echo " Done."
 }
 
 function status_django {
-    [ ! -f $PIDFILE ] && echo " * DomoWeb is not running (can't find pid file)"
-    RUNNING=$(pgrep "$DAEMON" | grep -c $(cat $PIDFILE))
+    [ ! -f $PIDFILE ] && \
+		echo " * DomoWeb is not running (can't find pid file)" &&
+		exit 0
+    RUNNING=$(pgrep "$NAME" | grep -c $(cat $PIDFILE 2>/dev/null))
     if [ $RUNNING -eq 1 ]; then
         echo " * DomoWeb is running"
     else
         echo " * DomoWeb is not running"
     fi
-
-    kill $(cat $PIDFILE)
-    sleep 1
-    kill -9 $(cat $PIDFILE)
-    echo " Done."
 }
 
 case "$1" in
     start)
-		[ ! -d /var/run/domoweb ] && \
-			/bin/mkdir /var/run/domoweb
-		/bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
+		[ -f $PIDFILE ] && echo "Domoweb seems to be running." && exit 0
 		start_django
     ;;
     stop)
@@ -101,6 +115,6 @@ case "$1" in
 		start_django
     ;;
     *)
-    echo "usage: $0 {start|stop|restart|status}"
+    echo "usage: $0 {start|stop|restart|status|killall}"
 esac
 exit 0
