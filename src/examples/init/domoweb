@@ -64,9 +64,6 @@ function start_django {
 
 function stop_django {
     echo -n " * Stopping DomoWeb..."
-    #for pid in `ps ax | grep "$DAEMON" | grep -v grep | awk '{print $1}'`; do
-    #    kill -9 $pid 2>/dev/null 1>&2
-    #done
     kill $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
     sleep 1
     [ -f $PIDFILE ] && kill -9 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
@@ -74,15 +71,12 @@ function stop_django {
     echo " Done."
 }
 
-function killall  {
+function killall_django {
+    stop_django
     echo -n " * Killing all DomoWeb..."
-    #for pid in `ps ax | grep "$DAEMON" | grep -v grep | awk '{print $1}'`; do
-    #    kill -9 $pid 2>/dev/null 1>&2
-    #done
-    killall $NAME >/dev/null 2>&1
-    sleep 1
-    [ -f $PIDFILE ] && kill -9 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
-    [ -f $PIDFILE ] && rm $PIDFILE
+    for pid in `ps ax | grep "$NAME" | grep -v grep | awk '{print $1}'`; do
+        kill -9 $pid 2>/dev/null 1>&2
+    done
     echo " Done."
 }
 
@@ -108,6 +102,9 @@ case "$1" in
     ;;
     status)
 		status_django
+    ;;
+    killall)
+		killall_django
     ;;
     restart)
 		stop_django
