@@ -84,15 +84,21 @@ function status_django {
 
 case "$1" in
     start)
-    start_django
+		[ ! -d /var/run/domoweb ] && \
+			/bin/mkdir /var/run/domoweb
+		/bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
+		start_django
     ;;
     stop)
-    stop_django
+		stop_django
+    ;;
+    status)
+		status_django
     ;;
     restart)
-    stop_django
-    sleep 3
-    start_django
+		stop_django
+		sleep 3
+		start_django
     ;;
     *)
     echo "usage: $0 {start|stop|restart|status}"
