@@ -1,136 +1,100 @@
-#!/bin/sh
-#
+#!/bin/bash
+
 ### BEGIN INIT INFO
 # Provides:          domoweb
 # Required-Start:    $local_fs $network
 # Required-Stop:     $local_fs $network
-# Should-Start:
-# Should-Stop:
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Start DomoWeb UI for Domogik
-# Description:       Domoweb is the web interface of domogik
 ### END INIT INFO
 
-. /lib/lsb/init-functions
+#This file is part of B{Domogik} project (U{http://www.domogik.org}).
+#
+#License
+#=======
+#
+#B{Domogik} is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#B{Domogik} is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with Domogik. If not, see U{http://www.gnu.org/licenses}.
 
-set -e
+# source application-specific settings
+CUSTOM_PATH=""
 
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/sbin/dmg_domoweb
-NAME=dmg_domoweb
-DESC="Domoweb UI"
+[ -f /etc/conf.d/domoweb ] && . /etc/conf.d/domoweb
+[ -f /etc/default/domoweb ] && . /etc/default/domoweb
+
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$CUSTOM_PATH:
+DAEMON=$(which dmg_domoweb)
 LOGFILE=/var/log/domoweb/console.log
 PIDFILE=/var/run/domoweb/domoweb.pid
 
-if [ ! -x $DAEMON ] ; then
-    echo "Can't find $DAEMON"
-    exit 0
+if [ $UID != 0 ];then
+    echo "Must be run with root privileges";
+    exit 1;
 fi
 
-#Don't update these values.
-#Use /etc/default/domoweb instead
-RUN=no
-DOMOWEB_USER=domoweb
-DIETIME=1
-STARTTIME=4
-
-# Include defaults if available
-if [ -f /etc/default/domoweb ] ; then
-    . /etc/default/domoweb
-fi
-
-if [ "x$RUN" != "xyes" ] ; then
-    echo "$NAME disabled; edit /etc/default/domoweb"
-    exit 0
-fi
-
-start_server() {
-    /bin/su - ${DOMOWEB_USER} -c "$DAEMON >>$LOGFILE 2>&1 &"
-    sleep $STARTTIME
-}
-
-stop_server() {
-	if [ -f $PIDFILE ] ; then
-		killproc -p $PIDFILE $DAEMON >/dev/null 2>&1
-		sleep $DIETIME
-	fi
-	if [ -f $PIDFILE ] ; then
-		killproc -p $PIDFILE $DAEMON -9 >/dev/null 2>&1
-		sleep $DIETIME
-	fi
-}
-
-restart_server() {
-    stop_server
-    if [ "$(running)" = "y" ] ;  then
-        echo n
-        return 1
+function start_django {
+    echo -n " * Starting DomoWeb..."
+    /bin/su - ${DOMOWEB_USER} -c "$DAEMON >$LOGFILE 2>&1 &"
+    if [ $? -gt 0 ]; then
+        echo " An error occured during DomoWeb startup."
+        exit 1
+    else
+        echo " Done."
     fi
-    start_server
-	if [ "$(running)" = "y" ] ; then
-		echo y
-	else
-		echo n
-	fi
 }
 
-running() {
-	set +e
-	STAT="0"
-	pidofproc -p $PIDFILE $DAEMON >/dev/null || STAT="$?"
-	if [ $STAT = 0 ] ; then
-		echo y
-	else
-		echo n
-	fi
-	set -e
+function stop_django {
+    echo -n " * Stopping DomoWeb..."
+    #for pid in `ps ax | grep "$DAEMON" | grep -v grep | awk '{print $1}'`; do
+    #    kill -9 $pid 2>/dev/null 1>&2
+    #done
+    kill $(cat $PIDFILE)
+    sleep 1
+    kill -9 $(cat $PIDFILE)
+    [ -f $PIDFILE ] && rm $PIDFILE
+    echo " Done."
+}
+
+function status_django {
+    [ ! -f $PIDFILE ] && echo " * DomoWeb is not running (can't find pid file)"
+    RUNNING=$(pgrep "$DAEMON" | grep -c $(cat $PIDFILE))
+    if [ $RUNNING -eq 1 ]; then
+        echo " * DomoWeb is running"
+    else
+        echo " * DomoWeb is not running"
+    fi
+
+    kill $(cat $PIDFILE)
+    sleep 1
+    kill -9 $(cat $PIDFILE)
+    echo " Done."
 }
 
 case "$1" in
-  start)
-		[ ! -d /var/run/domoweb ] && \
-			/bin/mkdir /var/run/domoweb
-		/bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
-        log_daemon_msg "Starting $DESC " "$NAME"
-        if [ "$(running)" = "y" ] ; then
-                log_progress_msg "apparently already running"
-                log_end_msg 0
-                exit 0
-        fi
-        start_server
-        if  [ "$(running)" = "y" ] ;  then
-			# It's ok, the server started and is running
-            log_end_msg 0
-        else
-            # It is not running after we did start
-            log_end_msg 1
-        fi
+    start)
+    start_django
     ;;
-  stop)
-        log_daemon_msg "Stopping $DESC" "$NAME"
-        stop_server
-        if [ "$(running)" = "y" ] ; then
-            log_end_msg 1
-        else
-            log_end_msg 0
-        fi
+    stop)
+    stop_django
     ;;
-  force-reload|restart)
-        log_daemon_msg "Restarting $DESC" "$NAME"
-        if [ "$(restart_server)" = "y" ] ; then
-            log_end_msg 0
-        else
-            log_end_msg 1
-        fi
+    restart)
+    stop_django
+    sleep 3
+    start_django
     ;;
-  status)
-        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit "$?"
-    ;;
-  *)
-    echo "Usage: $0 {start|stop|restart|force-reload}" >&2
-    exit 1
-    ;;
+    *)
+    echo "usage: $0 {start|stop|restart|status}"
 esac
-
 exit 0
