@@ -99,7 +99,7 @@
             <li><a href="#tabs-1">{% trans "Informations" %}</a></li>
             <li><a href="#tabs-2">{% trans "Requirements" %}</a></li>
             <li><a href="#tabs-3">{% trans "Configuration" %}</a></li>
-        {% if plugin.id == "onewire" %}
+        {% if plugin.id == "knx" %}
             <li><a href="#tabs-4">{% trans "Special" %}</a></li>
         {% endif %}
         </ul>
@@ -112,7 +112,7 @@
         <div id="tabs-3">
             {% include "plugins/requirements.html" %}
         </div>
-    {% if plugin.id == "onewire" %}
+    {% if plugin.id == "knx" %}
         <div id="tabs-4">
             {% include "plugins/special_knx.html" %}
         </div>
