@@ -1,0 +1,48 @@
+{% load i18n %}
+<script type='text/javascript'>
+    $(function(){
+        $("#specialsubmit").click(function(){
+            var dmg_addr = $("#dmg_addr").val();
+            var cmd_addr = $("#cmd_addr").val();
+            var cmd_type = $("#cmd_type").val();
+            var stat_addr = $("#stat_addr").val();
+            var stat_type = $("#stat_type").val();
+            var read = $("#read").is(':checked');
+            if (dmg_addr && cmd_addr && cmd_type && stat_addr && stat_type) {
+                var value = dmg_addr + ':' + cmd_addr + ':' + cmd_type + ':' + stat_addr + ':' + stat_type + ':' + read;
+                rinor.put(['api', 'command', 'knx', dmg_addr], {"command":'Add', "value":value})
+                    .done(function(data, status, xhr){
+                        $.notification('error', '{% trans "Sent" %}');                                                                      
+                    })
+                    .fail(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
+                    });
+            } else {
+                $.notification('error', '{% trans "All fields should be filled" %}');                                                                      
+            }
+        });
+    });
+</script>
+<section class="subsection">
+    <h2>{% trans "Special" %}</h2>
+        <form id='specialform'>
+            <label for='dmg_addr'>{% trans 'Domogik device address' %}:</label>
+            <input type='text' id='dmg_addr' name='dmg_addr'/>
+            <label for='cmd_addr'>{% trans 'KNX command group address' %}:</label>
+            <input type='text' id='cmd_addr' name='cmd_addr'/>
+            <label for='cmd_type'>{% trans 'KNX command datatype' %}:</label>
+            <input type='text' id='cmd_type' name='cmd_type'/>
+            <label for='stat_addr'>{% trans 'KNX state group address' %}:</label>
+            <input type='text' id='stat_addr' name='stat_addr'/>
+            <label for='stat_type'>{% trans 'KNX state datatype' %}:</label>
+            <input type='text' id='stat_type' name='stat_type'/>
+            <label for='lecture'>{% trans "Read on start" %}</label>
+            <input type='checkbox' id='read' name='read' value='true'/>
+        </form>
+        <p>
+            <button id='specialsubmit' class='button icon16-action-save'>{% trans "Send" %}</button>
+        </p>
+
+</section>
+

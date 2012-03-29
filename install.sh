@@ -34,6 +34,7 @@
 DMW_ETC=/etc/domoweb
 DMW_LIB=/var/lib/domoweb
 DMW_LOG=/var/log/domoweb
+DMW_RUN=/var/run/domoweb
 DMW_BIN=/usr/sbin
 
 function run_setup_py {
@@ -103,6 +104,13 @@ function copy_sample_files {
     fi
     chown $d_user:root $DMW_LOG
     chmod 755 $DMW_LOG
+
+    # create /var/run/domoweb
+    if [ ! -d $DMW_RUN ];then
+        mkdir $DMW_RUN
+    fi
+    chown $d_user:root $DMW_RUN
+    chmod 755 $DMW_RUN
 
     if [ ! -f $DMW_ETC/domoweb.cfg ];then
         cp -f src/examples/config/domoweb.cfg $DMW_ETC/domoweb.cfg

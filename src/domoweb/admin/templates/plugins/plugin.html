@@ -99,69 +99,23 @@
             <li><a href="#tabs-1">{% trans "Informations" %}</a></li>
             <li><a href="#tabs-2">{% trans "Requirements" %}</a></li>
             <li><a href="#tabs-3">{% trans "Configuration" %}</a></li>
+        {% if plugin.id == "onewire" %}
+            <li><a href="#tabs-4">{% trans "Special" %}</a></li>
+        {% endif %}
         </ul>
         <div id="tabs-1">
-            <section class="subsection">
-                <h2>{% trans "Basic Control" %}</h2>
-                <button id='buttonstatus'></button>
-                <ul class='infos'>
-                    <li><span class='label'>{% trans "Version" %}:</span> {{ plugin.version }}</li>
-                    <li><span class='label'>{% trans "Documentation" %}:</span> <a href='{{ plugin.documentation }}'>Wiki</a></li>
-                    <li><span class='label'>{% trans "Host" %}:</span> {{ plugin.host }}</li>
-                    <li><span class='label'>{% trans "Technology" %}:</span> {{ plugin.technology }}</li>
-                    <li><div id='iconstatus'></div></li>
-                </ul>
-            </section>
-            <section class="subsection">
-                <h2>{% trans "Description" %}</h2>
-                <p>{{ plugin.description|linebreaksbr }}</p>
-            </section>
+            {% include "plugins/informations.html" %}
         </div>
         <div id="tabs-2">
-            <section class="subsection">
-                <h2>{% trans "Dependencies" %}</h2>
-                <ul class='dependencies'>
-                    {% for dependency in dependencies %}
-                        <li>{{dependency.id}}
-                        {% if dependency.installed == 'False' %}
-                            <div style='float:right' class='icon16-text icon16-status-false'>Missing</div>                                                                            
-                            {% if dependency.error %}
-                                <p class='error'>{{ dependency.error }}</p>
-                            {% endif %}
-                            {% if dependency.cmdline %}
-                                <code>{{ dependency.cmdline }}</code>
-                            {% endif %}
-                        {% else %}
-                            <div style='float:right' class='icon16-text icon16-status-true'>Installed</div>                                   
-                        {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </section>
-            <section class="subsection">
-                <h2>{% trans "UDEV Rules" %}</h2>
-                <ul class='udevrules'>
-                    {% for udevrule in udevrules %}
-                    <li><strong>{{ udevrule.model }}</strong>: {{ udevrule.description }}</p>
-                        <p>{{ udevrule.filename }}:
-                        <code>{{ udevrule.rule }}</code></p>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </section>
+            {% include "plugins/requirements.html" %}
         </div>
         <div id="tabs-3">
-            <section class="subsection">
-                <h2>{% trans "Configuration" %}</h2>
-                <div id='configuration'>
-                    <p><button id='configurationdelete' class='button icon16-action-del'>{% trans 'Delete configuration' %}</button></p>
-                    <div id='simple_configuration_items'>
-                    </div>
-                    <div id='grouped_configuration_items'>
-                    </div>
-                    <p id='group_buttons'></p> 
-                </div>
-            </section>
+            {% include "plugins/requirements.html" %}
         </div>
+    {% if plugin.id == "onewire" %}
+        <div id="tabs-4">
+            {% include "plugins/special_knx.html" %}
+        </div>
+    {% endif %}
     </div>
 {% endblock %}

@@ -1,0 +1,32 @@
+{% load i18n %}
+<section class="subsection">
+    <h2>{% trans "Dependencies" %}</h2>
+    <ul class='dependencies'>
+        {% for dependency in dependencies %}
+            <li>{{dependency.id}}
+            {% if dependency.installed == 'False' %}
+                <div style='float:right' class='icon16-text icon16-status-false'>Missing</div>                                                                            
+                {% if dependency.error %}
+                    <p class='error'>{{ dependency.error }}</p>
+                {% endif %}
+                {% if dependency.cmdline %}
+                    <code>{{ dependency.cmdline }}</code>
+                {% endif %}
+            {% else %}
+                <div style='float:right' class='icon16-text icon16-status-true'>Installed</div>                                   
+            {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</section>
+<section class="subsection">
+    <h2>{% trans "UDEV Rules" %}</h2>
+    <ul class='udevrules'>
+        {% for udevrule in udevrules %}
+        <li><strong>{{ udevrule.model }}</strong>: {{ udevrule.description }}</p>
+            <p>{{ udevrule.filename }}:
+            <code>{{ udevrule.rule }}</code></p>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
