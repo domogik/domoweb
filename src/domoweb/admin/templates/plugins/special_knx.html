@@ -9,8 +9,9 @@
             var stat_type = $("#stat_type").val();
             var read = $("#read").is(':checked');
             if (dmg_addr) {
+                if(cmd_addr||stat_addr){
                 var value = dmg_addr + ':' + cmd_addr + ':' + cmd_type + ':' + stat_addr + ':' + stat_type + ':' + read;
-                rinor.put(['api', 'command', 'knx', dmg_addr], {"command":'Add', "value":value})
+                rinor.put(['api', 'command', 'knx', 'UI'], {"command":'Add', "value":value})
                     .done(function(data, status, xhr){
                         $.notification('error', '{% trans "Sent" %}');                                                                      
                     })
@@ -18,8 +19,11 @@
                         if (jqXHR.status == 400)
                             $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
                     });
+                }else {
+                $.notification('error', '{% trans "Need Command group or Stat group address field should be filled" %}')
+                }
             } else {
-                $.notification('error', '{% trans "All fields should be filled" %}');                                                                      
+                $.notification('error', '{% trans "Domogik device address field should be filled" %}');                                
             }
         });
     });
