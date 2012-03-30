@@ -8,7 +8,7 @@
             var stat_addr = $("#stat_addr").val();
             var stat_type = $("#stat_type").val();
             var read = $("#read").is(':checked');
-            if (dmg_addr && cmd_addr && cmd_type && stat_addr && stat_type) {
+            if (dmg_addr) {
                 var value = dmg_addr + ':' + cmd_addr + ':' + cmd_type + ':' + stat_addr + ':' + stat_type + ':' + read;
                 rinor.put(['api', 'command', 'knx', dmg_addr], {"command":'Add', "value":value})
                     .done(function(data, status, xhr){
@@ -32,11 +32,52 @@
             <label for='cmd_addr'>{% trans 'KNX command group address' %}:</label>
             <input type='text' id='cmd_addr' name='cmd_addr'/>
             <label for='cmd_type'>{% trans 'KNX command datatype' %}:</label>
-            <input type='text' id='cmd_type' name='cmd_type'/>
+            <select name="drop1" id="cmd_type">
+                <option value="1.001">1.001-Switch ON/OFF</option>
+                <option value="1.008">1.008-Blind Controle UP/DOWN</option>
+                <option value="3.007">3.007-Dimming by step</option>
+                <option value="3.008">3.008-Blind by step</option>
+                <option value="5.001">5.001-Scalling 0-100%</option>
+                <option value="5.003">5.003-Angle 0-360°</option>
+                <option value="5.xxx">5.xxx-8bit unsigned integer</option>
+                <option value="6.xxx">6.xxx-8bit signed integer</option>
+                <option value="7.xxx">7.xxx-16bit unsigned integer</option>
+                <option value="8.xxx">8.xxx-16bit signed integer</option>
+                <option value="9.xxx">9.xxx-16bit floating number</option>
+                <option value="10.001">10.001-Time</option>
+                <option value="11.001">11.001-Date</option>
+                <option value="12.xxx">12.xxx-32bit unsigned integer</option>
+                <option value="13.xxx">13.xxx-32bit signed integer</option>
+                <option value="14.xxx">14.xxx-32bit IEEE754 floating point</option>
+                <option value="16.000">16.000-String</option>
+                <option value="20.102">20.102-HVAC mode</option>
+                <option value="DT_HVACEib">Special DTP for TB042</option>
+            </select>
+
             <label for='stat_addr'>{% trans 'KNX state group address' %}:</label>
             <input type='text' id='stat_addr' name='stat_addr'/>
             <label for='stat_type'>{% trans 'KNX state datatype' %}:</label>
-            <input type='text' id='stat_type' name='stat_type'/>
+           <select name="drop1" id="stat_type">
+                <option value="1.001">1.001-Switch ON/OFF</option>
+                <option value="1.008">1.008-Blind Controle UP/DOWN</option>
+                <option value="3.007">3.007-Dimming by step</option>
+                <option value="3.008">3.008-Blind by step</option>
+                <option value="5.001">5.001-Scalling 0-100%</option>
+                <option value="5.003">5.003-Angle 0-360°</option>
+                <option value="5.xxx">5.xxx-8bit unsigned integer</option>
+                <option value="6.xxx">6.xxx-8bit signed integer</option>
+                <option value="7.xxx">7.xxx-16bit unsigned integer</option>
+                <option value="8.xxx">8.xxx-16bit signed integer</option>
+                <option value="9.xxx">9.xxx-16bit floating number</option>
+                <option value="10.001">10.001-Time</option>
+                <option value="11.001">11.001-Date</option>
+                <option value="12.xxx">12.xxx-32bit unsigned integer</option>
+                <option value="13.xxx">13.xxx-32bit signed integer</option>
+                <option value="14.xxx">14.xxx-32bit IEEE754 floating point</option>
+                <option value="16.000">16.000-String</option>
+                <option value="20.102">20.102-HVAC mode</option>
+                <option value="DT_HVACEib">Special DTP for TB042</option>
+            </select>
             <label for='lecture'>{% trans "Read on start" %}</label>
             <input type='checkbox' id='read' name='read' value='true'/>
         </form>
