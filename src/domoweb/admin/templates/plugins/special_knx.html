@@ -8,12 +8,22 @@
             var stat_addr = $("#stat_addr").val();
             var stat_type = $("#stat_type").val();
             var read = $("#read").is(':checked');
+            var comment = $("#comment").val();
             if (dmg_addr) {
                 if(cmd_addr||stat_addr){
-                var value = dmg_addr + ':' + cmd_addr + ':' + cmd_type + ':' + stat_addr + ':' + stat_type + ':' + read;
+                var value = dmg_addr + ':' + cmd_addr + ':' + cmd_type + ':' + stat_addr + ':' + stat_type + ':' + read+':'+comment;
                 rinor.put(['api', 'command', 'knx', 'UI'], {"command":'Add', "value":value})
                     .done(function(data, status, xhr){
-                        $.notification('error', '{% trans "Sent" %}');                                                                      
+                         test=JSON.stringify(data);
+                         debut=test.search('data=');
+                         test=test.slice(debut+4);
+                         fin=test.search('}');
+                         test=test.slice(1,fin-2);                       
+                         if (test.search('Error')>=0){
+                            $.notification('error', test);
+                         }else{
+                         $.notification('info',test ); 
+                         }
                     })
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
@@ -84,6 +94,9 @@
             </select>
             <label for='lecture'>{% trans "Read on start" %}</label>
             <input type='checkbox' id='read' name='read' value='true'/>
+            <label for='comment'>{% trans 'Description of this device' %}:</label>
+            <input type='text' id='comment' name='comment' size='40'/>
+
         </form>
         <p>
             <button id='specialsubmit' class='button icon16-action-save'>{% trans "Send" %}</button>
