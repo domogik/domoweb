@@ -48,7 +48,7 @@
             }
             this.displayValue(this.processingValue);
 
-            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":this.values[this.processingValue]})
+            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":this.values[this.processingValue]})
                 .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })
@@ -79,7 +79,7 @@
             if (value != null) {
                 if (value == 1 || (typeof(value) == 'string' && value.toLowerCase() == this.values[1])) {
                     this.currentValue = 1;
-                } else {
+                } else if (value == 0 || (typeof(value) == 'string' && value.toLowerCase() == this.values[0])) {
                     this.currentValue = 0;
                 }                
             } else { // Unknown
