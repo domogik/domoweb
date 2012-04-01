@@ -1,0 +1,44 @@
+<VirtualHost *:80>
+	ServerAdmin webmaster@example.com
+	ServerName www.example.com
+	ServerAlias domoweb.localhost
+	DocumentRoot /var/www/domoweb
+
+	ErrorLog /var/log/apache2/domoweb/error.log
+	LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"" common
+	CustomLog /var/log/apache2/domoweb/access.log common
+
+        ProxyRequests Off
+    	ProxyVia On
+
+	<Location />
+		ProxyPass http://127.0.0.1:40404/
+	    ProxyPassReverse http://127.0.0.1:40404/
+		ProxyHTMLURLMap http://127.0.0.1:40404/ /
+	    SetOutputFilter proxy-html
+
+		#AuthBasicAuthoritative Off
+		#AuthUserFile /dev/null
+
+		#AuthMySQL_Host localhost
+		#AuthMySQL_DB domogik
+		#AuthMySQL_User domogik
+		#AuthMySQL_Password password
+
+		#AuthMySQL_Password_Table core_user_account
+		#AuthMySQL_Username_Field login
+		#AuthMySQL_Password_Field password
+		#AuthMySQL_Empty_Passwords off
+		#AuthMySQL_Encryption_Types Crypt_DES Crypt_MD5 PHP_MD5 SHA1Sum MySQL
+
+		#AuthMYSQL on
+		#AuthMySQL_Authoritative on
+
+		#AuthName "domoweb"
+		#AuthType Basic
+		#require valid-user
+
+	</Location>
+
+</VirtualHost>
+

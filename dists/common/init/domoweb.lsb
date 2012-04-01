@@ -1,0 +1,136 @@
+#!/bin/sh
+#
+### BEGIN INIT INFO
+# Provides:          domoweb
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs $network
+# Should-Start:
+# Should-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start DomoWeb UI for Domogik
+# Description:       Domoweb is the web interface of domogik
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+set -e
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/sbin/dmg_domoweb
+NAME=dmg_domoweb
+DESC="Domoweb UI"
+LOGFILE=/var/log/domoweb/console.log
+PIDFILE=/var/run/domoweb/domoweb.pid
+
+if [ ! -x $DAEMON ] ; then
+    echo "Can't find $DAEMON"
+    exit 0
+fi
+
+#Don't update these values.
+#Use /etc/default/domoweb instead
+RUN=no
+DOMOWEB_USER=domoweb
+DIETIME=1
+STARTTIME=4
+
+# Include defaults if available
+if [ -f /etc/default/domoweb ] ; then
+    . /etc/default/domoweb
+fi
+
+if [ "x$RUN" != "xyes" ] ; then
+    echo "$NAME disabled; edit /etc/default/domoweb"
+    exit 0
+fi
+
+start_server() {
+    /bin/su - ${DOMOWEB_USER} -c "$DAEMON >>$LOGFILE 2>&1 &"
+    sleep $STARTTIME
+}
+
+stop_server() {
+	if [ -f $PIDFILE ] ; then
+		killproc -p $PIDFILE $DAEMON >/dev/null 2>&1
+		sleep $DIETIME
+	fi
+	if [ -f $PIDFILE ] ; then
+		killproc -p $PIDFILE $DAEMON -9 >/dev/null 2>&1
+		sleep $DIETIME
+	fi
+}
+
+restart_server() {
+    stop_server
+    if [ "$(running)" = "y" ] ;  then
+        echo n
+        return 1
+    fi
+    start_server
+	if [ "$(running)" = "y" ] ; then
+		echo y
+	else
+		echo n
+	fi
+}
+
+running() {
+	set +e
+	STAT="0"
+	pidofproc -p $PIDFILE $DAEMON >/dev/null || STAT="$?"
+	if [ $STAT = 0 ] ; then
+		echo y
+	else
+		echo n
+	fi
+	set -e
+}
+
+case "$1" in
+  start)
+		[ ! -d /var/run/domoweb ] && \
+			/bin/mkdir /var/run/domoweb
+		/bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
+        log_daemon_msg "Starting $DESC " "$NAME"
+        if [ "$(running)" = "y" ] ; then
+                log_progress_msg "apparently already running"
+                log_end_msg 0
+                exit 0
+        fi
+        start_server
+        if  [ "$(running)" = "y" ] ;  then
+			# It's ok, the server started and is running
+            log_end_msg 0
+        else
+            # It is not running after we did start
+            log_end_msg 1
+        fi
+    ;;
+  stop)
+        log_daemon_msg "Stopping $DESC" "$NAME"
+        stop_server
+        if [ "$(running)" = "y" ] ; then
+            log_end_msg 1
+        else
+            log_end_msg 0
+        fi
+    ;;
+  force-reload|restart)
+        log_daemon_msg "Restarting $DESC" "$NAME"
+        if [ "$(restart_server)" = "y" ] ; then
+            log_end_msg 0
+        else
+            log_end_msg 1
+        fi
+    ;;
+  status)
+        status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit "$?"
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status|force-reload}" >&2
+    exit 1
+    ;;
+esac
+
+exit 0

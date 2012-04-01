@@ -47,12 +47,12 @@ fi
 
 function start_django {
     echo -n " * Starting DomoWeb..."
-	[ ! -d /var/run/domoweb ] && \
-		/bin/mkdir /var/run/domoweb
-	/bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
-	[ ! -d /var/log/domoweb ] && \
-		/bin/mkdir /var/log/domoweb
-	/bin/chown -Rf ${DOMOWEB_USER}:root /var/log/domoweb
+    [ ! -d /var/run/domoweb ] && \
+        /bin/mkdir /var/run/domoweb
+    /bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
+    [ ! -d /var/log/domoweb ] && \
+        /bin/mkdir /var/log/domoweb
+    /bin/chown -Rf ${DOMOWEB_USER}:root /var/log/domoweb
     /bin/su - ${DOMOWEB_USER} -c "$DAEMON >$LOGFILE 2>&1 &"
     if [ $? -gt 0 ]; then
         echo " An error occured during DomoWeb startup."
@@ -82,8 +82,8 @@ function killall_django {
 
 function status_django {
     [ ! -f $PIDFILE ] && \
-		echo " * DomoWeb is not running (can't find pid file)" &&
-		exit 0
+        echo " * DomoWeb is not running (can't find pid file)" &&
+        exit 0
     RUNNING=$(pgrep "$NAME" | grep -c $(cat $PIDFILE 2>/dev/null))
     if [ $RUNNING -eq 1 ]; then
         echo " * DomoWeb is running"
@@ -94,22 +94,22 @@ function status_django {
 
 case "$1" in
     start)
-		[ -f $PIDFILE ] && echo "Domoweb seems to be running." && exit 0
-		start_django
+        [ -f $PIDFILE ] && echo "Domoweb seems to be running. Please stop it." && exit 0
+        start_django
     ;;
     stop)
-		stop_django
+        stop_django
     ;;
     status)
-		status_django
+        status_django
     ;;
     killall)
-		killall_django
+        killall_django
     ;;
     restart)
-		stop_django
-		sleep 3
-		start_django
+        stop_django
+        sleep 3
+        start_django
     ;;
     *)
     echo "usage: $0 {start|stop|restart|status|killall}"
