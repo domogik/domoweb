@@ -33,9 +33,30 @@
                 $.notification('error', '{% trans "Need Command group or Stat group address field should be filled" %}')
                 }
             } else {
-                $.notification('error', '{% trans "Domogik device address field should be filled" %}');                                
+                $.notification('error', '{% trans "Domogik device address field should be filled" %}');                
             }
         });
+   $("#specialread").click(function(){
+      data="";
+      rinor.put(['api', 'command', 'knx', 'UI'], {"command":'Add', "value":"Request"})
+                    .done(function(data, status, xhr){
+                         test=JSON.stringify(data);
+                         debut=test.search('data=');
+                         test=test.slice(debut+4);
+                         fin=test.search('}');
+                         test=test.slice(1,fin-2);                       
+                         test=test.replace(/,#/g,"\n");
+                         test=test.replace(/,/gi,":");
+                         test=test.replace("#","");
+                         $.notification('info',test );
+                         $.getElementsById("demo").innerHTML="Test id";
+                         }
+                    )
+                    .fail(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
+                   });
+      });
     });
 </script>
 <section class="subsection">
@@ -96,10 +117,13 @@
             <input type='checkbox' id='read' name='read' value='true'/>
             <label for='comment'>{% trans 'Description of this device' %}:</label>
             <input type='text' id='comment' name='comment' size='40'/>
+            <label id="test1" name="Test2">tt</label>
+           <p id="demo">test demo</p>
 
         </form>
         <p>
             <button id='specialsubmit' class='button icon16-action-save'>{% trans "Send" %}</button>
+            <button id='specialread' class='button icon16-action-save'>{% trans "Read files" %}</button>
         </p>
 
 </section>
