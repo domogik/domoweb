@@ -3,7 +3,7 @@
         // default options
         options: {
             version: 0.1,
-            creator: 'Domogik',
+            creator: 'Basilic,Domogik',
             id: 'dmg_6x5_IPcamhedenfoscamMJPEG',
             name: 'Image Stream with motion control',
             description: 'Widget for displaying Webcam MJPEG stream',

@@ -3,7 +3,7 @@
         // default options
         options: {
             version: 0.1,
-            creator: 'Domogik',
+            creator: 'Basilic,Domogik',
             id: 'dmg_2x1_basicNoStateActuatorOff',
             name: 'Basic Widget Off',
             description: 'Only Off',
