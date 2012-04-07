@@ -23,6 +23,7 @@
                             $.notification('error', test);
                          }else{
                          $.notification('info',test ); 
+                         $("#specialread").click();
                          }
                     })
                     .fail(function(jqXHR, status, error){
@@ -36,10 +37,19 @@
                 $.notification('error', '{% trans "Domogik device address field should be filled" %}');                
             }
         });
-   function supp(i){
-          message="Suppression ligne " +i;
-          $notification('info', message);
-          }
+
+   $("#specialdelete").click(function(){
+      var ligne = $("#ligne_to_delete").val();
+                value="Delete:"+ligne
+                rinor.put(['api', 'command', 'knx', 'UI'], {"command":'Add', "value":value})
+                    .done(function(data, status, xhr){
+                     $("#specialread").click();
+                     })
+                    .fail(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
+                    });
+     });
 
 
    $("#specialread").click(function(){
@@ -56,9 +66,7 @@
                          do{
                            i=i+1;
                            next=test.search(',');
-                           onclik="supp"+i;
-                           text=text+"<br><button id="+onclik+ ">Delete</button>"+ test.slice(1,next);
-                           $('#'+onclik).click(function(){notification("info",i);});
+                           text=text+"<br/>" +i+" - "+ test.slice(0,next);
                            test=test.slice(next+1); 
 			 }
 			 while (test.search(",")>=0);
@@ -136,5 +144,6 @@
             <button id='specialread' class='button icon16-action-save'>{% trans "Read file" %}</button>
         </p>
               <p id="demo"><u>Config file:</u></p>
+           <button id='specialdelete' class='button icon16-action-save'>{% trans "Delete ligne" %}</button><input type=text id='ligne_to_delete' name='ligne_to_delete' size='40'>
 </section>
 
