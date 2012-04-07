@@ -43,6 +43,8 @@
                 value="Delete:"+ligne
                 rinor.put(['api', 'command', 'knx', 'UI'], {"command":'Add', "value":value})
                     .done(function(data, status, xhr){
+                     $.notification('info','Ligne deleted' ); 
+                     $("#specialread").click();
                      $("#specialread").click();
                      })
                     .fail(function(jqXHR, status, error){
