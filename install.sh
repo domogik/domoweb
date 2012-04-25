@@ -136,6 +136,10 @@ function copy_sample_files {
         echo "Can't find the directory where I can copy system-wide config. Usually it is /etc/default/"
         exit 6
     fi
+    if [ -d "/etc/logrotate.d/" ];then
+		cp src/examples/logrotate/domoweb /etc/logrotate.d/
+        chmod 644 /etc/logrotate.d/domoweb
+    fi
     if [ -d "/etc/init.d/" ];then
         cp src/examples/init/domoweb /etc/init.d/
         chmod +x /etc/init.d/domoweb
