@@ -458,7 +458,7 @@ class PackageInstalledResource(RinorResource):
     version = fields.CharField(attribute = 'version')
     enabled = fields.CharField(attribute = 'enabled')
     type = fields.CharField(attribute = 'type')
-    source = fields.CharField(attribute = 'source')
+#    source = fields.CharField(attribute = 'source')
     fullname = fields.CharField(attribute = 'fullname')
     updates = fields.ListField(attribute = 'updates')
 
@@ -517,7 +517,7 @@ class PackageAvailableResource(RinorResource):
     
     def obj_update_list(self, bundle, request, **kwargs):
         if (bundle['command'] == 'install' or bundle['command'] == 'install'):
-            _data = self._meta.rinor_pipe.put_install(kwargs['host'], kwargs['type'], bundle['package'], bundle['release'])
+            _data = self._meta.rinor_pipe.put_install(kwargs['host'], kwargs['type'], bundle['package'], bundle['version'])
         return _data
 
 class PackageDependencyResource(RinorResource):

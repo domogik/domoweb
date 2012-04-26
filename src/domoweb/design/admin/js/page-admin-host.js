@@ -153,14 +153,14 @@
                 },
                 {
                     "fnRender": function ( oObj ) {
-/*                        source = oObj.aData['source'];
-                        if (source.charAt(source.length-1)) {
+                        source = oObj.aData['source'];
+                        if (source.charAt(source.length-1) == '/') {
                             source = source.substr(0, source.length-1);
                         }
                         array_source = source.split('/');
                         repository = array_source.pop();
                         return "<span class='repository'><span class='icon' style='background-image:url(" + source + "/icon)'></span>" + repository + "</span>";
-*/                  return 'null';
+                  return 'null';
                     },
                 },
                 { "mDataProp": "category" },
