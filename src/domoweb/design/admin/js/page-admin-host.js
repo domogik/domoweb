@@ -322,7 +322,7 @@
                         return "<span class='repository'><span class='icon' style='background-image:url(" + source + "/icon)'></span>" + repository + "</span>";
                     },
                 },
-                { "mDataProp": "techno" },
+                { "mDataProp": "category" },
                 {
                     "fnRender": function ( oObj ) {
                         return oObj.aData['desc'].replace(/\n/g, '<br />');
