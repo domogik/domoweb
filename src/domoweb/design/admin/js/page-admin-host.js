@@ -325,19 +325,24 @@
                 { "mDataProp": "category" },
                 {
                     "fnRender": function ( oObj ) {
-                        return oObj.aData['desc'].replace(/\n/g, '<br />');
+                        var str = '';
+                        if (oObj.aData['description']) {
+                            str = oObj.aData['description'].replace(/\n/g, '<br />');
+                        }
+                        return str;
                     },
                 },
                 { "mDataProp": "author" },
                 {
                     "fnRender": function ( oObj ) {
                         var str = "";
-                        str += "<button class='install'>Install</button><a href='" + oObj.aData['doc'] + "' target='_blank' class='button external-button'>Documentation</a>";
+                        str += "<button class='install'>Install</button>";
+                        if (oObj.aData['documentation'])
+                            str += "<a href='" + oObj.aData['documentation'] + "' target='_blank' class='button external-button'>Documentation</a>";
                         return str;
                     },
                     "sClass": "center"
                 },
-
             ],
             "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
                 $("button.install", nRow).ajaxButton({
