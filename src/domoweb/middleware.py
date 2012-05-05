@@ -25,14 +25,12 @@ class RinorMiddleware(object):
             print "rinor_url:http://%s:%s" % (_ip.value, _port.value)
             
             if not 'rinor_api_version'  in request.session:
-                print "DEBUG 1"
                 try:
                     _info = InfoPipe().get_info_extended()
                 except RinorNotAvailable:
                     t = loader.get_template('error/RinorNotAvailable.html')
                     c = Context({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
                     return HttpResponseServerError(t.render(c))
-                print "DEBUG 2"
 
                 if (not _info.info.rinor_version_superior and not _info.info.rinor_version_inferior):
                     request.session['rinor_api_version'] = _info.info.rinor_version                    
@@ -40,12 +38,8 @@ class RinorMiddleware(object):
                     t = loader.get_template('error/BadDomogikVersion.html')
                     c = Context({'rinor_info':_info})
                     return HttpResponseServerError(t.render(c))
-                print "DEBUG 3"
-            if not 'normal_mode' in request.session:
-                mode = InfoPipe().get_mode()
-                request.session['normal_mode'] = (mode == "normal")
-                print "DEBUG 4"
-            print "DEBUG 5"
+            mode = InfoPipe().get_mode()
+            request.session['normal_mode'] = (mode == "normal")
 
         """
         Check if has message
