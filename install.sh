@@ -43,7 +43,7 @@ function run_setup_py {
         develop|install)
             if [ -f "setup.py" ];then
                 python ./ez_setup.py
-                python ./setup.py $MODE --script-dir=$DMW_BIN
+                python ./setup.py $MODE
                 if [ "x$?" != "x0" ];then
                     echo "setup.py script exists with a non 0 return value : $?"
                     exit 13
