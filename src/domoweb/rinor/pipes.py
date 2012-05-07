@@ -66,13 +66,13 @@ class InfoPipe(RinorPipe):
     def get_info_extended(self):
         _data = self.get_info()
         if (_data):
-            if ("REST_API_release" in _data.info):
-                _data.info['rinor_version'] = _data.info.REST_API_release
+            if ("REST_API_version" in _data.info):
+                _data.info['rinor_version'] = _data.info.REST_API_version
             else:    
                 _data.info['rinor_version'] = '0.1'
 
-            if ("Domogik_release" in _data.info):
-                _data.info['dmg_version'] = _data.info.Domogik_release
+            if ("Domogik_version" in _data.info):
+                _data.info['dmg_version'] = _data.info.Domogik_version
             else:
                 _data.info['dmg_version'] = '0.1'             
 
