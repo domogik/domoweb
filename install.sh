@@ -59,6 +59,11 @@ function run_setup_py {
     esac
 }
 
+function generate_revision_py {
+    python ./generate_revision.py
+    echo "Generate revision data file"
+}
+
 function test_sources {
     FILENAME=$1
     [ -d "$PWD/src" ] ||( echo "Can't find src/ directory, are you running this script from the sources main directory? (with ./$FILENAME" && exit 2 )
@@ -215,6 +220,7 @@ run_setup_py $MODE
 copy_sample_files
 update_default_config
 init_django_db
+generate_revision_py
 create_log_dir
 
 echo "Everything seems to be good, DomoWeb should be installed correctly."

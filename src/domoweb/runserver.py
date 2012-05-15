@@ -49,6 +49,8 @@ import sys
 import logging
 import os, os.path
 import pwd
+import commands
+import pickle
 
 import cherrypy
 from cherrypy import _cplogging, _cperror
@@ -175,11 +177,20 @@ class HTTPLogger(_cplogging.LogManager):
 def rundevelop():
     PROJECT_PATH=os.path.dirname(os.path.abspath(__file__))
     os.environ['DOMOWEB_PATH']=PROJECT_PATH
+    os.environ['DOMOWEB_BRANCH']=commands.getoutput("cd %s ; hg id -b 2>/dev/null" % PROJECT_PATH)
+    os.environ['DOMOWEB_REV']=commands.getoutput("cd %s ; hg id -n 2>/dev/null" % PROJECT_PATH)
+    os.environ['DOMOWEB_TAG']=commands.getoutput("cd %s ; hg id -t 2>/dev/null" % PROJECT_PATH)
     Server().run(PROJECT_PATH)
 
 def runinstall():
     PROJECT_PATH='/usr/share/domoweb'
     os.environ['DOMOWEB_PATH']=PROJECT_PATH
+    fh_in = open("/var/lib/domoweb/domoweb.dat", "rb")
+    data = pickle.load(fh_in)
+    fh_in.close()
+    os.environ['DOMOWEB_BRANCH']=data['branch']
+    os.environ['DOMOWEB_REV']=data['rev']
+    os.environ['DOMOWEB_TAG']=data['tag']
     Server().run(PROJECT_PATH)
     
 if __name__ == '__main__':
