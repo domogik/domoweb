@@ -170,6 +170,7 @@ class DeviceTypePipe(RinorPipe):
     list_path = "/base/device_type/list"
     index = 'device_type'
     paths = []
+    dependencies = ['package']
 
 class DeviceUsagePipe(RinorPipe):
     cache_expiry = 3600
