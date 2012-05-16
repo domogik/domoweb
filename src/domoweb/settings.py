@@ -52,7 +52,7 @@ PROJECT_PATH = os.environ['DOMOWEB_PATH']
 print PROJECT_PATH
 
 ### Get DomoWeb Version
-DOMOWEB_VERSION = "%s-%s.%s" % (os.environ['DOMOWEB_BRANCH'], os.environ['DOMOWEB_TAG'], os.environ['DOMOWEB_REV'])
+DOMOWEB_VERSION = "0.2.0-beta1.%s" % (os.environ['DOMOWEB_REV'])
 print DOMOWEB_VERSION
 
 ### UI Database settings
