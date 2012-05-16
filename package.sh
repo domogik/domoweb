@@ -1,10 +1,12 @@
 #!/bin/bash
 
+BRANCH=$(hg id -b)
+REV=$(hg id -n)
+TAG=$(hg id -t)
 
-FULL_RELEASE=$(hg branch | xargs hg log -l1 --template '{branch}.{rev} [{latesttag}] - {date|isodate}' -b)
-echo $FULL_RELEASE
-RELEASE=$(hg branch | xargs hg log -l1 --template '{branch}.{rev}' -b)
-SHORT_RELEASE=$(hg branch | xargs hg log -l1 --template '{branch}' -b)
+RELEASE="$BRANCH-$TAG.$REV"
+echo $RELEASE
+SHORT_RELEASE="$BRANCH-$TAG"
 
 ARCHIVE_NAME=domoweb-temp
 ARCHIVE=/tmp/$ARCHIVE_NAME.tgz
@@ -58,19 +60,23 @@ function set_release_number() {
         exit 1
     fi
     echo "setup.py : release number updated"
-    FILE2=$POST_PROCESSING/domoweb-$SHORT_RELEASE/src/domoweb/settings_develop.py
-    FILE3=$POST_PROCESSING/domoweb-$SHORT_RELEASE/src/domoweb/settings_install.py
-    sed -i "s/DOMOWEB_FULL_VERSION = .*/DOMOWEB_FULL_VERSION = '$FULL_RELEASE'/" $FILE2 $FILE3
+    FILE2=$POST_PROCESSING/domoweb-$SHORT_RELEASE/generate_revision.py
+    sed -i "s/    'branch':.*/    'branch':'$BRANCH',/" $FILE2
     if [ $? -ne 0 ] ; then
         echo "Error... exiting"
         exit 1
     fi
-    sed -i "s/DOMOWEB_VERSION = .*/DOMOWEB_VERSION = '$RELEASE'/" $FILE2 $FILE3
+    sed -i "s/    'rev':.*/    'rev':'$REV',/" $FILE2
     if [ $? -ne 0 ] ; then
         echo "Error... exiting"
         exit 1
     fi
-    echo "settings: release number updated"
+    sed -i "s/    'tag':.*/    'tag':'$TAG',/" $FILE2
+    if [ $? -ne 0 ] ; then
+        echo "Error... exiting"
+        exit 1
+    fi
+    echo "setup: release number updated"
 }
 
 function create_final_pkg() {
