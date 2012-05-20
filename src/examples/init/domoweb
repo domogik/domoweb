@@ -85,7 +85,7 @@ function status_django {
         echo " * DomoWeb is not running (can't find pid file)" &&
         exit 0
     RUNNING=$(pgrep "$NAME" | grep -c $(cat $PIDFILE 2>/dev/null))
-    if [ $RUNNING -eq 1 ]; then
+    if [ $RUNNING"u" == "1u" ]; then
         echo " * DomoWeb is running"
     else
         echo " * DomoWeb is not running"
