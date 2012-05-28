@@ -33,10 +33,7 @@ function numbersonly(e) {
                     field = self._addCheckboxField(value.name, value.label, value.required);
                     break;
                 case 'select':
-                    field = self._addSelectField(value.name, value.label, value.required, value.option.initial, value.option.options);
-                    break;
-                case 'selectipod':
-                    field = self._addSelectIpodField(value.name, value.label, value.required, value.option.initial, value.option.options);
+                    field = self._addSelectField(value.name, value.label, value.required, value.items, value.options);
                     break;
                 }
                 self._allFields.push(field);
@@ -95,66 +92,34 @@ function numbersonly(e) {
             this._content.append(inputitem);
             return inputitem;
         },
-        
-        _addSelectField: function(name, label, required, initial, options) {
+
+        _addSelectField: function(name, label, required, items, options) {
             var labelitem = $("<label for='" + name + "'>" + label + "</label>");
-            var inputitem = $("<select class='medium' id='" + name + "' name='" + name + "'></select>");
+            var inputitem = $("<select class='medium' id='" + name + "' name='" + name + "' style='width:20em;'></select>");
             if (required) {
                 labelitem.addClass('required');
                 inputitem.addClass('required');
             }
-            if (initial) {
-                inputitem.append("<option value='" + initial.value + "'>" + initial.label + "</option>");
+            if (options.placeholder) {
+                inputitem.append("<option value=''></option>");
+                inputitem.attr('data-placeholder', options.placeholder);
             }
-            if (options) {
-                jQuery.each(options, function(index, option) {
-                    inputitem.append("<option value='" + option.value + "'>" + option.label + "</option>");
-                });                
-            }
-            this._content.append(labelitem);
-            this._content.append(inputitem);
-            return inputitem;
-        },
-        
-        _addSelectIpodField: function(name, label, required, initial, options) {
-            var labelitem = $("<label for='" + name + "'>" + label + "</label>");
-            var inputitem = $("<input type='hidden' class='medium' id='" + name + "' name='" + name + "' value='" + initial.value + "' />");
-            if (required) {
-                labelitem.addClass('required');
-            }
-            this._content.append(labelitem);
-            this._content.append(inputitem);
-            var button = $("<a tabindex='0' href='#" + name + "_list' class='fg-button' id='" + name + "_button'><div class='" + initial.icon + "'>" + initial.label + "</div></a>");
-            if (required) {
-                button.addClass('required');
-            }
-            this._content.append(button);
-            var list = $("<div id='" + name + "_list'></div>");
-            list.hide();
-            if (options) {
-                var ul = $("<ul></ul>");
-                jQuery.each(options, function(index, option) {
-                    var li = $("<li></li>");
-                    li.append("<a href='#' value='" + option.value + "' valuetxt='" + option.label + "' valueicon='" + option.icon + "'><div class='icon16-text " + option.icon + "'>" + option.label + "</div></a>");
-                    if(option.submenu) {
-                        var subul = $("<ul></ul>");
-                        jQuery.each(option.submenu, function(index, suboption) {
-                            subul.append("<li><a href='#' value='" + suboption.value + "' valuetxt='" + option.label + "." + suboption.label + "' valueicon='" + option.icon + "'>" + suboption.label + "</a></li>");
-                        });
-                        li.append(subul);
+            if (items) {
+                jQuery.each(items, function(index, item) {
+                    if (item.subitems) {
+                        group = $("<optgroup label='" + item.label + "' class='" + item.icon + "' icon='" + item.icon + "'></optgroup>");
+                        jQuery.each(item.subitems, function(index, subitem) {
+                            group.append("<option class='" + subitem.icon + "' value='" + subitem.value + "'>" + subitem.label + "</option>");                                                    
+                        });                                        
+                        inputitem.append(group);                        
+                    } else {
+                        inputitem.append("<option class='" + item.icon + "' value='" + item.value + "' icon='" + item.icon + "'>" + item.label + "</option>");                        
                     }
-                    ul.append(li);
                 });                
-                list.append(ul);
             }
-            this._content.append(list);
-            button.menu({
-                content: list.html(),
-                backLink: false,
-                crumbDefaultText: 'Choose a technologie:',
-                resultValueField: '#' + name,
-                resultTextElement: "#" + name + "_button"
-            });
+            this._content.append(labelitem);
+            this._content.append(inputitem);
+            inputitem.chosen();
             return inputitem;
         },
         
@@ -176,24 +141,23 @@ function numbersonly(e) {
                 if (value.required || self._hasvalue(value)) {
                     switch(value.type) {
                     case 'text':
-                        if (!self._validTextLength(value.name, value.option.min, value.option.max)) {
+                        if (!self._validTextLength(value.name, value.options.min, value.options.max)) {
                             $("#" + value.name).addClass('state-error');
-                            valid &= self._addTips(value.label + " length has to be between " + value.option. min + " and " + value.option.max + ".");
+                            valid &= self._addTips(value.label + " length has to be between " + value.options. min + " and " + value.options.max + ".");
                         } else {
                             $("#" + value.name).removeClass('state-error');                            
                         }
                         break;
                     case 'numericpassword':
-                        if (!self._validTextLength(value.name, value.option.min, value.option.max)) {
+                        if (!self._validTextLength(value.name, value.options.min, value.options.max)) {
                             $("#" + value.name).addClass('state-error');
-                            valid &= self._addTips(value.label + " length has to be between " + value.option. min + " and " + value.option.max + ".");
+                            valid &= self._addTips(value.label + " length has to be between " + value.options. min + " and " + value.options.max + ".");
                         } else {
                             $("#" + value.name).removeClass('state-error');                            
                         }
                         break;
                     case 'select':
-                    case 'selectipod':
-                        if (!self._validNotInitial(value.name, value.option.initial)) {
+                        if (!self._validNotInitial(value.name)) {
                             $("#" + value.name + "_button").addClass('state-error');
                             valid &= self._addTips(value.label + " is not selected");
                         } else {
@@ -211,9 +175,9 @@ function numbersonly(e) {
             return (val.length <= max && val.length >= min);
         },
 
-        _validNotInitial: function(name, initial) {
+        _validNotInitial: function(name) {
             var val = $("#" + name).val();
-            return (val != initial.value);
+            return (val != "");
         },
 
         _values: function() {
@@ -224,7 +188,6 @@ function numbersonly(e) {
                 case 'text':
                 case 'numericpassword':
                 case 'select':
-                case 'selectipod':
                     result[value.name] = $('#' + value.name).val();
                     break;
                 case 'checkbox':
@@ -294,17 +257,12 @@ function numbersonly(e) {
                         $('#' + value.name).val(decoded);
                         break;
                     case 'select':
-                        $('#' + value.name).val(ops.values[value.name]);
+                        $('#' + value.name + ' option[value="' + ops.values[value.name] + '"]').attr('selected', 'selected');
+                        $('#' + value.name).trigger("liszt:updated");
                         break;
                     case 'checkbox':
                         if (ops.values[value.name] == true)
                             $('#' + value.name).attr('checked', 'checked');
-                        break;
-                    case 'selectipod':
-                        $('#' + value.name).val(ops.values[value.name]);
-                        var valuetxt = $('#' + value.name + "_list a[value = '" + ops.values[value.name] + "']").attr('valuetxt');
-                        var valueicon = $('#' + value.name + "_list a[value = '" + ops.values[value.name] + "']").attr('valueicon');
-                        $('#' + value.name + '_button').html("<div class='" + valueicon + "'>" + valuetxt + "<div>");
                         break;
                     }
                 });
