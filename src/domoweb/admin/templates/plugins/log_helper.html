@@ -1,0 +1,73 @@
+{% load i18n %}
+<script type='text/javascript'>
+
+$(function(){
+   $("#loglist").click(function() {
+        var value = $("#nblines").val();
+        rinor.put(['api', 'command', '{{ plugin.id }}', '{{ plugin.id }}'], {"command":'log', "value":value})
+           .done(function(data, status, xhr){
+                 //alert(JSON.stringify(data));
+                 var test=JSON.stringify(data);
+                 var debut=test.search('helper.basic');
+                 test=test.slice(debut+13);
+                 //var fin=test.search('}');
+                 test=test.slice(1,test.length-4);
+                 //alert(test);
+                 test=test.replace(/[\{]{1}[\\]{1}[n]{1}([a-zA-Z0-9]+[a-zA-Z0-9\-]*)[=]/g,'{"$1" : "');
+                 //alert(test);
+                 test=test.replace(/[\\]{1}[n]{1}[\}]{1}/g,'"}');
+                 //alert(test);
+                 test=test.replace(/[\\]{1}[n]{1}([a-zA-Z0-9]+[a-zA-Z0-9\-]*)[=]/g,'" , "$1" : "');
+                 //alert(test);
+                 //var lines=eval('(' + test + ')');
+                 var data=new Array();
+                 lines = JSON.parse(test, function(key, value) {
+                        //alert("key="+key+",value="+value);
+                        //alert(key.match(/[l]{1}[o]{1}[g]{1}[0-9]+/g));
+                        if ( key.match(/[s]{1}[c]{1}[r]{1}[0-9]+/g) != null ) {
+                                i=parseInt(key.replace(/[s]{1}[c]{1}[r]{1}([0-9]+)/g,'$1'))-1;
+                                data[i]=value;
+                                //alert("match");
+                                return value;
+                            }
+                        return value;
+                    });
+                 i=0;
+                 //alert(data);
+                 var log_items=document.getElementById("log_items");
+                 while(log_items.rows.length>1)
+                     log_items.deleteRow(log_items.rows.length-1);
+                 $("#log_items tbody").append("<tr id='log" + 0 + "'></tr>");
+                 var hhtml = "";
+                 do {
+                       //alert(data[i]);
+                       hhtml = hhtml + data[i] + "<br/>";
+                       i=i+1;
+                 } while (i<data.length);
+                 var tr = $("tr#log"+0);
+                 tr.append("<td>" +  hhtml + "</td>");
+            })
+            .fail(function(jqXHR, status, error){
+                if (jqXHR.status == 400)
+                    $.notification('error', '{% trans "Cant get list" %} (' + jqXHR.responseText + ')');
+            });
+        });
+});
+</script>
+<section class="subsection">
+    <h2>{% trans "Logs" %}</h2>
+    <div id='log_list'>
+        <p><label for='nblines'>{% trans 'Number of lines to show' %}:</label>
+        <input type='text' id='nblines' name='nblines' value="50" />
+        <button id='loglist' class='button icon16-action-save'>{% trans "View" %}</button></p>
+        <table id='log_items' class='simple'>
+            <thead>
+                <tr>
+                    <th scope='col'>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</section>
