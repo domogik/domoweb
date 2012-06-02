@@ -1,5 +1,6 @@
 $(function(){
     $.fn.extend({
+        // Create the item HTML content row
         createItemContent: function (item) {
             var ikey = item.key;
             var iid = item.id;
@@ -12,33 +13,34 @@ $(function(){
             if (item.options != undefined && item.options != '' ) {
                 ioptions = item.options.split(",");
             }
+            // Create table row
             var tr = $("<tr id='" + item.key + "'></tr>");
+            
             tr.attr('key_prefix', iprefix);
-            if (ioptionnal == "yes") {
+            
+            // If required display required indicator
+            if (ioptionnal == "yes")
                 optionnalDisplay = "";
-            }
-            else {
+            else
                 optionnalDisplay = "<img src='/design/common/images/required.png' alt='Required'/>";
-            }
-            tr.append("<td class='key'><span>" +  ikey + "</span> " + optionnalDisplay + "</td><td><label for='value_" + ikey + "'>" +  idescription + "</label></td>");
+            
+            // Key cell
+            tr.append("<td class='key'><span>" +  ikey + "</span> " + optionnalDisplay + "</td>");
+            // Description cell
+            tr.append("<td><label for='value_" + ikey + "'>" +  idescription + "</label></td>");
+            // Value cell
             var td = $("<td class='value' type='" + item.type + "'></td>");
             if (itype == 'boolean') {
                 td.append("<input type='checkbox' name='value_" + ikey + "' id='value_" + ikey + "' />");
-                tr.append(td);
-                tr.append("<td></td>");
             } else if (itype == 'password') {
                 td.append("<input type='password' name='value_" + ikey + "' id='value_" + ikey + "'  class='medium' value='' />");
-                tr.append(td);
-                tr.append("<td></td>");
             } else if (itype == 'enum' && item.options != undefined) {
                 var b = "<select name='value_" + ikey + "' id='value_" + ikey + "'  class='medium'>";
-		for ( x in ioptions ) {
+                for ( x in ioptions ) {
                 	b += "<option value='" + ioptions[x] + "'>" + ioptions[x] + "</option>";
                 }
                 b += "</select>";
                 td.append(b);
-                tr.append(td);
-                tr.append("<td></td>");
             } else {
                 td.append("<input type='text' name='value_" + ikey + "' id='value_" + ikey + "' class='medium' value='' />");                                                                            
                 tr.append(td);
@@ -51,11 +53,33 @@ $(function(){
                 });
                 var td = $("<td><ul class='actions'><li></li></ul></td>");
                 $("li", td).append(resetButton);
+            }
+            tr.append(td);
+            
+            // Action cell
+            if (itype == 'boolean') {
+                tr.append("<td></td>");
+            } else if (itype == 'password') {
+                tr.append("<td></td>");
+            } else if (itype == 'enum' && item.options != undefined) {
+                tr.append("<td></td>");
+            } else {
+                var resetButton = $("<button id='reset" + ikey + "' class='icon16-action-reset buttonicon' title='Reset " + ikey + "'><span class='offscreen'>Reset " + ikey + "</span></button>");
+                resetButton.attr('tr_id', ikey);
+                resetButton.attr('default', idefault);
+                resetButton.click(function(event) {
+                    $("tr#" + $(this).attr('tr_id') +" .value").setNotConfigured($(this).attr('default'));
+                    event.stopPropagation();
+                });
+                var td = $("<td><ul class='actions'><li></li></ul></td>");
+                $("li", td).append(resetButton);
                 tr.append(td);                                    
             }
+            
             this.append(tr);
         },
 
+        // Set the item value
         configureItemContent: function (item) {
             var ikey = item.key;
             var iid = item.id 
@@ -64,6 +88,7 @@ $(function(){
             var iprefix = item.prefix;
             var td = $("tr#" + ikey +" .value");
 
+            //retrive all the plugin config items
             rinor.get(['api', 'pluginconfig', plugin_host, plugin_id, ikey])
                 .done(function(data, status, xhr){
                     if (itype == 'boolean') {
@@ -71,7 +96,7 @@ $(function(){
                             $("input", td).attr('checked', true);
                         }
                     } else if (itype == 'enum') {
-			$("select", td).val(data.value);
+            			$("select", td).val(data.value);
                     } else {    
                         $("input", td).val(data.value);
                     }
@@ -80,25 +105,26 @@ $(function(){
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);
                     if (jqXHR.status == 404) { // If not configured
-                        if (itype == 'boolean') {
-                            td.setNotConfigured();
-                        } else {
-                            if (idefault == "None")
-                                idefault = null;
-                            td.setNotConfigured(idefault);
-                        }
+                        if (idefault == "None")
+                            idefault = null;
+                        td.setNotConfigured(idefault);
                     }
                 });
         },
         
+        // Set the item as not configure yet, with the default value
         setNotConfigured: function(defaultValue) {
             this.addClass('icon16-status-warning');
             this.prepend("<span class='offscreen'>No configured</span>");
             $("input", this).attr("class", "default");
-            if ((defaultValue) && (defaultValue != "None")) {
-                $("input", this).val(defaultValue);            
+            if ((!defaultValue) || (defaultValue == "None")) {
+                defaultValue = "";
+            }
+            if ($("input", this).attr('type') == 'checkbox') {
+                if (defaultValue == 'True')
+                    $("input", this).attr('checked', true);           
             } else {
-                $("input", this).val("");                        
+                $("input", this).val(defaultValue);            
             }
         },
         
@@ -182,10 +208,12 @@ $(function(){
                     item.prefix = item.key
                     pluginCfg[nbPluginCfg] = item;
                     nbPluginCfg++;
+                    // Add item row
                     $("#configuration_items").createItemContent(item);
+                    // Set item value
                     $("#configuration_items").configureItemContent(item);
                 }
-                else {
+                else { // Interface
                     var addInterfaceButton = $("<button class='button icon16-action-add'>Add interface</button>");
                     $('#group_buttons').append(addInterfaceButton);
 
