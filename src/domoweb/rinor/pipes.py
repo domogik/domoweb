@@ -5,6 +5,8 @@ from domoweb.exceptions import RinorError, RinorNotConfigured
 from distutils2.version import *
 from distutils2.version import IrrationalVersionError
 import simplejson
+import cherrypy
+import datetime
 
 def select_sublist(list_of_dicts, **kwargs):
     return [d for d in list_of_dicts 
@@ -23,22 +25,27 @@ class EventPipe(RinorPipe):
         try:
             _devices_list = DevicePipe().get_dict().keys()
         except RinorNotConfigured:
-            print "EVENTS : Rinor not configured yet"
+            today = datetime.datetime.today()
+            cherrypy.log("{0} -- EVENTS : RINOR not configured yet".format(today.strftime("%Y%m%d-%H%M%S")))
         else:
             if (len(_devices_list) > 0):
                 _devices = [str(id) for id in _devices_list]
                 _data = self._get_data(self.new_path, _devices)               
                 _event = _data.event[0]
                 _ticket = _event.ticket_id
-                print "EVENTS : NEW " + str(_event.timestamp)
+                today = datetime.datetime.today()
+                cherrypy.log("{0} -- EVENTS : NEW".format(today.strftime("%Y%m%d-%H%M%S")))
                 yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'
                 while(True):
                     _data = self._get_data(self.get_path, [_ticket])               
                     _event = _data.event[0]
-                    print "EVENTS : RECEIVED " + str(_event.timestamp)
+                    today = datetime.datetime.today()
+                    cherrypy.log("{0} -- EVENTS : RECEIVED".format(today.strftime("%Y%m%d-%H%M%S")))
                     yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'        
             else:
-                print "EVENTS : No devices yet"
+                today = datetime.datetime.today()
+                cherrypy.log("{0} -- EVENTS : No devices yet".format(today.strftime("%Y%m%d-%H%M%S")))
+
 class InfoPipe(RinorPipe):
     cache_expiry = 0
     list_path = ""
