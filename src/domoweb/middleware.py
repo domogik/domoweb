@@ -38,7 +38,12 @@ class RinorMiddleware(object):
                     t = loader.get_template('error/BadDomogikVersion.html')
                     c = Context({'rinor_info':_info})
                     return HttpResponseServerError(t.render(c))
-            mode = InfoPipe().get_mode()
+            try:
+                mode = InfoPipe().get_mode()
+            except RinorNotAvailable:
+                t = loader.get_template('error/RinorNotAvailable.html')
+                c = Context({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
+                return HttpResponseServerError(t.render(c))
             request.session['normal_mode'] = (mode == "normal")
 
         """
