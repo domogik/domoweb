@@ -14,7 +14,7 @@
                 tableInstalledExternals.fnReloadAjax();
             }
         });
-        
+
         tableInstalledPlugins = $('#installed_plugins').dataTable( {
             "oLanguage": {
                 "sEmptyTable": "No plugin installed"

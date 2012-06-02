@@ -61,16 +61,15 @@
 {% block right %}
     <div id="tabs">
         <ul>
-            {% if host.primary == "True" %}
-            <li><a href="#tabs-repositories">Repositories</a></li>
-            {% endif %}
+            <li><a href="#tabs-host">Host</a></li>
             <li><a href="#tabs-plugins">Plugins</a></li>
             {% if host.primary == "True" %}
             <li><a href="#tabs-externals">External members</a></li>
             {% endif %}
         </ul>
     {% if host.primary == "True" %}
-        <div id="tabs-repositories">
+        <div id="tabs-host">
+            {% if host.primary == "True" %}
             <section class="subsection">
                 <h2>{% trans "Repositories" %}</h2>
                 <button id='update_cache'>{% trans "Update cache" %}</button>
@@ -85,6 +84,7 @@
                     </tbody>
                 </table>
             </section>
+            {% endif %}
         </div>
     {% endif %}
         <div id="tabs-plugins">
