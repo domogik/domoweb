@@ -40,8 +40,8 @@
 
    $("#specialdelete").click(function(){
       var ligne = $("#ligne_to_delete").val();
-                value="Delete:"+ligne
-                rinor.put(['api', 'command', 'knx', 'UI'], {"command":'Add', "value":value})
+                value=ligne
+                rinor.put(['api', 'command', 'knx', 'Delete'], {"command":'Add', "value":value})
                     .done(function(data, status, xhr){
                      $.notification('info','Ligne deleted' );
                      $("#specialread").click();
