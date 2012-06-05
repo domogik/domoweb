@@ -455,10 +455,10 @@ class HelperResource(RinorResource):
 class PackageInstalledResource(RinorResource):
     # fields must map to the attributes in the Row class
     id = fields.CharField(attribute = 'id')
-    release = fields.CharField(attribute = 'release')
+    version = fields.CharField(attribute = 'version')
     enabled = fields.CharField(attribute = 'enabled')
     type = fields.CharField(attribute = 'type')
-    source = fields.CharField(attribute = 'source')
+#    source = fields.CharField(attribute = 'source')
     fullname = fields.CharField(attribute = 'fullname')
     updates = fields.ListField(attribute = 'updates')
 
@@ -485,24 +485,20 @@ class PackageInstalledResource(RinorResource):
 class PackageAvailableResource(RinorResource):
     # fields must map to the attributes in the Row class
     id = fields.CharField(attribute = 'id')
-    release = fields.CharField(attribute = 'release')
+    version = fields.CharField(attribute = 'version')
     type = fields.CharField(attribute = 'type')
     fullname = fields.CharField(attribute = 'fullname')
-    techno = fields.CharField(attribute = 'techno')
-    package_url = fields.CharField(attribute = 'package_url')
-    techno = fields.CharField(attribute = 'techno')
-    desc = fields.CharField(attribute = 'desc')
-    techno = fields.CharField(attribute = 'techno')
-    changelog = fields.CharField(attribute = 'changelog')
-    doc = fields.CharField(attribute = 'doc')
-    techno = fields.CharField(attribute = 'techno')
-    author = fields.CharField(attribute = 'author')
-    email = fields.CharField(attribute = 'email')
-    techno = fields.CharField(attribute = 'techno')
+    category = fields.CharField(attribute = 'category')
+    archive_url = fields.CharField(attribute = 'archive_url')
+    description = fields.CharField(attribute = 'description', null=True)
+    changelog = fields.CharField(attribute = 'changelog', null=True)
+    documentation = fields.CharField(attribute = 'documentation', null=True)
+    author = fields.CharField(attribute = 'author', null=True)
+    email = fields.CharField(attribute = 'email', null=True)
     priority = fields.CharField(attribute = 'priority')
-    dependencies = fields.ListField(attribute = 'dependencies')
-    domogik_min_release = fields.CharField(attribute = 'domogik_min_release')
-    source = fields.CharField(attribute = 'source')
+    dependencies = fields.ListField(attribute = 'dependencies', null=True)
+    domogik_min_version = fields.CharField(attribute = 'domogik_min_version')
+    source = fields.CharField(attribute = 'source', null=True)
 
     class Meta:
         resource_name = 'package-available'
@@ -521,7 +517,7 @@ class PackageAvailableResource(RinorResource):
     
     def obj_update_list(self, bundle, request, **kwargs):
         if (bundle['command'] == 'install' or bundle['command'] == 'install'):
-            _data = self._meta.rinor_pipe.put_install(kwargs['host'], kwargs['type'], bundle['package'], bundle['release'])
+            _data = self._meta.rinor_pipe.put_install(kwargs['host'], kwargs['type'], bundle['package'], bundle['version'])
         return _data
 
 class PackageDependencyResource(RinorResource):
@@ -529,7 +525,7 @@ class PackageDependencyResource(RinorResource):
     id = fields.CharField(attribute = 'id')
     type = fields.CharField(attribute = 'type')
     installed = fields.CharField(attribute = 'installed')
-    release = fields.CharField(attribute = 'release')
+    version = fields.CharField(attribute = 'version')
     cmdline = fields.CharField(attribute = 'cmd_line')
     candidate = fields.CharField(attribute = 'candidate')
     error = fields.CharField(attribute = 'error')

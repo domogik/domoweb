@@ -5,6 +5,8 @@ from domoweb.exceptions import RinorError, RinorNotConfigured
 from distutils2.version import *
 from distutils2.version import IrrationalVersionError
 import simplejson
+import cherrypy
+import datetime
 
 def select_sublist(list_of_dicts, **kwargs):
     return [d for d in list_of_dicts 
@@ -23,22 +25,27 @@ class EventPipe(RinorPipe):
         try:
             _devices_list = DevicePipe().get_dict().keys()
         except RinorNotConfigured:
-            print "EVENTS : Rinor not configured yet"
+            today = datetime.datetime.today()
+            cherrypy.log("{0} -- EVENTS : RINOR not configured yet".format(today.strftime("%Y%m%d-%H%M%S")))
         else:
             if (len(_devices_list) > 0):
                 _devices = [str(id) for id in _devices_list]
                 _data = self._get_data(self.new_path, _devices)               
                 _event = _data.event[0]
                 _ticket = _event.ticket_id
-                print "EVENTS : NEW " + str(_event.timestamp)
+                today = datetime.datetime.today()
+                cherrypy.log("{0} -- EVENTS : NEW".format(today.strftime("%Y%m%d-%H%M%S")))
                 yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'
                 while(True):
                     _data = self._get_data(self.get_path, [_ticket])               
                     _event = _data.event[0]
-                    print "EVENTS : RECEIVED " + str(_event.timestamp)
+                    today = datetime.datetime.today()
+                    cherrypy.log("{0} -- EVENTS : RECEIVED".format(today.strftime("%Y%m%d-%H%M%S")))
                     yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'        
             else:
-                print "EVENTS : No devices yet"
+                today = datetime.datetime.today()
+                cherrypy.log("{0} -- EVENTS : No devices yet".format(today.strftime("%Y%m%d-%H%M%S")))
+
 class InfoPipe(RinorPipe):
     cache_expiry = 0
     list_path = ""
@@ -66,13 +73,13 @@ class InfoPipe(RinorPipe):
     def get_info_extended(self):
         _data = self.get_info()
         if (_data):
-            if ("REST_API_release" in _data.info):
-                _data.info['rinor_version'] = _data.info.REST_API_release
+            if ("REST_API_version" in _data.info):
+                _data.info['rinor_version'] = _data.info.REST_API_version
             else:    
                 _data.info['rinor_version'] = '0.1'
 
-            if ("Domogik_release" in _data.info):
-                _data.info['dmg_version'] = _data.info.Domogik_release
+            if ("Domogik_version" in _data.info):
+                _data.info['dmg_version'] = _data.info.Domogik_version
             else:
                 _data.info['dmg_version'] = '0.1'             
 
@@ -170,6 +177,7 @@ class DeviceTypePipe(RinorPipe):
     list_path = "/base/device_type/list"
     index = 'device_type'
     paths = []
+    dependencies = ['package']
 
 class DeviceUsagePipe(RinorPipe):
     cache_expiry = 3600

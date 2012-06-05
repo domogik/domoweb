@@ -39,10 +39,12 @@ function getPluginsList() {
     
     rinor.get(['api', 'plugin'])
         .done(function(data, status, xhr){
-            if (data.objects && data.objects.length > 0) { // If a least 1 plugin is enabled
+            if (data.objects && data.objects.length > 0) { // If a least 1 host exist
+                var plugin_count = 0;
                 $.each(data.objects, function() {
                     var host = this.host;
                     $.each(this.list, function() {
+                        plugin_count++;
                         var technology = this.technology.replace(' ', '');
                         if ($("#plugins_list ul#menu_" + technology).length == 0) {
                             $("#plugins_list").append("<li><div class='titlenav2 icon16-technology-" + technology + "'>" + technology + "</div><ul id='menu_" + technology + "'></ul></li>")
@@ -76,15 +78,24 @@ function getPluginsList() {
                         $("#plugins_list ul#menu_" + technology).append(li);	
                     });
                 });
+                if (plugin_count == 0) { // If no plugin detected
+                    var li = $("<li></li>");
+                    var a = $("<a>No plugin enabled or installed<br />Click to reload</a>");
+                    a.attr('href', '#');
+                    a.addClass("icon16-status-error");
+                    a.click(function(){getPluginsList();})
+                    li.append(a);
+                    $("#plugins_list").append(li);
+                }                    
             } else {
                 var li = $("<li></li>");
-                var a = $("<a>No plugin enabled or installed<br />Click to reload</a>");
+                var a = $("<a>No host listed<br />Click to reload</a>");
                 a.attr('href', '#');
                 a.addClass("icon16-status-error");
                 a.click(function(){getPluginsList();})
                 li.append(a);
                 $("#plugins_list").append(li);
-            }                    
+            }
         })
         .fail(function(jqXHR, status, error){
             var li = $("<li></li>");

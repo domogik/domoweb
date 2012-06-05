@@ -25,10 +25,10 @@
 {% block css %}
     <link href="/design/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
     <link href="/design/admin/css/page-admin-organization.css" rel="stylesheet" type="text/css" />
-    <link href="/design/libraries/fg.menu-3.0/css/fg.menu.css" rel="stylesheet" type="text/css" />
+    <link href="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
-    <script type="text/javascript" src="/design/libraries/fg.menu-3.0/js/fg.menu.js"></script>
+    <script type="text/javascript" src="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
 {% endblock %}
 {% block js_script %}
     $(function(){
@@ -55,15 +55,17 @@
             tips: "{% trans "All fields in bold are required." %}",
             tipsid: 'tipsAddDevice',
             fields: [
-                {name : 'adddevicename', type:'text', label:'Name', required: true, option: {min: 1, max: 80}},
-                {name : 'adddeviceaddress', type:'text', label:'Address', required: true, option: {min: 1, max: 80}},
-                {name : 'adddevicetype', type:'selectipod', label:'Feature', required: true, option: {
-                    initial: {value:'0', label:'Choose a device feature', icone:''},
-                    options: [
+                {name : 'adddevicename', type:'text', label:'Name', required: true, options: {min: 1, max: 80}},
+                {name : 'adddeviceaddress', type:'text', label:'Address', required: true, options: {min: 1, max: 80}},
+                {name : 'adddevicetype', type:'select', label:'Feature', required: true,
+                    options: {
+                        placeholder: 'Choose a device feature',
+                    },
+                    items: [
                         {% regroup types_list|dictsort:"device_technology_id" by device_technology as technologies_list %}
                         {% for technology in technologies_list %}
                             { label: '{{ technology.grouper.name }}', icon:'icon16-technology-{{ technology.grouper.id }}',
-                                submenu: [
+                                subitems: [
                                 {% for type in technology.list %}
                                     {value:'{{ type.id }}', label:'{{ type.name }}'},
                                 {% endfor %}
@@ -71,17 +73,19 @@
                             },
                         {% endfor %}
                     ]
-                }},
-                {name : 'adddeviceusage', type:'selectipod', label:'Usage', required: true, option: {
-                    initial: {value:'0', label:'Choose a usage', icone:''},
-                    options: [
+                },
+                {name : 'adddeviceusage', type:'select', label:'Usage', required: true,
+                    options: {
+                        placeholder: 'Choose a usage',
+                    },
+                    items: [
                     {% for usage in usages_list %}
                         {value:'{{ usage.id }}', label: '{{ usage.name }}', icon: 'icon16-usage-{{ usage.id }}'},
                     {% endfor %}
-                    ]
-                }},
-                {name : 'adddevicedescription', type:'text', label:'Description', required: false, option: {min: 1, max: 80}},
-                {name : 'adddevicereference', type:'text', label:'Reference', required: false, option: {min: 1, max: 80}}
+                    ],
+                },
+                {name : 'adddevicedescription', type:'text', label:'Description', required: false, options: {min: 1, max: 80}},
+                {name : 'adddevicereference', type:'text', label:'Reference', required: false, options: {min: 1, max: 80}}
             ]
         });
 
@@ -89,18 +93,20 @@
             tips: "{% trans "All fields in bold are required." %}",
             tipsid: 'tipsUpdDevice',
             fields: [
-                {name : 'upddevicename', type:'text', label:'Name', required: true, option: {min: 1, max: 80}},
-                {name : 'upddeviceaddress', type:'text', label:'Address', required: true, option: {min: 1, max: 80}},
-                {name : 'upddeviceusage', type:'selectipod', label:'Usage', required: true, option: {
-                    initial: {value:'0', label:'Choose a usage', icone:''},
-                    options: [
+                {name : 'upddevicename', type:'text', label:'Name', required: true, options: {min: 1, max: 80}},
+                {name : 'upddeviceaddress', type:'text', label:'Address', required: true, options: {min: 1, max: 80}},
+                {name : 'upddeviceusage', type:'select', label:'Usage', required: true,
+                    options: {
+                        placeholder: 'Choose a usage',
+                    },
+                    items: [
                     {% for usage in usages_list %}
                         {value:'{{ usage.id }}', label: '{{ usage.name }}', icon: 'icon16-usage-{{ usage.id }}'},
                     {% endfor %}
-                    ]
-                }},
-                {name : 'upddevicedescription', type:'text', label:'Description', required: false, option: {min: 1, max: 80}},
-                {name : 'upddevicereference', type:'text', label:'Reference', required: false, option: {min: 1, max: 80}}
+                    ],
+                },
+                {name : 'upddevicedescription', type:'text', label:'Description', required: false, options: {min: 1, max: 80}},
+                {name : 'upddevicereference', type:'text', label:'Reference', required: false, options: {min: 1, max: 80}}
             ]
         });
         

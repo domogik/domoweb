@@ -40,7 +40,7 @@ try:
     settings = settings_db
 except ImportError:
     import sys
-    sys.stderr.write("""Error: Can't find the file 'settings_develop.py' in the directory containing %r.""" % __file__)
+    sys.stderr.write("""Error: Can't find the file 'settings_db.py' in the directory containing %r.""" % __file__)
     sys.exit(1)
 
 def run_manager():

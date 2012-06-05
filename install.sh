@@ -43,7 +43,7 @@ function run_setup_py {
         develop|install)
             if [ -f "setup.py" ];then
                 python ./ez_setup.py
-                python ./setup.py $MODE --script-dir=$DMW_BIN
+                python ./setup.py $MODE
                 if [ "x$?" != "x0" ];then
                     echo "setup.py script exists with a non 0 return value : $?"
                     exit 13
@@ -57,6 +57,11 @@ function run_setup_py {
             echo "Only develop and install modes are available"
         ;;
     esac
+}
+
+function generate_revision_py {
+    python ./generate_revision.py
+    echo "Generate revision data file"
 }
 
 function test_sources {
@@ -136,6 +141,10 @@ function copy_sample_files {
         echo "Can't find the directory where I can copy system-wide config. Usually it is /etc/default/"
         exit 6
     fi
+    if [ -d "/etc/logrotate.d/" ];then
+		cp src/examples/logrotate/domoweb /etc/logrotate.d/
+        chmod 644 /etc/logrotate.d/domoweb
+    fi
     if [ -d "/etc/init.d/" ];then
         cp src/examples/init/domoweb /etc/init.d/
         chmod +x /etc/init.d/domoweb
@@ -211,6 +220,7 @@ run_setup_py $MODE
 copy_sample_files
 update_default_config
 init_django_db
+generate_revision_py
 create_log_dir
 
 echo "Everything seems to be good, DomoWeb should be installed correctly."
