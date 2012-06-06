@@ -27,4 +27,22 @@
 {% block title %}{% trans page_title %}{% endblock %}
 
 {% block content %}
+
+    <p>{% trans "Please choose your language in the dropdown list" %}</p>
+    <form action="{% url config_welcome_view %}" method="post">{% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+        <div class='row'>
+            {{ field.errors }}
+            <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}>
+               {{ field.label }} {% if field.field.required %}<span class="offscreen"> (required)</span>{% endif %}</span>
+            </label>
+            {{ field }}
+        </div>
+    {% endfor %}
+        <ul class='wizard_nav'>
+            <li><input type="submit" value="Next" class="next" /></li>
+        </ul>
+    </form>
+
 {% endblock %}

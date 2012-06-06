@@ -81,7 +81,7 @@ def index(request):
     )
 
 ### Domogik Server configuration form
-class DomogikSetupForm(forms.Form):
+class RINORSetupForm(forms.Form):
     ip = forms.IPAddressField(max_length=15, label="Server IP address")
     port = forms.DecimalField(decimal_places=0, min_value=0, label="Server port")
     prefix = forms.CharField(max_length=50, label="Url prefix (without '/')", required=False)
@@ -105,17 +105,37 @@ class DomogikSetupForm(forms.Form):
         # Always return the full collection of cleaned data.
         return cleaned_data
 
+class LanguageForm(forms.Form):
+    language = forms.ChoiceField(label="Language", choices=settings.LANGUAGES)
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        language = cleaned_data.get("language")
+        
+        # Always return the full collection of cleaned data.
+        return cleaned_data
+    
 def config_welcome(request):
     """
     @param request : the HTTP request
     @return an HttpResponse object
     """
 
-    page_title = _("Domogik - Free home automation under Linux")
+    page_title = _("1. Select your language")
+    if request.method == 'POST': # If the form has been submitted...
+        form = LanguageForm(request.POST) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            cd = form.cleaned_data
+            p = Parameter(key='language', value=cd["language"])
+            p.save()
+            return redirect('config_configserver_view') # Redirect after POST
+    else:
+        form = LanguageForm() # An unbound form
 
     return go_to_page(
         request, 'config/welcome.html',
         page_title,
+        form=form,
     )
 
 def config_configserver(request):
@@ -124,10 +144,10 @@ def config_configserver(request):
     @return an HttpResponse object
     """
 
-    page_title = _("1. Domogik server configuration")
+    page_title = _("2. Domogik server configuration")
 
     if request.method == 'POST': # If the form has been submitted...
-        form = DomogikSetupForm(request.POST) # A form bound to the POST data
+        form = RINORSetupForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             cd = form.cleaned_data
             p = Parameter(key='rinor_ip', value=cd["ip"])
@@ -149,7 +169,7 @@ def config_configserver(request):
         ip = request.META['HTTP_HOST'].split(':')[0]
         if (not ipFormatChk(ip)) :
             ip = socket.gethostbyname(ip)
-        form = DomogikSetupForm(initial={'ip': ip, 'port': 40405}) # An unbound form
+        form = RINORSetupForm(initial={'ip': ip, 'port': 40405}) # An unbound form
     
     return go_to_page(
         request, 'config/configserver.html',
@@ -163,7 +183,7 @@ def config_testserver(request):
     @return an HttpResponse object
     """
 
-    page_title = _("2. Testing Domogik server")
+    page_title = _("3. Testing Domogik server")
     
     return go_to_page(
         request, 'config/testserver.html',
