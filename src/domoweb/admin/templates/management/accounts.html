@@ -38,10 +38,10 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsAddAccount',
             fields: [
-                {name : 'adduserlogin', type:'text', label:'Login', required: true, option: {min: 1, max: 80}},
-                {name : 'adduserfirstname', type:'text', label:'Firstname', required: true, option: {min: 1, max: 80}},
-                {name : 'adduserlastname', type:'text', label:'Lastname', required: true, option: {min: 1, max: 80}},
-                {name : 'adduserpassword', type:'numericpassword', label:'Access code (numeric only)', required: true, option: {min: 1, max: 80}},
+                {name : 'adduserlogin', type:'text', label:'Login', required: true, options: {min: 1, max: 80}},
+                {name : 'adduserfirstname', type:'text', label:'Firstname', required: true, options: {min: 1, max: 80}},
+                {name : 'adduserlastname', type:'text', label:'Lastname', required: true, options: {min: 1, max: 80}},
+                {name : 'adduserpassword', type:'numericpassword', label:'Access code (numeric only)', required: true, options: {min: 1, max: 80}},
                 {name : 'adduseradmin', type:'checkbox', label:'Is admin', required: true}
             ]
         });
@@ -50,8 +50,8 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsAddPerson',
             fields: [
-                {name : 'personfirstname', type:'text', label:'Firstname', required: true, option: {min: 1, max: 80}},
-                {name : 'personlastname', type:'text', label:'Lastname', required: true, option: {min: 1, max: 80}}
+                {name : 'personfirstname', type:'text', label:'Firstname', required: true, options: {min: 1, max: 80}},
+                {name : 'personlastname', type:'text', label:'Lastname', required: true, options: {min: 1, max: 80}}
             ]
         });
         
@@ -93,9 +93,9 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsUpdateAccount',
             fields: [
-                {name : 'upduserlogin', type:'text', label:'Login', required: true, option: {min: 1, max: 80}},
-                {name : 'upduserfirstname', type:'text', label:'Firstname', required: true, option: {min: 1, max: 80}},
-                {name : 'upduserlastname', type:'text', label:'Lastname', required: true, option: {min: 1, max: 80}},
+                {name : 'upduserlogin', type:'text', label:'Login', required: true, options: {min: 1, max: 80}},
+                {name : 'upduserfirstname', type:'text', label:'Firstname', required: true, options: {min: 1, max: 80}},
+                {name : 'upduserlastname', type:'text', label:'Lastname', required: true, options: {min: 1, max: 80}},
                 {name : 'upduseradmin', type:'checkbox', label:'Is admin', required: true}
             ]
         });
@@ -104,8 +104,8 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsPasswordAccount',
             fields: [
-                {name : 'oldpassword', type:'numericpassword', label:'Old access code', required: true, option: {min: 1, max: 80}},
-                {name : 'newpassword', type:'numericpassword', label:'New access code (numeric only)', required: true, option: {min: 1, max: 80}},
+                {name : 'oldpassword', type:'numericpassword', label:'Old access code', required: true, options: {min: 1, max: 80}},
+                {name : 'newpassword', type:'numericpassword', label:'New access code (numeric only)', required: true, options: {min: 1, max: 80}},
             ]
         });
     });

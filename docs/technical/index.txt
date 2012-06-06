@@ -1,0 +1,8 @@
+===================
+General description
+===================
+
+RINOR Connection
+================
+
+.. image:: RINOR_Connection.png
