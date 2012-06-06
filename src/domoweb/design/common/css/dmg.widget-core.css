@@ -5,14 +5,17 @@
     position:relative;
     -moz-user-select:none;
     -webkit-user-select:none;
+    user-select:none;
     -moz-box-sizing:border-box;
     -webkit-box-sizing:border-box;
+    box-sizing:border-box;
 }
 
 .widget.border {
     border: 1px solid #cccccc;
     -moz-border-radius: 0.8em;
     -webkit-border-radius: 0.8em;
+    border-radius: 0.8em;
 }
 
 .widget .identity, .shape .identity {
@@ -37,9 +40,11 @@
     -moz-transform-origin:0% 100%;
 	-webkit-transform-origin:0% 100%;
 	-o-transform-origin:0% 100%;
+    transform-origin:0% 100%;
     -moz-transform:rotate(-90deg);
 	-webkit-transform:rotate(-90deg);
 	-o-transform:rotate(-90deg);
+    transform:rotate(-90deg);
 }
 
 .length1 {width: 6em}
@@ -86,9 +91,11 @@
     position:relative;
     -moz-border-radius: 0.8em;
     -webkit-border-radius: 0.8em;
+    border-radius: 0.8em;
     margin:auto;
     -moz-user-select:none;
     -webkit-user-select:none;
+    user-select:none;
     background-color:#000000;
     cursor:pointer;
 }

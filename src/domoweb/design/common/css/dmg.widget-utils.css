@@ -29,6 +29,7 @@
     font-size:1.2em;
     -moz-user-select:none;
     -webkit-user-select:none;
+    user-select:none;
 }
 
 .widget_1x1_panel .command {
@@ -40,9 +41,11 @@
     background-repeat: no-repeat;
     -moz-border-radius: 17px;
     -webkit-border-radius: 17px;
+    border-radius: 17px;
     position:absolute;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;    
+    box-sizing: border-box;
 }
 
 .widget_1x1_panel .command.label {
@@ -67,9 +70,11 @@
     height:10px;
     -moz-border-radius: 0.8em 0 0.8em 0;
     -webkit-border-radius: 0.8em 0 0.8em 0;
+    border-radius: 0.8em 0 0.8em 0;
     padding: 0.2em 0.5em 0.2em 0.5em;
     -moz-user-select:none;
     -webkit-user-select:none;
+    user-select:none;
 }
 
 .widget_status.error {

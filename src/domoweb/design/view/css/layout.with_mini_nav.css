@@ -74,6 +74,7 @@ header#mainheader {
 	background-image: -moz-linear-gradient(0% 5% 270deg,#908D6F, #D2CDBC);
 	-moz-border-radius: 0.8em ;
     -webkit-border-radius: 0.8em;	
+	border-radius: 0.8em ;
 }
 
 section#mainsection {

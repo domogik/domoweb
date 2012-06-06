@@ -7,11 +7,13 @@
     border: 1px solid #979387;
     -moz-border-radius: 0.8em;
     -webkit-border-radius: 0.8em;
+    border-radius: 0.8em;
 }
 
 .block:hover {
     -moz-box-shadow: 5px 5px 10px #999;
     -webkit-box-shadow: 5px 5px 10px #999;    
+    box-shadow: 5px 5px 10px #999;
 }
 
 /* Header section */

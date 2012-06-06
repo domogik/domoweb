@@ -23,6 +23,7 @@
 	color: #000000;
 	-moz-border-radius: 0.4em;
     -webkit-border-radius: 0.4em;
+	border-radius: 0.4em;
 }
 .ui-accordion .ui-accordion-header a:hover {
 	font-weight: bold;
@@ -32,6 +33,7 @@
 	color: #ffffff;
  	-moz-border-radius: 0.4em 0.4em 0 0;
     -webkit-border-radius: 0.4em 0.4em 0 0;
+ 	border-radius: 0.4em 0.4em 0 0;
 	border-bottom:none;
 }
 .ui-accordion .ui-accordion-header .ui-icon { position: absolute; left: .5em; top: 50%; margin-top: -8px; }
@@ -41,6 +43,7 @@
 	border-right: 1px solid #cccccc;
 	-moz-border-radius: 0 0 0.4em 0.4em;
     -webkit-border-radius: 0 0 0.4em 0.4em;
+	border-radius: 0 0 0.4em 0.4em;
 	background-color:#eeeeee ;
 	padding: 1em;
 	border-top: 0; margin-top: -2px;
@@ -113,4 +116,6 @@
     border-bottom:1px solid #cccccc;
     border-right:1px solid #cccccc;
     -moz-border-radius: 0 0 0.8em 0;
+    -webkit-border-radius: 0 0 0.8em 0;
+    border-radius: 0 0 0.8em 0;
 }

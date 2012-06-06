@@ -4,6 +4,7 @@
     border: 1px solid #cccccc;
     -moz-border-radius: 0 0 0.8em 0.8em;
     -webkit-border-radius: 0 0 0.8em 0.8em;
+    border-radius: 0 0 0.8em 0.8em;
     margin-top:1em;
     padding:0;
 }

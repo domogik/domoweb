@@ -32,6 +32,7 @@
     background:rgba(0,0,0,0.8);
     -moz-border-radius: 0.8em;
     -webkit-border-radius: 0.8em;
+    border-radius: 0.8em;
     vertical-align:middle;
     position:absolute;
 }
@@ -41,6 +42,7 @@
     border: 1px solid #cccccc;
     -moz-border-radius: 2em;
     -webkit-border-radius: 2em;
+    border-radius: 2em;
     line-height:2em;
     width:13em;
     height:2em;

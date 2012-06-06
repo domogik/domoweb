@@ -53,9 +53,9 @@
     padding-bottom:1em;
     text-align:center;
     border: 1px dashed #cccccc;
-    border-radius: 0.8em;
     -moz-border-radius: 0.8em;
     -webkit-border-radius: 0.8em;
+    border-radius: 0.8em;
     background-color:#DDFFD9;
 }
 

@@ -26,6 +26,7 @@ input[type='text'],input[type='password'] {
     margin: 0 0 0.2em 0;
     -moz-border-radius: 0.4em;
     -webkit-border-radius: 0.4em;
+    border-radius: 0.4em;
     background-position:right 50%;
     background-repeat:no-repeat;
 }
@@ -38,6 +39,7 @@ textarea {
     border:1px solid #999;
     -moz-border-radius: 0.4em;
     -webkit-border-radius: 0.4em;
+    border-radius: 0.4em;
 }
 
 input[type='text']:hover, input[type='text']:focus,
