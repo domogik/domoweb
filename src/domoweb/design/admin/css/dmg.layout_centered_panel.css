@@ -2,9 +2,9 @@
     width:60em;
     margin: -20em auto 0 -30em;
     position:absolute;
--webkit-box-shadow: 0px 0px 100px 5px #000000;
--moz-box-shadow: 0px 0px 100px 5px #000000;
-box-shadow: 0px 0px 100px 5px #000000;
+    -webkit-box-shadow: 0px 0px 100px 5px #000000;
+    -moz-box-shadow: 0px 0px 100px 5px #000000;
+    box-shadow: 0px 0px 100px 5px #000000;
     left:50%;
     top:50%;
 }
@@ -14,9 +14,9 @@ box-shadow: 0px 0px 100px 5px #000000;
     padding: 1em;
     background-color:#2D2C2F;
     color:#FFFFFF;
-	border-radius: 0.8em 0.8em 0 0;
 	-moz-border-radius: 0.8em 0.8em 0 0;
 	-webkit-border-radius: 0.8em 0.8em 0 0;
+	border-radius: 0.8em 0.8em 0 0;
 }
 
 .content-centered-panel section#mainsection {
@@ -24,9 +24,9 @@ box-shadow: 0px 0px 100px 5px #000000;
 	min-height:20em;
 	border: #2D2C2F 1px solid;
     background-color:#FFFFFF;
-	border-radius: 0 0 0.8em 0.8em;
 	-moz-border-radius: 0 0 0.8em 0.8em;
 	-webkit-border-radius: 0 0 0.8em 0.8em;
+	border-radius: 0 0 0.8em 0.8em;
     padding:1em 1em 5em 1em;
 }
 

@@ -79,6 +79,7 @@ input.buttonok:hover, input.buttonok:active, input.buttonok:focus {
 #logincode {
     -moz-appearance: none;
     -webkit-appearance: none;
+    appearance: none;
     width:6em;
     border:2px solid #666;
     background:#CCC;
@@ -86,6 +87,7 @@ input.buttonok:hover, input.buttonok:active, input.buttonok:focus {
     text-align:center;
     -moz-border-radius: 0.8em 0 0 0.8em;
     -webkit-border-radius: 0.8em 0 0 0.8em;
+    border-radius: 0.8em 0 0 0.8em;
     margin:0;
     padding:0;
     line-height:1.4em;
@@ -110,6 +112,7 @@ input.buttonok:hover, input.buttonok:active, input.buttonok:focus {
     background-color:#9BB528;
     -moz-border-radius: 0 0.8em 0.8em 0;
     -webkit-border-radius: 0 0.8em 0.8em 0;
+    border-radius: 0 0.8em 0.8em 0;
     color:#666;
     line-height:1.4em;
     height:1.4em;

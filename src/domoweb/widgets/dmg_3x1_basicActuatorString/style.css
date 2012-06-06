@@ -8,9 +8,9 @@
     top: 1.5em;
     left: 1em;
     border:1px solid #B8B8B8;
-    border-radius: 0.4em;
     -moz-border-radius: 0.4em;
     -webkit-border-radius: 0.4em;
+    border-radius: 0.4em;
     width:10em;
 }
 
@@ -20,11 +20,13 @@
   width:5.5em;
   -moz-border-radius: .8em;
   -webkit-border-radius: .8em;
+  border-radius: .8em;
   position:absolute;
   right:1em;
   bottom:.95em;
   -moz-box-sizing:border-box;
   -webkit-box-sizing:border-box;
+  box-sizing:border-box;
   background-color:rgba(0,0,0,0.8);
   color: #fff;
   cursor: pointer;

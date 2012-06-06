@@ -27,6 +27,7 @@ a.button {
 	height:2em;
 	-moz-border-radius: 1.4em;
     -webkit-border-radius: 1.4em;
+	border-radius: 1.4em;
 	background-color:#f6f6f6;
 	background-position: 5% 50%;
 	background-repeat: no-repeat;
@@ -46,6 +47,7 @@ a.button {
     line-height:2em;
 	-moz-border-radius: 1.4em;
     -webkit-border-radius: 1.4em;
+	border-radius: 1.4em;
 	background-color:#f6f6f6;
 	outline:none;
 	cursor: pointer;
@@ -71,6 +73,7 @@ a.button {
 	border: 1px solid #cccccc;
 	-moz-border-radius: 1.4em;
     -webkit-border-radius: 1.4em;
+	border-radius: 1.4em;
 	background-color:transparent;
 	outline:none;
 	cursor: pointer;
@@ -95,6 +98,7 @@ a.button {
 	border-right:none;
 	-moz-border-radius: 1.4em 0 0.8em 0;
     -webkit-border-radius: 1.4em 0 0.8em 0;
+	border-radius: 1.4em 0 0.8em 0;
 	background-color:#f6f6f6;
 	background-position: left 50%;
 	background-repeat: no-repeat;
@@ -117,6 +121,7 @@ a.buttonicon, .buttonicon {
 	width: 3em;
 	-moz-border-radius: 1.4em;
     -webkit-border-radius: 1.4em;
+	border-radius: 1.4em;
 	background-color:#f6f6f6;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;
@@ -137,6 +142,7 @@ a.buttonicon, .buttonicon {
 	width: 2.5em;
 	-moz-border-radius: 0 1.4em 1.4em 0;
     -webkit-border-radius:  0 1.4em 1.4em 0;
+	border-radius: 0 1.4em 1.4em 0;
 	background-color:#f6f6f6;
 	background-position: 50% 50%;
 	background-repeat: no-repeat;

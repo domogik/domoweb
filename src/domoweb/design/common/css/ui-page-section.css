@@ -4,6 +4,7 @@
     margin:1em 0 1em 0;
     -moz-border-radius: 0.8em;
     -webkit-border-radius: 0.8em;
+    border-radius: 0.8em;
     background-position:left 50%;
     background-repeat: no-repeat;
     font-weight:bold;
@@ -21,6 +22,7 @@
     border: 1px solid #979387;
     -moz-border-radius: 0.8em;
     -webkit-border-radius: 0.8em;
+    border-radius: 0.8em;
     background-color:#eeeeee;
 }
 

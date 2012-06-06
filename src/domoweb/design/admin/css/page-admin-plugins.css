@@ -19,6 +19,7 @@ ul.infos {
     border:1px solid #cccccc;
     -moz-border-radius: 0.8em;
     -webkit-border-radius: 0.8em;
+    border-radius: 0.8em;
     padding:1em;
     text-align:left;
 }

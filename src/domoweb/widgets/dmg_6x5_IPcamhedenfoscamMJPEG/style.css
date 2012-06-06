@@ -16,10 +16,12 @@
   width:5.5em;
   -moz-border-radius: .8em;
   -webkit-border-radius: .8em;
+  border-radius: .8em;
   position:absolute;
   bottom:0;
   -moz-box-sizing:border-box;
   -webkit-box-sizing:border-box;
+  box-sizing:border-box;
   background-color:rgba(0,0,0,0.8);
   color: #fff;
   cursor: pointer;

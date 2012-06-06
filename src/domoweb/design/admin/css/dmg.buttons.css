@@ -29,15 +29,15 @@ input[type='submit'].disabled, .disabled, input[type='submit'].disabled:hover, .
 }
 
 .next {
-    border-radius: 0 2em 2em 0;
     -moz-border-radius: 0 2em 2em 0;
     -webkit-border-radius: 0 2em 2em 0;
+    border-radius: 0 2em 2em 0;
     padding-right: 2em;
 }
 
 .previous {
-    border-radius: 2em 0 0 2em;
     -moz-border-radius: 2em 0 0 2em;
     -webkit-border-radius: 2em 0 0 2em;
+    border-radius: 2em 0 0 2em;
     padding-left: 2em;
 }

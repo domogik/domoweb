@@ -15,6 +15,7 @@
 	height:7em;
 	-moz-border-radius: 0.8em 0 0 0;
     -webkit-border-radius: 0.8em 0 0 0;
+	border-radius: 0.8em 0 0 0;
     border-right: #979387 1px solid;
 }
 
@@ -22,6 +23,7 @@
     margin:0;
     -moz-box-shadow: 1px 0 5px #000000;
     -webkit-box-shadow: 1px 0 5px #000000;
+    box-shadow: 1px 0 5px #000000;
 }
 
 .subsection {
@@ -78,4 +80,5 @@
     border-top: #cccccc 1px dashed;
     -moz-border-radius: 0 0 0 0.8em;
     -webkit-border-radius: 0 0 0 0.8em;
+    border-radius: 0 0 0 0.8em;
 }

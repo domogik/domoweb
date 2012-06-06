@@ -7,6 +7,7 @@ body {
 	background-repeat:no-repeat;
 	-moz-background-size: 100% 250px;
 	-webkit-background-size: 100% 250px;
+	background-size: 100% 250px;
 }
 
 header#mainheader {
@@ -23,6 +24,7 @@ header#mainheader {
 	background-image: -moz-linear-gradient(0% 5% 270deg,#908D6F, #D2CDBC);
 	-moz-border-radius: 0.8em ;
     -webkit-border-radius: 0.8em;	
+	border-radius: 0.8em ;
 }
 
 section#mainesection {
