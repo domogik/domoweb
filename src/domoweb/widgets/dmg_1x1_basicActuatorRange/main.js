@@ -74,6 +74,7 @@
 					}
 					e.stopPropagation();
 				});
+            this.setValue(null);
             this._initValues(1);
         },
 
@@ -173,6 +174,7 @@
             } else { // unknown
                 this._processingValue = 0;
                 this.element.displayIcon('unknown');
+                this.currentValue = this.displayMin;
                 this._displayValue(null);
             }
         },
