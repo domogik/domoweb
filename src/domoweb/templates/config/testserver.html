@@ -68,10 +68,10 @@
 {% block title %}{% trans page_title %}{% endblock %}
 
 {% block content %}
-    <h2>Testing Domogik Server connection</h2>
-    <div id='internal' class='loader'><span class='offscreen'>Loading</span></div>
+    <h2>{% trans "Testing Domogik Server connection" %}</h2>
+    <div id='internal' class='loader'><span class='offscreen'>{% trans "Loading" %}</span></div>
     <ul class='wizard_nav'>
-        <li><a href='{% url config_configserver_view %}' class='button previous'>Previous</a></li>
-        <li><a href='{% url index_view %}' class='button next'>Finish</a></li>
+        <li><a href='{% url config_configserver_view %}' class='button previous'>{% trans "Previous" %}</a></li>
+        <li><a href='{% url index_view %}' class='button next'>{% trans "Finish" %}</a></li>
     </ul>
 {% endblock %}
