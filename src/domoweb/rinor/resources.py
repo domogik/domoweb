@@ -309,9 +309,10 @@ class RoomResource(RinorResource):
 
 class DeviceResource(RinorResource):
     # fields must map to the attributes in the Row class
-#    id = fields.IntegerField(attribute = 'id')
-#    name = fields.CharField(attribute = 'name')
-#    description = fields.CharField(attribute = 'description')
+    id = fields.IntegerField(attribute = 'id')
+    name = fields.CharField(attribute = 'name')
+    description = fields.CharField(attribute = 'description')
+    device_type_id = fields.CharField(attribute = 'device_type_id')
 #    area_id = fields.IntegerField(attribute = 'area_id')
     
     class Meta:

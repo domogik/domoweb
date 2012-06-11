@@ -1,0 +1,23 @@
+==============
+Widget process
+==============
+
+On Page Load
+============
+
+.. image:: OnPageLoad.png
+
+On Page Ready
+=============
+
+.. image:: OnPageReady.png
+
+On State Event received
+=======================
+
+.. image:: OnStateEvent.png
+
+On Command sent
+===============
+
+.. image:: OnCommand.png

@@ -1,0 +1,105 @@
+--- a/src/domoweb/templates/config/configserver.html
++++ b/src/domoweb/templates/config/configserver.html
+@@ -34,13 +34,13 @@
+         <div class='row'>
+             {{ field.errors }}
+             <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}>
+-               {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
++               {{ field.label }} {% if field.field.required %}<span class="offscreen"> (required)</span>{% endif %}</span>
+             </label>
+             {{ field }}
+         </div>
+     {% endfor %}
+         <ul class='wizard_nav'>
+-            <li><a href='{% url config_welcome_view %}' class='button previous'>{% trans "Previous" %}</a></li>
++            <li><a href='{% url config_welcome_view %}' class='button previous'>Previous</a></li>
+             <li><input type="submit" value="Next" class="next" /></li>
+         </ul>
+     </form>
+diff --git a/src/domoweb/templates/config/testserver.html b/src/domoweb/templates/config/testserver.html
+--- a/src/domoweb/templates/config/testserver.html
++++ b/src/domoweb/templates/config/testserver.html
+@@ -68,10 +68,10 @@
+ {% block title %}{% trans page_title %}{% endblock %}
+ 
+ {% block content %}
+-    <h2>{% trans "Testing Domogik Server connection" %}</h2>
+-    <div id='internal' class='loader'><span class='offscreen'>{% trans "Loading" %}</span></div>
++    <h2>Testing Domogik Server connection</h2>
++    <div id='internal' class='loader'><span class='offscreen'>Loading</span></div>
+     <ul class='wizard_nav'>
+-        <li><a href='{% url config_configserver_view %}' class='button previous'>{% trans "Previous" %}</a></li>
+-        <li><a href='{% url index_view %}' class='button next'>{% trans "Finish" %}</a></li>
++        <li><a href='{% url config_configserver_view %}' class='button previous'>Previous</a></li>
++        <li><a href='{% url index_view %}' class='button next'>Finish</a></li>
+     </ul>
+ {% endblock %}
+\ No newline at end of file
+diff --git a/src/domoweb/templates/config/welcome.html b/src/domoweb/templates/config/welcome.html
+--- a/src/domoweb/templates/config/welcome.html
++++ b/src/domoweb/templates/config/welcome.html
+@@ -35,7 +35,7 @@
+         <div class='row'>
+             {{ field.errors }}
+             <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}>
+-               {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
++               {{ field.label }} {% if field.field.required %}<span class="offscreen"> (required)</span>{% endif %}</span>
+             </label>
+             {{ field }}
+         </div>
+
+--- a/src/domoweb/templates/error/BadDomogikVersion.html
++++ b/src/domoweb/templates/error/BadDomogikVersion.html
+@@ -32,9 +32,9 @@
+         <h1>{% trans "Bad Domogik Version" %}</h1>
+         <p><strong>
+         {% if rinor_info.info.rinor_version_inferior %}
+-            {% trans "Your Domogik version is too old" %} {{rinor_info.info.dmg_version}}, {% trans "please upgrade Domogik to" %} >= {{dmg_min_version}}
++            Your Domogik version is too old {{rinor_info.info.dmg_version}}, please upgrade Domogik to >= {{dmg_min_version}}
+         {% else %}
+-            {% trans "Your Domoweb version is too old for this new version of Domogik" %} {{rinor_info.info.dmg_version}}, {% trans "please upgrade Domoweb " %}     
++            Your Domoweb version is too old for this new version of Domogik {{rinor_info.info.dmg_version}}, please upgrade Domoweb      
+         {% endif %}
+         </strong></p>
+     </div>
+diff --git a/src/domoweb/templates/error/BadStatusLine.html b/src/domoweb/templates/error/BadStatusLine.html
+--- a/src/domoweb/templates/error/BadStatusLine.html
++++ b/src/domoweb/templates/error/BadStatusLine.html
+@@ -30,7 +30,7 @@
+ {% block content %}
+     <div id="error">
+         <h1>{% trans "Interface Server has crashed" %}</h1>
+-        <p>{% trans "A bug is probably causing the REST server to crash on this url." %}</p>
+-        <p><a href="http://tracker.domogik.org/">{% trans "Please fill a bug report, with maximum details" %}</a></p>
++        <p>A bug is probably causing the REST server to crash on this url.</p>
++        <p><a href="http://tracker.domogik.org/">Please fill a bug report, with maximum details</a></p>
+     </div>
+ {% endblock %}
+diff --git a/src/domoweb/templates/error/RinorNotAvailable.html b/src/domoweb/templates/error/RinorNotAvailable.html
+--- a/src/domoweb/templates/error/RinorNotAvailable.html
++++ b/src/domoweb/templates/error/RinorNotAvailable.html
+@@ -31,7 +31,7 @@
+     <div id="error">
+         <h1>{% trans "RINOR not available" %}</h1>
+         <ol>
+-            <li>{% trans "Check if RINOR is running on" %} {{ rinor_url }}</li>
++            <li>Check if RINOR is running on {{ rinor_url }}</li>
+             <li><a href="{% url config_configserver_view %}">{% trans "Re-Configure RINOR's address" %}</a></li>
+             <li><a href="http://wiki.domogik.org/doc_StandardInstallation">{% trans "Read Domogik Wiki (How to start the server)" %}</a></li>
+         </ol>
+
+diff --git a/src/domoweb/view/templates/layouts/base_view.html b/src/domoweb/view/templates/layouts/base_view.html
+--- a/src/domoweb/view/templates/layouts/base_view.html
++++ b/src/domoweb/view/templates/layouts/base_view.html
+@@ -100,9 +100,9 @@
+         </nav>
+     </div>
+ 	<ul class="breadcrumb">
+-        	<li><a href='{% url index_view %}' class='homepage'>&nbsp;<span class='offscreen'>{% trans "Domogik homepage" %}</span></a></li>
++        	<li><a href='{% url index_view %}' class='homepage'>&nbsp;<span class='offscreen'>Domogik homepage</span></a></li>
+             {% block breadcrumb %}{% endblock %}
+-        	<li id='showmenu'><a href='#' class='icon16-action-menu'>{% trans "Menu" %}</a></li>
++        	<li id='showmenu'><a href='#' class='icon16-action-menu'>Menu</a></li>
+     </ul>
+ 	<div id="content-bgnd">
+         <div class="columnleft">

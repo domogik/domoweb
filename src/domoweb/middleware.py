@@ -45,6 +45,8 @@ class RinorMiddleware(object):
                 c = Context({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
                 return HttpResponseServerError(t.render(c))
             request.session['normal_mode'] = (mode == "normal")
+            request.session['rinor_ip'] = _ip.value
+            request.session['rinor_port'] = _port.value
 
         """
         Check if has message

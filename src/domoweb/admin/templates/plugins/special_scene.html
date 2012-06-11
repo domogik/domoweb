@@ -1,0 +1,26 @@
+{% load i18n %}
+<script type='text/javascript'>
+    $(function(){
+        rinor.get(['api', 'feature'])
+            .done(function(data, status, xhr){
+                $.each(data.objects, function(index, object) {
+                    var group = $("optgroup#" + object.device_id).first();
+                    if (group.length == 0) {
+                        group = $("<optgroup id='" + object.device_id + "' label='[" + object.device.device_type_id + "] " + object.device.name + "'></optgroup>");
+                        $("select#features").append(group);
+                    }
+                    group.append("<option value='" + object.id + "'>" + object.device_feature_model.name + "</option>");
+                });
+                $("select#features").chosen();
+            })
+            .fail(function(jqXHR, status, error){
+                if (jqXHR.status == 400)
+                    $.notification('error', '{% trans "Device list not retrieved" %} (' + jqXHR.responseText + ')');
+            });
+    });
+</script>
+<section class="subsection">
+    <h2>{% trans "Special" %}</h2>
+    <select id="features" style="width:20em;"></select>
+    <p>Rinor Url :{{ request.session.rinor_ip }}:{{ request.session.rinor_port }}</p> 
+</section>
