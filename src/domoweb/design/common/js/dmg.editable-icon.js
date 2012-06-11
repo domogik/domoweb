@@ -134,11 +134,11 @@
     $.extend($.ui.editable_icon, {
         defaults: {
             icon: "",
-            editText: "Edit icon",
-            previousText: "View previous icon",
-            nextText: "View next icon",
-            validText: "Valid icon",
-            cancelText: "Cancel icon change",
+            editText: gettext('Edit icon'),
+            previousText: gettext('View previous icon'),
+            nextText: gettext('View next icon'),
+            validText: gettext('Valid icon'),
+            cancelText: gettext('Cancel icon change'),
             validCallback: null
         }
     });

@@ -17,7 +17,7 @@
         
         start: function() {
             var self = this;
-            this.div.append("<span class='offscreen'>Processing</span>");
+            this.div.append("<span class='offscreen'>" + gettext('Processing') + "</span>");
             $(this.div).fadeIn(500).fadeOut(500);
             $(this.div).everyTime(1200, 'processing', function (){
                 $(self.div).fadeIn(500).fadeOut(500);

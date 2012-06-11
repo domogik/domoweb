@@ -5,7 +5,7 @@
         {% for dependency in dependencies %}
             <li>{{dependency.id}}
             {% if dependency.installed == 'False' %}
-                <div style='float:right' class='icon16-text icon16-status-false'>Missing</div>                                                                            
+                <div style='float:right' class='icon16-text icon16-status-false'>{% trans "Missing" %}</div>                                                                            
                 {% if dependency.error %}
                     <p class='error'>{{ dependency.error }}</p>
                 {% endif %}
@@ -13,7 +13,7 @@
                     <code>{{ dependency.cmdline }}</code>
                 {% endif %}
             {% else %}
-                <div style='float:right' class='icon16-text icon16-status-true'>Installed</div>                                   
+                <div style='float:right' class='icon16-text icon16-status-true'>{% trans "Installed" %}</div>                                   
             {% endif %}
             </li>
         {% endfor %}

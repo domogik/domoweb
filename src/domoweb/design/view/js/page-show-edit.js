@@ -106,7 +106,7 @@ $(function(){
         deletable: function() {
             var self = this;
             this.addClass('deletable')
-                .append('<button class="icon16-action-remove"><span class=\'offscreen\'>Effacer</span></button>')
+                .append("<button class='icon16-action-remove'><span class='offscreen'>" + gettext('Effacer') + "</span></button>")
                 .find('button').click(function(){
                         var association_id = self.data('associationid');
                         if (association_id) {

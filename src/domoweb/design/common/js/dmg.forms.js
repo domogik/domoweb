@@ -151,7 +151,7 @@ function numbersonly(e) {
             button.menu({
                 content: list.html(),
                 backLink: false,
-                crumbDefaultText: 'Choose a technologie:',
+                crumbDefaultText: gettext('Choose a technologie') + ':',
                 resultValueField: '#' + name,
                 resultTextElement: "#" + name + "_button"
             });
@@ -178,7 +178,7 @@ function numbersonly(e) {
                     case 'text':
                         if (!self._validTextLength(value.name, value.option.min, value.option.max)) {
                             $("#" + value.name).addClass('state-error');
-                            valid &= self._addTips(value.label + " length has to be between " + value.option. min + " and " + value.option.max + ".");
+                            valid &= self._addTips(value.label + " " + gettext('length has to be between') + " " + value.option. min + " " + gettext('and') + " " + value.option.max + ".");
                         } else {
                             $("#" + value.name).removeClass('state-error');                            
                         }
@@ -186,7 +186,7 @@ function numbersonly(e) {
                     case 'numericpassword':
                         if (!self._validTextLength(value.name, value.option.min, value.option.max)) {
                             $("#" + value.name).addClass('state-error');
-                            valid &= self._addTips(value.label + " length has to be between " + value.option. min + " and " + value.option.max + ".");
+                            valid &= self._addTips(value.label + " " + gettext('length has to be between') + " " + value.option. min + " " + gettext('and') + " " + value.option.max + ".");
                         } else {
                             $("#" + value.name).removeClass('state-error');                            
                         }

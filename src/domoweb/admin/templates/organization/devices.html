@@ -55,10 +55,10 @@
             tips: "{% trans "All fields in bold are required." %}",
             tipsid: 'tipsAddDevice',
             fields: [
-                {name : 'adddevicename', type:'text', label:'Name', required: true, option: {min: 1, max: 80}},
-                {name : 'adddeviceaddress', type:'text', label:'Address', required: true, option: {min: 1, max: 80}},
-                {name : 'adddevicetype', type:'selectipod', label:'Feature', required: true, option: {
-                    initial: {value:'0', label:'Choose a device feature', icone:''},
+                {name : 'adddevicename', type:'text', label:'{% trans "Name" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'adddeviceaddress', type:'text', label:'{% trans "Address" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'adddevicetype', type:'selectipod', label:'{% trans "Feature" %}', required: true, option: {
+                    initial: {value:'0', label:'{% trans "Choose a device feature" %}', icone:''},
                     options: [
                         {% regroup types_list|dictsort:"device_technology_id" by device_technology as technologies_list %}
                         {% for technology in technologies_list %}
@@ -72,16 +72,16 @@
                         {% endfor %}
                     ]
                 }},
-                {name : 'adddeviceusage', type:'selectipod', label:'Usage', required: true, option: {
-                    initial: {value:'0', label:'Choose a usage', icone:''},
+                {name : 'adddeviceusage', type:'selectipod', label:'{% trans "Usage" %}', required: true, option: {
+                    initial: {value:'0', label:'{% trans "Choose a usage" %}', icone:''},
                     options: [
                     {% for usage in usages_list %}
                         {value:'{{ usage.id }}', label: '{{ usage.name }}', icon: 'icon16-usage-{{ usage.id }}'},
                     {% endfor %}
                     ]
                 }},
-                {name : 'adddevicedescription', type:'text', label:'Description', required: false, option: {min: 1, max: 80}},
-                {name : 'adddevicereference', type:'text', label:'Reference', required: false, option: {min: 1, max: 80}}
+                {name : 'adddevicedescription', type:'text', label:'{% trans "Description" %}', required: false, option: {min: 1, max: 80}},
+                {name : 'adddevicereference', type:'text', label:'{% trans "Reference" %}', required: false, option: {min: 1, max: 80}}
             ]
         });
 
@@ -89,18 +89,18 @@
             tips: "{% trans "All fields in bold are required." %}",
             tipsid: 'tipsUpdDevice',
             fields: [
-                {name : 'upddevicename', type:'text', label:'Name', required: true, option: {min: 1, max: 80}},
-                {name : 'upddeviceaddress', type:'text', label:'Address', required: true, option: {min: 1, max: 80}},
-                {name : 'upddeviceusage', type:'selectipod', label:'Usage', required: true, option: {
-                    initial: {value:'0', label:'Choose a usage', icone:''},
+                {name : 'upddevicename', type:'text', label:'{% trans "Name" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'upddeviceaddress', type:'text', label:'{% trans "Address" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'upddeviceusage', type:'selectipod', label:'{% trans "Usage" %}', required: true, option: {
+                    initial: {value:'0', label:'{% trans "Choose a usage" %}', icone:''},
                     options: [
                     {% for usage in usages_list %}
                         {value:'{{ usage.id }}', label: '{{ usage.name }}', icon: 'icon16-usage-{{ usage.id }}'},
                     {% endfor %}
                     ]
                 }},
-                {name : 'upddevicedescription', type:'text', label:'Description', required: false, option: {min: 1, max: 80}},
-                {name : 'upddevicereference', type:'text', label:'Reference', required: false, option: {min: 1, max: 80}}
+                {name : 'upddevicedescription', type:'text', label:'{% trans "Description" %}', required: false, option: {min: 1, max: 80}},
+                {name : 'upddevicereference', type:'text', label:'{% trans "Reference" %}', required: false, option: {min: 1, max: 80}}
             ]
         });
         

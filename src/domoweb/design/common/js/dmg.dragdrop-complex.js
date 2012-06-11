@@ -54,7 +54,7 @@
                         self._initialise(this);
                     });                    
                 } else {
-                    zone.list.append("<li class='empty'><p>Empty</p></li>");
+                    zone.list.append("<li class='empty'><p>" + gettext('Empty') + "</p></li>");
                 }
             });
         },
@@ -217,7 +217,7 @@
                         } else {
                             text = $(objNode).text() 
                         }
-                        text += "<br />Associated with " + zone_target.name;                  
+                        text += "<br />" + gettext('Associated with') + " " + zone_target.name;                  
                         zone_origin.list.append("<li id='" + element_value + "_trace' class='trace'>" + text + "</li>");
                     }
                 }
@@ -230,7 +230,7 @@
                 $('li.empty', zone_target.element).remove();
     
                 if ($('li', zone_from.list).length == 0) {
-                    zone_from.list.html("<li class='empty'><p>Empty</p></li>");
+                    zone_from.list.html("<li class='empty'><p>" + gettext('Empty') + "</p></li>");
                 }
                 if (runcallback) {
                     if (zone_target.dropcallback) {
@@ -282,7 +282,7 @@
                     if (this.id != idFrom && (this.drop || (this.droporigin && this.id == idOrigin))) {
                         var name = this.name
                         if (this.id == idOrigin) {
-                            name = "Remove association";                            
+                            name = gettext('Remove association');                            
                         }
                         var objChoice = $("<li>" + name + "</li>")
                         objChoice.attr('tabIndex', -1);

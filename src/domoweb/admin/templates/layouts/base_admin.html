@@ -60,7 +60,7 @@
             $('#plugins_list li a[title]').tooltip_right();
             
         {% if not request.session.normal_mode %}
-            $.notification("debug", "Domogik in development mode. Plugins are running from the sources");
+            $.notification("debug", '{% trans "Domogik in development mode. Plugins are running from the sources" %}');
         {% endif %}  
         });
         // ]]>

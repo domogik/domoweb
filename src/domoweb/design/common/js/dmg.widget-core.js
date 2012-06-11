@@ -86,7 +86,7 @@ function get_widgets_options(id) {
                 })
                 .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
-                        $.notification('error', '{% trans "Getting stats failed" %} (' + data.description + ')');
+                        $.notification('error', gettext('Getting stats failed') + ' (' + data.description + ')');
                 });
         },
         

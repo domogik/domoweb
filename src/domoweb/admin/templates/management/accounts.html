@@ -38,11 +38,11 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsAddAccount',
             fields: [
-                {name : 'adduserlogin', type:'text', label:'Login', required: true, option: {min: 1, max: 80}},
-                {name : 'adduserfirstname', type:'text', label:'Firstname', required: true, option: {min: 1, max: 80}},
-                {name : 'adduserlastname', type:'text', label:'Lastname', required: true, option: {min: 1, max: 80}},
-                {name : 'adduserpassword', type:'numericpassword', label:'Access code (numeric only)', required: true, option: {min: 1, max: 80}},
-                {name : 'adduseradmin', type:'checkbox', label:'Is admin', required: true}
+                {name : 'adduserlogin', type:'text', label:'{% trans "Login" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'adduserfirstname', type:'text', label:'{% trans "Firstname" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'adduserlastname', type:'text', label:'{% trans "Lastname" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'adduserpassword', type:'numericpassword', label:'{% trans "Access code (numeric only)" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'adduseradmin', type:'checkbox', label:'{% trans "Is admin" %}', required: true}
             ]
         });
         
@@ -50,8 +50,8 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsAddPerson',
             fields: [
-                {name : 'personfirstname', type:'text', label:'Firstname', required: true, option: {min: 1, max: 80}},
-                {name : 'personlastname', type:'text', label:'Lastname', required: true, option: {min: 1, max: 80}}
+                {name : 'personfirstname', type:'text', label:'{% trans "Firstname" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'personlastname', type:'text', label:'{% trans "Lastname" %}', required: true, option: {min: 1, max: 80}}
             ]
         });
         
@@ -93,10 +93,10 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsUpdateAccount',
             fields: [
-                {name : 'upduserlogin', type:'text', label:'Login', required: true, option: {min: 1, max: 80}},
-                {name : 'upduserfirstname', type:'text', label:'Firstname', required: true, option: {min: 1, max: 80}},
-                {name : 'upduserlastname', type:'text', label:'Lastname', required: true, option: {min: 1, max: 80}},
-                {name : 'upduseradmin', type:'checkbox', label:'Is admin', required: true}
+                {name : 'upduserlogin', type:'text', label:'{% trans "Login" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'upduserfirstname', type:'text', label:'{% trans "Firstname" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'upduserlastname', type:'text', label:'{% trans "Lastname" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'upduseradmin', type:'checkbox', label:'{% trans "Is admin" %}', required: true}
             ]
         });
         
@@ -104,8 +104,8 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsPasswordAccount',
             fields: [
-                {name : 'oldpassword', type:'numericpassword', label:'Old access code', required: true, option: {min: 1, max: 80}},
-                {name : 'newpassword', type:'numericpassword', label:'New access code (numeric only)', required: true, option: {min: 1, max: 80}},
+                {name : 'oldpassword', type:'numericpassword', label:'{% trans "Old access code" %}', required: true, option: {min: 1, max: 80}},
+                {name : 'newpassword', type:'numericpassword', label:'{% trans "New access code (numeric only)" %}', required: true, option: {min: 1, max: 80}},
             ]
         });
     });
@@ -134,7 +134,7 @@
                 <th scope='col'>{% trans "Login" %}</th>
                 <th scope='col'>{% trans "Real name" %}</th>
                 <th scope='col'>{% trans "Admin" %}</th>
-                <th scope='col'>Actions</th>
+                <th scope='col'>{% trans "Actions" %}</th>
             </tr>
             {% for account in accounts_list %}
                 <script type="text/javascript">
@@ -218,7 +218,7 @@
             <tr>
                 <th scope='col'>{% trans "First name" %}</th>
                 <th scope='col'>{% trans "Last name" %}</th>
-                <th scope='col'>Actions</th>
+                <th scope='col'>{% trans "Actions" %}</th>
             </tr>
             {% for person in people_list %}
                 <script type="text/javascript">
@@ -249,7 +249,7 @@
                                 // Submit form
                                 rinor.put(['api', 'person', '{{ person.id }}'], {'first_name': values.personfirstname, 'last_name': values.personlastname})
                                     .done(function(data, status, xhr){
-                                        $.reloadPage({'status': 'success', 'msg': '{% trans "Person " %} \'' + data.first_name + ' ' + data.last_name + '\' updated'});
+                                        $.reloadPage({'status': 'success', 'msg': '{% trans "Person" %} \'' + data.first_name + ' ' + data.last_name + '\' {% trans "updated" %}'});
                                     })
                                     .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
