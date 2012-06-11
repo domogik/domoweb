@@ -7,13 +7,12 @@
                     var group = $("optgroup#" + object.device_id).first();
                     if (group.length == 0) {
                         group = $("<optgroup id='" + object.device_id + "' label='[" + object.device.device_type_id + "] " + object.device.name + "'></optgroup>");
-                        $("select#feature").append(group);
-                        $("select#features").append(group);
-                    }
-                    
+                        $("select#features1").append(group);
+                    }                    
                     group.append("<option value='" + object.id + "'>" + object.device_feature_model.name + "</option>");
                 });
-                $("select#features").chosen();
+                $("select#features2").append($("select#features1").clone.html());
+                $("select.features").chosen();
             })
             .fail(function(jqXHR, status, error){
                 if (jqXHR.status == 400)
@@ -23,21 +22,21 @@
 
 </script>
 <section class="subsection">
-    <h2>{% trans "Created Scene" %)</h2>
-    <select id="features1" style="width:20em;"></select>
+    <h2>{% trans "Created Scene" %}</h2>
+    <select id="features1" class='features' style="width:20em;"></select>
     <select id="test1" style="width:10em;"></select>
     <select id="value1" style="width:20em;"></select>
     </p>
-    <select id="TestFeature" style="width:20em;"></select>
+    <select id="TestFeature" style="width:10em;"></select>
     </p>
-    <select id="features2" style="width:20em;"></select>
+    <select id="features2" class='features' style="width:20em;"></select>
     <select id="test2" style="width:10em;"></select>
     <select id="value2" style="width:20em;"></select>
     </p>
-    <h3>(% trans "If True" %)</h3>
+    <h3>{% trans "If True" %}</h3>
     <select id="sortieVrai" style="width:20em;"></select>
     <select id="valueVrai" style="width:20em;"></select>
-    <h3>(% trans "If Wrong" %)</h3>
+    <h3>{% trans "If Wrong" %}</h3>
     <select id="sortieFaux" style="width:20em;"></select>
     <select id="valueFaux" style="width:20em;"></select>
 
