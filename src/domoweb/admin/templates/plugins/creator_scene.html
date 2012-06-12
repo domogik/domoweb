@@ -1,13 +1,23 @@
 {% load i18n %}
 <script type='text/javascript'>
     $(function(){
+
         var tableau = new Array();
         
         $("select#features1").change(function(){
           var test = $(this).val();
           var test2 = $("select#TestFeature").val();
           if (test != "" && (test2=="And" || test2=="Or"|| test2=="None")){
+             $('select#test1 option').remove();
              $('select#test1').show();
+             $('select#test1').append("<option value='None'>-----</option>");
+             $('select#test1').append("<option value='='>=</option>");
+             var feature=$("select#features1").val();
+             var type=tableau[test][4];
+             if (type=="numeric"|| type=="range"){
+               $('select#test1').append("<option value='>'>></option>");
+               $('select#test1').append("<option value='<'><</option>");
+              }
           }else{
              $('select#test1').hide();
              $('#value1').hide();
@@ -27,15 +37,25 @@
           $("select#test2").change();
         });    
 
-
-
         $("select#test1").change(function(){
           var test = $("select#features1").val();
           if (tableau[test][4]=="list"||tableau[test][4]=="binary"){
-            
             $('select#test1').attr("disabled", true);
             $('select#test1 option[value="="]').attr("selected", "selected");
             $("#value1").html("<select id='Test_value1'></select>");
+            var valeur = tableau[test][6];
+            var test2 = tableau[test][4];
+            valeur = valeur.replace(/&quot;/g,'"');
+            var obj = jQuery.parseJSON(valeur);
+            if (test2 == "binary"){
+             $("select#Test_value1").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+             $("select#Test_value1").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+             }
+            else{
+            for(i=0 ;i<obj.commandValues.length;i++){
+            $("select#Test_value1").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+            }
+            }
             $("#value1").show();
           }
           else {
@@ -56,6 +76,19 @@
             $('select#test2').attr("disabled", true);
             $('select#test2 option[value="="]').attr("selected", "selected");
             $("#value2").html("<select id='Test_value2'></select>");
+            
+            var valeur = tableau[test][6];
+            var test2 = tableau[test][4];
+            valeur = valeur.replace(/&quot;/g,'"');
+            var obj = jQuery.parseJSON(valeur);
+            if (test2 == "binary"){
+             $("select#Test_value2").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+             $("select#Test_value2").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+             }
+             else{
+              for(i=0 ;i<obj.commandValues.length;i++){
+             $("select#Test_value2").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+             }}
             $("#value2").show();
           }
           else {
@@ -93,9 +126,62 @@
           }
         });
 
+      $("select#sortieVrai").change(function(){
+          var test = $("select#sortieVrai").val();
+          var valeur = tableau[test][6];
+          var test2 = tableau[test][4];    
+          valeur = valeur.replace(/&quot;/g,'"');
+          var obj = jQuery.parseJSON(valeur);
+ 
+          if (tableau[test][4]=="list"||tableau[test][4]=="binary"){
+          $("#valvrai").html("<select id='valueVrai'></select>");
+          if (test2 == "binary"){
+             $("select#valueVrai").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+             $("select#valueVrai").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+             }
+           else{
+             for(i=0 ;i<obj.commandValues.length;i++){
+               $("select#valueVrai").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+               }
+             }
+
+          }
+          if (test2=="numeric"|| test2=="range"){
+          $("#valvrai").html("<input id='valueVrai'></input>");
+          }
+      }
+);
+
+      $("select#sortieFaux").change(function(){
+          var test = $("select#sortieFaux").val();
+          var valeur = tableau[test][6];
+          var test2 = tableau[test][4];    
+          valeur = valeur.replace(/&quot;/g,'"');
+          var obj = jQuery.parseJSON(valeur);
+ 
+          if (tableau[test][4]=="list"||tableau[test][4]=="binary"){
+          $("#valfaux").html("<select id='valueFaux'></select>");
+          if (test2 == "binary"){
+             $("select#valueFaux").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+             $("select#valueFaux").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+             }
+           else{
+             for(i=0 ;i<obj.commandValues.length;i++){
+               $("select#valueFaux").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+               }
+             }
+
+          }
+          if (test2=="numeric"|| test2=="range"){
+          $("#valfaux").html("<input id='valueFaux'></input>");
+          }
+      }
+);
+
       $(document).ready(function(){
         var i=1;
-        $('select#features1').append("<option value='0'>--------- </option>");
+        $('select#features1').append("<option value='0'>----------</option>");
+        $('select#sortieVrai').append("<option value='0'>----------</option>");
         rinor.get(['api', 'feature'])
             .done(function(data, status, xhr){
                 $.each(data.objects, function(index, object) {
@@ -125,10 +211,11 @@
 </script>
 <section class="subsection">
     <h2>{% trans "Created Scene" %}</h2>
+    <h3>{% trans "If" %}</h3>   
     <div>
     <select id="features1" class='listes' style="width:30em;"></select>
     <select id="test1" class='listes' style="width:10em;">
-    <option value="None">None</option>
+    <option value="None">----</option>
     <option value=">">></option>
     <option value="<"><</option>
     <option value="=">=</option>
@@ -137,7 +224,7 @@
     </div>
     <div>
     <select id="TestFeature" class='listes' style="width:10em;">
-    <option value="None">None</option>
+    <option value="None">----</option>
     <option value="And">And</option>
     <option value="Or">Or</option>
     <option value=">">></option>
@@ -156,12 +243,12 @@
     <span id="value2" style="width:30em;"></span>
     </div>
     <div>
-    <h3>{% trans "If True" %}</h3>
+    <h3>{% trans "then" %}</h3>
     <select id="sortieVrai" class='listes' style="width:30em;"></select> =>
-    <select id="valueVrai" style="width:20em;"></select>
-    <h3>{% trans "If Wrong" %}</h3>
+    <span id="valvrai"></span>
+    <h3>{% trans "else" %}</h3>
     <select id="sortieFaux" class='listes' style="width:30em;"></select> =>
-    <select id="valueFaux" style="width:20em;"></select>
+    <span id="valfaux"></span>
     </div>
     <button id="Creator" class='button icon16-action-save' style="width:20em;">{% trans "Create" %}</button>
     <p>Rinor Url :{{ request.session.rinor_ip }}:{{ request.session.rinor_port }}</p> 
