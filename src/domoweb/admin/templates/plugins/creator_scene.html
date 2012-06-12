@@ -2,22 +2,113 @@
 <script type='text/javascript'>
     $(function(){
         var tableau = new Array();
-                tableau[0]=  ["device_id","feature_type","device_feature_model.feature_type","device_feature_model.stat_key","device.name","device_feature_model.parameters"];
-                var i=0;
+        
+        $("select#features1").change(function(){
+          var test = $(this).val();
+          var test2 = $("select#TestFeature").val();
+          if (test != "" && (test2=="And" || test2=="Or"|| test2=="None")){
+             $('select#test1').show();
+          }else{
+             $('select#test1').hide();
+             $('#value1').hide();
+          }
+          $("select#test1").change();
+        });    
+
+        $("select#features2").change(function(){
+          var test = $(this).val();
+          var test2 = $("select#TestFeature").val();
+          if (test != "" && (test2=="And" || test2=="Or")){
+             $('select#test2').show();
+          }else{
+             $('select#test2').hide();
+             $('#value2').hide();
+          }
+          $("select#test2").change();
+        });    
+
+
+
+        $("select#test1").change(function(){
+          var test = $("select#features1").val();
+          if (tableau[test][4]=="list"||tableau[test][4]=="binary"){
+            
+            $('select#test1').attr("disabled", true);
+            $('select#test1 option[value="="]').attr("selected", "selected");
+            $("#value1").html("<select id='Test_value1'></select>");
+            $("#value1").show();
+          }
+          else {
+            $('select#test1').removeAttr("disabled");
+            $("#value1").html("<input id='Test_value1'></input>");
+            $("#value1").show();
+          }
+          
+          if ($(this).val()!="None" && ($("select#TestFeature").val()=="And" ||$("select#TestFeature").val()=="Or"   ||$("select#TestFeature").val()=="None")){
+             $("#value1").show();
+          }
+          else $("#value1").hide();
+        });
+
+        $("select#test2").change(function(){
+          var test = $("select#features2").val();
+          if ((tableau[test][4]=="list"||tableau[test][4]=="binary")&&($("select#TestFeature").val!="None")){ 
+            $('select#test2').attr("disabled", true);
+            $('select#test2 option[value="="]').attr("selected", "selected");
+            $("#value2").html("<select id='Test_value2'></select>");
+            $("#value2").show();
+          }
+          else {
+            $('select#test2').removeAttr("disabled");
+            $("#value2").html("<input id='Test_value2'></input>");
+            $("#value2").show();
+          }
+          
+          if ($(this).val()!="None" && ($("select#TestFeature").val()=="And" ||$("select#TestFeature").val()=="Or"   ||$("select#TestFeature").val()=="None")){
+             $("#value2").show();
+          }
+          else $("#value2").hide();
+        });
+
+        $("select#TestFeature").change(function(){
+          var test= $("select#TestFeature").val();
+          if (test != "None"){
+             $("select#features2").show();
+             if (test !="And" && test != "Or"){
+                $("select#test1").hide();
+                $("#value1").hide();
+                $("select#test2").hide();
+                $("#value2").hide();
+              }else{
+                $("select#test1").show();
+                $("#value1").show();
+                $("select#test2").show();
+                $("select#test2").change();
+             }
+             $("select#features2").change();
+          }else{
+             $("select#features2").hide();
+             $("select#test2").hide();
+             $("#value2").hide();
+          }
+        });
+
+      $(document).ready(function(){
+        var i=1;
+        $('select#features1').append("<option value='0'>--------- </option>");
         rinor.get(['api', 'feature'])
             .done(function(data, status, xhr){
                 $.each(data.objects, function(index, object) {
-                    tableau[i]=[object.device_id,object.device.name,object.device_feature_model.feature_type,object.device.device_type_id,object.device_feature_model.parameters];
-                    i=i++;
-                    group.append("<option value='" + object.id + "'>" + object.device_feature_model.name + "</option>");
-                    var test=object.device_feature_model.parameters
-                    test=test.replace(/&quot;/g," ");
-   
-                    
+                    tableau[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters];
+                    if (object.device_feature_model.feature_type == "actuator"){
+                       $('select#sortieVrai').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
+                    }
+                    if (object.device_feature_model.name != "Trigger"){
+                       $('select#features1').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
+                    }
+                    i=i+1;
                     });
                 
-
-
                 $("select#features2").append($("select#features1").clone().html());
                 $("select#sortieFaux").append($("select#sortieVrai").clone().html());
            })
@@ -25,73 +116,10 @@
                 if (jqXHR.status == 400)
                     $.notification('error', '{% trans "Device list not retrieved" %} (' + jqXHR.responseText + ')');
             });
-       
-        $("select#features1").change(function(){
-          var test = $("select#features1").val;
-          var test2 = $("select#TestFeature").val
-          if (test != "" && (test2=="and" || test2=="or")){
-             $('select#test1').show();
-          }else{
-             $('select#test1').hide();
-             $('#value1').hide();
-          }
-        });    
-
-        $("select#test1").change(function(){
-          var test = $("select#test1").val();
-          if ( test !="None"){
-             if (test=="="){
-             $("#value1").html("<select id='Test_value1'></select>");
-             $("#value1").show();
-              }
-              else{
-              $("#value1").html("<input id='Test_value1'></input>");
-              $("#value1").show();
-              }
-          }
-          else $("#value1").hide();
-        });
-
-        $("select#test2").change(function(){
-          var test = $("select#test2").val();
-          if ( test !="None"){
-             if (test=="="){
-             $("#value2").html("<select id='Test_value2'></select>");
-             $("#value2").show();
-              }
-              else{
-              $("#value2").html("<input id='Test_value2'></input>");
-              $("#value2").show();
-              }
-          }
-          else $("#value2").hide();
-        });
-
-
-
-        $("select#TestFeature").change(function(){
-          var test= $("select#TestFeature").val();
-          if (test != "None"){
-             $("select#features2").show();
-             if (test !="and" && test != "or"){
-                $("select#test1").hide();
-                $("#value1").hide();
-                $("select#test2").hide();
-                $("#value2").hide();
-             }
-             else{
-                $("select#test1").show();
-                $("#value1").show();
-                $("select#test2").show();
-                $("select#test2").change();
-             }
-          }
-          else{
-             $("select#features2").hide();
-             $("select#test2").hide();
-             $("#value2").hide();
-           }
-        });
+          $("select#features2").hide();
+          $("select#test2").hide();
+          $("select#features1").change();
+     });
 });
 
 </script>
@@ -110,8 +138,8 @@
     <div>
     <select id="TestFeature" class='listes' style="width:10em;">
     <option value="None">None</option>
-    <option value="and">And</option>
-    <option value="or">Or</option>
+    <option value="And">And</option>
+    <option value="Or">Or</option>
     <option value=">">></option>
     <option value="<"><</option>
     <option value="=">=</option>
