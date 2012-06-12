@@ -137,7 +137,7 @@
         </div>
     {% if plugin.id == "knx" %}
         <div id="tabs-4">
-            {% include "plugins/special_knx.html" %}
+            {% include "plugins/knx/special_knx.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "cron" %}
@@ -147,12 +147,12 @@
     {% endif %}
     {% if plugin.id == "scene" %}
         <div id="tabs-4">
-            {% include "plugins/creator_scene.html" %}
+            {% include "plugins/scene/creator_scene.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "scene" %}
         <div id="tabs-5">
-            {% include "plugins/manage_scene.html" %}
+            {% include "plugins/scene/manage_scene.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "telldus" %}
