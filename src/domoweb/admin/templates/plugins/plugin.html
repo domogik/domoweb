@@ -108,7 +108,10 @@
             <li><a href="#tabs-4">{% trans "Special" %}</a></li>
         {% endif %}
         {% if plugin.id == "scene" %}
-            <li><a href="#tabs-4">{% trans "Special" %}</a></li>
+            <li><a href="#tabs-4">{% trans "Creator" %}</a></li>
+        {% endif %}
+        {% if plugin.id == "scene" %}
+            <li><a href="#tabs-5">{% trans "Manage" %}</a></li>
         {% endif %}
         {% if plugin.id == "telldus" %}
             <li><a href="#tabs-5">{% trans "Helper" %}</a></li>
@@ -144,7 +147,12 @@
     {% endif %}
     {% if plugin.id == "scene" %}
         <div id="tabs-4">
-            {% include "plugins/special_scene.html" %}
+            {% include "plugins/creator_scene.html" %}
+        </div>
+    {% endif %}
+    {% if plugin.id == "scene" %}
+        <div id="tab-5">
+            {% include "plugins/manage_scene.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "telldus" %}
