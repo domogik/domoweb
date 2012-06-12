@@ -1,0 +1,374 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-06-12 10:25+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: design/admin/js/dmg.ajax.js:74 design/admin/js/dmg.ajax.js.c:155
+msgid "Method"
+msgstr ""
+
+#: design/admin/js/dmg.ajax.js:74 design/admin/js/dmg.ajax.js.c:155
+msgid "does not exist on jQuery.ajaxButton"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:8
+msgid "Package cache updated"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:20
+msgid "No plugin installed"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:38
+msgid "Disable"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:40
+msgid "Configure"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:43
+msgid "Enable"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:45
+#: design/admin/js/page-admin-host.js:263
+msgid "Uninstall"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:47
+#: design/admin/js/page-admin-host.js:265
+msgid "Update"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:59
+#: design/admin/js/page-admin-host.js:277
+msgid "Package uninstalled"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:66
+msgid "Package enabled"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:74
+msgid "Package disabled"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:82
+#: design/admin/js/page-admin-host.js:193
+#: design/admin/js/page-admin-host.js:284
+#: design/admin/js/page-admin-host.js:351
+msgid "Package installed"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:93
+#: design/admin/js/page-admin-host.js:204
+msgid "Missing"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:99
+#: design/admin/js/page-admin-host.js:210
+msgid "Installed"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:112
+#: design/admin/js/page-admin-host.js:223
+msgid "Missing dependency"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:135
+msgid "No plugin available to install"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:180
+#: design/admin/js/page-admin-host.js:339
+msgid "Install"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:182
+#: design/admin/js/page-admin-host.js:341
+msgid "Documentation"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:247
+msgid "No external member installed"
+msgstr ""
+
+#: design/admin/js/page-admin-host.js:295
+msgid "No external member available to install"
+msgstr ""
+
+#: design/admin/js/page-admin-rinor.js:26
+msgid "Number of Domogik requests"
+msgstr ""
+
+#: design/admin/js/page-admin-rinor.js:27
+msgid "Number of devices requests"
+msgstr ""
+
+#: design/admin/js/page-admin-rinor.js:28
+msgid "Max size for request queues"
+msgstr ""
+
+#: design/admin/js/page-admin.js:18
+msgid "No hosts"
+msgstr ""
+
+#: design/admin/js/page-admin.js:18 design/admin/js/page-admin.js.c:28
+#: design/admin/js/page-admin.js:82 design/admin/js/page-admin.js.c:91
+#: design/admin/js/page-admin.js:101
+msgid "Click to reload"
+msgstr ""
+
+#: design/admin/js/page-admin.js:60
+msgid "Plugin Running"
+msgstr ""
+
+#: design/admin/js/page-admin.js:63
+msgid "External member Running"
+msgstr ""
+
+#: design/admin/js/page-admin.js:68
+msgid "Plugin Stopped"
+msgstr ""
+
+#: design/admin/js/page-admin.js:71
+msgid "External member Stopped"
+msgstr ""
+
+#: design/admin/js/page-admin.js:82
+msgid "No plugin enabled or installed"
+msgstr ""
+
+#: design/admin/js/page-admin.js:91
+msgid "No host listed"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:21
+msgid "Required"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:45 design/admin/js/plugin-config.js:266
+#: design/admin/js/rinor-config.js:32 design/admin/js/rinor-config.js.c:251
+msgid "Reset"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:96
+msgid "No configured"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:108 design/admin/js/rinor-config.js:93
+msgid "Key"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:108 design/admin/js/rinor-config.js:93
+msgid "Description"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:108 design/admin/js/rinor-config.js:93
+msgid "Value"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:108 design/admin/js/rinor-config.js:93
+msgid "Actions"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:127 design/admin/js/rinor-config.js:112
+msgid "Configuration deleted"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:149 design/admin/js/rinor-config.js:134
+msgid "Configuration saved successfully"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:189 design/admin/js/rinor-config.js:174
+msgid "Add interface"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:192 design/admin/js/rinor-config.js:177
+msgid "Delete interface"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:322 design/admin/js/rinor-config.js:307
+msgid "item(s) not configured yet"
+msgstr ""
+
+#: design/admin/js/plugin-config.js:330 design/admin/js/rinor-config.js:315
+msgid "Save"
+msgstr ""
+
+#: design/admin/js/rinor-config.js:81
+msgid "Not configured"
+msgstr ""
+
+#: design/charting/dmg.chart-core.js:67
+msgid "Data creation failed"
+msgstr ""
+
+#: design/common/js/dmg.browser.js:3
+msgid "An unknown browser"
+msgstr ""
+
+#: design/common/js/dmg.browser.js:6
+msgid "an unknown version"
+msgstr ""
+
+#: design/common/js/dmg.browser.js:7
+msgid "an unknown OS"
+msgstr ""
+
+#: design/common/js/dmg.browser.js:121 design/common/js/dmg.browser.js.c:126
+msgid "Your Firefox version"
+msgstr ""
+
+#: design/common/js/dmg.browser.js:121 design/common/js/dmg.browser.js.c:126
+#: design/common/js/dmg.browser.js:131
+msgid "is too old for Domogik"
+msgstr ""
+
+#: design/common/js/dmg.browser.js:121 design/common/js/dmg.browser.js.c:126
+msgid "Please upgrade to Firefox >3.6"
+msgstr ""
+
+#: design/common/js/dmg.browser.js:131
+msgid "Your Chrome version"
+msgstr ""
+
+#: design/common/js/dmg.browser.js:131
+msgid "Please upgrade to Chrome >5.0"
+msgstr ""
+
+#: design/common/js/dmg.browser.js:135
+msgid "Your browser"
+msgstr ""
+
+#: design/common/js/dmg.browser.js:135
+msgid "is not supported by Domogik"
+msgstr ""
+
+#: design/common/js/dmg.browser.js:135
+msgid "Please use Firefox 3.6 or Chrome 5.0"
+msgstr ""
+
+#: design/common/js/dmg.dragdrop-complex.js:57
+#: design/common/js/dmg.dragdrop-complex.js:233
+msgid "Empty"
+msgstr ""
+
+#: design/common/js/dmg.dragdrop-complex.js:220
+msgid "Associated with"
+msgstr ""
+
+#: design/common/js/dmg.dragdrop-complex.js:285
+msgid "Remove association"
+msgstr ""
+
+#: design/common/js/dmg.editable-icon.js:137
+msgid "Edit icon"
+msgstr ""
+
+#: design/common/js/dmg.editable-icon.js:138
+msgid "View previous icon"
+msgstr ""
+
+#: design/common/js/dmg.editable-icon.js:139
+msgid "View next icon"
+msgstr ""
+
+#: design/common/js/dmg.editable-icon.js:140
+msgid "Valid icon"
+msgstr ""
+
+#: design/common/js/dmg.editable-icon.js:141
+msgid "Cancel icon change"
+msgstr ""
+
+#: design/common/js/dmg.external-links.js:4
+msgid "Opens in a new window"
+msgstr ""
+
+#: design/common/js/dmg.forms.js:154
+msgid "Choose a technologie"
+msgstr ""
+
+#: design/common/js/dmg.forms.js:181 design/common/js/dmg.forms.js.c:189
+msgid "length has to be between"
+msgstr ""
+
+#: design/common/js/dmg.forms.js:181 design/common/js/dmg.forms.js.c:189
+msgid "and"
+msgstr ""
+
+#: design/common/js/dmg.login.js:20
+msgid "Select a user"
+msgstr ""
+
+#: design/common/js/dmg.login.js:20
+msgid "Change User"
+msgstr ""
+
+#: design/common/js/dmg.login.js:27
+msgid "Enter your code"
+msgstr ""
+
+#: design/common/js/dmg.login.js:27
+msgid "Ok"
+msgstr ""
+
+#: design/common/js/dmg.login.js:34
+msgid "Impossible to list Accounts"
+msgstr ""
+
+#: design/common/js/dmg.notifications.js:2
+msgid "hide all notifications"
+msgstr ""
+
+#: design/common/js/dmg.notifications.js:12
+msgid "Success"
+msgstr ""
+
+#: design/common/js/dmg.notifications.js:15
+msgid "Information"
+msgstr ""
+
+#: design/common/js/dmg.notifications.js:19
+msgid "Error"
+msgstr ""
+
+#: design/common/js/dmg.notifications.js:23
+msgid "Warning"
+msgstr ""
+
+#: design/common/js/dmg.notifications.js:26
+msgid "Debug"
+msgstr ""
+
+#: design/common/js/dmg.processing.js:20
+msgid "Processing"
+msgstr ""
+
+#: design/common/js/dmg.tabs.js:12
+msgid "Add"
+msgstr ""
+
+#: design/common/js/dmg.widget-core.js:89
+msgid "Getting stats failed"
+msgstr ""
+
+#: design/view/js/page-show-edit.js:109
+msgid "Effacer"
+msgstr ""
