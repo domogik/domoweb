@@ -121,7 +121,7 @@ def config_welcome(request):
     @return an HttpResponse object
     """
 
-    page_title = _("1. Select your language")
+    page_title = "1. %s" % _("Select your language")
     if request.method == 'POST': # If the form has been submitted...
         form = LanguageForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
@@ -144,7 +144,7 @@ def config_configserver(request):
     @return an HttpResponse object
     """
 
-    page_title = _("2. Domogik server configuration")
+    page_title = "2. %s" % _("Domogik server configuration")
 
     if request.method == 'POST': # If the form has been submitted...
         form = RINORSetupForm(request.POST) # A form bound to the POST data
@@ -183,7 +183,7 @@ def config_testserver(request):
     @return an HttpResponse object
     """
 
-    page_title = _("3. Testing Domogik server")
+    page_title = "3. %s" % _("Testing Domogik server")
     
     return go_to_page(
         request, 'config/testserver.html',

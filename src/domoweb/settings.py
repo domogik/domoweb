@@ -77,6 +77,11 @@ LANGUAGE_CODE = 'en'
 LANGUAGES = (
   ('en', 'English'),
   ('fr', 'Francais'),
+  ('it', 'Italiano'),
+)
+
+LOCALE_PATHS = (
+    '%s/locale' % PROJECT_PATH,
 )
 
 SITE_ID = 1
