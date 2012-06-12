@@ -1,30 +1,25 @@
 {% load i18n %}
 <script type='text/javascript'>
     $(function(){
+        var tableau = new Array();
+                tableau[0]=  ["device_id","feature_type","device_feature_model.feature_type","device_feature_model.stat_key","device.name","device_feature_model.parameters"];
+                var i=0;
         rinor.get(['api', 'feature'])
             .done(function(data, status, xhr){
                 $.each(data.objects, function(index, object) {
-                    var group = $("optgroup#" + object.device_id).first();
-                    if (group.length == 0) {
-                        group = $("<optgroup id='" + object.device_id +"_"+object.device_feature_model.stat_key+"' label='[" + object.device.device_type_id + "] " + object.device.name + "'></optgroup>");
-                        $("select#features1").append(group);
-                    }                    
+                    tableau[i]=[object.device_id,object.device.name,object.device_feature_model.feature_type,object.device.device_type_id,object.device_feature_model.parameters];
+                    i=i++;
                     group.append("<option value='" + object.id + "'>" + object.device_feature_model.name + "</option>");
                     var test=object.device_feature_model.parameters
                     test=test.replace(/&quot;/g," ");
-                    if (object.device_feature_model.feature_type == "actuator") {
-                        var group2 =  $("optgroup#" + object.device_id).first(); 
-                        if (group2.length == 0) {
-                            group2 = $("<optgroup id='" + object.device_id + "' label='[" + object.device.device_type_id + "] " + object.device.name + "'></optgroup>");
-                            $("select#sortieVrai").append(group2);
-                            }   
-                        group2.append("<option value='" + object.id + "'>" + object.device_feature_model.name + "</option>");
-                    }
+   
+                    
                     });
                 
+
+
                 $("select#features2").append($("select#features1").clone().html());
                 $("select#sortieFaux").append($("select#sortieVrai").clone().html());
-                $("select.listes").chosen();
            })
             .fail(function(jqXHR, status, error){
                 if (jqXHR.status == 400)
@@ -32,36 +27,114 @@
             });
        
         $("select#features1").change(function(){
-              var test = $("optgroup#2").first();
-              test=$("<optgroup id='1' label='test'></optgroup>");
-             test.append="<option value='1'> 'test'</option>";
-             $("select#test1").append(test);
-             $("selec#test1").chosen();
+          var test = $("select#features1").val;
+          var test2 = $("select#TestFeature").val
+          if (test != "" && (test2=="and" || test2=="or")){
+             $('select#test1').show();
+          }else{
+             $('select#test1').hide();
+             $('#value1').hide();
+          }
+        });    
+
+        $("select#test1").change(function(){
+          var test = $("select#test1").val();
+          if ( test !="None"){
+             if (test=="="){
+             $("#value1").html("<select id='Test_value1'></select>");
+             $("#value1").show();
+              }
+              else{
+              $("#value1").html("<input id='Test_value1'></input>");
+              $("#value1").show();
+              }
+          }
+          else $("#value1").hide();
         });
-       
-} )   ;
+
+        $("select#test2").change(function(){
+          var test = $("select#test2").val();
+          if ( test !="None"){
+             if (test=="="){
+             $("#value2").html("<select id='Test_value2'></select>");
+             $("#value2").show();
+              }
+              else{
+              $("#value2").html("<input id='Test_value2'></input>");
+              $("#value2").show();
+              }
+          }
+          else $("#value2").hide();
+        });
+
+
+
+        $("select#TestFeature").change(function(){
+          var test= $("select#TestFeature").val();
+          if (test != "None"){
+             $("select#features2").show();
+             if (test !="and" && test != "or"){
+                $("select#test1").hide();
+                $("#value1").hide();
+                $("select#test2").hide();
+                $("#value2").hide();
+             }
+             else{
+                $("select#test1").show();
+                $("#value1").show();
+                $("select#test2").show();
+                $("select#test2").change();
+             }
+          }
+          else{
+             $("select#features2").hide();
+             $("select#test2").hide();
+             $("#value2").hide();
+           }
+        });
+});
 
 </script>
 <section class="subsection">
     <h2>{% trans "Created Scene" %}</h2>
+    <div>
     <select id="features1" class='listes' style="width:30em;"></select>
-    <select id="test1" class='listes' style="width:10em;"></select>
-    <select id="value1" style="width:20em;"></select>
-    </p>
-    <select id="TestFeature" class='listes' style="width:10em;"></select>
-    </p>
+    <select id="test1" class='listes' style="width:10em;">
+    <option value="None">None</option>
+    <option value=">">></option>
+    <option value="<"><</option>
+    <option value="=">=</option>
+    </select>
+    <span id="value1"></span>
+    </div>
+    <div>
+    <select id="TestFeature" class='listes' style="width:10em;">
+    <option value="None">None</option>
+    <option value="and">And</option>
+    <option value="or">Or</option>
+    <option value=">">></option>
+    <option value="<"><</option>
+    <option value="=">=</option>
+    </select>
+    </div>
+    <div>
     <select id="features2" class='listes' style="width:30em;"></select>
-    <select id="test2" class='listes' style="width:10em;"></select>
-    <select id="value2" style="width:30em;"></select>
-    </p>
+    <select id="test2" class='listes' style="width:10em;">
+    <option value="None">None</option>
+    <option value=">">></option>
+    <option value="<"><</option>
+    <option value="=">=</option>
+    </select>
+    <span id="value2" style="width:30em;"></span>
+    </div>
+    <div>
     <h3>{% trans "If True" %}</h3>
-    <select id="sortieVrai" class='listes' style="width:30em;"></select>
+    <select id="sortieVrai" class='listes' style="width:30em;"></select> =>
     <select id="valueVrai" style="width:20em;"></select>
     <h3>{% trans "If Wrong" %}</h3>
-    <select id="sortieFaux" class='listes' style="width:30em;"></select>
+    <select id="sortieFaux" class='listes' style="width:30em;"></select> =>
     <select id="valueFaux" style="width:20em;"></select>
-
-
-
+    </div>
+    <button id="Creator" class='button icon16-action-save' style="width:20em;">{% trans "Create" %}</button>
     <p>Rinor Url :{{ request.session.rinor_ip }}:{{ request.session.rinor_port }}</p> 
 </section>
