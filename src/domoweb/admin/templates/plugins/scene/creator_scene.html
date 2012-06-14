@@ -7,6 +7,14 @@
         $("select#features1").change(function(){
           var test = $(this).val();
           var test2 = $("select#TestFeature").val();
+          if ((tableau[test][4]=="binary"||tableau[test][4]=="list") && (test2!="And" && test2!="Or" && test2!="None")){
+             $("select#TestFeature option").remove();
+             $("select#TestFeature").append("<option value='None'>----</option>");
+             $("select#features2").hide();
+             $("select#test2").hide();
+             $("#value2").hide();
+             test2 = $("select#TestFeature").val();
+          }
           if (test != "" && (test2=="And" || test2=="Or"|| test2=="None")){
              $('select#test1 option').remove();
              $('select#test1').show();
@@ -38,38 +46,40 @@
         });    
 
         $("select#test1").change(function(){
-          var test = $("select#features1").val();
-          if (tableau[test][4]=="list"||tableau[test][4]=="binary"){
-            $('select#test1').attr("disabled", true);
-            $('select#test1 option[value="="]').attr("selected", "selected");
-            $("#value1").html("<select id='Test_value1' style='width:20em;'></select>");
-            $("select#TestFeature option=[value='>']").remove();
-            $("select#TestFeature option=[value='=']").remove();
-            $("select#TestFeature option=[value='<']").remove();
-            var valeur = tableau[test][6];
-            var test2 = tableau[test][4];
-            valeur = valeur.replace(/&quot;/g,'"');
-            var obj = jQuery.parseJSON(valeur);
-            if (test2 == "binary"){
-             $("select#Test_value1").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
-             $("select#Test_value1").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
-             }
-            else{
-            for(i=0 ;i<obj.commandValues.length;i++){
-            $("select#Test_value1").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
-            }
+           var test = $("select#features1").val();
+           if (tableau[test][4]=="list"||tableau[test][4]=="binary"){
+              $('select#test1').attr("disabled", true);
+              $('select#test1 option[value="="]').attr("selected", "selected");
+              $("#value1").html("<select id='Test_value1' style='width:20em;'></select>");
+              $("select#TestFeature option").remove();
+              $("select#TestFeature").append("<option value='None'>----</option>");
+              $("select#TestFeature").append("<option value='And'>And</option>");
+              $("select#TestFeature").append("<option value='Or'>Or</option>");
+              var valeur = tableau[test][6];
+              var test2 = tableau[test][4];
+              valeur = valeur.replace(/&quot;/g,'"');
+              var obj = jQuery.parseJSON(valeur);
+              if (test2 == "binary"){
+                 $("select#Test_value1").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+                 $("select#Test_value1").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+              }else{
+                 for(i=0 ;i<obj.commandValues.length;i++){
+                    $("select#Test_value1").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+                 }
             }
             $("#value1").show();
+          }else {
+             $('select#test1').removeAttr("disabled");
+             $("#value1").html("<input id='Test_value1' style='width:20em;'></input>");
+             $("#value1").show();
+             $("select#TestFeature option").remove();
+             $("select#TestFeature").append("<option value='None'>----</option>");
+             $("select#TestFeature").append("<option value='And'>And</option>");
+             $("select#TestFeature").append("<option value='Or'>Or</option>");
+             $("select#TestFeature").append("<option value='='>=</option>");
+             $("select#TestFeature").append("<option value='>'>></option>");
+             $("select#TestFeature").append("<option value='<'><</option>");
           }
-          else {
-            $('select#test1').removeAttr("disabled");
-            $("#value1").html("<input id='Test_value1' style='width:20em;'></input>");
-            $("#value1").show();
-            $("select#TestFeature").append("<option value='='>=</option>");
-            $("select#TestFeature").append("<option value='>'>></option>");
-            $("select#TestFeature").append("<option value='<'><</option>");
-          }
-          
           if ($(this).val()!="None" && ($("select#TestFeature").val()=="And" ||$("select#TestFeature").val()=="Or"   ||$("select#TestFeature").val()=="None")){
              $("#value1").show();
           }
@@ -118,7 +128,21 @@
                 $("#value1").hide();
                 $("select#test2").hide();
                 $("#value2").hide();
+                $("select#features2 option").remove();
+                var feature1= $("select#features1").val();
+                var taille=tableau.length;
+                feature1=parseInt(feature1);
+                for(i=1;i<tableau.length;i++){
+                   var tab=tableau[i];
+                   if (tableau[i][4]=="number"||tableau[i][4]=="range"){
+                      if (i!=$("select#features1").val()){
+                         $("select#features2").append("<option value='"+i+"'>"+tableau[i][8]+" - "+tableau[i][7]+"</option>");
+                      }                
+                   }  
+                  }                
               }else{
+                $("select#features2 option").remove();
+                $("select#features2").append($("select#features1").clone().html());
                 $("select#test1").show();
                 $("#value1").show();
                 $("select#test2").show();
@@ -198,7 +222,7 @@
         rinor.get(['api', 'feature'])
             .done(function(data, status, xhr){
                 $.each(data.objects, function(index, object) {
-                    tableau[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters];
+                    tableau[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
                     if (object.device_feature_model.feature_type == "actuator"){
                        $('select#sortieVrai').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
                     }
@@ -208,7 +232,7 @@
                     i=i+1;
                     });
                 
-                $("select#features2").append($("select#features1").clone().html());
+         
                 $("select#sortieFaux").append($("select#sortieVrai").clone().html());
            })
             .fail(function(jqXHR, status, error){
@@ -240,9 +264,6 @@
     <option value="None">----</option>
     <option value="And">And</option>
     <option value="Or">Or</option>
-    <option value=">">></option>
-    <option value="<"><</option>
-    <option value="=">=</option>
     </select>
     </div>
     <div>
