@@ -55,11 +55,11 @@
             tips: "{% trans "All fields in bold are required." %}",
             tipsid: 'tipsAddDevice',
             fields: [
-                {name : 'adddevicename', type:'text', label:'Name', required: true, options: {min: 1, max: 80}},
-                {name : 'adddeviceaddress', type:'text', label:'Address', required: true, options: {min: 1, max: 80}},
-                {name : 'adddevicetype', type:'select', label:'Feature', required: true,
+                {name : 'adddevicename', type:'text', label:'{% trans "Name" %}', required: true, options: {min: 1, max: 80}},
+                {name : 'adddeviceaddress', type:'text', label:'{% trans "Address" %}', required: true, options: {min: 1, max: 80}},
+                {name : 'adddevicetype', type:'select', label:'{% trans "Feature" %}', required: true,
                     options: {
-                        placeholder: 'Choose a device feature',
+                        placeholder: '{% trans "Choose a device feature" %}',
                     },
                     items: [
                         {% regroup types_list|dictsort:"device_technology_id" by device_technology as technologies_list %}
@@ -74,9 +74,9 @@
                         {% endfor %}
                     ]
                 },
-                {name : 'adddeviceusage', type:'select', label:'Usage', required: true,
+                {name : 'adddeviceusage', type:'select', label:'{% trans "Usage" %}', required: true,
                     options: {
-                        placeholder: 'Choose a usage',
+                        placeholder: '{% trans "Choose a usage" %}',
                     },
                     items: [
                     {% for usage in usages_list %}
@@ -84,8 +84,8 @@
                     {% endfor %}
                     ],
                 },
-                {name : 'adddevicedescription', type:'text', label:'Description', required: false, options: {min: 1, max: 80}},
-                {name : 'adddevicereference', type:'text', label:'Reference', required: false, options: {min: 1, max: 80}}
+                {name : 'adddevicedescription', type:'text', label:'{% trans "Description" %}', required: false, options: {min: 1, max: 80}},
+                {name : 'adddevicereference', type:'text', label:'{% trans "Reference" %}', required: false, options: {min: 1, max: 80}}
             ]
         });
 
@@ -93,11 +93,11 @@
             tips: "{% trans "All fields in bold are required." %}",
             tipsid: 'tipsUpdDevice',
             fields: [
-                {name : 'upddevicename', type:'text', label:'Name', required: true, options: {min: 1, max: 80}},
-                {name : 'upddeviceaddress', type:'text', label:'Address', required: true, options: {min: 1, max: 80}},
-                {name : 'upddeviceusage', type:'select', label:'Usage', required: true,
+                {name : 'upddevicename', type:'text', label:'{% trans "Name" %}', required: true, options: {min: 1, max: 80}},
+                {name : 'upddeviceaddress', type:'text', label:'{% trans "Address" %}', required: true, options: {min: 1, max: 80}},
+                {name : 'upddeviceusage', type:'select', label:'{% trans "Usage" %}', required: true,
                     options: {
-                        placeholder: 'Choose a usage',
+                        placeholder: '% trans "Choose a usage" %}',
                     },
                     items: [
                     {% for usage in usages_list %}
@@ -105,8 +105,8 @@
                     {% endfor %}
                     ],
                 },
-                {name : 'upddevicedescription', type:'text', label:'Description', required: false, options: {min: 1, max: 80}},
-                {name : 'upddevicereference', type:'text', label:'Reference', required: false, options: {min: 1, max: 80}}
+                {name : 'upddevicedescription', type:'text', label:'{% trans "Description" %}', required: false, options: {min: 1, max: 80}},
+                {name : 'upddevicereference', type:'text', label:'{% trans "Reference" %}', required: false, options: {min: 1, max: 80}}
             ]
         });
         

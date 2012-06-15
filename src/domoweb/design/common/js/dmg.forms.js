@@ -143,7 +143,7 @@ function numbersonly(e) {
                     case 'text':
                         if (!self._validTextLength(value.name, value.options.min, value.options.max)) {
                             $("#" + value.name).addClass('state-error');
-                            valid &= self._addTips(value.label + " length has to be between " + value.options. min + " and " + value.options.max + ".");
+                            valid &= self._addTips(value.label + " " + gettext('length has to be between') + " " + value.options. min + " " + gettext('and') + " " + value.options.max + ".");
                         } else {
                             $("#" + value.name).removeClass('state-error');                            
                         }
@@ -151,7 +151,7 @@ function numbersonly(e) {
                     case 'numericpassword':
                         if (!self._validTextLength(value.name, value.options.min, value.options.max)) {
                             $("#" + value.name).addClass('state-error');
-                            valid &= self._addTips(value.label + " length has to be between " + value.options. min + " and " + value.options.max + ".");
+                            valid &= self._addTips(value.label + " " + gettext('length has to be between') + " " + value.options. min + " " + gettext('and') + " " + value.options.max + ".");
                         } else {
                             $("#" + value.name).removeClass('state-error');                            
                         }

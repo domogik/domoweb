@@ -37,7 +37,7 @@
         <form id="loginForm" method="POST" action="{% url login_view %}?next={{next}}">
             <div class="columnleft">
                 <h2>1. {% trans "Select a user" %}</h2>
-                <div id='resetLogin' class='buttontext'>Change User</div>
+                <div id='resetLogin' class='buttontext'>{% trans "Change User" %}</div>
                 <input id="loginname" name="login" type="text" />
                 <ul id="users">
                     {% for account in account_list %}
@@ -54,7 +54,7 @@
                 {% spaceless %}
                 <div id="code">
                     <input id="logincode" name="password" type="password" value="" />
-                    <div id='submit' class="buttonok">Ok</div>
+                    <div id='submit' class="buttonok">{% trans "Ok" %}</div>
                 </div>
                 {% endspaceless %}
                 <ul id="digits">

@@ -73,7 +73,7 @@
   <table class="info">
     <thead>
       <tr>
-          <th class="h" colspan="2">Settings</th>
+          <th class="h" colspan="2">{% trans "Settings" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -91,7 +91,7 @@
     <table class="info">
       <thead>
         <tr>
-          <th class="h" colspan="2">COOKIES</th>
+          <th class="h" colspan="2">{% trans "COOKIES" %}</th>
         </tr>
       </thead>
       <tbody>
@@ -104,7 +104,7 @@
       </tbody>
     </table>
   {% else %}
-    <p>No cookie data</p>
+    <p>{% trans "No cookie data" %}</p>
   {% endif %}
 <br />
   <table class="info">
@@ -123,7 +123,7 @@
     </tbody>
   </table>
 {% else %}
-  <p>Request data not supplied</p>
+  <p>{% trans "Request data not supplied" %}</p>
 {% endif %}
 
   </section>

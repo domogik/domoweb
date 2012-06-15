@@ -28,18 +28,19 @@
 
 {% block content %}
     <p>{% trans "Please enter the your RINOR server parameters. (This should be the local address from the Domoweb service, not the remote address from the Browser)" %}</p>
-    <form action="{% url config_welcome_view %}" method="post">{% csrf_token %}
+    <form action="{% url config_configserver_view %}" method="post">{% csrf_token %}
     {{ form.non_field_errors }}
     {% for field in form %}
         <div class='row'>
             {{ field.errors }}
             <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}>
-               {{ field.label }} {% if field.field.required %}<span class="offscreen"> (required)</span>{% endif %}</span>
+               {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
             </label>
             {{ field }}
         </div>
     {% endfor %}
         <ul class='wizard_nav'>
+            <li><a href='{% url config_welcome_view %}' class='button previous'>{% trans "Previous" %}</a></li>
             <li><input type="submit" value="Next" class="next" /></li>
         </ul>
     </form>

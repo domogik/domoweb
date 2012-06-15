@@ -61,10 +61,10 @@
 {% block right %}
     <div id="tabs">
         <ul>
-            <li><a href="#tabs-host">Host</a></li>
-            <li><a href="#tabs-plugins">Plugins</a></li>
+            <li><a href="#tabs-host">{% trans "Host" %}</a></li>
+            <li><a href="#tabs-plugins">{% trans "Plugins" %}</a></li>
             {% if host.primary == "True" %}
-            <li><a href="#tabs-externals">External members</a></li>
+            <li><a href="#tabs-externals">{% trans "External members" %}</a></li>
             {% endif %}
         </ul>
     {% if host.primary == "True" %}

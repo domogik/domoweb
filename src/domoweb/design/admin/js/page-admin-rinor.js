@@ -23,9 +23,9 @@ function refresh() {
             
             // Events {{rest.event.Number_of_requests}} / {{rest.event.Max_size_for_request_queues}}
             $("#request_number").empty();
-            $("#request_number").append("<li><span class='label'>Number of Domogik requests: </span>" + data.event.Number_of_Domogik_events_requests + "</li>")
-            $("#request_number").append("<li><span class='label'>Number of devices requests: </span>" + data.event.Number_of_devices_events_requests + "</li>")
-            $("#request_number").append("<li><span class='label'>Max size for request queues: </span>" + data.event.Max_size_for_request_queues + "</li>")
+            $("#request_number").append("<li><span class='label'>" + gettext('Number of Domogik requests') + ": </span>" + data.event.Number_of_Domogik_events_requests + "</li>")
+            $("#request_number").append("<li><span class='label'>" + gettext('Number of devices requests') + ": </span>" + data.event.Number_of_devices_events_requests + "</li>")
+            $("#request_number").append("<li><span class='label'>" + gettext('Max size for request queues') + ": </span>" + data.event.Max_size_for_request_queues + "</li>")
             
             // Domogik Request list
             $("#domogik_request_list").dataTable().fnClearTable();

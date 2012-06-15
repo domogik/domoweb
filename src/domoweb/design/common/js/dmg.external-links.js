@@ -1,6 +1,6 @@
 $(function(){
     $('a[href^="http://"]').attr({
         target: "_blank",
-        title: "Opens in a new window"
+        title: gettext('Opens in a new window')
     });
 });

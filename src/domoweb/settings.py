@@ -72,7 +72,17 @@ TIME_ZONE = 'Europe/Paris'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
+
+LANGUAGES = (
+  ('en', 'English'),
+  ('fr', 'Francais'),
+  ('it', 'Italiano'),
+)
+
+LOCALE_PATHS = (
+    '%s/locale' % PROJECT_PATH,
+)
 
 SITE_ID = 1
 
@@ -91,8 +101,7 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # TODO : uncomment this once multi-languages will be supported
-    # 'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

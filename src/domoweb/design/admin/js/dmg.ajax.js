@@ -71,7 +71,7 @@
         } else if ( typeof method === 'object' || ! method ) {
             return methodsAjaxButton.init.apply( this, arguments );
         } else {
-            $.error( 'Method ' +  method + ' does not exist on jQuery.ajaxButton' );
+            $.error( gettext('Method') + ' ' +  method + ' ' + gettext('does not exist on jQuery.ajaxButton') );
         }
     };
     
@@ -152,7 +152,7 @@
         } else if ( typeof method === 'object' || ! method ) {
             return methodsAjaxSwitch.init.apply( this, arguments );
         } else {
-            $.error( 'Method ' +  method + ' does not exist on jQuery.ajaxSwitch' );
+            $.error( gettext('Method') + ' ' +  method + ' ' + gettext('does not exist on jQuery.ajaxButton') );
         }
     };
 })(jQuery);

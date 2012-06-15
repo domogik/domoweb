@@ -5,7 +5,7 @@
         $("#update_cache").ajaxButton({
             'url':['api', 'repository'],
             'data':{'action':'refresh'},
-            'successMsg':"Package cache updated",
+            'successMsg': gettext('Package cache updated'),
             'icon':'icon16-action-reset',
             'successFct':function(data, status, xhr) {
                 tableAvailablePlugins.fnReloadAjax();
@@ -17,7 +17,7 @@
 
         tableInstalledPlugins = $('#installed_plugins').dataTable( {
             "oLanguage": {
-                "sEmptyTable": "No plugin installed"
+                "sEmptyTable": gettext('No plugin installed')
             },
             "bProcessing": true,
             "sAjaxSource": '/rinor/api/package-installed/' + host_id + '/plugin/',
@@ -35,16 +35,16 @@
                     "fnRender": function ( oObj ) {
                         var str = "";
                         if (oObj.aData['enabled'] == 'True') {
-                            str += "<button class='disable'>Disable</button>";
+                            str += "<button class='disable'>" + gettext('Disable') + "</button>";
                             url = config_url.replace('plugin_id', oObj.aData['id']).replace('plugin_type', 'plugin');
-                            str += "<a href='" + url + "' class='button icon16-action-customize'>Configure</a>";
+                            str += "<a href='" + url + "' class='button icon16-action-customize'>" + gettext('Configure') + "</a>";
                         }
                         else {
-                            str += "<button class='enable'>Enable</button>";
+                            str += "<button class='enable'>" + gettext('Enable') + "</button>";
                         }
-                        str+= "<button class='uninstall'>Uninstall</button>";
+                        str+= "<button class='uninstall'>" + gettext('Uninstall') + "</button>";
                         $.each(oObj.aData['updates'], function(index, update) {
-                            str+= "<button class='update' version='" + update.version + "'>Update&nbsp;(" + update.version + ")</button>";
+                            str+= "<button class='update' version='" + update.version + "'>" + gettext('Update') + "&nbsp;(" + update.version + ")</button>";
                         });
                         return str;
                     },
@@ -56,14 +56,14 @@
                 $("button.uninstall", nRow).ajaxButton({
                     'url':['api', 'package-installed', host_id, aData['type']],
                     'data':{command : 'uninstall', package : aData['id']},
-                    'successMsg':"Package uninstalled",
+                    'successMsg': gettext('Package uninstalled'),
                     'icon':'icon16-action-del',
                     'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax();tableInstalledPlugins.fnReloadAjax();}
                 });
                 $("button.enable", nRow).ajaxButton({
                     'url':['api', 'plugin', host_id, aData['id']],
                     'data':{command : 'enable'},
-                    'successMsg':"Package enabled",
+                    'successMsg':gettext('Package enabled'),
                     'icon':'icon16-status-active',
                     'successFct':function(data, status, xhr) {tableInstalledPlugins.fnReloadAjax();getPluginsList();}
                 });
@@ -71,7 +71,7 @@
                 $("button.disable", nRow).ajaxButton({
                     'url':['api', 'plugin', host_id, aData['id']],
                     'data':{command : 'disable'},
-                    'successMsg':"Package disabled",
+                    'successMsg':gettext('Package disabled'),
                     'icon':'icon16-status-inactive',
                     'successFct':function(data, status, xhr) {tableInstalledPlugins.fnReloadAjax();getPluginsList();}
                 });
@@ -79,7 +79,7 @@
                 $("button.update", nRow).ajaxButton({
                     'url':['api', 'package-available', host_id, aData['type']],
                     'data':{command : 'install', package : aData['id'], version : $("button.update", nRow).attr('version')},
-                    'successMsg':"Package installed",
+                    'successMsg': gettext('Package installed'),
                     'icon':'icon16-action-add',
                     'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax();tableInstalledPlugins.fnReloadAjax();},
                     'preFct':function(self, options, processFunction) {
@@ -90,13 +90,13 @@
                                 $.each(data.objects, function(index, dependency) {
                                     dialog_html += "<li>" + dependency.id
                                     if (dependency.installed == 'False') {
-                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-false'>Missing</div>"                                                                                
+                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-false'>" + gettext('Missing') + "</div>"                                                                                
                                         if (dependency.error)
                                             dialog_html += "<p class='error'>" + dependency.error + "</p>";
                                         if (dependency.cmdline)
                                             dialog_html += "<code>" + dependency.cmdline + "</code>";
                                     } else {
-                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-true'>Installed</div>"                                        
+                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-true'>" + gettext('Installed') + "</div>"                                        
                                     }
                                     dialog_html += "</li>";
                                     if (dependency.installed == 'False') {
@@ -109,7 +109,7 @@
                                     self.addClass(options.icon).removeClass('icon16-status-loading');
                                     self.removeAttr("disabled");
                                     // Display alert windows
-                                    $('#dialog_dependency').dialog('option', 'title', 'Missing dependency');
+                                    $('#dialog_dependency').dialog('option', 'title', gettext('Missing dependency'));
                                     $('#dialog_dependency').html(dialog_html);
                                     $('#dialog_dependency').dialog('open');
                                 } else {
@@ -132,7 +132,7 @@
         tableAvailablePlugins = $('#available_plugins').dataTable( {
             "iDisplayLength": 50,
             "oLanguage": {
-                "sEmptyTable": "No plugin available to install"
+                "sEmptyTable": gettext('No plugin available to install')
             },
             "bProcessing": true,
             "sAjaxSource": '/rinor/api/package-available/' + host_id + '/plugin/',
@@ -177,9 +177,9 @@
                 {
                     "fnRender": function ( oObj ) {
                         var str = "";
-                        str += "<button class='install'>Install</button>";
+                        str += "<button class='install'>" + gettext('Install') + "</button>";
                         if (oObj.aData['documentation'])
-                            str += "<a href='" + oObj.aData['documentation'] + "' target='_blank' class='button external-button'>Documentation</a>";
+                            str += "<a href='" + oObj.aData['documentation'] + "' target='_blank' class='button external-button'>" + gettext('Documentation') + "</a>";
                         return str;
                     },
                     "sClass": "center"
@@ -190,7 +190,7 @@
                 $("button.install", nRow).ajaxButton({
                     'url':['api', 'package-available', host_id, aData['type']],
                     'data':{command : 'install', package : aData['id'], version : aData['version']},
-                    'successMsg':"Package installed",
+                    'successMsg': gettext('Package installed'),
                     'icon':'icon16-action-add',
                     'successFct':function(data, status, xhr) {tableAvailablePlugins.fnReloadAjax();tableInstalledPlugins.fnReloadAjax();},
                     'preFct':function(self, options, processFunction) {
@@ -201,13 +201,13 @@
                                 $.each(data.objects, function(index, dependency) {
                                     dialog_html += "<li>" + dependency.id
                                     if (dependency.installed == 'False') {
-                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-false'>Missing</div>"                                                                                
+                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-false'>"+ gettext('Missing') + "</div>"                                                                                
                                         if (dependency.error)
                                             dialog_html += "<p class='error'>" + dependency.error + "</p>";
                                         if (dependency.cmdline)
                                             dialog_html += "<code>" + dependency.cmdline + "</code>";
                                     } else {
-                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-true'>Installed</div>"                                        
+                                        dialog_html += "<div style='float:right' class='icon16-text icon16-status-true'>" + gettext('Installed') + "</div>"                                        
                                     }
                                     dialog_html += "</li>";
                                     if (dependency.installed == 'False') {
@@ -220,7 +220,7 @@
                                     self.addClass(options.icon).removeClass('icon16-status-loading');
                                     self.removeAttr("disabled");
                                     // Display alert windows
-                                    $('#dialog_dependency').dialog('option', 'title', 'Missing dependency');
+                                    $('#dialog_dependency').dialog('option', 'title', gettext('Missing dependency'));
                                     $('#dialog_dependency').html(dialog_html);
                                     $('#dialog_dependency').dialog('open');
                                 } else {
@@ -244,7 +244,7 @@
         tableInstalledExternals = $('#installed_externals').dataTable( {
             "bProcessing": true,
             "oLanguage": {
-                "sEmptyTable": "No external member installed"
+                "sEmptyTable": gettext('No external member installed')
             },
             "sAjaxSource": '/rinor/api/package-installed/' + host_id + '/external/',
             "sAjaxDataProp": "objects",
@@ -260,9 +260,9 @@
                 {
                     "fnRender": function ( oObj ) {
                         var str = "";
-                        str+= "<button class='uninstall'>Uninstall</button>";
+                        str+= "<button class='uninstall'>" + gettext('Uninstall') + "</button>";
                         $.each(oObj.aData['updates'], function(index, update) {
-                            str+= "<button class='update' version='" + update.version + "'>Update&nbsp;(" + update.version + ")</button>";
+                            str+= "<button class='update' version='" + update.version + "'>" + gettext('Update') + "&nbsp;(" + update.version + ")</button>";
                         });
                         return str;
                     },
@@ -274,14 +274,14 @@
                 $("button.uninstall", nRow).ajaxButton({
                     'url':['api', 'package-installed', host_id, aData['type']],
                     'data':{command : 'uninstall', package : aData['id']},
-                    'successMsg':"Package uninstalled",
+                    'successMsg': gettext('Package uninstalled'),
                     'icon':'icon16-action-del',
                     'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax();tableInstalledExternals.fnReloadAjax();}
                 });
                 $("button.update", nRow).ajaxButton({
                     'url':['api', 'package-available', host_id, aData['type']],
                     'data':{command : 'install', package : aData['id'], version : $("button.update", nRow).attr('version')},
-                    'successMsg':"Package installed",
+                    'successMsg': gettext('Package installed'),
                     'icon':'icon16-action-add',
                     'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax();tableInstalledExternals.fnReloadAjax();}
                 });
@@ -292,7 +292,7 @@
         tableAvailableExternals = $('#available_externals').dataTable( {
             "iDisplayLength": 50,
             "oLanguage": {
-                "sEmptyTable": "No external member available to install"
+                "sEmptyTable": gettext('No external member available to install')
             },
             "bProcessing": true,
             "sAjaxSource": '/rinor/api/package-available/' + host_id + '/external/',
@@ -336,9 +336,9 @@
                 {
                     "fnRender": function ( oObj ) {
                         var str = "";
-                        str += "<button class='install'>Install</button>";
+                        str += "<button class='install'>" + gettext('Install') + "</button>";
                         if (oObj.aData['documentation'])
-                            str += "<a href='" + oObj.aData['documentation'] + "' target='_blank' class='button external-button'>Documentation</a>";
+                            str += "<a href='" + oObj.aData['documentation'] + "' target='_blank' class='button external-button'>" + gettext('Documentation') + "</a>";
                         return str;
                     },
                     "sClass": "center"
@@ -348,7 +348,7 @@
                 $("button.install", nRow).ajaxButton({
                     'url':['api', 'package-available', host_id, aData['type']],
                     'data':{command : 'install', package : aData['id'], version : aData['version']},
-                    'successMsg':"Package installed",
+                    'successMsg': gettext('Package installed'),
                     'icon':'icon16-action-add',
                     'successFct':function(data, status, xhr) {tableAvailableExternals.fnReloadAjax();tableInstalledExternals.fnReloadAjax();}
                 });

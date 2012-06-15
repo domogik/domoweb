@@ -399,6 +399,24 @@ def admin_core_djangoinfo(request):
     )
 
 @admin_required
+def admin_core_domowebdata(request):
+    """
+    Method called when the admin Domoweb Data page is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+    
+    page_title = _("Domoweb Data")
+    
+    return go_to_page(
+        request, 'core/domowebdata.html',
+        page_title,
+        nav1_admin = "selected",
+        nav2_core_domowebdata = "selected",
+        parameter_data = Parameter.objects.all()
+    )
+    
+@admin_required
 def admin_host(request, id):
     """
     Method called when the admin plugins page is accessed

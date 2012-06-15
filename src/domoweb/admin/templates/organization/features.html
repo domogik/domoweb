@@ -130,7 +130,7 @@
                             <ul class="draggables">
                                 {% for feature in device.feature %}
                                     {% if feature.association %}
-                                        <li class='trace' id='feature-{{ device.id }}-{{ feature.id }}_trace'>{{ device.name }} {{ feature.name }}<br/>associated with {{ feature.association.place_type }} {{ feature.association.place_id }}</li>
+                                        <li class='trace' id='feature-{{ device.id }}-{{ feature.id }}_trace'>{{ device.name }} {{ feature.name }}<br/>{% trans "associated with" %} {{ feature.association.place_type }} {{ feature.association.place_id }}</li>
                                     {% else %}
                                         <li class="draggable icon32-usage-{{ usage.grouper.id }} unknown" value="feature-{{ device.id }}-{{ feature.id }}" zoneorigin='target_device-{{ device.id }}'><div id="feature_{{ device.id }}_{{ feature.id }}"><span class='name'>{{ device.name|truncchar:10 }}<br/>{{ feature.name|truncchar:10 }}</span></div></li>
                                     {% endif %}

@@ -4,10 +4,11 @@ from django.http import HttpResponseServerError
 from django.template import Context, loader
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.conf import settings
+from django.utils import translation
 from httplib import BadStatusLine
 from domoweb.models import Parameter, Widget
 from domoweb.rinor.pipes import InfoPipe
-from django.conf import settings
 import os
 
 class RinorMiddleware(object):
@@ -47,6 +48,17 @@ class RinorMiddleware(object):
             request.session['normal_mode'] = (mode == "normal")
             request.session['rinor_ip'] = _ip.value
             request.session['rinor_port'] = _port.value
+
+        """
+        Set Language
+        """
+        try:
+            _lang = Parameter.objects.get(key='language')
+        except Parameter.DoesNotExist:
+            pass
+        else:
+            translation.activate(_lang.value)
+            request.LANGUAGE_CODE = _lang.value
 
         """
         Check if has message

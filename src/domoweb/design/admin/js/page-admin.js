@@ -15,7 +15,7 @@ function getHostsList() {
                     });
                 } else {
                     var li = $("<li></li>");
-                    var a = $("<a>No hosts<br />Click to reload</a>");
+                    var a = $("<a>" + gettext('No hosts') + "<br />" + gettext('Click to reload') + "</a>");
                     a.attr('href', '#');
                     a.addClass("icon16-status-error");
                     a.click(function(){getHostsList();})
@@ -25,7 +25,7 @@ function getHostsList() {
         })
         .fail(function(jqXHR, status, error){
             var li = $("<li></li>");
-            var a = $("<a>" + jqXHR.responseText + " <br />Click to reload</a>");
+            var a = $("<a>" + jqXHR.responseText + "<br />" + gettext('Click to reload') + "</a>");
             a.attr('href', '#');
             a.addClass("icon16-status-error");
             a.click(function(){getHostsList();})
@@ -58,18 +58,18 @@ function getPluginsList() {
                             if (this.status == 'ON') {
                                 if (this.type == 'plugin') {
                                     status.addClass("icon16-status-plugin-up");
-                                    status.append("<span class='offscreen'>Plugin Running</span>");                                    
+                                    status.append("<span class='offscreen'>" + gettext('Plugin Running') + "</span>");                                    
                                 } else { // external
                                     status.addClass("icon16-status-external-up");
-                                    status.append("<span class='offscreen'>External member Running</span>");                                                                        
+                                    status.append("<span class='offscreen'>" + gettext('External member Running') + "</span>");                                                                        
                                 }
                             } else {
                                 if (this.type == 'plugin') {
                                     status.addClass("icon16-status-plugin-down");
-                                    status.append("<span class='offscreen'>Plugin Stopped</span>");
+                                    status.append("<span class='offscreen'>" + gettext('Plugin Stopped') + "</span>");
                                 } else { // external
                                     status.addClass("icon16-status-external-down");
-                                    status.append("<span class='offscreen'>External member Stopped</span>");
+                                    status.append("<span class='offscreen'>" + gettext('External member Stopped') + "</span>");
                                 }
                             }
                         }
@@ -80,7 +80,7 @@ function getPluginsList() {
                 });
                 if (plugin_count == 0) { // If no plugin detected
                     var li = $("<li></li>");
-                    var a = $("<a>No plugin enabled or installed<br />Click to reload</a>");
+                    var a = $("<a>" + gettext('No plugin enabled or installed') + "<br />" + gettext('Click to reload') + "</a>");
                     a.attr('href', '#');
                     a.addClass("icon16-status-error");
                     a.click(function(){getPluginsList();})
@@ -89,7 +89,7 @@ function getPluginsList() {
                 }                    
             } else {
                 var li = $("<li></li>");
-                var a = $("<a>No host listed<br />Click to reload</a>");
+                var a = $("<a>" + gettext('No host listed') + "<br />" + gettext('Click to reload') + "</a>");
                 a.attr('href', '#');
                 a.addClass("icon16-status-error");
                 a.click(function(){getPluginsList();})
@@ -99,7 +99,7 @@ function getPluginsList() {
         })
         .fail(function(jqXHR, status, error){
             var li = $("<li></li>");
-            var a = $("<a>" + jqXHR.responseText + " <br />Click to reload</a>");
+            var a = $("<a>" + jqXHR.responseText + "<br />" + gettext('Click to reload') + "</a>");
             a.attr('href', '#');
             a.addClass("icon16-status-error");
             a.click(function(){getPluginsList();})

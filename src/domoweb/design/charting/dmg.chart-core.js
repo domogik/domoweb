@@ -64,7 +64,7 @@
                 })
                 .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
-                        $.notification('error', 'data creation failed (' + jqXHR.responseText + ')');
+                        $.notification('error', gettext('Data creation failed') + ' (' + jqXHR.responseText + ')');
                     defer.reject(jqXHR, status, error);
                 });
             return defer.promise();

@@ -1,16 +1,1220 @@
-# French translation of Django.
-# This file is distributed under the same license as the Django package.
-# Copyright (C) 2008 Django Software Foundation and individual contributors.
-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+#   <ferllings@gmail.com>, 2012.
+# Romain Bourdy <achileos@gmail.com>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: Django\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-04 18:59+0200\n"
-"PO-Revision-Date: 2009-03-01 12:35+0100\n"
-"Last-Translator: Stéphane Raimbault <stephane.raimbault@gmail.com>\n"
-"Language-Team: French <http://django-fr.org>\n"
+"Project-Id-Version: Domoweb\n"
+"Report-Msgid-Bugs-To: http://tracker.domogik.org/projects/domoweb\n"
+"POT-Creation-Date: 2012-06-12 10:32+0200\n"
+"PO-Revision-Date: 2012-06-15 15:52+0000\n"
+"Last-Translator: ferllings <ferllings@gmail.com>\n"
+"Language-Team: French (http://www.transifex.net/projects/p/domoweb/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n>1;\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+
+#: views.py:61 admin/templates/layouts/base_admin.html:75
+#: admin/templates/layouts/base_admin.html:80
+#: templates/layouts/base_home.html:41 templates/layouts/base_home.html:46
+msgid "Domogik"
+msgstr "Domogik"
+
+#: views.py:124
+msgid "Select your language"
+msgstr "Sélectionnez votre langue"
+
+#: views.py:147
+msgid "Domogik server configuration"
+msgstr "Configuration du serveur Domogik"
+
+#: views.py:186
+msgid "Testing Domogik server"
+msgstr "Test du serveur Domogik"
+
+#: admin/views.py:63
+msgid "Login page"
+msgstr "Page de connexion"
+
+#: admin/views.py:105
+msgid ""
+"Sorry unable to log in. Please check login name / password and try again."
+msgstr "Connexion impossible. Veuillez vérifier votre couple identifiant/mot de passe et réessayer."
+
+#: admin/views.py:117
+msgid "Accounts management"
+msgstr "Gestion des comptes"
+
+#: admin/views.py:138
+msgid "Devices organization"
+msgstr "Gestion des périphériques"
+
+#: admin/views.py:165
+msgid "Rooms organization"
+msgstr "Gestion des pièces"
+
+#: admin/views.py:192
+msgid "Areas organization"
+msgstr "Gestion des zones"
+
+#: admin/views.py:215
+msgid "House organization"
+msgstr "Gestion de la maison"
+
+#: admin/views.py:236
+msgid "Widgets organization"
+msgstr "Gestion des widgets"
+
+#: admin/views.py:261 admin/templates/plugins/plugin.html:92
+msgid "Plugin"
+msgstr "Plugin"
+
+#: admin/views.py:274
+msgid "External Member"
+msgstr "Participant externe"
+
+#: admin/views.py:292
+msgid "Helpers tools"
+msgstr "Outils d'aide"
+
+#: admin/views.py:310
+msgid "RINOR informations"
+msgstr "Informations RINOR"
+
+#: admin/views.py:336
+msgid "Python informations"
+msgstr "Informations Python"
+
+#: admin/views.py:387
+msgid "Django informations"
+msgstr "Informations Django"
+
+#: admin/views.py:409 admin/templates/layouts/base_admin.html:127
+msgid "Domoweb Data"
+msgstr "Données Domoweb"
+
+#: admin/views.py:430
+#, python-format
+msgid "Host %s"
+msgstr "Hôte %s"
+
+#: admin/templates/login.html:36
+msgid "Identification"
+msgstr "Identification"
+
+#: admin/templates/login.html:39
+msgid "Select a user"
+msgstr "Choisissez un utilsateur"
+
+#: admin/templates/login.html:40
+msgid "Change User"
+msgstr "Changement d'utilisateur"
+
+#: admin/templates/login.html:53
+msgid "Enter your code"
+msgstr "Entrez votre code"
+
+#: admin/templates/login.html:57
+msgid "Ok"
+msgstr "Ok"
+
+#: admin/templates/login.html:72
+msgid "Del."
+msgstr "Eff."
+
+#: admin/templates/core/djangoinfo.html:42
+msgid "Django Informations"
+msgstr "Informations Django"
+
+#: admin/templates/core/djangoinfo.html:76
+msgid "Settings"
+msgstr "Réglages"
+
+#: admin/templates/core/djangoinfo.html:94
+msgid "COOKIES"
+msgstr "Cookies"
+
+#: admin/templates/core/djangoinfo.html:107
+msgid "No cookie data"
+msgstr "Aucun cookie"
+
+#: admin/templates/core/djangoinfo.html:126
+msgid "Request data not supplied"
+msgstr "Données requises non fournies"
+
+#: admin/templates/core/domowebdata.html:51
+#: admin/templates/plugins/external.html:144
+msgid "Key"
+msgstr "Clé"
+
+#: admin/templates/core/domowebdata.html:52
+#: admin/templates/plugins/external.html:144
+msgid "Value"
+msgstr "Valeur"
+
+#: admin/templates/core/helpers.html:99
+msgid "Home"
+msgstr "Accueil"
+
+#: admin/templates/core/helpers.html:107
+#: admin/templates/layouts/base_admin.html:123
+msgid "Helpers"
+msgstr "Outils d'aide"
+
+#: admin/templates/core/helpers.html:108
+msgid "Command"
+msgstr "Commande"
+
+#: admin/templates/core/helpers.html:110
+msgid "Send"
+msgstr "Envoyer"
+
+#: admin/templates/core/helpers.html:111
+msgid "Stop"
+msgstr "Stop"
+
+#: admin/templates/core/helpers.html:112
+msgid "clear"
+msgstr "RAZ"
+
+#: admin/templates/core/pyinfo.html:42
+msgid "Python Informations"
+msgstr "Informations Python"
+
+#: admin/templates/core/rinor.html:53
+#: admin/templates/layouts/base_admin.html:124
+msgid "RINOR"
+msgstr "RINOR"
+
+#: admin/templates/core/rinor.html:59 admin/templates/plugins/external.html:79
+#: admin/templates/plugins/plugin.html:43
+msgid "Status"
+msgstr "Etat"
+
+#: admin/templates/core/rinor.html:60 admin/templates/core/rinor.html:175
+#: admin/templates/organization/house.html:64
+#: admin/templates/plugins/configuration.html:4
+#: admin/templates/plugins/external.html:140
+#: admin/templates/plugins/plugin.html:101
+msgid "Configuration"
+msgstr "Configuration"
+
+#: admin/templates/core/rinor.html:64
+msgid "Force Refresh"
+msgstr "Forcer rafraichissement"
+
+#: admin/templates/core/rinor.html:67
+msgid "Information"
+msgstr "Information"
+
+#: admin/templates/core/rinor.html:75
+msgid "Statistics"
+msgstr "Statistique"
+
+#: admin/templates/core/rinor.html:77 admin/templates/core/rinor.html.py:97
+msgid "XML files last load"
+msgstr "Dernier chargement des fichiers XML"
+
+#: admin/templates/core/rinor.html:78 admin/templates/core/rinor.html.py:98
+msgid "XML files loaded"
+msgstr "Fichiers XML chargés"
+
+#: admin/templates/core/rinor.html:85 admin/templates/core/rinor.html:105
+msgid "XML files KO"
+msgstr "Fichiers XML invalides"
+
+#: admin/templates/core/rinor.html:95
+msgid "Commands"
+msgstr "Commandes"
+
+#: admin/templates/core/rinor.html:115
+msgid "Queues status"
+msgstr "Etat des files"
+
+#: admin/templates/core/rinor.html:123
+msgid "Events status"
+msgstr "Etat des évenements"
+
+#: admin/templates/core/rinor.html:124
+msgid "Requests"
+msgstr "Requête"
+
+#: admin/templates/core/rinor.html:130 admin/templates/core/rinor.html:140
+#: admin/templates/core/rinor.html:153
+msgid "ID"
+msgstr "ID"
+
+#: admin/templates/core/rinor.html:131 admin/templates/core/rinor.html:141
+#: admin/templates/core/rinor.html:154
+msgid "Created"
+msgstr "Crée"
+
+#: admin/templates/core/rinor.html:132 admin/templates/core/rinor.html:142
+#: admin/templates/core/rinor.html:155
+msgid "Last access"
+msgstr "Dernier accès"
+
+#: admin/templates/core/rinor.html:133 admin/templates/core/rinor.html:143
+#: admin/templates/core/rinor.html:157
+msgid "Queue size"
+msgstr "Taille de la file"
+
+#: admin/templates/core/rinor.html:134 admin/templates/core/rinor.html:144
+#: admin/templates/core/rinor.html:158
+msgid "Instance Unfinished Tasks"
+msgstr "Taches en cours sur l'instance"
+
+#: admin/templates/core/rinor.html:135 admin/templates/core/rinor.html:145
+#: admin/templates/core/rinor.html:159
+msgid "Instance Max size"
+msgstr "Taille maxi de l'instance"
+
+#: admin/templates/core/rinor.html:156
+msgid "Device id list"
+msgstr "Liste des identifiants de modules"
+
+#: admin/templates/core/rinor.html:169
+#: admin/templates/plugins/informations.html:4
+msgid "Basic Control"
+msgstr "Contrôles de base"
+
+#: admin/templates/core/rinor.html:177
+#: admin/templates/plugins/configuration.html:6
+msgid "Delete configuration"
+msgstr "Supprimer la configuration"
+
+#: admin/templates/hosts/host.html:65 admin/templates/hosts/host.html.py:75
+msgid "Repositories"
+msgstr "Dépôts"
+
+#: admin/templates/hosts/host.html:67
+#: admin/templates/layouts/base_admin.html:113
+msgid "Plugins"
+msgstr "Plugins"
+
+#: admin/templates/hosts/host.html:69
+msgid "External members"
+msgstr "Participants externes"
+
+#: admin/templates/hosts/host.html:76
+msgid "Update cache"
+msgstr "Mise à jour du cache"
+
+#: admin/templates/hosts/host.html:79
+msgid "Priority"
+msgstr "Priorité"
+
+#: admin/templates/hosts/host.html:79
+msgid "URL"
+msgstr "URL"
+
+#: admin/templates/hosts/host.html:92 admin/templates/hosts/host.html:123
+#: admin/templates/plugins/requirements.html:16
+msgid "Installed"
+msgstr "Installé"
+
+#: admin/templates/hosts/host.html:95 admin/templates/hosts/host.html:107
+#: admin/templates/hosts/host.html:126 admin/templates/hosts/host.html:138
+#: admin/templates/organization/areas.html:54
+#: admin/templates/organization/devices.html:59
+#: admin/templates/organization/devices.html:93
+#: admin/templates/organization/devices.html:154
+#: admin/templates/organization/rooms.html:112
+msgid "Name"
+msgstr "Nom"
+
+#: admin/templates/hosts/host.html:96 admin/templates/hosts/host.html:108
+#: admin/templates/hosts/host.html:127 admin/templates/hosts/host.html:139
+#: admin/templates/plugins/external.html:123
+#: admin/templates/plugins/informations.html:7
+#: view/templates/area.edit.html:100 view/templates/house.edit.html:100
+#: view/templates/room.edit.html:101
+msgid "Version"
+msgstr "Version"
+
+#: admin/templates/hosts/host.html:97 admin/templates/hosts/host.html:113
+#: admin/templates/hosts/host.html:128 admin/templates/hosts/host.html:144
+msgid "Action"
+msgstr "Action"
+
+#: admin/templates/hosts/host.html:104 admin/templates/hosts/host.html:135
+msgid "Available"
+msgstr "Disponible"
+
+#: admin/templates/hosts/host.html:109 admin/templates/hosts/host.html:140
+msgid "Repository"
+msgstr "Dépôt"
+
+#: admin/templates/hosts/host.html:110 admin/templates/hosts/host.html:141
+msgid "Category"
+msgstr "Catégorie"
+
+#: admin/templates/hosts/host.html:111 admin/templates/hosts/host.html:142
+#: admin/templates/organization/areas.html:55
+#: admin/templates/organization/devices.html:84
+#: admin/templates/organization/devices.html:103
+#: admin/templates/organization/devices.html:155
+#: admin/templates/organization/rooms.html:113
+#: admin/templates/plugins/external.html:135
+#: admin/templates/plugins/informations.html:15
+#: view/templates/area.edit.html:104 view/templates/house.edit.html:104
+#: view/templates/room.edit.html:105
+msgid "Description"
+msgstr "Description"
+
+#: admin/templates/hosts/host.html:112 admin/templates/hosts/host.html:143
+msgid "Authors"
+msgstr "Auteurs"
+
+#: admin/templates/layouts/base_admin.html:63
+msgid "Domogik in development mode. Plugins are running from the sources"
+msgstr "Domogik est en mode développement. Les plugins sont exécutés depuis les sources"
+
+#: admin/templates/layouts/base_admin.html:75
+#: templates/layouts/base_home.html:41
+msgid "Joyeux noël"
+msgstr "Joyeux noël"
+
+#: admin/templates/layouts/base_admin.html:80
+#: templates/layouts/base_home.html:46
+msgid "Free home automation under Linux"
+msgstr "Solution de domotique libre sous Linux"
+
+#: admin/templates/layouts/base_admin.html:85
+#: templates/layouts/base_home.html:51
+#: view/templates/layouts/base_view.html:89
+msgid "Visualization"
+msgstr "Visualisation"
+
+#: admin/templates/layouts/base_admin.html:85
+#: templates/layouts/base_home.html:51
+#: view/templates/layouts/base_view.html:89
+msgid "View, Control your house"
+msgstr "Visualiser, Contrôler votre maison"
+
+#: admin/templates/layouts/base_admin.html:86
+#: templates/layouts/base_home.html:52
+#: view/templates/layouts/base_view.html:90
+msgid "Administration"
+msgstr "Administration"
+
+#: admin/templates/layouts/base_admin.html:86
+#: templates/layouts/base_home.html:52
+#: view/templates/layouts/base_view.html:90
+msgid "Configure, Manage"
+msgstr "Configurer, Gérer"
+
+#: admin/templates/layouts/base_admin.html:87
+#: templates/layouts/base_home.html:53
+#: view/templates/layouts/base_view.html:91
+msgid "Help"
+msgstr "Aide"
+
+#: admin/templates/layouts/base_admin.html:87
+#: templates/layouts/base_home.html:53
+#: view/templates/layouts/base_view.html:91
+msgid "External Wiki page"
+msgstr "Page de Wiki externe"
+
+#: admin/templates/layouts/base_admin.html:90
+#: view/templates/layouts/base_view.html:94
+msgid "Log in"
+msgstr "Connexion"
+
+#: admin/templates/layouts/base_admin.html:90
+#: view/templates/layouts/base_view.html:94
+msgid "Identify yourself"
+msgstr "Veuillez vous identifier"
+
+#: admin/templates/layouts/base_admin.html:92
+#: view/templates/layouts/base_view.html:96
+msgid "Log out"
+msgstr "Déconnexion"
+
+#: admin/templates/layouts/base_admin.html:92
+#: view/templates/layouts/base_view.html:96
+msgid "Disconnect"
+msgstr "Déconnexion"
+
+#: admin/templates/layouts/base_admin.html:101
+msgid "Organization"
+msgstr "Organisation"
+
+#: admin/templates/layouts/base_admin.html:103
+#: admin/templates/organization/features.html:149
+#: admin/templates/organization/house.html:59
+#: admin/templates/organization/rooms.html:287
+#: admin/templates/organization/widgets.html:46
+msgid "House"
+msgstr "Maison"
+
+#: admin/templates/layouts/base_admin.html:104
+#: admin/templates/organization/areas.html:80
+#: admin/templates/organization/features.html:150
+msgid "Areas"
+msgstr "Zones"
+
+#: admin/templates/layouts/base_admin.html:105
+#: admin/templates/organization/features.html:151
+#: admin/templates/organization/rooms.html:140
+msgid "Rooms"
+msgstr "Pièces"
+
+#: admin/templates/layouts/base_admin.html:106
+#: admin/templates/organization/devices.html:130
+msgid "Devices"
+msgstr "Périphériques"
+
+#: admin/templates/layouts/base_admin.html:107
+#: admin/templates/organization/widgets.html:38
+#: view/templates/area.edit.html:48 view/templates/house.edit.html:48
+#: view/templates/room.edit.html:49
+msgid "Widgets"
+msgstr "Widgets"
+
+#: admin/templates/layouts/base_admin.html:109
+msgid "Management"
+msgstr "Gestion"
+
+#: admin/templates/layouts/base_admin.html:111
+msgid "Accounts"
+msgstr "Comptes"
+
+#: admin/templates/layouts/base_admin.html:117
+msgid "Hosts"
+msgstr "Hôtes"
+
+#: admin/templates/layouts/base_admin.html:121
+msgid "Core"
+msgstr "Coeur"
+
+#: admin/templates/layouts/base_admin.html:125
+msgid "Python"
+msgstr "Python"
+
+#: admin/templates/layouts/base_admin.html:126
+msgid "Django"
+msgstr "Django"
+
+#: admin/templates/management/accounts.html:33
+#: admin/templates/management/accounts.html:202
+#: admin/templates/management/accounts.html:268
+#: admin/templates/organization/areas.html:46
+#: admin/templates/organization/areas.html:161
+#: admin/templates/organization/devices.html:51
+#: admin/templates/organization/devices.html:209
+#: admin/templates/organization/rooms.html:104
+#: admin/templates/organization/rooms.html:268
+msgid "Delete"
+msgstr "Suppression"
+
+#: admin/templates/management/accounts.html:34
+#: admin/templates/organization/areas.html:47
+#: admin/templates/organization/devices.html:52
+#: admin/templates/organization/rooms.html:105
+msgid "Please confirm to delete"
+msgstr "Veuillez confirmer la suppression"
+
+#: admin/templates/management/accounts.html:38
+#: admin/templates/management/accounts.html:50
+#: admin/templates/management/accounts.html:93
+#: admin/templates/management/accounts.html:104
+msgid "All fields are required."
+msgstr "Tout les champs sont requis."
+
+#: admin/templates/management/accounts.html:41
+#: admin/templates/management/accounts.html:96
+#: admin/templates/management/accounts.html:134
+msgid "Login"
+msgstr "Identifiant"
+
+#: admin/templates/management/accounts.html:42
+#: admin/templates/management/accounts.html:53
+#: admin/templates/management/accounts.html:97
+msgid "Firstname"
+msgstr "Prénom"
+
+#: admin/templates/management/accounts.html:43
+#: admin/templates/management/accounts.html:54
+#: admin/templates/management/accounts.html:98
+msgid "Lastname"
+msgstr "Nom"
+
+#: admin/templates/management/accounts.html:44
+msgid "Access code (numeric only)"
+msgstr "Code d'accès (Chiffres uniquement)"
+
+#: admin/templates/management/accounts.html:45
+#: admin/templates/management/accounts.html:99
+msgid "Is admin"
+msgstr "Est admin"
+
+#: admin/templates/management/accounts.html:60
+msgid "Create new account"
+msgstr "Créer nouveau compte"
+
+#: admin/templates/management/accounts.html:66
+msgid "New account added"
+msgstr "Nouveau compte ajouté"
+
+#: admin/templates/management/accounts.html:70
+msgid "Account not created"
+msgstr "Compte non crée"
+
+#: admin/templates/management/accounts.html:77
+msgid "Create new person"
+msgstr "Créer nouvelle personne"
+
+#: admin/templates/management/accounts.html:83
+msgid "New person added"
+msgstr "Nouvelle personne ajoutée"
+
+#: admin/templates/management/accounts.html:87
+msgid "Person not created"
+msgstr "Personne non crée"
+
+#: admin/templates/management/accounts.html:107
+msgid "Old access code"
+msgstr "Ancien code d'accès"
+
+#: admin/templates/management/accounts.html:108
+msgid "New access code (numeric only)"
+msgstr "Nouveau code d'accès (chiffres uniquement)"
+
+#: admin/templates/management/accounts.html:128
+msgid "Accounts list"
+msgstr "Liste des comptes"
+
+#: admin/templates/management/accounts.html:130
+msgid "Add new account"
+msgstr "Ajouter un compte"
+
+#: admin/templates/management/accounts.html:135
+msgid "Real name"
+msgstr "Nom réel"
+
+#: admin/templates/management/accounts.html:136
+msgid "Admin"
+msgstr "Admin"
+
+#: admin/templates/management/accounts.html:137
+#: admin/templates/management/accounts.html:221
+msgid "Actions"
+msgstr "Actions"
+
+#: admin/templates/management/accounts.html:150
+#: admin/templates/management/accounts.html:168
+msgid "Account"
+msgstr "Compte"
+
+#: admin/templates/management/accounts.html:150
+#: admin/templates/management/accounts.html:234
+#: admin/templates/organization/areas.html:106
+#: admin/templates/organization/devices.html:172
+#: admin/templates/organization/rooms.html:166
+#: admin/templates/organization/rooms.html:195
+msgid "successfully deleted"
+msgstr "suppression terminée avec succès"
+
+#: admin/templates/management/accounts.html:154
+msgid "Account not deleted"
+msgstr "Compte non supprimé"
+
+#: admin/templates/management/accounts.html:161
+msgid "Update account"
+msgstr "Mettre à jour le compte"
+
+#: admin/templates/management/accounts.html:168
+#: admin/templates/management/accounts.html:185
+#: admin/templates/organization/areas.html:149
+#: admin/templates/organization/devices.html:190
+#: admin/templates/organization/rooms.html:255
+msgid "successfully updated"
+msgstr "mise à jour terminée avec succès"
+
+#: admin/templates/management/accounts.html:172
+msgid "Account not updated"
+msgstr "Compte non mis à jour"
+
+#: admin/templates/management/accounts.html:179
+#: admin/templates/management/accounts.html:204
+msgid "Change password for"
+msgstr "Choix du nouveau mot de passe"
+
+#: admin/templates/management/accounts.html:185
+msgid "Password"
+msgstr "Mot de passe"
+
+#: admin/templates/management/accounts.html:189
+msgid "Password not updated"
+msgstr "Mot de passe non mis à jour"
+
+#: admin/templates/management/accounts.html:203
+#: admin/templates/management/accounts.html:269
+#: admin/templates/organization/areas.html:162
+#: admin/templates/organization/devices.html:210
+#: admin/templates/organization/rooms.html:269
+msgid "Modify"
+msgstr "Modifier"
+
+#: admin/templates/management/accounts.html:213
+msgid "Peoples list"
+msgstr "List des personnes"
+
+#: admin/templates/management/accounts.html:215
+msgid "Add new person"
+msgstr "Ajouter une personne"
+
+#: admin/templates/management/accounts.html:219
+msgid "First name"
+msgstr "Prénom"
+
+#: admin/templates/management/accounts.html:220
+msgid "Last name"
+msgstr "Nom"
+
+#: admin/templates/management/accounts.html:234
+#: admin/templates/management/accounts.html:252
+msgid "Person"
+msgstr "Personne"
+
+#: admin/templates/management/accounts.html:238
+msgid "Person not deleted"
+msgstr "Personne non supprimée"
+
+#: admin/templates/management/accounts.html:245
+msgid "Update person"
+msgstr "Mise à jour de la personne"
+
+#: admin/templates/management/accounts.html:252
+msgid "updated"
+msgstr "mis à jour"
+
+#: admin/templates/management/accounts.html:256
+msgid "Person not updated"
+msgstr "Personne non mise à jour"
+
+#: admin/templates/organization/areas.html:37
+msgid "Add new area"
+msgstr "Ajouter une zone"
+
+#: admin/templates/organization/areas.html:51
+msgid "Area name is required."
+msgstr "Le nom de la zone est obligatoire."
+
+#: admin/templates/organization/areas.html:61
+msgid "Create new area"
+msgstr "Ajout d'une zone"
+
+#: admin/templates/organization/areas.html:67
+msgid "New area added"
+msgstr "Zone ajoutée"
+
+#: admin/templates/organization/areas.html:71
+msgid "Area not created"
+msgstr "Zone non-ajoutée"
+
+#: admin/templates/organization/areas.html:85
+msgid "Areas list"
+msgstr "Liste des zones"
+
+#: admin/templates/organization/areas.html:106
+#: admin/templates/organization/areas.html:149
+msgid "Area"
+msgstr "Zone"
+
+#: admin/templates/organization/areas.html:111
+msgid "Area not deleted"
+msgstr "Zone non supprimée"
+
+#: admin/templates/organization/areas.html:133
+msgid "Icon not updated"
+msgstr "Icône non mise à jour"
+
+#: admin/templates/organization/areas.html:142
+msgid "Update area"
+msgstr "Mettre à jour la zone"
+
+#: admin/templates/organization/areas.html:153
+msgid "Area not updated"
+msgstr "Zone non mise à jour"
+
+#: admin/templates/organization/devices.html:41
+#: admin/templates/organization/devices.html:110
+msgid "Add new device"
+msgstr "Ajout de périphérique"
+
+#: admin/templates/organization/devices.html:56
+#: admin/templates/organization/devices.html:90
+msgid "All fields in bold are required."
+msgstr "Les champs en gras sont requis"
+
+#: admin/templates/organization/devices.html:60
+#: admin/templates/organization/devices.html:94
+#: admin/templates/organization/devices.html:156
+msgid "Address"
+msgstr "AddresseTy"
+
+#: admin/templates/organization/devices.html:61
+msgid "Feature"
+msgstr "Fonctionnalité"
+
+#: admin/templates/organization/devices.html:62
+msgid "Choose a device feature"
+msgstr "Choisissez un type de module"
+
+#: admin/templates/organization/devices.html:76
+#: admin/templates/organization/devices.html:95
+msgid "Usage"
+msgstr "Utilisation"
+
+#: admin/templates/organization/devices.html:77
+#: admin/templates/organization/devices.html:96
+msgid "Choose a usage"
+msgstr "Choisissez un usage"
+
+#: admin/templates/organization/devices.html:85
+#: admin/templates/organization/devices.html:104
+#: admin/templates/organization/devices.html:157
+msgid "Reference"
+msgstr "Référence"
+
+#: admin/templates/organization/devices.html:117
+msgid "New device added"
+msgstr "Nouveau module ajouté"
+
+#: admin/templates/organization/devices.html:121
+msgid "device not created"
+msgstr "module non créé"
+
+#: admin/templates/organization/devices.html:135
+msgid "Devices list"
+msgstr "Liste des modules"
+
+#: admin/templates/organization/devices.html:158
+msgid "Type"
+msgstr "Type"
+
+#: admin/templates/organization/devices.html:172
+#: admin/templates/organization/devices.html:190
+msgid "Device"
+msgstr "Périphérique"
+
+#: admin/templates/organization/devices.html:176
+msgid "Device not deleted"
+msgstr "Module non supprimé"
+
+#: admin/templates/organization/devices.html:183
+msgid "Update new device"
+msgstr "Module mis à jour"
+
+#: admin/templates/organization/devices.html:194
+msgid "Device not updated"
+msgstr "Module non mis à jour"
+
+#: admin/templates/organization/features.html:113
+msgid "Features list"
+msgstr "Liste des fonctionnalités"
+
+#: admin/templates/organization/features.html:134
+msgid "associated with"
+msgstr "associé avec"
+
+#: admin/templates/organization/features.html:145
+msgid "Associations"
+msgstr "Associations"
+
+#: admin/templates/organization/house.html:46
+msgid "house name not updated"
+msgstr "Nom de la maison non mis à jour"
+
+#: admin/templates/organization/house.html:51
+msgid "house name can not be empty"
+msgstr "Le nom de la maison ne peut être vide"
+
+#: admin/templates/organization/house.html:66
+msgid "House name"
+msgstr "Nom de la maison"
+
+#: admin/templates/organization/house.html:70
+msgid "Save"
+msgstr "Sauvegarder"
+
+#: admin/templates/organization/rooms.html:38
+msgid "Add new room"
+msgstr "Ajouter une nouvelle pièce"
+
+#: admin/templates/organization/rooms.html:73
+#: admin/templates/organization/rooms.html:292
+#: admin/templates/organization/rooms.html:303
+msgid "Empty"
+msgstr "Vide"
+
+#: admin/templates/organization/rooms.html:109
+msgid "Room name is required."
+msgstr "Le nom de la pièce est requis"
+
+#: admin/templates/organization/rooms.html:119
+msgid "Create new room"
+msgstr "Créer une nouvelle pièce"
+
+#: admin/templates/organization/rooms.html:125
+msgid "New room added"
+msgstr "Nouvelle pièce créée"
+
+#: admin/templates/organization/rooms.html:129
+msgid "Room not created"
+msgstr "Pièce non créée"
+
+#: admin/templates/organization/rooms.html:145
+msgid "Rooms list"
+msgstr "Liste des pièces"
+
+#: admin/templates/organization/rooms.html:166
+#: admin/templates/organization/rooms.html:195
+#: admin/templates/organization/rooms.html:255
+msgid "Room"
+msgstr "Pièce"
+
+#: admin/templates/organization/rooms.html:171
+#: admin/templates/organization/rooms.html:200
+msgid "Room not deleted"
+msgstr "Pièce non supprimée"
+
+#: admin/templates/organization/rooms.html:185
+msgid "ui-config for Room features not deleted"
+msgstr "ui-config non supprimé"
+
+#: admin/templates/organization/rooms.html:205
+msgid "features associations for Room not deleted"
+msgstr "Fonctionnalité associée à la pièce non supprimée"
+
+#: admin/templates/organization/rooms.html:210
+msgid "Get features associations for Room"
+msgstr "Récupérer les fonctionnalités associées à la pièce"
+
+#: admin/templates/organization/rooms.html:215
+msgid "ui-config for Room not deleted"
+msgstr "ui-config non supprimé"
+
+#: admin/templates/organization/rooms.html:248
+msgid "Update room"
+msgstr "Mise à jour pièce"
+
+#: admin/templates/organization/rooms.html:259
+msgid "Room not updated"
+msgstr "Pièce non mise à jour"
+
+#: admin/templates/organization/rooms.html:285
+msgid "Rooms organisation"
+msgstr "Organisation des pièces"
+
+#: admin/templates/organization/rooms.html:285
+msgid "Drag &amp; Drop instructions"
+msgstr "Instructions de Drag &amp; Drop"
+
+#: admin/templates/organization/rooms.html:286
+msgid "Unattributed rooms"
+msgstr "Pièces non attribuées"
+
+#: admin/templates/organization/widgets.html:43
+msgid "Placement"
+msgstr "Emplacement"
+
+#: admin/templates/organization/widgets.html:44
+msgid "Select a Area/Room to place widgets"
+msgstr "Sélectionner une pièce/zone pour placer des widgets"
+
+#: admin/templates/plugins/external.html:60
+#: admin/templates/plugins/plugin.html:37
+msgid "Running"
+msgstr "En cours d'execution"
+
+#: admin/templates/plugins/external.html:62
+#: admin/templates/plugins/plugin.html:56
+msgid "Stop plugin"
+msgstr "Arrêter le plugin"
+
+#: admin/templates/plugins/external.html:64
+#: admin/templates/plugins/plugin.html:58
+msgid "Plugin successfully stopped"
+msgstr "Plugin arrêté"
+
+#: admin/templates/plugins/external.html:65
+msgid "Plugin not stopped"
+msgstr "Echec de l'arrêt du plugin"
+
+#: admin/templates/plugins/external.html:68
+#: admin/templates/plugins/plugin.html:39
+msgid "Stopped"
+msgstr "Stoppé"
+
+#: admin/templates/plugins/external.html:70
+#: admin/templates/plugins/plugin.html:62
+msgid "Start plugin"
+msgstr "Démarrer le plugin"
+
+#: admin/templates/plugins/external.html:72
+#: admin/templates/plugins/plugin.html:64
+msgid "Plugin successfully started"
+msgstr "Plugin démarré"
+
+#: admin/templates/plugins/external.html:73
+msgid "Plugin not started"
+msgstr "Plugin non démarré"
+
+#: admin/templates/plugins/external.html:120
+msgid "External member"
+msgstr "Participant externe"
+
+#: admin/templates/plugins/external.html:124
+#: admin/templates/plugins/informations.html:8
+msgid "Documentation"
+msgstr "Documentation"
+
+#: admin/templates/plugins/external.html:124
+msgid "Wiki"
+msgstr "Wiki"
+
+#: admin/templates/plugins/external.html:125
+#: admin/templates/plugins/informations.html:9
+msgid "Host"
+msgstr "Hôte"
+
+#: admin/templates/plugins/external.html:127
+#: admin/templates/plugins/informations.html:10
+msgid "Technology"
+msgstr "Technologie"
+
+#: admin/templates/plugins/plugin.html:99
+msgid "Informations"
+msgstr "Inormations"
+
+#: admin/templates/plugins/plugin.html:100
+msgid "Requirements"
+msgstr "Prérequis"
+
+#: admin/templates/plugins/plugin.html:103
+#: admin/templates/plugins/special_knx.html:86
+msgid "Special"
+msgstr "Special"
+
+#: admin/templates/plugins/requirements.html:3
+msgid "Dependencies"
+msgstr "Dépendences"
+
+#: admin/templates/plugins/requirements.html:8
+msgid "Missing"
+msgstr "Manquant"
+
+#: admin/templates/plugins/requirements.html:23
+msgid "UDEV Rules"
+msgstr "Règles UDEV"
+
+#: admin/templates/plugins/special_knx.html:31
+#: admin/templates/plugins/special_knx.html:52
+#: admin/templates/plugins/special_knx.html:80
+msgid "Data not sent"
+msgstr "Données non envoyées"
+
+#: admin/templates/plugins/special_knx.html:34
+msgid "Need Command group or Stat group address field should be filled"
+msgstr "Adresse du groupe de commande ou du groupe d'état doit être indiquée"
+
+#: admin/templates/plugins/special_knx.html:37
+msgid "Domogik device address field should be filled"
+msgstr "Adresse du module doit être indiquée"
+
+#: admin/templates/plugins/special_knx.html:88
+msgid "Domogik device address"
+msgstr "Adresse du module"
+
+#: admin/templates/plugins/special_knx.html:90
+msgid "KNX command group address"
+msgstr "Adresse du groupe de commande KNX"
+
+#: admin/templates/plugins/special_knx.html:92
+msgid "KNX command datatype"
+msgstr "Type de donnée de commande KNX"
+
+#: admin/templates/plugins/special_knx.html:115
+msgid "KNX state group address"
+msgstr "Adresse du groupe d'état KNX"
+
+#: admin/templates/plugins/special_knx.html:117
+msgid "KNX state datatype"
+msgstr "Type de donnée d'état KNX"
+
+#: admin/templates/plugins/special_knx.html:139
+msgid "Read on start"
+msgstr "Lire au démarrage"
+
+#: admin/templates/plugins/special_knx.html:141
+msgid "Description of this device"
+msgstr "Description du périphérique"
+
+#: admin/templates/plugins/special_knx.html:145
+msgid "Add"
+msgstr "Ajouter"
+
+#: admin/templates/plugins/special_knx.html:146
+msgid "Read file"
+msgstr "Lire le fichier"
+
+#: admin/templates/plugins/special_knx.html:149
+msgid "Delete ligne"
+msgstr "Effacer ligne"
+
+#: templates/index.html:68
+msgid "No areas or rooms configured yet"
+msgstr "Pas de pièces ni de zones configurées"
+
+#: templates/config/configserver.html:30
+msgid ""
+"Please enter the your RINOR server parameters. (This should be the local "
+"address from the Domoweb service, not the remote address from the Browser)"
+msgstr "Entrer les paramètre du serveur RINOR. (Cela signifie l'adresse locale depuis Domoweb, et pas l'adresse distante depuis le navigateur)"
+
+#: templates/config/configserver.html:37 templates/config/welcome.html:38
+msgid "(required)"
+msgstr "(obligatoire)"
+
+#: templates/config/configserver.html:43 templates/config/testserver.html:74
+msgid "Previous"
+msgstr "Précedent"
+
+#: templates/config/testserver.html:71
+msgid "Testing Domogik Server connection"
+msgstr "Connection au serveur Domogik en cours"
+
+#: templates/config/testserver.html:72
+msgid "Loading"
+msgstr "Chargement"
+
+#: templates/config/testserver.html:75 view/templates/area.edit.html:44
+#: view/templates/area.edit.html.py:46 view/templates/house.edit.html:44
+#: view/templates/house.edit.html.py:46 view/templates/room.edit.html:45
+#: view/templates/room.edit.html.py:47
+msgid "Finish"
+msgstr "Terminer"
+
+#: templates/config/welcome.html:31
+msgid "Please choose your language in the dropdown list"
+msgstr "Choisir une langue dans la liste"
+
+#: templates/error/BadDomogikVersion.html:28
+msgid "Error - Bad Domogik Version"
+msgstr "Erreur - Mauvaise version de Domogik"
+
+#: templates/error/BadDomogikVersion.html:32
+msgid "Bad Domogik Version"
+msgstr "Mauvaise version de Domogik"
+
+#: templates/error/BadDomogikVersion.html:35
+msgid "Your Domogik version is too old"
+msgstr "Votre version de Domogik est trop ancienne"
+
+#: templates/error/BadDomogikVersion.html:35
+msgid "please upgrade Domogik to"
+msgstr "mettre à jour Domogik à"
+
+#: templates/error/BadDomogikVersion.html:37
+msgid "Your Domoweb version is too old for this new version of Domogik"
+msgstr "Votre version de Domoweb est trop ancienne pour cette version de Domogik"
+
+#: templates/error/BadDomogikVersion.html:37
+msgid "please upgrade Domoweb"
+msgstr "mettre à jour Domogik"
+
+#: templates/error/BadStatusLine.html:28
+msgid "Error"
+msgstr "Erreur"
+
+#: templates/error/BadStatusLine.html:32
+msgid "Interface Server has crashed"
+msgstr "Le serveur RINOR ne répond plus"
+
+#: templates/error/BadStatusLine.html:33
+msgid "A bug is probably causing the REST server to crash on this url."
+msgstr "Un bug cause probablement la non réponse de RINOR sur cette url."
+
+#: templates/error/BadStatusLine.html:34
+msgid "Please fill a bug report, with maximum details"
+msgstr "Merci de remplir un rapport d'erreur, avec le maximum de détails"
+
+#: templates/error/RinorError.html:28 templates/error/RinorError.html.py:32
+msgid "Rinor Error"
+msgstr "Erreur RINOR"
+
+#: templates/error/RinorNotAvailable.html:28
+msgid "Error - RINOR not available"
+msgstr "Liste des zones"
+
+#: templates/error/RinorNotAvailable.html:32
+msgid "RINOR not available"
+msgstr "RINOR indisponible"
+
+#: templates/error/RinorNotAvailable.html:34
+msgid "Check if RINOR is running on"
+msgstr "Verifier que RINOR est actif"
+
+#: templates/error/RinorNotAvailable.html:35
+msgid "Re-Configure RINOR's address"
+msgstr "Re-configurer l'adresse du serveur RINOR"
+
+#: templates/error/RinorNotAvailable.html:36
+msgid "Read Domogik Wiki (How to start the server)"
+msgstr "Lire le Wiki de Domogik (Comment démarrer le serveur)"
+
+#: templates/layouts/base_home.html:40 templates/layouts/base_home.html:45
+msgid "Domogik logo"
+msgstr "Logo Domogik"
+
+#: view/views.py:55
+msgid "View House"
+msgstr "Voir la maison"
+
+#: view/views.py:87
+msgid "Edit House"
+msgstr "Modifier la maison"
+
+#: view/views.py:120 view/views.py:176
+msgid "View "
+msgstr "Voir"
+
+#: view/views.py:147 view/views.py:203
+msgid "Edit "
+msgstr "Editer"
+
+#: view/templates/area.edit.html:98 view/templates/house.edit.html:98
+#: view/templates/room.edit.html:99
+msgid "Drag & drop this wigdet to the page"
+msgstr "Glisser/Déposer ce widget sur la page"
+
+#: view/templates/area.edit.html:102 view/templates/house.edit.html:102
+#: view/templates/room.edit.html:103
+msgid "Author"
+msgstr "Auteur"
+
+#: view/templates/area.edit.html:106 view/templates/house.edit.html:106
+#: view/templates/room.edit.html:107
+msgid "Screenshot"
+msgstr "Capture d'écran"
+
+#: view/templates/area.html:44 view/templates/house.html:43
+#: view/templates/room.html:48
+msgid "Customize"
+msgstr "Personnaliser"
+
+#: view/templates/layouts/base_view.html:103
+msgid "Domogik homepage"
+msgstr "Site web de Domogik"
+
+#: view/templates/layouts/base_view.html:105
+msgid "Menu"
+msgstr "Menu"

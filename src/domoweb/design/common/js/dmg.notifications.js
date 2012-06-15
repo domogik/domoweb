@@ -1,5 +1,5 @@
 (function($) {
-    $.jGrowl.defaults.closerTemplate = '<div>hide all notifications</div>';
+    $.jGrowl.defaults.closerTemplate = '<div>' + gettext('hide all notifications') + '</div>';
 
     $.extend({
         notification: function(status, msg) {
@@ -9,21 +9,21 @@
             var msgformated = msg.replace( /\n/g, '<br />\n' );
             switch (theme) {
                 case 'success':
-                    header = "Success";
+                    header = gettext('Success');
                     break;
                 case 'info':
-                    header = "Information";
+                    header = gettext('Information');
                     sticky = true;
                     break;
                 case 'error':
-                    header = "Error";
+                    header = gettext('Error');
                     sticky = true;
                     break;
                 case 'warning':
-                    header = "Warning";
+                    header = gettext('Warning');
                     break;
                 case 'debug':
-                    header = "Debug";
+                    header = gettext('Debug');
                     break;
             }    
             $.jGrowl(msgformated, { header: header, sticky: sticky, theme: theme });

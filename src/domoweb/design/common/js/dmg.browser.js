@@ -1,10 +1,10 @@
     var BrowserDetect = {
         init: function () {
-            this.browser = this.searchString(this.dataBrowser) || "An unknown browser";
+            this.browser = this.searchString(this.dataBrowser) || gettext('An unknown browser');
             this.version = this.searchVersion(navigator.userAgent)
                 || this.searchVersion(navigator.appVersion)
-                || "an unknown version";
-            this.OS = this.searchString(this.dataOS) || "an unknown OS";
+                || gettext('an unknown version');
+            this.OS = this.searchString(this.dataOS) || gettext('an unknown OS');
         },
         searchString: function (data) {
             for (var i=0;i<data.length;i++)	{
@@ -118,21 +118,21 @@ $(function(){
     switch(BrowserDetect.browser) {
         case 'Firefox':
             if (BrowserDetect.version < 3.6) {
-                $.notification("warning",  "Your Firefox version (" + BrowserDetect.version + ") is too old for Domogik<br/> Please upgrade to Firefox >3.6");                
+                $.notification("warning", gettext('Your Firefox version') + " (" + BrowserDetect.version + ") " + gettext('is too old for Domogik') + "<br/>" + gettext('Please upgrade to Firefox >3.6'));                
             }
             break;
         case 'Mozilla':
             if (BrowserDetect.version < 1.9) {
-                $.notification("warning",  "Your Firefox version (" + BrowserDetect.version + ") is too old for Domogik<br/> Please upgrade to Firefox >3.6");                
+                $.notification("warning",  gettext('Your Firefox version') + " (" + BrowserDetect.version + ") " + gettext('is too old for Domogik') + "<br/>" + gettext('Please upgrade to Firefox >3.6'));                
             }
             break;
         case 'Chrome':
             if (BrowserDetect.version < 5.0) {
-                $.notification("warning",  "Your Chrome version (" + BrowserDetect.version + ") is too old for Domogik<br/> Please upgrade to Chrome >5.0");                
+                $.notification("warning",  gettext('Your Chrome version') + " (" + BrowserDetect.version + ") " + gettext('is too old for Domogik') + "<br/>" + gettext('Please upgrade to Chrome >5.0'));                
             }
             break;
         default:
-            $.notification("warning",  "Your browser '" + BrowserDetect.browser + " " + BrowserDetect.version + "' is not supported by Domogik<br/> Please use Firefox 3.6 or Chrome 5.0");
+            $.notification("warning",  gettext('Your browser') + " '" + BrowserDetect.browser + " " + BrowserDetect.version + "' " + gettext('is not supported by Domogik') + "<br/>" + gettext('Please use Firefox 3.6 or Chrome 5.0'));
             break;
     };
 });

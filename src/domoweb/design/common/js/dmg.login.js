@@ -17,21 +17,21 @@ function openlogin(path) {
                         });
 
             var form = $("<form id='loginForm' method='POST' action='/admin/login/?next=" + path + "'></form>");
-            form.append("<div class='columnleft'><h2>1. Select a user</h2><div id='resetLogin' class='buttontext'>Change User</div><input id='loginname' name='login' type='text' /><ul id='users'></ul></div>");
+            form.append("<div class='columnleft'><h2>1. " + gettext('Select a user') + "</h2><div id='resetLogin' class='buttontext'>" + gettext('Change User') + "</div><input id='loginname' name='login' type='text' /><ul id='users'></ul></div>");
             $.each(data.objects, function() {
                 var account = this;
                 $('#users', form).append("<li><a href='#' id='id" + account.login + "'><img src='/design/common/images/userid.jpg' alt='' width='64' height='64' />" + account.person.first_name + "</a></li>");
                 $('#id' + account.login, form).click(function(){chooseUser('id' + account.login, account.login);});
             });
             
-            form.append("<div class='columnright'><h2>2. Enter your code</h2><div id='code'><input id='logincode' name='password' type='password' value='' /><div id='submit' class='buttonok'>Ok</div></div><ul id='digits'><li><a href='#' onclick='addDigit(0);'>0</a></li><li><a href='#' onclick='addDigit(1);'>1</a></li><li><a href='#' onclick='addDigit(2);'>2</a></li><li><a href='#' onclick='addDigit(3);'>3</a></li><li><a href='#' onclick='addDigit(4);'>4</a></li><li><a href='#' onclick='addDigit(5);'>5</a></li><li><a href='#' onclick='addDigit(6);'>6</a></li><li><a href='#' onclick='addDigit(7);'>7</a></li><li><a href='#' onclick='addDigit(8);'>8</a></li><li><a href='#' onclick='addDigit(9);'>9</a></li><li><a href='#' onclick='removeLastDigit();'>C</a></li><li><a href='#' onclick='resetDigit();'>Del.</a></li></ul></div>");
+            form.append("<div class='columnright'><h2>2. " + gettext('Enter your code') + "</h2><div id='code'><input id='logincode' name='password' type='password' value='' /><div id='submit' class='buttonok'>" + gettext('Ok') + "</div></div><ul id='digits'><li><a href='#' onclick='addDigit(0);'>0</a></li><li><a href='#' onclick='addDigit(1);'>1</a></li><li><a href='#' onclick='addDigit(2);'>2</a></li><li><a href='#' onclick='addDigit(3);'>3</a></li><li><a href='#' onclick='addDigit(4);'>4</a></li><li><a href='#' onclick='addDigit(5);'>5</a></li><li><a href='#' onclick='addDigit(6);'>6</a></li><li><a href='#' onclick='addDigit(7);'>7</a></li><li><a href='#' onclick='addDigit(8);'>8</a></li><li><a href='#' onclick='addDigit(9);'>9</a></li><li><a href='#' onclick='removeLastDigit();'>C</a></li><li><a href='#' onclick='resetDigit();'>Del.</a></li></ul></div>");
             dialog.append(form);
             initLogin();
         })
         .fail(function(jqXHR, status, error){
 //            self.cancel();
             if (jqXHR.status == 400)
-                $.notification('error', 'Impossible to list Accounts (' + jqXHR.responseText + ')');
+                $.notification('error', gettext('Impossible to list Accounts') + ' (' + jqXHR.responseText + ')');
         });
 }
 

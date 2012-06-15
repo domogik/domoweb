@@ -9,7 +9,7 @@
     });
     $.extend($.ui.domogik_tabs, {
         defaults: {
-            addTitle: "Add",
+            addTitle: gettext('Add'),
         	addCallback: null
         }
     });

@@ -35,9 +35,17 @@ Implements
 from django.conf.urls.defaults import *
 from django.conf import settings
 
-urlpatterns = patterns('domoweb.views',
+js_info_dict = {
+    'packages': ('domoweb',),
+}
+
+urlpatterns = patterns('',
+    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+)
+
+urlpatterns += patterns('domoweb.views',
     url(r'^$', 'index', name="index_view"),
-    url(r'^config/welcome$', 'config_configserver', name="config_welcome_view"),
+    url(r'^config/welcome$', 'config_welcome', name="config_welcome_view"),
     url(r'^config/configserver$', 'config_configserver', name="config_configserver_view"),
     url(r'^config/testserver$', 'config_testserver', name="config_testserve_view"),
 )

@@ -29,7 +29,7 @@ $(function(){
             } else {
                 td.append("<input type='text' name='value_" + ikey + "' id='value_" + ikey + "' class='medium' value='' />");                                                                            
                 tr.append(td);
-                var resetButton = $("<button id='reset" + ikey + "' class='icon16-action-reset buttonicon' title='Reset " + ikey + "'><span class='offscreen'>Reset " + ikey + "</span></button>");
+                var resetButton = $("<button id='reset" + ikey + "' class='icon16-action-reset buttonicon' title='Reset " + ikey + "'><span class='offscreen'>" + gettext('Reset') + " " + ikey + "</span></button>");
                 resetButton.attr('tr_id', ikey);
                 resetButton.attr('default', idefault);
                 resetButton.click(function(event) {
@@ -78,7 +78,7 @@ $(function(){
         
         setNotConfigured: function(defaultValue) {
             this.addClass('icon16-status-warning');
-            this.prepend("<span class='offscreen'>No configured</span>");
+            this.prepend("<span class='offscreen'>" + gettext('Not configured') + "</span>");
             $("input", this).attr("class", "default");
             if ((defaultValue) && (defaultValue != "None")) {
                 $("input", this).val(defaultValue);            
@@ -90,7 +90,7 @@ $(function(){
         createConfigurationTable: function (idName) {
             this.append("<table id='" + idName +"' class='simple'> \
                          <thead> \
-                         <tr><th scope='col'>Key</th><th scope='col'>Description</th><th scope='col'>value</th><th>Actions</th></tr> \
+                         <tr><th scope='col'>" + gettext('Key') + "</th><th scope='col'>" + gettext('Description') + "</th><th scope='col'>" + gettext('Value') + "</th><th>" + gettext('Actions') + "</th></tr> \
                          </thead> \
                          <tbody> \
                          </tbody> \
@@ -109,7 +109,7 @@ $(function(){
     function deleteConfig(host, id) {
         rinor.delete(['api', 'pluginconfig', host, id])
             .done(function(data, status, xhr){
-                $.reloadPage({'status': 'success', 'msg': 'Configuration deleted'});
+                $.reloadPage({'status': 'success', 'msg': gettext('Configuration deleted')});
             })
             .fail(function(jqXHR, status, error){
                 if (jqXHR.status == 400)
@@ -131,7 +131,7 @@ $(function(){
                     $('#value_' + item.key).parent().attr('class', 'value icon16-status-true');
                     itemSaved++;
                     if (itemSaved == configuration.length) { // All saved without error
-                        $.notification('success', "Configuration saved successfully");
+                        $.notification('success', gettext('Configuration saved successfully'));
                         $("#buttonstatus").attr('disabled', false);
                     }
                 })
@@ -171,10 +171,10 @@ $(function(){
                     $("#configuration_items").configureItemContent(item);
                 }
                 else {
-                    var addInterfaceButton = $("<button class='button icon16-action-add'>Add interface</button>");
+                    var addInterfaceButton = $("<button class='button icon16-action-add'>" + gettext('Add interface') + "</button>");
                     $('#group_buttons').append(addInterfaceButton);
 
-                    var delInterfaceButton = $("<button class='button icon16-action-del'>Delete interface</button>");
+                    var delInterfaceButton = $("<button class='button icon16-action-del'>" + gettext('Delete interface') + "</button>");
                     $('#group_buttons').append(delInterfaceButton);
 
                     // get number of registered interfaces
@@ -248,7 +248,7 @@ $(function(){
                                     $("tr#" + $(this).attr('tr_id') +" .value").setNotConfigured($(this).attr('default'));
                                     event.stopPropagation();
                                 });
-                                $(".offscreen", this).text('Reset ' + newKey);
+                                $(".offscreen", this).text(gettext('Reset') + " " + newKey);
                                 addedGroup = {};
                                 addedGroup.key = newKey;
                                 addedGroup.type = $(".value", $(item)).attr('type');
@@ -304,7 +304,7 @@ $(function(){
                 .done(function(data, status, xhr){
                     var never_configured = num_items - data.length;
                     if (never_configured > 0) {
-                        $.notification('warning', never_configured + " item(s) not configured yet");
+                        $.notification('warning', never_configured + " " + gettext('item(s) not configured yet'));
                         $("#buttonstatus").attr('disabled', true);
                     }
                 })
@@ -312,7 +312,7 @@ $(function(){
                     if (jqXHR.status == 400)
                         $.notification('error', jqXHR.responseText);
                 });
-            $("#configuration").append("<p><button id='configurationsubmit' class='button icon16-action-save'>Save</button></p>");
+            $("#configuration").append("<p><button id='configurationsubmit' class='button icon16-action-save'>" + gettext('Save') + "</button></p>");
             $("#configurationsubmit").click(function(event) {
                 saveConfig(plugin_host, plugin_id, pluginCfg, nbInterface);
                 event.stopPropagation();

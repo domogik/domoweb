@@ -74,15 +74,15 @@
             <section class="subsection">
                 <h2>{% trans "Statistics" %}</h2>
                 <ul class='stats'>
-                    <li><span class='label'>XML files last load: </span>{{rinor.stats.XML_files_last_load}}</li>
-                    <li><span class='label'>XML files loaded: </span>
+                    <li><span class='label'>{% trans "XML files last load" %}: </span>{{rinor.stats.XML_files_last_load}}</li>
+                    <li><span class='label'>{% trans "XML files loaded" %}: </span>
                         <ul id='fileslist'>
                         {% for file in rinor.stats.XML_files_loaded %}
                             <li>{{ file }}</li>
                         {% endfor %}
                         </ul>
                     </li>
-                    <li><span class='label'>XML files KO: </span>
+                    <li><span class='label'>{% trans "XML files KO" %}: </span>
                         <ul id='fileslist'>
                         {% for file in rinor.stats.XML_files_KO %}
                             <li>{{ file }}</li>
@@ -94,15 +94,15 @@
             <section class="subsection">
                 <h2>{% trans "Commands" %}</h2>
                 <ul class='commands'>
-                    <li><span class='label'>XML files last load: </span>{{rinor.command.XML_files_last_load}}</li>
-                    <li><span class='label'>XML files loaded: </span>
+                    <li><span class='label'>{% trans "XML files last load" %}: </span>{{rinor.command.XML_files_last_load}}</li>
+                    <li><span class='label'>{% trans "XML files loaded" %}: </span>
                         <ul id='fileslist'>
                         {% for file in rinor.command.XML_files_loaded %}
                             <li>{{ file }}</li>
                         {% endfor %}
                         </ul>
                     </li>
-                    <li><span class='label'>XML files KO: </span>
+                    <li><span class='label'>{% trans "XML files KO" %}: </span>
                         <ul id='fileslist'>
                         {% for file in rinor.command.XML_files_KO %}
                             <li>{{ file }}</li>
@@ -127,22 +127,22 @@
                 <table id='domogik_request_list' class='display' cellpadding="0" cellspacing="0" border="0">
                     <thead>
                         <tr>
-                            <th scope='col'>ID</th>
-                            <th scope='col'>Created</th>
-                            <th scope='col'>Last access</th>
-                            <th scope='col'>Queue size</th>                    
-                            <th scope='col'>Instance Unfinished Tasks</th>
-                            <th scope='col'>Instance Max size</th>
+                            <th scope='col'>{% trans "ID" %}</th>
+                            <th scope='col'>{% trans "Created" %}</th>
+                            <th scope='col'>{% trans "Last access" %}</th>
+                            <th scope='col'>{% trans "Queue size" %}</th>                    
+                            <th scope='col'>{% trans "Instance Unfinished Tasks" %}</th>
+                            <th scope='col'>{% trans "Instance Max size" %}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>ID</td>
-                            <td>Created</td>
-                            <td>Last access</td>
-                            <td>Queue size</td>                    
-                            <td>Instance Unfinished Tasks</td>
-                            <td>Instance Max size</td>
+                            <td>{% trans "ID" %}</td>
+                            <td>{% trans "Created" %}</td>
+                            <td>{% trans "Last access" %}</td>
+                            <td>{% trans "Queue size" %}</td>                    
+                            <td>{% trans "Instance Unfinished Tasks" %}</td>
+                            <td>{% trans "Instance Max size" %}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -150,13 +150,13 @@
                 <table id='devices_request_list' class='display' cellpadding="0" cellspacing="0" border="0">
                     <thead>
                         <tr>
-                            <th scope='col'>ID</th>
-                            <th scope='col'>Created</th>
-                            <th scope='col'>Last access</th>
-                            <th scope='col'>Device id list</th>
-                            <th scope='col'>Queue size</th>                    
-                            <th scope='col'>Instance Unfinished Tasks</th>
-                            <th scope='col'>Instance Max size</th>
+                            <th scope='col'>{% trans "ID" %}</th>
+                            <th scope='col'>{% trans "Created" %}</th>
+                            <th scope='col'>{% trans "Last access" %}</th>
+                            <th scope='col'>{% trans "Device id list" %}</th>
+                            <th scope='col'>{% trans "Queue size" %}</th>                    
+                            <th scope='col'>{% trans "Instance Unfinished Tasks" %}</th>
+                            <th scope='col'>{% trans "Instance Max size" %}</th>
                         </tr>
                     </thead>
                     <tbody>
