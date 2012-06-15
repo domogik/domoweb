@@ -9,3 +9,4 @@ Table Of Content
     /index
     /technical/index
     /technical/widget_process
+    /technical/i18n

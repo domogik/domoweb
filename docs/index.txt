@@ -6,3 +6,4 @@ Technical Documentation
 =======================
 * :doc:`General description </technical/index>`
 * :doc:`How Widgets are working </technical/widget_process>`
+* :doc:`How i18n is implemented </technical/i18n>`
