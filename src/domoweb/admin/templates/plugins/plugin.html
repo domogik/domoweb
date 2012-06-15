@@ -142,7 +142,7 @@
     {% endif %}
     {% if plugin.id == "cron" %}
         <div id="tabs-4">
-            {% include "plugins/special_cron.html" %}
+            {% include "plugins/cron/special.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "scene" %}
@@ -157,22 +157,22 @@
     {% endif %}
     {% if plugin.id == "telldus" %}
         <div id="tabs-5">
-            {% include "plugins/helper.html" %}
+            {% include "plugins/telldus/helper.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "cron" %}
         <div id="tabs-5">
-            {% include "plugins/helper.html" %}
+            {% include "plugins/cron/helper.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "cron" %}
         <div id="tabs-6">
-            {% include "plugins/log_helper.html" %}
+            {% include "plugins/cron/helper.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "telldus" %}
         <div id="tabs-6">
-            {% include "plugins/log_helper.html" %}
+            {% include "plugins/telldus/log.html" %}
         </div>
     {% endif %}
     </div>

@@ -1,6 +1,7 @@
 {% load i18n %}
 <script type='text/javascript'>
 
+
 function helperrinor (args) {
     rinor.put(['api', 'command', '{{ plugin.id }}', '{{ plugin.id }}'], args)
     .done(function(data, status, xhr){
@@ -78,7 +79,8 @@ $(function(){
     <div id='helper_div'>
         <p><label for='command'>{% trans 'Command' %}:</label>
         <input type='text' id='command' name='command' />
-        <button id='helperexecute' class='button icon16-action-save'>{% trans "Execute" %}</button></p>
+        <button id='helperexecute' class='button icon16-action-save'>{% trans "Execute" %}</button>
+        <button id='helperhelp' class='button icon16-action-plus'>{% trans "Help" %}</button></p>
         <table id='helper_scn' class='simple'>
             <thead>
                 <tr>
