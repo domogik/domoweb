@@ -41,15 +41,17 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
 from django.template import RequestContext
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
+from django.utils.translation import ugettext_lazy
+from django.utils.translation import ugettext as _
 from django.conf import settings
 from django import forms
+from django.forms.widgets import Select
 from domoweb.models import Parameter, Widget
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.signals import rinor_changed
-
+from django.utils.encoding import force_unicode
+from django.utils.html import escape, conditional_escape
 
 def index(request):
     """
@@ -105,8 +107,24 @@ class RINORSetupForm(forms.Form):
         # Always return the full collection of cleaned data.
         return cleaned_data
 
+class SelectIcon(Select):
+    def render_option(self, selected_choices, option_value, option_label):
+        option_value = force_unicode(option_value)
+        class_html = ' class="icon16-language-%s"' % option_value
+        if option_value in selected_choices:
+            selected_html = ' selected="selected"'
+            if not self.allow_multiple_selected:
+                # Only allow for a single selection.
+                selected_choices.remove(option_value)
+        else:
+            selected_html = ''
+        return '<option value="%s"%s%s>%s</option>' % (
+            escape(option_value), selected_html, class_html,
+            conditional_escape(force_unicode(option_label)))
+
+
 class LanguageForm(forms.Form):
-    language = forms.ChoiceField(label="Language", choices=settings.LANGUAGES)
+    language = forms.ChoiceField(widget=SelectIcon, label="Language", choices=settings.LANGUAGES)
 
     def clean(self):
         cleaned_data = self.cleaned_data
@@ -130,7 +148,14 @@ def config_welcome(request):
             p.save()
             return redirect('config_configserver_view') # Redirect after POST
     else:
-        form = LanguageForm() # An unbound form
+        try:
+            _language = Parameter.objects.get(key='language')
+        except Parameter.DoesNotExist:
+            _language = _language.value
+        else:
+            _language = 'en'
+
+        form = LanguageForm(initial={'language': _language}) # An unbound form
 
     return go_to_page(
         request, 'config/welcome.html',
@@ -166,10 +191,30 @@ def config_configserver(request):
             rinor_changed.send(sender='config_configserver')
             return redirect('config_testserve_view') # Redirect after POST
     else:
-        ip = request.META['HTTP_HOST'].split(':')[0]
-        if (not ipFormatChk(ip)) :
-            ip = socket.gethostbyname(ip)
-        form = RINORSetupForm(initial={'ip': ip, 'port': 40405}) # An unbound form
+        try:
+            _ip = Parameter.objects.get(key='rinor_ip')
+        except Parameter.DoesNotExist:
+            _ip = _ip.value
+        else:
+            _ip = request.META['HTTP_HOST'].split(':')[0]
+            if (not ipFormatChk(_ip)) :
+                _ip = socket.gethostbyname(_ip)
+
+        try:
+            _port = Parameter.objects.get(key='rinor_port')
+        except Parameter.DoesNotExist:
+            _language = _port.value
+        else:
+            _language = 40405
+
+        try:
+            _prefix = Parameter.objects.get(key='rinor_prefix')
+        except Parameter.DoesNotExist:
+            _prefix = _prefix.value
+        else:
+            _prefix = ""
+            
+        form = RINORSetupForm(initial={'ip': _ip, 'port': _port, 'prefix': _prefix}) # An unbound form
     
     return go_to_page(
         request, 'config/configserver.html',

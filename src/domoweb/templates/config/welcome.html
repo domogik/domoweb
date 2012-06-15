@@ -21,8 +21,16 @@
 {% load i18n %}
 
 {% block css %}
+    <link href="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
+    <link href="/design/common/css/page-config.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
+    <script type="text/javascript" src="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
+{% endblock %}
+{% block js_script %}
+    $(function(){
+        $('#id_language').chosen();
+    });
 {% endblock %}
 {% block title %}{% trans page_title %}{% endblock %}
 
@@ -34,9 +42,8 @@
     {% for field in form %}
         <div class='row'>
             {{ field.errors }}
-            <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}>
-               {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
-            </label>
+            <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}></label>
+            <div>{{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span></div>
             {{ field }}
         </div>
     {% endfor %}
