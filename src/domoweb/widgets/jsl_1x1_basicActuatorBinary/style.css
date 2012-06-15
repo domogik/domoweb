@@ -1,0 +1,9 @@
+.jsl_1x1_basicActuatorBinary {    
+    text-align:center;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+}
+
+.icon32-usage-jsl-light .widget_status { display: none }
+.icon32-usage-jsl-light.actuator.binary.value_0 { background-image:url(images/light_off_32.png);}
+.icon32-usage-jsl-light.actuator.binary.value_1 { background-image:url(images/light_on_32.png);}
