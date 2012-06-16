@@ -7,6 +7,7 @@
             id: 'dmg_2x1_basicNoStateActuatorOff',
             name: 'Basic Widget Off',
             description: 'Only Off',
+	    screenshot: 'dmg_2x1_basicNoStateActuatorOff.png',
             type: 'actuator.binary',
             height: 1,
             width: 2,

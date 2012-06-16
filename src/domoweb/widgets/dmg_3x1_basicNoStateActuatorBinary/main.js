@@ -7,6 +7,7 @@
             id: 'dmg_3x1_basicNoStateActuatorBinary',
             name: 'Stateless basic widget',
             description: 'Basic switch widget (x10, broken plcbus, . . .)',
+            screenshot: 'dmg_3x1_basicNoStateActuatorBinary.png',
             type: 'actuator.binary',
             height: 1,
             width: 3,
