@@ -7,6 +7,7 @@
             id: 'dmg_1x1_basicActuatorBinary',
             name: 'Basic widget',
             description: 'Basic widget with border and name',
+	    screenshot: 'dmg_1x1_basicActuatorBinary.png',
             type: 'actuator.binary',
             height: 1,
             width: 1,

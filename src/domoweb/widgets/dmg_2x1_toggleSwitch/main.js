@@ -7,6 +7,7 @@
             id: 'dmg_2x1_toggleSwitch',
             name: 'Shiny toggle switch',
             description: 'Shiny toggle switch using CSS3 animation',
+            screenshot: 'dmg_2x1_toggleSwitch.png', 
             type: 'actuator.binary',
             height: 1,
             width: 2,

@@ -1,4 +1,24 @@
-.icon32-usage-jsl-light {background-image:url(images/light_on_32.png);}
+.jsl_3x1_basicNoStateActuatorBinary .icon32-usage-light {background-image:url(images/light_on_32.png);}
+
+.jsl_3x1_basicNoStateActuatorBinary.icon32-usage-light.actuator.binary {
+	background-image:url(images/light_on_32.png);
+}
+/* .jsl_3x1_basicNoStateActuatorBinary.icon32-usage-light.actuator.binary.value_1 { */
+/* 	background-image:url(images/light_on_32.png); */
+/* } */
+
+.jsl_3x1_basicNoStateActuatorBinary.icon32-usage-light {
+	background-image:url(images/light_on_32.png);
+}
+
+.jsl_3x1_basicNoStateActuatorBinary.value_0 .off{
+	left: 8em;
+  	background-color: #800000;
+}
+.jsl_3x1_basicNoStateActuatorBinary.value_1 .on {
+	left: 1.4em;
+ 	background-color: #008000;
+}
 
 
 
@@ -53,12 +73,12 @@
   left: 8em;
 }
 
-.jsl_3x1_basicNoStateActuatorBinary.value_1 .on {
-  left: 1.4em;
-  background-color: #008000;
-}
+/* .jsl_3x1_basicNoStateActuatorBinary.value_1 .on { */
+/*   left: 1.4em; */
+/*   background-color: #008000; */
+/* } */
 
-.jsl_3x1_basicNoStateActuatorBinary.value_0 .off {
-  left: 8em;
-  background-color: #800000;
-}
+/* .jsl_3x1_basicNoStateActuatorBinary.value_0 .off { */
+/*   left: 8em; */
+/*   background-color: #800000; */
+/* } */

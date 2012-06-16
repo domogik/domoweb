@@ -3,10 +3,11 @@
         // default options
         options: {
             version: 0.1,
-            creator: 'Domogik',
+            creator: 'Domogik, jesuislibre',
             id: 'jsl_3x1_basicNoStateActuatorBinary',
             name: 'JSL Stateless basic widget',
             description: 'JSL Basic switch widget (x10, broken plcbus, . . .)',
+            screenshot: 'jsl_3x1_basicNoStateActuatorBinary.png',
             type: 'actuator.binary',
             height: 1,
             width: 3,
@@ -16,7 +17,7 @@
 
         _init: function() {
             var self = this, o = this.options;
-            this.element.addClass("icon32-usage-jsl-" + o.usage)
+            this.element.addClass("icon32-usage-" + o.usage)
               .processing();
             // Building widget content
             var main = $("<div class='main'></div>");
