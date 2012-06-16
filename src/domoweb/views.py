@@ -151,9 +151,9 @@ def config_welcome(request):
         try:
             _language = Parameter.objects.get(key='language')
         except Parameter.DoesNotExist:
-            _language = _language.value
-        else:
             _language = 'en'
+        else:
+            _language = _language.value
 
         form = LanguageForm(initial={'language': _language}) # An unbound form
 
@@ -193,26 +193,18 @@ def config_configserver(request):
     else:
         try:
             _ip = Parameter.objects.get(key='rinor_ip')
+            _port = Parameter.objects.get(key='rinor_port')
+            _prefix = Parameter.objects.get(key='rinor_prefix')
         except Parameter.DoesNotExist:
-            _ip = _ip.value
-        else:
             _ip = request.META['HTTP_HOST'].split(':')[0]
             if (not ipFormatChk(_ip)) :
                 _ip = socket.gethostbyname(_ip)
-
-        try:
-            _port = Parameter.objects.get(key='rinor_port')
-        except Parameter.DoesNotExist:
-            _language = _port.value
-        else:
-            _language = 40405
-
-        try:
-            _prefix = Parameter.objects.get(key='rinor_prefix')
-        except Parameter.DoesNotExist:
-            _prefix = _prefix.value
-        else:
+            _port = 40405
             _prefix = ""
+        else:
+            _ip = _ip.value
+            _language = _port.value
+            _prefix = _prefix.value
             
         form = RINORSetupForm(initial={'ip': _ip, 'port': _port, 'prefix': _prefix}) # An unbound form
     
