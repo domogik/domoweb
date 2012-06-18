@@ -30,7 +30,7 @@
     $(function(){
         // Accordion
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:0});
-        $("#housename").val($("<div/>").html('{{ house_name }}').text());
+        $("#housename").val($("<div/>").html('{{ house_name|stripnl }}').text());
         $("#generalsubmit").click(function(){
             var name = $("#housename").val();
             if (name) {

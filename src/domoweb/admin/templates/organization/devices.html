@@ -30,6 +30,7 @@
 {% block js_include %}
     <script type="text/javascript" src="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
 {% endblock %}
+
 {% block js_script %}
     $(function(){
         // Accordion
@@ -187,7 +188,7 @@
                             $('#upddevicedialog').dialog_form('updbutton', {
                                 title: "{% trans 'Update new device' %}",
                                 button: "#update{{ device.id }}",
-                                values: {upddevicename : '{{ device.name }}', upddevicedescription : '{{ device.description }}', upddeviceaddress : '{{ device.address }}', upddevicereference : '{{ device.reference }}', upddeviceusage : '{{ device.device_usage_id }}'},
+                                values: {upddevicename : '{{ device.name|stripnl }}', upddevicedescription : '{{ device.description|stripnl }}', upddeviceaddress : '{{ device.address|stripnl }}', upddevicereference : '{{ device.reference|stripnl }}', upddeviceusage : '{{ device.device_usage_id }}'},
                                 onok: function(values) {
                                     // Submit form
                                     rinor.put(['api', 'device', '{{ device.id }}'], {'name': values.upddevicename, 'address': values.upddeviceaddress, 'usage_id': values.upddeviceusage, 'description': values.upddevicedescription, 'reference': values.upddevicereference})
@@ -204,10 +205,10 @@
                         // ]]>
                     </script>
                     <tr class="{% cycle 'odd' 'even' %}">
-                        <td>{{ device.name }}</td>
-                        <td>{{ device.description }}</td>
-                        <td>{{ device.address }}</td>
-                        <td>{{ device.reference }}</td>
+                        <td>{{ device.name|stripnl }}</td>
+                        <td>{{ device.description|stripnl }}</td>
+                        <td>{{ device.address|stripnl }}</td>
+                        <td>{{ device.reference|stripnl }}</td>
                         <td><div class='icon16-text icon16-technology-{{ device.device_type.device_technology_id }}'>{{ device.device_type.device_technology_id }}.{{ device.device_type.name }}</td>
                         <td>
                             <ul class="actions">

@@ -147,7 +147,7 @@
             {% spaceless %}
                 <ul>
                     {% for room in rooms_list %}
-                        <li><a id="tab{{ room.id }}" href="#element{{ room.id }}" class="icon16-room-{{ room.icon }}">{{ room.name }}</a></li>
+                        <li><a id="tab{{ room.id }}" href="#element{{ room.id }}" class="icon16-room-{{ room.icon }}">{{ room.name|stripnl }}</a></li>
                     {% endfor %}
                 </ul>
             {% endspaceless %}
@@ -245,9 +245,9 @@
                         
                         /* Add a function to update an room */
                         $('#roomdialog').dialog_form('updbutton', {
-                            title: "{% trans "Update room" %} '{{ room.name }}'",
+                            title: "{% trans "Update room" %} '{{ room.name|stripnl }}'",
                             button: "#update{{ room.id }}",
-                            values: {roomname : '{{ room.name }}', roomdescription : '{{ room.description }}'},
+                            values: {roomname : '{{ room.name|stripnl }}', roomdescription : '{{ room.description|stripnl }}'},
                             onok: function(values) {
                                 // Submit form
                                 rinor.put(['api', 'room', '{{ room.id }}'], {'name': values.roomname, 'description': values.roomdescription})
@@ -270,8 +270,8 @@
                 </ul>
                 <div class="content">
                     <div id="icon{{ room.id }}"></div>
-                    <h2 id="zone{{ room.id }}h">{{ room.name }}</h2>
-                    <p>{{ room.description }}</p>
+                    <h2 id="zone{{ room.id }}h">{{ room.name|stripnl }}</h2>
+                    <p>{{ room.description|stripnl }}</p>
 
                 </div>
             </div>
@@ -287,7 +287,7 @@
             <legend class='icon16-house-default'>{% trans "House" %}</legend>
             <ul class="roomslist">
                 {% for room in house_rooms %}
-                <li class="roomitem icon32-room-{{ room.icon }}" ddvalue="{{ room.id }}" ddname='{{ room.description }}'>{{ room.name }}<span class="description">{{ room.description }}</span></li>
+                <li class="roomitem icon32-room-{{ room.icon }}" ddvalue="{{ room.id }}" ddname='{{ room.description|stripnl }}'>{{ room.name|stripnl }}<span class="description">{{ room.description|stripnl }}</span></li>
                 {% empty %}
                 <li class="empty">{% trans "Empty" %}</li>
                 {% endfor %}
@@ -298,7 +298,7 @@
             <legend class="icon16-area-{{ area.config.icon }}">{{ area.name }}</legend>
             <ul class="roomslist">
                 {% for room in area.rooms %}
-                <li class="roomitem icon32-room-{{ room.icon }}" ddvalue="{{ room.id }}" ddname='{{ room.description }}'>{{ room.name }}<span class="description">{{ room.description }}</span></li>
+                <li class="roomitem icon32-room-{{ room.icon }}" ddvalue="{{ room.id }}" ddname='{{ room.description|stripnl }}'>{{ room.name|stripnl }}<span class="description">{{ room.description|stripnl }}</span></li>
                 {% empty %}
                 <li class="empty">{% trans "Empty" %}</li>
                 {% endfor %}

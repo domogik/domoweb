@@ -28,6 +28,9 @@ along with Domogik. If not, see U{http://www.gnu.org/licenses}.
 
 from django import template
 from django.template import Node
+from django.template.defaultfilters import stringfilter
+from django.utils.text import normalize_newlines
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -42,6 +45,13 @@ def truncchar(value, arg):
 @register.filter
 def switchUnderscore(value):
     return value.replace('_', ' ')
+
+@register.filter
+@stringfilter
+def stripnl(value):
+    value = normalize_newlines(value)
+    return mark_safe(value.replace('\n', ''))
+
 
 class GetPosition(Node):
     def __init__(self, array, id, grouper):

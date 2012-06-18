@@ -87,7 +87,7 @@
             {% spaceless %}
             <ul>
                 {% for area in areas_list %}
-                    <li><a id="tab{{ area.id }}" href="#element{{ area.id }}" class="icon16-area-{{ area.icon }}">{{ area.name }}</a></li>
+                    <li><a id="tab{{ area.id }}" href="#element{{ area.id }}" class="icon16-area-{{ area.icon }}">{{ area.name|stripnl }}</a></li>
                 {% endfor %}
             </ul>
             {% endspaceless %}
@@ -139,9 +139,9 @@
                         
                         /* Add a function to update an area */
                         $('#areadialog').dialog_form('updbutton', {
-                            title: "{% trans "Update area" %} '{{ area.name }}'",
+                            title: "{% trans "Update area" %} '{{ area.name|stripnl }}'",
                             button: "#update{{ area.id }}",
-                            values: {areaname : '{{ area.name }}', areadescription : '{{ area.description }}'},
+                            values: {areaname : '{{ area.name|stripnl }}', areadescription : '{{ area.description|stripnl }}'},
                             onok: function(values) {
                                 // Submit form
                                 rinor.put(['api', 'area', '{{ area.id }}'], {'name': values.areaname, 'description': values.areadescription})
@@ -163,8 +163,8 @@
                 </ul>
                 <div class="content">
                     <div id="icon{{ area.id }}"></div>
-                    <h2>{{ area.name }}</h2>
-                    <p>{{ area.description }}</p>
+                    <h2>{{ area.name|stripnl }}</h2>
+                    <p>{{ area.description|stripnl }}</p>
                 </div>
             </div>
             {% endfor %}
