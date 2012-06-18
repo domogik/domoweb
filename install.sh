@@ -177,11 +177,6 @@ if [ ! -x "$(which python)" ];then
 fi
 }
 
-function create_log_dir {
-    mkdir -p /var/log/domogik
-    chown -R $d_user: /var/log/domogik 
-}
-
 function init_django_db {
     python ./src/domoweb/manage.py syncdb --noinput
     chown $d_user: $DMW_LIB/domoweb.db
@@ -221,7 +216,6 @@ copy_sample_files
 update_default_config
 init_django_db
 generate_revision_py
-create_log_dir
 
 echo "Everything seems to be good, DomoWeb should be installed correctly."
 echo "I will start the test_config.py script to check it."
