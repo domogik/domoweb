@@ -7,17 +7,11 @@
 #        * <old-preinst> abort-upgrade <new-version>
 #
 
-export PATH=$PATH:/sbin:/usr/sbin:/bin:/usr/bin
-DATADIR=/var/lib/domoweb
-LOGDIR=/var/log/domoweb
-set -e
-
-set +e
+set +
 /usr/sbin/a2enmod proxy
 /usr/sbin/a2enmod proxy_html
 /usr/sbin/a2enmod proxy_http
 /usr/sbin/a2enmod auth_mysql
-
 set -e
 
 #DEBHELPER#
