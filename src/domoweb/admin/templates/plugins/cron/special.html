@@ -29,13 +29,13 @@
                     })
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
                     });
                 }else {
-                $.notification('error', '{% trans "Need Command group or Stat group address field should be filled" %}')
+                $.notification('error', "{% trans "Need Command group or Stat group address field should be filled" %}")
                 }
             } else {
-                $.notification('error', '{% trans "Domogik device address field should be filled" %}');
+                $.notification('error', "{% trans "Domogik device address field should be filled" %}");
             }
         });
 
@@ -86,10 +86,10 @@
                     })
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
                     });
                 }else {
-                $.notification('error', '{% trans "Need Command group or Stat group address field should be filled" %}')
+                $.notification('error', "{% trans "Need Command group or Stat group address field should be filled" %}")
                 }
         });
 
@@ -140,7 +140,7 @@
                 })
                 .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
-                        $.notification('error', '{% trans "Cant get list" %} (' + jqXHR.responseText + ')');
+                        $.notification('error', "{% trans "Cant get list" %} (" + jqXHR.responseText + ")");
                 });
         });
 
@@ -155,7 +155,7 @@
                      })
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
                     });
      });
 
@@ -183,7 +183,7 @@
                     )
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
                    });
       });
     $("")

@@ -21,6 +21,8 @@
 
 
 {% load i18n %}
+{% load text %}
+
 {% block css %}
     <link href="/design/admin/css/page-admin-organization.css" rel="stylesheet" type="text/css" />
 {% endblock %}
@@ -43,12 +45,12 @@
                         $("#housename").removeClass('icon16-status-true');
                         $("#housename").addClass('icon16-status-false');
                         if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "house name not updated" %} (' + jqXHR.responseText + ')');
+                            $.notification('error', "{% trans "house name not updated" %} (" + jqXHR.responseText + ")");
                     });
             } else {
                 $("#housename").removeClass('icon16-status-true');
                 $("#housename").addClass('icon16-status-false');  
-                $.notification('error', '{% trans "house name can not be empty" %}');                                                                      
+                $.notification('error', "{% trans "house name can not be empty" %}");                                                                      
             }
         });
     });

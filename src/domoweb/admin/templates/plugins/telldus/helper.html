@@ -48,7 +48,7 @@ function helperrinor (args) {
     })
     .fail(function(jqXHR, status, error){
         if (jqXHR.status == 400)
-            $.notification('error', '{% trans "Cant call helper" %} (' + jqXHR.responseText + ')');
+            $.notification('error', "{% trans "Cant call helper" %} (" + jqXHR.responseText + ")");
     });
 }
 
@@ -64,7 +64,7 @@ $(function(){
         if (data[0]) {
             helperrinor(args)
         } else {
-            $.notification('error', '{% trans "Enter a command to execute. Click help to get command list." %}')
+            $.notification('error', "{% trans "Enter a command to execute. Click help to get command list." %}")
         }
     });
    $("#helperhelp").click(function() {

@@ -38,11 +38,11 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsAddAccount',
             fields: [
-                {name : 'adduserlogin', type:'text', label:'{% trans "Login" %}', required: true, options: {min: 1, max: 80}},
-                {name : 'adduserfirstname', type:'text', label:'{% trans "Firstname" %}', required: true, options: {min: 1, max: 80}},
-                {name : 'adduserlastname', type:'text', label:'{% trans "Lastname" %}', required: true, options: {min: 1, max: 80}},
-                {name : 'adduserpassword', type:'numericpassword', label:'{% trans "Access code (numeric only)" %}', required: true, options: {min: 1, max: 80}},
-                {name : 'adduseradmin', type:'checkbox', label:'{% trans "Is admin" %}', required: true}
+                {name : 'adduserlogin', type:'text', label:"{% trans "Login" %}", required: true, options: {min: 1, max: 80}},
+                {name : 'adduserfirstname', type:'text', label:"{% trans "Firstname" %}", required: true, options: {min: 1, max: 80}},
+                {name : 'adduserlastname', type:'text', label:"{% trans "Lastname" %}", required: true, options: {min: 1, max: 80}},
+                {name : 'adduserpassword', type:'numericpassword', label:"{% trans "Access code (numeric only)" %}", required: true, options: {min: 1, max: 80}},
+                {name : 'adduseradmin', type:'checkbox', label:"{% trans "Is admin" %}", required: true}
             ]
         });
         
@@ -50,8 +50,8 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsAddPerson',
             fields: [
-                {name : 'personfirstname', type:'text', label:'{% trans "Firstname" %}', required: true, options: {min: 1, max: 80}},
-                {name : 'personlastname', type:'text', label:'{% trans "Lastname" %}', required: true, options: {min: 1, max: 80}}
+                {name : 'personfirstname', type:'text', label:"{% trans "Firstname" %}", required: true, options: {min: 1, max: 80}},
+                {name : 'personlastname', type:'text', label:"{% trans "Lastname" %}", required: true, options: {min: 1, max: 80}}
             ]
         });
         
@@ -63,11 +63,11 @@
                 // Submit form
                 rinor.post(['api', 'user'], {'login': values.adduserlogin, 'password': values.adduserpassword, 'is_admin': values.adduseradmin, 'first_name': values.adduserfirstname, 'last_name': values.adduserlastname})
                     .done(function(data, status, xhr){
-                        $.reloadPage({'status': 'success', 'msg': '{% trans "New account added" %} \'' + data.login + '\''});
+                        $.reloadPage({'status': 'success', 'msg': "{% trans "New account added" %} '" + data.login + "'"});
                     })
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Account not created" %} (' + jqXHR.responseText + ')');
+                            $.notification('error', "{% trans "Account not created" %} (" + jqXHR.responseText + ")");
                     });
             }
         });
@@ -80,11 +80,11 @@
                 // Submit form
                 rinor.post(['api', 'person'], {'first_name': values.personfirstname, 'last_name': values.personlastname})
                     .done(function(data, status, xhr){
-                        $.reloadPage({'status': 'success', 'msg': '{% trans "New person added" %} \'' + data.first_name + ' ' + data.last_name + '\''});
+                        $.reloadPage({'status': 'success', 'msg': "{% trans "New person added" %} '" + data.first_name + " " + data.last_name + "'"});
                     })
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Person not created" %} (' + jqXHR.responseText + ')');
+                            $.notification('error', "{% trans "Person not created" %} (" + jqXHR.responseText + ")");
                     });
             }
         });
@@ -93,10 +93,10 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsUpdateAccount',
             fields: [
-                {name : 'upduserlogin', type:'text', label:'{% trans "Login" %}', required: true, options: {min: 1, max: 80}},
-                {name : 'upduserfirstname', type:'text', label:'{% trans "Firstname" %}', required: true, options: {min: 1, max: 80}},
-                {name : 'upduserlastname', type:'text', label:'{% trans "Lastname" %}', required: true, options: {min: 1, max: 80}},
-                {name : 'upduseradmin', type:'checkbox', label:'{% trans "Is admin" %}', required: true}
+                {name : 'upduserlogin', type:'text', label:"{% trans "Login" %}", required: true, options: {min: 1, max: 80}},
+                {name : 'upduserfirstname', type:'text', label:"{% trans "Firstname" %}", required: true, options: {min: 1, max: 80}},
+                {name : 'upduserlastname', type:'text', label:"{% trans "Lastname" %}", required: true, options: {min: 1, max: 80}},
+                {name : 'upduseradmin', type:'checkbox', label:"{% trans "Is admin" %}", required: true}
             ]
         });
         
@@ -104,8 +104,8 @@
             tips: "{% trans "All fields are required." %}",
             tipsid: 'tipsPasswordAccount',
             fields: [
-                {name : 'oldpassword', type:'numericpassword', label:'{% trans "Old access code" %}', required: true, options: {min: 1, max: 80}},
-                {name : 'newpassword', type:'numericpassword', label:'{% trans "New access code (numeric only)" %}', required: true, options: {min: 1, max: 80}},
+                {name : 'oldpassword', type:'numericpassword', label:"{% trans "Old access code" %}", required: true, options: {min: 1, max: 80}},
+                {name : 'newpassword', type:'numericpassword', label:"{% trans "New access code (numeric only)" %}", required: true, options: {min: 1, max: 80}},
             ]
         });
     });
@@ -147,11 +147,11 @@
                             onok: function() {
                                 rinor.delete(['api', 'user', '{{ account.id }}'])
                                     .done(function(data, status, xhr){
-                                        $.reloadPage({'status': 'success', 'msg': '{% trans "Account" %} \'' + data.login + '\' {% trans "successfully deleted" %}'});
+                                        $.reloadPage({'status': 'success', 'msg': "{% trans "Account" %} \'' + data.login + '\' {% trans "successfully deleted" %}"});
                                     })
                                     .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
-                                            $.notification('error', '{% trans "Account not deleted" %} (' + jqXHR.responseText + ')');
+                                            $.notification('error', "{% trans "Account not deleted" %} (" + jqXHR.responseText + ")");
                                     });
                             }
                         });
@@ -165,11 +165,11 @@
                                 // Submit form
                                 rinor.put(['api', 'user', '{{ account.id }}'], {'login': values.upduserlogin, 'is_admin': values.upduseradmin, 'first_name': values.upduserfirstname, 'last_name': values.upduserlastname})
                                     .done(function(data, status, xhr){
-                                        $.reloadPage({'status': 'success', 'msg': '{% trans "Account" %} \'' + data.login + '\' {% trans "successfully updated" %}'});
+                                        $.reloadPage({'status': 'success', 'msg': "{% trans "Account" %} \'' + data.login + '\' {% trans "successfully updated" %}"});
                                     })
                                     .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
-                                            $.notification('error', '{% trans "Account not updated" %} (' + jqXHR.responseText + ')');
+                                            $.notification('error', "{% trans "Account not updated" %} (" + jqXHR.responseText + ")");
                                     });
                             }
                         });
@@ -186,7 +186,7 @@
                                     })
                                     .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
-                                            $.notification('error', '{% trans "Password not updated" %} (' + jqXHR.responseText + ')');
+                                            $.notification('error', "{% trans "Password not updated" %} (" + jqXHR.responseText + ")");
                                     });
                             }
                         });
@@ -231,11 +231,11 @@
                             onok: function() {
                                 rinor.delete(['api', 'person', '{{ person.id }}'])
                                     .done(function(data, status, xhr){
-                                        $.reloadPage({'status': 'success', 'msg': '{% trans "Person" %} \'' + data.first_name + ' ' + data.last_name + '\' {% trans "successfully deleted" %}'});
+                                        $.reloadPage({'status': 'success', 'msg': "{% trans "Person" %} \'' + data.first_name + ' ' + data.last_name + '\' {% trans "successfully deleted" %}"});
                                     })
                                     .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
-                                            $.notification('error', '{% trans "Person not deleted" %} (' + jqXHR.responseText + ')');
+                                            $.notification('error', "{% trans "Person not deleted" %} (" + jqXHR.responseText + ")");
                                     });
                             }
                         });
@@ -249,11 +249,11 @@
                                 // Submit form
                                 rinor.put(['api', 'person', '{{ person.id }}'], {'first_name': values.personfirstname, 'last_name': values.personlastname})
                                     .done(function(data, status, xhr){
-                                        $.reloadPage({'status': 'success', 'msg': '{% trans "Person" %} \'' + data.first_name + ' ' + data.last_name + '\' {% trans "updated" %}'});
+                                        $.reloadPage({'status': 'success', 'msg': "{% trans "Person" %} \'' + data.first_name + ' ' + data.last_name + '\' {% trans "updated" %}"});
                                     })
                                     .fail(function(jqXHR, status, error){
                                         if (jqXHR.status == 400)
-                                            $.notification('error', '{% trans "Person not updated" %} (' + jqXHR.responseText + ')');
+                                            $.notification('error', "{% trans "Person not updated" %} (" + jqXHR.responseText + ")");
                                     });
                             }
                         });

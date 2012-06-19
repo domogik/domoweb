@@ -34,9 +34,9 @@
 
         function setStatus(status) {
             if (status=='up') { //active
-                textstatus = '{% trans "Running" %}';
+                textstatus = "{% trans "Running" %}";
             } else { //inactive
-                textstatus = '{% trans "Stopped" %}';
+                textstatus = "{% trans "Stopped" %}";
             }
             $("#iconstatus").empty()
                 .attr('class', "icon16-text-right icon16-status-plugin-" + status)
@@ -53,15 +53,15 @@
                 },
             'states':[{
                     'id':'up',
-                    'text':'{% trans "Stop plugin" %}',
+                    'text':"{% trans "Stop plugin" %}",
                     'data':{'command':'stop'},
-                    'successMsg':'{% trans "Plugin successfully stopped" %}',
+                    'successMsg':"{% trans "Plugin successfully stopped" %}",
                     'icon':'icon16-status-inactive',
                 },{
                     'id':'down',
-                    'text':'{% trans "Start plugin" %}',
+                    'text':"{% trans "Start plugin" %}",
                     'data':{'command':'start'},
-                    'successMsg':'{% trans "Plugin successfully started" %}',
+                    'successMsg':"{% trans "Plugin successfully started" %}",
                     'icon':'icon16-status-active',
                 }]
             });

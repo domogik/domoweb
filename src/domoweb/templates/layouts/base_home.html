@@ -37,12 +37,12 @@
     {% if we %}
         {% include 'we.html' %}
         <header id="mainheader">
-            <a href="{% url index_view %}" id="logo"><img src="/design/common/images/logo_domogik_we.png" alt='{% trans "Domogik logo" %}' /></a>
+            <a href="{% url index_view %}" id="logo"><img src="/design/common/images/logo_domogik_we.png" alt="{% trans "Domogik logo" %}" /></a>
             <div id="title">{% trans "Domogik" %} <span id="subtitle">{% trans "Joyeux noël" %}</span> </div>
         </header>
     {% else %}
         <header id="mainheader">
-            <a href="{% url index_view %}" id="logo"><img src="/design/common/images/logo_domogik.png" alt='{% trans "Domogik logo" %}' /></a>
+            <a href="{% url index_view %}" id="logo"><img src="/design/common/images/logo_domogik.png" alt="{% trans "Domogik logo" %}" /></a>
             <div id="title">{% trans "Domogik" %} <span id="subtitle">{% trans "Free home automation under Linux" %}</span> </div>
         </header>
     {% endif %}

@@ -237,7 +237,7 @@
            })
             .fail(function(jqXHR, status, error){
                 if (jqXHR.status == 400)
-                    $.notification('error', '{% trans "Device list not retrieved" %} (' + jqXHR.responseText + ')');
+                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
             });
           $("select#features2").hide();
           $("select#test2").hide();

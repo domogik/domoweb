@@ -57,20 +57,20 @@ $(function(){
     function setStatus(status) {
         if (status) { //active
             strstatus = 'up';
-            textstatus = '{% trans "Running" %}';
+            textstatus = "{% trans "Running" %}";
             btstrstatus = 'inactive';
-            bttextstatus = '{% trans "Stop plugin" %}';
+            bttextstatus = "{% trans "Stop plugin" %}";
             btaction = 'stop';
-            btokmsg = '{% trans "Plugin successfully stopped" %}';
-            bterrormsg = '{% trans "Plugin not stopped" %}';
+            btokmsg = "{% trans "Plugin successfully stopped" %}";
+            bterrormsg = "{% trans "Plugin not stopped" %}";
         } else { //inactive
             strstatus = 'down';
-            textstatus = '{% trans "Stopped" %}';
+            textstatus = "{% trans "Stopped" %}";
             btstrstatus = 'active';
-            bttextstatus = '{% trans "Start plugin" %}';
+            bttextstatus = "{% trans "Start plugin" %}";
             btaction = 'start';
-            btokmsg = '{% trans "Plugin successfully started" %}';
-            bterrormsg = '{% trans "Plugin not started" %}';
+            btokmsg = "{% trans "Plugin successfully started" %}";
+            bterrormsg = "{% trans "Plugin not started" %}";
         }
         btstatus = !status;
 

@@ -49,7 +49,7 @@ $(function(){
             })
             .fail(function(jqXHR, status, error){
                 if (jqXHR.status == 400)
-                    $.notification('error', '{% trans "Cant get list" %} (' + jqXHR.responseText + ')');
+                    $.notification('error', "{% trans "Cant get list" %} (" + jqXHR.responseText + ")");
             });
         });
 });
