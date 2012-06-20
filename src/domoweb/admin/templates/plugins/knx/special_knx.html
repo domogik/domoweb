@@ -18,69 +18,75 @@
                          debut=test.search('data=');
                          test=test.slice(debut+4);
                          fin=test.search('}');
-                         test=test.slice(1,fin-2);                       
+                         test=test.slice(1,fin-2);
                          if (test.search('Error')>=0){
                             $.notification('error', test);
                          }else{
-                         $.notification('info',test ); 
+                         $.notification('info',test );
                          $("#specialread").click();
                          }
                     })
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
                     });
                 }else {
-                $.notification('error', '{% trans "Need Command group or Stat group address field should be filled" %}')
+                $.notification('error', "{% trans "Need Command group or Stat group address field should be filled" %}")
                 }
             } else {
-                $.notification('error', '{% trans "Domogik device address field should be filled" %}');                
+                $.notification('error', "{% trans "Domogik device address field should be filled" %}");
             }
         });
 
    $("#specialdelete").click(function(){
       var ligne = $("#ligne_to_delete").val();
-                value="Delete:"+ligne
-                rinor.put(['api', 'command', 'knx', 'UI'], {"command":'Add', "value":value})
+                value=ligne
+                rinor.put(['api', 'command', 'knx', 'Delete'], {"command":'Add', "value":value})
                     .done(function(data, status, xhr){
-                     $.notification('info','Ligne deleted' ); 
+                     $.notification('info','Ligne deleted' );
                      $("#specialread").click();
                      $("#specialread").click();
                      })
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
                     });
      });
 
 
    $("#specialread").click(function(){
       data="";
-      rinor.put(['api', 'command', 'knx', 'UI'], {"command":'Add', "value":"Request"})
+      rinor.put(['api', 'command', 'knx', 'Request'], {"command":'Add', "value":"Request"})
                     .done(function(data, status, xhr){
                          test=JSON.stringify(data);
                          debut=test.search('data=');
                          test=test.slice(debut+4);
                          fin=test.search('}');
-                         test=test.slice(1,fin-2);                       
+                         test=test.slice(1,fin-2);
                          i=0;
                          text="<u>Config file:</u> <br/>"
                          do{
                            i=i+1;
                            next=test.search(',');
                            text=text+"<br/>" +i+" - "+ test.slice(0,next);
-                           test=test.slice(next+1); 
-			 }
-			 while (test.search(",")>=0);
-                         $('#demo').html(text);
+                           test=test.slice(next+1);
                          }
+                         while (test.search(",")>=0);
+                             $('#demo').html(text);
+                             }
                     )
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
                    });
       });
+
+   $(document).ready(function(){
+         $("#specialread").click();
+         $("#specialread").click();
     });
+    });
+
 </script>
 <section class="subsection">
     <h2>{% trans "Special" %}</h2>

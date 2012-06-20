@@ -28,21 +28,21 @@
     $(function(){
         // Accordion
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:2});
-    
+
         // Tabs
         $("#tabs").tabs();
-    
+
         function setStatus(status) {
             if (status=='up') { //active
-                textstatus = '{% trans "Running" %}';
+                textstatus = "{% trans "Running" %}";
             } else { //inactive
-                textstatus = '{% trans "Stopped" %}';
+                textstatus = "{% trans "Stopped" %}";
             }
             $("#iconstatus").empty()
                 .attr('class', "icon16-text-right icon16-status-plugin-" + status)
                 .html("<span class='label'>{% trans "Status" %}:</span><span class='offscreen'>" + textstatus + "</span>");
         }
-        
+
         $("#buttonstatus").ajaxSwitch({
             'url':['api','plugin', '{{ plugin.host }}', '{{ plugin.id }}'],
             'successFct':function(state, status, xhr){
@@ -53,19 +53,19 @@
                 },
             'states':[{
                     'id':'up',
-                    'text':'{% trans "Stop plugin" %}',
+                    'text':"{% trans "Stop plugin" %}",
                     'data':{'command':'stop'},
-                    'successMsg':'{% trans "Plugin successfully stopped" %}',
+                    'successMsg':"{% trans "Plugin successfully stopped" %}",
                     'icon':'icon16-status-inactive',
                 },{
                     'id':'down',
-                    'text':'{% trans "Start plugin" %}',
+                    'text':"{% trans "Start plugin" %}",
                     'data':{'command':'start'},
-                    'successMsg':'{% trans "Plugin successfully started" %}',
+                    'successMsg':"{% trans "Plugin successfully started" %}",
                     'icon':'icon16-status-active',
                 }]
             });
-            
+
         {% ifequal plugin.status "ON" %}
             setStatus('up');
             $("#buttonstatus").ajaxSwitch('run', 'up');
@@ -73,17 +73,19 @@
             setStatus('down');
             $("#buttonstatus").ajaxSwitch('run', 'down');
         {% endifequal %}
-    });    
+    });
 {% endblock %}
 {% block css %}
     <link href="/design/admin/css/page-admin-plugins.css" rel="stylesheet" type="text/css" />
     <link href="/design/admin/css/plugin-config.css" rel="stylesheet" type="text/css" />
     <link href="/design/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
+    <link href="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
     <script type="text/javascript" src="/design/libraries/jquery.timers-1.2/jquery.timers-1.2.js"></script>
     <script type="text/javascript" src="/design/libraries/jquery.ba-dotimeout-1.0/jquery.ba-dotimeout.min.js"></script>
     <script type="text/javascript" src="/design/admin/js/plugin-config.js"></script>
+    <script type="text/javascript" src="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
 {% endblock %}
 {% block title %}{% trans page_title %}{% endblock %}
 
@@ -104,6 +106,12 @@
         {% endif %}
         {% if plugin.id == "cron" %}
             <li><a href="#tabs-4">{% trans "Special" %}</a></li>
+        {% endif %}
+        {% if plugin.id == "scene" %}
+            <li><a href="#tabs-4">{% trans "Creator" %}</a></li>
+        {% endif %}
+        {% if plugin.id == "scene" %}
+            <li><a href="#tabs-5">{% trans "Manage" %}</a></li>
         {% endif %}
         {% if plugin.id == "telldus" %}
             <li><a href="#tabs-5">{% trans "Helper" %}</a></li>
@@ -129,12 +137,22 @@
         </div>
     {% if plugin.id == "knx" %}
         <div id="tabs-4">
-            {% include "plugins/special_knx.html" %}
+            {% include "plugins/knx/special_knx.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "cron" %}
         <div id="tabs-4">
             {% include "plugins/cron/special.html" %}
+        </div>
+    {% endif %}
+    {% if plugin.id == "scene" %}
+        <div id="tabs-4">
+            {% include "plugins/scene/creator_scene.html" %}
+        </div>
+    {% endif %}
+    {% if plugin.id == "scene" %}
+        <div id="tabs-5">
+            {% include "plugins/scene/manage_scene.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "telldus" %}
