@@ -32,7 +32,6 @@
     $(function(){
         // Accordion
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:0});
-        $("#housename").val($("<div/>").html('{{ house_name|stripnl }}').text());
         $("#generalsubmit").click(function(){
             var name = $("#housename").val();
             if (name) {
@@ -66,7 +65,7 @@
         <h2>{% trans "Configuration" %}</h2>
         <form id='generalhouse'>
             <label for='housename'>{% trans "House name" %}</label>
-            <input type='text' id='housename' name='housename' />
+            <input type='text' id='housename' name='housename' value="{{ house_name|stripnl }}" />
         </form>
         <p>
             <button id='generalsubmit' class='button icon16-action-save'>{% trans "Save" %}</button>
