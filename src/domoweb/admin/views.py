@@ -478,3 +478,25 @@ def admin_resource_icon_package_available(request, type, id, version):
     mimetype = mimetypes.guess_type(uri)
     response = HttpResponse(contents, mimetype=mimetype)
     return response
+
+@admin_required
+def admin_core_devicesstats(request):
+    """
+    Method called when the admin Domoweb Data page is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+    
+    page_title = _("Devices Stats Logs")
+    
+    devicesevents = StatePipe().get_last(100, '*', '*')
+    devicesevents.reverse()
+    
+    return go_to_page(
+        request, 'core/devicesstats.html',
+        page_title,
+        devicesevents_list = devicesevents,
+        nav1_admin = "selected",
+        nav2_core_domowebdata = "selected",
+        parameter_data = Parameter.objects.all()
+    )

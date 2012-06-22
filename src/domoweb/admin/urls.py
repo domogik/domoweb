@@ -58,4 +58,5 @@ urlpatterns = patterns('domoweb.admin.views',
     url(r'host/(?P<id>[a-zA-Z0-9_.-]+)/$', 'admin_host', name="admin_host_view"),
     url(r'resource/icon/package/installed/(?P<type>(plugin|external))/(?P<id>[\w\d_-]+)$', 'admin_resource_icon_package_installed', name="admin_resource_icon_package_installed_view"),
     url(r'resource/icon/package/available/(?P<type>(plugin|external))/(?P<id>[\w\d_-]+)/(?P<version>.+)$', 'admin_resource_icon_package_available', name="admin_resource_icon_package_available_view"),
+    url(r'core/devicesstats/$','admin_core_devicesstats',name='admin_devicesstats_view'),
 )
