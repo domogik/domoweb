@@ -128,6 +128,13 @@
             day.click(function() {
                 self.show_graph('24h', 0);
             });            
+            var hhour = $("<li class='bt8h'><button>Last 8 hours</button></li>");
+            hhour.click(function() {
+                self.show_graph('8h', 0);
+            });
+
+
+
             var previous = $("<li class='previous'><button disabled='disabled'>Previous</button></li>");
             var next = $("<li class='next'><button disabled='disabled'>Next</button></li>");
 
@@ -137,7 +144,8 @@
                 .append(year)
                 .append(month)
                 .append(week)
-                .append(day);
+                .append(day)
+                .append(hhour);
 
             $('body').append(dialog);
             dialog.dialog({ width:'90%',

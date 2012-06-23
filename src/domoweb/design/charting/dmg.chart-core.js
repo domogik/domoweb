@@ -16,6 +16,10 @@
             
             this.now = new Date();
             switch(o.type) {
+                case '8h':
+                    this.from = new Date(this.now.getFullYear(), this.now.getMonth(), this.now.getDate(),this.now.getHours()-8-(8*o.shift),0,0);
+                    this.to = new Date(this.now.getFullYear(), this.now.getMonth(), this.now.getDate(),this.now.getHours()+1-(8*o.shift),0,0);
+                    break;
                 case '24h':
                     this.from = new Date(this.now.getFullYear(), this.now.getMonth(), this.now.getDate()-1-o.shift,this.now.getHours(),0,0);
                     this.to = new Date(this.now.getFullYear(), this.now.getMonth(), this.now.getDate()-o.shift,this.now.getHours()+1,0,0);
@@ -40,6 +44,9 @@
             var self = this, o = this.options;
             var restparams = null;
             switch(o.type) {
+                case '8h':
+                    restparams = ['api','state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'minute', 'selector', 'avg', o.device_id, o.key];
+                    break;
                 case '24h':
                     restparams = ['api','state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'minute', 'selector', 'avg', o.device_id, o.key];
                     break;

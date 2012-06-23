@@ -93,6 +93,19 @@ var ChartHighcharts = ChartCore.extend({
         },
         
         _init_graph: {
+            _8h: function(graph_options, o, from, to) {
+                graph_options.title.text = Highcharts.dateFormat('%A %d %B %Y', to.getTime());
+                graph_options.xAxis.min = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate(),from.getHours(),0,0);
+                graph_options.xAxis.max = Date.UTC(to.getFullYear(), to.getMonth(), to.getDate(),to.getHours(),0,0);
+                graph_options.xAxis.dateTimeLabelFormats = {hour: '%H:%M'};
+                graph_options.xAxis.tickInterval = null;
+                graph_options.tooltip.formatter = function() {
+                    return Highcharts.dateFormat('%d/%m/%Y %Hh%M', this.x) +'<br/>'
+                        + "<strong>" + Highcharts.numberFormat(this.y, 2, ',') +" " + o.unit + "</strong>";
+                    };
+                return graph_options;
+            },
+
             _24h: function(graph_options, o, from, to) {
                 graph_options.title.text = Highcharts.dateFormat('%A %d %B %Y', to.getTime());
                 graph_options.xAxis.min = Date.UTC(from.getFullYear(), from.getMonth(), from.getDate(),from.getHours(),0,0);
@@ -148,6 +161,14 @@ var ChartHighcharts = ChartCore.extend({
 
         // Used to pre-process data before displaying
         _process_data: {
+            _8h: function(values) {
+                var d = [];
+                $.each(values, function(index, stat) {
+                    d.push([(Date.UTC(stat[0], stat[1]-1, stat[3], stat[4], stat[5], 0)), stat[6]]);
+                });
+                return d;
+            },
+
             _24h: function(values) {
                 var d = [];
                 $.each(values, function(index, stat) {
