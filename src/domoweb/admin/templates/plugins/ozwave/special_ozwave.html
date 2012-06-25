@@ -1,0 +1,33 @@
+{% load i18n %}
+<script type='text/javascript'>
+    $(function(){
+        $("#specialsubmit").click(function(){
+            var dmg_addr = $("#dmg_addr").val();
+            if (dmg_addr) {
+               rinor.put(['api', 'command', 'ozwave', 'UI'], {"command":'Add', "value":dmg_addr})
+                    .done(function(data, status, xhr){
+                         $.notification('info',test );
+                    })
+                    .fail(function(jqXHR, status, error){
+                       if (jqXHR.status == 400)
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
+                    });
+                }else {
+                $.notification('error', "{% trans "Need dmg address" %}")
+                }
+           
+        });
+    });
+
+</script>
+<section class="subsection">
+    <h2>{% trans "Special" %}</h2>
+        <form id='specialform'>
+            <label for='dmg_addr'>{% trans 'Domogik device address' %}:</label>
+            <input type='text' id='dmg_addr' name='dmg_addr'/>
+        </form>
+        <p>
+            <button id='specialsubmit' class='button icon16-action-save'>{% trans "Add" %}</button>
+        </p>
+</section>
+
