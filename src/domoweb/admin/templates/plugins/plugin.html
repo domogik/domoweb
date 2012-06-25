@@ -104,6 +104,10 @@
         {% if plugin.id == "knx" %}
             <li><a href="#tabs-4">{% trans "Special" %}</a></li>
         {% endif %}
+        {% if plugin.id == "ozwave" %}
+            <li><a href="#tabs-4">{% trans "Special" %}</a></li>
+        {% endif %}
+
         {% if plugin.id == "cron" %}
             <li><a href="#tabs-4">{% trans "Special" %}</a></li>
         {% endif %}
@@ -140,6 +144,12 @@
             {% include "plugins/knx/special_knx.html" %}
         </div>
     {% endif %}
+    {% if plugin.id == "ozwave" %}
+        <div id="tabs-4">
+            {% include "plugins/ozwave/special_ozwave.html" %}
+        </div>
+    {% endif %}
+
     {% if plugin.id == "cron" %}
         <div id="tabs-4">
             {% include "plugins/cron/special.html" %}
