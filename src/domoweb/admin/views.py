@@ -203,6 +203,27 @@ def admin_organization_areas(request):
         areas_list=areas
     )
 
+#@admin_required
+def admin_organization_pages(request):
+    """
+    Method called when the admin pages organization page is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+
+    page_title = _("Pages organization")
+
+    id = request.GET.get('id', 0)
+    pages = PagePipe().get_list()
+
+    return go_to_page(
+        request, 'organization/pages.html',
+        page_title,
+        nav1_admin = "selected",
+        nav2_organization_pages = "selected",
+        id=id,
+        pages_list=pages
+    )
 
 @admin_required
 def admin_organization_house(request):

@@ -39,8 +39,8 @@ import os
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-RINOR_MIN_API = '0.5'
-RINOR_MAX_API = '0.5' #included
+RINOR_MIN_API = '0.6'
+RINOR_MAX_API = '0.6' #included
 DMG_MIN_VERSION = '0.2.0-alpha1'
 
 ADMINS = ()
@@ -128,6 +128,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'tastypie',
+    'mptt',
     'domoweb',
     'domoweb.view',
     'domoweb.admin',

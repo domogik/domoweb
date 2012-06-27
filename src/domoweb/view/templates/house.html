@@ -37,7 +37,7 @@
     <script type="text/javascript" src="/design/view/js/page-show.js"></script>
 {% endblock %}
 
-{% block title %}{% trans page_title %}{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
 {% block breadcrumb %}
         <li id='customize'><a href='{% url edit_house_view 'page' %}' class='icon16-action-customize{% if not is_user_connected %} admin_required{% endif %}'>{% trans "Customize" %}</a></li>

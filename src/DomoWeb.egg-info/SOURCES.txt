@@ -7,6 +7,14 @@ src/DomoWeb.egg-info/entry_points.txt
 src/DomoWeb.egg-info/not-zip-safe
 src/DomoWeb.egg-info/requires.txt
 src/DomoWeb.egg-info/top_level.txt
+src/DomoWeb.egg-info/.AppleDouble/.Parent
+src/DomoWeb.egg-info/.AppleDouble/PKG-INFO
+src/DomoWeb.egg-info/.AppleDouble/SOURCES.txt
+src/DomoWeb.egg-info/.AppleDouble/dependency_links.txt
+src/DomoWeb.egg-info/.AppleDouble/entry_points.txt
+src/DomoWeb.egg-info/.AppleDouble/not-zip-safe
+src/DomoWeb.egg-info/.AppleDouble/requires.txt
+src/DomoWeb.egg-info/.AppleDouble/top_level.txt
 src/domoweb/__init__.py
 src/domoweb/context_processors.py
 src/domoweb/exceptions.py
@@ -24,8 +32,6 @@ src/domoweb/admin/__init__.py
 src/domoweb/admin/pyinfo.py
 src/domoweb/admin/urls.py
 src/domoweb/admin/views.py
-src/domoweb/admin/templatetags/__init__.py
-src/domoweb/admin/templatetags/text.py
 src/domoweb/rinor/__init__.py
 src/domoweb/rinor/events.py
 src/domoweb/rinor/pipes.py
@@ -34,8 +40,8 @@ src/domoweb/rinor/rinorModel.py
 src/domoweb/rinor/rinorPipe.py
 src/domoweb/rinor/rinorResource.py
 src/domoweb/rinor/urls.py
+src/domoweb/templatetags/__init__.py
+src/domoweb/templatetags/text.py
 src/domoweb/view/__init__.py
 src/domoweb/view/urls.py
 src/domoweb/view/views.py
-src/domoweb/view/templatetags/__init__.py
-src/domoweb/view/templatetags/text.py

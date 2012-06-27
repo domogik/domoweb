@@ -108,7 +108,42 @@ class HelperPipe(RinorPipe):
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index]
+
+class PagePipe(RinorPipe):
+    cache_expiry = 3600
+    list_path = "/base/page/list"
+    add_path = "/base/page/add"
+    update_path = "/base/page/update"
+    delete_path = "/base/page/del"
+    index = 'page'
+    paths = []
+
+"""
+    def post_list(self, name, description):
+        _data = self._post_data(self.add_path, ['name', name, 'description', description])
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)
+        return _data[self.index][0]
+
+    def put_detail(self, id, name, description, area_id):
+        if (area_id):
+            _data = self._put_data(self.update_path, ['id', id, 'area_id', area_id])
+        else:
+            _data = self._put_data(self.update_path, ['id', id, 'name', name, 'description', description])
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)
+        return _data[self.index][0]
         
+    def delete_detail(self, id):
+        _data = self._delete_data(self.delete_path, [id])
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)
+        if len(_data[self.index]) > 0:
+            return _data[self.index][0]
+        else:
+            return None
+"""
+
 class RoomPipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/room/list"
