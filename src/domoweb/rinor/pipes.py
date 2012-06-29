@@ -118,18 +118,21 @@ class PagePipe(RinorPipe):
     index = 'page'
     paths = []
 
-"""
-    def post_list(self, name, description):
-        _data = self._post_data(self.add_path, ['name', name, 'description', description])
+
+    def put_detail(self, id, bundle):
+        params = ['id', id, 'name', bundle["name"]]
+        if 'description' in bundle:
+            params.extend(['description', bundle["description"]])
+        _data = self._put_data(self.update_path, params)
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
 
-    def put_detail(self, id, name, description, area_id):
-        if (area_id):
-            _data = self._put_data(self.update_path, ['id', id, 'area_id', area_id])
-        else:
-            _data = self._put_data(self.update_path, ['id', id, 'name', name, 'description', description])
+    def post_list(self, bundle):
+        params = ['name', bundle["name"], 'parent', bundle["parent"]]
+        if 'description' in bundle:
+            params.extend(['description', bundle["description"]])
+        _data = self._post_data(self.add_path, params)
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
@@ -142,7 +145,6 @@ class PagePipe(RinorPipe):
             return _data[self.index][0]
         else:
             return None
-"""
 
 class RoomPipe(RinorPipe):
     cache_expiry = 3600

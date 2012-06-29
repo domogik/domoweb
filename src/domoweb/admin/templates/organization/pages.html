@@ -29,14 +29,59 @@
 {% endblock %}
 {% block js_include %}
     <script type="text/javascript" src="/design/libraries/jstree_pre1.0_fix_1/jquery.jstree.js"></script>
+    <script type="text/javascript" src="/design/libraries/jstree_pre1.0_fix_1/_lib/jquery.hotkeys.js"></script>
 {% endblock %}
 {% block js_script %}
     $(function(){
         // Accordion}
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:0});
         $("#pages").jstree({
-            "core" : { "initially_open" : [ "page1" ] },
-            "plugins" : ["themes", "html_data" ]
+            "core" : { "initially_open" : [ "page_1" ] },
+            "ui" : {
+                // this makes the node with ID node_4 selected onload
+                "initially_select" : [ "page_1" ]
+            },
+            "plugins" : ["themes", "html_data", "ui", "crrm", "hotkeys"]
+        })
+        .bind("rename.jstree", function (e, tree) {
+            var id = tree.rslt.obj.attr("id").replace("page_","");
+            var name = tree.rslt.new_name
+            rinor.put(['api', 'page', id], {'name': name})
+                .fail(function(jqXHR, status, error){
+                    $.jstree.rollback(tree.rlbk);
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Page not renamed" %} (" + jqXHR.responseText + ")");
+                });
+        })
+        .bind("remove.jstree", function (e, tree) {
+            tree.rslt.obj.each(function () {
+                var id = this.id.replace("page_","");
+                rinor.delete(['api', 'page', id])
+                    .done(function(data, status, xhr){
+                            tree.inst.refresh();
+                    })
+                    .fail(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', "{% trans "Page not deleted" %} (" + jqXHR.responseText + ")");
+                    });
+            });
+        })
+        .bind("create.jstree", function (e, tree) {
+            var parent = tree.rslt.parent.attr("id").replace("page_","");
+            var name = tree.rslt.name
+            rinor.post(['api', 'page'], {'name': name, 'parent': parent})
+                .done(function(data, status, xhr){
+                    $(tree.rslt.obj).attr("id", "page_" + data.id);
+                })
+                .fail(function(jqXHR, status, error){
+                    $.jstree.rollback(tree.rlbk);
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Page not renamed" %} (" + jqXHR.responseText + ")");
+                });
+        });
+        
+        $("#mmenu button").click(function () {
+            $("#pages").jstree(this.id);
         });
     });
 {% endblock %}
@@ -50,10 +95,15 @@
     <section class="subsection">
         <h2>{% trans "Pages list" %}</h2>
         {% spaceless %}
+        <div id="mmenu">
+            <button id="create">Create</button>
+            <button id="rename">Rename</button>
+            <button id="remove">Remove</button>
+        </div>
         <div id="pages">
             <ul class="root">
             {% recursetree pages_list %}
-                <li id="page{{ node.id }}"><a href="#">{{ node.name }}</a>
+                <li id="page_{{ node.id }}"><a href="#">{{ node.name }}</a>
                     {% if not node.is_leaf_node %}
                         <ul class="children">
                             {{ children }}

@@ -43,10 +43,6 @@ from tastypie import fields
 from tastypie.http import *
 from tastypie.utils import trailing_slash
 
-# Missing from tastypie 0.9.9
-class HttpNotFound(HttpResponse):
-    status_code = 404
-
 class AssociationResource(RinorResource):
     # fields must map to the attributes in the Row class
     id = fields.IntegerField(attribute = 'id')
@@ -597,3 +593,26 @@ class HostResource(RinorResource):
         authentication = Authentication()
         authorization = Authorization()
         rinor_pipe = HostPipe()
+
+class PageResource(RinorResource):
+    # fields must map to the attributes in the Row class
+    id = fields.IntegerField(attribute = 'id')
+    name = fields.CharField(attribute = 'name')
+    description = fields.CharField(attribute = 'description')
+    
+    class Meta:
+        resource_name = 'page'
+        list_allowed_methods = ['get', 'post']
+        detail_allowed_methods = ['get', 'put', 'delete']
+        authentication = Authentication()
+        authorization = Authorization()
+        rinor_pipe = PagePipe()
+
+    def obj_create(self, bundle, request=None, **kwargs):
+        return self._meta.rinor_pipe.post_list(bundle)
+
+    def obj_update(self, bundle, request=None, **kwargs):
+        return self._meta.rinor_pipe.put_detail(kwargs['pk'], bundle)
+
+    def obj_delete(self, request=None, **kwargs):
+        return self._meta.rinor_pipe.delete_detail(kwargs["pk"])

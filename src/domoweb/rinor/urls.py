@@ -59,6 +59,7 @@ rinor_api.register(PackageDependencyResource())
 rinor_api.register(RepositoryResource())
 rinor_api.register(CommandResource())
 rinor_api.register(HostResource())
+rinor_api.register(PageResource())
 
 urlpatterns = patterns('',
     (r'', include(rinor_api.urls)),
