@@ -1,0 +1,13 @@
+body {
+	background-color:#eeeeee;
+    background-image: url(content_bgnd.png);
+    background-position: 0% 0%;
+	background-repeat: no-repeat;
+}
+
+header {
+    background-color: #BDCB2F;
+    background-image: url(banner_bgnd.png);
+    background-position: 100% 50%;
+	background-repeat: no-repeat;
+}

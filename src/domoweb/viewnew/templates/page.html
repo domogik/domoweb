@@ -25,10 +25,22 @@
 {% block js_script %}
     var device_types = {{ device_types|safe }};
     var device_usages = {{ device_usages|safe }};
+    $(function(){
+        $('#closeform').click(function() {
+            $('#loginform').hide();
+        });
+        
+        $('#loginbutton').click(function() {
+            $('#loginform').show();
+            $('#loginform #password').focus();
+        });
+    });
 {% endblock %}
 
 {% block css %}
-        <link href="/design/view/css/view-page.css" rel="stylesheet" type="text/css" />
+       <link href="/design/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
+       <link href="/design/viewnew/css/view-page.css" rel="stylesheet" type="text/css" />
+       <link href="/design/viewnew/theme/flowers/view-page.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block js_include %}
@@ -39,7 +51,36 @@
 {% block body %}
     <header role='banner'>
         <h1>{{ page_title }}</h1>
+        <nav role="navigation">
+            <ul id="mainmenu">
+            {% if not is_user_connected %}
+                <li><a id="loginbutton" role="button" class="button_round icon32-menu-unlock-white" href="#" title="{% trans "Identify yourself" %}"><span class="offscreen">{% trans "Log in" %}</span></a></li>
+            {% else %}
+                <li><a role="button" class="button_round icon32-menu-widgets-white" href="#" title="{% trans "Place widgets" %}"><span class="offscreen">{% trans "Place widgets" %}</span></a></li>
+                <li><a role="button" class="button_round icon32-menu-config-white" href="#" title="{% trans "Configure" %}"><span class="offscreen">{% trans "Configure" %}</span></a></li>
+                <li><a role="button" class="button_round icon32-menu-lock-white" href="{% url logout_view %}?next={{ request.path }}" title="{% trans "Disconnect" %} {{ request.session.user.first_name }}"><span class="offscreen">{% trans "Log out" %} {{ request.session.user.first_name }}</span></a></li>
+            {% endif %}
+            </ul>
+        </nav>
+        {% if not is_user_connected %}
+            <form id="loginform" role="form" class="hidden" action="{% url login_view %}?next={{ request.path }}" method="post">
+                <label for="password">{% trans "Password" %}</label>
+                <input id="login" name="login" type="hidden" value="admin" />
+                <input id="password" type="password" name="password" placeholder="{% trans "Enter your password" %}" />
+                <input type="submit" value="{% trans "Login" %}" class="button icon16-menu-unlock-black" />
+                <a id="closeform" role="button" class="close icon36-action-close">
+                    <span class="offscreen">{% trans "Close" %}</span>
+                </a>
+            </form>
+        {% endif %}
     </header>
     <div role='main'></div>
-    <nav role="navigation"></nav>
+    <footer>
+        <nav role="navigation">
+            <div id="tree"><a href='#'>&nbsp;<span class="offscreen">{% trans "Menu" %}</span></a></div>
+            <ul id="breadcrumb">
+                <li><a href='#' class="current">{{ page_title }}</a></li>
+            </ul>
+        </nav>
+    </footer>
 {% endblock %}

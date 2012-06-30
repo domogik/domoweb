@@ -639,6 +639,12 @@
 
 .icon16-status-loading {background-image:url('../images/ajax-loader.gif')}
 
+/* Page menu */
+.icon32-menu-unlock-white {background-image:url(../images/menu/unlock_white_32.png);}
+.icon32-menu-lock-white {background-image:url(../images/menu/lock_white_32.png);}
+.icon32-menu-config-white {background-image:url(../images/menu/config_white_32.png);}
+.icon32-menu-widgets-white {background-image:url(../images/menu/widgets_white_32.png);}
+
 /* Languages */
 .icon16-language-en { background-image:url(../images/language/en_16.png);}
 .icon16-language-fr { background-image:url(../images/language/fr_16.png);}

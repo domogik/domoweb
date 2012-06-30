@@ -78,8 +78,13 @@ def logout(request):
     @param request: HTTP request
     @return an HttpResponse object
     """
+    next = request.GET.get('next', '')
+
     request.session.clear()
-    return HttpResponseRedirect('/')
+    if next != '':
+        return HttpResponseRedirect(next)
+    else:
+        return HttpResponseRedirect('/')
 
 
 def _auth(request, next):
@@ -98,7 +103,7 @@ def _auth(request, next):
         if next != '':
             return HttpResponseRedirect(next)
         else:
-            return HttpResponseRedirect('/view/')
+            return HttpResponseRedirect('/')
 
     except RinorError:
         # User not found, ask again to log in
