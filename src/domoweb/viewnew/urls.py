@@ -22,36 +22,22 @@ along with Domogik. If not, see U{http://www.gnu.org/licenses}.
 Module purpose
 ==============
 
+
+
 Implements
 ==========
 
 
-@author: Cédric Trévisan <cedric@domogik.org>
-@copyright: (C) 2007-2011 Domogik project
+@author: Domogik project
+@copyright: (C) 2007-2009 Domogik project
 @license: GPL(v3)
 @organization: Domogik
 """
 
 from django.conf.urls.defaults import *
-from django.conf import settings
 
-js_info_dict = {
-    'packages': ('domoweb',),
-}
 
-urlpatterns = patterns('',
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
-)
-
-urlpatterns += patterns('domoweb.views',
-    url(r'^$', 'index', name="index_view"),
-    url(r'^config/welcome$', 'config_welcome', name="config_welcome_view"),
-    url(r'^config/configserver$', 'config_configserver', name="config_configserver_view"),
-    url(r'^config/testserver$', 'config_testserver', name="config_testserve_view"),
-)
-urlpatterns += patterns('',
-    (r'^view/', include('domoweb.view.urls')),
-    (r'^viewnew/', include('domoweb.viewnew.urls')),
-    (r'^admin/', include('domoweb.admin.urls')),
-    (r'^rinor/', include('domoweb.rinor.urls')),
+urlpatterns = patterns('domoweb.viewnew.views',
+    url(r'^$', 'page', name="page_view"),
+    url(r'^(?P<id>\d+)$', 'page', name="page_view"),
 )

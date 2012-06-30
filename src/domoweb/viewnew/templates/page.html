@@ -1,0 +1,45 @@
+{% extends "layouts/base_viewnew.html" %}
+{% comment %}
+# Copyright 2012 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Cédric Trévisan <cedric@domogik.org>
+{% endcomment %}
+
+{% load i18n %}
+{% load text %}
+
+{% block js_script %}
+    var device_types = {{ device_types|safe }};
+    var device_usages = {{ device_usages|safe }};
+{% endblock %}
+
+{% block css %}
+        <link href="/design/view/css/view-page.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block js_include %}
+{% endblock %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+    <header role='banner'>
+        <h1>{{ page_title }}</h1>
+    </header>
+    <div role='main'></div>
+    <nav role="navigation"></nav>
+{% endblock %}
