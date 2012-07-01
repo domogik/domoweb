@@ -53,7 +53,7 @@ def page(request, id=1):
     """
 
     page = PagePipe().get_pk(id)
-    
+    page_path = PagePipe().get_path(id)
     page_title = page.name
 
     widgets_list = Widget.objects.all()
@@ -68,5 +68,6 @@ def page(request, id=1):
         widgets=widgets_list,
         device_types=typeDict,
         device_usages=usageDict,
-        page=page
+        page=page,
+        page_path=page_path
     )

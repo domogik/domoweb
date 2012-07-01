@@ -115,6 +115,7 @@ class PagePipe(RinorPipe):
     add_path = "/base/page/add"
     update_path = "/base/page/update"
     delete_path = "/base/page/del"
+    path_path = "/base/page/path"
     index = 'page'
     paths = []
 
@@ -167,6 +168,13 @@ class PagePipe(RinorPipe):
                         _current_path.append(obj) # Level up
         return top_node
 
+    def get_path(self, id):
+        url = "%s/%s" % (self.path_path, id)
+        data = self._get_data(url)
+        if data.status == "ERROR":
+            raise RinorError(data.code, data.description)
+        return data[self.index]
+    
 class RoomPipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/room/list"

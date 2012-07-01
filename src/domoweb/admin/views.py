@@ -208,7 +208,7 @@ def admin_organization_areas(request):
         areas_list=areas
     )
 
-#@admin_required
+@admin_required
 def admin_organization_pages(request):
     """
     Method called when the admin pages organization page is accessed
