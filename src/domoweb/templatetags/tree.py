@@ -33,64 +33,27 @@ from django.utils.translation import ugettext as _
 
 register = template.Library()
 
-@register.filter
-def cache_tree_children(queryset):
-    """
-    Takes a list/queryset of model objects in MPTT left (depth-first) order,
-    and caches the children on each node so that no further queries are needed.
-    This makes it possible to have a recursively included template without worrying
-    about database queries.
-
-    Returns a list of top-level nodes.
-    """
-
-    current_path = []
-    top_nodes = []
-    if queryset:
-        root_level = None
-        for obj in queryset:
-            node_level = obj.left
-            if root_level is None:
-                root_level = node_level
-            if node_level < root_level:
-                raise ValueError(_("cache_tree_children was passed nodes in the wrong order!"))
-            obj._cached_children = []
-
-            while len(current_path) > node_level - root_level:
-                current_path.pop(-1)
-
-            if node_level == root_level:
-                top_nodes.append(obj)
-            else:
-                current_path[-1]._cached_children.append(obj)
-            current_path.append(obj)
-    return top_nodes
-
 class RecurseTreeNode(template.Node):
-    def __init__(self, template_nodes, queryset_var):
+    def __init__(self, template_nodes, tree_var):
         self.template_nodes = template_nodes
-        self.queryset_var = queryset_var
+        self.tree_var = tree_var
 
     def _render_node(self, context, node):
         bits = []
-        node.is_leaf_node = False
         context.push()
-        for child in node._cached_children:
-            context['node'] = child
-            bits.append(self._render_node(context, child))
-        if len(bits) == 0:
-            node.is_leaf_node = True
+        if not node.is_leaf:
+            for child in node.childrens:
+                context['node'] = child
+                bits.append(self._render_node(context, child))
+            context['children'] = mark_safe(u''.join(bits))
         context['node'] = node
-        context['children'] = mark_safe(u''.join(bits))
         rendered = self.template_nodes.render(context)
         context.pop()
         return rendered
 
     def render(self, context):
-        queryset = self.queryset_var.resolve(context)
-        roots = cache_tree_children(queryset)
-        bits = [self._render_node(context, node) for node in roots]
-        return ''.join(bits)
+        tree = self.tree_var.resolve(context)
+        return self._render_node(context, tree)
 
 
 @register.tag
@@ -118,9 +81,9 @@ def recursetree(parser, token):
     if len(bits) != 2:
         raise template.TemplateSyntaxError(_('%s tag requires a queryset') % bits[0])
 
-    queryset_var = template.Variable(bits[1])
+    tree_var = template.Variable(bits[1])
 
     template_nodes = parser.parse(('endrecursetree',))
     parser.delete_first_token()
 
-    return RecurseTreeNode(template_nodes, queryset_var)
+    return RecurseTreeNode(template_nodes, tree_var)

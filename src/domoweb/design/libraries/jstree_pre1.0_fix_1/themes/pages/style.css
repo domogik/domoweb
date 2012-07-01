@@ -1,0 +1,79 @@
+/*
+ * jsTree default theme 1.0
+ * Supported features: dots/no-dots, icons/no-icons, focused, loading
+ * Supported plugins: ui (hovered, clicked), checkbox, contextmenu, search
+ */
+
+.jstree-pages a {
+    display: inline-block;
+    padding: 0.2em;
+    border:1px solid transparent;
+}
+.jstree-pages li, 
+.jstree-pages ins { background-image:url("d.png"); background-repeat:no-repeat; background-color:transparent; }
+.jstree-pages li { background-position:-90px 0; background-repeat:repeat-y; }
+.jstree-pages li.jstree-last { background:transparent; }
+.jstree-pages .jstree-open > ins { background-position:-72px 0; }
+.jstree-pages .jstree-closed > ins { background-position:-54px 0; }
+.jstree-pages .jstree-leaf > ins { background-position:-36px 0; }
+
+.jstree-pages .jstree-hovered { background:#e7f4f9; border:1px solid #d8f0fa;}
+.jstree-pages .jstree-clicked { background:#beebff; border:1px solid #99defd;}
+.jstree-pages a .jstree-icon { background-position:-56px -19px; }
+.jstree-pages a.jstree-loading .jstree-icon { background:url("throbber.gif") center center no-repeat !important; }
+
+.jstree-pages.jstree-focused { background:#ffffee; }
+
+.jstree-pages .jstree-no-dots li, 
+.jstree-pages .jstree-no-dots .jstree-leaf > ins { background:transparent; }
+.jstree-pages .jstree-no-dots .jstree-open > ins { background-position:-18px 0; }
+.jstree-pages .jstree-no-dots .jstree-closed > ins { background-position:0 0; }
+
+.jstree-pages .jstree-no-icons a .jstree-icon { display:none; }
+
+.jstree-pages .jstree-search { font-style:italic; }
+
+.jstree-pages .jstree-no-icons .jstree-checkbox { display:inline-block; }
+.jstree-pages .jstree-no-checkboxes .jstree-checkbox { display:none !important; }
+.jstree-pages .jstree-checked > a > .jstree-checkbox { background-position:-38px -19px; }
+.jstree-pages .jstree-unchecked > a > .jstree-checkbox { background-position:-2px -19px; }
+.jstree-pages .jstree-undetermined > a > .jstree-checkbox { background-position:-20px -19px; }
+.jstree-pages .jstree-checked > a > .jstree-checkbox:hover { background-position:-38px -37px; }
+.jstree-pages .jstree-unchecked > a > .jstree-checkbox:hover { background-position:-2px -37px; }
+.jstree-pages .jstree-undetermined > a > .jstree-checkbox:hover { background-position:-20px -37px; }
+
+#vakata-dragged.jstree-pages ins { background:transparent !important; }
+#vakata-dragged.jstree-pages .jstree-ok { background:url("d.png") -2px -53px no-repeat !important; }
+#vakata-dragged.jstree-pages .jstree-invalid { background:url("d.png") -18px -53px no-repeat !important; }
+#jstree-marker.jstree-pages { background:url("d.png") -41px -57px no-repeat !important; text-indent:-100px; }
+
+.jstree-pages a.jstree-search { color:aqua; }
+.jstree-pages .jstree-locked a { color:silver; cursor:default; }
+
+#vakata-contextmenu.jstree-pages-context, 
+#vakata-contextmenu.jstree-pages-context li ul { background:#f0f0f0; border:1px solid #979797; -moz-box-shadow: 1px 1px 2px #999; -webkit-box-shadow: 1px 1px 2px #999; box-shadow: 1px 1px 2px #999; }
+#vakata-contextmenu.jstree-pages-context li { }
+#vakata-contextmenu.jstree-pages-context a { color:black; }
+#vakata-contextmenu.jstree-pages-context a:hover, 
+#vakata-contextmenu.jstree-pages-context .vakata-hover > a { padding:0 5px; background:#e8eff7; border:1px solid #aecff7; color:black; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px; }
+#vakata-contextmenu.jstree-pages-context li.jstree-contextmenu-disabled a, 
+#vakata-contextmenu.jstree-pages-context li.jstree-contextmenu-disabled a:hover { color:silver; background:transparent; border:0; padding:1px 4px; }
+#vakata-contextmenu.jstree-pages-context li.vakata-separator { background:white; border-top:1px solid #e0e0e0; margin:0; }
+#vakata-contextmenu.jstree-pages-context li ul { margin-left:-4px; }
+
+/* IE6 BEGIN */
+.jstree-pages li, 
+.jstree-pages ins,
+#vakata-dragged.jstree-pages .jstree-invalid, 
+#vakata-dragged.jstree-pages .jstree-ok, 
+#jstree-marker.jstree-pages { _background-image:url("d.gif"); }
+.jstree-pages .jstree-open ins { _background-position:-72px 0; }
+.jstree-pages .jstree-closed ins { _background-position:-54px 0; }
+.jstree-pages .jstree-leaf ins { _background-position:-36px 0; }
+.jstree-pages a ins.jstree-icon { _background-position:-56px -19px; }
+#vakata-contextmenu.jstree-pages-context ins { _display:none; }
+#vakata-contextmenu.jstree-pages-context li { _zoom:1; }
+.jstree-pages .jstree-undetermined a .jstree-checkbox { _background-position:-20px -19px; }
+.jstree-pages .jstree-checked a .jstree-checkbox { _background-position:-38px -19px; }
+.jstree-pages .jstree-unchecked a .jstree-checkbox { _background-position:-2px -19px; }
+/* IE6 END */

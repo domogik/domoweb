@@ -99,3 +99,11 @@ ul.customize_list li a {
     -webkit-border-radius: 0 0.8em 0.8em 0;
     border-radius: 0 0.8em 0.8em 0;
 }
+
+#mmenu {
+    margin: 1em;
+}
+#pages {
+    padding: 1em;
+    margin: 1em;
+}

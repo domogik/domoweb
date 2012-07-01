@@ -146,6 +146,27 @@ class PagePipe(RinorPipe):
         else:
             return None
 
+    def get_tree(self):
+        data = self.get_list()
+        _current_path = []
+        top_node = None
+        
+        if data:
+            for obj in data:
+                obj.childrens = []
+                # If right = left + 1 then it is a leaf
+                obj.is_leaf = ((obj.left + 1) == obj.right)
+                if top_node == None:
+                    top_node = obj
+                    _current_path.append(obj)
+                else:
+                    while (obj.left > _current_path[-1].right): # Level down
+                        _current_path.pop()
+                    _current_path[-1].childrens.append(obj)
+                    if not obj.is_leaf:
+                        _current_path.append(obj) # Level up
+        return top_node
+
 class RoomPipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/room/list"

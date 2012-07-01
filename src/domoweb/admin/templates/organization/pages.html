@@ -36,6 +36,11 @@
         // Accordion}
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:0});
         $("#pages").jstree({
+            "themes" : {
+                "theme" : "pages",
+	            "dots" : false,
+	            "icons" : true
+	        },
             "core" : { "initially_open" : [ "page_1" ] },
             "ui" : {
                 // this makes the node with ID node_4 selected onload
@@ -96,15 +101,15 @@
         <h2>{% trans "Pages list" %}</h2>
         {% spaceless %}
         <div id="mmenu">
-            <button id="create">Create</button>
-            <button id="rename">Rename</button>
-            <button id="remove">Remove</button>
+            <button id="create" class="button icon16-action-add">Create</button>
+            <button id="rename" class="button icon16-action-update">Rename</button>
+            <button id="remove" class="button icon16-action-del">Remove</button>
         </div>
         <div id="pages">
             <ul class="root">
             {% recursetree pages_list %}
                 <li id="page_{{ node.id }}"><a href="#">{{ node.name }}</a>
-                    {% if not node.is_leaf_node %}
+                    {% if not node.is_leaf %}
                         <ul class="children">
                             {{ children }}
                         </ul>
