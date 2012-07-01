@@ -74,9 +74,14 @@ class Server(object):
         os.environ['DOMOWEB_STATIC_DESIGN'] = STATIC_DESIGN_ROOT
 
         STATIC_WIDGETS_URL = "/widgets"
-        STATIC_WIDGETS_ROOT = os.path.join(PROJECT_PATH, "widgets")
+        STATIC_WIDGETS_ROOT = os.path.join(PROJECT_PATH, "packs/widgets")
         os.environ['DOMOWEB_STATIC_WIDGETS'] = STATIC_WIDGETS_ROOT
-        STATICS = {STATIC_DESIGN_URL:STATIC_DESIGN_ROOT, STATIC_WIDGETS_URL:STATIC_WIDGETS_ROOT}
+        
+        STATIC_THEMES_URL = "/themes"
+        STATIC_THEMES_ROOT = os.path.join(PROJECT_PATH, "packs/themes")
+        os.environ['DOMOWEB_STATIC_THEMES'] = STATIC_THEMES_ROOT
+        
+        STATICS = {STATIC_DESIGN_URL:STATIC_DESIGN_ROOT, STATIC_WIDGETS_URL:STATIC_WIDGETS_ROOT, STATIC_THEMES_URL:STATIC_THEMES_ROOT}
         
         settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
         try:
