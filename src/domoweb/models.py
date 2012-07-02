@@ -6,3 +6,9 @@ class Parameter(models.Model):
     
 class Widget(models.Model):
     id = models.CharField(max_length=50, primary_key=True)
+    
+class PageIcon(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
+    iconset_id = models.CharField(max_length=50)
+    icon_id = models.CharField(max_length=50)
+    label = models.CharField(max_length=50)

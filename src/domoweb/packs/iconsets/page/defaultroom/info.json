@@ -1,0 +1,49 @@
+{
+    "json_version": 1,
+    "identity": {
+        "type": "iconset_page",
+        "id": "defaultroom",
+        "version": 1,
+        "name": "Default",
+        "description": "",
+        "creator": "Marisa",
+        "creator_email": "info@domogik.org"
+    },
+    "icons": [
+        {
+            "id": "bathroom",
+            "label": "Bathroom",
+            "sizes": [16, 32, 64]
+        },
+        {
+            "id": "bedroom",
+            "label": "Bedroom",
+            "sizes": [16, 32, 64]
+        },
+        {
+            "id": "garage",
+            "label": "Garage",
+            "sizes": [16, 32, 64]
+        },
+        {
+            "id": "kidsroom",
+            "label": "Kidsroom",
+            "sizes": [16, 32, 64]
+        },
+        {
+            "id": "kitchen",
+            "label": "Kitchen",
+            "sizes": [16, 32, 64]
+        },
+        {
+            "id": "office",
+            "label": "Office",
+            "sizes": [16, 32, 64]
+        },
+        {
+            "id": "tvlounge",
+            "label": "TV Lounge",
+            "sizes": [16, 32, 64]
+        }
+    ]
+}

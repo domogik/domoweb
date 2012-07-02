@@ -49,7 +49,7 @@ from domoweb.utils import *
 from domoweb.rinor.pipes import *
 import pyinfo
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import Parameter
+from domoweb.models import Parameter, Widget, PageIcon
 
 
 def login(request):
@@ -439,7 +439,9 @@ def admin_core_domowebdata(request):
         page_title,
         nav1_admin = "selected",
         nav2_core_domowebdata = "selected",
-        parameter_data = Parameter.objects.all()
+        parameters = Parameter.objects.all(),
+        widgets = Widget.objects.all(),
+        pageicons = PageIcon.objects.all()
     )
     
 @admin_required

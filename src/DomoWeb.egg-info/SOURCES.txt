@@ -42,6 +42,10 @@ src/domoweb/rinor/rinorResource.py
 src/domoweb/rinor/urls.py
 src/domoweb/templatetags/__init__.py
 src/domoweb/templatetags/text.py
+src/domoweb/templatetags/tree.py
 src/domoweb/view/__init__.py
 src/domoweb/view/urls.py
 src/domoweb/view/views.py
+src/domoweb/viewnew/__init__.py
+src/domoweb/viewnew/urls.py
+src/domoweb/viewnew/views.py

@@ -1,50 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-#     * Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above
-# copyright notice, this list of conditions and the following disclaimer
-# in the documentation and/or other materials provided with the
-# distribution.
-#     * Neither the name of Sylvain Hellegouarch nor the names of his
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-
-__author__ = "Sylvain Hellegouarch"
-__version__ = "0.1.0"
-__doc__ = """
-Module to host a Django application from within a CherryPy server.
-
-Instead of creating a clone to `runserver` like other similar
-packages do, we simply setup and host the Django application
-using WSGI and CherryPy's capabilities to serve it.
-
-In order to configure the application, we use the `settings.configure(...)`
-function provided by Django.
-
-Finally, since the CherryPy WSGI server doesn't offer a log
-facility, we add a straightforward WSGI middleware to do so, based
-on the CherryPy built-in logger. Obviously any other log middleware
-can be used instead.
-"""
-
 import sys
 import logging
 import os, os.path
@@ -80,8 +33,12 @@ class Server(object):
         STATIC_THEMES_URL = "/themes"
         STATIC_THEMES_ROOT = os.path.join(PROJECT_PATH, "packs/themes")
         os.environ['DOMOWEB_STATIC_THEMES'] = STATIC_THEMES_ROOT
+
+        STATIC_ICONSETS_URL = "/iconsets"
+        STATIC_ICONSETS_ROOT = os.path.join(PROJECT_PATH, "packs/iconsets")
+        os.environ['DOMOWEB_STATIC_ICONSETS'] = STATIC_ICONSETS_ROOT
         
-        STATICS = {STATIC_DESIGN_URL:STATIC_DESIGN_ROOT, STATIC_WIDGETS_URL:STATIC_WIDGETS_ROOT, STATIC_THEMES_URL:STATIC_THEMES_ROOT}
+        STATICS = {STATIC_DESIGN_URL:STATIC_DESIGN_ROOT, STATIC_WIDGETS_URL:STATIC_WIDGETS_ROOT, STATIC_THEMES_URL:STATIC_THEMES_ROOT, STATIC_ICONSETS_URL:STATIC_ICONSETS_ROOT}
         
         settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
         try:

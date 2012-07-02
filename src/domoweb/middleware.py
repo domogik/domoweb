@@ -7,9 +7,10 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.utils import translation
 from httplib import BadStatusLine
-from domoweb.models import Parameter, Widget
+from domoweb.models import Parameter, Widget, PageIcon
 from domoweb.rinor.pipes import InfoPipe
 import os
+import simplejson
 
 class RinorMiddleware(object):
 
@@ -101,13 +102,32 @@ class RinorMiddleware(object):
 
 class LaunchMiddleware:
     def __init__(self):
-        # List the availables widgets
+        # List available widgets
         Widget.objects.all().delete()
         STATIC_WIDGETS_ROOT = os.environ['DOMOWEB_STATIC_WIDGETS']
         if os.path.isdir(STATIC_WIDGETS_ROOT):
             for file in os.listdir(STATIC_WIDGETS_ROOT):
-                main = os.path.join(STATIC_WIDGETS_ROOT, file, "main.js")
-                if os.path.isfile(main):
-                    w = Widget(id=file)
-                    w.save();
+                if not file.startswith('.'): # not hidden file
+                    main = os.path.join(STATIC_WIDGETS_ROOT, file, "main.js")
+                    if os.path.isfile(main):
+                        w = Widget(id=file)
+                        w.save()
+
+        # List available page iconsets
+        PageIcon.objects.all().delete()
+        STATIC_ICONSETS_ROOT = os.environ['DOMOWEB_STATIC_ICONSETS']
+        STATIC_ICONSETS_PAGE = os.path.join(STATIC_ICONSETS_ROOT, "page")
+        if os.path.isdir(STATIC_ICONSETS_PAGE):
+            for file in os.listdir(STATIC_ICONSETS_PAGE):
+                if not file.startswith('.'): # not hidden file
+                    info = os.path.join(STATIC_ICONSETS_PAGE, file, "info.json")
+                    if os.path.isfile(main):
+                        iconset_file = open(info, "r")
+                        iconset_json = simplejson.load(iconset_file)
+                        iconset_id = iconset_json["identity"]["id"]
+                        for icon in iconset_json["icons"]:
+                            id = iconset_id + '.' + icon["id"]
+                            i = PageIcon(id=id, iconset_id=iconset_id, icon_id=icon["id"], label=icon["label"])
+                            i.save()
+
         raise MiddlewareNotUsed

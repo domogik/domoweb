@@ -43,23 +43,63 @@
 {% endblock %}
 
 {% block right %}
-  <section class="subsection">
+    <section class="subsection">
         <h2>Parameter table</h2>
-      <table class="info">
-    <thead>
-      <tr>
-          <th class="h" scope='col'>{% trans "Key" %}</th>
-          <th class="h" scope='col'>{% trans "Value" %}</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for parameter in parameter_data %}
-        <tr>
-          <td class='e'>{{ parameter.key }}</td>
-          <td class="code v">{{ parameter.value }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-  </table>
+        <table class="info">
+            <thead>
+                <tr>
+                    <th class="h" scope='col'>{% trans "Key" %}</th>
+                    <th class="h" scope='col'>{% trans "Value" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for parameter in parameters %}
+                <tr>
+                    <td class='e'>{{ parameter.key }}</td>
+                    <td class="code v">{{ parameter.value }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    <section class="subsection">
+        <h2>Widget table</h2>
+        <table class="info">
+            <thead>
+                <tr>
+                    <th class="h" scope='col'>{% trans "ID" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for widget in widgets %}
+                <tr>
+                    <td class='e'>{{ widget.id }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+  </section>
+    <section class="subsection">
+        <h2>PageIcon table</h2>
+        <table class="info">
+            <thead>
+                <tr>
+                    <th class="h" scope='col'>{% trans "ID" %}</th>
+                    <th class="h" scope='col'>{% trans "iconset_id" %}</th>
+                    <th class="h" scope='col'>{% trans "icon_id" %}</th>
+                    <th class="h" scope='col'>{% trans "Label" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for icon in pageicons %}
+                <tr>
+                    <td class='e'>{{ icon.id }}</td>
+                    <td class='e'>{{ icon.iconset_id }}</td>
+                    <td class='e'>{{ icon.icon_id }}</td>
+                    <td class='e'>{{ icon.label }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
   </section>
 {% endblock %}

@@ -70,7 +70,9 @@ d_files.extend(list_all_files('src/domoweb/templates/', '/usr/share/domoweb/temp
 d_files.extend(list_all_files('src/domoweb/admin/templates/', '/usr/share/domoweb/admin/templates/')),
 d_files.extend(list_all_files('src/domoweb/view/templates/', '/usr/share/domoweb/view/templates/')),
 d_files.extend(list_all_files('src/domoweb/design/', '/usr/share/domoweb/design/')),
-d_files.extend(list_all_files('src/domoweb/widgets/', '/usr/share/domoweb/widgets/')),
+d_files.extend(list_all_files('src/domoweb/packs/widgets/', '/usr/share/domoweb/widgets/')),
+d_files.extend(list_all_files('src/domoweb/packs/themes/', '/usr/share/domoweb/themes/')),
+d_files.extend(list_all_files('src/domoweb/packs/iconsets/', '/usr/share/domoweb/iconsets/')),
 d_files.extend(list_all_files('src/domoweb/locale/', '/usr/share/domoweb/locale/')),
 
 setup(
