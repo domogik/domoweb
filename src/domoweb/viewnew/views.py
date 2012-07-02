@@ -38,9 +38,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.shortcuts import redirect
 from django.template import RequestContext
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
-from django.conf import settings
+from django.utils.translation import ugettext as _
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.models import Widget
@@ -70,4 +68,36 @@ def page(request, id=1):
         device_usages=usageDict,
         page=page,
         page_path=page_path
+    )
+
+def page_configuration(request, id=1):
+    """
+    Method called when a ui page configuration is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+
+    page = PagePipe().get_pk(id)
+    page_title = "%s %s" % (page.name, _("Configuration"))
+
+    return go_to_page(
+        request, 'configuration.html',
+        page_title,
+        page=page,
+    )
+    
+def page_elements(request, id=1):
+    """
+    Method called when a ui page widgets is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+
+    page = PagePipe().get_pk(id)
+    page_title = "%s %s" % (page.name, _("Widgets"))
+
+    return go_to_page(
+        request, 'elements.html',
+        page_title,
+        page=page,
     )

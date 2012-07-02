@@ -40,4 +40,6 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('domoweb.viewnew.views',
     url(r'^$', 'page', name="page_view"),
     url(r'^(?P<id>\d+)$', 'page', name="page_view"),
+    url(r'^configuration/(?P<id>\d+)$', 'page_configuration', name="page_configuration_view"),
+    url(r'^elements/(?P<id>\d+)$', 'page_elements', name="page_elements_view"),
 )

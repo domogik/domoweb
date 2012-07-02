@@ -1,0 +1,48 @@
+{% extends "layouts/base_viewnew.html" %}
+{% comment %}
+# Copyright 2012 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Cédric Trévisan <cedric@domogik.org>
+{% endcomment %}
+
+{% load i18n %}
+{% load text %}
+
+{% block js_script %}
+{% endblock %}
+
+{% block css %}
+       <link href="/design/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
+       <link href="/design/viewnew/css/elements-page.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block js_include %}
+{% endblock %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+    <header role='banner'>
+        <h1>{{ page_title }}</h1>
+        <nav role="navigation">
+            <ul id="mainmenu">
+                <li><a role="button" class="button_round icon32-menu-lock-white" href="{% url logout_view %}?next={{ request.path }}" title="{% trans "Disconnect" %} {{ request.session.user.first_name }}"><span class="offscreen">{% trans "Log out" %} {{ request.session.user.first_name }}</span></a></li>
+            </ul>
+        </nav>
+    </header>
+    <div role='main'></div>
+{% endblock %}
