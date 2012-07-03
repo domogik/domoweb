@@ -124,6 +124,8 @@ class PagePipe(RinorPipe):
         params = ['id', id, 'name', bundle["name"]]
         if 'description' in bundle:
             params.extend(['description', bundle["description"]])
+        if 'icon' in bundle:
+            params.extend(['icon', bundle["icon"]])
         _data = self._put_data(self.update_path, params)
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
@@ -133,6 +135,8 @@ class PagePipe(RinorPipe):
         params = ['name', bundle["name"], 'parent', bundle["parent"]]
         if 'description' in bundle:
             params.extend(['description', bundle["description"]])
+        if 'icon' in bundle:
+            params.extend(['icon', bundle["icon"]])
         _data = self._post_data(self.add_path, params)
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)

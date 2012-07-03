@@ -26,8 +26,8 @@
 {% endblock %}
 
 {% block css %}
-       <link href="/design/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
-       <link href="/design/viewnew/css/configuration-page.css" rel="stylesheet" type="text/css" />
+    <link href="/design/viewnew/css/ui-buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/design/viewnew/css/configuration-page.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block js_include %}
@@ -44,5 +44,23 @@
             </ul>
         </nav>
     </header>
-    <div role='main'></div>
+    <div role='main'>
+        <h2>Update configuration</h2>
+    <form action="{% url page_configuration_view page.id %}" id="pageForm" method="post">{% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+        <div class='row'>
+            {{ field.errors }}
+            <label for="{{ field.auto_id }}" class="{% if field.field.required %} required{% endif %}">
+               {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+            </label>
+            {{ field }}
+        </div>
+    {% endfor %}   
+        <ul>
+            <li><a href="{% url page_view page.id %}" class="buttontext">Cancel</a></li>
+            <li><input type="submit" value="Save" class="buttontext" /></li>
+        </ul>
+    </form>
+    </div>
 {% endblock %}

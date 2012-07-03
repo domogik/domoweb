@@ -51,6 +51,7 @@
 {% block body %}
     <header role='banner'>
         <h1>{{ page_title }}</h1>
+        <div class="description">{{ page.description }}</div>
         <nav role="navigation">
             <ul id="mainmenu">
             {% if not is_user_connected %}

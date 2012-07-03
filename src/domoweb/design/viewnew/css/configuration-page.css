@@ -1,3 +1,67 @@
 header {
-    background-color: #cb955b;
+    background-color: #3b8fcb;
+    color: #000000;
+}
+
+html, body {
+    color: #fff;
+    background: url(../images/form_bgnd.png)
+}
+
+li {
+    display: inline-block;
+}
+ul {
+    text-align: right;
+}
+form, fieldset, input {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+form {            
+    font-family: Helvetica, Arial, sans-serif; font-size: 1em;
+    width: 25em;
+    margin: 2em auto 0 auto;
+}
+
+input[type="text"], textarea {
+    -webkit-border-radius: 0.8em;
+    -moz-border-radius: 0.8em;
+    border-radius: 0.8em;
+    border:none;
+    font-size: 1.2em;
+    width: 90%;
+    padding: 7px 8px 7px 32px;
+    
+    background-color: #ddd;
+    background-position 0% 0%;
+    background-repeat: no-repeat;
+
+    color:#333;
+    text-shadow:0px 1px 0px #FFF;
+    -moz-box-shadow: 0px 1px 0px #777;
+    -webkit-box-shadow: 0px 1px 0px #777;
+    box-shadow: 0px 1px 0px #777;
+    margin-bottom: 0.5em;
+}
+
+input[type="text"]:focus, textarea:focus {
+    background-color: #ffffff;
+}
+
+h2 {
+    color: #fff;
+    text-shadow: 0px -1px 0px #000;
+    text-align: center;
+    padding: 18px;
+    margin: 0px;
+    font-weight: normal;
+    font-size: 24px;
+    font-family: Lucida Grande, Helvetica, Arial, sans-serif;
+    border-bottom: solid #0c0c0c 1px;
+    -moz-box-shadow: 0px 1px 0px #3a3a3a;
+    -webkit-box-shadow: 0px 1px 0px #3a3a3a;
+    box-shadow: 0px 1px 0px #3a3a3a;
 }
