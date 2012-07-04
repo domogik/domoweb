@@ -107,12 +107,6 @@
         {% if plugin.id == "cron" %}
             <li><a href="#tabs-4">{% trans "Special" %}</a></li>
         {% endif %}
-        {% if plugin.id == "scene" %}
-            <li><a href="#tabs-4">{% trans "Creator" %}</a></li>
-        {% endif %}
-        {% if plugin.id == "scene" %}
-            <li><a href="#tabs-5">{% trans "Manage" %}</a></li>
-        {% endif %}
         {% if plugin.id == "telldus" %}
             <li><a href="#tabs-5">{% trans "Helper" %}</a></li>
         {% endif %}
@@ -143,16 +137,6 @@
     {% if plugin.id == "cron" %}
         <div id="tabs-4">
             {% include "plugins/cron/special.html" %}
-        </div>
-    {% endif %}
-    {% if plugin.id == "scene" %}
-        <div id="tabs-4">
-            {% include "plugins/scene/creator_scene.html" %}
-        </div>
-    {% endif %}
-    {% if plugin.id == "scene" %}
-        <div id="tabs-5">
-            {% include "plugins/scene/manage_scene.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "telldus" %}
