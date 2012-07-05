@@ -38,9 +38,12 @@
 {% endblock %}
 
 {% block css %}
-       <link href="/design/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
-       <link href="/design/viewnew/css/view-page.css" rel="stylesheet" type="text/css" />
-       <link href="/themes/flowers/view-page.css" rel="stylesheet" type="text/css" />
+    <link href="/design/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
+    <link href="/design/viewnew/css/view-page.css" rel="stylesheet" type="text/css" />
+    <link href="/themes/flowers/view-page.css" rel="stylesheet" type="text/css" />
+    {% for iconset in iconsets %}
+    <link href="/iconsets/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
+    {% endfor %}
 {% endblock %}
 
 {% block js_include %}
@@ -50,7 +53,7 @@
 
 {% block body %}
     <header role='banner'>
-        <h1>{{ page_title }}</h1>
+        <h1 class="icon64-{{ page.icon }}">{{ page_title }}</h1>
         <div class="description">{{ page.description }}</div>
         <nav role="navigation">
             <ul id="mainmenu">

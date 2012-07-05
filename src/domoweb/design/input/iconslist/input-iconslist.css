@@ -1,0 +1,70 @@
+.iconslist {
+    height: 25em;
+    overflow: auto;
+    display: block;
+}
+
+.iconslist li {
+    display: inline-block;
+    background-color: #EFEFEF;
+    margin: 0.2em;
+    padding: 0;
+    -webkit-border-radius: 0.4em;
+    -moz-border-radius: 0.4em;
+    border-radius: 0.4em;
+    width: 8em;
+    height: 10em;
+    color: #000000;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.iconslist input {
+    display: none;
+}
+
+.iconslist .icon {
+    margin: 0;
+    padding: 70px 0.2em 0.2em 0.2em;
+    display:block;
+    text-align: center;
+    background-position: 50% 5px;
+    background-repeat: no-repeat;
+    border-bottom: 1px solid #F7F7F7;
+    white-space:nowrap;
+    text-overflow:ellipsis;  
+    overflow:hidden;
+    display: block;
+}
+
+.iconslist .checkbox-select {
+    margin: 0.8em auto 0 auto;
+    width: 5em;
+    display: block;
+    border: none;
+    background-color: #A0DC4F;
+    padding: 0.3em;
+    -webkit-border-radius: 0.4em;
+    -moz-border-radius: 0.4em;
+    border-radius: 0.4em;
+    font-size: 1.1em;
+    color: #F7F7F7;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+}
+
+.iconslist li[aria-checked="true"] {
+    background-color: #A0DC4F;
+    background-position: 0% 100%;
+    background-repeat: no-repeat;
+    background-image: url(checkbox.png)
+}
+
+.iconslist li[aria-checked="true"] .checkbox-select {
+    display: none;
+}
+
+.iconslist li[aria-checked="true"] .icon {
+    border-bottom: 1px solid #BDE784;
+}

@@ -1,7 +1,7 @@
 @charset "UTF-8";
 /* CSS Document */
 
-.icon64-defaultarea-default { background-image:url(home_64.png);}
+.icon64-defaultarea-home { background-image:url(home_64.png);}
 .icon64-defaultarea-area { background-image:url(area_64.png);}
 .icon64-defaultarea-attic { background-image:url(attic_64.png);}
 .icon64-defaultarea-basement { background-image:url(basement_64.png);}
@@ -15,7 +15,7 @@
 .icon64-defaultarea-groundfloor2 { background-image:url(groundfloor2_64.png);}
 .icon64-defaultarea-garage { background-image:url(garage_64.png);}
 
-.icon32-defaultarea-default { background-image:url(home_32.png);}
+.icon32-defaultarea-home { background-image:url(home_32.png);}
 .icon32-defaultarea-area { background-image:url(area_32.png);}
 .icon32-defaultarea-attic { background-image:url(attic_32.png);}
 .icon32-defaultarea-basement { background-image:url(basement_32.png);}
@@ -29,7 +29,7 @@
 .icon32-defaultarea-groundfloor2 { background-image:url(groundfloor2_32.png);}
 .icon32-defaultarea-garage { background-image:url(garage_32.png);}
 
-.icon16-defaultarea-default { background-image:url(home_16.png);}
+.icon16-defaultarea-home { background-image:url(home_16.png);}
 .icon16-defaultarea-area { background-image:url(area_16.png);}
 .icon16-defaultarea-attic { background-image:url(attic_16.png);}
 .icon16-defaultarea-basement { background-image:url(basement_16.png);}

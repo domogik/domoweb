@@ -68,6 +68,13 @@ header {
     min-height: 5em;
 }
 
+header h1 {
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+    margin: 0;
+    padding: 0.5em 0.5em 0.5em 70px;
+}
+
 header ul#mainmenu {
     margin-top:-0.5em;
     float: right;    

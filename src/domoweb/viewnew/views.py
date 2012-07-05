@@ -35,24 +35,26 @@ Implements
 """
 from django.utils.http import urlquote
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.shortcuts import redirect
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
 from django import forms
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.models import Widget
-
+from domoweb.models import Widget, PageIcon
+from domoweb import fields
+    
 # Page configuration form
 class PageForm(forms.Form):
     name = forms.CharField(max_length=50, label=_("Page name"), widget=forms.TextInput(attrs={'class':'icon32-form-tag'}), required=True)
     description = forms.CharField(label=_("Page description"), widget=forms.Textarea(attrs={'class':'icon32-form-edit'}), required=False)
-    icon = forms.CharField(max_length=50, label=_("Page icon"), required=False)
+    icon = fields.IconChoiceField(label=_("Choose the icon"), required=False, empty_label="No icon", queryset=PageIcon.objects.all())
     
     def clean(self):
-        return self.cleaned_data
-
+        cd = self.cleaned_data
+        cd['icon'] = cd['icon'].id
+        return cd
+    
 def page(request, id=1):
     """
     Method called when a ui page is accessed
@@ -63,6 +65,8 @@ def page(request, id=1):
     page = PagePipe().get_pk(id)
     page_path = PagePipe().get_path(id)
     page_title = page.name
+
+    iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
 
     widgets_list = Widget.objects.all()
 
@@ -76,7 +80,8 @@ def page(request, id=1):
         device_types=typeDict,
         device_usages=usageDict,
         page=page,
-        page_path=page_path
+        page_path=page_path,
+        iconsets=iconsets
     )
 
 @admin_required
@@ -90,6 +95,8 @@ def page_configuration(request, id):
     page = PagePipe().get_pk(id)
     page_title = "%s %s" % (page.name, _("Configuration"))
 
+    iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
+    
     if request.method == 'POST': # If the form has been submitted...
         form = PageForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
@@ -100,12 +107,15 @@ def page_configuration(request, id):
             return redirect('page_view', id=id) # Redirect after POST
     else:
         form = PageForm(initial={'name': page.name, 'description': page.description, 'icon': page.icon})
-        
+    
+    print form.media
+    
     return go_to_page(
         request, 'configuration.html',
         page_title,
         page=page,
-        form=form
+        form=form,
+        iconsets=iconsets
     )
 
 @admin_required

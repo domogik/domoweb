@@ -125,9 +125,10 @@ class LaunchMiddleware:
                         iconset_file = open(info, "r")
                         iconset_json = simplejson.load(iconset_file)
                         iconset_id = iconset_json["identity"]["id"]
+                        iconset_name = iconset_json["identity"]["name"]
                         for icon in iconset_json["icons"]:
-                            id = iconset_id + '.' + icon["id"]
-                            i = PageIcon(id=id, iconset_id=iconset_id, icon_id=icon["id"], label=icon["label"])
+                            id = iconset_id + '-' + icon["id"]
+                            i = PageIcon(id=id, iconset_id=iconset_id, iconset_name=iconset_name, icon_id=icon["id"], label=icon["label"])
                             i.save()
 
         raise MiddlewareNotUsed

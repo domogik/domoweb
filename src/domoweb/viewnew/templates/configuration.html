@@ -23,21 +23,30 @@
 {% load text %}
 
 {% block js_script %}
+    
+    $(document).ready(function() {
+        var group = new radioGroup('iconslist');
+    }); // end ready
+
 {% endblock %}
 
 {% block css %}
     <link href="/design/viewnew/css/ui-buttons.css" rel="stylesheet" type="text/css" />
     <link href="/design/viewnew/css/configuration-page.css" rel="stylesheet" type="text/css" />
+    {% for iconset in iconsets %}
+    <link href="/iconsets/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
+    {% endfor %}
 {% endblock %}
 
 {% block js_include %}
+    {{ form.media }}
 {% endblock %}
 
 {% block title %}{{ page_title }}{% endblock %}
 
 {% block body %}
     <header role='banner'>
-        <h1>{{ page_title }}</h1>
+        <h1 class="icon64-{{ page.icon }}">{{ page_title }}</h1>
         <nav role="navigation">
             <ul id="mainmenu">
                 <li><a role="button" class="button_round icon32-menu-lock-white" href="{% url logout_view %}?next={{ request.path }}" title="{% trans "Disconnect" %} {{ request.session.user.first_name }}"><span class="offscreen">{% trans "Log out" %} {{ request.session.user.first_name }}</span></a></li>
@@ -45,22 +54,37 @@
         </nav>
     </header>
     <div role='main'>
-        <h2>Update configuration</h2>
-    <form action="{% url page_configuration_view page.id %}" id="pageForm" method="post">{% csrf_token %}
-    {{ form.non_field_errors }}
-    {% for field in form %}
-        <div class='row'>
-            {{ field.errors }}
-            <label for="{{ field.auto_id }}" class="{% if field.field.required %} required{% endif %}">
-               {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
-            </label>
-            {{ field }}
-        </div>
-    {% endfor %}   
-        <ul>
-            <li><a href="{% url page_view page.id %}" class="buttontext">Cancel</a></li>
-            <li><input type="submit" value="Save" class="buttontext" /></li>
-        </ul>
-    </form>
+        <form action="{% url page_configuration_view page.id %}" id="pageForm" method="post">{% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="columnleft">
+                <div class='row'>
+                    {{ form.name.errors }}
+                    <label for="{{ form.name.auto_id }}" class="{% if form.name.field.required %} required{% endif %}">
+                       {{ form.name.label }} {% if form.name.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                    </label>
+                    {{ form.name }}
+                </div>
+                <div class='row'>
+                    {{ form.description.errors }}
+                    <label for="{{ form.description.auto_id }}" class="{% if form.description.field.required %} required{% endif %}">
+                       {{ form.description.label }} {% if form.description.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                    </label>
+                    {{ form.description }}
+                </div>
+            </div>
+            <div class="columnright">
+                <div class='row'>
+                    {{ form.icon.errors }}
+                    <p id="iconslist_label" class="{% if form.icon.field.required %} required{% endif %}">
+                       {{ form.icon.label }} {% if form.icon.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                    </p>
+                    {{ form.icon }}
+                </div>
+            </div>
+            <ul class="buttons">
+                <li><a href="{% url page_view page.id %}" class="buttontext">Cancel</a></li>
+                <li><input type="submit" value="Save" class="buttontext" /></li>
+            </ul>
+        </form>
     </div>
 {% endblock %}

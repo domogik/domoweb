@@ -1,18 +1,17 @@
 header {
-    background-color: #3b8fcb;
-    color: #000000;
+    background-color: #ffffff;
+    border-bottom: 1px solid #EFEFEF;
 }
 
 html, body {
-    color: #fff;
     background: url(../images/form_bgnd.png)
 }
 
 li {
     display: inline-block;
 }
-ul {
-    text-align: right;
+ul.buttons {
+    text-align: left;
 }
 form, fieldset, input {
     margin: 0;
@@ -20,10 +19,22 @@ form, fieldset, input {
     border: none;
 }
 
+.columnleft, .columnright {
+    padding: 1em;
+}
+
+.columnleft {
+    float: left;
+    max-width: 30em;
+}
+
+.columnright {
+    margin-left: 30em;
+}
+
 form {            
-    font-family: Helvetica, Arial, sans-serif; font-size: 1em;
-    width: 25em;
-    margin: 2em auto 0 auto;
+    font-family: "Lucida Grande","Lucida","Arial",Sans-serif;
+    font-size: 1em;
 }
 
 input[type="text"], textarea {
@@ -35,24 +46,20 @@ input[type="text"], textarea {
     width: 90%;
     padding: 7px 8px 7px 32px;
     
-    background-color: #ddd;
-    background-position 0% 0%;
+    background-color: #EFEFEF;
+    background-position: 2px 2px;
     background-repeat: no-repeat;
 
     color:#333;
     text-shadow:0px 1px 0px #FFF;
-    -moz-box-shadow: 0px 1px 0px #777;
-    -webkit-box-shadow: 0px 1px 0px #777;
-    box-shadow: 0px 1px 0px #777;
     margin-bottom: 0.5em;
 }
 
 input[type="text"]:focus, textarea:focus {
-    background-color: #ffffff;
+    background-color: #A0DC4F;
 }
 
 h2 {
-    color: #fff;
     text-shadow: 0px -1px 0px #000;
     text-align: center;
     padding: 18px;
