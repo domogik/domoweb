@@ -23,9 +23,12 @@
 {% load text %}
 
 {% block js_script %}
-    
-    $(document).ready(function() {
+    $(function() {
         var group = new radioGroup('iconslist');
+        
+        $("a#save").click(function(){
+            $("#pageForm").submit();
+        });
     }); // end ready
 
 {% endblock %}
@@ -49,6 +52,8 @@
         <h1 class="icon64-{{ page.icon }}">{{ page_title }}</h1>
         <nav role="navigation">
             <ul id="mainmenu">
+                <li><a role="button" id ="save" class="button_round icon32-menu-save-white" href="#" title="{% trans "Save" %}"><span class="offscreen">{% trans "Save" %}</span></a></li>
+                <li><a role="button" id ="cancel" class="button_round icon32-menu-cancel-white" href="{% url page_view page.id %}" title="{% trans "Cancel" %}"><span class="offscreen">{% trans "Cancel" %}</span></a></li>
                 <li><a role="button" class="button_round icon32-menu-lock-white" href="{% url logout_view %}?next={{ request.path }}" title="{% trans "Disconnect" %} {{ request.session.user.first_name }}"><span class="offscreen">{% trans "Log out" %} {{ request.session.user.first_name }}</span></a></li>
             </ul>
         </nav>
@@ -81,10 +86,6 @@
                     {{ form.icon }}
                 </div>
             </div>
-            <ul class="buttons">
-                <li><a href="{% url page_view page.id %}" class="buttontext">Cancel</a></li>
-                <li><input type="submit" value="Save" class="buttontext" /></li>
-            </ul>
         </form>
     </div>
 {% endblock %}

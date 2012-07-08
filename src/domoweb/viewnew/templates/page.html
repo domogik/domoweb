@@ -58,7 +58,7 @@
         <nav role="navigation">
             <ul id="mainmenu">
             {% if not is_user_connected %}
-                <li><a id="loginbutton" role="button" class="button_round icon32-menu-unlock-white" href="#" title="{% trans "Identify yourself" %}"><span class="offscreen">{% trans "Log in" %}</span></a></li>
+                <li><a id="loginbutton" role="button" class="button_round icon32-menu-unlock" href="#" title="{% trans "Identify yourself" %}"><span class="offscreen">{% trans "Log in" %}</span></a></li>
             {% else %}
                 <li><a role="button" class="button_round icon32-menu-elements-white" href="{% url page_elements_view page.id %}" title="{% trans "Place elements" %}"><span class="offscreen">{% trans "Place elements" %}</span></a></li>
                 <li><a role="button" class="button_round icon32-menu-config-white" href="{% url page_configuration_view page.id %}" title="{% trans "Configure" %}"><span class="offscreen">{% trans "Configure" %}</span></a></li>
