@@ -1,12 +1,15 @@
+import simplejson
+import cherrypy
+import datetime
+
+from distutils2.version import *
+from distutils2.version import IrrationalVersionError
+
 from django.conf import settings
 from django.core.cache import cache
 from domoweb.rinor.rinorPipe import RinorPipe
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from distutils2.version import *
-from distutils2.version import IrrationalVersionError
-import simplejson
-import cherrypy
-import datetime
+from domoweb.models import WidgetInstance
 
 def select_sublist(list_of_dicts, **kwargs):
     return [d for d in list_of_dicts 
@@ -327,6 +330,16 @@ class FeaturePipe(RinorPipe):
     paths = []
     dependencies = ['device']
 
+class WidgetInstancePipe(RinorPipe):
+    cache_expiry = 3600
+    paths = []
+    
+    def get_page_list(self, id):
+        instances = WidgetInstance.objects.filter(page_id=id).order_by('order')
+        for instance in instances:
+            instance.feature = FeaturePipe().get_pk(instance.feature_id)
+        return instances
+    
 class AssociationPipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/feature_association/list"

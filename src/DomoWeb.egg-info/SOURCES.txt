@@ -18,6 +18,7 @@ src/DomoWeb.egg-info/.AppleDouble/top_level.txt
 src/domoweb/__init__.py
 src/domoweb/context_processors.py
 src/domoweb/exceptions.py
+src/domoweb/fields.py
 src/domoweb/manage.py
 src/domoweb/middleware.py
 src/domoweb/models.py

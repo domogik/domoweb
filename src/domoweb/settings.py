@@ -128,6 +128,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'tastypie',
+    'django_tables2',
     'domoweb',
     'domoweb.view',
     'domoweb.viewnew',

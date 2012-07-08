@@ -4,8 +4,10 @@
 .icon32-menu-unlock-white {background-image:url(../images/menu/unlock_white_32.png);}
 .icon16-menu-unlock-black {background-image:url(../images/menu/unlock_black_16.png);}
 .icon32-menu-lock-white {background-image:url(../images/menu/lock_white_32.png);}
+.icon32-menu-lookup-white {background-image:url(../images/menu/lookup_white_32.png);}
 .icon32-menu-config-white {background-image:url(../images/menu/config_white_32.png);}
 .icon32-menu-elements-white {background-image:url(../images/menu/elements_white_32.png);}
+.icon32-menu-save-white {background-image:url(../images/menu/save_white_32.png);}
 
 .icon36-action-close { background-image:url(../images/action/close_36.png);}
 
@@ -15,3 +17,6 @@
 .icon64-default {background-image:url(../images/unknown_64.png);}
 .icon32-default {background-image:url(../images/unknown_32.png);}
 .icon16-default {background-image:url(../images/unknown_16.png);}
+
+.ui-icon { display: inline-block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
+.icon16-action-remove { background-image:url(../images/action/delete_16.png);}

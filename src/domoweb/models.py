@@ -13,3 +13,10 @@ class PageIcon(models.Model):
     iconset_name = models.CharField(max_length=50)
     icon_id = models.CharField(max_length=50)
     label = models.CharField(max_length=50)
+
+class WidgetInstance(models.Model):
+    id = models.AutoField(primary_key=True)
+    page_id = models.IntegerField()
+    order = models.IntegerField()
+    widget_id = models.CharField(max_length=50)
+    feature_id = models.IntegerField()

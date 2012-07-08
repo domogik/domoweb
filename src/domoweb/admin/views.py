@@ -35,7 +35,9 @@ Implements
 """
 import urllib
 import urllib2
+import pyinfo
 import mimetypes
+import django_tables2 as tables
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -47,10 +49,8 @@ from django.contrib import messages
 from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-import pyinfo
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import Parameter, Widget, PageIcon
-
+from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance
 
 def login(request):
     """
@@ -424,6 +424,22 @@ def admin_core_djangoinfo(request):
         sys_path=sys.path,
     )
 
+class WidgetTable(tables.Table):
+    class Meta:
+        model = Widget
+
+class ParameterTable(tables.Table):
+    class Meta:
+        model = Parameter
+
+class PageIconTable(tables.Table):
+    class Meta:
+        model = PageIcon
+
+class WidgetInstanceTable(tables.Table):
+    class Meta:
+        model = WidgetInstance
+
 @admin_required
 def admin_core_domowebdata(request):
     """
@@ -434,14 +450,20 @@ def admin_core_domowebdata(request):
     
     page_title = _("Domoweb Data")
     
+    widget_table = WidgetTable(Widget.objects.all())
+    parameter_table = ParameterTable(Parameter.objects.all())
+    pageicon_table = PageIconTable(PageIcon.objects.all())
+    widgetinstance_table = WidgetInstanceTable(WidgetInstance.objects.all())
+    
     return go_to_page(
         request, 'core/domowebdata.html',
         page_title,
         nav1_admin = "selected",
         nav2_core_domowebdata = "selected",
-        parameters = Parameter.objects.all(),
-        widgets = Widget.objects.all(),
-        pageicons = PageIcon.objects.all()
+        parameter_table = parameter_table,
+        widget_table = widget_table,
+        pageicon_table = pageicon_table,
+        widgetinstance_table = widgetinstance_table,
     )
     
 @admin_required

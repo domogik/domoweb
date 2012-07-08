@@ -41,7 +41,7 @@ from django.utils.translation import ugettext as _
 from django import forms
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.models import Widget, PageIcon
+from domoweb.models import Widget, PageIcon, WidgetInstance
 from domoweb import fields
     
 # Page configuration form
@@ -107,9 +107,7 @@ def page_configuration(request, id):
             return redirect('page_view', id=id) # Redirect after POST
     else:
         form = PageForm(initial={'name': page.name, 'description': page.description, 'icon': page.icon})
-    
-    print form.media
-    
+
     return go_to_page(
         request, 'configuration.html',
         page_title,
@@ -129,8 +127,27 @@ def page_elements(request, id):
     page = PagePipe().get_pk(id)
     page_title = "%s %s" % (page.name, _("Widgets"))
 
+    iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
+
+    if request.method == 'POST': # If the form has been submitted...
+        widgetinstances = WidgetInstance.objects.filter(page_id=id).delete()
+        features = request.POST["features"].split(',')
+        widgets = request.POST["widgets"].split(',')
+        for i, feature in enumerate(features):
+            w = WidgetInstance(order=i, page_id=id, feature_id=feature, widget_id=widgets[i])
+            w.save()
+        return redirect('page_view', id=id) # Redirect after POST
+
+    devices = DeviceExtendedPipe().get_list()
+    widgets = Widget.objects.all()
+    widgetinstances = WidgetInstancePipe().get_page_list(id)
+    
     return go_to_page(
         request, 'elements.html',
         page_title,
         page=page,
+        iconsets=iconsets,
+        devices=devices,
+        widgets=widgets,
+        widgetinstances=widgetinstances,
     )

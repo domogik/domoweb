@@ -1,3 +1,33 @@
 header {
-    background-color: #3b8fcb;
+    background-color: #ffffff;
+    border-bottom: 1px solid #EFEFEF;
 }
+
+html, body {
+    background: url(../images/form_bgnd.png)
+}
+
+#widgetsmatrix {
+    margin: 2em;
+    min-height: 40em;
+    text-align: center;
+}
+
+#widgetsmatrix .shape {
+    display:inline-block;
+    margin:1em;
+}
+
+.deletable button {
+    position:absolute;
+    top:-8px;
+    right:-8px;
+    width:16px;
+    height:16px;
+    background-color:transparent;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    border:none;
+    cursor: pointer;
+}
+

@@ -85,6 +85,7 @@ setup(
     install_requires=['setuptools',
                       'django == 1.4',
                       'django-tastypie >= 0.9.11',
+                      'django-tables2',
                       'simplejson >= 1.9.2',
                       'httplib2 >= 0.6.0',
                       'Distutils2',
