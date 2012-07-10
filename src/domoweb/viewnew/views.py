@@ -68,7 +68,9 @@ def page(request, id=1):
 
     iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
 
-    widgets_list = Widget.objects.all()
+    widgets = WidgetInstance.objects.filter(page_id=id).values('widget_id').distinct()
+    print widgets
+    widgetinstances = WidgetInstancePipe().get_page_list(id)
 
     usageDict = DeviceUsagePipe().get_dict()
     typeDict = DeviceTypePipe().get_dict()
@@ -76,12 +78,13 @@ def page(request, id=1):
     return go_to_page(
         request, 'page.html',
         page_title,
-        widgets=widgets_list,
+        widgets=widgets,
         device_types=typeDict,
         device_usages=usageDict,
         page=page,
         page_path=page_path,
-        iconsets=iconsets
+        iconsets=iconsets,
+        widgetinstances=widgetinstances,
     )
 
 @admin_required

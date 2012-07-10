@@ -4,6 +4,17 @@ header .description {
     font-style: italic;
 }
 
+#widgetsmatrix {
+    margin: 2em;
+    min-height: 40em;
+    text-align: center;
+}
+
+#widgetsmatrix .widget {
+    display:inline-block;
+    margin:1em;
+}
+
 footer {
     position: absolute;
     bottom: 0;
