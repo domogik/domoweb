@@ -64,12 +64,13 @@ def page(request, id=1):
 
     page = PagePipe().get_pk(id)
     page_path = PagePipe().get_path(id)
+    page_tree = PagePipe().get_tree()
+    
     page_title = page.name
 
     iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
 
     widgets = WidgetInstance.objects.filter(page_id=id).values('widget_id').distinct()
-    print widgets
     widgetinstances = WidgetInstancePipe().get_page_list(id)
 
     usageDict = DeviceUsagePipe().get_dict()
@@ -83,6 +84,7 @@ def page(request, id=1):
         device_usages=usageDict,
         page=page,
         page_path=page_path,
+        page_tree=page_tree,
         iconsets=iconsets,
         widgetinstances=widgetinstances,
     )

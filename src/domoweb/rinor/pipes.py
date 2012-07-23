@@ -162,17 +162,31 @@ class PagePipe(RinorPipe):
         if data:
             for obj in data:
                 obj.childrens = []
+                obj.leafs = 0
                 # If right = left + 1 then it is a leaf
                 obj.is_leaf = ((obj.left + 1) == obj.right)
                 if top_node == None:
                     top_node = obj
+                    obj.level = 0
+                    obj.max_level = 0
                     _current_path.append(obj)
                 else:
                     while (obj.left > _current_path[-1].right): # Level down
-                        _current_path.pop()
+                        top = _current_path.pop()
+                        _current_path[-1].leafs = _current_path[-1].leafs + top.leafs
+                    obj.level = len(_current_path)
+                    if obj.level > top_node.max_level:
+                        # Save the number of levels in the root node
+                        top_node.max_level = obj.level
                     _current_path[-1].childrens.append(obj)
                     if not obj.is_leaf:
                         _current_path.append(obj) # Level up
+                    else:
+                        _current_path[-1].leafs = _current_path[-1].leafs + 1
+            while (len(_current_path) > 1): # Level down
+                top = _current_path.pop()
+                _current_path[-1].leafs = _current_path[-1].leafs + top.leafs
+
         return top_node
 
     def get_path(self, id):

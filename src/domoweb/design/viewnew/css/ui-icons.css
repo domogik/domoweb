@@ -14,9 +14,9 @@
 .icon32-form-tag {background-image:url(../images/form/tag_32.png);}
 .icon32-form-edit {background-image:url(../images/form/edit_32.png);}
 
-.icon64-default {background-image:url(../images/unknown_64.png);}
-.icon32-default {background-image:url(../images/unknown_32.png);}
-.icon16-default {background-image:url(../images/unknown_16.png);}
+.icon64-, .icon64-default {background-image:url(../images/unknown_64.png);}
+.icon32-, .icon32-default {background-image:url(../images/unknown_32.png);}
+.icon16-, .icon16-default {background-image:url(../images/unknown_16.png);}
 
 .ui-icon { display: inline-block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
 .icon16-action-remove { background-image:url(../images/action/delete_16.png);}

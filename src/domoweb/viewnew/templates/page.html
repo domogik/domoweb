@@ -21,8 +21,9 @@
 
 {% load i18n %}
 {% load text %}
+{% load tree %}
 
-{% block js_script %}
+{% block js_script %} 
     var device_types = {{ device_types|safe }};
     var device_usages = {{ device_usages|safe }};
 
@@ -30,8 +31,6 @@
         {% for instance in widgetinstances %}
             var parameters_usage = $.stringToJSON(device_usages["{{instance.feature.device.device_usage_id}}"].default_options);
             var parameters_type = $.stringToJSON("{{instance.feature.device_feature_model.parameters|safe}}");
-            console.log(parameters_usage);
-            console.log(parameters_type);
             var options = {
                 usage: "{{ instance.feature.device.device_usage_id }}",
                 devicename: "{{ instance.feature.device.name }}",
@@ -54,6 +53,10 @@
         $('#loginbutton').click(function() {
             $('#loginform').show();
             $('#loginform #password').focus();
+        });
+        
+        $('.menu.tree a').click(function() {
+            $('#tree').toggle();
         });
     });
 {% endblock %}
@@ -89,6 +92,7 @@
     <script type="text/javascript" src="/design/libraries/jquery.longclick-0.3.3/jquery.longclick-0.3.3.min.js"></script>
     <script type="text/javascript" src="/design/libraries/jquery.transform/jquery.transform.js"></script>
     <script type="text/javascript" src="/design/libraries/simple-inheritance/simple-inheritance.js"></script>
+    <script type="text/javascript" src="/design/libraries/kinetic-v3.10.3/kinetic-v3.10.3.js"></script>
     <script type="text/javascript" src="/design/common/js/dmg.rinor.js"></script>
     <script type="text/javascript" src="/design/common/js/dmg.processing.js"></script>
     <script type="text/javascript" src="/design/common/js/dmg.widget-core.js"></script>
@@ -144,12 +148,68 @@
     </div>
     <footer>
         <nav role="navigation">
-            <div id="tree"><a href='#'>&nbsp;<span class="offscreen">{% trans "Menu" %}</span></a></div>
             <ul id="breadcrumb">
+                <li class="menu tree"><a href='#' role="button">&nbsp;<span class="offscreen">{% trans "Menu" %}</span></a></li>
             {% for path in page_path %}
-                <li><a href='{% url page_view path.id %}' class="current">{{ path.name }}</a></li>
+                <li class="path"><a href='{% url page_view path.id %}' class="icon16-{{ path.icon }}">{{ path.name }}</a></li>
             {% endfor %}
             </ul>
         </nav>
     </footer>
+    <script>        
+      window.onload = function() {
+        {% list_levels page_tree 70 %}
+
+        var layer1 = new Kinetic.Layer();
+        {% list_levels page_tree 70 %}
+        {% for level in levels reversed %}
+            var circle{{ level.num }} = new Kinetic.Circle({
+              x: {{ level.x }},
+              y: {{ level.y }},
+              radius: {{ level.radius }},
+              fill: "rgba(255,255,255,0.4)",
+              stroke: "#dddddd",
+              strokeWidth: 1
+            });
+            layer1.add(circle{{ level.num }});
+        {% endfor %}
+        
+        var layer2 = new Kinetic.Layer();
+        {% recursemenu page_tree 70 %}
+            {% if node.level > 0 %}
+            var line{{ node.id }} = new Kinetic.Line({
+                points: [{{ node.fromx }}, {{ node.fromy }}, {{ node.x }}, {{ node.y }}],
+                stroke: "#dddddd",
+                strokeWidth: 2,
+            });
+            layer2.add(line{{ node.id }});
+            {% endif %}
+            {% if not node.is_leaf %}
+                {{ children }}
+            {% endif %}
+        {% endrecursemenu %}
+
+        var stage = new Kinetic.Stage({
+          container: "tree",
+          width: {{ page_tree.size }},
+          height: {{ page_tree.size }}
+        });
+        stage.add(layer1);
+        stage.add(layer2);
+      };
+    </script>
+    <div id="tree" style="width:{{ page_tree.size }}px; height:{{ page_tree.size }}px; margin-left: -{{ page_tree.margin }}px;">
+        <ul id="treeroot">
+        {% recursemenu page_tree 70 %}
+            <li id="page_{{ node.id }}" class="level_{{ node.level }}">
+                <a href="{% url page_view node.id %}" class="icon32-{{ node.icon }}" style="-moz-transform: translate({{ node.x }}px,{{ node.y }}px);-webkit-transform: translate({{ node.x }}px,{{ node.y }}px);transform: translate({{ node.x }}px,{{ node.y }}px)"><span class="pagename">{{ node.name }}</span></a>
+                {% if not node.is_leaf %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+                {% endif %}
+            </li>
+        {% endrecursemenu %}
+        </ul>
+    </div>
 {% endblock %}

@@ -6,7 +6,6 @@ header .description {
 
 #widgetsmatrix {
     margin: 2em;
-    min-height: 40em;
     text-align: center;
 }
 
@@ -22,46 +21,50 @@ footer {
 
 /* Breadcrumb */
 
-#breadcrumb{
+#breadcrumb {
   overflow: hidden;
   padding-left: 0.7em;
   display: inline-block;
 }
 
-#breadcrumb li{
+#breadcrumb .tree {
+  margin: 0 1.5em 0 0;
+  float: left;
+}
+#breadcrumb .path {
   margin: 0 2em 0 0;
   float: left;
 }
 
-#breadcrumb a{
-  padding: .7em 1em .7em 1em;
+#breadcrumb .path a {
+  padding: .7em 1em .7em 25px;
   float: left;
   text-decoration: none;
   color: #444;
-  background: #ddd;  
+  background-position: 7px 50%;
+  background-repeat: no-repeat;
+  background-color: #ddd;  
   position: relative;
   z-index: 1;
   text-shadow: 0 1px 0 rgba(255,255,255,.5);
 }
 
-#breadcrumb a::before {
+#breadcrumb .path a::before {
   content:'';
   position:absolute;
   top: 0;
   bottom: 0;
   width: 1em;
   background: #ddd;
-  -moz-transform: skew(-10deg);  
-  -webkit-transform: skew(-10deg);  
-  transform: skew(-10deg);  
-}
-
-#breadcrumb a::before{
+  -moz-transform: skewX(-10deg);  
+  -webkit-transform: skewX(-10deg);  
+  transform: skewX(-10deg);  
   left: -.5em;
   border-radius: 5px 0 0 5px;
+  z-index: -1;
 }
 
-#breadcrumb a::after{
+#breadcrumb .path a::after {
   background: #ddd;
   content: "";
   height: 2.5em;
@@ -77,22 +80,7 @@ footer {
   border-radius: .4em;
 }
 
-#breadcrumb a:hover,
-#breadcrumb a:hover::after,
-#breadcrumb a:hover::before,
-#breadcrumb a:focus,
-#breadcrumb a:focus::after,
-#breadcrumb a:focus::before {
-  background: #BDCB2F;
-}
-
-/* Tree menu */
-#tree {
-  margin: 0 0.5em 0 0.5em;
-  float: left;
-}
-
-#tree a{
+#breadcrumb .menu a {
   background: #ddd;
   padding: .7em 1em;
   float: left;
@@ -105,34 +93,83 @@ footer {
   background-position: center center;
   background-repeat: no-repeat;
   border-radius: 5px 0 0 5px;
+  -webkit-border-radius: 5px 0 0 5px;
+  -moz-border-radius: 5px 0 0 5px;
 }
 
-#tree a::after{
+#breadcrumb .menu a::after {
   content:'';
   position:absolute;
   top: 0;
   bottom: 0;
   width: 1em;
   background: #ddd;
-  -moz-transform: skew(-10deg);  
-  -webkit-transform: skew(-10deg);  
-  transform: skew(-10deg);  
-}
-
-#tree a::after{
+  -moz-transform: skewX(-10deg);  
+  -webkit-transform: skewX(-10deg);  
+  transform: skewX(-10deg);  
   right: -.5em;   
   border-radius: 0 5px 5px 0;
+  -webkit-border-radius: 0 5px 5px 0;
+  -moz-border-radius: 0 5px 5px 0;
 }
 
-#tree a:hover,
-#tree a:hover::after,
-#tree a:focus,
-#tree a:focus::after {
+#treeroot a:hover,
+#treeroot a:focus,
+#breadcrumb a:hover,
+#breadcrumb a:hover::after,
+#breadcrumb a:hover::before,
+#breadcrumb a:focus,
+#breadcrumb a:focus::after,
+#breadcrumb a:focus::before {
   background-color: #BDCB2F;
 }
 
-/* Login form */
+#treeroot a:active,
+#breadcrumb a:active,
+#breadcrumb a:active::after,
+#breadcrumb a:active::before {
+    background-color: #4a9ecb;
+}
 
+#tree {
+    position: absolute;
+    top:2em;
+    left: 50%;
+    z-index: 9;
+    display: none;
+}
+
+#treeroot a {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9;
+    white-space: nowrap;
+    display: inline-block;
+    width:4em;
+    height:4em;
+    margin: -2em 0 0 -2em;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-color: #ddd;
+    
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    text-align: center;
+}
+
+#treeroot a .pagename {
+    color: #000000;
+    text-decoration: none;
+    display: none;
+}
+
+#treeroot a:hover .pagename {
+    display: inline-block;
+}
+
+/* Login form */
 form#loginform {
     position: absolute;
     right: 0;
@@ -155,8 +192,8 @@ form#loginform {
 }
 
 form#loginform input[type=password] {
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
     border-radius: 5px;
     border: 1px solid #eeeeee;
     padding: 0.2em;
