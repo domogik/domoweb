@@ -1,4 +1,4 @@
-{% extends "layouts/base_viewnew.html" %}
+{% extends "layouts/base_view.html" %}
 {% comment %}
 # Copyright 2012 Domogik project
 
@@ -28,7 +28,7 @@
     <script type="text/javascript" src="/design/common/js/dmg.dragdrop.js"></script>
     <script type="text/javascript" src="/design/common/js/dmg.widget-core.js"></script>
     <script type="text/javascript" src="/design/common/js/dmg.widget-utils.js"></script>
-    <script type="text/javascript" src="/design/viewnew/js/elements-page.js"></script>
+    <script type="text/javascript" src="/design/view/js/elements-page.js"></script>
 
     {% for widget in widgets %}
     <script type="text/javascript" src="/widgets/{{ widget.id }}/main.js"></script>	
@@ -74,7 +74,7 @@
 
 {% block css %}
     <link href="/design/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
-    <link href="/design/viewnew/css/elements-page.css" rel="stylesheet" type="text/css" />
+    <link href="/design/view/css/elements-page.css" rel="stylesheet" type="text/css" />
     <link href="/design/view/css/page-show-edit.css" rel="stylesheet" type="text/css" />
     <link href="/design/common/css/dmg.widget-core.css" rel="stylesheet" type="text/css" />    
     <link href="/design/common/css/dmg.widget-utils.css" rel="stylesheet" type="text/css" />    

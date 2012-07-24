@@ -131,7 +131,6 @@ INSTALLED_APPS = (
     'django_tables2',
     'domoweb',
     'domoweb.view',
-    'domoweb.viewnew',
     'domoweb.admin',
     'domoweb.rinor',
 )
@@ -162,7 +161,6 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     '%s/templates/' % PROJECT_PATH,
     '%s/view/templates/' % PROJECT_PATH,
-    '%s/viewnew/templates/' % PROJECT_PATH,
     '%s/admin/templates/' % PROJECT_PATH,
     '%s/rinor/templates/' % PROJECT_PATH,
 )

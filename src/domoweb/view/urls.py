@@ -38,11 +38,8 @@ from django.conf.urls.defaults import *
 
 
 urlpatterns = patterns('domoweb.view.views',
-    url(r'^$', 'house', name="view_index_view"),
-    url(r'house/$', 'house', name="view_house_view"),
-    url(r'house/edit/(?P<from_page>\w+)/$', 'house_edit', name="edit_house_view"),
-    url(r'area/(?P<area_id>\d+)/$', 'area', name='view_area_view'),
-    url(r'area/edit/(?P<area_id>\d+)/(?P<from_page>\w+)/$', 'area_edit', name='edit_area_view'),
-    url(r'room/(?P<room_id>\d+)/$', 'room', name='view_room_view'),
-    url(r'room/edit/(?P<room_id>\d+)/(?P<from_page>\w+)/$', 'room_edit', name='edit_room_view')
+    url(r'^$', 'page', name="page_view"),
+    url(r'^(?P<id>\d+)$', 'page', name="page_view"),
+    url(r'^configuration/(?P<id>\d+)$', 'page_configuration', name="page_configuration_view"),
+    url(r'^elements/(?P<id>\d+)$', 'page_elements', name="page_elements_view"),
 )

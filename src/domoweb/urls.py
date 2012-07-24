@@ -44,14 +44,13 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('domoweb.views',
-    url(r'^$', 'index', name="index_view"),
     url(r'^config/welcome$', 'config_welcome', name="config_welcome_view"),
     url(r'^config/configserver$', 'config_configserver', name="config_configserver_view"),
     url(r'^config/testserver$', 'config_testserver', name="config_testserve_view"),
 )
 urlpatterns += patterns('',
+    url(r'^$', 'domoweb.view.views.page', name="index_view"),
     (r'^view/', include('domoweb.view.urls')),
-    (r'^viewnew/', include('domoweb.viewnew.urls')),
     (r'^admin/', include('domoweb.admin.urls')),
     (r'^rinor/', include('domoweb.rinor.urls')),
 )

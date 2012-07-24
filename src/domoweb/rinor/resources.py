@@ -43,43 +43,6 @@ from tastypie import fields
 from tastypie.http import *
 from tastypie.utils import trailing_slash
 
-class AssociationResource(RinorResource):
-    # fields must map to the attributes in the Row class
-    id = fields.IntegerField(attribute = 'id')
-    place_id = fields.IntegerField(attribute = 'place_id')
-    place_type = fields.CharField(attribute = 'place_type')
-    place = fields.CharField(attribute = 'place')
-    widget = fields.CharField(attribute = 'widget')
-    device_feature_id = fields.IntegerField(attribute = 'device_feature_id')
-    feature = fields.DictField(attribute = 'feature')
-
-    class Meta:
-        resource_name = 'association'
-        list_allowed_methods = ['get', 'post']
-        detail_allowed_methods = ['delete']
-        authentication = Authentication()
-        authorization = Authorization()
-        rinor_pipe = AssociationExtendedPipe()
-
-    def base_urls(self):
-        return [
-            url(r"^(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/(?P<type>(house))%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), {'deep': False, 'pk': None}, name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/(?P<type>(house))/deep%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), {'deep': True, 'pk': None}, name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/(?P<type>(area|room))/(?P<pk>\d*)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), {'deep': False}, name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/(?P<type>(area|room))/deep/(?P<pk>\d*)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), {'deep': True}, name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/(?P<pk>\d*)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
-        ]
-
-    def obj_get_list(self, request, **kwargs):
-        return self._meta.rinor_pipe.get_list(kwargs['type'], kwargs['pk'], kwargs['deep'])
-
-    def obj_create(self, bundle, request=None, **kwargs):
-        return self._meta.rinor_pipe.post_list(bundle["page_type"], bundle["feature_id"], bundle["page_id"], bundle["widget_id"], bundle["place_id"])
-
-    def obj_delete(self, request=None, **kwargs):
-        return self._meta.rinor_pipe.delete_detail(kwargs["pk"])
-
 class FeatureResource(RinorResource):
     # fields must map to the attributes in the Row class
     id = fields.IntegerField(attribute = 'id')
@@ -141,28 +104,6 @@ class StateResource(RinorResource):
         except ObjectDoesNotExist:
             return HttpNotFound()
         return self.create_response(request, obj)
-
-class UiConfigResource(RinorResource):
-    # fields must map to the attributes in the Row class
-    name = fields.CharField(attribute = 'name')
-    reference = fields.CharField(attribute = 'reference')
-    key = fields.CharField(attribute = 'key')
-    value = fields.CharField(attribute = 'value')
-
-    class Meta:
-        resource_name = 'uiconfig'
-        list_allowed_methods = ['get', 'post']
-        authentication = Authentication()
-        authorization = Authorization()
-        rinor_pipe = UiConfigPipe()
-
-    def base_urls(self):
-        return [
-            url(r"^(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-        ]
-
-    def obj_create(self, bundle, request=None, **kwargs):
-        return self._meta.rinor_pipe.post_list(bundle["name"], bundle["reference"], bundle["key"], bundle["value"])
 
 class PluginResource(RinorResource):
     # fields must map to the attributes in the Row class
@@ -252,56 +193,6 @@ class PluginConfigResource(RinorResource):
 
     def obj_update(self, bundle, request=None, **kwargs):
         return self._meta.rinor_pipe.set_detail(kwargs['hostname'], kwargs['id'], kwargs['key'], bundle['value'])
-
-class AreaResource(RinorResource):
-    # fields must map to the attributes in the Row class
-    id = fields.IntegerField(attribute = 'id')
-    name = fields.CharField(attribute = 'name')
-    description = fields.CharField(attribute = 'description')
-    
-    class Meta:
-        resource_name = 'area'
-        list_allowed_methods = ['get', 'post']
-        detail_allowed_methods = ['get', 'put', 'delete']
-        authentication = Authentication()
-        authorization = Authorization()
-        rinor_pipe = AreaExtendedPipe()
-
-    def obj_create(self, bundle, request=None, **kwargs):
-        return self._meta.rinor_pipe.post_list(bundle["name"], bundle["description"])
-
-    def obj_update(self, bundle, request=None, **kwargs):
-        return self._meta.rinor_pipe.put_detail(kwargs['pk'], bundle["name"], bundle["description"])
-
-    def obj_delete(self, request=None, **kwargs):
-        return self._meta.rinor_pipe.delete_detail(kwargs["pk"])
-
-class RoomResource(RinorResource):
-    # fields must map to the attributes in the Row class
-    id = fields.IntegerField(attribute = 'id')
-    name = fields.CharField(attribute = 'name')
-    description = fields.CharField(attribute = 'description')
-    area_id = fields.IntegerField(attribute = 'area_id')
-    
-    class Meta:
-        resource_name = 'room'
-        list_allowed_methods = ['get', 'post']
-        detail_allowed_methods = ['get', 'put', 'delete']
-        authentication = Authentication()
-        authorization = Authorization()
-        rinor_pipe = RoomExtendedPipe()
-
-    def obj_create(self, bundle, request=None, **kwargs):
-        return self._meta.rinor_pipe.post_list(bundle["name"], bundle["description"])
-
-    def obj_update(self, bundle, request=None, **kwargs):
-        if ('area_id' in bundle):
-            return self._meta.rinor_pipe.put_detail(kwargs['pk'], None, None, bundle["area_id"])
-        else:
-            return self._meta.rinor_pipe.put_detail(kwargs['pk'], bundle["name"], bundle["description"], None)
-
-    def obj_delete(self, request=None, **kwargs):
-        return self._meta.rinor_pipe.delete_detail(kwargs["pk"])
 
 class DeviceResource(RinorResource):
     # fields must map to the attributes in the Row class

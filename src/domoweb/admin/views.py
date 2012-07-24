@@ -158,56 +158,6 @@ def admin_organization_devices(request):
         types_list=types
     )
 
-
-@admin_required
-def admin_organization_rooms(request):
-    """
-    Method called when the admin rooms organization page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    page_title = _("Rooms organization")
-
-    id = request.GET.get('id', 0)
-    rooms = RoomExtendedPipe().get_list()
-    house_rooms = RoomExtendedPipe().get_list_noarea()
-    areas = AreaExtendedPipe().get_list()
-
-    return go_to_page(
-        request, 'organization/rooms.html',
-        page_title,
-        nav1_admin = "selected",
-        nav2_organization_rooms = "selected",
-        id=id,
-        rooms_list=rooms,
-        house_rooms=house_rooms,
-        areas_list=areas
-    )
-
-
-@admin_required
-def admin_organization_areas(request):
-    """
-    Method called when the admin areas organization page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    page_title = _("Areas organization")
-
-    id = request.GET.get('id', 0)
-    areas = AreaExtendedPipe().get_list()
-
-    return go_to_page(
-        request, 'organization/areas.html',
-        page_title,
-        nav1_admin = "selected",
-        nav2_organization_areas = "selected",
-        id=id,
-        areas_list=areas
-    )
-
 @admin_required
 def admin_organization_pages(request):
     """
@@ -229,27 +179,6 @@ def admin_organization_pages(request):
         id=id,
         pages_list=pages
     )
-
-@admin_required
-def admin_organization_house(request):
-    """
-    Method called when the admin house organization page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-    
-    page_title = _("House organization")
-
-    house_name = UiConfigPipe().get_house()
-
-    return go_to_page(
-        request, 'organization/house.html',
-        page_title,
-        nav1_admin = "selected",
-        nav2_organization_house = "selected",
-        house_name=house_name
-    )
-
 
 @admin_required
 def admin_organization_widgets(request):

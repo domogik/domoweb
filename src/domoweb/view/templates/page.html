@@ -1,4 +1,4 @@
-{% extends "layouts/base_viewnew.html" %}
+{% extends "layouts/base_view.html" %}
 {% comment %}
 # Copyright 2012 Domogik project
 
@@ -64,7 +64,7 @@
 {% block css %}
     <link href="/design/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
     <link href="/design/common/css/ui-dialog.css" rel="stylesheet" type="text/css" />
-    <link href="/design/viewnew/css/view-page.css" rel="stylesheet" type="text/css" />
+    <link href="/design/view/css/view-page.css" rel="stylesheet" type="text/css" />
     <link href="/themes/flowers/view-page.css" rel="stylesheet" type="text/css" />
     {% for iconset in iconsets %}
     <link href="/iconsets/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
@@ -105,7 +105,7 @@
     <script type="text/javascript" src="/widgets/{{ widget.widget_id }}/main.js"></script>	
     {% endfor %}
 
-    <script type="text/javascript" src="/design/viewnew/js/view-page.js"></script>
+    <script type="text/javascript" src="/design/view/js/view-page.js"></script>
     <script type="text/javascript" src="/iconsets/usage/default/icons.js"></script>
 
 {% endblock %}
