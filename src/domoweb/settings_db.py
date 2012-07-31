@@ -36,7 +36,6 @@ Implements
 
 DEBUG = True
 
-
 LIB_PATH = '/var/lib/domoweb'
 
 ### UI Database settings

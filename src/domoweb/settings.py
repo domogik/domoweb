@@ -130,6 +130,7 @@ INSTALLED_APPS = (
     'tastypie',
     'django_tables2',
     'domoweb',
+    'domoweb.config',
     'domoweb.view',
     'domoweb.admin',
     'domoweb.rinor',
@@ -160,6 +161,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     '%s/templates/' % PROJECT_PATH,
+    '%s/config/templates/' % PROJECT_PATH,
     '%s/view/templates/' % PROJECT_PATH,
     '%s/admin/templates/' % PROJECT_PATH,
     '%s/rinor/templates/' % PROJECT_PATH,

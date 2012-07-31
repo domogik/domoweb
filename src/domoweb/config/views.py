@@ -46,41 +46,12 @@ from django.utils.translation import ugettext as _
 from django.conf import settings
 from django import forms
 from django.forms.widgets import Select
-from domoweb.models import Parameter, Widget
+from domoweb.models import Parameter
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.signals import rinor_changed
 from django.utils.encoding import force_unicode
 from django.utils.html import escape, conditional_escape
-
-def index(request):
-    """
-    Method called when the main page is accessed
-    @param request : the HTTP request
-    @return an HttpResponse object
-    """
-
-    page_title = _("Domogik")
-
-    widgets_list = Widget.objects.all()
-    usageDict = DeviceUsagePipe().get_dict()
-    typeDict = DeviceTypePipe().get_dict()
-
-    areas = AreaExtendedPipe().get_list()
-    rooms = RoomExtendedPipe().get_list_noarea()
-
-    house_name = UiConfigPipe().get_house()
-
-    return go_to_page(
-        request, 'index.html',
-        page_title,
-        widgets=widgets_list,
-        device_types=typeDict,
-        device_usages=usageDict,
-        areas_list=areas,
-        rooms_list=rooms,
-        house_name=house_name
-    )
 
 ### Domogik Server configuration form
 class RINORSetupForm(forms.Form):
@@ -158,7 +129,7 @@ def config_welcome(request):
         form = LanguageForm(initial={'language': _language}) # An unbound form
 
     return go_to_page(
-        request, 'config/welcome.html',
+        request, 'welcome.html',
         page_title,
         form=form,
     )
@@ -209,7 +180,7 @@ def config_configserver(request):
         form = RINORSetupForm(initial={'ip': _ip, 'port': _port, 'prefix': _prefix}) # An unbound form
     
     return go_to_page(
-        request, 'config/configserver.html',
+        request, 'configserver.html',
         page_title,
         form=form,
     )
@@ -223,6 +194,6 @@ def config_testserver(request):
     page_title = "3. %s" % _("Testing Domogik server")
     
     return go_to_page(
-        request, 'config/testserver.html',
+        request, 'testserver.html',
         page_title,
     )

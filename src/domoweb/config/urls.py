@@ -32,23 +32,11 @@ Implements
 @organization: Domogik
 """
 
-from django.http import HttpResponse
 from django.conf.urls.defaults import *
-from django.conf import settings
 
-js_info_dict = {
-    'packages': ('domoweb',),
-}
-
-urlpatterns = patterns('',
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
-)
-
-urlpatterns += patterns('',
-    url(r'^$', 'domoweb.view.views.page', name="index_view"),
-    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
-    (r'^config/', include('domoweb.config.urls')),
-    (r'^view/', include('domoweb.view.urls')),
-    (r'^admin/', include('domoweb.admin.urls')),
-    (r'^rinor/', include('domoweb.rinor.urls')),
+urlpatterns = patterns('domoweb.config.views',
+    url(r'^$', 'config_welcome', name="config_index_view"),
+    url(r'^welcome$', 'config_welcome', name="config_welcome_view"),
+    url(r'^configserver$', 'config_configserver', name="config_configserver_view"),
+    url(r'^testserver$', 'config_testserver', name="config_testserve_view"),
 )

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-  
 
 """ This file is part of B{Domogik} project (U{http://www.domogik.org}).
 
@@ -22,33 +22,15 @@ along with Domogik. If not, see U{http://www.gnu.org/licenses}.
 Module purpose
 ==============
 
+
+
 Implements
 ==========
 
 
-@author: Cédric Trévisan <cedric@domogik.org>
-@copyright: (C) 2007-2011 Domogik project
+@author: Domogik project
+@copyright: (C) 2007-2009 Domogik project
 @license: GPL(v3)
 @organization: Domogik
 """
 
-from django.http import HttpResponse
-from django.conf.urls.defaults import *
-from django.conf import settings
-
-js_info_dict = {
-    'packages': ('domoweb',),
-}
-
-urlpatterns = patterns('',
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
-)
-
-urlpatterns += patterns('',
-    url(r'^$', 'domoweb.view.views.page', name="index_view"),
-    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
-    (r'^config/', include('domoweb.config.urls')),
-    (r'^view/', include('domoweb.view.urls')),
-    (r'^admin/', include('domoweb.admin.urls')),
-    (r'^rinor/', include('domoweb.rinor.urls')),
-)
