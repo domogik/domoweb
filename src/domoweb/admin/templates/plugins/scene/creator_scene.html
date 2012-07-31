@@ -1,34 +1,186 @@
 {% load i18n %}
 <script type='text/javascript'>
     $(function(){
+        var test1_visible
+        var value1_visible
+        var feature2_visible
+        var test2_visible
+        var value2_visible
+        var test_visible
+        var TvalueVrai
+        var TvalueFaux
+        var Tvalue1
+        var Tvalue2
 
         var tableau = new Array();
-        
+
+        $("#Creator").click(function(){ 
+             rinor_ip = "{{ request.session.rinor_ip }}";
+             rinor_port = "{{ request.session.rinor_port }}";
+             if($('select#features1').val() != 0){
+                    device1adr = tableau[$("select#features1").val()][4];
+                    device1id = tableau[$("select#features1").val()][0];
+                    device1tech = tableau[$("select#features1").val()][2];
+                    debut1 = device1tech.split(".");
+                    device1tech = debut1[0];
+                    device1key = tableau[$("select#features1").val()][1];
+                    }else{
+                    device1adr = '';
+                    device1id = '';
+                    device1tech = '';
+                    device1key = '';
+                    }
+              if(features2_visible == true && $('select#features2').val() != 0){
+                    device2adr = tableau[$("select#features2").val()][4];
+                    device2id = tableau[$("select#features2").val()][0];
+                    device2tech = tableau[$("select#features2").val()][2];
+                    debut2 = device2tech.split(".");
+                    device2tech = debut2[0];
+                    device2key = tableau[$("select#features2").val()][1];
+              }else{
+                    device2adr = '';
+                    device2id = '';
+                    device2tech = '';
+                    device2key = '';
+              }
+              if(test1_visible == true && $("select#test1").val() != 0){
+                   optest1= $("select#test1").val();
+              }else{
+                    optest1 = '';
+              }
+
+              device1val='';
+              if (Tvalue1 == 'Val'){
+                 device1val= $("#Test_value1").val();
+               }
+              if (Tvalue1 =='Select'){
+                 device1val = $("select#Test_value1").val();
+               }
+
+              device2val='';
+              if (Tvalue2 == 'Val'){
+                 device2val= $("#Test_value2").val();
+               }
+              if (Tvalue2 =='Select'){
+                 device2val=$("select#Test_value2").val();
+               }
+
+              if(test2_visible == true && $("select#test2").val() != 0){
+                   optest2= $("select#test2").val();
+              }else{
+                    optest2 = '';
+              }
+              if($("select#TestFeature").val() != 'None'){
+                   optest= $("select#TestFeature").val();
+              }else{
+                    optest = '';
+              }
+              if( $("select#sortieVrai").val() != 0){
+                   actiontrueadr = tableau[$("select#sortieVrai").val()][4];
+                   actiontruetech = tableau[$("select#sortieVrai").val()][2];
+                   debuttrue = actiontruetech.split(".");
+                   actiontruetech = debuttrue[0];
+                   test =  tableau[$("select#sortieVrai").val()][5]; 
+                   test = test.replace(/&quot;/g,"'");
+                   test = test.replace(/{/g,"");
+                   test = test.replace(/}/g,"");
+                   test = test.replace(/:/g,",");
+                   test = test.replace(/'/g,"");
+                   test = test.split(',');
+                   actiontruecmd = test[1];
+              }else{
+                   actiontrueadr = '';
+                   actiontruetech = '';
+                   actiontruecmd = '';
+              }
+              if( $("select#sortieFaux").val() != 0){
+                   actionfalseadr = tableau[$("select#sortieFaux").val()][4];
+                   actionfalsetech = tableau[$("select#sortieFaux").val()][2];
+                   debutfalse = actionfalsetech.split(".");
+                   actionfalsetech = debutfalse[0];
+                   test = tableau[$("select#sortieFaux").val()][5]; 
+                   test = test.replace(/&quot;/g,"'");
+                   test = test.replace(/{/g,"");
+                   test = test.replace(/}/g,"");
+                   test = test.replace(/:/g,",");
+                   test = test.replace(/'/g,"");
+                   test = test.split(',');
+                   actionfalsecmd = test[1]
+
+              }else{
+                   actionfalseadr = '';
+                   actionfalsetech = '';
+                   actionfalsecmd = '';
+              }
+              actionfalseval = ''
+              actiontrueval = ''
+              if( TvalueFaux == 'Val'){
+                  actionfalseval = $("#valueFaux").val();
+              }
+              if (TvalueFaux == 'Select'){
+                  actionfalseval = $("select#valueFaux").val();;
+              }
+              if( TvalueVrai == 'Val'){
+                  actiontrueval = $("#valueVrai").val();
+              }
+              if (TvalueVrai == 'Select'){
+                  actiontrueval = $("select#valueVrai").val();;
+              }
+
+
+                    value="{'device1adr':"+device1adr+",'device1id':"+device1id+",'device1tech':"+device1tech+",'device1key':"+device1key+",'device2adr':"+device2adr+",'device2id':"+device2id+",'device2tech':"+device2tech+",'device2key':"+device2key+",'device1op':"+optest1+",'device2op':"+optest2+",'device1val':"+device1val+",'device2val':"+device2val+",'opglobal':"+optest+",'actiontruetech':"+actiontruetech+",'actionfalsetech':"+actionfalsetech+",'actiontrueadr':"+actiontrueadr+",'actionfalseadr':"+actionfalseadr+",'actiontruecmd':"+actiontruecmd+",'actionfalsecmd':"+actionfalsecmd+",'actiontrueval':"+actiontrueval+",'actionfalseval':"+actionfalseval+",'rinorip':"+rinor_ip+",'rinorport':"+rinor_port+"}"        
+
+                 rinor.put(['api', 'command', 'scene', '0'], {"command":"Create", 'value':value})
+                    .done(function(data, status, xhr){
+                         test=JSON.stringify(data);
+                         debut=test.search('data=');
+                         test=test.slice(debut+4);
+                         fin=test.search('}');
+                         test=test.slice(1,fin-2);
+                         if (test.search('Error')>=0){
+                            $.notification('error', test);
+                         }else{
+                         $.notification('info',test );
+                         }
+                    })
+                    .fail(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
+                    });
+                  
+               });
+
         $("select#features1").change(function(){
           var test = $(this).val();
           var test2 = $("select#TestFeature").val();
-          if ((tableau[test][4]=="binary"||tableau[test][4]=="list") && (test2!="And" && test2!="Or" && test2!="None")){
+          if ((tableau[test][3]=="binary"||tableau[test][3]=="list") && (test2!="And" && test2!="Or" && test2!="None")){
              $("select#TestFeature option").remove();
              $("select#TestFeature").append("<option value='None'>----</option>");
              $("select#features2").hide();
+             features2_visible = false
              $("select#test2").hide();
+             test2_visible = false
              $("#value2").hide();
+             value2_visible = false
              test2 = $("select#TestFeature").val();
           }
           if (test != "" && (test2=="And" || test2=="Or"|| test2=="None")){
              $('select#test1 option').remove();
              $('select#test1').show();
+             test1_visible = true
              $('select#test1').append("<option value='None'>-----</option>");
              $('select#test1').append("<option value='='>=</option>");
              var feature=$("select#features1").val();
-             var type=tableau[test][4];
+             var type=tableau[test][3];
              if (type=="number"|| type=="range"){
                $('select#test1').append("<option value='>'>></option>");
                $('select#test1').append("<option value='<'><</option>");
               }
           }else{
              $('select#test1').hide();
+             test1_visible = false
              $('#value1').hide();
+             value1_visible = false
           }
           $("select#test1").change();
         });    
@@ -38,16 +190,21 @@
           var test2 = $("select#TestFeature").val();
           if (test != "" && (test2=="And" || test2=="Or")){
              $('select#test2').show();
+             test2_visible= true
           }else{
+             test2_visible= false
              $('select#test2').hide();
+             test2_visible = false
              $('#value2').hide();
+             value2_visible = false
           }
           $("select#test2").change();
         });    
 
         $("select#test1").change(function(){
            var test = $("select#features1").val();
-           if (tableau[test][4]=="list"||tableau[test][4]=="binary"){
+           if (tableau[test][3]=="list"||tableau[test][3]=="binary"){
+              Tvalue1 = 'Select'
               $('select#test1').attr("disabled", true);
               $('select#test1 option[value="="]').attr("selected", "selected");
               $("#value1").html("<select id='Test_value1' style='width:20em;'></select>");
@@ -55,8 +212,8 @@
               $("select#TestFeature").append("<option value='None'>----</option>");
               $("select#TestFeature").append("<option value='And'>And</option>");
               $("select#TestFeature").append("<option value='Or'>Or</option>");
-              var valeur = tableau[test][6];
-              var test2 = tableau[test][4];
+              var valeur = tableau[test][5];
+              var test2 = tableau[test][3];
               valeur = valeur.replace(/&quot;/g,'"');
               var obj = jQuery.parseJSON(valeur);
               if (test2 == "binary"){
@@ -68,10 +225,13 @@
                  }
             }
             $("#value1").show();
+            value1_visible = true
           }else {
+             Tvalue1 = 'Val'
              $('select#test1').removeAttr("disabled");
              $("#value1").html("<input id='Test_value1' style='width:20em;'></input>");
              $("#value1").show();
+             value1_visible = true
              $("select#TestFeature option").remove();
              $("select#TestFeature").append("<option value='None'>----</option>");
              $("select#TestFeature").append("<option value='And'>And</option>");
@@ -82,19 +242,23 @@
           }
           if ($(this).val()!="None" && ($("select#TestFeature").val()=="And" ||$("select#TestFeature").val()=="Or"   ||$("select#TestFeature").val()=="None")){
              $("#value1").show();
+             value1_visible = true
+          }else{
+               $("#value1").hide();
+               value1_visible = false
           }
-          else $("#value1").hide();
         });
 
         $("select#test2").change(function(){
           var test = $("select#features2").val();
-          if ((tableau[test][4]=="list"||tableau[test][4]=="binary")&&($("select#TestFeature").val!="None")){ 
+          if ((tableau[test][3]=="list"||tableau[test][3]=="binary")&&($("select#TestFeature").val!="None")){ 
+            Tvalue2 = 'Select'
             $('select#test2').attr("disabled", true);
             $('select#test2 option[value="="]').attr("selected", "selected");
             $("#value2").html("<select id='Test_value2' style='width:20em;'></select>");
             
-            var valeur = tableau[test][6];
-            var test2 = tableau[test][4];
+            var valeur = tableau[test][5];
+            var test2 = tableau[test][3];
             valeur = valeur.replace(/&quot;/g,'"');
             var obj = jQuery.parseJSON(valeur);
             if (test2 == "binary"){
@@ -106,35 +270,46 @@
              $("select#Test_value2").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
              }}
             $("#value2").show();
+            value2_visible = true
           }
           else {
+            Tvalue2 = 'Val'
             $('select#test2').removeAttr("disabled");
             $("#value2").html("<input id='Test_value2' style='width:20em;'></input>");
             $("#value2").show();
+            value2_visible = true
           }
           
           if ($(this).val()!="None" && ($("select#TestFeature").val()=="And" ||$("select#TestFeature").val()=="Or"   ||$("select#TestFeature").val()=="None")){
              $("#value2").show();
+             value2_visible = true
+          }else{
+             $("#value2").hide();
+             value2_visible = false
           }
-          else $("#value2").hide();
         });
 
         $("select#TestFeature").change(function(){
           var test= $("select#TestFeature").val();
           if (test != "None"){
              $("select#features2").show();
+             features2_visible = true
              if (test !="And" && test != "Or"){
                 $("select#test1").hide();
+                test1_visible = false
                 $("#value1").hide();
+                value1_visible = false
                 $("select#test2").hide();
+                test2_visible = false
                 $("#value2").hide();
+                value2_visible = false
                 $("select#features2 option").remove();
                 var feature1= $("select#features1").val();
                 var taille=tableau.length;
                 feature1=parseInt(feature1);
                 for(i=1;i<tableau.length;i++){
                    var tab=tableau[i];
-                   if (tableau[i][4]=="number"||tableau[i][4]=="range"){
+                   if (tableau[i][3]=="number"||tableau[i][3]=="range"){
                       if (i!=$("select#features1").val()){
                          $("select#features2").append("<option value='"+i+"'>"+tableau[i][8]+" - "+tableau[i][7]+"</option>");
                       }                
@@ -144,26 +319,33 @@
                 $("select#features2 option").remove();
                 $("select#features2").append($("select#features1").clone().html());
                 $("select#test1").show();
+                test1_visible = true
                 $("#value1").show();
+                value1_visible = true
                 $("select#test2").show();
+                test2_visible = true
                 $("select#test2").change();
              }
              $("select#features2").change();
           }else{
              $("select#features2").hide();
+             features2_visible = false
              $("select#test2").hide();
+             test2_visible = false
              $("#value2").hide();
+             value2_visible = false
           }
         });
 
       $("select#sortieVrai").change(function(){
           var test = $("select#sortieVrai").val();
-          var valeur = tableau[test][6];
-          var test2 = tableau[test][4];    
+          var valeur = tableau[test][5];
+          var test2 = tableau[test][3];    
           valeur = valeur.replace(/&quot;/g,'"');
           var obj = jQuery.parseJSON(valeur);
  
-          if (tableau[test][4]=="list"||tableau[test][4]=="binary"){
+          if (tableau[test][3]=="list"||tableau[test][3]=="binary"){
+          TvalueVrai = 'Select'
           $("#valvrai").html("<select id='valueVrai' style='width:20em;'></select>");
           if (test2 == "binary"){
              $("select#valueVrai").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
@@ -177,6 +359,7 @@
 
           }
           if (test2=="numeric"|| test2=="range"){
+          TvalueVrai = 'Val'
           $("#valvrai").html("<input id='valueVrai' style='width:20em;'></input>");
           }
           if (test2=="trigger"){      
@@ -188,12 +371,13 @@
 
       $("select#sortieFaux").change(function(){
           var test = $("select#sortieFaux").val();
-          var valeur = tableau[test][6];
-          var test2 = tableau[test][4];    
+          var valeur = tableau[test][5];
+          var test2 = tableau[test][3];    
           valeur = valeur.replace(/&quot;/g,'"');
           var obj = jQuery.parseJSON(valeur);
  
-          if (tableau[test][4]=="list"||tableau[test][4]=="binary"){
+          if (tableau[test][3]=="list"||tableau[test][3]=="binary"){
+          TvalueFaux = 'Select' 
           $("#valfaux").html("<select id='valueFaux' style='width:20em;'></select>");
           if (test2 == "binary"){
              $("select#valueFaux").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
@@ -208,6 +392,7 @@
           }
           if (test2=="numeric"|| test2=="range"){
              $("#valfaux").html("<input id='valueFaux' style='width:20em;'></input>");
+             TvalueFaux = 'Val'
           }
           if (test2=="trigger"){      
              $("#valfaux").html("");
@@ -222,7 +407,7 @@
         rinor.get(['api', 'feature'])
             .done(function(data, status, xhr){
                 $.each(data.objects, function(index, object) {
-                    tableau[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
+                    tableau[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
                     if (object.device_feature_model.feature_type == "actuator"){
                        $('select#sortieVrai').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
                     }
@@ -240,7 +425,9 @@
                     $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
             });
           $("select#features2").hide();
+          features2_visible = false
           $("select#test2").hide();
+          test2_visible = false
           $("select#features1").change();
      });
 });

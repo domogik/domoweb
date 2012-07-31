@@ -32,6 +32,7 @@ Implements
 @organization: Domogik
 """
 
+from django.http import HttpResponse
 from django.conf.urls.defaults import *
 from django.conf import settings
 
@@ -50,6 +51,7 @@ urlpatterns += patterns('domoweb.views',
 )
 urlpatterns += patterns('',
     url(r'^$', 'domoweb.view.views.page', name="index_view"),
+    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
     (r'^view/', include('domoweb.view.urls')),
     (r'^admin/', include('domoweb.admin.urls')),
     (r'^rinor/', include('domoweb.rinor.urls')),
