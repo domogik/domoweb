@@ -181,29 +181,6 @@ def admin_organization_pages(request):
     )
 
 @admin_required
-def admin_organization_widgets(request):
-    """
-    Method called when the admin widgets organization page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    page_title = _("Widgets organization")
-
-    rooms = RoomExtendedPipe().get_list()
-    areas = AreaExtendedPipe().get_list()
-
-    return go_to_page(
-        request, 'organization/widgets.html',
-        page_title,
-        nav1_admin = "selected",
-        nav2_organization_widgets = "selected",
-        areas_list=areas,
-        rooms_list=rooms
-    )
-
-
-@admin_required
 def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     """
     Method called when the admin plugin command page is accessed
