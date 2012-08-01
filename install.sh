@@ -155,6 +155,16 @@ function copy_sample_files {
         echo "Init directory does not exist (/etc/init.d or /etc/rc.d)"
         exit 7
     fi
+    
+    # copying default packs in /var/lib/domoweb/packs
+    if [ -d $DMW_LIB/packs ];then
+        echo "Replacing packs in /var/lib/domoweb/packs"
+        rm -rf $DMW_LIB/packs
+    else
+        echo "Copying default packs in /var/lib/domoweb/packs"
+    fi
+    cp -r src/packs $DMW_LIB
+    chown $d_user:root $DMW_LIB/packs 
 }
 
 function update_default_config {

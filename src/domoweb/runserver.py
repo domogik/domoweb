@@ -17,7 +17,7 @@ from domoweb.rinor.events import *
 os.environ['DJANGO_SETTINGS_MODULE']='domoweb.settings'
 
 class Server(object):
-    def run(self, PROJECT_PATH):
+    def run(self, PROJECT_PATH, PROJECT_PACKS):
         ETC_PATH = '/etc/domoweb'
         SERVER_CONFIG = '%s/domoweb.cfg' % ETC_PATH
 
@@ -27,15 +27,15 @@ class Server(object):
         os.environ['DOMOWEB_STATIC_DESIGN'] = STATIC_DESIGN_ROOT
 
         STATIC_WIDGETS_URL = "/widgets"
-        STATIC_WIDGETS_ROOT = os.path.join(PROJECT_PATH, "packs/widgets")
+        STATIC_WIDGETS_ROOT = os.path.join(PROJECT_PACKS, "widgets")
         os.environ['DOMOWEB_STATIC_WIDGETS'] = STATIC_WIDGETS_ROOT
         
         STATIC_THEMES_URL = "/themes"
-        STATIC_THEMES_ROOT = os.path.join(PROJECT_PATH, "packs/themes")
+        STATIC_THEMES_ROOT = os.path.join(PROJECT_PACKS, "themes")
         os.environ['DOMOWEB_STATIC_THEMES'] = STATIC_THEMES_ROOT
 
         STATIC_ICONSETS_URL = "/iconsets"
-        STATIC_ICONSETS_ROOT = os.path.join(PROJECT_PATH, "packs/iconsets")
+        STATIC_ICONSETS_ROOT = os.path.join(PROJECT_PACKS, "iconsets")
         os.environ['DOMOWEB_STATIC_ICONSETS'] = STATIC_ICONSETS_ROOT
         
         STATICS = {STATIC_DESIGN_URL:STATIC_DESIGN_ROOT, STATIC_WIDGETS_URL:STATIC_WIDGETS_ROOT, STATIC_THEMES_URL:STATIC_THEMES_ROOT, STATIC_ICONSETS_URL:STATIC_ICONSETS_ROOT}
@@ -139,17 +139,21 @@ class HTTPLogger(_cplogging.LogManager):
 def rundevelop():
     PROJECT_PATH=os.path.dirname(os.path.abspath(__file__))
     os.environ['DOMOWEB_PATH']=PROJECT_PATH
+    PROJECT_PACKS=os.path.join(os.path.dirname(os.path.abspath(__file__)),os.path.pardir, 'packs')
+    os.environ['DOMOWEB_PACKS']=PROJECT_PACKS
     os.environ['DOMOWEB_REV']=commands.getoutput("cd %s ; hg id -n 2>/dev/null" % PROJECT_PATH)
-    Server().run(PROJECT_PATH)
+    Server().run(PROJECT_PATH, PROJECT_PACKS)
 
 def runinstall():
     PROJECT_PATH='/usr/share/domoweb'
     os.environ['DOMOWEB_PATH']=PROJECT_PATH
+    PROJECT_PACKS='/var/lib/domoweb/packs'
+    os.environ['DOMOWEB_PACKS']=PROJECT_PACKS
     fh_in = open("/var/lib/domoweb/domoweb.dat", "rb")
     data = pickle.load(fh_in)
     fh_in.close()
     os.environ['DOMOWEB_REV']=data['rev']
-    Server().run(PROJECT_PATH)
+    Server().run(PROJECT_PATH, PROJECT_PACKS)
     
 if __name__ == '__main__':
     rundevelop()
