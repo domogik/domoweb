@@ -189,6 +189,8 @@ fi
 
 function init_django_db {
     python ./src/domoweb/manage.py syncdb --noinput
+#    python ./src/domoweb/manage.py migrate domoweb 0001 --fake
+#   else python ./src/domoweb/manage.py migrate domoweb
     chown $d_user: $DMW_LIB/domoweb.db
 }
 
