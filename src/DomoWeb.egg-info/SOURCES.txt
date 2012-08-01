@@ -28,6 +28,8 @@ src/domoweb/admin/views.py
 src/domoweb/config/__init__.py
 src/domoweb/config/urls.py
 src/domoweb/config/views.py
+src/domoweb/migrations/0001_initial.py
+src/domoweb/migrations/__init__.py
 src/domoweb/rinor/__init__.py
 src/domoweb/rinor/events.py
 src/domoweb/rinor/pipes.py
