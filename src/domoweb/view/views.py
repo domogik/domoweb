@@ -41,14 +41,19 @@ from django.utils.translation import ugettext as _
 from django import forms
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.models import Widget, PageIcon, WidgetInstance
+from domoweb.models import Widget, PageIcon, WidgetInstance, PageTheme
 from domoweb import fields
+    
+class ThemeChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.label
     
 # Page configuration form
 class PageForm(forms.Form):
     name = forms.CharField(max_length=50, label=_("Page name"), widget=forms.TextInput(attrs={'class':'icon32-form-tag'}), required=True)
     description = forms.CharField(label=_("Page description"), widget=forms.Textarea(attrs={'class':'icon32-form-edit'}), required=False)
     icon = fields.IconChoiceField(label=_("Choose the icon"), required=False, empty_label="No icon", queryset=PageIcon.objects.all())
+    theme_id = ThemeChoiceField(label=_("Choose a theme"), required=False, empty_label="No theme", queryset=PageTheme.objects.all())
     
     def clean(self):
         cd = self.cleaned_data
@@ -106,12 +111,12 @@ def page_configuration(request, id):
         form = PageForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             cd = form.cleaned_data
-            params = {'name': cd["name"], 'description': cd["description"], 'icon': cd["icon"]}
+            params = {'name': cd["name"], 'description': cd["description"], 'icon': cd["icon"], 'theme_id': cd["theme_id"]}
             PagePipe().put_detail(id, params)
             
             return redirect('page_view', id=id) # Redirect after POST
     else:
-        form = PageForm(initial={'name': page.name, 'description': page.description, 'icon': page.icon})
+        form = PageForm(initial={'name': page.name, 'description': page.description, 'icon': page.icon, 'theme_id': page.theme_id})
 
     return go_to_page(
         request, 'configuration.html',

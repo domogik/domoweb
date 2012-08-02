@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.cache import cache
 from domoweb.rinor.rinorPipe import RinorPipe
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import WidgetInstance
+from domoweb.models import WidgetInstance, Page
 
 def select_sublist(list_of_dicts, **kwargs):
     return [d for d in list_of_dicts 
@@ -132,6 +132,16 @@ class PagePipe(RinorPipe):
         _data = self._put_data(self.update_path, params)
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
+        else:
+            # save the django params
+            try:
+                page = Page.objects.get(id=id)
+            except Page.DoesNotExist:
+                page = Page(id=id)
+            if 'theme_id' in bundle:
+                page.theme_id = bundle["theme_id"]
+            page.save()
+
         return _data[self.index][0]
 
     def post_list(self, bundle):
@@ -143,17 +153,44 @@ class PagePipe(RinorPipe):
         _data = self._post_data(self.add_path, params)
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
+        else:
+            # save the django params
+            page = Page(id=id)
+            if 'theme_id' in bundle:
+                page.theme_id = bundle["theme_id"]
+            page.save()
         return _data[self.index][0]
         
     def delete_detail(self, id):
         _data = self._delete_data(self.delete_path, [id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
+        else:
+            try:
+                page = Page.objects.get(id=id)
+            except Page.DoesNotExist:
+                pass
+            else:
+                page.delete()
         if len(_data[self.index]) > 0:
             return _data[self.index][0]
         else:
             return None
 
+    def get_list(self):
+        data = self._get_data(self.list_path)
+        if data.status == "ERROR":
+            raise RinorError(data.code, data.description)
+        pages = data[self.index]
+        for page in pages:
+            try:
+                model = Page.objects.get(id=page.id)
+            except Page.DoesNotExist:
+                page.theme_id = ''
+            else:
+                page.theme_id = model.theme_id
+        return pages
+        
     def get_tree(self):
         data = self.get_list()
         _current_path = []

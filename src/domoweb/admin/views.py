@@ -50,7 +50,7 @@ from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance
+from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, PageTheme
 
 def login(request):
     """
@@ -346,6 +346,10 @@ class WidgetInstanceTable(tables.Table):
     class Meta:
         model = WidgetInstance
 
+class PageThemeTable(tables.Table):
+    class Meta:
+        model = PageTheme
+        
 @admin_required
 def admin_core_domowebdata(request):
     """
@@ -360,6 +364,7 @@ def admin_core_domowebdata(request):
     parameter_table = ParameterTable(Parameter.objects.all())
     pageicon_table = PageIconTable(PageIcon.objects.all())
     widgetinstance_table = WidgetInstanceTable(WidgetInstance.objects.all())
+    pagetheme_table = PageThemeTable(PageTheme.objects.all())
     
     return go_to_page(
         request, 'core/domowebdata.html',
@@ -370,6 +375,7 @@ def admin_core_domowebdata(request):
         widget_table = widget_table,
         pageicon_table = pageicon_table,
         widgetinstance_table = widgetinstance_table,
+        pagetheme_table = pagetheme_table,
     )
     
 @admin_required

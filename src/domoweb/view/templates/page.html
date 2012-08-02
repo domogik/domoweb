@@ -65,7 +65,11 @@
     <link href="/design/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
     <link href="/design/common/css/ui-dialog.css" rel="stylesheet" type="text/css" />
     <link href="/design/view/css/view-page.css" rel="stylesheet" type="text/css" />
-    <link href="/themes/flowers/view-page.css" rel="stylesheet" type="text/css" />
+    
+    {% if page.theme_id %}
+    <link href="/themes/{{ page.theme_id }}/view-page.css" rel="stylesheet" type="text/css" />
+    {% endif %}
+
     {% for iconset in iconsets %}
     <link href="/iconsets/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
     {% endfor %}

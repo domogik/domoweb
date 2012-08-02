@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.utils import translation
 from httplib import BadStatusLine
-from domoweb.models import Parameter, Widget, PageIcon
+from domoweb.models import Parameter, Widget, PageIcon, PageTheme
 from domoweb.rinor.pipes import InfoPipe
 import os
 import simplejson
@@ -73,10 +73,10 @@ class RinorMiddleware(object):
                 messages.error(request, _message)
             elif (_tag == 'warning'):
                 messages.warning(request, _message)
-            elif (_tag == 'info'):
-                messages.info(request, _message)
-            elif (_tag == 'debug'):
-                messages.debug(request, _message)
+            elif (_tag == 'information'):
+                messages.information(request, _message)
+            elif (_tag == 'alert'):
+                messages.alert(request, _message)
         return
 
 #    def process_view(self, request, view_func, view_args, view_kwargs):
@@ -130,5 +130,20 @@ class LaunchMiddleware:
                             id = iconset_id + '-' + icon["id"]
                             i = PageIcon(id=id, iconset_id=iconset_id, iconset_name=iconset_name, icon_id=icon["id"], label=icon["label"])
                             i.save()
+
+        # List available page themes
+        PageTheme.objects.all().delete()
+        STATIC_THEMES_ROOT = os.environ['DOMOWEB_STATIC_THEMES']
+        if os.path.isdir(STATIC_THEMES_ROOT):
+            for file in os.listdir(STATIC_THEMES_ROOT):
+                if not file.startswith('.'): # not hidden file
+                    info = os.path.join(STATIC_THEMES_ROOT, file, "info.json")
+                    if os.path.isfile(main):
+                        theme_file = open(info, "r")
+                        theme_json = simplejson.load(theme_file)
+                        theme_id = theme_json["identity"]["id"]
+                        theme_name = theme_json["identity"]["name"]
+                        t = PageTheme(id=theme_id, label=theme_name)
+                        t.save()
 
         raise MiddlewareNotUsed

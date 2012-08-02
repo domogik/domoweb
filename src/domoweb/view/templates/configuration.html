@@ -29,6 +29,7 @@
         $("a#save").click(function(){
             $("#pageForm").submit();
         });
+        $('#id_theme_id').chosen();
     }); // end ready
 
 {% endblock %}
@@ -36,6 +37,8 @@
 {% block css %}
     <link href="/design/view/css/ui-buttons.css" rel="stylesheet" type="text/css" />
     <link href="/design/view/css/configuration-page.css" rel="stylesheet" type="text/css" />
+    <link href="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
+
     {% for iconset in iconsets %}
     <link href="/iconsets/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
     {% endfor %}
@@ -43,6 +46,7 @@
 
 {% block js_include %}
     {{ form.media }}
+    <script type="text/javascript" src="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
 {% endblock %}
 
 {% block title %}{{ page_title }}{% endblock %}
@@ -75,6 +79,13 @@
                        {{ form.description.label }} {% if form.description.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
                     </label>
                     {{ form.description }}
+                </div>
+                <div class='row'>
+                    {{ form.theme_id.errors }}
+                    <label for="{{ form.theme_id.auto_id }}" class="{% if form.theme_id.field.required %} required{% endif %}">
+                       {{ form.theme_id.label }} {% if form.theme_id.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                    </label>
+                    {{ form.theme_id }}
                 </div>
             </div>
             <div class="columnright">
