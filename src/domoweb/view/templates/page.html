@@ -119,11 +119,12 @@
         <nav role="navigation">
             <ul id="mainmenu">
             {% if not is_user_connected %}
-                <li><a id="loginbutton" role="button" class="button_round icon32-menu-unlock-white" href="#" title="{% trans "Identify yourself" %}"><span class="offscreen">{% trans "Log in" %}</span></a></li>
+                <li><a id="loginbutton" role="button" class="button_round icon24-menu-unlock" href="#" title="{% trans "Identify yourself" %}"><span class="offscreen">{% trans "Log in" %}</span></a></li>
             {% else %}
-                <li><a role="button" class="button_round icon32-menu-elements-white" href="{% url page_elements_view page.id %}" title="{% trans "Place elements" %}"><span class="offscreen">{% trans "Place elements" %}</span></a></li>
-                <li><a role="button" class="button_round icon32-menu-config-white" href="{% url page_configuration_view page.id %}" title="{% trans "Configure" %}"><span class="offscreen">{% trans "Configure" %}</span></a></li>
-                <li><a role="button" class="button_round icon32-menu-lock-white" href="{% url logout_view %}?next={{ request.path }}" title="{% trans "Disconnect" %} {{ request.session.user.first_name }}"><span class="offscreen">{% trans "Log out" %} {{ request.session.user.first_name }}</span></a></li>
+                <li><a role="button" class="button_round icon24-menu-elements" href="{% url page_elements_view page.id %}" title="{% trans "Place elements" %}"><span class="offscreen">{% trans "Place elements" %}</span></a></li>
+                <li><a role="button" class="button_round icon24-menu-config" href="{% url page_configuration_view page.id %}" title="{% trans "Configure" %}"><span class="offscreen">{% trans "Configure" %}</span></a></li>
+                <li><a role="button" class="button_round icon24-menu-admin" href="{% url admin_index_view %}" title="{% trans "Admin section" %}"><span class="offscreen">{% trans "Admin section" %}</span></a></li>
+                <li><a role="button" class="button_round icon24-menu-lock" href="{% url logout_view %}?next={{ request.path }}" title="{% trans "Disconnect" %} {{ request.session.user.first_name }}"><span class="offscreen">{% trans "Log out" %} {{ request.session.user.first_name }}</span></a></li>
             {% endif %}
             </ul>
         </nav>

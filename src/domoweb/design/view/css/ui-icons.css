@@ -1,13 +1,14 @@
 @charset "UTF-8";
 
 /* Page menu */
-.icon32-menu-unlock-white {background-image:url(../images/menu/unlock_white_32.png);}
-.icon32-menu-lock-white {background-image:url(../images/menu/lock_white_32.png);}
-.icon32-menu-lookup-white {background-image:url(../images/menu/lookup_white_32.png);}
-.icon32-menu-config-white {background-image:url(../images/menu/config_white_32.png);}
-.icon32-menu-elements-white {background-image:url(../images/menu/elements_white_32.png);}
-.icon32-menu-save-white {background-image:url(../images/menu/save_white_32.png);}
-.icon32-menu-cancel-white {background-image:url(../images/menu/cancel_white_32.png);}
+.icon24-menu-unlock {background-image:url(../images/menu/unlock_24.png);}
+.icon24-menu-lock {background-image:url(../images/menu/lock_24.png);}
+.icon24-menu-lookup {background-image:url(../images/menu/lookup_24.png);}
+.icon24-menu-config {background-image:url(../images/menu/config_24.png);}
+.icon24-menu-admin {background-image:url(../images/menu/admin_24.png);}
+.icon24-menu-elements {background-image:url(../images/menu/elements_24.png);}
+.icon32-menu-save {background-image:url(../images/menu/save_32.png);}
+.icon32-menu-cancel {background-image:url(../images/menu/cancel_32.png);}
 
 .icon36-action-close { background-image:url(../images/action/close_36.png);}
 

@@ -98,10 +98,10 @@
         <h1 class="icon64-{{ page.icon }}">{{ page_title }}</h1>
         <nav role="navigation">
             <ul id="mainmenu">
-                <li><a role="button" id ="save" class="button_round icon32-menu-save-white" href="#" title="{% trans "Save widgets" %}"><span class="offscreen">{% trans "Save widgets" %}</span></a></li>
-                <li><a role="button" id ="cancel" class="button_round icon32-menu-cancel-white" href="{% url page_view page.id %}" title="{% trans "Cancel" %}"><span class="offscreen">{% trans "Cancel" %}</span></a></li>
-                <li><a role="button" id ="showwidgets" class="button_round icon32-menu-lookup-white" href="#" title="{% trans "Show widgets dialog" %}"><span class="offscreen">{% trans "Show widgets dialog" %}</span></a></li>
-                <li><a role="button" class="button_round icon32-menu-lock-white" href="{% url logout_view %}?next={{ request.path }}" title="{% trans "Disconnect" %} {{ request.session.user.first_name }}"><span class="offscreen">{% trans "Log out" %} {{ request.session.user.first_name }}</span></a></li>
+                <li><a role="button" id ="save" class="button_round icon32-menu-save" href="#" title="{% trans "Save widgets" %}"><span class="offscreen">{% trans "Save widgets" %}</span></a></li>
+                <li><a role="button" id ="cancel" class="button_round icon32-menu-cancel" href="{% url page_view page.id %}" title="{% trans "Cancel" %}"><span class="offscreen">{% trans "Cancel" %}</span></a></li>
+                <li><a role="button" id ="showwidgets" class="button_round icon24-menu-lookup" href="#" title="{% trans "Show widgets dialog" %}"><span class="offscreen">{% trans "Show widgets dialog" %}</span></a></li>
+                <li><a role="button" class="button_round icon24-menu-lock" href="{% url logout_view %}?next={{ request.path }}" title="{% trans "Disconnect" %} {{ request.session.user.first_name }}"><span class="offscreen">{% trans "Log out" %} {{ request.session.user.first_name }}</span></a></li>
             </ul>
         </nav>
     </header>
