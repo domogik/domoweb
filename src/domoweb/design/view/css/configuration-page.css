@@ -32,6 +32,17 @@ form, fieldset, input {
     margin-left: 30em;
 }
 
+@media handheld, only screen and (max-width: 800px){
+    .columnleft {
+        float: none;
+        max-width:none;
+    }
+    
+    .columnright {
+        margin-left:0;
+    }
+}
+
 form {            
     font-family: "Lucida Grande","Lucida","Arial",Sans-serif;
     font-size: 1em;
