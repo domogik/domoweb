@@ -570,13 +570,6 @@
 .icon32-menu-config-white {background-image:url(../images/menu/config_white_32.png);}
 .icon32-menu-widgets-white {background-image:url(../images/menu/widgets_white_32.png);}
 
-/* Languages */
-.icon16-language-en { background-image:url(../images/language/en_16.png);}
-.icon16-language-fr { background-image:url(../images/language/fr_16.png);}
-.icon16-language-de { background-image:url(../images/language/de_16.png);}
-.icon16-language-it { background-image:url(../images/language/it_16.png);}
-.icon16-language-es { background-image:url(../images/language/es_16.png);}
-
 .icon16-text {
     display:inline-block;
     background-position: 0% 50%;
