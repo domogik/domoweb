@@ -12,3 +12,4 @@ Table Of Content
     /technical/i18n
     /packs/index
     /packs/iconset
+    /packs/theme

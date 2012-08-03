@@ -12,7 +12,6 @@ and will sligtly move to downloadable packages along Domoweb versions.
 Types of packs
 ==============
 
-* Iconsets of pages icons
-* Page style themes
-* Widgets
+* :doc:`Iconsets of pages icons </packs/iconset>`
+* :doc:`Page style themes </packs/theme>`
 

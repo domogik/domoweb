@@ -2,6 +2,9 @@
 IconSet pack
 ============
 
+Each iconset are specifically created for a different section of Domoweb (page, usage, etc ...)
+But one type is available so far in Domoweb 0.3: 'iconset_page'
+
 Pack structure
 ==============
 
@@ -25,64 +28,63 @@ Each icon should be named according to the info.json section::
 info.json
 ---------
 
-The info.json file declare all icons available in the set ::
-.. code-block:: none
+The info.json file declare all icons available in the set.
+
+.. code-block:: javascript
 
     {
-                json_version: 1,
-                identity: {
-                            type: 'page_iconset',
-                            id: 'iconset_test',
-                            version: 0.1,
-                            name: 'Test iconset',
-                            description: 'Description for test iconset..',
-                            creator: 'Domogik',
-                            creator_email: 'xx@xxx.fr',
-                            ...
-                },
-                images: {...},
-                icons: [
-                            {
-                                        id: 'myicon',
-                                        label: 'My Icon',
-                                        sizes: [16, 32, 64],
-                            },
-                            {...},
-                ],
+        json_version: 1,
+        identity: {
+            type: 'iconset_page',
+            id: 'myicons',
+            version: 0.1,
+            name: 'My iconset',
+            description: 'Description for iconset..',
+            creator: 'Domogik',
+            creator_email: 'xx@xxx.xx',
+            ...
+        },
+        images: {...},
+        icons: [
+            {
+                id: 'myicon',
+                label: 'My Icon',
+                sizes: [16, 32, 64],
+            },
+            {...},
+        ],
     }
 
-* version : ((Packages_info_json|see info.json page))
-* type : the type id for the widget element is 'dmg_widget'.
-* identity : ((Packages_info_json|see info.json page))
-* images : ((Packages_info_json|see info.json page))
+* version : (see Domogik info.json documentation page)
+* type : the type id for the widget element is 'iconset_page'.
+* identity : (see Domogik info.json documentation page)
+* images : (see Domogik info.json documentation page)
 * icons : list of icons
-
 
 Internal processing and data
 ============================
 
-Domoweb start
+Registration
 -------------
 
-* The 'icons/page' folder is parsed
+* When Domoweb starts the ``packs/iconsets/`` folder is parsed
 * If the json version is supported:
-    * The iconset is registered in the 'iconset_page' table
-    * If not available the CSS file is generated
+    * Each icon of the iconset is registered into the domoweb 'PageIcon' database. (Visible in Domoweb Admin > Core > Domoweb Data)
 
-.. code-block:: CSS
-
-    .iconsetid_iconid.icon64 { background-image:url(images/iconid_64.png);}
-    .iconsetid_iconid.icon32 { background-image:url(images/iconid_32.png);}
-    .iconsetid_iconid.icon16 { background-image:url(images/iconid_16.png);}
+.. todo::
+    If not available the CSS file is generated
+    .icon64-iconsetid-iconid { background-image:url(images/iconid_64.png);}
+    .icon32-iconsetid-iconid { background-image:url(images/iconid_32.png);}
+    .icon16-iconsetid-iconid { background-image:url(images/iconid_16.png);}
 
 Icon association
 ----------------
 
-iconsetid.iconid -> ui_page
+The couple ``iconsetid-iconid`` is attribued to the page item on the Domogik table ``ui_page``.
 
 Applied icon style
 ------------------
 
-.. code-block::
+To apply an icon to a HTML element, we attribute the icon css class::
 
-    class='iconset_iconid icon< size >'
+    class='icon<size>-iconsetid-iconid'

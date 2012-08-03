@@ -11,3 +11,6 @@ Technical Documentation
 Packs
 =====
 * :doc:`Before creating a pack </packs/index>`
+* Packs types :
+    * :doc:`Iconsets </packs/iconset>`
+    * :doc:`Themes </packs/theme>`
