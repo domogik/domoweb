@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/1.4/topics/i18n/translation/
 The translation process is based on gettext.
 The translations has to be implemented on three sections:
 
-*   in Python view code
-*   in Template code
+* in Python view code
+* in Template code
 * in Javascript code
 
 Python views

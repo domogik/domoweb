@@ -1,0 +1,88 @@
+============
+IconSet pack
+============
+
+Pack structure
+==============
+
+The iconset root folder name should be identical to the iconset id::
+
+    /var/lib/domoweb/packs/iconsets/page/< id >/...
+
+or in dev. mode::
+
+    ../src/packs/iconsets/page/< id >/...
+
+Naming convention
+-----------------
+
+Each icon should be named according to the info.json section::
+
+    < id >_< size >.png
+
+(ex. myicon_16.png)
+
+info.json
+---------
+
+The info.json file declare all icons available in the set ::
+.. code-block:: none
+
+    {
+                json_version: 1,
+                identity: {
+                            type: 'page_iconset',
+                            id: 'iconset_test',
+                            version: 0.1,
+                            name: 'Test iconset',
+                            description: 'Description for test iconset..',
+                            creator: 'Domogik',
+                            creator_email: 'xx@xxx.fr',
+                            ...
+                },
+                images: {...},
+                icons: [
+                            {
+                                        id: 'myicon',
+                                        label: 'My Icon',
+                                        sizes: [16, 32, 64],
+                            },
+                            {...},
+                ],
+    }
+
+* version : ((Packages_info_json|see info.json page))
+* type : the type id for the widget element is 'dmg_widget'.
+* identity : ((Packages_info_json|see info.json page))
+* images : ((Packages_info_json|see info.json page))
+* icons : list of icons
+
+
+Internal processing and data
+============================
+
+Domoweb start
+-------------
+
+* The 'icons/page' folder is parsed
+* If the json version is supported:
+    * The iconset is registered in the 'iconset_page' table
+    * If not available the CSS file is generated
+
+.. code-block:: CSS
+
+    .iconsetid_iconid.icon64 { background-image:url(images/iconid_64.png);}
+    .iconsetid_iconid.icon32 { background-image:url(images/iconid_32.png);}
+    .iconsetid_iconid.icon16 { background-image:url(images/iconid_16.png);}
+
+Icon association
+----------------
+
+iconsetid.iconid -> ui_page
+
+Applied icon style
+------------------
+
+.. code-block::
+
+    class='iconset_iconid icon< size >'

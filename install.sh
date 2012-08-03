@@ -188,6 +188,7 @@ function check_python {
 }
 
 function init_django_db {
+    python ./src/domoweb/manage.py syncdb --noinput
     ret=$(python ./src/domoweb/manage.py migrate --list)
     echo $ret
     if echo $ret|grep -qs '(*) 0001_initial'; then
@@ -195,7 +196,6 @@ function init_django_db {
         python ./src/domoweb/manage.py migrate domoweb
     else
         echo "Init migration DB"
-        python ./src/domoweb/manage.py syncdb --noinput
         python ./src/domoweb/manage.py migrate domoweb 0001 --fake
     fi
     chown $d_user: $DMW_LIB/domoweb.db
