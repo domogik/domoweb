@@ -69,8 +69,8 @@ def house(request):
         page_title,
         widgets=widgets_list,
         nav1_show = "selected",
-        device_types=typeDict,
-        device_usages=usageDict,
+        device_types=str(typeDict),
+        device_usages=str(usageDict),
         areas_list=areas,
         rooms_list=rooms,
         house_name=house_name
@@ -123,8 +123,8 @@ def area(request, area_id):
         page_title,
         widgets=widgets_list,
         nav1_show = "selected",
-        device_types=typeDict,
-        device_usages=usageDict,
+        device_types=str(typeDict),
+        device_usages=str(usageDict),
         area=area,
         house_name=house_name
     )
@@ -179,8 +179,8 @@ def room(request, room_id):
         page_title,
         widgets=widgets_list,
         nav1_show = "selected",
-        device_types=typeDict,
-        device_usages=usageDict,
+        device_types=str(typeDict),
+        device_usages=str(usageDict),
         room=room,
         house=house_name
     )
