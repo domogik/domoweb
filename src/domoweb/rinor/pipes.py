@@ -154,12 +154,13 @@ class PagePipe(RinorPipe):
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         else:
+            data = _data[self.index][0]
             # save the django params
-            page = Page(id=id)
+            page = Page(id=data.id)
             if 'theme_id' in bundle:
                 page.theme_id = bundle["theme_id"]
             page.save()
-        return _data[self.index][0]
+        return data
         
     def delete_detail(self, id):
         _data = self._delete_data(self.delete_path, [id])
