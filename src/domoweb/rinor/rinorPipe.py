@@ -150,12 +150,14 @@ def _objectify_json(i):
     if isinstance(i, dict):
         transformed_dict = JSONDict()
         for key, val in i.iteritems():
-            transformed_dict[smart_str(key)] = _objectify_json(val)
+            if type(key) == unicode:
+                key = smart_str(key)
+            transformed_dict[key] = _objectify_json(val)
         return transformed_dict
     elif isinstance(i, list):
         for idx in range(len(i)):
             i[idx] = _objectify_json(i[idx])
-    else:
+    elif type(i) == unicode:
         i = smart_str(i)
     return i
     
