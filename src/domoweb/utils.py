@@ -7,6 +7,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from domoweb.models import Parameter
 from django.shortcuts import redirect
+from django.utils.encoding import smart_str
 
 def go_to_page(request, html_page, page_title, **attribute_list):
     """
@@ -80,3 +81,19 @@ def ipFormatChk(ip_str):
       return True
    else:
       return False
+    
+def convertToStr(data):
+    if isinstance(data, dict):
+        transformed_dict = dict()
+        for key, val in data.iteritems():
+            if isinstance(key, unicode):
+                key = smart_str(key)
+            transformed_dict[key] = convertToStr(val)
+        return transformed_dict
+    elif isinstance(data, list):
+        for idx in range(len(data)):
+            data[idx] = convertToStr(data[idx])
+    if isinstance(data, unicode):
+        return smart_str(data)
+    else:
+        return data

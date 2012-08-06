@@ -44,7 +44,7 @@ from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.models import Widget
-
+    
 def house(request):
     """
     Method called when the show index page is accessed
@@ -69,8 +69,8 @@ def house(request):
         page_title,
         widgets=widgets_list,
         nav1_show = "selected",
-        device_types=typeDict,
-        device_usages=usageDict,
+        device_types=convertToStr(typeDict),
+        device_usages=convertToStr(usageDict),
         areas_list=areas,
         rooms_list=rooms,
         house_name=house_name
@@ -123,8 +123,8 @@ def area(request, area_id):
         page_title,
         widgets=widgets_list,
         nav1_show = "selected",
-        device_types=typeDict,
-        device_usages=usageDict,
+        device_types=convertToStr(typeDict),
+        device_usages=convertToStr(usageDict),
         area=area,
         house_name=house_name
     )
@@ -179,8 +179,8 @@ def room(request, room_id):
         page_title,
         widgets=widgets_list,
         nav1_show = "selected",
-        device_types=typeDict,
-        device_usages=usageDict,
+        device_types=convertToStr(typeDict),
+        device_usages=convertToStr(usageDict),
         room=room,
         house=house_name
     )

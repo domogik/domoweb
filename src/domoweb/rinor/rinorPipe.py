@@ -2,7 +2,6 @@ import urllib
 import urllib2
 from django.core.cache import cache
 from django.utils import simplejson
-from django.utils.encoding import smart_str
 from domoweb.models import Parameter
 from domoweb.exceptions import RinorNotConfigured, RinorNotAvailable, RinorError
 from httplib import BadStatusLine
@@ -150,15 +149,11 @@ def _objectify_json(i):
     if isinstance(i, dict):
         transformed_dict = JSONDict()
         for key, val in i.iteritems():
-            if type(key) == unicode:
-                key = smart_str(key)
             transformed_dict[key] = _objectify_json(val)
         return transformed_dict
     elif isinstance(i, list):
         for idx in range(len(i)):
             i[idx] = _objectify_json(i[idx])
-    elif type(i) == unicode:
-        i = smart_str(i)
     return i
     
 class JSONDict(dict):

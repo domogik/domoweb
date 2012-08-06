@@ -75,8 +75,8 @@ def index(request):
         request, 'index.html',
         page_title,
         widgets=widgets_list,
-        device_types=typeDict,
-        device_usages=usageDict,
+        device_types=convertToStr(typeDict),
+        device_usages=convertToStr(usageDict),
         areas_list=areas,
         rooms_list=rooms,
         house_name=house_name
