@@ -1,33 +1,487 @@
+{% comment %}
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Plugin purpose 
+# ==============
+# Support Z-wave technology
+# Implements user interface for domoweb
+# ==============
+# Author : Nico <nico84dev@gmail.com>
+{% endcomment %}
+
 {% load i18n %}
+<script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
 <script type='text/javascript'>
-    $(function(){
-        $("#specialsubmit").click(function(){
-            var dmg_addr = $("#dmg_addr").val();
-            if (dmg_addr) {
-               rinor.put(['api', 'command', 'ozwave', 'UI'], {"command":'Add', "value":dmg_addr})
+
+   $(function(){
+    var infoNode ={};
+    
+    // Constante d'entete de colonne de la table node_items 
+    var hdLiNode = {"NodeId":0, "Name":1, "Location":2, "Model":3, "Awake": 4, "Type":5, "Last update":6, "Action":7};
+
+    function GetDataFromxPL (data, key) {
+        dt=JSON.stringify(data);
+        debut=dt.search(key + '=');
+        offset =key.length;
+        if (key=='count') {
+            dt=dt.slice(debut);
+         //   dt= '{' +dt;
+       //     fin=dt.search('\\');
+        }else { 
+            dt=dt.slice(debut+offset+1);
+          }; 
+        fin=dt.search('}');   
+        dt=dt.slice(0,fin-2); 
+        dt=dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"');
+        if (key=='count') {
+            fin=dt.search('}');   
+            dt=dt.slice(0,fin);
+            dt='{"count":8}';
+            };
+        return JSON.parse(dt); 
+        };
+        
+    function ParseAckXPL(xpl) {
+        var tamp=xpl;
+        var li=0;
+        var i=0;
+        var inc=1;
+        var mesxPL = {};
+        mesxPL['count']=1;
+        while (li !=-1) {
+           li = tamp.search(/[\n]|\\n/);
+           inc=1;
+           if (li !=-1) {
+             ttt = tamp.slice(li,li+2);
+                if (tamp.slice(li,li+2) == '\\n') {inc=2;};
+                ligne=tamp.slice(0,li);
+                ki = ligne.search('=');
+                if (ki !=-1) {
+                    num = parseInt(ligne.slice(ki+1));
+                    if (num) {val = num} else {val=ligne.slice(ki+1)}
+                    mesxPL[ligne.slice(0,ki)] =  val;
+                }
+                tamp=tamp.slice(li+inc)
+            };
+            };
+        if (mesxPL.count > 1) { 
+            for (i=0; i< mesxPL.count; i++) {
+                dt=mesxPL['value' +i];
+                dt= (dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"')) + "}";
+        //        console.log (dt);
+                mesxPL['value' +i] = JSON.parse(dt); 
+            };
+        } else {
+            dt = mesxPL['data'];
+            mesxPL['data'] = dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"');
+        };
+        return mesxPL;
+    };
+        
+    function SetDataToxPL (data) {
+        dt=JSON.stringify(data);
+        console.log ("SetDataToxPL : " + dt);
+        var val = dt.replace(/[{]/g, '|').replace(/[,]/g,';').replace(/[}]/g,'\\').replace(/["]/g,"'"); 
+        console.log ("SetDataToxPL str : " + val);
+        return val;
+        };
+       
+    function setStatusZW(status) {
+        if (status=='up') { //active
+            textstatus = "En cours d'execution";
+        } else { //inactive
+            textstatus = "Stoppé";
+        }
+        $("#iconstatuszw").empty()
+            .attr('class', "icon16-text-right icon16-status-plugin-" + status)
+            .html("<span class='label'>Etat:</span><span class='offscreen'>" + textstatus + "</span>");
+        }
+        
+    function GetinfoNode (nodeid) {
+        infoNode ={};
+        if (nodeid) {
+                var msg = {};
+                msg['command'] = "Refresh";
+                var val = {};
+                val['request'] ='GetNodeInfo';
+                val['node'] =nodeid;
+                msg['value'] = SetDataToxPL (val);
+                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
                     .done(function(data, status, xhr){
-                         $.notification('info',test );
+                        infoNode = GetDataFromxPL(data, 'data');
+                        var dt=JSON.stringify(infoNode);
+                        $('#listbrute').html(dt);
+                        $('#testmsg').html(" Get infoNode, infonode : " + infoNode['Model']);
+                        console.log("Dans getinfonode : " + infoNode['Model']);
+                        $.notification('debug',"Node : " + infoNode['Model'] + " info refreshed" );
+                        RefreshTabHtml(infoNode);
+                        return  infoNode;
                     })
                     .fail(function(jqXHR, status, error){
                        if (jqXHR.status == 400)
-                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") please check your device configuration");
+                            infoNode['Node'] =   nodeid;
+                            infoNode['Model'] = "NodeId not define";
+                            return infoNode;
                     });
-                }else {
-                $.notification('error', "{% trans "Need dmg address" %}")
-                }
-           
-        });
+        }else { infoNode['Model'] = "NodeId not define";
+                console.log("Dans getinfonode  pas de nodeid " + infoNode['Model']);   
+                return infoNode;
+                } 
+        };
+    function GetinfoValuesNode (nodeid, callback) {
+        var valuesNode = [];
+        var messXpl = {};
+        if (nodeid) {
+                var msg = {};
+                msg['command'] = "Refresh";
+                var val = {};
+                val['request'] ='GetNodeValuesInfo';
+                val['node'] =nodeid;
+                msg['value'] = SetDataToxPL (val);
+                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+                    .done(function(data, status, xhr){
+                        messXpl = ParseAckXPL(data.xpl);
+                        var thOut = Object.keys(messXpl['value0']);  // Hypothèse, vrais pour l'intant, toutes les lignes on les mêmes entêtes !
+                        var RowN = [];
+                        for (i=0; i<messXpl.count; i++) {
+                            valuesNode[i]= messXpl['value' + i];
+                            var R = [];
+                            R[0] = i + 1;
+                            for (ii=0; ii<thOut.length;ii++) {
+                                R[ii+1] = valuesNode[i][thOut[ii]]
+                                }
+                            RowN[i] = R;
+                        }
+                        console.log("Dans GetinfoValuesNode : " + RowN);
+                 //       $.notification('debug',"Node : " + valuesNode['Value'] + " info refreshed" );
+                        callback(thOut);
+                        var idDetNode = '#detNode' + nodeid; 
+                        $(idDetNode).dataTable({
+                                "bFilter": false,  
+                                "aaData": RowN
+                                });
+                        for (i=0; i<thOut.length; i++) {
+                            if (thOut[i] == 'nodeId' | thOut[i] == 'homeId') {$(idDetNode).dataTable().fnSetColumnVis( i+1, false ); };
+                            };
+                        return  valuesNode;
+                    })
+                    .fail(function(jqXHR, status, error){
+                       if (jqXHR.status == 400)
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") please check your device configuration");
+                            valuesNode['Node'] =   nodeid;
+                            valuesNode['Model'] = "NodeId not define";
+                            return valuesNode;
+                    });
+        }else { valuesNode['Model'] = "NodeId not define";
+                console.log("Dans GetinfoValuesNode  pas de nodeid " + infoNode['Model']);   
+                return valuesNode;
+                } 
+        };
+
+        $("#specialsubmit").click(function(){
+            var dmg_addr = $("#dmg_addr").val();
+            var info_node = 'Actualiser';
+            var msg = {};
+            var netWorkZW ={};
+            setStatusZW('down');
+            msg['command'] = "Refresh";
+            var val = {};
+            val['request'] ='GetNetworkID';
+            msg['value'] = SetDataToxPL (val);
+            rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+                .done(function(data, status, xhr){
+                    netWorkZW =GetDataFromxPL(data, 'data');
+                    $('#homeid').html(netWorkZW['HomeID']);
+                    $('#namectrl').html(netWorkZW['Model']);
+                    $('#deviceadr').html(netWorkZW['Device']);
+                    $('#numnodes').html(netWorkZW['Node count']);
+                    $('#libctrl').html(netWorkZW['Library']);
+                    $('#libctrlver').html(netWorkZW['Version']);                    
+                    $('#testmsg').html("");
+                    $('#testmsg2').html(JSON.stringify(netWorkZW));
+                    console.log("Dans Submit, .done: " + netWorkZW['Model']);
+                    setStatusZW('up')
+                    $.notification('debug',"device : " + netWorkZW['Primary controller'] + " info refreshed" );
+                    var node_items = document.getElementById("node_items");
+                    RefreshNodes(netWorkZW);
+                })
+                .fail(function(jqXHR, status, error){
+                   if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") please check your device configuration");
+                        setStatusZW('down')
+                });
+            });
+    
+    function RefreshNodes(netWorkZW) {
+           console.log("Dans RefreshNode, après .done" + JSON.stringify(netWorkZW));
+           $('#testmsg').html(netWorkZW.ListNodeId.length);
+            if (netWorkZW) {
+                var i=0;
+                var nId=0;
+                while (nId< netWorkZW.ListNodeId.length) {
+                        infoNode = GetinfoNode(netWorkZW.ListNodeId[nId]);
+                        console.log("While refreshnode nodeID: " + netWorkZW.ListNodeId[nId]);
+                        i++;
+                    nId++;
+                    };
+                };
+            };
+            
+    function RefreshTabHtml(zwNode) {
+        console.log("Dans RefreshTabHtml, " + zwNode);
+        var node_items = document.getElementById("node_items");
+        var nodeid=zwNode.Node;
+        var iid= "node_" + nodeid;
+        var dataT = $('#node_items').dataTable().fnGetData();
+        var trfunct= function(li,dr){$('#node_items').dataTable().fnAddData(dr);};        
+        if (dataT) {
+            for (i=0; i<dataT.length; i++) {
+                if (dataT[i][hdLiNode['NodeId']]==nodeid) {
+                    var trfunct= function(li,dr){$('#node_items').dataTable().fnUpdate(dr,li);};
+                    var li= i;
+                    break;
+                };
+            };
+        };
+        trfunct(li, [zwNode.Node, zwNode.Name, zwNode.Location, zwNode.Model, zwNode['State sleeping'], zwNode.Type, zwNode['Last update'],""]);
+        console.log("Dans RefreshTabHtml, DataTable : " + dataT[li] + "---" + zwNode.Model);    
+     };   
+     
+// fnRender, callback des élements du tableau autre que texte
+    function setNameNode(oObj) {
+        return "<input type='text' title='Name' value='" + oObj.aData[hdLiNode['Name']] + "'/>";
+        };
+        
+    function setStatusSleep(oObj) {
+       var status = oObj.aData[hdLiNode['Awake']];
+       if (status==true) { //Sleeping
+            textstatus = "Probablement en veille";
+            st = 'unknown'
+        } else { //actif
+            textstatus = "Actif sur le réseaux";
+            st = 'active'
+        };
+        console.log("set status sleep coloms : " + oObj.aData + " " + status);
+        return  st + "<span class='icon16-text-right  icon16-status-" + st + "' /span>";
+        };
+        
+    function setActionNode(oObj) {
+        var num = oObj.aData[hdLiNode['NodeId']];
+        var ret =  "<button id='detailnode" + num + 
+                        "' class='icon16-action-add buttonicon' title='Detail Node' ><span class='offscreen'>Detail Node : " + num + "</span></button>";
+         ret =  ret + "<button id='updnode" + num + 
+                        "' class='icon16-action-update buttonicon' title='Update Node' ><span class='offscreen'>Update Node : " + num + "</span></button>";
+        console.log("******** setActionNode : " + oObj.aData + " ret : " + ret);
+        return  ret;
+        };
+    
+    function returnTextValue(val) {
+        if (typeof(val) != 'number') {
+            debut = val.search('value=');
+            if (debut != -1) {GetinfoValuesNode
+                val = val.slice(debut+7);
+                fin = val.search("'");
+                val = val.slice(0,fin);
+                };
+          };
+        return val;
+        };
+/* Formatage du details d'une row  */
+    function fnFormatDetails (nTr, thOut)
+    {
+        var aData = oTabNodes.fnGetData(nTr);
+        var idDetNode = 'detNode' + aData[hdLiNode['NodeId']];
+        console.log("Format detail node entête : " + thOut);
+//        var sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">';
+        var sOut = '<table id="' + idDetNode + '" class="simple" cellpadding="5" border="1"><thead><tr>'
+    //   var thOut = Object.keys(values[0]);
+        sOut += '<th scope="col">Num</th>';
+        for (i=0; i<thOut.length; i++) {
+            sOut += '<th scope="col">' + thOut[i]+ '</th>';
+            };
+        sOut += '</tr></thead><tbody></tbody></table>';
+   //     console.log (sOut);
+        return sOut;
+    };
+// Callback event des commandes dans la table des nodes.
+// Class button, 
+    $('#node_items tbody td button').live('click', function () {
+        var nTr = this.parentNode.parentNode;
+        var aData = oTabNodes.fnGetData( nTr );
+        if (this.title =='Update Node') {
+            console.log("Dans click updatenode, DataTable : " + aData);   
+            // Lancer la sauvegarde vers plugin
+                var msg = {};
+                msg['command'] = "Refresh";
+                var val = {};
+                val['request'] ='SetNodeNameLoc';
+                val['node'] =aData[hdLiNode['NodeId']];
+                val['newname'] = returnTextValue(aData[hdLiNode['Name']]);
+                val['newloc'] = returnTextValue(aData[hdLiNode['Location']]);
+                msg['value'] = SetDataToxPL (val);
+                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+                    .done(function(data, status, xhr){
+                        infoNode = GetDataFromxPL(data,  'data');
+                        var dt=JSON.stringify(infoNode);
+                        console.log("Dans Update Node : " + infoNode['Model']);
+                        $.notification('debug',"Node : " + infoNode['Model'] + " name and  location update" );
+                        RefreshTabHtml(infoNode);
+                        return  infoNode;
+                    })
+                    .fail(function(jqXHR, status, error){
+                       if (jqXHR.status == 400)
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") {% trans "please check your device configuration" %}");
+                            infoNode['Node'] =   nodeid;
+                            infoNode['Model'] = "NodeId not define";
+                            return infoNode;
+                    });
+        };
+        if (this.title =='Detail Node') {
+           var t =  this.attributes["class"].value; //nodeValue
+           if (t.search('action-del') != -1 ) {
+			// This row is already open - close it 
+			this.attributes["class"].value = "icon16-action-add buttonicon"; //nodeValue
+			oTabNodes.fnClose( nTr );
+            }else {
+                // Open this row 
+                this.attributes["class"].value = "icon16-action-del buttonicon"; //nodeValue
+                //send update nodes values
+                var values = GetinfoValuesNode(aData[hdLiNode['NodeId']], function(thOut){ oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,thOut), 'simple' );});
+ /*               var idDetNode = 'detNode' + aData[hdLiNode['NodeId']]; 
+                $("#"+idDetNode).dataTable({
+                        "bFilter": false
+                        });
+                for (i=0; i<values.length; i++) {
+                    $('#+idDetNode').dataTable().fnAddData(values[i]);
+                    }
+                
+                console.log("click detail values : " + values); */
+     //           oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,values), 'simple' );
+            };
+        }else {
+            console.log("Dans click button, DataTable : " + this.title); 
+        };
+ 	} ); 
+ // class input   
+   $('#node_items tbody td input').live('keydown', function (e) {
+        var nTr = this.parentNode.parentNode;
+       var aData = oTabNodes.fnGetData( nTr );
+       if (this.title =='Name') {
+            console.log("Dans Nom key down, DataTable : " + aData + " code : " + e.keyCode );
+            aData[hdLiNode['Name']] = this.value;
+            console.log("new value : " +aData);
+        };
+       if (this.title =='Location') {
+            console.log("Dans Nom key down, DataTable : " + aData + " code : " + e.keyCode );
+            aData[hdLiNode['Location']] = this.value;
+            console.log("new value : " +aData);
+        } else {
+            console.log("Dans Nom key down, input : " + this.title); 
+        };
+ 	} );     
+    
+        $("#specialsave").click(function(){
+                var msg = {};
+                msg['command'] = "Refresh";
+                msg['value'] = "|'request':'SaveConfig'\\";
+                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+                    .done(function(data, status, xhr){
+                    $.notification('info',"Request : " + " saving config ok" );
+                    })
+                    .fail(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") please check your device configuration");
+                    });
+			});
+            
+    
+   $(document).ready(function(){
+         oTabNodes = $("#node_items").dataTable({
+            "bFilter": false,
+            "aoColumnDefs": [  
+                { "fnRender": function (oObj) {return setNameNode(oObj);}, "aTargets": [ hdLiNode['Name'] ] },
+                { "fnRender": function (oObj) {return  "<input type='text' title='Location' value='" + 
+                                                oObj.aData[hdLiNode['Location']] + "'/>";}, "aTargets": [ hdLiNode['Location'] ] },
+                { "fnRender": function (oObj) {return setStatusSleep(oObj);}, "aTargets": [ hdLiNode['Awake'] ] },
+                { "fnRender": function (oObj) {return setActionNode(oObj);}, "aTargets": [hdLiNode['Action'] ] },      
+                { "bSortable": false, "aTargets": [ hdLiNode['Action'] ] }, 
+                ],
+            "aaSorting": [[0, 'asc']]
+            } );
+         $("#specialsubmit").click();
     });
+});
+
+
 
 </script>
 <section class="subsection">
-    <h2>{% trans "Special" %}</h2>
-        <form id='specialform'>
-            <label for='dmg_addr'>{% trans 'Domogik device address' %}:</label>
-            <input type='text' id='dmg_addr' name='dmg_addr'/>
+
+    <h2>{% trans "Zwave controller" %}  &nbsp;&nbsp;&nbsp;&nbsp;
+            <div id="iconstatuszw"> <span class="label">{% trans "Status"%}:</span>
+            </div></h2>
+        <form id='controllerform'>
+            <ul class='infos'>
+                <li><FONT size=3>
+                    <span class='label'>{% trans "Home ID" %}:</span>&nbsp;<span class='subtitle' id='homeid'><u>{% trans "Undefined" %}</u></span>
+                </FONT> </li>
+                 <li>
+                    <span class='label'>{% trans "Contoller" %}:</span>&nbsp;<span class='subtitle' id='namectrl'><u>{% trans "Undefined" %}</u></span>
+                    &nbsp;&nbsp;&nbsp;<span class='label'>{% trans "Device" %}:</span>&nbsp;<span class='subtitle' id='deviceadr'><u>{% trans "Undefined" %}</u></span>
+                    &nbsp;&nbsp;&nbsp;<span class='label'>{% trans "Number of nodes" %}:</span>&nbsp;<span class='subtitle'  id='numnodes'><u>{% trans "Undefined" %}</u></span>
+                </li>
+                <li>
+                    <span class='label'>{% trans "Library" %}:</span>&nbsp;<span class='subtitle'  id='libctrl'><u>{% trans "Undefined" %}</u></span>
+                    &nbsp;&nbsp;&nbsp;<span class='label'>{% trans "Version" %}:</span>&nbsp;<span class='subtitle'  id='libctrlver'><u>{% trans "Undefined" %}</u></span>
+                </li>
+            </ul>
+ <!--           {"Node":1,"Node count":3,"Primary controller":"Z-Stick S2","Node sleeping":1,"ListNodeId":[1,5,6],
+            "Library":"Static Controller","Device":"/dev/zwave","Version":"Z-Wave 2.78","HomeID":"0x014d0f18","Model":"Aeon Labs -- Z-Stick S2"} -->
+<!--			<p id='testmsg'><u>Infos Node:</u></p>
+            <p id='testmsg2'><u>Infos Node:</u></p>  -->
         </form>
         <p>
-            <button id='specialsubmit' class='button icon16-action-save'>{% trans "Add" %}</button>
+            <button id='specialsubmit' class='button icon16-action-reset'>{% trans "Refresh" %}</button>
+            <button id='specialsave' class='button icon16-action-save'>{% trans "Save config" %}</button>
+<!--            <label for='dmg_addr'>{% trans 'Pour test (non actif)' %}:</label>
+            <input type='text' id='dmg_addr' name='dmg_addr'/> -->
         </p>
 </section>
-
+<section class="subsection">
+    <h2>{% trans "Zwave Network device" %}</h2>
+    <p>{% trans "Description of zwave network with devices capacities" %}</p>
+<!--	    <p id='listbrute'><u>la liste brute de node</u></p> -->
+        <div id='networkform'>
+            <table id='node_items' class='simple'>
+                <thead>
+                    <tr>
+                        <th scope='col'>{% trans "NodeId" %}</th>
+                        <th scope='col'>{% trans "Name" %}</th>
+                        <th scope='col'>{% trans "Location" %}</th>
+                        <th scope='col'>{% trans "Model" %}</th>
+                        <th scope='col'>{% trans "Awake" %}</th>
+                        <th scope='col'>{% trans "Type" %}</th>
+                        <th scope='col'>{% trans "Last update" %}</th>
+                        <th scope='col'>{% trans "Action" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+        </table>
+        </div>
+</section>
