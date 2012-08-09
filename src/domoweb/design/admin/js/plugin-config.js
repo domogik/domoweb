@@ -22,7 +22,7 @@ $(function(){
             if (ioptionnal == "yes")
                 optionnalDisplay = "";
             else
-                optionnalDisplay = "<img src='/design/common/images/required.png' alt='" + gettext('Required') + "'/>";
+                optionnalDisplay = "<img src='" + STATIC_DESIGN_URL +"/common/images/required.png' alt='" + gettext('Required') + "'/>";
             
             // Key cell
             tr.append("<td class='key'><span>" +  ikey + "</span> " + optionnalDisplay + "</td>");

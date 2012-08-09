@@ -12,7 +12,8 @@ function RINOR() {
 RINOR.prototype.send = function(type, parameters, data) {
     var self = this;
     var data_str = null;
-    url = '/rinor/';
+    url = REST_URL + '/';
+	
     // Build the RINOR url
     $.each(parameters, function(){
         url += encodeURIComponent(this) + '/';     

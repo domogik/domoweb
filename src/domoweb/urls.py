@@ -41,18 +41,18 @@ js_info_dict = {
 }
 
 urlpatterns = patterns('',
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+    (r'^%sjsi18n/$' % settings.URL_PREFIX, 'django.views.i18n.javascript_catalog', js_info_dict),
 )
 
 urlpatterns += patterns('domoweb.views',
-    url(r'^$', 'index', name="index_view"),
-    url(r'^config/welcome$', 'config_welcome', name="config_welcome_view"),
-    url(r'^config/configserver$', 'config_configserver', name="config_configserver_view"),
-    url(r'^config/testserver$', 'config_testserver', name="config_testserve_view"),
+    url(r'^%s$' % settings.URL_PREFIX, 'index', name="index_view"),
+    url(r'^%sconfig/welcome$' % settings.URL_PREFIX, 'config_welcome', name="config_welcome_view"),
+    url(r'^%sconfig/configserver$' % settings.URL_PREFIX, 'config_configserver', name="config_configserver_view"),
+    url(r'^%sconfig/testserver$' % settings.URL_PREFIX, 'config_testserver', name="config_testserve_view"),
 )
 urlpatterns += patterns('',
-    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
-    (r'^view/', include('domoweb.view.urls')),
-    (r'^admin/', include('domoweb.admin.urls')),
-    (r'^rinor/', include('domoweb.rinor.urls')),
+    (r'^%srobots\.txt$' % settings.URL_PREFIX, lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
+    (r'^%sview/' % settings.URL_PREFIX, include('domoweb.view.urls')),
+    (r'^%sadmin/' % settings.URL_PREFIX, include('domoweb.admin.urls')),
+    (r'^%srinor/' % settings.URL_PREFIX, include('domoweb.rinor.urls')),
 )

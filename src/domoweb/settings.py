@@ -50,6 +50,14 @@ LIB_PATH = '/var/lib/domoweb'
 
 PROJECT_PATH = os.environ['DOMOWEB_PATH']
 print PROJECT_PATH
+URL_PREFIX = os.environ['DOMOWEB_URL_PREFIX']
+REST_URL = "/%srinor" % URL_PREFIX
+EVENTS_URL = "/%sevents" % URL_PREFIX
+CONFIG_URL = "/%sconfig" % URL_PREFIX
+ADMIN_URL = "/%sadmin" % URL_PREFIX
+VIEW_URL = "/%sview" % URL_PREFIX
+STATIC_DESIGN_URL = os.environ['DOMOWEB_DESIGN_URL']
+STATIC_WIDGETS_URL = os.environ['DOMOWEB_WIDGETS_URL']
 
 ### Get DomoWeb Version
 DOMOWEB_VERSION = "dev.%s" % (os.environ['DOMOWEB_REV'])
@@ -117,7 +125,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.i18n',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'domoweb.context_processors.rinor',
+    'domoweb.context_processors.domoweb',
 )
 
 INSTALLED_APPS = (
@@ -149,9 +157,9 @@ PIPES_SOCKET_TIMEOUT=600 # 600 sec
 API_LIMIT_PER_PAGE = 0
 
 # For login Auth
-LOGIN_URL = '/admin/login'
-LOGOUT_URL = '/admin/logout'
-LOGIN_REDIRECT_URL = '/admin/'
+LOGIN_URL = '/%slogin' % ADMIN_URL
+LOGOUT_URL = '/%slogout' % ADMIN_URL
+LOGIN_REDIRECT_URL = '/%s' % ADMIN_URL
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or

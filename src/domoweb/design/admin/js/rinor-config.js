@@ -14,7 +14,7 @@ $(function(){
                 optionnalDisplay = "";
             }
             else {
-                optionnalDisplay = "<img src='/design/common/images/required.png' alt='Required'/>";
+                optionnalDisplay = "<img src='" + STATIC_DESIGN_URL + "/common/images/required.png' alt='Required'/>";
             }
             tr.append("<td class='key'><span>" +  ikey + "</span> " + optionnalDisplay + "</td><td><label for='value_" + ikey + "'>" +  idescription + "</label></td>");
             var td = $("<td class='value' type='" + item.type + "'></td>");

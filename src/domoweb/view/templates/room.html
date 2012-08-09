@@ -31,11 +31,11 @@
 {% endblock %}
 
 {% block css %}
-    <link href="/design/view/css/page-show-room.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/view/css/page-show-room.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block js_include %}
-    <script type="text/javascript" src="/design/view/js/page-show.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/view/js/page-show.js"></script>
 {% endblock %}
 
 {% block title %}{% trans page_title %}{% endblock %}

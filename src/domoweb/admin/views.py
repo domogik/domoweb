@@ -103,7 +103,7 @@ def _auth(request, next):
     except RinorError:
         # User not found, ask again to log in
         error_msg = ugettext(u"Sorry unable to log in. Please check login name / password and try again.")
-        return HttpResponseRedirect('/admin/login/?status=error&msg=%s' % error_msg)
+        return HttpResponseRedirect('%s/?status=error&msg=%s' % (settings.LOGIN_URL, error_msg))
 
 
 @admin_required

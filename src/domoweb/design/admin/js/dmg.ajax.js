@@ -17,7 +17,7 @@
                         else
                             var defer = rinor.put(url, options.data);
                     } else {
-                        url = '/rinor/' + url.join('/') + '/';
+                        url = REST_URL + '/' + url.join('/') + '/';
                         var defer = $.ajax({
                             type: 'GET',
                             url: url,
