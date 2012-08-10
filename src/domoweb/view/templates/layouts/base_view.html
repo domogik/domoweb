@@ -27,19 +27,19 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<link rel="icon shortcut" type="image/png" href="/design/common/images/favicon.png" />
+<link href="{{ static_design_url }}/common/images/favicon.png" rel="icon shortcut" type="image/png" />
     
-<link href="/design/view/css/common-page.css" rel="stylesheet" type="text/css" />
-<link href="/design/view/css/ui-icons.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/view/css/common-page.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/view/css/ui-icons.css" rel="stylesheet" type="text/css" />
 
 {% block global_css %}{% endblock %}
 {% block css %}{% endblock %}
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
-<script type="text/javascript" src="/design/libraries/jquery-1.7.1/jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="/design/view/js/notifications.js"></script>
-<script type="text/javascript" src="/design/libraries/noty-v2.0.3/js/noty/jquery.noty.js"></script>
-<script type="text/javascript" src="/design/libraries/noty-v2.0.3/js/noty/layouts/top.js"></script>
-<script type="text/javascript" src="/design/libraries/noty-v2.0.3/js/noty/themes/default.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-1.7.1/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/view/js/notifications.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/noty-v2.0.3/js/noty/jquery.noty.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/noty-v2.0.3/js/noty/layouts/top.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/noty-v2.0.3/js/noty/themes/default.js"></script>
 {% block global_js_include %}{% endblock %}
 {% block js_include %}{% endblock %}
 <script type="text/javascript">

@@ -20,35 +20,45 @@ class Server(object):
     def run(self, PROJECT_PATH, PROJECT_PACKS):
         ETC_PATH = '/etc/domoweb'
         SERVER_CONFIG = '%s/domoweb.cfg' % ETC_PATH
-
-        # Set static content
-        STATIC_DESIGN_URL = "/design"
-        STATIC_DESIGN_ROOT = os.path.join(PROJECT_PATH, "design")
-        os.environ['DOMOWEB_STATIC_DESIGN'] = STATIC_DESIGN_ROOT
-
-        STATIC_WIDGETS_URL = "/widgets"
-        STATIC_WIDGETS_ROOT = os.path.join(PROJECT_PACKS, "widgets")
-        os.environ['DOMOWEB_STATIC_WIDGETS'] = STATIC_WIDGETS_ROOT
         
-        STATIC_THEMES_URL = "/themes"
-        STATIC_THEMES_ROOT = os.path.join(PROJECT_PACKS, "themes")
-        os.environ['DOMOWEB_STATIC_THEMES'] = STATIC_THEMES_ROOT
-
-        STATIC_ICONSETS_URL = "/iconsets"
-        STATIC_ICONSETS_ROOT = os.path.join(PROJECT_PACKS, "iconsets")
-        os.environ['DOMOWEB_STATIC_ICONSETS'] = STATIC_ICONSETS_ROOT
-        
-        STATICS = {STATIC_DESIGN_URL:STATIC_DESIGN_ROOT, STATIC_WIDGETS_URL:STATIC_WIDGETS_ROOT, STATIC_THEMES_URL:STATIC_THEMES_ROOT, STATIC_ICONSETS_URL:STATIC_ICONSETS_ROOT}
-        
-        settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
         try:
             cherrypy.config.update(SERVER_CONFIG)
         except IOError:
             sys.stderr.write("Error: Can't find the file '%s/domoweb.cfg'\n" % ETC_PATH)
             sys.exit(1)
+            
         engine = cherrypy.engine
         plugins.PIDFile(engine, "/var/run/domoweb/domoweb.pid").subscribe()
-        DjangoAppPlugin(engine, STATICS).subscribe()
+        
+        url_prefix = cherrypy.config.get("domoweb.url_prefix", "")
+        if url_prefix != "":
+            url_prefix += "/"
+        os.environ['DOMOWEB_URL_PREFIX'] = url_prefix
+
+        # Set static content
+        STATIC_DESIGN_URL = "/%sdesign" % url_prefix
+        STATIC_DESIGN_ROOT = os.path.join(PROJECT_PATH, "design")
+        os.environ['DOMOWEB_DESIGN_URL'] = STATIC_DESIGN_URL
+        os.environ['DOMOWEB_DESIGN_ROOT'] = STATIC_DESIGN_ROOT
+
+        STATIC_WIDGETS_URL = "/%swidgets" % url_prefix
+        STATIC_WIDGETS_ROOT = os.path.join(PROJECT_PATH, "widgets")
+        os.environ['DOMOWEB_WIDGETS_URL'] = STATIC_WIDGETS_URL
+        os.environ['DOMOWEB_WIDGETS_ROOT'] = STATIC_WIDGETS_ROOT
+        
+        STATIC_THEMES_URL = "/%sthemes" % url_prefix
+        STATIC_THEMES_ROOT = os.path.join(PROJECT_PACKS, "themes")
+        os.environ['DOMOWEB_THEMES_URL'] = STATIC_THEMES_URL
+        os.environ['DOMOWEB_THEMES_ROOT'] = STATIC_THEMES_ROOT
+
+        STATIC_ICONSETS_URL = "/%siconsets" % url_prefix
+        STATIC_ICONSETS_ROOT = os.path.join(PROJECT_PACKS, "iconsets")
+        os.environ['DOMOWEB_ICONSETS_ROOT'] = STATIC_ICONSETS_ROOT
+        os.environ['DOMOWEB_ICONSETS_ROOT'] = STATIC_ICONSETS_ROOT
+        
+        STATICS = {STATIC_DESIGN_URL:STATIC_DESIGN_ROOT, STATIC_WIDGETS_URL:STATIC_WIDGETS_ROOT, STATIC_THEMES_URL:STATIC_THEMES_ROOT, STATIC_ICONSETS_URL:STATIC_ICONSETS_ROOT}
+
+        DjangoAppPlugin(engine, url_prefix, STATICS).subscribe()
         engine.signal_handler.subscribe()
         if hasattr(engine, "console_control_handler"):
             engine.console_control_handler.subscribe()
@@ -62,8 +72,9 @@ class DjangoAppPlugin(plugins.SimplePlugin):
     the Django application onto the CherryPy server.
     """
     STATICS = None
-    def __init__(self, bus, statics):
+    def __init__(self, bus, url_prefix, statics):
         self.STATICS = statics
+        self.url_prefix = url_prefix
         super(DjangoAppPlugin, self).__init__(bus)
 
     def start(self):
@@ -71,9 +82,9 @@ class DjangoAppPlugin(plugins.SimplePlugin):
         cherrypy.tree.graft(HTTPLogger(WSGIHandler()))
         
         self.bus.log("Setting up the static directory to be served")
-        settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
+#        settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
 
-        cherrypy.tree.mount(Events(), '/events')
+        cherrypy.tree.mount(Events(), '/%sevents' % self.url_prefix)
 
         for (url, root) in self.STATICS.items():
             static_handler = cherrypy.tools.staticdir.handler(

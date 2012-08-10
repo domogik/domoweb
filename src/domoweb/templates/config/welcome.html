@@ -22,7 +22,7 @@
 
 {% block css %}
     <link href="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
-    <link href="{{ static_design_url }}/config/css/page-config.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/page-config.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
     <script type="text/javascript" src="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
@@ -32,7 +32,7 @@
         $('#id_language').chosen();
     });
 {% endblock %}
-{% block title %}{{ page_title }}{% endblock %}
+{% block title %}{% trans page_title %}{% endblock %}
 
 {% block content %}
 

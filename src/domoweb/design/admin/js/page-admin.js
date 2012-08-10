@@ -7,7 +7,7 @@ function getHostsList() {
                     $.each(data.objects, function() {
                         var li = $("<li></li>");
                         var a = $("<a>" + this.id + "</a>");
-                        a.attr('href', '/admin/host/' + this.id);
+                        a.attr('href', ADMIN_URL + '/host/' + this.id);
                         if (this.primary == "True")
                             a.addClass('icon16-status-primary');
                         li.append(a);
@@ -51,7 +51,7 @@ function getPluginsList() {
                         }
                         var li = $("<li class='" + this.type + "'></li>");
                         var a = $("<a></a>");
-                        a.attr('href', '/admin/plugin/' + host + "/" + this.id + "/" + this.type);
+                        a.attr('href', ADMIN_URL + '/plugin/' + host + "/" + this.id + "/" + this.type);
                         var status = $("<div><div class='host'>" + host + "</div>" + this.id + "</div>");
                         status.addClass("menu-indicator")
                         if (this.id != 'rest') {

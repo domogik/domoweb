@@ -18,33 +18,34 @@ class RinorMiddleware(object):
         """
         Check if rinor is configured
         """
-        if not request.path.startswith('/config/'):
+        if not request.path.startswith('/%sconfig/' % settings.URL_PREFIX):
             try:
                 _ip = Parameter.objects.get(key='rinor_ip')
                 _port = Parameter.objects.get(key='rinor_port')
             except Parameter.DoesNotExist:
                 return redirect("config_welcome_view")
-            print "rinor_url:http://%s:%s" % (_ip.value, _port.value)
+#            print "rinor_url:http://%s:%s" % (_ip.value, _port.value)
             
             if not 'rinor_api_version'  in request.session:
+                
                 try:
                     _info = InfoPipe().get_info_extended()
                 except RinorNotAvailable:
                     t = loader.get_template('error/RinorNotAvailable.html')
-                    c = Context({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
+                    c = RequestContext({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
                     return HttpResponseServerError(t.render(c))
 
                 if (not _info.info.rinor_version_superior and not _info.info.rinor_version_inferior):
                     request.session['rinor_api_version'] = _info.info.rinor_version                    
                 else:
                     t = loader.get_template('error/BadDomogikVersion.html')
-                    c = Context({'rinor_info':_info})
+                    c = RequestContext({'rinor_info':_info})
                     return HttpResponseServerError(t.render(c))
             try:
                 mode = InfoPipe().get_mode()
             except RinorNotAvailable:
                 t = loader.get_template('error/RinorNotAvailable.html')
-                c = Context({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
+                c = RequestContext({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
                 return HttpResponseServerError(t.render(c))
             request.session['normal_mode'] = (mode == "normal")
             request.session['rinor_ip'] = _ip.value
@@ -104,7 +105,7 @@ class LaunchMiddleware:
     def __init__(self):
         # List available widgets
         Widget.objects.all().delete()
-        STATIC_WIDGETS_ROOT = os.environ['DOMOWEB_STATIC_WIDGETS']
+        STATIC_WIDGETS_ROOT = os.environ['DOMOWEB_WIDGETS_ROOT']
         if os.path.isdir(STATIC_WIDGETS_ROOT):
             for file in os.listdir(STATIC_WIDGETS_ROOT):
                 if not file.startswith('.'): # not hidden file

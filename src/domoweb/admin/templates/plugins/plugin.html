@@ -76,21 +76,21 @@
     });
 {% endblock %}
 {% block css %}
-    <link href="/design/admin/css/page-admin-plugins.css" rel="stylesheet" type="text/css" />
-    <link href="/design/admin/css/plugin-config.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
-    <link href="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/admin/css/page-admin-plugins.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/admin/css/plugin-config.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
-    <script type="text/javascript" src="/design/libraries/jquery.timers-1.2/jquery.timers-1.2.js"></script>
-    <script type="text/javascript" src="/design/libraries/jquery.ba-dotimeout-1.0/jquery.ba-dotimeout.min.js"></script>
-    <script type="text/javascript" src="/design/admin/js/plugin-config.js"></script>
-    <script type="text/javascript" src="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.timers-1.2/jquery.timers-1.2.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.ba-dotimeout-1.0/jquery.ba-dotimeout.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/admin/js/plugin-config.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
 {% endblock %}
 {% block title %}{{ page_title }}{% endblock %}
 
 {% block banner %}
-    <h1 class="ident icon64-plugin-{{ plugin.id }} icon64-resize" style='background-image:url(/admin/resource/icon/package/installed/plugin/{{ plugin.id }})'>
+    <h1 class="ident icon64-plugin-{{ plugin.id }} icon64-resize" style='background-image:url({{ admin_url }}/resource/icon/package/installed/plugin/{{ plugin.id }})'>
         <span class="title">{% trans "Plugin" %} '{{ plugin.id }}'</span>
     </h1>
 {% endblock %}

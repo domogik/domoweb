@@ -23,15 +23,15 @@
 {% load text %}
 
 {% block js_include %}
-    <script type="text/javascript" src="/design/libraries/jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js"></script>
-    <script type="text/javascript" src="/design/libraries/jquery.ui.subclass/jquery.ui.subclass.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.dragdrop.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.widget-core.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.widget-utils.js"></script>
-    <script type="text/javascript" src="/design/view/js/elements-page.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.ui.subclass/jquery.ui.subclass.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.dragdrop.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-core.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-utils.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/view/js/elements-page.js"></script>
 
     {% for widget in widgets %}
-    <script type="text/javascript" src="/widgets/{{ widget.id }}/main.js"></script>	
+    <script type="text/javascript" src="{{ static_widgets_url }}/{{ widget.id }}/main.js"></script>	
     {% endfor %}
 
 {% endblock %}
@@ -73,19 +73,19 @@
 {% endblock %}
 
 {% block css %}
-    <link href="/design/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
-    <link href="/design/view/css/elements-page.css" rel="stylesheet" type="text/css" />
-    <link href="/design/view/css/page-show-edit.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/dmg.widget-core.css" rel="stylesheet" type="text/css" />    
-    <link href="/design/common/css/dmg.widget-utils.css" rel="stylesheet" type="text/css" />    
-    <link href="/design/common/css/ui-dialog.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/view/css/elements-page.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/view/css/page-show-edit.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/dmg.widget-core.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_design_url }}/common/css/dmg.widget-utils.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_design_url }}/common/css/ui-dialog.css" rel="stylesheet" type="text/css" />
 
     {% for iconset in iconsets %}
-    <link href="/iconsets/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_iconsets_url }}/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
     {% endfor %}
 
     {% for widget in widgets %}
-    <link href="/widgets/{{ widget.id }}/style.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_widgets_url }}/{{ widget.id }}/style.css" rel="stylesheet" type="text/css" />
     {% endfor %}
 
 

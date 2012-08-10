@@ -22,10 +22,10 @@
 {% load i18n %}
 
 {% block global_css %}
-    <link href="/design/admin/css/dmg.layout_main.css" rel="stylesheet" type="text/css"/>
-    <link href="/design/admin/css/dmg.layout_centered_panel.css" rel="stylesheet" type="text/css"/>
-    <link href="/design/admin/css/dmg.buttons.css" rel="stylesheet" type="text/css"/>
-    <link href="/design/admin/css/dmg.forms.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ static_design_url }}/admin/css/dmg.layout_main.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ static_design_url }}/admin/css/dmg.layout_centered_panel.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ static_design_url }}/admin/css/dmg.buttons.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ static_design_url }}/admin/css/dmg.forms.css" rel="stylesheet" type="text/css"/>
 {% endblock %}
 
 {% block global_js_include %}
@@ -34,8 +34,8 @@
 {% block body %}
     <div class='content-centered-panel'>
         <header id="mainheader">
-            <a href="/" id="logo"><img src="/design/common/images/logo_domogik.png" alt="{% trans "Domogik logo" %}" /></a>
-            <h1>{{ page_title }}</h1>
+            <a href="/" id="logo"><img src="{{ static_design_url }}/common/images/logo_domogik.png" alt="{% trans "Domogik logo" %}" /></a>
+            <h1>{% trans page_title %}</h1>
         </header>
         <section id="mainsection">
             {% block content %}{% endblock %}

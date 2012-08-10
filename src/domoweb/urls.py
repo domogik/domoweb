@@ -41,14 +41,14 @@ js_info_dict = {
 }
 
 urlpatterns = patterns('',
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+    (r'^%sjsi18n/$' % settings.URL_PREFIX, 'django.views.i18n.javascript_catalog', js_info_dict),
 )
 
 urlpatterns += patterns('',
     url(r'^$', 'domoweb.view.views.page', name="index_view"),
-    (r'^robots\.txt$', lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
-    (r'^config/', include('domoweb.config.urls')),
-    (r'^view/', include('domoweb.view.urls')),
-    (r'^admin/', include('domoweb.admin.urls')),
-    (r'^rinor/', include('domoweb.rinor.urls')),
+    (r'^%srobots\.txt$' % settings.URL_PREFIX, lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
+    (r'^%sconfig/' % settings.URL_PREFIX, include('domoweb.config.urls')),
+    (r'^%sview/' % settings.URL_PREFIX, include('domoweb.view.urls')),
+    (r'^%sadmin/' % settings.URL_PREFIX, include('domoweb.admin.urls')),
+    (r'^%srinor/' % settings.URL_PREFIX, include('domoweb.rinor.urls')),
 )

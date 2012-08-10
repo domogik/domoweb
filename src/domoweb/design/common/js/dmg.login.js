@@ -16,11 +16,11 @@ function openlogin(path) {
                             }
                         });
 
-            var form = $("<form id='loginForm' method='POST' action='/admin/login/?next=" + path + "'></form>");
+            var form = $("<form id='loginForm' method='POST' action='" + ADMIN_URL + "/login/?next=" + path + "'></form>");
             form.append("<div class='columnleft'><h2>1. " + gettext('Select a user') + "</h2><div id='resetLogin' class='buttontext'>" + gettext('Change User') + "</div><input id='loginname' name='login' type='text' /><ul id='users'></ul></div>");
             $.each(data.objects, function() {
                 var account = this;
-                $('#users', form).append("<li><a href='#' id='id" + account.login + "'><img src='/design/common/images/userid.jpg' alt='' width='64' height='64' />" + account.person.first_name + "</a></li>");
+                $('#users', form).append("<li><a href='#' id='id" + account.login + "'><img src='" + STATIC_DESIGN_URL + "/common/images/userid.jpg' alt='' width='64' height='64' />" + account.person.first_name + "</a></li>");
                 $('#id' + account.login, form).click(function(){chooseUser('id' + account.login, account.login);});
             });
             

@@ -166,7 +166,7 @@ $(function(){
             this.element.find('dd.author').text(woptions.creator);
             this.element.find('dd.description').text(woptions.description);
             if (woptions.screenshot) {
-                this.element.find('dd.screenshot').html("<img src='/widgets/" + woptions.id + "/" + woptions.screenshot + "' />");
+                this.element.find('dd.screenshot').html("<img src='" + STATIC_WIDGETS_URL + "/" + woptions.id + "/" + woptions.screenshot + "' />");
             } else {
                 this.element.find('dd.screenshot').empty();                
             }

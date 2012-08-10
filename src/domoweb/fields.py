@@ -6,6 +6,7 @@ from django.forms.util import flatatt
 from django.utils.encoding import StrAndUnicode, force_unicode
 from django.utils.html import escape, conditional_escape
 from django.utils.safestring import mark_safe
+from django.conf import settings
 
 class IconRadioInput(widgets.SubWidget):
     """
@@ -75,9 +76,9 @@ class IconRadioSelect(RadioSelect):
     renderer = IconRadioFieldRenderer
     class Media:
         css = {
-            'all': ('/design/input/iconslist/input-iconslist.css',)
+            'all': ('%s/input/iconslist/input-iconslist.css' % STATIC_DESIGN_URL)
         }
-        js = ['/design/input/iconslist/input-iconslist.js']
+        js = ['%s/input/iconslist/input-iconslist.js' % STATIC_DESIGN_URL]
 
 class IconChoiceField(ModelChoiceField):
     widget=IconRadioSelect

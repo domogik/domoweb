@@ -24,16 +24,16 @@
 {% load text %}
 
 {% block css %}
-    <link href="/design/admin/css/page-admin-rinor.css" rel="stylesheet" type="text/css" />
-    <link href="/design/admin/css/plugin-config.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
-    <link href="/design/libraries/jquery.dataTables-1.8.2/css/page.css" rel="stylesheet" type="text/css" />
-    <link href="/design/libraries/jquery.dataTables-1.8.2/css/table.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/admin/css/page-admin-rinor.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/admin/css/plugin-config.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/css/page.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/css/table.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
-    <script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="/design/admin/js/page-admin-rinor.js"></script>
-    <script type="text/javascript" src="/design/admin/js/rinor-config.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-rinor.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/admin/js/rinor-config.js"></script>
 {% endblock %}
 {% block js_script %}
     var plugin_host = '{{ host }}';

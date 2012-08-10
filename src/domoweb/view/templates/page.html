@@ -62,55 +62,55 @@
 {% endblock %}
 
 {% block css %}
-    <link href="/design/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/ui-dialog.css" rel="stylesheet" type="text/css" />
-    <link href="/design/view/css/view-page.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-dialog.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/view/css/view-page.css" rel="stylesheet" type="text/css" />
     
     {% if page.theme_id %}
-    <link href="/themes/{{ page.theme_id }}/view-page.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_themes_url }}/{{ page.theme_id }}/view-page.css" rel="stylesheet" type="text/css" />
     {% endif %}
 
     {% for iconset in iconsets %}
-    <link href="/iconsets/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_iconsets_url }}/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
     {% endfor %}
-    <link href="/iconsets/usage/default/icons.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_iconsets_url }}/usage/default/icons.css" rel="stylesheet" type="text/css" />    
 
-    <link href="/design/common/css/ui-processing.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/dmg.widget-core.css" rel="stylesheet" type="text/css" />    
-    <link href="/design/common/css/dmg.widget-utils.css" rel="stylesheet" type="text/css" />    
-    <link href="/widgets/dmg_4x3_colorPicker/farbtastic.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-processing.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/dmg.widget-core.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_design_url }}/common/css/dmg.widget-utils.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_widgets_url }}/dmg_4x3_colorPicker/farbtastic.css" rel="stylesheet" type="text/css" />
 
     {% for widget in widgets %}
-    <link href="/widgets/{{ widget.widget_id }}/style.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_widgets_url }}/{{ widget.widget_id }}/style.css" rel="stylesheet" type="text/css" />
     {% endfor %}
 
 {% endblock %}
 
 {% block js_include %}
-    <script type="text/javascript" src="/design/libraries/jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js"></script>
-    <script type="text/javascript" src="/design/libraries/jquery.ui.subclass/jquery.ui.subclass.js"></script>
-    <script type="text/javascript" src="/design/libraries/jquery.timers-1.2/jquery.timers-1.2.js"></script>
-    <script type="text/javascript" src="/design/libraries/jquery.ba-dotimeout-1.0/jquery.ba-dotimeout.min.js"></script>
-    <script type="text/javascript" src="/design/libraries/highcharts-2.1.9/highcharts-2.1.9.js"></script>
-    <script type="text/javascript" src="/design/libraries/highcharts-2.1.9/highcharts-exporting-2.1.9.js"></script>
-    <script type="text/javascript" src="/design/libraries/jquery.longclick-0.3.3/jquery.longclick-0.3.3.min.js"></script>
-    <script type="text/javascript" src="/design/libraries/jquery.transform/jquery.transform.js"></script>
-    <script type="text/javascript" src="/design/libraries/simple-inheritance/simple-inheritance.js"></script>
-    <script type="text/javascript" src="/design/libraries/kinetic-v3.10.3/kinetic-v3.10.3.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.rinor.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.processing.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.widget-core.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.widget-utils.js"></script>
-    <script type="text/javascript" src="/widgets/dmg_4x3_colorPicker/farbtastic.js"></script>
-    <script type="text/javascript" src="/design/charting/dmg.chart-core.js"></script>
-    <script type="text/javascript" src="/design/charting/dmg.highcharts.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.ui.subclass/jquery.ui.subclass.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.timers-1.2/jquery.timers-1.2.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.ba-dotimeout-1.0/jquery.ba-dotimeout.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/highcharts-2.1.9/highcharts-2.1.9.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/highcharts-2.1.9/highcharts-exporting-2.1.9.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.longclick-0.3.3/jquery.longclick-0.3.3.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.transform/jquery.transform.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/simple-inheritance/simple-inheritance.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/kinetic-v3.10.3/kinetic-v3.10.3.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.rinor.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.processing.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-core.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-utils.js"></script>
+    <script type="text/javascript" src="{{ static_widgets_url }}/dmg_4x3_colorPicker/farbtastic.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/charting/dmg.chart-core.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/charting/dmg.highcharts.js"></script>
 
     {% for widget in widgets %}
-    <script type="text/javascript" src="/widgets/{{ widget.widget_id }}/main.js"></script>	
+    <script type="text/javascript" src="{{ static_widgets_url }}/{{ widget.widget_id }}/main.js"></script>	
     {% endfor %}
 
-    <script type="text/javascript" src="/design/view/js/view-page.js"></script>
-    <script type="text/javascript" src="/iconsets/usage/default/icons.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/view/js/view-page.js"></script>
+    <script type="text/javascript" src="{{ static_iconsets_url }}/usage/default/icons.js"></script>
 
 {% endblock %}
 

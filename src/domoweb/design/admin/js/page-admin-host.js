@@ -20,14 +20,14 @@
                 "sEmptyTable": gettext('No plugin installed')
             },
             "bProcessing": true,
-            "sAjaxSource": '/rinor/api/package-installed/' + host_id + '/plugin/',
+            "sAjaxSource": REST_URL + '/api/package-installed/' + host_id + '/plugin/',
             "sAjaxDataProp": "objects",
             "sPaginationType": "full_numbers",
             "sDom": 'flrt<"bottom"p>',
             "aoColumns": [
                 {
                     "fnRender": function ( oObj ) {
-                        return "<span class='package'><span class='icon' style='background-image:url(/admin/resource/icon/package/installed/plugin/" + oObj.aData['id'] + ")'></span>" + oObj.aData['id'] + "</span>";
+                        return "<span class='package'><span class='icon' style='background-image:url(" + ADMIN_URL + "/resource/icon/package/installed/plugin/" + oObj.aData['id'] + ")'></span>" + oObj.aData['id'] + "</span>";
                     }
                 },
                 { "mDataProp": "version" },
@@ -135,7 +135,7 @@
                 "sEmptyTable": gettext('No plugin available to install')
             },
             "bProcessing": true,
-            "sAjaxSource": '/rinor/api/package-available/' + host_id + '/plugin/',
+            "sAjaxSource": REST_URL + '/api/package-available/' + host_id + '/plugin/',
             "sAjaxDataProp": "objects",
             "sPaginationType": "full_numbers",
             "sDom": 'flrt<"bottom"p>',
@@ -148,7 +148,7 @@
                 },
                 {
                     "fnRender": function ( oObj ) {
-                        return "<span class='package'><span class='icon' style='background-image:url(/admin/resource/icon/package/available/plugin/" + oObj.aData['id'] + "/" + oObj.aData['version'] + ")'></span>" + oObj.aData['version'] + "</span>";
+                        return "<span class='package'><span class='icon' style='background-image:url(" + ADMIN_URL + "/resource/icon/package/available/plugin/" + oObj.aData['id'] + "/" + oObj.aData['version'] + ")'></span>" + oObj.aData['version'] + "</span>";
                     }
                 },
                 {
@@ -246,14 +246,14 @@
             "oLanguage": {
                 "sEmptyTable": gettext('No external member installed')
             },
-            "sAjaxSource": '/rinor/api/package-installed/' + host_id + '/external/',
+            "sAjaxSource": REST_URL + '/api/package-installed/' + host_id + '/external/',
             "sAjaxDataProp": "objects",
             "sPaginationType": "full_numbers",
             "sDom": 'flrt<"bottom"p>',
             "aoColumns": [
                 {
                     "fnRender": function ( oObj ) {
-                        return "<span class='package'><span class='icon' style='background-image:url(/admin/resource/icon/package/installed/external/" + oObj.aData['id'] + ")'></span>" + oObj.aData['id'] + "</span>";
+                        return "<span class='package'><span class='icon' style='background-image:url(" + ADMIN_URL + "/resource/icon/package/installed/external/" + oObj.aData['id'] + ")'></span>" + oObj.aData['id'] + "</span>";
                     }
                 },
                 { "mDataProp": "version" },
@@ -295,7 +295,7 @@
                 "sEmptyTable": gettext('No external member available to install')
             },
             "bProcessing": true,
-            "sAjaxSource": '/rinor/api/package-available/' + host_id + '/external/',
+            "sAjaxSource": REST_URL + '/api/package-available/' + host_id + '/external/',
             "sAjaxDataProp": "objects",
             "sPaginationType": "full_numbers",
             "sDom": 'flrt<"bottom"p>',
@@ -308,7 +308,7 @@
                 },
                 {
                     "fnRender": function ( oObj ) {
-                        return "<span class='package'><span class='icon' style='background-image:url(/admin/resource/icon/package/available/external/" + oObj.aData['id'] + "/" + oObj.aData['version'] + ")'></span>" + oObj.aData['version'] + "</span>";
+                        return "<span class='package'><span class='icon' style='background-image:url(" + ADMIN_URL + "/resource/icon/package/available/external/" + oObj.aData['id'] + "/" + oObj.aData['version'] + ")'></span>" + oObj.aData['version'] + "</span>";
                     }
                 },
                 {

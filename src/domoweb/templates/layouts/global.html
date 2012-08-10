@@ -26,32 +26,42 @@
 <meta http-equiv="Cache-Control" content="no-cache" />
 <meta http-equiv="Pragma" content="no-cache" />
 
-<link rel="icon shortcut" type="image/png" href="/design/common/images/favicon.png" />
+<link href="{{ static_design_url }}/common/images/favicon.png" rel="icon shortcut" type="image/png" />
 <link href='http://fonts.googleapis.com/css?family=Expletus+Sans:700' rel='stylesheet' type='text/css'>
 
-<!--link href="/design/libraries/jquery-ui-1.8.16.custom/css/smoothness/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css"/-->
-<link href="/design/libraries/jquery.jgrowl-1.2.6/css/jquery.jgrowl.css" rel="stylesheet" type="text/css"/>
-<link href="/design/common/css/ui.general.css" rel="stylesheet" type="text/css" />
-<link href="/design/common/css/ui-icons.css" rel="stylesheet" type="text/css" />
-<link href="/design/common/css/dmg.notifications.css" rel="stylesheet" type="text/css" />
+<!--link href="{{ static_design_url }}/libraries/jquery-ui-1.8.16.custom/css/smoothness/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css"/-->
+<link href="{{ static_design_url }}/libraries/jquery.jgrowl-1.2.6/css/jquery.jgrowl.css" rel="stylesheet" type="text/css"/>
+<link href="{{ static_design_url }}/common/css/ui.general.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/common/css/ui-icons.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/common/css/dmg.notifications.css" rel="stylesheet" type="text/css" />
 
 {% block global_css %}{% endblock %}
 {% block css %}{% endblock %}
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
-<script type="text/javascript" src="/design/libraries/jquery-1.7.1/jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="/design/libraries/jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js"></script>
-<script type="text/javascript" src="/design/libraries/jquery.qtip-1.0.0-rc3/jquery.qtip-1.0.0-rc3.min.js"></script>
-<script type="text/javascript" src="/design/libraries/jquery.jgrowl-1.2.6/js/jquery.jgrowl_minimized.js"></script>
-<script type="text/javascript" src="/design/libraries/jquery.ui.subclass/jquery.ui.subclass.js"></script>
-<script type="text/javascript" src="/design/common/js/main.js"></script>
-<script type="text/javascript" src="/design/common/js/dmg.rinor.js"></script>
-<script type="text/javascript" src="/design/common/js/dmg.notifications.js"></script>
-<script type="text/javascript" src="/design/common/js/dmg.browser.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-1.7.1/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.qtip-1.0.0-rc3/jquery.qtip-1.0.0-rc3.min.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.jgrowl-1.2.6/js/jquery.jgrowl_minimized.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.ui.subclass/jquery.ui.subclass.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/common/js/main.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.rinor.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.notifications.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.browser.js"></script>
 
 {% block global_js_include %}{% endblock %}
 {% block js_include %}{% endblock %}
 <script type="text/javascript">
     // <![CDATA[
+    var REST_URL = "{{ rest_url }}";
+    var EVENTS_URL = "{{ events_url }}";
+    var CONFIG_URL = "{{ config_url }}";
+    var ADMIN_URL = "{{ admin_url }}";
+    var VIEW_URL = "{{ view_url }}";
+    var STATIC_DESIGN_URL = "{{ static_design_url }}";
+    var STATIC_WIDGETS_URL = "{{ static_widgets_url }}";
+    var STATIC_THEMES_URL = "{{ static_themes_url }}";
+    var STATIC_ICONSETS_URL = "{{ static_iconsets_url }}";
+
     {% block js_script %}{% endblock %}
     $(function(){
     {% if messages %}

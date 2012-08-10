@@ -23,12 +23,12 @@
 {% load text %}
 
 {% block css %}
-    <link href="/design/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
-    <link href="/design/admin/css/page-admin-organization.css" rel="stylesheet" type="text/css" />
-    <link href="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/admin/css/page-admin-organization.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
-    <script type="text/javascript" src="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
 {% endblock %}
 
 {% block js_script %}

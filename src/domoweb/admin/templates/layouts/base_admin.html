@@ -22,34 +22,34 @@
 {% load i18n %}
 
 {% block global_css %}
-<link href="/design/admin/css/layout.with_nav.css" rel="stylesheet" type="text/css" />
-<link href="/design/common/css/layout.content.css" rel="stylesheet" type="text/css" />
-<link href="/design/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
-<link href="/design/common/css/dmg.login.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/admin/css/layout.with_nav.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/common/css/layout.content.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/common/css/dmg.login.css" rel="stylesheet" type="text/css" />
 
-    <link href="/design/common/css/ui-forms.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/dmg.editable-icon.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/ui-nav2.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/ui-dialog.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/ui-tabs.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/ui-processing.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/ui-page-section.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-forms.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/dmg.editable-icon.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-nav2.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-dialog.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-tabs.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-processing.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-page-section.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block global_js_include %}
-<script type="text/javascript" src="/design/common/js/dmg.icons.js"></script>
-<script type="text/javascript" src="/design/common/js/dmg.login.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.icons.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.login.js"></script>
 
-    <script type="text/javascript" src="/design/libraries/jquery.timers-1.2/jquery.timers-1.2.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.external-links.js"></script>
-    <script type="text/javascript" src="/design/admin/js/dmg.ajax.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.tabs.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.forms.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.editable-icon.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.processing.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.tooltips.js"></script>
-    <script type="text/javascript" src="/design/common/js/dmg.dialogs.js"></script>
-    <script type="text/javascript" src="/design/admin/js/page-admin.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.timers-1.2/jquery.timers-1.2.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.external-links.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/admin/js/dmg.ajax.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.tabs.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.forms.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.editable-icon.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.processing.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.tooltips.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.dialogs.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin.js"></script>
     <script type="text/javascript">
         // <![CDATA[
         $(document).ready(function(){
@@ -71,12 +71,12 @@
     {% if we %}
         {% include 'we.html' %}
         <header id="mainheader">
-            <a href="{% url index_view %}" id="logo"><img src="/design/common/images/logo_domogik_we.png" alt="Domogik logo" /></a>
+            <a href="{% url index_view %}" id="logo"><img src="{{ static_design_url }}/common/images/logo_domogik_we.png" alt="Domogik logo" /></a>
             <div id="title">{% trans "Domogik" %} <span id="subtitle">{% trans "Joyeux noël" %}</span> </div>
         </header>
     {% else %}
         <header id="mainheader">
-            <a href="{% url index_view %}" id="logo"><img src="/design/common/images/logo_domogik.png" alt="Domogik logo" /></a>
+            <a href="{% url index_view %}" id="logo"><img src="{{ static_design_url }}/common/images/logo_domogik.png" alt="Domogik logo" /></a>
             <div id="title">{% trans "Domogik" %} <span id="subtitle">{% trans "Free home automation under Linux" %}</span> </div>
         </header>
     {% endif %}

@@ -25,8 +25,8 @@
 {% load django_tables2 %}
 
 {% block css %}
-    <link href="/design/admin/css/page-admin-tools.css" rel="stylesheet" type="text/css" />
-    <link href="/design/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/admin/css/page-admin-tools.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
 {% endblock %}

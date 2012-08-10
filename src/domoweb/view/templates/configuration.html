@@ -35,18 +35,18 @@
 {% endblock %}
 
 {% block css %}
-    <link href="/design/view/css/ui-buttons.css" rel="stylesheet" type="text/css" />
-    <link href="/design/view/css/configuration-page.css" rel="stylesheet" type="text/css" />
-    <link href="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/view/css/ui-buttons.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/view/css/configuration-page.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
 
     {% for iconset in iconsets %}
-    <link href="/iconsets/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_iconsets_url }}/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
     {% endfor %}
 {% endblock %}
 
 {% block js_include %}
     {{ form.media }}
-    <script type="text/javascript" src="/design/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
 {% endblock %}
 
 {% block title %}{{ page_title }}{% endblock %}

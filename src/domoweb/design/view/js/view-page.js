@@ -1,5 +1,5 @@
 $(function(){
-    var es = new EventSource('/events/');
+    var es = new EventSource(EVENTS_URL + '/');
     es.addEventListener('open', function (event) {
     }, false);
     es.addEventListener('message', function (event) {
@@ -11,7 +11,6 @@ $(function(){
     
 	$(window).bind('beforeunload', function () {  es.close(); });
 });
-
 
 (function($) {    
     $.extend({

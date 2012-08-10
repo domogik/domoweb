@@ -25,11 +25,11 @@
 {% load tree %}
 
 {% block css %}
-    <link href="/design/admin/css/page-admin-organization.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/admin/css/page-admin-organization.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
-    <script type="text/javascript" src="/design/libraries/jstree_pre1.0_fix_1/jquery.jstree.js"></script>
-    <script type="text/javascript" src="/design/libraries/jstree_pre1.0_fix_1/_lib/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jstree_pre1.0_fix_1/jquery.jstree.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jstree_pre1.0_fix_1/_lib/jquery.hotkeys.js"></script>
 {% endblock %}
 {% block js_script %}
     $(function(){
