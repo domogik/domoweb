@@ -116,13 +116,13 @@ class LaunchMiddleware:
 
         # List available page iconsets
         PageIcon.objects.all().delete()
-        STATIC_ICONSETS_ROOT = os.environ['DOMOWEB_STATIC_ICONSETS']
+        STATIC_ICONSETS_ROOT = os.environ['DOMOWEB_ICONSETS_ROOT']
         STATIC_ICONSETS_PAGE = os.path.join(STATIC_ICONSETS_ROOT, "page")
         if os.path.isdir(STATIC_ICONSETS_PAGE):
             for file in os.listdir(STATIC_ICONSETS_PAGE):
                 if not file.startswith('.'): # not hidden file
                     info = os.path.join(STATIC_ICONSETS_PAGE, file, "info.json")
-                    if os.path.isfile(main):
+                    if os.path.isfile(info):
                         iconset_file = open(info, "r")
                         iconset_json = simplejson.load(iconset_file)
                         iconset_id = iconset_json["identity"]["id"]
@@ -134,12 +134,12 @@ class LaunchMiddleware:
 
         # List available page themes
         PageTheme.objects.all().delete()
-        STATIC_THEMES_ROOT = os.environ['DOMOWEB_STATIC_THEMES']
+        STATIC_THEMES_ROOT = os.environ['DOMOWEB_THEMES_ROOT']
         if os.path.isdir(STATIC_THEMES_ROOT):
             for file in os.listdir(STATIC_THEMES_ROOT):
                 if not file.startswith('.'): # not hidden file
                     info = os.path.join(STATIC_THEMES_ROOT, file, "info.json")
-                    if os.path.isfile(main):
+                    if os.path.isfile(info):
                         theme_file = open(info, "r")
                         theme_json = simplejson.load(theme_file)
                         theme_id = theme_json["identity"]["id"]

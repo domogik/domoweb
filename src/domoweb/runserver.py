@@ -42,7 +42,7 @@ class Server(object):
         os.environ['DOMOWEB_DESIGN_ROOT'] = STATIC_DESIGN_ROOT
 
         STATIC_WIDGETS_URL = "/%swidgets" % url_prefix
-        STATIC_WIDGETS_ROOT = os.path.join(PROJECT_PATH, "widgets")
+        STATIC_WIDGETS_ROOT = os.path.join(PROJECT_PACKS, "widgets")
         os.environ['DOMOWEB_WIDGETS_URL'] = STATIC_WIDGETS_URL
         os.environ['DOMOWEB_WIDGETS_ROOT'] = STATIC_WIDGETS_ROOT
         
@@ -53,7 +53,7 @@ class Server(object):
 
         STATIC_ICONSETS_URL = "/%siconsets" % url_prefix
         STATIC_ICONSETS_ROOT = os.path.join(PROJECT_PACKS, "iconsets")
-        os.environ['DOMOWEB_ICONSETS_ROOT'] = STATIC_ICONSETS_ROOT
+        os.environ['DOMOWEB_ICONSETS_URL'] = STATIC_ICONSETS_URL
         os.environ['DOMOWEB_ICONSETS_ROOT'] = STATIC_ICONSETS_ROOT
         
         STATICS = {STATIC_DESIGN_URL:STATIC_DESIGN_ROOT, STATIC_WIDGETS_URL:STATIC_WIDGETS_ROOT, STATIC_THEMES_URL:STATIC_THEMES_ROOT, STATIC_ICONSETS_URL:STATIC_ICONSETS_ROOT}
