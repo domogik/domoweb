@@ -20,12 +20,13 @@
 {% load i18n %}
 
 <!DOCTYPE html>
-<html lang="{{LANGUAGE_CODE}}">
+<html lang="{{LANGUAGE_CODE}}" manifest="{% url cache_manifest %}">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<meta http-equiv="Cache-Control" content="no-cache" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <link href="{{ static_design_url }}/common/images/favicon.png" rel="icon shortcut" type="image/png" />
     

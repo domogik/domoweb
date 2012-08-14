@@ -35,6 +35,7 @@ Implements
 from django.http import HttpResponse
 from django.conf.urls.defaults import *
 from django.conf import settings
+from manifesto.views import ManifestView
 
 js_info_dict = {
     'packages': ('domoweb',),
@@ -42,6 +43,10 @@ js_info_dict = {
 
 urlpatterns = patterns('',
     (r'^%sjsi18n/$' % settings.URL_PREFIX, 'django.views.i18n.javascript_catalog', js_info_dict),
+)
+
+urlpatterns += patterns('',
+  url(r'^%smanifest\.appcache$' % settings.URL_PREFIX, ManifestView.as_view(), name="cache_manifest"),
 )
 
 urlpatterns += patterns('',
