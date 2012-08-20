@@ -1,99 +1,28 @@
+{% comment %}
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Sébastien GALLET <bibi21000@gmail.com>
+{% endcomment %}
+
 {% load i18n %}
 <script type='text/javascript'>
 
     $(function(){
-        $("#specialsubmit").click(function(){
-            var dmg_addr = $("#dmg_addr").val();
-            var cmd_addr = $("#cmd_addr").val();
-            var cmd_type = $("#cmd_type").val();
-            var stat_addr = $("#stat_addr").val();
-            var stat_type = $("#stat_type").val();
-            var read = $("#read").is(':checked');
-            var comment = $("#comment").val();
-            if (dmg_addr) {
-                if(cmd_addr||stat_addr){
-                var value = dmg_addr + ':' + cmd_addr + ':' + cmd_type + ':' + stat_addr + ':' + stat_type + ':' + read+':'+comment;
-                rinor.put(['api', 'command', 'knx', 'UI'], {"command":'Add', "value":value})
-                    .done(function(data, status, xhr){
-                         test=JSON.stringify(data);
-                         debut=test.search('data=');
-                         test=test.slice(debut+4);
-                         fin=test.search('}');
-                         test=test.slice(1,fin-2);
-                         if (test.search('Error')>=0){
-                            $.notification('error', test);
-                         }else{
-                         $.notification('info',test );
-                         $("#specialread").click();
-                         }
-                    })
-                    .fail(function(jqXHR, status, error){
-                        if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
-                    });
-                }else {
-                $.notification('error', '{% trans "Need Command group or Stat group address field should be filled" %}')
-                }
-            } else {
-                $.notification('error', '{% trans "Domogik device address field should be filled" %}');
-            }
-        });
-
-        $("#specialcreatealarm").click(function(){
-            cont=true
-            var mess = {};
-            mess['command'] = "start";
-            mess['value'] = $("#alarmtype").val();
-            //mess['caller'] = "UI";
-            //mess['alarmtype'] = $("#alarmtype").val();
-            var iid=$("#name").val();
-            //mess['device'] = iid;
-            var starthour = $("#starthour").val();
-            var stophour = $("#stophour").val();
-            var days = $("#days").val();
-            var alarm="";
-            if ((stophour != null) && (stophour != "")) {
-                mess['value'] = days + ',' + starthour + ':' + stophour;
-            } else {
-                mess['value'] = days + ',' + starthour;
-            }
-            mess['nst-xpltype'] = $("#xpltype").is(':selected');
-            mess['nst-schema'] = $("#schema").val();
-            mess['parameter0'] = $("#parameter0").val();
-            mess['valueon0'] = $("#valueon0").val();
-            mess['valueoff0'] = $("#valueoff0").val();
-            var field0 = $("#field0").val();
-            mess['nst-'+field0] = $("#value0").val();
-            var field1 = $("#field1").val();
-            if ((field1 != null) && (field1 != "")) {
-                mess['nst-'+field1] = $("#value1").val();
-            }
-            //alert(JSON.stringify(mess));
-            if (cont) {
-                rinor.put(['api', 'command', 'cron', iid], mess)
-                    .done(function(data, status, xhr){
-                         test=JSON.stringify(data);
-                         debut=test.search('data=');
-                         test=test.slice(debut+4);
-                         fin=test.search('}');
-                         test=test.slice(1,fin-2);
-                         if (test.search('Error')>=0){
-                            $.notification('error', test);
-                         }else{
-                         $.notification('info',test );
-                         $("#specialread").click();
-                         }
-                    })
-                    .fail(function(jqXHR, status, error){
-                        if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
-                    });
-                }else {
-                $.notification('error', '{% trans "Need Command group or Stat group address field should be filled" %}')
-                }
-        });
-
-   $("#speciallist").click(function() {
+    $("#speciallist").click(function() {
             rinor.put(['api', 'command', 'cron', 'UI'], {"command":'list'})
                .done(function(data, status, xhr){
                      //alert(JSON.stringify(data));
@@ -143,50 +72,6 @@
                         $.notification('error', '{% trans "Cant get list" %} (' + jqXHR.responseText + ')');
                 });
         });
-
-   $("#specialdelete").click(function(){
-      var ligne = $("#ligne_to_delete").val();
-                value="Delete:"+ligne
-                rinor.put(['api', 'command', 'knx', 'UI'], {"command":'Add', "value":value})
-                    .done(function(data, status, xhr){
-                     $.notification('info','Ligne deleted' );
-                     $("#specialread").click();
-                     $("#specialread").click();
-                     })
-                    .fail(function(jqXHR, status, error){
-                        if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
-                    });
-     });
-
-
-   $("#specialread").click(function(){
-      data="";
-      rinor.put(['api', 'command', 'knx', 'UI'], {"command":'Add', "value":"Request"})
-                    .done(function(data, status, xhr){
-                         test=JSON.stringify(data);
-                         debut=test.search('data=');
-                         test=test.slice(debut+4);
-                         fin=test.search('}');
-                         test=test.slice(1,fin-2);
-                         i=0;
-                         text="<u>Config file:</u> <br/>"
-                         do{
-                           i=i+1;
-                           next=test.search(',');
-                           text=text+"<br/>" +i+" - "+ test.slice(0,next);
-                           test=test.slice(next+1);
-             }
-             while (test.search(",")>=0);
-                         $('#demo').html(text);
-                         }
-                    )
-                    .fail(function(jqXHR, status, error){
-                        if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ')');
-                   });
-      });
-    $("")
     });
 </script>
 <section class="subsection">
@@ -211,156 +96,3 @@
         </table>
     </div>
 </section>
-<section class="subsection">
-    <h2>{% trans "Create an On/Off alarm" %}</h2>
-    <p>{% trans "This type of alarm let's you send On/off message using a time interval." %}</p>
-        <form id='alarmform'>
-            <fieldset>
-                <legend>{% trans 'Alarm informations'%}</legend>
-                    <table>
-                        <tr>
-                            <td><label for='alarmtype'>{% trans 'Alarm type' %}:</label></td>
-                            <td><input type='text' id='alarmtype' name='alarmtype' readonly="readonly" value="alarm"/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='name'>{% trans 'The bame of th alarm : you will use it to create a device.' %}:</label></td>
-                            <td><input type='text' id='name' name='name'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='days'>{% trans 'The days : a combination of MoTuWeThFrSaSu' %}:</label></td>
-                            <td><input type='text' id='days' name='days'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='starthour'>{% trans 'Start hour of the alarm (ie 8:00)' %}:</label></td>
-                            <td><input type='text' id='starthour' name='starthour'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='stophour'>{% trans 'Stop hour of the alarm (ie 11:00). Should be left blank for an infinite alarm.' %}:</label></td>
-                            <td><input type='text' id='stophour' name='stophour'/></td>
-                        </tr>
-                    </table>
-            </fieldset>
-            <fieldset>
-                <legend>{% trans 'Message to send'%}</legend>
-                    <table>
-                        <tr>
-                            <td><label for='xpltype'>{% trans 'Xpl-type' %}:</label></td>
-                            <td><select name="xpltype" id="xpltype">
-                                    <option value="xpl-cmnd" selected="selected">xpl-cmnd</option>
-                                    <option value="xpl-trig">xpl-trig</option>
-                                    <option value="xpl-stat">xpl-stat</option>
-                                </select></td>
-                        </tr>
-                        <tr>
-                            <td><label for='schema'>{% trans 'Schema to use : telldus.basic, x10.basic, ...' %}:</label></td>
-                            <td><input type='text' id='schema' name='schema'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='parameter0'>{% trans 'The name of the command to use : command, dim, ...' %}:</label></td>
-                            <td><input type='text' id='parameter0' name='parameter0'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='valueon0'>{% trans 'The on value of the command to send : on, 100, ...' %}:</label></td>
-                            <td><input type='text' id='valueon0' name='valueon0'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='valueoff0'>{% trans 'The off value of the command to send : off, 0, ...' %}:</label></td>
-                            <td><input type='text' id='valueoff0' name='valueoff0'/></td>
-                        </tr>
-                    </table>
-            </fieldset>
-            <fieldset>
-                <legend>{% trans 'Device insformation'%}</legend>
-                    <table>
-                        <tr>
-                            <td><label for='field0'>{% trans 'The adress field name : device, group,  ...' %}:</label></td>
-                            <td><input type='text' id='field0' name='field0'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='value0'>{% trans 'The value of the field address : TS14, A1, ...' %}:</label></td>
-                            <td><input type='text' id='value0' name='value0'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='field1'>{% trans 'The name of an optional field : house, group,  ...' %}:</label></td>
-                            <td><input type='text' id='field1' name='field1'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='value1'>{% trans 'The value of the optional field : A, ...' %}:</label></td>
-                            <td><input type='text' id='value1' name='value1'/></td>
-                        </tr>
-                    </table>
-            </fieldset>
-        <p>
-            <button id='specialcreatealarm' class='button icon16-action-save'>{% trans "Create" %}</button>
-            <button id='specialcancel' class='button icon16-action-save'>{% trans "Cancel" %}</button>
-        </p>
-        </form>
-</section>
-
-<section class="subsection">
-    <h2>{% trans "Special" %}</h2>
-        <form id='specialform'>
-            <label for='dmg_addr'>{% trans 'Domogik device address' %}:</label>
-            <input type='text' id='dmg_addr' name='dmg_addr'/>
-            <label for='cmd_addr'>{% trans 'KNX command group address' %}:</label>
-            <input type='text' id='cmd_addr' name='cmd_addr'/>
-            <label for='cmd_type'>{% trans 'KNX command datatype' %}:</label>
-            <select name="drop1" id="cmd_type">
-                <option value="1.001">1.001-Switch ON/OFF</option>
-                <option value="1.008">1.008-Blind Controle UP/DOWN</option>
-                <option value="3.007">3.007-Dimming by step</option>
-                <option value="3.008">3.008-Blind by step</option>
-                <option value="5.001">5.001-Scalling 0-100%</option>
-                <option value="5.003">5.003-Angle 0-360°</option>
-                <option value="5.xxx">5.xxx-8bit unsigned integer</option>
-                <option value="6.xxx">6.xxx-8bit signed integer</option>
-                <option value="7.xxx">7.xxx-16bit unsigned integer</option>
-                <option value="8.xxx">8.xxx-16bit signed integer</option>
-                <option value="9.xxx">9.xxx-16bit floating number</option>
-                <option value="10.001">10.001-Time</option>
-                <option value="11.001">11.001-Date</option>
-                <option value="12.xxx">12.xxx-32bit unsigned integer</option>
-                <option value="13.xxx">13.xxx-32bit signed integer</option>
-                <option value="14.xxx">14.xxx-32bit IEEE754 floating point</option>
-                <option value="16.000">16.000-String</option>
-                <option value="20.102">20.102-HVAC mode</option>
-                <option value="DT_HVACEib">Special DTP for TB042</option>
-            </select>
-
-            <label for='stat_addr'>{% trans 'KNX state group address' %}:</label>
-            <input type='text' id='stat_addr' name='stat_addr'/>
-            <label for='stat_type'>{% trans 'KNX state datatype' %}:</label>
-           <select name="drop1" id="stat_type">
-                <option value="1.001">1.001-Switch ON/OFF</option>
-                <option value="1.008">1.008-Blind Controle UP/DOWN</option>
-                <option value="3.007">3.007-Dimming by step</option>
-                <option value="3.008">3.008-Blind by step</option>
-                <option value="5.001">5.001-Scalling 0-100%</option>
-                <option value="5.003">5.003-Angle 0-360°</option>
-                <option value="5.xxx">5.xxx-8bit unsigned integer</option>
-                <option value="6.xxx">6.xxx-8bit signed integer</option>
-                <option value="7.xxx">7.xxx-16bit unsigned integer</option>
-                <option value="8.xxx">8.xxx-16bit signed integer</option>
-                <option value="9.xxx">9.xxx-16bit floating number</option>
-                <option value="10.001">10.001-Time</option>
-                <option value="11.001">11.001-Date</option>
-                <option value="12.xxx">12.xxx-32bit unsigned integer</option>
-                <option value="13.xxx">13.xxx-32bit signed integer</option>
-                <option value="14.xxx">14.xxx-32bit IEEE754 floating point</option>
-                <option value="16.000">16.000-String</option>
-                <option value="20.102">20.102-HVAC mode</option>
-                <option value="DT_HVACEib">Special DTP for TB042</option>
-            </select>
-            <label for='lecture'>{% trans "Read on start" %}</label>
-            <input type='checkbox' id='read' name='read' value='true'/>
-            <label for='comment'>{% trans 'Description of this device' %}:</label>
-            <input type='text' id='comment' name='comment' size='40'/>
-        </form>
-        <p>
-            <button id='specialsubmit' class='button icon16-action-save'>{% trans "Add" %}</button>
-            <button id='specialread' class='button icon16-action-save'>{% trans "Read file" %}</button>
-        </p>
-              <p id="demo"><u>Config file:</u></p>
-           <button id='specialdelete' class='button icon16-action-save'>{% trans "Delete ligne" %}</button><input type=text id='ligne_to_delete' name='ligne_to_delete' size='40'>
-</section>
-
