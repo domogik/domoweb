@@ -1,7 +1,7 @@
 from domoweb.exceptions import RinorError, RinorNotAvailable
 from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpResponseServerError
-from django.template import Context, loader
+from django.template import Context, loader, RequestContext
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.conf import settings
