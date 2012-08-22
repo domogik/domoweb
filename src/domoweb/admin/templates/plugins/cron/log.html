@@ -26,7 +26,7 @@ $(function(){
         var value = $("#nblines").val();
         rinor.put(['api', 'command', '{{ plugin.id }}', '{{ plugin.id }}'], {"command":'log', "value":value})
            .done(function(data, status, xhr){
-                 //alert(JSON.stringify(data["xpl"]));
+                 alert(JSON.stringify(data["xpl"]));
                  var test=JSON.stringify(data["xpl"]);
                  //var test=data;
                  var debut=test.search('nhelper.basic');
@@ -79,7 +79,7 @@ $(function(){
     <div id='log_list'>
         <p><label for='nblines'>{% trans 'Number of lines to show' %}:</label>
         <input type='text' id='nblines' name='nblines' value="50" />
-        <button id='loglist' class='button icon16-action-save'>{% trans "View" %}</button></p>
+        <button id='loglist' class='button icon16-action-reset'>{% trans "View" %}</button></p>
         <table id='log_items' class='simple'>
             <thead>
                 <tr>
