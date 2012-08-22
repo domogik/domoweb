@@ -26,7 +26,7 @@ $(function(){
         var value = $("#nblines").val();
         rinor.put(['api', 'command', '{{ plugin.id }}', '{{ plugin.id }}'], {"command":'log', "value":value})
            .done(function(data, status, xhr){
-                 alert(JSON.stringify(data["xpl"]));
+                 //alert(JSON.stringify(data["xpl"]));
                  var test=JSON.stringify(data["xpl"]);
                  //var test=data;
                  var debut=test.search('nhelper.basic');
