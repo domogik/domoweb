@@ -540,6 +540,9 @@
 .icon32-menu-helpers { background-image:url(../images/menu/terminal_32.png);}
 
 /* Action */
+.icon16-action-play { background-image:url(../images/action/play_16.png);}
+.icon16-action-pause { background-image:url(../images/action/pause_16.png);}
+.icon16-action-help { background-image:url(../images/action/help_16.png);}
 .icon16-action-add { background-image:url(../images/action/plus_16.png);}
 .icon16-action-del { background-image:url(../images/action/minus_16.png);}
 .icon16-action-update { background-image:url(../images/action/pen_16.png);}
