@@ -78,7 +78,8 @@
                 tamp=tamp.slice(li+inc)
             };
             };
-        if (mesxPL.count > 1) { 
+        console.log("*** mesxPL['count'] = " + mesxPL['count']);
+        if (mesxPL.count > 0) { 
             for (i=0; i< mesxPL.count; i++) {
                 dt=mesxPL['value' +i];
                 dt= (dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"')) + "}";
@@ -86,8 +87,7 @@
                 mesxPL['value' +i] = JSON.parse(dt); 
             };
         } else {
-            dt = mesxPL['data'];
-            mesxPL['data'] = dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"');
+            console.log (" --- no data--- messxPL" + mesxPL);
         };
         return mesxPL;
     };
@@ -156,29 +156,37 @@
                 rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
                     .done(function(data, status, xhr){
                         messXpl = ParseAckXPL(data.xpl);
-                        var thOut = Object.keys(messXpl['value0']);  // Hypothèse, vrais pour l'intant, toutes les lignes on les mêmes entêtes !
-                        var RowN = [];
-                        for (i=0; i<messXpl.count; i++) {
-                            valuesNode[i]= messXpl['value' + i];
-                            var R = [];
-                            R[0] = i + 1;
-                            for (ii=0; ii<thOut.length;ii++) {
-                                R[ii+1] = valuesNode[i][thOut[ii]]
-                                }
-                            RowN[i] = R;
-                        }
-                        console.log("Dans GetinfoValuesNode : " + RowN);
-                 //       $.notification('debug',"Node : " + valuesNode['Value'] + " info refreshed" );
-                        callback(thOut);
-                        var idDetNode = '#detNode' + nodeid; 
-                        $(idDetNode).dataTable({
-                                "bFilter": false,  
-                                "aaData": RowN
-                                });
-                        for (i=0; i<thOut.length; i++) {
-                            if (thOut[i] == 'nodeId' | thOut[i] == 'homeId') {$(idDetNode).dataTable().fnSetColumnVis( i+1, false ); };
-                            };
-                        return  valuesNode;
+                        if (messXpl['count'] != 0) {
+                            var thOut = Object.keys(messXpl['value0']);  // Hypothèse, vrais pour l'intant, toutes les lignes on les mêmes entêtes !
+                            var RowN = [];
+                            for (i=0; i<messXpl.count; i++) {
+                                valuesNode[i]= messXpl['value' + i];
+                                var R = [];
+                                R[0] = i + 1;
+                                for (ii=0; ii<thOut.length;ii++) {
+                                    R[ii+1] = valuesNode[i][thOut[ii]]
+                                    }
+                                RowN[i] = R;
+                            }
+                            console.log("Dans GetinfoValuesNode : " + RowN);
+                            callback(thOut);
+                            var idDetNode = '#detNode' + nodeid; 
+                            $(idDetNode).dataTable({
+                                    "bFilter": false,  
+                                    "bAutoWidth": false,
+                                    "aaData": RowN
+                                    });
+                            for (i=0; i<thOut.length; i++) {
+                                if (thOut[i] == 'nodeId' | thOut[i] == 'homeId') {$(idDetNode).dataTable().fnSetColumnVis( i+1, false ); };
+                                };
+                            return valuesNode;
+                        } else { // le Node n'as pas de command_class
+                            var thOut =[];
+                            thOut[0]="No Command_Class";
+                            console.log("Dans GetinfoValuesNode no Cmd-Class : " + thOut);
+                            callback(thOut);                            
+                        
+                        };
                     })
                     .fail(function(jqXHR, status, error){
                        if (jqXHR.status == 400)
@@ -282,8 +290,13 @@
         
     function setActionNode(oObj) {
         var num = oObj.aData[hdLiNode['NodeId']];
+        var stAct = 'add';i
+        var tabDet = document.getElementById("detNode" + num);
+        if (tabDet) { // DetailNode opened 
+            stAct = 'del'; 
+        };
         var ret =  "<button id='detailnode" + num + 
-                        "' class='icon16-action-add buttonicon' title='Detail Node' ><span class='offscreen'>Detail Node : " + num + "</span></button>";
+                        "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' ><span class='offscreen'>Detail Node : " + num + "</span></button>";
          ret =  ret + "<button id='updnode" + num + 
                         "' class='icon16-action-update buttonicon' title='Update Node' ><span class='offscreen'>Update Node : " + num + "</span></button>";
         console.log("******** setActionNode : " + oObj.aData + " ret : " + ret);
@@ -307,14 +320,18 @@
         var aData = oTabNodes.fnGetData(nTr);
         var idDetNode = 'detNode' + aData[hdLiNode['NodeId']];
         console.log("Format detail node entête : " + thOut);
-//        var sOut = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">';
-        var sOut = '<table id="' + idDetNode + '" class="simple" cellpadding="5" border="1"><thead><tr>'
-    //   var thOut = Object.keys(values[0]);
-        sOut += '<th scope="col">Num</th>';
-        for (i=0; i<thOut.length; i++) {
-            sOut += '<th scope="col">' + thOut[i]+ '</th>';
-            };
-        sOut += '</tr></thead><tbody></tbody></table>';
+        if (thOut.length != 1) {
+            var sOut = '<table id="' + idDetNode + '" class="simple" cellpadding="5" border="1"><thead><tr>'
+            sOut += '<th scope="col">Num</th>';
+            for (i=0; i<thOut.length; i++) {
+                sOut += '<th scope="col">' + thOut[i]+ '</th>';
+                };
+            sOut += '</tr></thead><tbody></tbody></table>';
+        } else {
+            var sOut = '<table id="' + idDetNode + '" class="e" cellpadding="5" cellspacing="5" border="0" style="padding-left:100px;">' +
+                '<tr><td> {% trans "No Command_Class for"%} :</td><td>'+aData[hdLiNode['Type']]+'</td></tr>'+
+                '</table>';
+        };
    //     console.log (sOut);
         return sOut;
     };
@@ -352,26 +369,17 @@
                     });
         };
         if (this.title =='Detail Node') {
-           var t =  this.attributes["class"].value; //nodeValue
-           if (t.search('action-del') != -1 ) {
+            var t =  this.attributes["class"].value; //nodeValue
+            if (t.search('action-del') != -1 ) {
 			// This row is already open - close it 
-			this.attributes["class"].value = "icon16-action-add buttonicon"; //nodeValue
-			oTabNodes.fnClose( nTr );
+                this.attributes["class"].value = "icon16-action-add buttonicon"; //nodeValue
+                oTabNodes.fnClose( nTr );
             }else {
                 // Open this row 
                 this.attributes["class"].value = "icon16-action-del buttonicon"; //nodeValue
                 //send update nodes values
                 var values = GetinfoValuesNode(aData[hdLiNode['NodeId']], function(thOut){ oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,thOut), 'simple' );});
- /*               var idDetNode = 'detNode' + aData[hdLiNode['NodeId']]; 
-                $("#"+idDetNode).dataTable({
-                        "bFilter": false
-                        });
-                for (i=0; i<values.length; i++) {
-                    $('#+idDetNode').dataTable().fnAddData(values[i]);
-                    }
-                
-                console.log("click detail values : " + values); */
-     //           oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,values), 'simple' );
+            /*  console.log("click detail values : " + values); */
             };
         }else {
             console.log("Dans click button, DataTable : " + this.title); 
@@ -413,6 +421,7 @@
    $(document).ready(function(){
          oTabNodes = $("#node_items").dataTable({
             "bFilter": false,
+            "bAutoWidth": false,
             "aoColumnDefs": [  
                 { "fnRender": function (oObj) {return setNameNode(oObj);}, "aTargets": [ hdLiNode['Name'] ] },
                 { "fnRender": function (oObj) {return  "<input type='text' title='Location' value='" + 
