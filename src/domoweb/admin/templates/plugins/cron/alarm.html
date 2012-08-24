@@ -19,7 +19,13 @@
 {% endcomment %}
 
 {% load i18n %}
-<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
+
+<link rel="stylesheet" media="all" type="text/css" href="{{ static_design_url }}/llibraries/jquery-ui-1.8.16.custom/css/smoothness/jquery-ui-1.8.16.custom.css" />
+<link rel="stylesheet" media="all" type="text/css" href="{{ static_design_url }}/libraries/jquery-ui-timepicker/css/jquery-ui-timepicker-addon.css" />
+
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-ui-timepicker/js/jquery-ui-timepicker-addon.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-ui-timepicker/js/jquery-ui-sliderAccess.js"></script>
+
 <script type='text/javascript'>
     var devices = new Array();
 
@@ -39,33 +45,27 @@
              var nstvalue0 = "";
              var nstvalue1 = "";
              var alarm = "";
-             if($('select#device').val() != 0){
-                    nstdevice = devices[$("select#device").val()][4];
-                    nstid = devices[$("select#device").val()][0];
-                    var testvalue = devices[$("select#device").val()][2].split(".");
+             if($('select#alarmdevice').val() != 0){
+                    nstdevice = devices[$("select#alarmdevice").val()][4];
+                    nstid = devices[$("select#alarmdevice").val()][0];
+                    var testvalue = devices[$("select#alarmdevice").val()][2].split(".");
                     nsttechno = testvalue[0];
-                    testvalue = devices[$("select#device").val()][5];
+                    testvalue = devices[$("select#alarmdevice").val()][5];
                     testvalue = testvalue.replace(/&quot;/g,'"');
                     var obj = jQuery.parseJSON(testvalue);
-                    console.log("obj.command : " + obj['command']);
+                    //console.log("obj.command : " + obj['command']);
                     nstcommand = obj['command'];
                     // Must check if fields are selct or input
-                    testvalue =  $("#device_begin").val();
+                    testvalue =  $("#alarmdevice_begin").val();
                     if ( ! testvalue) {
-                        testvalue =  $("select#device_begin").val();
+                        testvalue =  $("select#alarmdevice_begin").val();
                     }
-                    //console.log("select#device_begin : " + $("select#device_begin").val());
-                    //testvalue = testvalue.replace(/&quot;/g,"'").replace(/{/g,"");
-                    //testvalue = testvalue.replace(/}/g,"").replace(/:/g,",");
-                    //testvalue = testvalue.replace(/'/g,"").split(',');
+                    //console.log("select#alarmdevice_begin : " + $("select#alarmdevice_begin").val());
                     nstvalue0 = testvalue;
-                    testvalue =  $("#device_end").val();
+                    testvalue =  $("#alarmdevice_end").val();
                     if ( !testvalue ) {
-                        testvalue =  $("select#device_end").val();
+                        testvalue =  $("select#alarmdevice_end").val();
                     }
-                    //testvalue = testvalue.replace(/&quot;/g,"'").replace(/{/g,"");
-                    //testvalue = testvalue.replace(/}/g,"").replace(/:/g,",");
-                    //testvalue = testvalue.replace(/'/g,"").split(',');
                     nstvalue1 = testvalue;
              };
              name = $("#alarmname").val();
@@ -83,72 +83,75 @@
              rinor.put(['api', 'command', 'cron', 'UI'], {"command":"create-alarm", 'value' : value})
                 .done(function(data, status, xhr){
                      test=JSON.stringify(data);
-                     debut=test.search('data=');
-                     test=test.slice(debut+4);
-                     fin=test.search('}');
-                     test=test.slice(1,fin-2);
-                     if (test.search('Error')>=0){
-                        $.notification('error', test);
+                     debut=test.search('error=');
+                     if (debut != -1) {
+                        test=test.slice(debut+5);
+                        fin=test.search('}');
+                        test=test.slice(1,fin-2);
+                        $.notification('error',test);
                      }else{
-                        $.notification('info',test );
+                        $("#speciallist").click();
+                        $.notification('info',"Alarm " + name + " created");
                      }
-                     RefreshTabHtml();
                 })
+
                 .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
                         $.notification('error', "{% trans "Can't create alarm" %} (" + jqXHR.responseText + ")");
                 });
         });
 
-        $("select#device").change(function(){
-              var test = $("select#device").val();
+        $("select#alarmdevice").change(function(){
+              var test = $("select#alarmdevice").val();
               var valeur = devices[test][5];
               var test2 = devices[test][3];
               valeur = valeur.replace(/&quot;/g,'"');
               var obj = jQuery.parseJSON(valeur);
 
               if (devices[test][3]=="list"||devices[test][3]=="binary"){
-                  $("#grp_device_begin").html("<select id='device_begin' style='width:20em;'></select>");
-                  $("#grp_device_end").html("<select id='device_end' style='width:20em;'></select>");
+                  $("#grp_alarmdevice_begin").html("<select id='alarmdevice_begin' style='width:20em;'></select>");
+                  $("#grp_alarmdevice_end").html("<select id='alarmdevice_end' style='width:20em;'></select>");
                   if (test2 == "binary"){
-                     $("select#device_begin").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
-                     $("select#device_begin").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
-                     $("select#device_end").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
-                     $("select#device_end").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+                     $("select#alarmdevice_begin").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+                     $("select#alarmdevice_begin").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+                     $("select#alarmdevice_end").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+                     $("select#alarmdevice_end").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
                   }
                   else {
                      for(i=0 ;i<obj.commandValues.length;i++){
-                       $("select#device_begin").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
-                       $("select#device_end").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+                       $("select#alarmdevice_begin").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+                       $("select#alarmdevice_end").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
                        }
                   }
               }
               else if (test2=="numeric"|| test2=="range"){
-                 $("#grp_device_begin").html("<input id='device_begin' style='width:20em;'></input>");
-                 $("#grp_device_end").html("<input id='device_end' style='width:20em;'></input>");
+                 $("#grp_alarmdevice_begin").html("<input id='alarmdevice_begin' style='width:20em;'></input>");
+                 $("#grp_alarmdevice_end").html("<input id='alarmdevice_end' style='width:20em;'></input>");
               }
               else if (test2=="trigger"){
-                 $("#grp_device_begin").html("");
-                 $("#grp_device_end").html("");
+                 $("#grp_alarmdevice_begin").html("");
+                 $("#grp_alarmdevice_end").html("");
               }
-        //console.log("select#device_begin : " + $("select#device_begin").val());
-        //if ($("#device_begin").val()) {
-        //    console.log("device_begin : " + $("#device_begin").val());
+        //console.log("select#alarmdevice_begin : " + $("select#alarmdevice_begin").val());
+        //if ($("#alarmdevice_begin").val()) {
+        //    console.log("alarmdevice_begin : " + $("#alarmdevice_begin").val());
         //}
-        //if ($("select#device_begin").val()) {
-        //    console.log("device_begin : " + $("select#device_begin").val());
+        //if ($("select#alarmdevice_begin").val()) {
+        //    console.log("alarmdevice_begin : " + $("select#alarmdevice_begin").val());
         //}
       });
 
 
       $(document).ready(function(){
         var i=1;
+        //$('#alarmstarthour').timepicker({});
+        //$('#alarmstophour').timepicker({});
         rinor.get(['api', 'feature'])
             .done(function(data, status, xhr){
                 $.each(data.objects, function(index, object) {
                     devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
                     if (object.device_feature_model.feature_type == "actuator"){
-                       $('select#device').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
+                       $('select#alarmdevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
                     }
                     i=i+1;
                 });
@@ -156,7 +159,7 @@
                 //for(i=0 ;i<devices[1].length;i++){
                 //    console.log("devices[1][" + i + "] : " + devices[1][i]);
                 //}
-                $("select#device").change();
+                $("select#alarmdevice").change();
            })
             .fail(function(jqXHR, status, error){
                 if (jqXHR.status == 400)
@@ -167,7 +170,7 @@
 
 </script>
 <section class="subsection">
-    <h3>{% trans "Create an interval periodic timer." %}</h3>
+    <h3>{% trans "Create an alarm." %}</h3>
     <p>{% trans "With this kind of timer, you could switch on your bedroom ligth at 9:00 every workdays, switch off your outdoor light at 23:00, or switch on your christmas tree at 18:00 and switch it off at 22:00." %}</p>
             <fieldset>
                 <legend><h4>{% trans 'Name'%}</h4></legend>
@@ -199,22 +202,22 @@
                 <legend><h4>{% trans 'Device to use'%}</h4></legend>
                     <table>
                         <tr>
-                            <td><label for='device'>{% trans "Device" %}:</label></td>
-                            <td><select id="device" class='listes' style="width:30em;"></select></td>
+                            <td><label for='alarmdevice'>{% trans "Device" %}:</label></td>
+                            <td><select id="alarmdevice" class='listes' style="width:30em;"></select></td>
                         </tr>
                         <tr>
-                            <td><label for='grp_device_begin'>{% trans "The command / value to use at the begin of the cycle." %}:</label></td>
-                            <td><span id="grp_device_begin"></span></td>
+                            <td><label for='grp_alarmdevice_begin'>{% trans "The command / value to use at the begin of the cycle." %}:</label></td>
+                            <td><span id="grp_alarmdevice_begin"></span></td>
                         </tr>
                         <tr>
-                            <td><label for='grp_device_end'>{% trans "The command / value to use at the end of the cycle." %}:</label></td>
-                            <td><span id="grp_device_end"></span></td>
+                            <td><label for='grp_alarmdevice_end'>{% trans "The command / value to use at the end of the cycle." %}:</label></td>
+                            <td><span id="grp_alarmdevice_end"></span></td>
                         </tr>
                     </table>
             </fieldset>
         <p>
             <button id='specialcreatealarm' class='button icon16-action-save'>{% trans "Create" %}</button>
-            <button id='specialcancel' class='button icon16-action-reset'>{% trans "Cancel" %}</button>
+            <button id='specialcancelalarm' class='button icon16-action-reset'>{% trans "Cancel" %}</button>
         </p>
 </section>
 

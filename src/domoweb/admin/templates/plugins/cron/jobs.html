@@ -162,48 +162,48 @@
         var jobid = aData[hdLiNode['JobId']];
         if (this.title =='Resume Alarm') {
             //console.log("Dans click resumealarm, DataTable : " + aData);
-                var msg = {};
-                msg['command'] = "resume";
-                msg['value'] = jobid;
-                rinor.put(['api', 'command', 'cron', jobid], msg)
-                   .done(function(data, status, xhr){
-                        //console.log("resumealarm ok, data : " + data);
-                        RefreshTabHtmlJob(data);
-                    })
-                    .fail(function(jqXHR, status, error){
-                        if (jqXHR.status == 400)
-                            $.notification('error', "{% trans "Can\'t resume alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
-                    });
+            var msg = {};
+            msg['command'] = "resume";
+            msg['value'] = jobid;
+            rinor.put(['api', 'command', 'cron', jobid], msg)
+               .done(function(data, status, xhr){
+                    //console.log("resumealarm ok, data : " + data);
+                    RefreshTabHtmlJob(data);
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Can\'t resume alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
+                });
         };
         if (this.title =='Stop Alarm') {
-            console.log("Dans click stopalarm, DataTable : " + aData);
-                var msg = {};
-                msg['command'] = "stop";
-                msg['value'] = jobid;
-                rinor.put(['api', 'command', 'cron', jobid], msg)
-                   .done(function(data, status, xhr){
-                        //console.log("stopalarm ok, data : " + data);
-                        RefreshTabHtmlJob(data);
-                    })
-                    .fail(function(jqXHR, status, error){
-                        if (jqXHR.status == 400)
-                            $.notification('error', "{% trans "Can\t stop alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
-                    });
+            //console.log("Dans click stopalarm, DataTable : " + aData);
+            var msg = {};
+            msg['command'] = "stop";
+            msg['value'] = jobid;
+            rinor.put(['api', 'command', 'cron', jobid], msg)
+               .done(function(data, status, xhr){
+                    //console.log("stopalarm ok, data : " + data);
+                    RefreshTabHtmlJob(data);
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Can\t stop alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
+                });
         };
         if (this.title =='Delete Alarm') {
-            console.log("Dans click deletealarm, DataTable : " + aData);
-                var msg = {};
-                msg['command'] = "halt";
-                msg['value'] = jobid;
-                rinor.put(['api', 'command', 'cron', jobid], msg)
-                   .done(function(data, status, xhr){
-                        //console.log("deletealarm ok, data : " + data);
-                        RefreshTabHtmlJob(data);
-                    })
-                    .fail(function(jqXHR, status, error){
-                        if (jqXHR.status == 400)
-                            $.notification('error', "{% trans "Can\'t delete alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
-                    });
+            //console.log("Dans click deletealarm, DataTable : " + aData);
+            var msg = {};
+            msg['command'] = "halt";
+            msg['value'] = jobid;
+            rinor.put(['api', 'command', 'cron', jobid], msg)
+               .done(function(data, status, xhr){
+                    //console.log("deletealarm ok, data : " + data);
+                    RefreshTabHtmlJob(data);
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Can\'t delete alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
+                });
         };
     } );
 

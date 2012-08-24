@@ -124,13 +124,19 @@
             <li><a href="#tabs-5">{% trans "Alarm" %}</a></li>
         {% endif %}
         {% if plugin.id == "cron" %}
-            <li><a href="#tabs-6">{% trans "Helper" %}</a></li>
+            <li><a href="#tabs-6">{% trans "Dawn Alarm" %}</a></li>
         {% endif %}
         {% if plugin.id == "telldus" %}
             <li><a href="#tabs-6">{% trans "Log" %}</a></li>
         {% endif %}
         {% if plugin.id == "cron" %}
-            <li><a href="#tabs-7">{% trans "Log" %}</a></li>
+            <li><a href="#tabs-7">{% trans "Date" %}</a></li>
+        {% endif %}
+        {% if plugin.id == "cron" %}
+            <li><a href="#tabs-8">{% trans "Helper" %}</a></li>
+        {% endif %}
+        {% if plugin.id == "cron" %}
+            <li><a href="#tabs-9">{% trans "Log" %}</a></li>
         {% endif %}
         </ul>
         <div id="tabs-1">
@@ -180,7 +186,7 @@
     {% endif %}
     {% if plugin.id == "cron" %}
         <div id="tabs-6">
-            {% include "plugins/cron/helper.html" %}
+            {% include "plugins/cron/dawnalarm.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "telldus" %}
@@ -190,6 +196,16 @@
     {% endif %}
     {% if plugin.id == "cron" %}
         <div id="tabs-7">
+            {% include "plugins/cron/date.html" %}
+        </div>
+    {% endif %}
+    {% if plugin.id == "cron" %}
+        <div id="tabs-8">
+            {% include "plugins/cron/helper.html" %}
+        </div>
+    {% endif %}
+    {% if plugin.id == "cron" %}
+        <div id="tabs-9">
             {% include "plugins/cron/log.html" %}
         </div>
     {% endif %}
