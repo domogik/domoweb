@@ -59,7 +59,7 @@
              alarm = $("#dawnalarmdays").val() + "," + $("#dawnalarmstarthour").val();
              alarm = alarm + "-" + $("#dawnalarmstophour").val();
              if (($("#dawnalarmdimlevels").val() != null) && ($("#dawnalarmdimlevels").val() != "")) {
-                    alarm = alarm + ":" + $("#dawnalarmdimlevels").val();
+                    alarm = alarm + "," + $("#dawnalarmdimlevels").val();
              };
              var value = "{ 'device':'" + name + "','devicetype':'" + devicetype +
                          "','alarm':'" + alarm +
