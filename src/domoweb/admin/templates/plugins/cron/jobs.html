@@ -90,15 +90,20 @@
         device = GetDeviceFromxPL(data);
 //        console.log("Dans RefreshTabHtmlJob, " + device);
         var cron_items = document.getElementById("cron_items");
-        var jobid=device['device'];
+        var jobid = device['device'];
+        var status = device['current'];
         var dataT = $('#cron_items').dataTable().fnGetData();
         var trfunct= function(li,dr){$('#cron_items').dataTable().fnAddData(dr);};
         if (dataT) {
             for (i=0; i<dataT.length; i++) {
                 if (dataT[i][hdLiNode['JobId']]==jobid) {
-                    var trfunct= function(li,dr){$('#cron_items').dataTable().fnUpdate(dr,li);};
-                    var li= i;
-                    break;
+					if (status=='halted') {
+						$('#cron_items').dataTable().fnDeleteRow(i);;
+						return ;
+					}
+					var trfunct = function(li,dr){$('#cron_items').dataTable().fnUpdate(dr,li);};
+					var li = i;
+					break;
                 };
             };
         };
