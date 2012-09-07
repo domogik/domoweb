@@ -100,6 +100,16 @@
         return val;
         };
        
+    function getDataTableColIndex (dTab, title) {
+        var cols = dTab.aoColumns;
+        for ( var x=0, xLen=cols.length ; x<xLen ; x++ ) {
+            if ( cols[x].sTitle.toLowerCase() == title.toLowerCase() ) {
+                return x;
+                };
+            }
+        return -1;
+        };
+       
     function setStatusZW(status) {
         if (status=='up') { //active
             textstatus = "En cours d'execution";
@@ -124,8 +134,6 @@
                     .done(function(data, status, xhr){
                         infoNode = GetDataFromxPL(data, 'data');
                         var dt=JSON.stringify(infoNode);
-                        $('#listbrute').html(dt);
-                        $('#testmsg').html(" Get infoNode, infonode : " + infoNode['Model']);
                         console.log("Dans getinfonode : " + infoNode['Model']);
                         $.notification('debug',"Node : " + infoNode['Model'] + " info refreshed" );
                         RefreshTabHtml(infoNode);
@@ -174,10 +182,14 @@
                             $(idDetNode).dataTable({
                                     "bFilter": false,  
                                     "bAutoWidth": false,
+                                    "aoColumnDefs": [  
+                                        { "fnRender": function (oObj) {return setStCmdClsNode(oObj);}, "aTargets": [0] },
+                                        ],
                                     "aaData": RowN
                                     });
                             for (i=0; i<thOut.length; i++) {
-                                if (thOut[i] == 'nodeId' | thOut[i] == 'homeId') {$(idDetNode).dataTable().fnSetColumnVis( i+1, false ); };
+                                if (thOut[i] == 'nodeId' | thOut[i] == 'homeId' | thOut[i] == 'domogikdevice') {
+                                    $(idDetNode).dataTable().fnSetColumnVis( i+1, false ); };
                                 };
                             return valuesNode;
                         } else { // le Node n'as pas de command_class
@@ -220,8 +232,8 @@
                     $('#numnodes').html(netWorkZW['Node count']);
                     $('#libctrl').html(netWorkZW['Library']);
                     $('#libctrlver').html(netWorkZW['Version']);                    
-                    $('#testmsg').html("");
-                    $('#testmsg2').html(JSON.stringify(netWorkZW));
+                    $('#libozwvers').html(netWorkZW['PYOZWLibVers']);
+                    $('#ozwplugvers').html(netWorkZW['OZWPluginVers']);
                     console.log("Dans Submit, .done: " + netWorkZW['Model']);
                     setStatusZW('up')
                     $.notification('debug',"device : " + netWorkZW['Primary controller'] + " info refreshed" );
@@ -237,7 +249,6 @@
     
     function RefreshNodes(netWorkZW) {
            console.log("Dans RefreshNode, après .done" + JSON.stringify(netWorkZW));
-           $('#testmsg').html(netWorkZW.ListNodeId.length);
             if (netWorkZW) {
                 var i=0;
                 var nId=0;
@@ -290,7 +301,7 @@
         
     function setActionNode(oObj) {
         var num = oObj.aData[hdLiNode['NodeId']];
-        var stAct = 'add';i
+        var stAct = 'add';
         var tabDet = document.getElementById("detNode" + num);
         if (tabDet) { // DetailNode opened 
             stAct = 'del'; 
@@ -298,11 +309,27 @@
         var ret =  "<button id='detailnode" + num + 
                         "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' ><span class='offscreen'>Detail Node : " + num + "</span></button>";
          ret =  ret + "<button id='updnode" + num + 
-                        "' class='icon16-action-update buttonicon' title='Update Node' ><span class='offscreen'>Update Node : " + num + "</span></button>";
+                        "' class='icon16-action-save buttonicon' title='Update Node' ><span class='offscreen'>Send update to Node : " + num + "</span></button>";
         console.log("******** setActionNode : " + oObj.aData + " ret : " + ret);
         return  ret;
         };
-    
+         
+    function setStCmdClsNode(oObj) {
+       var num = oObj.aData[0];
+       if (num < 10) { num = "0" + num; };
+       indexC = getDataTableColIndex(oObj.oSettings, 'domogikdevice')
+       var status = oObj.aData[indexC];
+       if (status==true) { //Available for domogik device
+            textstatus = "Device domogik";
+            st = 'primary'
+        } else { //not available
+            textstatus = "Pas de device domogik";
+            st = 'false'
+        };
+        console.log("set Device Avalaible coloms : " + oObj.aData + " " + status);
+        return  num + "<span class='icon16-text-right  icon16-status-" + st + "' /span>";
+        };
+        
     function returnTextValue(val) {
         if (typeof(val) != 'number') {
             debut = val.search('value=');
@@ -386,37 +413,35 @@
         };
  	} ); 
  // class input   
-   $('#node_items tbody td input').live('keydown', function (e) {
-        var nTr = this.parentNode.parentNode;
+    $('#node_items tbody td input').live('keyup', function (e) {
+       var nTr = this.parentNode.parentNode;
        var aData = oTabNodes.fnGetData( nTr );
        if (this.title =='Name') {
-            console.log("Dans Nom key down, DataTable : " + aData + " code : " + e.keyCode );
             aData[hdLiNode['Name']] = this.value;
             console.log("new value : " +aData);
-        };
-       if (this.title =='Location') {
-            console.log("Dans Nom key down, DataTable : " + aData + " code : " + e.keyCode );
+        }
+       else if (this.title =='Location') {
             aData[hdLiNode['Location']] = this.value;
             console.log("new value : " +aData);
         } else {
             console.log("Dans Nom key down, input : " + this.title); 
-        };
- 	} );     
+            };
+    });  
     
-        $("#specialsave").click(function(){
-                var msg = {};
-                msg['command'] = "Refresh";
-                msg['value'] = "|'request':'SaveConfig'\\";
-                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-                    .done(function(data, status, xhr){
-                    $.notification('info',"Request : " + " saving config ok" );
-                    })
-                    .fail(function(jqXHR, status, error){
-                        if (jqXHR.status == 400)
-                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") please check your device configuration");
-                    });
-			});
-            
+    $("#specialsave").click(function(){
+        var msg = {};
+        msg['command'] = "Refresh";
+        msg['value'] = "|'request':'SaveConfig'\\";
+        rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+            .done(function(data, status, xhr){
+            $.notification('info',"Request : " + " saving config ok" );
+            })
+            .fail(function(jqXHR, status, error){
+                if (jqXHR.status == 400)
+                    $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") please check your device configuration");
+            });
+    });
+        
     
    $(document).ready(function(){
          oTabNodes = $("#node_items").dataTable({
@@ -442,13 +467,17 @@
 <section class="subsection">
 
     <h2>{% trans "Zwave controller" %}  &nbsp;&nbsp;&nbsp;&nbsp;
-            <div id="iconstatuszw"> <span class="label">{% trans "Status"%}:</span>
-            </div></h2>
+            <div id='iconstatuszw'> <span class='label'>{% trans "Status"%}:</span>
+          </div><div align="right"><font size=2>
+                <span class='subtitle' id='libozwvers'><u>{% trans "Undefined"%}</u></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class='label'>{% trans "Plugin version" %}:</span>&nbsp;<span class='subtitle' id='ozwplugvers'><u>{% trans "Undefined"%}</u></span>
+            </font></div>
+            </h2>
         <form id='controllerform'>
             <ul class='infos'>
-                <li><FONT size=3>
+                <li><font size=3>
                     <span class='label'>{% trans "Home ID" %}:</span>&nbsp;<span class='subtitle' id='homeid'><u>{% trans "Undefined" %}</u></span>
-                </FONT> </li>
+                </font> </li>
                  <li>
                     <span class='label'>{% trans "Contoller" %}:</span>&nbsp;<span class='subtitle' id='namectrl'><u>{% trans "Undefined" %}</u></span>
                     &nbsp;&nbsp;&nbsp;<span class='label'>{% trans "Device" %}:</span>&nbsp;<span class='subtitle' id='deviceadr'><u>{% trans "Undefined" %}</u></span>
@@ -459,22 +488,28 @@
                     &nbsp;&nbsp;&nbsp;<span class='label'>{% trans "Version" %}:</span>&nbsp;<span class='subtitle'  id='libctrlver'><u>{% trans "Undefined" %}</u></span>
                 </li>
             </ul>
- <!--           {"Node":1,"Node count":3,"Primary controller":"Z-Stick S2","Node sleeping":1,"ListNodeId":[1,5,6],
-            "Library":"Static Controller","Device":"/dev/zwave","Version":"Z-Wave 2.78","HomeID":"0x014d0f18","Model":"Aeon Labs -- Z-Stick S2"} -->
-<!--			<p id='testmsg'><u>Infos Node:</u></p>
-            <p id='testmsg2'><u>Infos Node:</u></p>  -->
         </form>
         <p>
             <button id='specialsubmit' class='button icon16-action-reset'>{% trans "Refresh" %}</button>
-            <button id='specialsave' class='button icon16-action-save'>{% trans "Save config" %}</button>
-<!--            <label for='dmg_addr'>{% trans 'Pour test (non actif)' %}:</label>
-            <input type='text' id='dmg_addr' name='dmg_addr'/> -->
+            <button id='specialsave' class='button icon16-action-save'>{% trans "Save config" %}</button> 
+            <span class='subtitle'>{% trans " Updade Node button before saving" %}
         </p>
 </section>
 <section class="subsection">
     <h2>{% trans "Zwave Network device" %}</h2>
-    <p>{% trans "Description of zwave network with devices capacities" %}</p>
-<!--	    <p id='listbrute'><u>la liste brute de node</u></p> -->
+    <table class='simple'><tbody>
+        <tr>
+            <td>{% trans "Description of zwave network with devices capacities" %}</td>
+            <td></td>
+            <td class='value icon16-status-primary'></td>
+            <td> {% trans "Command Class available for domogik device" %}</td>
+        </tr>
+        <tr><td></td><td></td>
+            <td class='value icon16-status-false'></td>
+            <td> {% trans "Command Class not available for domogik device" %}</td>
+         </tr>   
+    </tbody></table>
+    <p></p>
         <div id='networkform'>
             <table id='node_items' class='simple'>
                 <thead>
