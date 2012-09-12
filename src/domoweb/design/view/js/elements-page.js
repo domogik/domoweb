@@ -12,13 +12,6 @@ function ondrop(event, ui) {
         associationid: ui.draggable.data('associationid'),
         widgetwidth: ui.draggable.data('widgetwidth'),
         widgetheight: ui.draggable.data('widgetheight'),
-
-        draggable:{
-            helper: false,
-            revert: 'invalid',
-            drag: ondrag,
-            stop: onstop
-        },
         deletable: true
     });            
     $.addAssociation(item, $(this));            
@@ -99,17 +92,6 @@ $(function(){
                 .append("<button class='icon16-action-remove'><span class='offscreen'>" + gettext('Remove') + "</span></button>")
                 .find('button').click(function(){
                     self.remove();
-/*                        var association_id = self.data('associationid');
-                        if (association_id) {
-                            rinor.delete(['api', 'association', association_id])
-                                .done(function(data, status, xhr){
-                                                   
-                                })
-                                .fail(function(jqXHR, status, error){
-                                    if (jqXHR.status == 400)
-                                        $.notification('error', jqXHR.responseText);
-                                });
-                        }*/
                 });
         }
 	});
@@ -222,7 +204,7 @@ $(function(){
                 'associationid': o.associationid
             });
             this.element.displayName();
-            this.element.draggable(o.draggable);
+            if (o.draggable) this.element.draggable(o.draggable);
             if (o.deletable) this.element.deletable();            
         }
     });
