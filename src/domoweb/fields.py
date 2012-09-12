@@ -76,7 +76,7 @@ class IconRadioSelect(RadioSelect):
     renderer = IconRadioFieldRenderer
     class Media:
         css = {
-            'all': ('%s/input/iconslist/input-iconslist.css' % settings.STATIC_DESIGN_URL)
+            'all': ['%s/input/iconslist/input-iconslist.css' % settings.STATIC_DESIGN_URL]
         }
         js = ['%s/input/iconslist/input-iconslist.js' % settings.STATIC_DESIGN_URL]
 

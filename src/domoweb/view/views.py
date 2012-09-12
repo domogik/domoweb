@@ -57,7 +57,10 @@ class PageForm(forms.Form):
     
     def clean(self):
         cd = self.cleaned_data
-        cd['icon'] = cd['icon'].id
+        if cd['icon']:
+            cd['icon'] = cd['icon'].id
+        else:
+            cd['icon'] = ''
         return cd
     
 def page(request, id=1):
