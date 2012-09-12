@@ -37,7 +37,8 @@ $(function(){
     $('#dialog').dialog({ width:'auto',
         position: ['middle', 100],
         resizable: true,
-        modal: false
+        modal: true,
+		draggable: false,
     });
 
     $("a#showwidgets").click(function(){
