@@ -167,9 +167,9 @@ PIPES_SOCKET_TIMEOUT=600 # 600 sec
 API_LIMIT_PER_PAGE = 0
 
 # For login Auth
-LOGIN_URL = '/%slogin' % ADMIN_URL
-LOGOUT_URL = '/%slogout' % ADMIN_URL
-LOGIN_REDIRECT_URL = '/%s' % ADMIN_URL
+LOGIN_URL = '%s/login' % ADMIN_URL
+LOGOUT_URL = '%s/logout' % ADMIN_URL
+LOGIN_REDIRECT_URL = '%s' % ADMIN_URL
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or
