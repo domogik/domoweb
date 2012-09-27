@@ -61,14 +61,20 @@
         .bind("remove.jstree", function (e, tree) {
             tree.rslt.obj.each(function () {
                 var id = this.id.replace("page_","");
-                rinor.delete(['api', 'page', id])
-                    .done(function(data, status, xhr){
-                            tree.inst.refresh();
-                    })
-                    .fail(function(jqXHR, status, error){
-                        if (jqXHR.status == 400)
-                            $.notification('error', "{% trans "Page not deleted" %} (" + jqXHR.responseText + ")");
-                    });
+                if (parseInt(id) > 1) {
+                    rinor.delete(['api', 'page', id])
+                        .done(function(data, status, xhr){
+                                tree.inst.refresh();
+                        })
+                        .fail(function(jqXHR, status, error){
+                            $.jstree.rollback(tree.rlbk);
+                            if (jqXHR.status == 400)
+                                $.notification('error', "{% trans "Page not deleted" %} (" + jqXHR.responseText + ")");
+                        });
+                } else {
+                    $.jstree.rollback(tree.rlbk);
+                    $.notification('error', "{% trans "You can not remove the root page" %}");                
+                }
             });
         })
         .bind("create.jstree", function (e, tree) {
