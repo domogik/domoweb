@@ -1,7 +1,7 @@
 from domoweb.exceptions import RinorError, RinorNotAvailable
 from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpResponseServerError
-from django.template import Context, loader
+from django.template import Context, RequestContext, loader
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.conf import settings
@@ -32,20 +32,20 @@ class RinorMiddleware(object):
                     _info = InfoPipe().get_info_extended()
                 except RinorNotAvailable:
                     t = loader.get_template('error/RinorNotAvailable.html')
-                    c = RequestContext({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
+                    c = RequestContext(request, {'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
                     return HttpResponseServerError(t.render(c))
 
                 if (not _info.info.rinor_version_superior and not _info.info.rinor_version_inferior):
                     request.session['rinor_api_version'] = _info.info.rinor_version                    
                 else:
                     t = loader.get_template('error/BadDomogikVersion.html')
-                    c = RequestContext({'rinor_info':_info})
+                    c = RequestContext(request, {'rinor_info':_info})
                     return HttpResponseServerError(t.render(c))
             try:
                 mode = InfoPipe().get_mode()
             except RinorNotAvailable:
                 t = loader.get_template('error/RinorNotAvailable.html')
-                c = RequestContext({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
+                c = RequestContext(request, {'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
                 return HttpResponseServerError(t.render(c))
             request.session['normal_mode'] = (mode == "normal")
             request.session['rinor_ip'] = _ip.value
