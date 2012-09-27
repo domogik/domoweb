@@ -1,0 +1,44 @@
+@charset "UTF-8";
+/* CSS Document */
+
+.icon64-defaultarea-home { background-image:url(home_64.png);}
+.icon64-defaultarea-area { background-image:url(area_64.png);}
+.icon64-defaultarea-attic { background-image:url(attic_64.png);}
+.icon64-defaultarea-basement { background-image:url(basement_64.png);}
+.icon64-defaultarea-basement2 { background-image:url(basement2_64.png);}
+.icon64-defaultarea-firstfloor { background-image:url(firstfloor_64.png);}
+.icon64-defaultarea-firstfloor2 { background-image:url(firstfloor2_64.png);}
+.icon64-defaultarea-garden { background-image:url(garden_64.png);}
+.icon64-defaultarea-secondfloor { background-image:url(secondfloor_64.png);}
+.icon64-defaultarea-secondfloor2 { background-image:url(secondfloor2_64.png);}
+.icon64-defaultarea-groundfloor { background-image:url(groundfloor_64.png);}
+.icon64-defaultarea-groundfloor2 { background-image:url(groundfloor2_64.png);}
+.icon64-defaultarea-garage { background-image:url(garage_64.png);}
+
+.icon32-defaultarea-home { background-image:url(home_32.png);}
+.icon32-defaultarea-area { background-image:url(area_32.png);}
+.icon32-defaultarea-attic { background-image:url(attic_32.png);}
+.icon32-defaultarea-basement { background-image:url(basement_32.png);}
+.icon32-defaultarea-basement2 { background-image:url(basement2_32.png);}
+.icon32-defaultarea-firstfloor { background-image:url(firstfloor_32.png);}
+.icon32-defaultarea-firstfloor2 { background-image:url(firstfloor2_32.png);}
+.icon32-defaultarea-garden { background-image:url(garden_32.png);}
+.icon32-defaultarea-secondfloor { background-image:url(secondfloor_32.png);}
+.icon32-defaultarea-secondfloor2 { background-image:url(secondfloor2_32.png);}
+.icon32-defaultarea-groundfloor { background-image:url(groundfloor_32.png);}
+.icon32-defaultarea-groundfloor2 { background-image:url(groundfloor2_32.png);}
+.icon32-defaultarea-garage { background-image:url(garage_32.png);}
+
+.icon16-defaultarea-home { background-image:url(home_16.png);}
+.icon16-defaultarea-area { background-image:url(area_16.png);}
+.icon16-defaultarea-attic { background-image:url(attic_16.png);}
+.icon16-defaultarea-basement { background-image:url(basement_16.png);}
+.icon16-defaultarea-basement2 { background-image:url(basement2_16.png);}
+.icon16-defaultarea-firstfloor { background-image:url(firstfloor_16.png);}
+.icon16-defaultarea-firstfloor2 { background-image:url(firstfloor2_16.png);}
+.icon16-defaultarea-garden { background-image:url(garden_16.png);}
+.icon16-defaultarea-secondfloor { background-image:url(secondfloor_16.png);}
+.icon16-defaultarea-secondfloor2 { background-image:url(secondfloor2_16.png);}
+.icon16-defaultarea-groundfloor { background-image:url(groundfloor_16.png);}
+.icon16-defaultarea-groundfloor2 { background-image:url(groundfloor2_16.png);}
+.icon16-defaultarea-garage { background-image:url(garage_16.png);}

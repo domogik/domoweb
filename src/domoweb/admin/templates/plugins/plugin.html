@@ -87,7 +87,7 @@
     <script type="text/javascript" src="{{ static_design_url }}/admin/js/plugin-config.js"></script>
     <script type="text/javascript" src="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
 {% endblock %}
-{% block title %}{% trans page_title %}{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
 {% block banner %}
     <h1 class="ident icon64-plugin-{{ plugin.id }} icon64-resize" style='background-image:url({{ admin_url }}/resource/icon/package/installed/plugin/{{ plugin.id }})'>

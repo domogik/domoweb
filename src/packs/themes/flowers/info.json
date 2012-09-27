@@ -1,0 +1,12 @@
+{
+    "json_version": 1,
+    "identity": {
+        "type": "theme_page",
+        "id": "flowers",
+        "version": 1,
+        "name": "Flowers",
+        "description": "",
+        "creator": "Ferllings",
+        "creator_email": "cedric@domogik.org"
+    }
+}

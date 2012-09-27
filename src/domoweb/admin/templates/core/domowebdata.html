@@ -22,6 +22,7 @@
 
 {% load i18n %}
 {% load text %}
+{% load django_tables2 %}
 
 {% block css %}
     <link href="{{ static_design_url }}/admin/css/page-admin-tools.css" rel="stylesheet" type="text/css" />
@@ -36,30 +37,35 @@
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:4});
     });
 {% endblock %}
-{% block title %}{% trans page_title %}{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
 {% block banner %}
-    <h1 class="ident"><span class="title">{% trans page_title %}</span></h1>
+    <h1 class="ident"><span class="title">{{ page_title }}</span></h1>
 {% endblock %}
 
 {% block right %}
-  <section class="subsection">
+    <section class="subsection">
         <h2>Parameter table</h2>
-      <table class="info">
-    <thead>
-      <tr>
-          <th class="h" scope='col'>{% trans "Key" %}</th>
-          <th class="h" scope='col'>{% trans "Value" %}</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for parameter in parameter_data %}
-        <tr>
-          <td class='e'>{{ parameter.key }}</td>
-          <td class="code v">{{ parameter.value }}</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  </section>
+        {% render_table parameter_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>Widget table</h2>
+        {% render_table widget_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>PageIcon table</h2>
+        {% render_table pageicon_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>WidgetInstance table</h2>
+        {% render_table widgetinstance_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>PageTheme table</h2>
+        {% render_table pagetheme_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>Page table</h2>
+        {% render_table page_table "core/table.html" %}
+    </section>
 {% endblock %}

@@ -35,179 +35,132 @@ Implements
 """
 from django.utils.http import urlquote
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.shortcuts import redirect
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
-from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext
-from django.conf import settings
+from django.utils.translation import ugettext as _
+from django import forms
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.models import Widget
+from domoweb.models import Widget, PageIcon, WidgetInstance, PageTheme
+from domoweb import fields
     
-def house(request):
-    """
-    Method called when the show index page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    page_title = _("View House")
-
-    widgets_list = Widget.objects.all()
-
-    usageDict = DeviceUsagePipe().get_dict()
-    typeDict = DeviceTypePipe().get_dict()
-
-    areas = AreaExtendedPipe().get_list()
-    rooms = RoomExtendedPipe().get_list_noarea()
-
-    house_name = UiConfigPipe().get_house()
-
-    return go_to_page(
-        request, 'house.html',
-        page_title,
-        widgets=widgets_list,
-        nav1_show = "selected",
-        device_types=convertToStr(typeDict),
-        device_usages=convertToStr(usageDict),
-        areas_list=areas,
-        rooms_list=rooms,
-        house_name=house_name
-    )
-
-@admin_required
-def house_edit(request, from_page):
-    """
-    Method called when the show index page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    page_title = _("Edit House")
-
-    widgets_list = Widget.objects.all()
-
-    house_name = UiConfigPipe().get_house()
-    devices = DeviceExtendedPipe().get_list()
-    return go_to_page(
-        request, 'house.edit.html',
-        page_title,
-        widgets=widgets_list,
-        nav1_show = "selected",
-        from_page = from_page,
-        house_name=house_name,
-        devices_list=devices
-    )
-
-
-def area(request, area_id):
-    """
-    Method called when the show area page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    widgets_list = Widget.objects.all()
-
-    usageDict = DeviceUsagePipe().get_dict()
-    typeDict = DeviceTypePipe().get_dict()
-
-    area = AreaExtendedPipe().get_pk(area_id)
-
-    house_name = UiConfigPipe().get_house()
-
-    page_title = _("View ") + area.name
-    return go_to_page(
-        request, 'area.html',
-        page_title,
-        widgets=widgets_list,
-        nav1_show = "selected",
-        device_types=convertToStr(typeDict),
-        device_usages=convertToStr(usageDict),
-        area=area,
-        house_name=house_name
-    )
-
-
-@admin_required
-def area_edit(request, area_id, from_page):
-    """
-    Method called when the show area page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    widgets_list = Widget.objects.all()
-
-    area = AreaExtendedPipe().get_pk(area_id)
-    house_name = UiConfigPipe().get_house()    
-    devices = DeviceExtendedPipe().get_list()
-
-    page_title = _("Edit ") + area.name
-    return go_to_page(
-        request, 'area.edit.html',
-        page_title,
-        widgets=widgets_list,
-        nav1_show = "selected",
-        from_page = from_page,
-        area=area,
-        house_name=house_name,
-        devices_list=devices
-    )
-
-
-def room(request, room_id):
-    """
-    Method called when the show room page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
+class ThemeChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.label
     
-    widgets_list = Widget.objects.all()
-
-    usageDict = DeviceUsagePipe().get_dict()
-    typeDict = DeviceTypePipe().get_dict()
-
-    room = RoomExtendedPipe().get_pk(room_id)
-
-    house_name = UiConfigPipe().get_house()    
-
-    page_title = _("View ") + room.name
-    return go_to_page(
-        request, 'room.html',
-        page_title,
-        widgets=widgets_list,
-        nav1_show = "selected",
-        device_types=convertToStr(typeDict),
-        device_usages=convertToStr(usageDict),
-        room=room,
-        house=house_name
-    )
-
-
-@admin_required
-def room_edit(request, room_id, from_page):
+# Page configuration form
+class PageForm(forms.Form):
+    name = forms.CharField(max_length=50, label=_("Page name"), widget=forms.TextInput(attrs={'class':'icon32-form-tag'}), required=True)
+    description = forms.CharField(label=_("Page description"), widget=forms.Textarea(attrs={'class':'icon32-form-edit'}), required=False)
+    icon = fields.IconChoiceField(label=_("Choose the icon"), required=False, empty_label="No icon", queryset=PageIcon.objects.all())
+    theme_id = ThemeChoiceField(label=_("Choose a theme"), required=False, empty_label="No theme", queryset=PageTheme.objects.all())
+    
+    def clean(self):
+        cd = self.cleaned_data
+        if cd['icon']:
+            cd['icon'] = cd['icon'].id
+        else:
+            cd['icon'] = ''
+        return cd
+    
+def page(request, id=1):
     """
-    Method called when the show room page is accessed
+    Method called when a ui page is accessed
     @param request : HTTP request
     @return an HttpResponse object
     """
 
-    widgets_list = Widget.objects.all()
+    page = PagePipe().get_pk(id)
+    page_path = PagePipe().get_path(id)
+    page_tree = PagePipe().get_tree()
+    
+    page_title = page.name
 
-    room = RoomExtendedPipe().get_pk(room_id)
-    house_name = UiConfigPipe().get_house()     
-    devices = DeviceExtendedPipe().get_list()
+    iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
 
-    page_title = _("Edit ") + room.name
+    widgets = WidgetInstance.objects.filter(page_id=id).values('widget_id').distinct()
+    widgetinstances = WidgetInstancePipe().get_page_list(id)
+
+    usageDict = DeviceUsagePipe().get_dict()
+    typeDict = DeviceTypePipe().get_dict()
+
     return go_to_page(
-        request, 'room.edit.html',
+        request, 'page.html',
         page_title,
-        widgets=widgets_list,
-        nav1_show = "selected",
-        from_page = from_page,
-        room=room,
-        house_name=house_name,
-        devices_list=devices
+        widgets=widgets,
+        device_types=convertToStr(typeDict),
+        device_usages=convertToStr(usageDict),
+        page=page,
+        page_path=page_path,
+        page_tree=page_tree,
+        iconsets=iconsets,
+        widgetinstances=widgetinstances,
+    )
+
+@admin_required
+def page_configuration(request, id):
+    """
+    Method called when a ui page configuration is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+
+    page = PagePipe().get_pk(id)
+    page_title = "%s %s" % (page.name, _("Configuration"))
+
+    iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
+    
+    if request.method == 'POST': # If the form has been submitted...
+        form = PageForm(request.POST) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            cd = form.cleaned_data
+            params = {'name': cd["name"], 'description': cd["description"], 'icon': cd["icon"], 'theme_id': cd["theme_id"]}
+            PagePipe().put_detail(id, params)
+            
+            return redirect('page_view', id=id) # Redirect after POST
+    else:
+        form = PageForm(initial={'name': page.name, 'description': page.description, 'icon': page.icon, 'theme_id': page.theme_id})
+
+    return go_to_page(
+        request, 'configuration.html',
+        page_title,
+        page=page,
+        form=form,
+        iconsets=iconsets
+    )
+
+@admin_required
+def page_elements(request, id):
+    """
+    Method called when a ui page widgets is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+
+    page = PagePipe().get_pk(id)
+    page_title = "%s %s" % (page.name, _("Widgets"))
+
+    iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
+
+    if request.method == 'POST': # If the form has been submitted...
+        widgetinstances = WidgetInstance.objects.filter(page_id=id).delete()
+        features = request.POST["features"].split(',')
+        widgets = request.POST["widgets"].split(',')
+        for i, feature in enumerate(features):
+            w = WidgetInstance(order=i, page_id=id, feature_id=feature, widget_id=widgets[i])
+            w.save()
+        return redirect('page_view', id=id) # Redirect after POST
+
+    devices = DeviceExtendedPipe().get_list()
+    widgets = Widget.objects.all()
+    widgetinstances = WidgetInstancePipe().get_page_list(id)
+    
+    return go_to_page(
+        request, 'elements.html',
+        page_title,
+        page=page,
+        iconsets=iconsets,
+        devices=devices,
+        widgets=widgets,
+        widgetinstances=widgetinstances,
     )

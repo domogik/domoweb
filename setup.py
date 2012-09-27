@@ -67,10 +67,10 @@ d_files = [
 ]
 
 d_files.extend(list_all_files('src/domoweb/templates/', '/usr/share/domoweb/templates/')),
+d_files.extend(list_all_files('src/domoweb/config/templates/', '/usr/share/domoweb/config/templates/')),
 d_files.extend(list_all_files('src/domoweb/admin/templates/', '/usr/share/domoweb/admin/templates/')),
 d_files.extend(list_all_files('src/domoweb/view/templates/', '/usr/share/domoweb/view/templates/')),
 d_files.extend(list_all_files('src/domoweb/design/', '/usr/share/domoweb/design/')),
-d_files.extend(list_all_files('src/domoweb/widgets/', '/usr/share/domoweb/widgets/')),
 d_files.extend(list_all_files('src/domoweb/locale/', '/usr/share/domoweb/locale/')),
 
 setup(
@@ -83,10 +83,13 @@ setup(
     install_requires=['setuptools',
                       'django == 1.4',
                       'django-tastypie >= 0.9.11',
+                      'django-tables2',
                       'simplejson >= 1.9.2',
                       'httplib2 >= 0.6.0',
                       'Distutils2',
-                      'CherryPy >= 3.2.2'],
+                      'CherryPy >= 3.2.2',
+                      'south',
+                      'manifesto'],
     #                      'rpc4django'],
     zip_safe = False,
     license = 'GPL v3',

@@ -1,0 +1,63 @@
+{% spaceless %}
+{% load querystring from django_tables2 %}
+{% load trans blocktrans from i18n %}
+{% if table.page %}
+<div class="table-container">
+{% endif %}
+{% block table %}
+<table class='info'>
+    {% block table.thead %}
+    <thead>
+        <tr>
+        {% for column in table.columns %}
+            {% if column.orderable %}
+            <th class="h" scope='col'><a href="{% querystring table.prefixed_order_by_field=column.order_by_alias.next %}">{{ column.header }}</a></th>
+            {% else %}
+            <th class="h" scope='col'>{{ column.header }}</th>
+            {% endif %}
+        {% endfor %}
+        </tr>
+    </thead>
+    {% endblock table.thead %}
+    {% block table.tbody %}
+    <tbody>
+        {% for row in table.page.object_list|default:table.rows %} {# support pagination #}
+        {% block table.tbody.row %}
+        <tr class="{% cycle "odd" "even" %}">
+            {% for column, cell in row.items %}
+                <td { class='e'>{{ cell }}</td>
+            {% endfor %}
+        </tr>
+        {% endblock table.tbody.row %}
+        {% empty %}
+        {% if table.empty_text %}
+        {% block table.tbody.empty_text %}
+        <tr><td class='e' colspan="{{ table.columns|length }}">{{ table.empty_text }}</td></tr>
+        {% endblock table.tbody.empty_text %}
+        {% endif %}
+        {% endfor %}
+    </tbody>
+    {% endblock table.tbody %}
+    {% block table.tfoot %}
+    <tfoot></tfoot>
+    {% endblock table.tfoot %}
+</table>
+{% endblock table %}
+
+{% if table.page %}
+{% block pagination %}
+<ul class="pagination">
+    {% if table.page.has_previous %}
+    {% block pagination.previous %}<li class="previous"><a href="{% querystring table.prefixed_page_field=table.page.previous_page_number %}">{% trans "Previous" %}</a></li>{% endblock pagination.previous %}
+    {% endif %}
+
+    {% block pagination.current %}<li class="current">{% blocktrans with current=table.page.number total=table.paginator.num_pages %}Page {{ current }} of {{ total }}{% endblocktrans %}</li>{% endblock pagination.current %}
+
+    {% if table.page.has_next %}
+    {% block pagination.next %}<li class="next"><a href="{% querystring table.prefixed_page_field=table.page.next_page_number %}">{% trans "Next" %}</a></li>{% endblock pagination.next %}
+    {% endif %}
+</ul>
+{% endblock pagination %}
+</div>
+{% endif %}
+{% endspaceless %}

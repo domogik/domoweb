@@ -35,6 +35,7 @@ Implements
 from django.http import HttpResponse
 from django.conf.urls.defaults import *
 from django.conf import settings
+from manifesto.views import ManifestView
 
 js_info_dict = {
     'packages': ('domoweb',),
@@ -44,14 +45,14 @@ urlpatterns = patterns('',
     (r'^%sjsi18n/$' % settings.URL_PREFIX, 'django.views.i18n.javascript_catalog', js_info_dict),
 )
 
-urlpatterns += patterns('domoweb.views',
-    url(r'^%s$' % settings.URL_PREFIX, 'index', name="index_view"),
-    url(r'^%sconfig/welcome$' % settings.URL_PREFIX, 'config_welcome', name="config_welcome_view"),
-    url(r'^%sconfig/configserver$' % settings.URL_PREFIX, 'config_configserver', name="config_configserver_view"),
-    url(r'^%sconfig/testserver$' % settings.URL_PREFIX, 'config_testserver', name="config_testserve_view"),
-)
 urlpatterns += patterns('',
+  url(r'^%smanifest\.appcache$' % settings.URL_PREFIX, ManifestView.as_view(), name="cache_manifest"),
+)
+
+urlpatterns += patterns('',
+    url(r'^$', 'domoweb.view.views.page', name="index_view"),
     (r'^%srobots\.txt$' % settings.URL_PREFIX, lambda r: HttpResponse("User-agent: *\nDisallow: /", mimetype="text/plain")),
+    (r'^%sconfig/' % settings.URL_PREFIX, include('domoweb.config.urls')),
     (r'^%sview/' % settings.URL_PREFIX, include('domoweb.view.urls')),
     (r'^%sadmin/' % settings.URL_PREFIX, include('domoweb.admin.urls')),
     (r'^%srinor/' % settings.URL_PREFIX, include('domoweb.rinor.urls')),

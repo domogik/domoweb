@@ -1,0 +1,55 @@
+<!--
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Cédric Trévisan <cedric@domogik.org>
+-->
+{% extends "layouts/base_centered_panel.html" %}
+{% load i18n %}
+
+{% block css %}
+    <link href="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/config/css/page-config.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block js_include %}
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
+{% endblock %}
+{% block js_script %}
+    $(function(){
+        $('#id_language').chosen();
+    });
+{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+    <p>{% trans "Please choose your language in the dropdown list" %}</p>
+    <form action="{% url config_welcome_view %}" method="post">{% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+        <div class='row'>
+            {{ field.errors }}
+            <label for="{{ field.auto_id }}" {% if field.field.required %}class="required"{% endif %}></label>
+            <div>{{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span></div>
+            {{ field }}
+        </div>
+    {% endfor %}
+        <ul class='wizard_nav'>
+            <li><input type="submit" value="{% trans "Next" %}" class="next" /></li>
+        </ul>
+    </form>
+
+{% endblock %}

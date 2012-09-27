@@ -36,7 +36,6 @@ Implements
 
 DEBUG = True
 
-
 LIB_PATH = '/var/lib/domoweb'
 
 ### UI Database settings
@@ -55,4 +54,5 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'domoweb',
+    'south',
 )

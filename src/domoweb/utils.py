@@ -37,7 +37,7 @@ def admin_required(f):
         #this check the session if userid key exist, if not it will redirect to login page
         if not __is_user_admin(request):
             path = urlquote(request.get_full_path())
-            return redirect("%/?next=%s" % (settings.LOGIN_URL, path))
+            return redirect("%s/?next=%s" % (settings.LOGIN_URL, path))
         return f(request, *args, **kwargs)
     wrap.__doc__=f.__doc__
     wrap.__name__=f.__name__

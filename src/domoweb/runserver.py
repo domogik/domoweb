@@ -1,50 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-#
-#     * Redistributions of source code must retain the above copyright
-# notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above
-# copyright notice, this list of conditions and the following disclaimer
-# in the documentation and/or other materials provided with the
-# distribution.
-#     * Neither the name of Sylvain Hellegouarch nor the names of his
-# contributors may be used to endorse or promote products derived from
-# this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-
-__author__ = "Sylvain Hellegouarch"
-__version__ = "0.1.0"
-__doc__ = """
-Module to host a Django application from within a CherryPy server.
-
-Instead of creating a clone to `runserver` like other similar
-packages do, we simply setup and host the Django application
-using WSGI and CherryPy's capabilities to serve it.
-
-In order to configure the application, we use the `settings.configure(...)`
-function provided by Django.
-
-Finally, since the CherryPy WSGI server doesn't offer a log
-facility, we add a straightforward WSGI middleware to do so, based
-on the CherryPy built-in logger. Obviously any other log middleware
-can be used instead.
-"""
-
 import sys
 import logging
 import os, os.path
@@ -64,10 +17,10 @@ from domoweb.rinor.events import *
 os.environ['DJANGO_SETTINGS_MODULE']='domoweb.settings'
 
 class Server(object):
-    def run(self, PROJECT_PATH):
+    def run(self, PROJECT_PATH, PROJECT_PACKS):
         ETC_PATH = '/etc/domoweb'
         SERVER_CONFIG = '%s/domoweb.cfg' % ETC_PATH
-#        settings = __import__(os.environ['DJANGO_SETTINGS_MODULE'])
+        
         try:
             cherrypy.config.update(SERVER_CONFIG)
         except IOError:
@@ -81,7 +34,7 @@ class Server(object):
         if url_prefix != "":
             url_prefix += "/"
         os.environ['DOMOWEB_URL_PREFIX'] = url_prefix
-        
+
         # Set static content
         STATIC_DESIGN_URL = "/%sdesign" % url_prefix
         STATIC_DESIGN_ROOT = os.path.join(PROJECT_PATH, "design")
@@ -89,11 +42,21 @@ class Server(object):
         os.environ['DOMOWEB_DESIGN_ROOT'] = STATIC_DESIGN_ROOT
 
         STATIC_WIDGETS_URL = "/%swidgets" % url_prefix
-        STATIC_WIDGETS_ROOT = os.path.join(PROJECT_PATH, "widgets")
+        STATIC_WIDGETS_ROOT = os.path.join(PROJECT_PACKS, "widgets")
         os.environ['DOMOWEB_WIDGETS_URL'] = STATIC_WIDGETS_URL
         os.environ['DOMOWEB_WIDGETS_ROOT'] = STATIC_WIDGETS_ROOT
+        
+        STATIC_THEMES_URL = "/%sthemes" % url_prefix
+        STATIC_THEMES_ROOT = os.path.join(PROJECT_PACKS, "themes")
+        os.environ['DOMOWEB_THEMES_URL'] = STATIC_THEMES_URL
+        os.environ['DOMOWEB_THEMES_ROOT'] = STATIC_THEMES_ROOT
 
-        STATICS = {STATIC_DESIGN_URL:STATIC_DESIGN_ROOT, STATIC_WIDGETS_URL:STATIC_WIDGETS_ROOT}
+        STATIC_ICONSETS_URL = "/%siconsets" % url_prefix
+        STATIC_ICONSETS_ROOT = os.path.join(PROJECT_PACKS, "iconsets")
+        os.environ['DOMOWEB_ICONSETS_URL'] = STATIC_ICONSETS_URL
+        os.environ['DOMOWEB_ICONSETS_ROOT'] = STATIC_ICONSETS_ROOT
+        
+        STATICS = {STATIC_DESIGN_URL:STATIC_DESIGN_ROOT, STATIC_WIDGETS_URL:STATIC_WIDGETS_ROOT, STATIC_THEMES_URL:STATIC_THEMES_ROOT, STATIC_ICONSETS_URL:STATIC_ICONSETS_ROOT}
 
         DjangoAppPlugin(engine, url_prefix, STATICS).subscribe()
         engine.signal_handler.subscribe()
@@ -187,17 +150,21 @@ class HTTPLogger(_cplogging.LogManager):
 def rundevelop():
     PROJECT_PATH=os.path.dirname(os.path.abspath(__file__))
     os.environ['DOMOWEB_PATH']=PROJECT_PATH
+    PROJECT_PACKS=os.path.join(os.path.dirname(os.path.abspath(__file__)),os.path.pardir, 'packs')
+    os.environ['DOMOWEB_PACKS']=PROJECT_PACKS
     os.environ['DOMOWEB_REV']=commands.getoutput("cd %s ; hg id -n 2>/dev/null" % PROJECT_PATH)
-    Server().run(PROJECT_PATH)
+    Server().run(PROJECT_PATH, PROJECT_PACKS)
 
 def runinstall():
     PROJECT_PATH='/usr/share/domoweb'
     os.environ['DOMOWEB_PATH']=PROJECT_PATH
+    PROJECT_PACKS='/var/lib/domoweb/packs'
+    os.environ['DOMOWEB_PACKS']=PROJECT_PACKS
     fh_in = open("/var/lib/domoweb/domoweb.dat", "rb")
     data = pickle.load(fh_in)
     fh_in.close()
     os.environ['DOMOWEB_REV']=data['rev']
-    Server().run(PROJECT_PATH)
+    Server().run(PROJECT_PATH, PROJECT_PACKS)
     
 if __name__ == '__main__':
     rundevelop()

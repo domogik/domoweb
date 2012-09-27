@@ -1,7 +1,5 @@
-{% extends "layouts/global.html" %}
-
 {% comment %}
-# Copyright 2011 Domogik project
+# Copyright 2012 Domogik project
 
 # This file is part of Domogik.
 # Domogik is free software: you can redistribute it and/or modify
@@ -21,96 +19,55 @@
 {% endcomment %}
 {% load i18n %}
 
-{% block global_css %}
-<link href="{{ static_design_url }}/view/css/layout.with_mini_nav.css" rel="stylesheet" type="text/css" />
-<link href="{{ static_design_url }}/common/css/layout.content.css" rel="stylesheet" type="text/css" />
-<link href="{{ static_design_url }}/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
-<link href="{{ static_design_url }}/common/css/dmg.login.css" rel="stylesheet" type="text/css" />
+<!DOCTYPE html>
+<html lang="{{LANGUAGE_CODE}}" manifest="{% url cache_manifest %}">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link href="{{ static_design_url }}/view/css/page-show.css" rel="stylesheet" type="text/css" />
-    <link href="{{ static_design_url }}/common/css/ui-breadcrumb.css" rel="stylesheet" type="text/css" />
-    <link href="{{ static_design_url }}/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
-    <link href="{{ static_design_url }}/common/css/ui-processing.css" rel="stylesheet" type="text/css" />
-    <link href="{{ static_design_url }}/common/css/dmg.widget-core.css" rel="stylesheet" type="text/css" />    
-    <link href="{{ static_design_url }}/common/css/dmg.widget-utils.css" rel="stylesheet" type="text/css" />    
-
-    <link href="{{ static_design_url }}/common/css/ui-page-block.css" rel="stylesheet" type="text/css" />
-    <link href="{{ static_design_url }}/common/css/ui-dialog.css" rel="stylesheet" type="text/css" />
-    <link href="{{ static_widgets_url }}/dmg_4x3_colorPicker/farbtastic.css" rel="stylesheet" type="text/css" />
-
-    {% for widget in widgets %}
-        <link href="{{ static_widgets_url }}/{{ widget.id }}/style.css" rel="stylesheet" type="text/css" />
-    {% endfor %}
-
-{% endblock %}
-
-{% block global_js_include %}
-    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.timers-1.2/jquery.timers-1.2.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.ba-dotimeout-1.0/jquery.ba-dotimeout.min.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/libraries/highcharts-2.1.9/highcharts-2.1.9.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/libraries/highcharts-2.1.9/highcharts-exporting-2.1.9.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.longclick-0.3.3/jquery.longclick-0.3.3.min.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.transform/jquery.transform.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/libraries/simple-inheritance/simple-inheritance.js"></script>
+<link href="{{ static_design_url }}/common/images/favicon.png" rel="icon shortcut" type="image/png" />
     
-    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.icons.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.tooltips.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.login.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.processing.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-core.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-utils.js"></script>
-    <script type="text/javascript" src="{{ static_widgets_url }}/dmg_4x3_colorPicker/farbtastic.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/charting/dmg.chart-core.js"></script>
-    <script type="text/javascript" src="{{ static_design_url }}/charting/dmg.highcharts.js"></script>
-    
-    {% for widget in widgets %}
-    <script type="text/javascript" src="{{ static_widgets_url }}/{{ widget.id }}/main.js"></script>	
-    {% endfor %}
-    <script type="text/javascript">
-        // <![CDATA[
-        $(function(){ 
-            $("#mainbar").hide();
-            $("li#showmenu").click(function(){
-                $("#mainbar").toggle(500);        
-            });
-            $("#nav1 a").tooltip_bottom();
-        });
-        // ]]>
-    </script>
-{% endblock %}
+<link href="{{ static_design_url }}/view/css/common-page.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/view/css/ui-icons.css" rel="stylesheet" type="text/css" />
 
-{% block body %}
-    {% if we %}
-        {% include 'we.html' %}
+{% block global_css %}{% endblock %}
+{% block css %}{% endblock %}
+<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-1.7.1/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/view/js/notifications.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/noty-v2.0.3/js/noty/jquery.noty.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/noty-v2.0.3/js/noty/layouts/top.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/noty-v2.0.3/js/noty/themes/default.js"></script>
+{% block global_js_include %}{% endblock %}
+{% block js_include %}{% endblock %}
+<script type="text/javascript">
+    // <![CDATA[
+    var REST_URL = "{{ rest_url }}";
+    var EVENTS_URL = "{{ events_url }}";
+    var CONFIG_URL = "{{ config_url }}";
+    var ADMIN_URL = "{{ admin_url }}";
+    var VIEW_URL = "{{ view_url }}";
+    var STATIC_DESIGN_URL = "{{ static_design_url }}";
+    var STATIC_WIDGETS_URL = "{{ static_widgets_url }}";
+    var STATIC_THEMES_URL = "{{ static_themes_url }}";
+    var STATIC_ICONSETS_URL = "{{ static_iconsets_url }}";
+    
+{% block js_script %}{% endblock %}
+    $(function(){
+    {% if messages %}
+        {% for message in messages %}
+        $.notification("{{ message.tags }}", "{{ message }}");
+        {% endfor %}
     {% endif %}
-    <div id="mainbar">
-        <nav id="nav1">
-            <ul>
-                <li><a href="{% url view_index_view %}" class="{{ nav1_show_class }}" title="{% trans "View, Control your house" %}">{% trans "Visualization" %}</a></li>
-                <li><a href="{% url admin_index_view %}" class="{% if not is_user_connected %}admin_required{% endif %}" title="{% trans "Configure, Manage" %}">{% trans "Administration" %}</a></li>
-				<li class='help'><a href="http://wiki.domogik.org/End_user_documentation" title="{% trans "External Wiki page" %}" target='_blank'>{% trans "Help" %}</a></li>
-                <li class="login">
-                    {% if not is_user_connected %}
-                        <a href="{% url login_view %}" title="{% trans "Identify yourself" %}">{% trans "Log in" %}</a>
-                    {% else %}
-                        <a href="{% url logout_view %}" title="{% trans "Disconnect" %} {{ request.session.user.first_name }}">{% trans "Log out" %} {{ request.session.user.first_name }}</a>
-                    {% endif %}
-                </li>
-            </ul>
-        </nav>
-    </div>
-	<ul class="breadcrumb">
-        	<li><a href='{% url index_view %}' class='homepage'>&nbsp;<span class='offscreen'>{% trans "Domogik homepage" %}</span></a></li>
-            {% block breadcrumb %}{% endblock %}
-        	<li id='showmenu'><a href='#' class='icon16-action-menu'>{% trans "Menu" %}</a></li>
-    </ul>
-	<div id="content-bgnd">
-        <div class="columnleft">
-            {% block contentleft %}{% endblock %}
-        </div>
-        <div class="columnright">
-            {% block contentright %}{% endblock %}
-        </div>
-        <div class='clear'></div>
-	</div>
-{% endblock %}
+    });
+    // ]]>
+</script>
+<title>{% block title %}Domogik{% endblock %}</title>
+</head>
+<body role='application'>
+    {% block body %}{% endblock %}
+</body>
+</html>

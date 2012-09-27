@@ -41,13 +41,9 @@ from domoweb.rinor.resources import *
 rinor_api = Api(api_name='api')
 rinor_api.register(FeatureResource())
 rinor_api.register(StateResource())
-rinor_api.register(AssociationResource())
-rinor_api.register(UiConfigResource())
 rinor_api.register(PluginResource())
 rinor_api.register(PluginDetailResource())
 rinor_api.register(PluginConfigResource())
-rinor_api.register(AreaResource())
-rinor_api.register(RoomResource())
 rinor_api.register(DeviceResource())
 rinor_api.register(UserResource())
 rinor_api.register(PersonResource())
@@ -59,6 +55,7 @@ rinor_api.register(PackageDependencyResource())
 rinor_api.register(RepositoryResource())
 rinor_api.register(CommandResource())
 rinor_api.register(HostResource())
+rinor_api.register(PageResource())
 
 urlpatterns = patterns('',
     (r'', include(rinor_api.urls)),

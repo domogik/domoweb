@@ -1,0 +1,77 @@
+<!--
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Cédric Trévisan <cedric@domogik.org>
+-->
+{% extends "layouts/base_centered_panel.html" %}
+{% load i18n %}
+
+{% block css %}
+<style type="text/css">
+    .build {
+        color: #4F4F4F;
+        font-style: italic;
+        text-align: center;
+        font-size:0.8em
+    }
+    .success_message, .fail_message {
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.2em;
+        padding-left: 32px;
+        background-position: 0% 50%;
+        background-repeat: no-repeat;
+        width:28em;
+        margin:auto;
+    }
+</style>
+{% endblock %}
+{% block js_include %}
+{% endblock %}
+{% block js_script %}
+    $(function(){
+        $('a.next').click(function(event) {event.preventDefault();}).addClass('disabled');
+
+        rinor.get(['api','info'])
+            .done(function(data, status, xhr){
+                if (data.info.rinor_version_inferior) {
+                    $('#internal').attr('class', 'success_message icon32-status-false').html('Successfully connected, but your Domogik version is too old (' + data.info.dmg_version + '), please upgrade Domogik to >= {{ dmg_min_version }} on ' + data.info.Host + ' <div class="build">' + data.info.Sources_version + '</div>');                
+                } else if (data.info.rinor_version_superior) {
+                    $('#internal').attr('class', 'success_message icon32-status-false').html('Successfully connected, but your Domoweb version is too old for this new version of Domogik (' + data.info.dmg_version + '), please upgrade Domoweb on ' + data.info.Host + ' <div class="build">' + data.info.Sources_version + '</div>');                                
+                } else {
+                    $('#internal').attr('class', 'success_message icon32-status-true').html('Successfully connected Domogik v' + data.info.dmg_version + ' on ' + data.info.Host + ' <div class="build">' + data.info.Sources_version + '</div>');
+                    $('a.next').unbind('click').removeClass('disabled');                
+                }
+            })
+            .fail(function(jqXHR, status, error){
+                $('#internal').attr('class', 'fail_message icon32-status-warning').html('Error : ' + jqXHR.responseText);
+                $('a.next').click(function(event) {event.preventDefault();}).addClass('disabled');
+                if (jqXHR.status == 400)
+                    $.notification('error', jqXHR.responseText);
+            });
+    });
+{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <h2>{% trans "Testing Domogik Server connection" %}</h2>
+    <div id='internal' class='loader'><span class='offscreen'>{% trans "Loading" %}</span></div>
+    <ul class='wizard_nav'>
+        <li><a href='{% url config_configserver_view %}' class='button previous'>{% trans "Previous" %}</a></li>
+        <li><a href='{% url index_view %}' class='button next'>{% trans "Finish" %}</a></li>
+    </ul>
+{% endblock %}

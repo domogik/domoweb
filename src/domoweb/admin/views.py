@@ -35,7 +35,9 @@ Implements
 """
 import urllib
 import urllib2
+import pyinfo
 import mimetypes
+import django_tables2 as tables
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -47,10 +49,8 @@ from django.contrib import messages
 from django.conf import settings
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-import pyinfo
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import Parameter
-
+from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, PageTheme, Page
 
 def login(request):
     """
@@ -78,8 +78,13 @@ def logout(request):
     @param request: HTTP request
     @return an HttpResponse object
     """
+    next = request.GET.get('next', '')
+
     request.session.clear()
-    return HttpResponseRedirect('/')
+    if next != '':
+        return HttpResponseRedirect(next)
+    else:
+        return HttpResponseRedirect('/')
 
 
 def _auth(request, next):
@@ -98,7 +103,7 @@ def _auth(request, next):
         if next != '':
             return HttpResponseRedirect(next)
         else:
-            return HttpResponseRedirect('/view/')
+            return HttpResponseRedirect('/')
 
     except RinorError:
         # User not found, ask again to log in
@@ -153,100 +158,27 @@ def admin_organization_devices(request):
         types_list=types
     )
 
-
 @admin_required
-def admin_organization_rooms(request):
+def admin_organization_pages(request):
     """
-    Method called when the admin rooms organization page is accessed
+    Method called when the admin pages organization page is accessed
     @param request : HTTP request
     @return an HttpResponse object
     """
 
-    page_title = _("Rooms organization")
+    page_title = _("Pages organization")
 
     id = request.GET.get('id', 0)
-    rooms = RoomExtendedPipe().get_list()
-    house_rooms = RoomExtendedPipe().get_list_noarea()
-    areas = AreaExtendedPipe().get_list()
+    pages = PagePipe().get_tree()
 
     return go_to_page(
-        request, 'organization/rooms.html',
+        request, 'organization/pages.html',
         page_title,
         nav1_admin = "selected",
-        nav2_organization_rooms = "selected",
+        nav2_organization_pages = "selected",
         id=id,
-        rooms_list=rooms,
-        house_rooms=house_rooms,
-        areas_list=areas
+        pages_list=pages
     )
-
-
-@admin_required
-def admin_organization_areas(request):
-    """
-    Method called when the admin areas organization page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    page_title = _("Areas organization")
-
-    id = request.GET.get('id', 0)
-    areas = AreaExtendedPipe().get_list()
-
-    return go_to_page(
-        request, 'organization/areas.html',
-        page_title,
-        nav1_admin = "selected",
-        nav2_organization_areas = "selected",
-        id=id,
-        areas_list=areas
-    )
-
-
-@admin_required
-def admin_organization_house(request):
-    """
-    Method called when the admin house organization page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-    
-    page_title = _("House organization")
-
-    house_name = UiConfigPipe().get_house()
-
-    return go_to_page(
-        request, 'organization/house.html',
-        page_title,
-        nav1_admin = "selected",
-        nav2_organization_house = "selected",
-        house_name=house_name
-    )
-
-
-@admin_required
-def admin_organization_widgets(request):
-    """
-    Method called when the admin widgets organization page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    page_title = _("Widgets organization")
-
-    rooms = RoomExtendedPipe().get_list()
-    areas = AreaExtendedPipe().get_list()
-
-    return go_to_page(
-        request, 'organization/widgets.html',
-        page_title,
-        nav1_admin = "selected",
-        nav2_organization_widgets = "selected",
-        areas_list=areas,
-        rooms_list=rooms
-    )
-
 
 @admin_required
 def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
@@ -398,6 +330,30 @@ def admin_core_djangoinfo(request):
         sys_path=sys.path,
     )
 
+class WidgetTable(tables.Table):
+    class Meta:
+        model = Widget
+
+class ParameterTable(tables.Table):
+    class Meta:
+        model = Parameter
+
+class PageIconTable(tables.Table):
+    class Meta:
+        model = PageIcon
+
+class WidgetInstanceTable(tables.Table):
+    class Meta:
+        model = WidgetInstance
+
+class PageThemeTable(tables.Table):
+    class Meta:
+        model = PageTheme
+
+class PageTable(tables.Table):
+    class Meta:
+        model = Page
+        
 @admin_required
 def admin_core_domowebdata(request):
     """
@@ -408,12 +364,24 @@ def admin_core_domowebdata(request):
     
     page_title = _("Domoweb Data")
     
+    widget_table = WidgetTable(Widget.objects.all())
+    parameter_table = ParameterTable(Parameter.objects.all())
+    pageicon_table = PageIconTable(PageIcon.objects.all())
+    widgetinstance_table = WidgetInstanceTable(WidgetInstance.objects.all())
+    pagetheme_table = PageThemeTable(PageTheme.objects.all())
+    page_table = PageTable(Page.objects.all())
+    
     return go_to_page(
         request, 'core/domowebdata.html',
         page_title,
         nav1_admin = "selected",
         nav2_core_domowebdata = "selected",
-        parameter_data = Parameter.objects.all()
+        parameter_table = parameter_table,
+        widget_table = widget_table,
+        pageicon_table = pageicon_table,
+        widgetinstance_table = widgetinstance_table,
+        pagetheme_table = pagetheme_table,
+        page_table = page_table,
     )
     
 @admin_required

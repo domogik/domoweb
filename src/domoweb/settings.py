@@ -39,8 +39,8 @@ import os
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-RINOR_MIN_API = '0.5'
-RINOR_MAX_API = '0.5' #included
+RINOR_MIN_API = '0.6'
+RINOR_MAX_API = '0.6' #included
 DMG_MIN_VERSION = '0.2.0-alpha1'
 
 ADMINS = ()
@@ -58,6 +58,8 @@ ADMIN_URL = "/%sadmin" % URL_PREFIX
 VIEW_URL = "/%sview" % URL_PREFIX
 STATIC_DESIGN_URL = os.environ['DOMOWEB_DESIGN_URL']
 STATIC_WIDGETS_URL = os.environ['DOMOWEB_WIDGETS_URL']
+STATIC_THEMES_URL = os.environ['DOMOWEB_THEMES_URL']
+STATIC_ICONSETS_URL = os.environ['DOMOWEB_ICONSETS_URL']
 
 ### Get DomoWeb Version
 DOMOWEB_VERSION = "dev.%s" % (os.environ['DOMOWEB_REV'])
@@ -103,8 +105,9 @@ SECRET_KEY = 'i#=g$uo$$qn&0qtz!sbimt%#d+lb!stt#12hr@%vp-u)yw3s+b'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
+#    'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
+    'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -136,10 +139,17 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'tastypie',
+    'manifesto',
+    'django_tables2',
     'domoweb',
+    'domoweb.config',
     'domoweb.view',
     'domoweb.admin',
     'domoweb.rinor',
+)
+
+MANIFESTO_EXCLUDED_MANIFESTS = (
+        'randomapp.manifest.WrongManifest',
 )
 
 # Session stuff
@@ -157,17 +167,18 @@ PIPES_SOCKET_TIMEOUT=600 # 600 sec
 API_LIMIT_PER_PAGE = 0
 
 # For login Auth
-LOGIN_URL = '/%slogin' % ADMIN_URL
-LOGOUT_URL = '/%slogout' % ADMIN_URL
-LOGIN_REDIRECT_URL = '/%s' % ADMIN_URL
+LOGIN_URL = '%s/login' % ADMIN_URL
+LOGOUT_URL = '%s/logout' % ADMIN_URL
+LOGIN_REDIRECT_URL = '%s' % ADMIN_URL
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or
     # "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    '%s/templates/' % PROJECT_PATH,
-    '%s/view/templates/' % PROJECT_PATH,
-    '%s/admin/templates/' % PROJECT_PATH,
-    '%s/rinor/templates/' % PROJECT_PATH,
+#    '%s/templates/' % PROJECT_PATH,
+#    '%s/config/templates/' % PROJECT_PATH,
+#    '%s/view/templates/' % PROJECT_PATH,
+#    '%s/admin/templates/' % PROJECT_PATH,
+#    '%s/rinor/templates/' % PROJECT_PATH,
 )

@@ -68,21 +68,13 @@
 {% endblock %}
 
 {% block body %}
-    {% if we %}
-        {% include 'we.html' %}
-        <header id="mainheader">
-            <a href="{% url index_view %}" id="logo"><img src="{{ static_design_url }}/common/images/logo_domogik_we.png" alt="Domogik logo" /></a>
-            <div id="title">{% trans "Domogik" %} <span id="subtitle">{% trans "Joyeux noël" %}</span> </div>
-        </header>
-    {% else %}
-        <header id="mainheader">
-            <a href="{% url index_view %}" id="logo"><img src="{{ static_design_url }}/common/images/logo_domogik.png" alt="Domogik logo" /></a>
-            <div id="title">{% trans "Domogik" %} <span id="subtitle">{% trans "Free home automation under Linux" %}</span> </div>
-        </header>
-    {% endif %}
+    <header id="mainheader">
+        <a href="{% url index_view %}" id="logo"><img src="{{ static_design_url }}/common/images/logo_domogik.png" alt="Domogik logo" /></a>
+        <div id="title">{% trans "Domogik" %} <span id="subtitle">{% trans "Free home automation under Linux" %}</span> </div>
+    </header>
     <nav id="nav1">
         <ul>
-            <li><a href="{% url view_index_view %}" class="{{ nav1_show }}">{% trans "Visualization" %}<span class='description'>{% trans "View, Control your house" %}</span></a></li>
+            <li><a href="{% url page_view %}" class="{{ nav1_show }}">{% trans "Visualization" %}<span class='description'>{% trans "View, Control your house" %}</span></a></li>
             <li><a href="{% url admin_index_view %}" class="{% if not is_user_connected %}admin_required {% endif %}{{ nav1_admin }}">{% trans "Administration" %}<span class='description'>{% trans "Configure, Manage" %}</span></a></li>
             <li class='help'><a href="http://wiki.domogik.org/End_user_documentation" target='_blank'>{% trans "Help" %}<span class='description'>{% trans "External Wiki page" %}</span></a></li>
             <li class="login">
@@ -100,11 +92,8 @@
             <nav id="nav2">
                 <div class="subnav2"><a href="#">{% trans "Organization" %}</a></div>
                 <ul>
-                    <li><a href="{% url admin_organization_view_house_view %}" class='{{ nav2_organization_house }}'>{% trans "House" %}</a></li>
-                    <li><a href="{% url admin_organization_areas_view %}" class='{{ nav2_organization_areas }}'>{% trans "Areas" %}</a></li>
-                    <li><a href="{% url admin_organization_rooms_view %}" class='{{ nav2_organization_rooms }}'>{% trans "Rooms" %}</a></li>
                     <li><a href="{% url admin_organization_devices_view %}" class='{{ nav2_organization_devices }}'>{% trans "Devices" %}</a></li>
-                    <!--li><a href="{% url admin_organization_widgets_view %}" class='{{ nav2_organization_widgets }}'>{% trans "Widgets" %}</a></li-->
+                    <li><a href="{% url admin_organization_pages_view %}" class='{{ nav2_organization_pages }}'>{% trans "Pages" %}</a></li>
                 </ul>
                 <div class="subnav2"><a href="#">{% trans "Management" %}</a></div>
                 <ul>

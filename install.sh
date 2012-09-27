@@ -155,6 +155,16 @@ function copy_sample_files {
         echo "Init directory does not exist (/etc/init.d or /etc/rc.d)"
         exit 7
     fi
+    
+    # copying default packs in /var/lib/domoweb/packs
+    if [ -d $DMW_LIB/packs ];then
+        echo "Replacing packs in /var/lib/domoweb/packs"
+        rm -rf $DMW_LIB/packs
+    else
+        echo "Copying default packs in /var/lib/domoweb/packs"
+    fi
+    cp -r src/packs $DMW_LIB
+    chown $d_user:root $DMW_LIB/packs 
 }
 
 function update_default_config {
@@ -166,7 +176,7 @@ function update_default_config {
 }
 
 function check_python {
-if [ ! -x "$(which python)" ];then
+    if [ ! -x "$(which python)" ];then
         echo "No python binary found, please install at least python2.6";
         exit 11
     else
@@ -174,11 +184,20 @@ if [ ! -x "$(which python)" ];then
             echo "Bad python version used, please install at least 2.6, and check /usr/bin/python starts the good version."
             exit 12
         fi
-fi
+    fi
 }
 
 function init_django_db {
     python ./src/domoweb/manage.py syncdb --noinput
+    ret=$(python ./src/domoweb/manage.py migrate --list)
+    echo $ret
+    if echo $ret|grep -qs '(*) 0001_initial'; then
+        echo "Apply migration script"
+        python ./src/domoweb/manage.py migrate domoweb
+    else
+        echo "Init migration DB"
+        python ./src/domoweb/manage.py migrate domoweb 0001 --fake
+    fi
     chown $d_user: $DMW_LIB/domoweb.db
 }
 

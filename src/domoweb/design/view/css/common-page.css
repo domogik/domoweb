@@ -1,0 +1,109 @@
+img {
+    border:none;
+}
+
+.hidden {
+    display:none;
+}
+
+.offscreen {
+	position:absolute;
+	left:-10000px;
+	top:auto;
+	width:1px;
+	height:1px;
+	overflow:hidden;
+}
+
+*, input {
+	outline: none;
+}
+
+.clear {
+    clear:both;
+}
+
+ul {
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+
+ul li {
+    margin:0;
+    padding:0;
+}
+
+button::-moz-focus-inner{
+	border: none;
+}
+
+.loader {
+    background: url('../images/ajax-loader.gif') 50% 50% no-repeat;
+    min-height: 32px;
+}
+
+@font-face {
+  font-family: 'Expletus Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Expletus Sans Bold'), local('ExpletusSans-Bold'), url(../../common/Expletus.woff) format('woff');
+}
+
+html, body {
+    height: 100%;
+	background-color:#eeeeee;
+	margin:0;
+}
+
+body {
+    font: 90% Arial, Helvetica, sans-serif;
+}
+
+header {
+    font-family: 'Expletus Sans',cursive;
+    background-color: #BDCB2F;
+    padding: 1em;
+    position: relative;
+    min-height: 5em;
+}
+
+header h1 {
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+    margin: 0;
+    padding: 0.5em 0.5em 0.5em 70px;
+}
+
+header ul#mainmenu {
+    margin-top:-0.5em;
+    float: right;    
+}
+
+header ul#mainmenu li {
+    display: inline-block;
+    margin-left: 1em;
+}
+
+a.button_round {
+    display: inline-block;
+    width: 2em;
+    height: 2em;
+    padding: 0.3em;
+    background-color:#3c3c3c;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+    border: #eeeeee 3px solid;
+    -webkit-border-radius: 2.5em;
+    -moz-border-radius: 2.5em;
+    border-radius: 2.5em;
+}
+
+a.button_round:hover,
+a.button_round:focus {
+    border-color: #ff9049;
+}
+
+a.button_round:active {
+    border-color: #5ba2ff;
+}

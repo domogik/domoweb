@@ -1,0 +1,26 @@
+@charset "UTF-8";
+/* CSS Document */
+
+.icon64-defaultroom-kitchen { background-image:url(kitchen_64.png);}
+.icon64-defaultroom-bedroom { background-image:url(bedroom_64.png);}
+.icon64-defaultroom-tvlounge { background-image:url(tvlounge_64.png);}
+.icon64-defaultroom-bathroom { background-image:url(bathroom_64.png);}
+.icon64-defaultroom-office { background-image:url(office_64.png);}
+.icon64-defaultroom-kidsroom { background-image:url(kidsroom_64.png);}
+.icon64-defaultroom-garage { background-image:url(garage_64.png);}
+
+.icon32-defaultroom-kitchen { background-image:url(kitchen_32.png);}
+.icon32-defaultroom-bedroom { background-image:url(bedroom_32.png);}
+.icon32-defaultroom-tvlounge { background-image:url(tvlounge_32.png);}
+.icon32-defaultroom-bathroom { background-image:url(bathroom_32.png);}
+.icon32-defaultroom-office { background-image:url(office_32.png);}
+.icon32-defaultroom-kidsroom { background-image:url(kidsroom_32.png);}
+.icon32-defaultroom-garage { background-image:url(garage_32.png);}
+
+.icon16-defaultroom-kitchen { background-image:url(kitchen_16.png);}
+.icon16-defaultroom-bedroom { background-image:url(bedroom_16.png);}
+.icon16-defaultroom-tvlounge { background-image:url(tvlounge_16.png);}
+.icon16-defaultroom-bathroom { background-image:url(bathroom_16.png);}
+.icon16-defaultroom-office { background-image:url(office_16.png);}
+.icon16-defaultroom-kidsroom { background-image:url(kidsroom_16.png);}
+.icon16-defaultroom-garage { background-image:url(garage_16.png);}

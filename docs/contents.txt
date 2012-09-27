@@ -10,3 +10,6 @@ Table Of Content
     /technical/index
     /technical/widget_process
     /technical/i18n
+    /packs/index
+    /packs/iconset
+    /packs/theme

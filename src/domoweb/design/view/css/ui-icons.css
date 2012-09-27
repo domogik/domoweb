@@ -1,0 +1,23 @@
+@charset "UTF-8";
+
+/* Page menu */
+.icon24-menu-unlock {background-image:url(../images/menu/unlock_24.png);}
+.icon24-menu-lock {background-image:url(../images/menu/lock_24.png);}
+.icon24-menu-lookup {background-image:url(../images/menu/lookup_24.png);}
+.icon24-menu-config {background-image:url(../images/menu/config_24.png);}
+.icon24-menu-admin {background-image:url(../images/menu/admin_24.png);}
+.icon24-menu-elements {background-image:url(../images/menu/elements_24.png);}
+.icon32-menu-save {background-image:url(../images/menu/save_32.png);}
+.icon32-menu-cancel {background-image:url(../images/menu/cancel_32.png);}
+
+.icon36-action-close { background-image:url(../images/action/close_36.png);}
+
+.icon32-form-tag {background-image:url(../images/form/tag_32.png);}
+.icon32-form-edit {background-image:url(../images/form/edit_32.png);}
+
+.icon64-, .icon64-default {background-image:url(../images/unknown_64.png);}
+.icon32-, .icon32-default {background-image:url(../images/unknown_32.png);}
+.icon16-, .icon16-default {background-image:url(../images/unknown_16.png);}
+
+.ui-icon { display: inline-block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
+.icon16-action-remove { background-image:url(../images/action/delete_16.png);}

@@ -1,0 +1,157 @@
+{% extends "layouts/base_view.html" %}
+{% comment %}
+# Copyright 2012 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Cédric Trévisan <cedric@domogik.org>
+{% endcomment %}
+
+{% load i18n %}
+{% load text %}
+
+{% block js_include %}
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.ui.subclass/jquery.ui.subclass.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.dragdrop.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-core.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-utils.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/view/js/elements-page.js"></script>
+
+    {% for widget in widgets %}
+    <script type="text/javascript" src="{{ static_widgets_url }}/{{ widget.id }}/main.js"></script>	
+    {% endfor %}
+
+{% endblock %}
+
+{% block js_script %}
+    $(function() {
+        $.initAssociations({{ page.id }});
+        
+        $("a#save").click(function(){
+            var features = new Array()
+            var widgets = new Array()
+            $("#widgetsmatrix .shape").each(function(index, element) {
+                features.push($(element).data('featureid'));
+                widgets.push($(element).data('widgetid'));
+            });
+            $("#pageForm input[name='features']").val(features.join(','));
+            $("#pageForm input[name='widgets']").val(widgets.join(','));
+            $("#pageForm").submit();
+        });
+
+        {% for instance in widgetinstances %}
+        $("#widgetinstance_{{ instance.id }}").widget_shape({
+            widgetid: '{{ instance.widget_id }}',
+            featureid: '{{ instance.feature_id }}',
+            featurename: '{{ instance.feature.device_feature_model.name }}',
+            devicename: '{{ instance.feature.device.name }}',
+            associationid: '{{ instance.id }}',
+            deletable: true
+        });
+        {% endfor %}
+    });
+
+{% endblock %}
+
+{% block css %}
+    <link href="{{ static_design_url }}/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/view/css/elements-page.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/dmg.widget-core.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_design_url }}/common/css/dmg.widget-utils.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_design_url }}/common/css/ui-dialog.css" rel="stylesheet" type="text/css" />
+
+    {% for iconset in iconsets %}
+    <link href="{{ static_iconsets_url }}/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
+    {% endfor %}
+
+    {% for widget in widgets %}
+    <link href="{{ static_widgets_url }}/{{ widget.id }}/style.css" rel="stylesheet" type="text/css" />
+    {% endfor %}
+
+
+{% endblock %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+    <header role='banner'>
+        <h1 class="icon64-{{ page.icon }}">{{ page_title }}</h1>
+        <nav role="navigation">
+            <ul id="mainmenu">
+                <li><a role="button" id ="save" class="button_round icon32-menu-save" href="#" title="{% trans "Save widgets" %}"><span class="offscreen">{% trans "Save widgets" %}</span></a></li>
+                <li><a role="button" id ="cancel" class="button_round icon32-menu-cancel" href="{% url page_view page.id %}" title="{% trans "Cancel" %}"><span class="offscreen">{% trans "Cancel" %}</span></a></li>
+                <li><a role="button" id ="showwidgets" class="button_round icon24-menu-lookup" href="#" title="{% trans "Show widgets dialog" %}"><span class="offscreen">{% trans "Show widgets dialog" %}</span></a></li>
+                <li><a role="button" class="button_round icon24-menu-lock" href="{% url logout_view %}?next={{ request.path }}" title="{% trans "Disconnect" %} {{ request.session.user.first_name }}"><span class="offscreen">{% trans "Log out" %} {{ request.session.user.first_name }}</span></a></li>
+            </ul>
+        </nav>
+    </header>
+    <div role='main'>
+        <div id='dialog' title='Place yours widgets'>
+            <div id='devices'>
+                <ul>
+                {% regroup devices|dictsort:"device_usage_id" by device_usage as usages %}
+                {% for usage in usages %}
+                    <li><div class='usage icon16-usage-{{ usage.grouper.id }}'>{{usage.grouper.name }}</div>
+                        <ul>
+                            {% for device in usage.list %}
+                            <li><button id='showdevice{{device.id}}' deviceid='{{device.id}}' class='device icon16-technology-{{ device.device_type.device_technology_id }}'>{{ device.name }} ({{ device.address }})</button></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div id='features'>
+                {% for device in devices %}
+                <ul id="features{{device.id}}" class='features'>
+                    {% for feature in device.features %}
+                    <li><button id='showfeature{{feature.id}}' class='feature' featureid='{{ feature.id }}' devicename='{{device.name }}' featuremodel='{{ feature.device_feature_model.id }}' featurename='{{ feature.device_feature_model.name }}' featuretype='{{ feature.device_feature_model.feature_type }}.{{ feature.device_feature_model.value_type }}'>{{ feature.device_feature_model.name }}</button></li>
+                    {% endfor %}
+                </ul>
+                {% endfor %}
+            </div>
+            <div id='widgets'>
+                <ul>
+                </ul>
+            </div>
+            <div id='model'>
+                <dl>
+                    <dt class='model'></dt>
+                    <dd class='dragdrop'>({% trans "Drag & drop this wigdet to the page" %})</dd>
+                    <dd class='model'></dd>
+                    <dt class='version'>{% trans "Version" %}:</dt>
+                    <dd class='version'></dd>
+                    <dt class='author'>{% trans "Author" %}:</dt>
+                    <dd class='author'></dd>
+                    <dt class='description'>{% trans "Description" %}:</dt>
+                    <dd class='description'></dd>
+                    <dt class='screenshot'>{% trans "Screenshot" %}:</dt>
+                    <dd class='screenshot'></dd>
+                </dl>
+            </div>
+        </div>
+        
+        <div id='widgetsmatrix' role='list'>
+            {% for instance in widgetinstances %}
+                <div id='widgetinstance_{{ instance.id }}' role='listitem'></div>
+            {% endfor %}
+        </div>
+        <form action="{% url page_elements_view page.id %}" id="pageForm" method="post">
+            <input type="hidden" name="features" />
+            <input type="hidden" name="widgets" />
+        </form>
+    </div>
+{% endblock %}

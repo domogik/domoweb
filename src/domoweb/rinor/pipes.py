@@ -1,12 +1,15 @@
+import simplejson
+import cherrypy
+import datetime
+
+from distutils2.version import *
+from distutils2.version import IrrationalVersionError
+
 from django.conf import settings
 from django.core.cache import cache
 from domoweb.rinor.rinorPipe import RinorPipe
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from distutils2.version import *
-from distutils2.version import IrrationalVersionError
-import simplejson
-import cherrypy
-import datetime
+from domoweb.models import WidgetInstance, Page
 
 def select_sublist(list_of_dicts, **kwargs):
     return [d for d in list_of_dicts 
@@ -108,69 +111,128 @@ class HelperPipe(RinorPipe):
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index]
-        
-class RoomPipe(RinorPipe):
+
+class PagePipe(RinorPipe):
     cache_expiry = 3600
-    list_path = "/base/room/list"
-    add_path = "/base/room/add"
-    update_path = "/base/room/update"
-    delete_path = "/base/room/del"
-    index = 'room'
+    list_path = "/base/page/list"
+    add_path = "/base/page/add"
+    update_path = "/base/page/update"
+    delete_path = "/base/page/del"
+    path_path = "/base/page/path"
+    index = 'page'
     paths = []
 
-    def post_list(self, name, description):
-        _data = self._post_data(self.add_path, ['name', name, 'description', description])
+
+    def put_detail(self, id, bundle):
+        params = ['id', id, 'name', bundle["name"]]
+        if 'description' in bundle:
+            params.extend(['description', bundle["description"]])
+        if 'icon' in bundle:
+            params.extend(['icon', bundle["icon"]])
+        _data = self._put_data(self.update_path, params)
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
+        else:
+            # save the django params
+            try:
+                page = Page.objects.get(id=id)
+            except Page.DoesNotExist:
+                page = Page(id=id)
+            if 'theme_id' in bundle:
+                page.theme_id = bundle["theme_id"]
+            page.save()
+
         return _data[self.index][0]
 
-    def put_detail(self, id, name, description, area_id):
-        if (area_id):
-            _data = self._put_data(self.update_path, ['id', id, 'area_id', area_id])
-        else:
-            _data = self._put_data(self.update_path, ['id', id, 'name', name, 'description', description])
+    def post_list(self, bundle):
+        params = ['name', bundle["name"], 'parent', bundle["parent"]]
+        if 'description' in bundle:
+            params.extend(['description', bundle["description"]])
+        if 'icon' in bundle:
+            params.extend(['icon', bundle["icon"]])
+        _data = self._post_data(self.add_path, params)
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
-        return _data[self.index][0]
+        else:
+            data = _data[self.index][0]
+            # save the django params
+            page = Page(id=data.id)
+            if 'theme_id' in bundle:
+                page.theme_id = bundle["theme_id"]
+            page.save()
+        return data
         
     def delete_detail(self, id):
         _data = self._delete_data(self.delete_path, [id])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
+        else:
+            try:
+                page = Page.objects.get(id=id)
+            except Page.DoesNotExist:
+                pass
+            else:
+                page.delete()
         if len(_data[self.index]) > 0:
             return _data[self.index][0]
         else:
             return None
 
-class AreaPipe(RinorPipe):
-    cache_expiry = 3600
-    list_path = "/base/area/list"
-    add_path = "/base/area/add"
-    update_path = "/base/area/update"
-    delete_path = "/base/area/del"
-    index = 'area'
-    paths = []
-
-    def post_list(self, name, description):
-        _data = self._post_data(self.add_path, ['name', name, 'description', description])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        return _data[self.index][0]
-
-    def put_detail(self, id, name, description):
-        _data = self._put_data(self.update_path, ['id', id, 'name', name, 'description', description])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        return _data[self.index][0]
+    def get_list(self):
+        data = self._get_data(self.list_path)
+        if data.status == "ERROR":
+            raise RinorError(data.code, data.description)
+        pages = data[self.index]
+        for page in pages:
+            try:
+                model = Page.objects.get(id=page.id)
+            except Page.DoesNotExist:
+                page.theme_id = ''
+            else:
+                page.theme_id = model.theme_id
+        return pages
         
-    def delete_detail(self, id):
-        _data = self._delete_data(self.delete_path, [id])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        if len(_data[self.index]) > 0:
-            return _data[self.index][0]
-        else:
-            return None
+    def get_tree(self):
+        data = self.get_list()
+        _current_path = []
+        top_node = None
+        
+        if data:
+            for obj in data:
+                obj.childrens = []
+                obj.leafs = 0
+                # If right = left + 1 then it is a leaf
+                obj.is_leaf = ((obj.left + 1) == obj.right)
+                if top_node == None:
+                    top_node = obj
+                    obj.level = 0
+                    obj.max_level = 0
+                    _current_path.append(obj)
+                else:
+                    while (obj.left > _current_path[-1].right): # Level down
+                        top = _current_path.pop()
+                        _current_path[-1].leafs = _current_path[-1].leafs + top.leafs
+                    obj.level = len(_current_path)
+                    if obj.level > top_node.max_level:
+                        # Save the number of levels in the root node
+                        top_node.max_level = obj.level
+                    _current_path[-1].childrens.append(obj)
+                    if not obj.is_leaf:
+                        _current_path.append(obj) # Level up
+                    else:
+                        _current_path[-1].leafs = _current_path[-1].leafs + 1
+            while (len(_current_path) > 1): # Level down
+                top = _current_path.pop()
+                _current_path[-1].leafs = _current_path[-1].leafs + top.leafs
+
+        return top_node
+
+    def get_path(self, id):
+        url = "%s/%s" % (self.path_path, id)
+        data = self._get_data(url)
+        if data.status == "ERROR":
+            raise RinorError(data.code, data.description)
+        return data[self.index]
 
 class DeviceTypePipe(RinorPipe):
     cache_expiry = 3600
@@ -184,41 +246,6 @@ class DeviceUsagePipe(RinorPipe):
     list_path = "/base/device_usage/list"
     index = 'device_usage'
     paths = []
-
-class UiConfigPipe(RinorPipe):
-    cache_expiry = 3600
-    list_path = "/base/ui_config/list"
-    set_path = "/base/ui_config/set"
-    delete_path = "/base/ui_config/del"
-    index = 'ui_config'
-    paths = []
-
-    def get_filtered(self, **kwargs):
-        _list = self.get_list()
-        return select_sublist(_list, **kwargs)
-
-    def post_list(self, name, reference, key, value):
-        _data = self._post_data(self.set_path, ['name', name, 'reference', reference, 'key', key, 'value', value])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        return _data[self.index][0]
-
-    def delete_reference(self, name, reference):
-        _data = self._delete_data(self.delete_path, ['by-reference', name, reference])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        if len(_data[self.index]) > 0:
-            return _data[self.index][0]
-        else:
-            return None
-    
-    def get_house(self):
-        house = UiConfigPipe().get_filtered(name='house')
-        if (len(house) > 0):
-            return house[0].value
-        else:
-            return None
-
     
 class DevicePipe(RinorPipe):
     cache_expiry = 3600
@@ -257,152 +284,15 @@ class FeaturePipe(RinorPipe):
     paths = []
     dependencies = ['device']
 
-class AssociationPipe(RinorPipe):
-    cache_expiry = 3600
-    list_path = "/base/feature_association/list"
-    listdeep_path = "/base/feature_association/listdeep"
-    add_path = "/base/feature_association/add"
-    delete_path = "/base/feature_association/del"
-    index = 'feature_association'
-    paths = []
-
-    def get_list(self, type, id=None, deep=False):
-        if deep:
-            if (type=='house'):
-                _data = self._get_data(self.listdeep_path, ['by-house'])
-            else:
-                _data = self._get_data(self.listdeep_path, [('by-%s' % type), id])               
-        else:
-            if (type=='house'):
-                _data = self._get_data(self.list_path, ['by-house'])
-            else:
-                _data = self._get_data(self.list_path, [('by-%s' % type), id])               
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        return _data[self.index]
-
-    def post_list(self, feature_id, page_type, page_id):
-        _data = self._post_data(self.add_path, ['feature_id', feature_id, 'association_type', page_type, 'association_id', page_id])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, data.description)
-        return _data[self.index][0]
-
-    def delete_detail(self, id):
-        _data = self._delete_data(self.delete_path, ['id', id])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        if len(_data[self.index]) > 0:
-            return _data[self.index][0]
-        else:
-            return None
-
-    def delete_type(self, type, id=None):
-        _data = self._delete_data(self.delete_path, ['association_type', type, 'association_id', id])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        if len(_data[self.index]) > 0:
-            return _data[self.index][0]
-        else:
-            return None
-
-    def delete_feature(self, id):
-        _data = self._delete_data(self.delete_path, ['feature_id', id])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        if len(_data[self.index]) > 0:
-            return _data[self.index][0]
-        else:
-            return None
-
-class AssociationExtendedPipe(RinorPipe):
+class WidgetInstancePipe(RinorPipe):
     cache_expiry = 3600
     paths = []
-
-    def get_list(self, type, id=None, deep=False):
-        _associations = AssociationPipe().get_list(type, id=id, deep=deep)
-        _uiconfigs = UiConfigPipe().get_filtered(name='association')
-        _features = FeaturePipe().get_list()
-        for association in _associations:
-            for uiconfig in _uiconfigs:
-                if int(uiconfig.reference) == association.id:
-                    association[uiconfig.key] = uiconfig.value
-            for feature in _features:
-                if feature.id == association.device_feature_id:
-                    association['feature'] = feature
-        return _associations
-
-    def post_list(self, page_type, feature_id, page_id, widget_id, place_id):
-        _association = AssociationPipe().post_list(feature_id, page_type, page_id)
-        UiConfigPipe().post_list('association', _association.id, 'widget', widget_id)
-        UiConfigPipe().post_list('association', _association.id, 'place', place_id)        
-        return _association
-
-    def delete_detail(self, id):
-        _association = AssociationPipe().delete_detail(id)
-        UiConfigPipe().delete_reference('association', id)        
-        return _association
     
-class AreaExtendedPipe(RinorPipe):
-    cache_expiry = 3600
-    paths = []
-
-    def get_list(self):
-        _areas = AreaPipe().get_list()
-        _uiconfigs = UiConfigPipe().get_filtered(name='area')
-        _rooms = RoomExtendedPipe().get_list()
-        for area in _areas:
-            for uiconfig in _uiconfigs:
-                if int(uiconfig.reference) == area.id:
-                    area[uiconfig.key] = uiconfig.value
-            area['rooms'] = select_sublist(_rooms, area_id = area.id)
-        return _areas
-
-    def post_list(self, name, description):
-        return AreaPipe().post_list(name, description)
-
-    def put_detail(self, id, name, description):
-        return AreaPipe().put_detail(id, name, description)
-
-    def delete_detail(self, id):
-        UiConfigPipe().delete_reference('area', id)
-        _associations = AssociationPipe().get_list('area', id)
-        for association in _associations:
-            UiConfigPipe().delete_reference('association', association.id)        
-        AssociationPipe().delete_type('area', id)
-        _area = AreaPipe().delete_detail(id)
-        return _area
-    
-class RoomExtendedPipe(RinorPipe):
-    cache_expiry = 3600
-    paths = []
-
-    def get_list(self):
-        _rooms = RoomPipe().get_list()
-        _uiconfigs = UiConfigPipe().get_filtered(name='room')
-        for room in _rooms:
-            for uiconfig in _uiconfigs:
-                if int(uiconfig.reference) == room.id:
-                    room[uiconfig.key] = uiconfig.value
-        return _rooms
-    
-    def get_list_noarea(self):
-        _rooms = self.get_list()
-        return select_sublist(_rooms, area_id = '')
-
-    def post_list(self, name, description):
-        return RoomPipe().post_list(name, description)
-
-    def put_detail(self, id, name, description, area_id):
-        return RoomPipe().put_detail(id, name, description, area_id)
-
-    def delete_detail(self, id):
-        UiConfigPipe().delete_reference('room', id)
-        _associations = AssociationPipe().get_list('room', id)
-        for association in _associations:
-            UiConfigPipe().delete_reference('association', association.id)        
-        AssociationPipe().delete_type('room', id)
-        _room = RoomPipe().delete_detail(id)
-        return _room
+    def get_page_list(self, id):
+        instances = WidgetInstance.objects.filter(page_id=id).order_by('order')
+        for instance in instances:
+            instance.feature = FeaturePipe().get_pk(instance.feature_id)
+        return instances
     
 class DeviceExtendedPipe(RinorPipe):
     cache_expiry = 3600

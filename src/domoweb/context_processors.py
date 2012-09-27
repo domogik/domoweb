@@ -13,5 +13,7 @@ def domoweb(request):
         'view_url': settings.VIEW_URL,
         'static_design_url': settings.STATIC_DESIGN_URL,
         'static_widgets_url': settings.STATIC_WIDGETS_URL,
+        'static_themes_url': settings.STATIC_THEMES_URL,
+        'static_iconsets_url': settings.STATIC_ICONSETS_URL,
     }
     return additions

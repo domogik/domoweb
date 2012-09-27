@@ -7,3 +7,10 @@ Technical Documentation
 * :doc:`General description </technical/index>`
 * :doc:`How Widgets are working </technical/widget_process>`
 * :doc:`How i18n is implemented </technical/i18n>`
+
+Packs
+=====
+* :doc:`Before creating a pack </packs/index>`
+* Packs types :
+    * :doc:`Iconsets </packs/iconset>`
+    * :doc:`Themes </packs/theme>`
