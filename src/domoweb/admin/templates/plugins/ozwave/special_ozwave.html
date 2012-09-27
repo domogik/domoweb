@@ -83,7 +83,7 @@
             for (i=0; i< mesxPL.count; i++) {
                 dt=mesxPL['value' +i];
                 dt= (dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"')) + "}";
-        //        console.log (dt);
+         //       console.log (dt);
                 mesxPL['value' +i] = JSON.parse(dt); 
             };
         } else {
@@ -180,7 +180,9 @@
                             callback(thOut);
                             var idDetNode = '#detNode' + nodeid; 
                             $(idDetNode).dataTable({
-                                    "bFilter": false,  
+                                    "bFilter": false,
+                                    "bJQueryUI": true,
+                                    "aLengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
                                     "bAutoWidth": false,
                                     "aoColumnDefs": [  
                                         { "fnRender": function (oObj) {return setStCmdClsNode(oObj);}, "aTargets": [0] },
@@ -232,6 +234,8 @@
                     $('#numnodes').html(netWorkZW['Node count']);
                     $('#libctrl').html(netWorkZW['Library']);
                     $('#libctrlver').html(netWorkZW['Version']);                    
+                    $('#confpath').html(netWorkZW['ConfigPath']);                    
+                    $('#userpath').html(netWorkZW['UserPath']);                    
                     $('#libozwvers').html(netWorkZW['PYOZWLibVers']);
                     $('#ozwplugvers').html(netWorkZW['OZWPluginVers']);
                     console.log("Dans Submit, .done: " + netWorkZW['Model']);
@@ -486,6 +490,12 @@
                 <li>
                     <span class='label'>{% trans "Library" %}:</span>&nbsp;<span class='subtitle'  id='libctrl'><u>{% trans "Undefined" %}</u></span>
                     &nbsp;&nbsp;&nbsp;<span class='label'>{% trans "Version" %}:</span>&nbsp;<span class='subtitle'  id='libctrlver'><u>{% trans "Undefined" %}</u></span>
+                </li>
+                <li>
+                    <span class='label'>{% trans "Openzwave path configuration" %}:</span>&nbsp;<span class='subtitle' id='confpath'><u>{% trans "Undefined" %}</u></span>
+                </li>
+                <li>
+                   <span class='label'>{% trans "User path" %}:</span>&nbsp;<span class='subtitle' id='userpath'><u>{% trans "Undefined" %}</u></span>
                 </li>
             </ul>
         </form>
