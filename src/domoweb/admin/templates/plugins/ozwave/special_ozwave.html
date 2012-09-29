@@ -228,27 +228,33 @@
             rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
                 .done(function(data, status, xhr){
                     netWorkZW =GetDataFromxPL(data, 'data');
-                    $('#homeid').html(netWorkZW['HomeID']);
-                    $('#namectrl').html(netWorkZW['Model']);
-                    $('#deviceadr').html(netWorkZW['Device']);
-                    $('#numnodes').html(netWorkZW['Node count']);
-                    $('#libctrl').html(netWorkZW['Library']);
-                    $('#libctrlver').html(netWorkZW['Version']);                    
                     $('#confpath').html(netWorkZW['ConfigPath']);                    
                     $('#userpath').html(netWorkZW['UserPath']);                    
                     $('#libozwvers').html(netWorkZW['PYOZWLibVers']);
                     $('#ozwplugvers').html(netWorkZW['OZWPluginVers']);
-                    console.log("Dans Submit, .done: " + netWorkZW['Model']);
-                    setStatusZW('up')
-                    $.notification('debug',"device : " + netWorkZW['Primary controller'] + " info refreshed" );
-                    var node_items = document.getElementById("node_items");
-                    RefreshNodes(netWorkZW);
+                    if (netWorkZW['error'] ==""){
+                        $('#homeid').html(netWorkZW['HomeID']);
+                        $('#namectrl').html(netWorkZW['Model']);
+                        $('#deviceadr').html(netWorkZW['Device']);
+                        $('#numnodes').html(netWorkZW['Node count']);
+                        $('#libctrl').html(netWorkZW['Library']);
+                        $('#libctrlver').html(netWorkZW['Version']);                    
+                        console.log("Dans Submit, .done: " + netWorkZW['Model']);
+                        setStatusZW('up')
+                        $.notification('debug',"device : " + netWorkZW['Primary controller'] + " info refreshed" );
+                        var node_items = document.getElementById("node_items");
+                        RefreshNodes(netWorkZW);
+                    } else {
+                        $('#homeid').html(netWorkZW['error']);
+                        setStatusZW('down')
+                    }
                 })
                 .fail(function(jqXHR, status, error){
-                   if (jqXHR.status == 400)
+                    $('#homeid').html("{% trans "Plugin not running" %}");
+                    setStatusZW('down')
+                    if (jqXHR.status == 400)
                         $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") please check your device configuration");
-                        setStatusZW('down')
-                });
+               });
             });
     
     function RefreshNodes(netWorkZW) {
