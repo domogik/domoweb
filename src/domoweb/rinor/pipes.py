@@ -173,7 +173,7 @@ class AreaPipe(RinorPipe):
             return None
 
 class DeviceTypePipe(RinorPipe):
-    cache_expiry = 3600
+    cache_expiry = 0
     list_path = "/base/device_type/list"
     index = 'device_type'
     paths = []
