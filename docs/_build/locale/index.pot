@@ -1,0 +1,63 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2012, Domogik
+# This file is distributed under the same license as the Domoweb package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Domoweb dev\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-05 20:23\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../index.txt:3
+# 2429a4c99d164066ac8aa0c434f33ffc
+msgid "Domoweb"
+msgstr ""
+
+#: ../../index.txt:6
+# 558ba00b23594dd8891f45459f335db5
+msgid "Technical Documentation"
+msgstr ""
+
+#: ../../index.txt:7
+# 8d103e1107e4483c8c0b68d726fe5c76
+msgid ":doc:`General description </technical/index>`"
+msgstr ""
+
+#: ../../index.txt:8
+# 3eaeb5ddd5584698afcb556ca590e0d0
+msgid ":doc:`How Widgets are working </technical/widget_process>`"
+msgstr ""
+
+#: ../../index.txt:9
+# 7110e9338f85453d84c941b23f88087d
+msgid ":doc:`How i18n is implemented </technical/i18n>`"
+msgstr ""
+
+#: ../../index.txt:12
+# 48fef5f149834efdad77b2beebb8acea
+msgid "Packs"
+msgstr ""
+
+#: ../../index.txt:13
+# e81a21beab5549aca75442df5c998112
+msgid ":doc:`Before creating a pack </packs/index>`"
+msgstr ""
+
+#: ../../index.txt:15
+# d4960db26d6e4a388744df9f08cadb82
+msgid ":doc:`Iconsets </packs/iconset>`"
+msgstr ""
+
+#: ../../index.txt:16
+# 3cdfc1d6537b405f803f0b19d26dd941
+msgid ":doc:`Themes </packs/theme>`"
+msgstr ""
+

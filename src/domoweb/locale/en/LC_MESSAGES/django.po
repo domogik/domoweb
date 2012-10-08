@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-12 10:32+0200\n"
+"POT-Creation-Date: 2012-10-05 18:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,88 +17,62 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: views.py:61 admin/templates/layouts/base_admin.html:75
-#: admin/templates/layouts/base_admin.html:80
-#: templates/layouts/base_home.html:41 templates/layouts/base_home.html:46
-msgid "Domogik"
-msgstr ""
-
-#: views.py:124
-msgid "Select your language"
-msgstr ""
-
-#: views.py:147
-msgid "Domogik server configuration"
-msgstr ""
-
-#: views.py:186
-msgid "Testing Domogik server"
-msgstr ""
-
 #: admin/views.py:63
 msgid "Login page"
 msgstr ""
 
-#: admin/views.py:105
+#: admin/views.py:110
 msgid ""
 "Sorry unable to log in. Please check login name / password and try again."
 msgstr ""
 
-#: admin/views.py:117
+#: admin/views.py:122
 msgid "Accounts management"
 msgstr ""
 
-#: admin/views.py:138
+#: admin/views.py:143
 msgid "Devices organization"
 msgstr ""
 
-#: admin/views.py:165
-msgid "Rooms organization"
+#: admin/views.py:169
+msgid "Pages organization"
 msgstr ""
 
-#: admin/views.py:192
-msgid "Areas organization"
-msgstr ""
-
-#: admin/views.py:215
-msgid "House organization"
-msgstr ""
-
-#: admin/views.py:236
-msgid "Widgets organization"
-msgstr ""
-
-#: admin/views.py:261 admin/templates/plugins/plugin.html:92
+#: admin/views.py:193 admin/templates/plugins/plugin.html:94
 msgid "Plugin"
 msgstr ""
 
-#: admin/views.py:274
+#: admin/views.py:206
 msgid "External Member"
 msgstr ""
 
-#: admin/views.py:292
+#: admin/views.py:224
 msgid "Helpers tools"
 msgstr ""
 
-#: admin/views.py:310
+#: admin/views.py:242
 msgid "RINOR informations"
 msgstr ""
 
-#: admin/views.py:336
+#: admin/views.py:268
 msgid "Python informations"
 msgstr ""
 
-#: admin/views.py:387
+#: admin/views.py:319
 msgid "Django informations"
 msgstr ""
 
-#: admin/views.py:409 admin/templates/layouts/base_admin.html:127
+#: admin/views.py:365 admin/templates/layouts/base_admin.html:116
 msgid "Domoweb Data"
 msgstr ""
 
-#: admin/views.py:430
+#: admin/views.py:398
 #, python-format
 msgid "Host %s"
+msgstr ""
+
+#: admin/views.py:458
+msgid "Devices Stats Logs"
 msgstr ""
 
 #: admin/templates/login.html:36
@@ -125,6 +99,37 @@ msgstr ""
 msgid "Del."
 msgstr ""
 
+#: admin/templates/core/devicesstats.html:53
+msgid "Devices Events"
+msgstr ""
+
+#: admin/templates/core/devicesstats.html:63
+#: admin/templates/core/rinor.html:131 admin/templates/core/rinor.html:141
+#: admin/templates/core/rinor.html:154
+msgid "Created"
+msgstr ""
+
+#: admin/templates/core/devicesstats.html:64
+#: admin/templates/organization/devices.html:165
+#: admin/templates/plugins/cron/jobs.html:243
+#: admin/templates/plugins/ozwave/special_ozwave.html:538
+msgid "Type"
+msgstr ""
+
+#: admin/templates/core/devicesstats.html:65
+msgid "Name device"
+msgstr ""
+
+#: admin/templates/core/devicesstats.html:66
+#: admin/templates/plugins/external.html:144
+msgid "Key"
+msgstr ""
+
+#: admin/templates/core/devicesstats.html:67
+#: admin/templates/plugins/external.html:144
+msgid "Value"
+msgstr ""
+
 #: admin/templates/core/djangoinfo.html:42
 msgid "Django Informations"
 msgstr ""
@@ -145,26 +150,18 @@ msgstr ""
 msgid "Request data not supplied"
 msgstr ""
 
-#: admin/templates/core/domowebdata.html:51
-#: admin/templates/plugins/external.html:144
-msgid "Key"
-msgstr ""
-
-#: admin/templates/core/domowebdata.html:52
-#: admin/templates/plugins/external.html:144
-msgid "Value"
-msgstr ""
-
 #: admin/templates/core/helpers.html:99
 msgid "Home"
 msgstr ""
 
 #: admin/templates/core/helpers.html:107
-#: admin/templates/layouts/base_admin.html:123
+#: admin/templates/layouts/base_admin.html:112
 msgid "Helpers"
 msgstr ""
 
 #: admin/templates/core/helpers.html:108
+#: admin/templates/plugins/cron/helper.html:100
+#: admin/templates/plugins/telldus/helper.html:100
 msgid "Command"
 msgstr ""
 
@@ -173,6 +170,7 @@ msgid "Send"
 msgstr ""
 
 #: admin/templates/core/helpers.html:111
+#: admin/templates/plugins/cron/jobs.html:152
 msgid "Stop"
 msgstr ""
 
@@ -185,20 +183,21 @@ msgid "Python Informations"
 msgstr ""
 
 #: admin/templates/core/rinor.html:53
-#: admin/templates/layouts/base_admin.html:124
+#: admin/templates/layouts/base_admin.html:113
 msgid "RINOR"
 msgstr ""
 
 #: admin/templates/core/rinor.html:59 admin/templates/plugins/external.html:79
 #: admin/templates/plugins/plugin.html:43
+#: admin/templates/plugins/cron/jobs.html:244
+#: admin/templates/plugins/ozwave/special_ozwave.html:480
 msgid "Status"
 msgstr ""
 
 #: admin/templates/core/rinor.html:60 admin/templates/core/rinor.html:175
-#: admin/templates/organization/house.html:64
 #: admin/templates/plugins/configuration.html:4
 #: admin/templates/plugins/external.html:140
-#: admin/templates/plugins/plugin.html:101
+#: admin/templates/plugins/plugin.html:103 view/views.py:109
 msgid "Configuration"
 msgstr ""
 
@@ -227,6 +226,7 @@ msgid "XML files KO"
 msgstr ""
 
 #: admin/templates/core/rinor.html:95
+#: admin/templates/plugins/cron/jobs.html:249
 msgid "Commands"
 msgstr ""
 
@@ -245,11 +245,6 @@ msgstr ""
 #: admin/templates/core/rinor.html:130 admin/templates/core/rinor.html:140
 #: admin/templates/core/rinor.html:153
 msgid "ID"
-msgstr ""
-
-#: admin/templates/core/rinor.html:131 admin/templates/core/rinor.html:141
-#: admin/templates/core/rinor.html:154
-msgid "Created"
 msgstr ""
 
 #: admin/templates/core/rinor.html:132 admin/templates/core/rinor.html:142
@@ -286,28 +281,49 @@ msgstr ""
 msgid "Delete configuration"
 msgstr ""
 
-#: admin/templates/hosts/host.html:65 admin/templates/hosts/host.html.py:75
-msgid "Repositories"
+#: admin/templates/core/table.html:51 config/templates/configserver.html:43
+#: config/templates/testserver.html:74
+msgid "Previous"
 msgstr ""
 
-#: admin/templates/hosts/host.html:67
-#: admin/templates/layouts/base_admin.html:113
+#: admin/templates/core/table.html:54
+#, python-format
+msgid "Page %(current)s of %(total)s"
+msgstr ""
+
+#: admin/templates/core/table.html:57 config/templates/configserver.html:44
+#: config/templates/welcome.html:51
+msgid "Next"
+msgstr ""
+
+#: admin/templates/hosts/host.html:64
+#: admin/templates/plugins/external.html:125
+#: admin/templates/plugins/informations.html:9
+msgid "Host"
+msgstr ""
+
+#: admin/templates/hosts/host.html:65
+#: admin/templates/layouts/base_admin.html:102
 msgid "Plugins"
 msgstr ""
 
-#: admin/templates/hosts/host.html:69
+#: admin/templates/hosts/host.html:67
 msgid "External members"
 msgstr ""
 
-#: admin/templates/hosts/host.html:76
+#: admin/templates/hosts/host.html:74
+msgid "Repositories"
+msgstr ""
+
+#: admin/templates/hosts/host.html:75
 msgid "Update cache"
 msgstr ""
 
-#: admin/templates/hosts/host.html:79
+#: admin/templates/hosts/host.html:78
 msgid "Priority"
 msgstr ""
 
-#: admin/templates/hosts/host.html:79
+#: admin/templates/hosts/host.html:78
 msgid "URL"
 msgstr ""
 
@@ -318,11 +334,13 @@ msgstr ""
 
 #: admin/templates/hosts/host.html:95 admin/templates/hosts/host.html:107
 #: admin/templates/hosts/host.html:126 admin/templates/hosts/host.html:138
-#: admin/templates/organization/areas.html:54
-#: admin/templates/organization/devices.html:59
-#: admin/templates/organization/devices.html:93
-#: admin/templates/organization/devices.html:154
-#: admin/templates/organization/rooms.html:112
+#: admin/templates/organization/devices.html:60
+#: admin/templates/organization/devices.html:98
+#: admin/templates/organization/devices.html:161
+#: admin/templates/plugins/cron/alarm.html:176
+#: admin/templates/plugins/cron/date.html:148
+#: admin/templates/plugins/cron/dawnalarm.html:123
+#: admin/templates/plugins/ozwave/special_ozwave.html:534
 msgid "Name"
 msgstr ""
 
@@ -330,13 +348,14 @@ msgstr ""
 #: admin/templates/hosts/host.html:127 admin/templates/hosts/host.html:139
 #: admin/templates/plugins/external.html:123
 #: admin/templates/plugins/informations.html:7
-#: view/templates/area.edit.html:100 view/templates/house.edit.html:100
-#: view/templates/room.edit.html:101
+#: admin/templates/plugins/ozwave/special_ozwave.html:498
+#: view/templates/elements.html:135
 msgid "Version"
 msgstr ""
 
 #: admin/templates/hosts/host.html:97 admin/templates/hosts/host.html:113
 #: admin/templates/hosts/host.html:128 admin/templates/hosts/host.html:144
+#: admin/templates/plugins/ozwave/special_ozwave.html:540
 msgid "Action"
 msgstr ""
 
@@ -353,15 +372,12 @@ msgid "Category"
 msgstr ""
 
 #: admin/templates/hosts/host.html:111 admin/templates/hosts/host.html:142
-#: admin/templates/organization/areas.html:55
-#: admin/templates/organization/devices.html:84
-#: admin/templates/organization/devices.html:103
-#: admin/templates/organization/devices.html:155
-#: admin/templates/organization/rooms.html:113
+#: admin/templates/organization/devices.html:89
+#: admin/templates/organization/devices.html:110
+#: admin/templates/organization/devices.html:162
 #: admin/templates/plugins/external.html:135
 #: admin/templates/plugins/informations.html:15
-#: view/templates/area.edit.html:104 view/templates/house.edit.html:104
-#: view/templates/room.edit.html:105
+#: view/templates/elements.html:139
 msgid "Description"
 msgstr ""
 
@@ -373,148 +389,120 @@ msgstr ""
 msgid "Domogik in development mode. Plugins are running from the sources"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:75
-#: templates/layouts/base_home.html:41
-msgid "Joyeux noël"
+#: admin/templates/layouts/base_admin.html:73
+#: templates/layouts/base_home.html:39
+msgid "Domogik"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:80
-#: templates/layouts/base_home.html:46
+#: admin/templates/layouts/base_admin.html:73
+#: templates/layouts/base_home.html:39
 msgid "Free home automation under Linux"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:85
-#: templates/layouts/base_home.html:51
-#: view/templates/layouts/base_view.html:89
+#: admin/templates/layouts/base_admin.html:77
+#: templates/layouts/base_home.html:43
 msgid "Visualization"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:85
-#: templates/layouts/base_home.html:51
-#: view/templates/layouts/base_view.html:89
+#: admin/templates/layouts/base_admin.html:77
+#: templates/layouts/base_home.html:43
 msgid "View, Control your house"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:86
-#: templates/layouts/base_home.html:52
-#: view/templates/layouts/base_view.html:90
+#: admin/templates/layouts/base_admin.html:78
+#: templates/layouts/base_home.html:44
 msgid "Administration"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:86
-#: templates/layouts/base_home.html:52
-#: view/templates/layouts/base_view.html:90
+#: admin/templates/layouts/base_admin.html:78
+#: templates/layouts/base_home.html:44
 msgid "Configure, Manage"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:87
-#: templates/layouts/base_home.html:53
-#: view/templates/layouts/base_view.html:91
+#: admin/templates/layouts/base_admin.html:79
+#: admin/templates/plugins/cron/helper.html:103
+#: admin/templates/plugins/telldus/helper.html:103
+#: templates/layouts/base_home.html:45
 msgid "Help"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:87
-#: templates/layouts/base_home.html:53
-#: view/templates/layouts/base_view.html:91
+#: admin/templates/layouts/base_admin.html:79
+#: templates/layouts/base_home.html:45
 msgid "External Wiki page"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:90
-#: view/templates/layouts/base_view.html:94
+#: admin/templates/layouts/base_admin.html:82 view/templates/page.html:126
 msgid "Log in"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:90
-#: view/templates/layouts/base_view.html:94
+#: admin/templates/layouts/base_admin.html:82 view/templates/page.html:126
 msgid "Identify yourself"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:92
-#: view/templates/layouts/base_view.html:96
+#: admin/templates/layouts/base_admin.html:84
+#: view/templates/configuration.html:61 view/templates/elements.html:97
+#: view/templates/page.html:131
 msgid "Log out"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:92
-#: view/templates/layouts/base_view.html:96
+#: admin/templates/layouts/base_admin.html:84
+#: view/templates/configuration.html:61 view/templates/elements.html:97
+#: view/templates/page.html:131
 msgid "Disconnect"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:101
+#: admin/templates/layouts/base_admin.html:93
 msgid "Organization"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:103
-#: admin/templates/organization/features.html:149
-#: admin/templates/organization/house.html:59
-#: admin/templates/organization/rooms.html:287
-#: admin/templates/organization/widgets.html:46
-msgid "House"
-msgstr ""
-
-#: admin/templates/layouts/base_admin.html:104
-#: admin/templates/organization/areas.html:80
-#: admin/templates/organization/features.html:150
-msgid "Areas"
-msgstr ""
-
-#: admin/templates/layouts/base_admin.html:105
-#: admin/templates/organization/features.html:151
-#: admin/templates/organization/rooms.html:140
-msgid "Rooms"
-msgstr ""
-
-#: admin/templates/layouts/base_admin.html:106
-#: admin/templates/organization/devices.html:130
+#: admin/templates/layouts/base_admin.html:95
+#: admin/templates/organization/devices.html:137
 msgid "Devices"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:107
-#: admin/templates/organization/widgets.html:38
-#: view/templates/area.edit.html:48 view/templates/house.edit.html:48
-#: view/templates/room.edit.html:49
-msgid "Widgets"
+#: admin/templates/layouts/base_admin.html:96
+msgid "Pages"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:109
+#: admin/templates/layouts/base_admin.html:98
 msgid "Management"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:111
+#: admin/templates/layouts/base_admin.html:100
 msgid "Accounts"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:117
+#: admin/templates/layouts/base_admin.html:106
 msgid "Hosts"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:121
+#: admin/templates/layouts/base_admin.html:110
 msgid "Core"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:125
+#: admin/templates/layouts/base_admin.html:114
 msgid "Python"
 msgstr ""
 
-#: admin/templates/layouts/base_admin.html:126
+#: admin/templates/layouts/base_admin.html:115
 msgid "Django"
+msgstr ""
+
+#: admin/templates/layouts/base_admin.html:117
+msgid "Devices Stats"
 msgstr ""
 
 #: admin/templates/management/accounts.html:33
 #: admin/templates/management/accounts.html:202
 #: admin/templates/management/accounts.html:268
-#: admin/templates/organization/areas.html:46
-#: admin/templates/organization/areas.html:161
-#: admin/templates/organization/devices.html:51
-#: admin/templates/organization/devices.html:209
-#: admin/templates/organization/rooms.html:104
-#: admin/templates/organization/rooms.html:268
+#: admin/templates/organization/devices.html:52
+#: admin/templates/organization/devices.html:216
+#: admin/templates/plugins/cron/jobs.html:157
 msgid "Delete"
 msgstr ""
 
 #: admin/templates/management/accounts.html:34
-#: admin/templates/organization/areas.html:47
-#: admin/templates/organization/devices.html:52
-#: admin/templates/organization/rooms.html:105
+#: admin/templates/organization/devices.html:53
 msgid "Please confirm to delete"
 msgstr ""
 
@@ -527,7 +515,7 @@ msgstr ""
 
 #: admin/templates/management/accounts.html:41
 #: admin/templates/management/accounts.html:96
-#: admin/templates/management/accounts.html:134
+#: admin/templates/management/accounts.html:134 view/templates/page.html:140
 msgid "Login"
 msgstr ""
 
@@ -612,10 +600,7 @@ msgstr ""
 
 #: admin/templates/management/accounts.html:150
 #: admin/templates/management/accounts.html:234
-#: admin/templates/organization/areas.html:106
-#: admin/templates/organization/devices.html:172
-#: admin/templates/organization/rooms.html:166
-#: admin/templates/organization/rooms.html:195
+#: admin/templates/organization/devices.html:179
 msgid "successfully deleted"
 msgstr ""
 
@@ -629,9 +614,7 @@ msgstr ""
 
 #: admin/templates/management/accounts.html:168
 #: admin/templates/management/accounts.html:185
-#: admin/templates/organization/areas.html:149
-#: admin/templates/organization/devices.html:190
-#: admin/templates/organization/rooms.html:255
+#: admin/templates/organization/devices.html:197
 msgid "successfully updated"
 msgstr ""
 
@@ -644,7 +627,7 @@ msgstr ""
 msgid "Change password for"
 msgstr ""
 
-#: admin/templates/management/accounts.html:185
+#: admin/templates/management/accounts.html:185 view/templates/page.html:137
 msgid "Password"
 msgstr ""
 
@@ -654,9 +637,7 @@ msgstr ""
 
 #: admin/templates/management/accounts.html:203
 #: admin/templates/management/accounts.html:269
-#: admin/templates/organization/areas.html:162
-#: admin/templates/organization/devices.html:210
-#: admin/templates/organization/rooms.html:269
+#: admin/templates/organization/devices.html:217
 msgid "Modify"
 msgstr ""
 
@@ -697,235 +678,93 @@ msgstr ""
 msgid "Person not updated"
 msgstr ""
 
-#: admin/templates/organization/areas.html:37
-msgid "Add new area"
-msgstr ""
-
-#: admin/templates/organization/areas.html:51
-msgid "Area name is required."
-msgstr ""
-
-#: admin/templates/organization/areas.html:61
-msgid "Create new area"
-msgstr ""
-
-#: admin/templates/organization/areas.html:67
-msgid "New area added"
-msgstr ""
-
-#: admin/templates/organization/areas.html:71
-msgid "Area not created"
-msgstr ""
-
-#: admin/templates/organization/areas.html:85
-msgid "Areas list"
-msgstr ""
-
-#: admin/templates/organization/areas.html:106
-#: admin/templates/organization/areas.html:149
-msgid "Area"
-msgstr ""
-
-#: admin/templates/organization/areas.html:111
-msgid "Area not deleted"
-msgstr ""
-
-#: admin/templates/organization/areas.html:133
-msgid "Icon not updated"
-msgstr ""
-
-#: admin/templates/organization/areas.html:142
-msgid "Update area"
-msgstr ""
-
-#: admin/templates/organization/areas.html:153
-msgid "Area not updated"
-msgstr ""
-
-#: admin/templates/organization/devices.html:41
-#: admin/templates/organization/devices.html:110
+#: admin/templates/organization/devices.html:42
+#: admin/templates/organization/devices.html:117
 msgid "Add new device"
 msgstr ""
 
-#: admin/templates/organization/devices.html:56
-#: admin/templates/organization/devices.html:90
+#: admin/templates/organization/devices.html:57
+#: admin/templates/organization/devices.html:95
 msgid "All fields in bold are required."
 msgstr ""
 
-#: admin/templates/organization/devices.html:60
-#: admin/templates/organization/devices.html:94
-#: admin/templates/organization/devices.html:156
+#: admin/templates/organization/devices.html:61
+#: admin/templates/organization/devices.html:99
+#: admin/templates/organization/devices.html:163
 msgid "Address"
 msgstr ""
 
-#: admin/templates/organization/devices.html:61
+#: admin/templates/organization/devices.html:62
 msgid "Feature"
 msgstr ""
 
-#: admin/templates/organization/devices.html:62
+#: admin/templates/organization/devices.html:64
 msgid "Choose a device feature"
 msgstr ""
 
-#: admin/templates/organization/devices.html:76
-#: admin/templates/organization/devices.html:95
+#: admin/templates/organization/devices.html:79
+#: admin/templates/organization/devices.html:100
 msgid "Usage"
 msgstr ""
 
-#: admin/templates/organization/devices.html:77
-#: admin/templates/organization/devices.html:96
+#: admin/templates/organization/devices.html:81
 msgid "Choose a usage"
 msgstr ""
 
-#: admin/templates/organization/devices.html:85
-#: admin/templates/organization/devices.html:104
-#: admin/templates/organization/devices.html:157
+#: admin/templates/organization/devices.html:90
+#: admin/templates/organization/devices.html:111
+#: admin/templates/organization/devices.html:164
 msgid "Reference"
 msgstr ""
 
-#: admin/templates/organization/devices.html:117
+#: admin/templates/organization/devices.html:124
 msgid "New device added"
 msgstr ""
 
-#: admin/templates/organization/devices.html:121
+#: admin/templates/organization/devices.html:128
 msgid "device not created"
 msgstr ""
 
-#: admin/templates/organization/devices.html:135
+#: admin/templates/organization/devices.html:142
 msgid "Devices list"
 msgstr ""
 
-#: admin/templates/organization/devices.html:158
-msgid "Type"
-msgstr ""
-
-#: admin/templates/organization/devices.html:172
-#: admin/templates/organization/devices.html:190
+#: admin/templates/organization/devices.html:179
+#: admin/templates/organization/devices.html:197
+#: admin/templates/plugins/cron/alarm.html:205
+#: admin/templates/plugins/cron/date.html:169
+#: admin/templates/plugins/cron/dawnalarm.html:152
+#: admin/templates/plugins/ozwave/special_ozwave.html:493
 msgid "Device"
 msgstr ""
 
-#: admin/templates/organization/devices.html:176
+#: admin/templates/organization/devices.html:183
 msgid "Device not deleted"
 msgstr ""
 
-#: admin/templates/organization/devices.html:183
+#: admin/templates/organization/devices.html:190
 msgid "Update new device"
 msgstr ""
 
-#: admin/templates/organization/devices.html:194
+#: admin/templates/organization/devices.html:201
 msgid "Device not updated"
 msgstr ""
 
-#: admin/templates/organization/features.html:113
-msgid "Features list"
+#: admin/templates/organization/pages.html:58
+#: admin/templates/organization/pages.html:90
+msgid "Page not renamed"
 msgstr ""
 
-#: admin/templates/organization/features.html:134
-msgid "associated with"
+#: admin/templates/organization/pages.html:72
+msgid "Page not deleted"
 msgstr ""
 
-#: admin/templates/organization/features.html:145
-msgid "Associations"
+#: admin/templates/organization/pages.html:76
+msgid "You can not remove the root page"
 msgstr ""
 
-#: admin/templates/organization/house.html:46
-msgid "house name not updated"
-msgstr ""
-
-#: admin/templates/organization/house.html:51
-msgid "house name can not be empty"
-msgstr ""
-
-#: admin/templates/organization/house.html:66
-msgid "House name"
-msgstr ""
-
-#: admin/templates/organization/house.html:70
-msgid "Save"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:38
-msgid "Add new room"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:73
-#: admin/templates/organization/rooms.html:292
-#: admin/templates/organization/rooms.html:303
-msgid "Empty"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:109
-msgid "Room name is required."
-msgstr ""
-
-#: admin/templates/organization/rooms.html:119
-msgid "Create new room"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:125
-msgid "New room added"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:129
-msgid "Room not created"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:145
-msgid "Rooms list"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:166
-#: admin/templates/organization/rooms.html:195
-#: admin/templates/organization/rooms.html:255
-msgid "Room"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:171
-#: admin/templates/organization/rooms.html:200
-msgid "Room not deleted"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:185
-msgid "ui-config for Room features not deleted"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:205
-msgid "features associations for Room not deleted"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:210
-msgid "Get features associations for Room"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:215
-msgid "ui-config for Room not deleted"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:248
-msgid "Update room"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:259
-msgid "Room not updated"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:285
-msgid "Rooms organisation"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:285
-msgid "Drag &amp; Drop instructions"
-msgstr ""
-
-#: admin/templates/organization/rooms.html:286
-msgid "Unattributed rooms"
-msgstr ""
-
-#: admin/templates/organization/widgets.html:43
-msgid "Placement"
-msgstr ""
-
-#: admin/templates/organization/widgets.html:44
-msgid "Select a Area/Room to place widgets"
+#: admin/templates/organization/pages.html:107
+msgid "Pages list"
 msgstr ""
 
 #: admin/templates/plugins/external.html:60
@@ -979,27 +818,60 @@ msgstr ""
 msgid "Wiki"
 msgstr ""
 
-#: admin/templates/plugins/external.html:125
-#: admin/templates/plugins/informations.html:9
-msgid "Host"
-msgstr ""
-
 #: admin/templates/plugins/external.html:127
 #: admin/templates/plugins/informations.html:10
 msgid "Technology"
 msgstr ""
 
-#: admin/templates/plugins/plugin.html:99
+#: admin/templates/plugins/plugin.html:101
 msgid "Informations"
 msgstr ""
 
-#: admin/templates/plugins/plugin.html:100
+#: admin/templates/plugins/plugin.html:102
 msgid "Requirements"
 msgstr ""
 
-#: admin/templates/plugins/plugin.html:103
-#: admin/templates/plugins/special_knx.html:86
+#: admin/templates/plugins/plugin.html:105
+#: admin/templates/plugins/plugin.html:108
+#: admin/templates/plugins/knx/special_knx.html:92
 msgid "Special"
+msgstr ""
+
+#: admin/templates/plugins/plugin.html:112
+msgid "Jobs"
+msgstr ""
+
+#: admin/templates/plugins/plugin.html:115
+msgid "Creator"
+msgstr ""
+
+#: admin/templates/plugins/plugin.html:118
+msgid "Manage"
+msgstr ""
+
+#: admin/templates/plugins/plugin.html:121
+#: admin/templates/plugins/plugin.html:136
+#: admin/templates/plugins/cron/helper.html:98
+#: admin/templates/plugins/telldus/helper.html:98
+msgid "Helper"
+msgstr ""
+
+#: admin/templates/plugins/plugin.html:124
+msgid "Alarm"
+msgstr ""
+
+#: admin/templates/plugins/plugin.html:127
+msgid "Dawn Alarm"
+msgstr ""
+
+#: admin/templates/plugins/plugin.html:130
+#: admin/templates/plugins/plugin.html:139
+msgid "Log"
+msgstr ""
+
+#: admin/templates/plugins/plugin.html:133
+#: admin/templates/plugins/cron/date.html:157
+msgid "Date"
 msgstr ""
 
 #: admin/templates/plugins/requirements.html:3
@@ -1014,94 +886,440 @@ msgstr ""
 msgid "UDEV Rules"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:31
-#: admin/templates/plugins/special_knx.html:52
-#: admin/templates/plugins/special_knx.html:80
+#: admin/templates/plugins/cron/alarm.html:100
+msgid "Can't create alarm"
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:166
+#: admin/templates/plugins/cron/date.html:138
+#: admin/templates/plugins/cron/dawnalarm.html:113
+#: admin/templates/plugins/scene/creator_scene.html:425
+msgid "Device list not retrieved"
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:173
+msgid "Create an alarm."
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:174
+msgid ""
+"With this kind of timer, you could switch on your bedroom ligth at 9:00 "
+"every workdays, switch off your outdoor light at 23:00, or switch on your "
+"christmas tree at 18:00 and switch it off at 22:00."
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:179
+#: admin/templates/plugins/cron/dawnalarm.html:126
+msgid "The name of the alarm / device."
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:185
+#: admin/templates/plugins/cron/dawnalarm.html:132
+msgid "Days and hours"
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:188
+#: admin/templates/plugins/cron/dawnalarm.html:135
+msgid "The days of the week : a combination of MoTuWeThFrSaSu"
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:192
+msgid "Start hour of the timer (ie 8:00)"
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:196
+msgid "Stop hour of the timer (ie 11:00). Could be left blank."
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:202
+#: admin/templates/plugins/cron/date.html:166
+#: admin/templates/plugins/cron/dawnalarm.html:149
+msgid "Device to use"
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:209
+msgid "The command / value to use at the begin of the cycle."
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:213
+msgid "The command / value to use at the end of the cycle."
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:219
+#: admin/templates/plugins/cron/date.html:179
+#: admin/templates/plugins/cron/dawnalarm.html:162
+#: admin/templates/plugins/scene/creator_scene.html:477
+msgid "Create"
+msgstr ""
+
+#: admin/templates/plugins/cron/alarm.html:220
+#: admin/templates/plugins/cron/date.html:180
+#: admin/templates/plugins/cron/dawnalarm.html:163
+#: view/templates/configuration.html:60 view/templates/elements.html:95
+msgid "Cancel"
+msgstr ""
+
+#: admin/templates/plugins/cron/date.html:90
+msgid "Can't create date"
+msgstr ""
+
+#: admin/templates/plugins/cron/date.html:145
+msgid "Create a date alarm."
+msgstr ""
+
+#: admin/templates/plugins/cron/date.html:146
+msgid ""
+"With this kind of timer you can activate a switch, a dimmer, ... at a "
+"specified date (and time of course). The date format is YYYYMMDDHHMMSS."
+msgstr ""
+
+#: admin/templates/plugins/cron/date.html:151
+msgid "The name of the date / device."
+msgstr ""
+
+#: admin/templates/plugins/cron/date.html:160
+msgid "The date in format YYYYMMDDHHMMSS"
+msgstr ""
+
+#: admin/templates/plugins/cron/date.html:173
+msgid "The command / value to use."
+msgstr ""
+
+#: admin/templates/plugins/cron/dawnalarm.html:88
+msgid "Can't create dawnalarm"
+msgstr ""
+
+#: admin/templates/plugins/cron/dawnalarm.html:120
+msgid "Create a dawn alarm."
+msgstr ""
+
+#: admin/templates/plugins/cron/dawnalarm.html:121
+msgid ""
+"With this kind of timer, you could turn your dimmer in a dawn simulator. You "
+"can specify the begin and the end hours of the cycle. You can also defined "
+"your own dim levels, specialy if your lights blink with the default values. "
+"You can specify up to 10 dim levels."
+msgstr ""
+
+#: admin/templates/plugins/cron/dawnalarm.html:139
+msgid "The begin of the dawn cycle (ie 8:00)."
+msgstr ""
+
+#: admin/templates/plugins/cron/dawnalarm.html:143
+msgid "The end of the awn cycle (ie 11:00)."
+msgstr ""
+
+#: admin/templates/plugins/cron/dawnalarm.html:156
+msgid "The dim levels to use, separated by commas. Could be left blank."
+msgstr ""
+
+#: admin/templates/plugins/cron/helper.html:71
+#: admin/templates/plugins/telldus/helper.html:71
+msgid "Cant call helper"
+msgstr ""
+
+#: admin/templates/plugins/cron/helper.html:87
+#: admin/templates/plugins/telldus/helper.html:87
+msgid "Enter a command to execute. Click help to get command list."
+msgstr ""
+
+#: admin/templates/plugins/cron/helper.html:102
+#: admin/templates/plugins/telldus/helper.html:102
+msgid "Execute"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:85
+msgid "Cant get jobs list"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:147
+msgid "Resume"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:180
+msgid "Can\\'t resume alarm"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:195
+msgid "Can\\t stop alarm"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:210
+msgid "Can\\'t delete alarm"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:233
+msgid "Cron jobs"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:235
+#: admin/templates/plugins/ozwave/special_ozwave.html:509
+msgid "Refresh"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:242
+msgid "JobId"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:245
+msgid "Runs"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:246
+msgid "APS"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:247
+msgid "Uptime (s/h/d)"
+msgstr ""
+
+#: admin/templates/plugins/cron/jobs.html:248
+msgid "Runtime (s/h/d)"
+msgstr ""
+
+#: admin/templates/plugins/cron/log.html:72
+#: admin/templates/plugins/telldus/log.html:72
+msgid "Cant get list"
+msgstr ""
+
+#: admin/templates/plugins/cron/log.html:78
+#: admin/templates/plugins/telldus/log.html:78
+msgid "Logs"
+msgstr ""
+
+#: admin/templates/plugins/cron/log.html:80
+#: admin/templates/plugins/telldus/log.html:80
+msgid "Number of lines to show"
+msgstr ""
+
+#: admin/templates/plugins/cron/log.html:82
+#: admin/templates/plugins/telldus/log.html:82
+msgid "View"
+msgstr ""
+
+#: admin/templates/plugins/knx/special_knx.html:31
+#: admin/templates/plugins/knx/special_knx.html:52
+#: admin/templates/plugins/knx/special_knx.html:80
+#: admin/templates/plugins/ozwave/special_ozwave.html:144
+#: admin/templates/plugins/ozwave/special_ozwave.html:207
+#: admin/templates/plugins/ozwave/special_ozwave.html:256
+#: admin/templates/plugins/ozwave/special_ozwave.html:402
+#: admin/templates/plugins/ozwave/special_ozwave.html:451
+#: admin/templates/plugins/scene/creator_scene.html:148
 msgid "Data not sent"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:34
+#: admin/templates/plugins/knx/special_knx.html:34
 msgid "Need Command group or Stat group address field should be filled"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:37
+#: admin/templates/plugins/knx/special_knx.html:37
 msgid "Domogik device address field should be filled"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:88
+#: admin/templates/plugins/knx/special_knx.html:94
 msgid "Domogik device address"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:90
+#: admin/templates/plugins/knx/special_knx.html:96
 msgid "KNX command group address"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:92
+#: admin/templates/plugins/knx/special_knx.html:98
 msgid "KNX command datatype"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:115
+#: admin/templates/plugins/knx/special_knx.html:121
 msgid "KNX state group address"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:117
+#: admin/templates/plugins/knx/special_knx.html:123
 msgid "KNX state datatype"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:139
+#: admin/templates/plugins/knx/special_knx.html:145
 msgid "Read on start"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:141
+#: admin/templates/plugins/knx/special_knx.html:147
 msgid "Description of this device"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:145
+#: admin/templates/plugins/knx/special_knx.html:151
 msgid "Add"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:146
+#: admin/templates/plugins/knx/special_knx.html:152
 msgid "Read file"
 msgstr ""
 
-#: admin/templates/plugins/special_knx.html:149
+#: admin/templates/plugins/knx/special_knx.html:155
 msgid "Delete ligne"
 msgstr ""
 
-#: templates/index.html:68
-msgid "No areas or rooms configured yet"
+#: admin/templates/plugins/ozwave/special_ozwave.html:253
+msgid "Plugin not running"
 msgstr ""
 
-#: templates/config/configserver.html:30
+#: admin/templates/plugins/ozwave/special_ozwave.html:369
+msgid "No Command_Class for"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:402
+msgid "please check your device configuration"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:479
+msgid "Zwave controller"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:482
+#: admin/templates/plugins/ozwave/special_ozwave.html:483
+#: admin/templates/plugins/ozwave/special_ozwave.html:489
+#: admin/templates/plugins/ozwave/special_ozwave.html:492
+#: admin/templates/plugins/ozwave/special_ozwave.html:493
+#: admin/templates/plugins/ozwave/special_ozwave.html:494
+#: admin/templates/plugins/ozwave/special_ozwave.html:497
+#: admin/templates/plugins/ozwave/special_ozwave.html:498
+#: admin/templates/plugins/ozwave/special_ozwave.html:501
+#: admin/templates/plugins/ozwave/special_ozwave.html:504
+msgid "Undefined"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:483
+msgid "Plugin version"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:489
+msgid "Home ID"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:492
+msgid "Contoller"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:494
+msgid "Number of nodes"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:497
+msgid "Library"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:501
+msgid "Openzwave path configuration"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:504
+msgid "User path"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:510
+msgid "Save config"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:511
+msgid " Updade Node button before saving"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:515
+msgid "Zwave Network device"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:518
+msgid "Description of zwave network with devices capacities"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:521
+msgid "Command Class available for domogik device"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:525
+msgid "Command Class not available for domogik device"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:533
+msgid "NodeId"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:535
+msgid "Location"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:536
+msgid "Model"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:537
+msgid "Awake"
+msgstr ""
+
+#: admin/templates/plugins/ozwave/special_ozwave.html:539
+msgid "Last update"
+msgstr ""
+
+#: admin/templates/plugins/scene/creator_scene.html:437
+msgid "Created Scene"
+msgstr ""
+
+#: admin/templates/plugins/scene/creator_scene.html:438
+msgid "If"
+msgstr ""
+
+#: admin/templates/plugins/scene/creator_scene.html:467
+msgid "then"
+msgstr ""
+
+#: admin/templates/plugins/scene/creator_scene.html:470
+msgid "else"
+msgstr ""
+
+#: admin/templates/plugins/scene/creator_scene.html:474
+msgid "Interval"
+msgstr ""
+
+#: admin/templates/plugins/scene/manage_scene.html:7
+msgid "Manage Scene"
+msgstr ""
+
+#: config/views.py:113
+msgid "Select your language"
+msgstr ""
+
+#: config/views.py:143
+msgid "Domogik server configuration"
+msgstr ""
+
+#: config/views.py:194
+msgid "Testing Domogik server"
+msgstr ""
+
+#: config/templates/configserver.html:30
 msgid ""
 "Please enter the your RINOR server parameters. (This should be the local "
 "address from the Domoweb service, not the remote address from the Browser)"
 msgstr ""
 
-#: templates/config/configserver.html:37 templates/config/welcome.html:38
+#: config/templates/configserver.html:37 config/templates/welcome.html:46
+#: templates/config/welcome.html:46 view/templates/configuration.html:72
+#: view/templates/configuration.html:79 view/templates/configuration.html:86
+#: view/templates/configuration.html:95
 msgid "(required)"
 msgstr ""
 
-#: templates/config/configserver.html:43 templates/config/testserver.html:74
-msgid "Previous"
-msgstr ""
-
-#: templates/config/testserver.html:71
+#: config/templates/testserver.html:71
 msgid "Testing Domogik Server connection"
 msgstr ""
 
-#: templates/config/testserver.html:72
+#: config/templates/testserver.html:72
 msgid "Loading"
 msgstr ""
 
-#: templates/config/testserver.html:75 view/templates/area.edit.html:44
-#: view/templates/area.edit.html.py:46 view/templates/house.edit.html:44
-#: view/templates/house.edit.html.py:46 view/templates/room.edit.html:45
-#: view/templates/room.edit.html.py:47
+#: config/templates/testserver.html:75
 msgid "Finish"
 msgstr ""
 
-#: templates/config/welcome.html:31
+#: config/templates/welcome.html:39 templates/config/welcome.html:39
 msgid "Please choose your language in the dropdown list"
 msgstr ""
 
@@ -1169,50 +1387,85 @@ msgstr ""
 msgid "Read Domogik Wiki (How to start the server)"
 msgstr ""
 
-#: templates/layouts/base_home.html:40 templates/layouts/base_home.html:45
+#: templates/layouts/base_centered_panel.html:37
+#: templates/layouts/base_home.html:38
 msgid "Domogik logo"
 msgstr ""
 
+#: templatetags/tree.py:83
+#, python-format
+msgid "%s tag requires a queryset"
+msgstr ""
+
+#: templatetags/tree.py:152 templatetags/tree.py:194
+#, python-format
+msgid "%s tag requires 3 arguments"
+msgstr ""
+
+#: view/views.py:53
+msgid "Page name"
+msgstr ""
+
+#: view/views.py:54
+msgid "Page description"
+msgstr ""
+
 #: view/views.py:55
-msgid "View House"
+msgid "Choose the icon"
 msgstr ""
 
-#: view/views.py:87
-msgid "Edit House"
+#: view/views.py:56
+msgid "Choose a theme"
 msgstr ""
 
-#: view/views.py:120 view/views.py:176
-msgid "View "
+#: view/views.py:141
+msgid "Widgets"
 msgstr ""
 
-#: view/views.py:147 view/views.py:203
-msgid "Edit "
+#: view/templates/configuration.html:59
+msgid "Save"
 msgstr ""
 
-#: view/templates/area.edit.html:98 view/templates/house.edit.html:98
-#: view/templates/room.edit.html:99
+#: view/templates/elements.html:94
+msgid "Save widgets"
+msgstr ""
+
+#: view/templates/elements.html:96
+msgid "Show widgets dialog"
+msgstr ""
+
+#: view/templates/elements.html:133
 msgid "Drag & drop this wigdet to the page"
 msgstr ""
 
-#: view/templates/area.edit.html:102 view/templates/house.edit.html:102
-#: view/templates/room.edit.html:103
+#: view/templates/elements.html:137
 msgid "Author"
 msgstr ""
 
-#: view/templates/area.edit.html:106 view/templates/house.edit.html:106
-#: view/templates/room.edit.html:107
+#: view/templates/elements.html:141
 msgid "Screenshot"
 msgstr ""
 
-#: view/templates/area.html:44 view/templates/house.html:43
-#: view/templates/room.html:48
-msgid "Customize"
+#: view/templates/page.html:128
+msgid "Place elements"
 msgstr ""
 
-#: view/templates/layouts/base_view.html:103
-msgid "Domogik homepage"
+#: view/templates/page.html:129
+msgid "Configure"
 msgstr ""
 
-#: view/templates/layouts/base_view.html:105
+#: view/templates/page.html:130
+msgid "Admin section"
+msgstr ""
+
+#: view/templates/page.html:139
+msgid "Enter your password"
+msgstr ""
+
+#: view/templates/page.html:142
+msgid "Close"
+msgstr ""
+
+#: view/templates/page.html:157
 msgid "Menu"
 msgstr ""

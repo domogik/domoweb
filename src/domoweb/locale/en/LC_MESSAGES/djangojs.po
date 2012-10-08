@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-15 17:14+0200\n"
+"POT-Creation-Date: 2012-10-05 18:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -129,85 +129,86 @@ msgid "No hosts"
 msgstr ""
 
 #: design/admin/js/page-admin.js:18 design/admin/js/page-admin.js.c:28
-#: design/admin/js/page-admin.js:82 design/admin/js/page-admin.js.c:91
-#: design/admin/js/page-admin.js:101
+#: design/admin/js/page-admin.js:83 design/admin/js/page-admin.js.c:92
+#: design/admin/js/page-admin.js:102
 msgid "Click to reload"
 msgstr ""
 
-#: design/admin/js/page-admin.js:60
+#: design/admin/js/page-admin.js:61
 msgid "Plugin Running"
 msgstr ""
 
-#: design/admin/js/page-admin.js:63
+#: design/admin/js/page-admin.js:64
 msgid "External member Running"
 msgstr ""
 
-#: design/admin/js/page-admin.js:68
+#: design/admin/js/page-admin.js:69
 msgid "Plugin Stopped"
 msgstr ""
 
-#: design/admin/js/page-admin.js:71
+#: design/admin/js/page-admin.js:72
 msgid "External member Stopped"
 msgstr ""
 
-#: design/admin/js/page-admin.js:82
+#: design/admin/js/page-admin.js:83
 msgid "No plugin enabled or installed"
 msgstr ""
 
-#: design/admin/js/page-admin.js:91
+#: design/admin/js/page-admin.js:92
 msgid "No host listed"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:21
+#: design/admin/js/plugin-config.js:25
 msgid "Required"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:45 design/admin/js/plugin-config.js:266
-#: design/admin/js/rinor-config.js:32 design/admin/js/rinor-config.js.c:251
+#: design/admin/js/plugin-config.js:47 design/admin/js/plugin-config.js.c:67
+#: design/admin/js/plugin-config.js:294 design/admin/js/rinor-config.js:32
+#: design/admin/js/rinor-config.js.c:251
 msgid "Reset"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:96
+#: design/admin/js/plugin-config.js:118
 msgid "No configured"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:108 design/admin/js/rinor-config.js:93
+#: design/admin/js/plugin-config.js:134 design/admin/js/rinor-config.js:93
 msgid "Key"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:108 design/admin/js/rinor-config.js:93
+#: design/admin/js/plugin-config.js:134 design/admin/js/rinor-config.js:93
 msgid "Description"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:108 design/admin/js/rinor-config.js:93
+#: design/admin/js/plugin-config.js:134 design/admin/js/rinor-config.js:93
 msgid "Value"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:108 design/admin/js/rinor-config.js:93
+#: design/admin/js/plugin-config.js:134 design/admin/js/rinor-config.js:93
 msgid "Actions"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:127 design/admin/js/rinor-config.js:112
+#: design/admin/js/plugin-config.js:153 design/admin/js/rinor-config.js:112
 msgid "Configuration deleted"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:149 design/admin/js/rinor-config.js:134
+#: design/admin/js/plugin-config.js:175 design/admin/js/rinor-config.js:134
 msgid "Configuration saved successfully"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:189 design/admin/js/rinor-config.js:174
+#: design/admin/js/plugin-config.js:217 design/admin/js/rinor-config.js:174
 msgid "Add interface"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:192 design/admin/js/rinor-config.js:177
+#: design/admin/js/plugin-config.js:220 design/admin/js/rinor-config.js:177
 msgid "Delete interface"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:322 design/admin/js/rinor-config.js:307
+#: design/admin/js/plugin-config.js:350 design/admin/js/rinor-config.js:307
 msgid "item(s) not configured yet"
 msgstr ""
 
-#: design/admin/js/plugin-config.js:330 design/admin/js/rinor-config.js:315
+#: design/admin/js/plugin-config.js:358 design/admin/js/rinor-config.js:315
 msgid "Save"
 msgstr ""
 
@@ -215,7 +216,7 @@ msgstr ""
 msgid "Not configured"
 msgstr ""
 
-#: design/charting/dmg.chart-core.js:67
+#: design/charting/dmg.chart-core.js:74
 msgid "Data creation failed"
 msgstr ""
 
@@ -301,15 +302,11 @@ msgstr ""
 msgid "Opens in a new window"
 msgstr ""
 
-#: design/common/js/dmg.forms.js:154
-msgid "Choose a technologie"
-msgstr ""
-
-#: design/common/js/dmg.forms.js:181 design/common/js/dmg.forms.js.c:189
+#: design/common/js/dmg.forms.js:146 design/common/js/dmg.forms.js.c:154
 msgid "length has to be between"
 msgstr ""
 
-#: design/common/js/dmg.forms.js:181 design/common/js/dmg.forms.js.c:189
+#: design/common/js/dmg.forms.js:146 design/common/js/dmg.forms.js.c:154
 msgid "and"
 msgstr ""
 
@@ -337,19 +334,19 @@ msgstr ""
 msgid "hide all notifications"
 msgstr ""
 
-#: design/common/js/dmg.notifications.js:12
+#: design/common/js/dmg.notifications.js:12 design/view/js/notifications.js:7
 msgid "Success"
 msgstr ""
 
-#: design/common/js/dmg.notifications.js:15
+#: design/common/js/dmg.notifications.js:15 design/view/js/notifications.js:10
 msgid "Information"
 msgstr ""
 
-#: design/common/js/dmg.notifications.js:19
+#: design/common/js/dmg.notifications.js:19 design/view/js/notifications.js:13
 msgid "Error"
 msgstr ""
 
-#: design/common/js/dmg.notifications.js:23
+#: design/common/js/dmg.notifications.js:23 design/view/js/notifications.js:16
 msgid "Warning"
 msgstr ""
 
@@ -369,6 +366,10 @@ msgstr ""
 msgid "Getting stats failed"
 msgstr ""
 
-#: design/view/js/page-show-edit.js:109
+#: design/view/js/elements-page.js:92
 msgid "Remove"
+msgstr ""
+
+#: design/view/js/notifications.js:19 design/view/js/notifications.js.c:22
+msgid "Alert"
 msgstr ""

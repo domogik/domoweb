@@ -1,0 +1,321 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2012, Domogik
+# This file is distributed under the same license as the Domoweb package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Domoweb dev\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-05 20:23\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../technical/i18n.txt:3
+# 8293c38df533475eba7154f1c2825c1e
+msgid "How i18n is implemented"
+msgstr ""
+
+#: ../../technical/i18n.txt:6
+# 6d6a7116459d43bdb240a2d01ba68f7f
+msgid "Django Internationalization"
+msgstr ""
+
+#: ../../technical/i18n.txt:8
+# 628e0a0f7bbe4f0b9d84414d4254d19e
+msgid "Domoweb translation is based on Django translation process: https://docs.djangoproject.com/en/1.4/topics/i18n/translation/"
+msgstr ""
+
+#: ../../technical/i18n.txt:11
+# 719aab92df0541fba0ad1703fc9e7503
+msgid "The translation process is based on gettext. The translations has to be implemented on three sections:"
+msgstr ""
+
+#: ../../technical/i18n.txt:14
+# 7d8b731dbe784173841ddb15fd886b51
+msgid "in Python view code"
+msgstr ""
+
+#: ../../technical/i18n.txt:15
+# 1e5202b47cad4efaa3345e611125d8f0
+msgid "in Template code"
+msgstr ""
+
+#: ../../technical/i18n.txt:16
+# 86a9824c548948fcbda04a78b1e3e8a3
+msgid "in Javascript code"
+msgstr ""
+
+#: ../../technical/i18n.txt:19
+# 2a6cdbcb4b2343b2b548905027bfb516
+msgid "Python views"
+msgstr ""
+
+#: ../../technical/i18n.txt:21
+# 90c7e103f6134314b1db7b7ad2f83ad6
+msgid "On each file: ::"
+msgstr ""
+
+#: ../../technical/i18n.txt:25
+#: ../../technical/i18n.txt:39
+#: ../../technical/i18n.txt:60
+# 35ce6d0670bd4193bc4f9ac2437fd840
+# 2b6768d965ec45c39faa8f8e091943be
+# 0f088ada50994163a393c96eeda255bb
+msgid "Then for each string: ::"
+msgstr ""
+
+#: ../../technical/i18n.txt:33
+# 2324d6ccc1a242a6b8134a02e23b8390
+msgid "Django templates"
+msgstr ""
+
+#: ../../technical/i18n.txt:35
+# 43e49125cb824f898ba600f534a7c614
+msgid "On each page: ::"
+msgstr ""
+
+#: ../../technical/i18n.txt:44
+# 8ec8b2cba0fd402b919fa445d2364060
+msgid "Javascript"
+msgstr ""
+
+#: ../../technical/i18n.txt:46
+# 700d4d5910d643bc9aa02f0af417cb02
+msgid "First we need to create the translation catalog: ::"
+msgstr ""
+
+#: ../../technical/i18n.txt:56
+# 16f8717276e5468485bfd03b91f02ebf
+msgid "And on main template: ::"
+msgstr ""
+
+#: ../../technical/i18n.txt:65
+# 94fc49eb07044291a24544a79c4532b7
+msgid "Language files generation"
+msgstr ""
+
+#: ../../technical/i18n.txt:67
+# 1db1b4116cae43859b35b44244a93f38
+msgid "The message file for each language needs to be created separately (with '-d djangojs' option for the JS files): ::"
+msgstr ""
+
+#: ../../technical/i18n.txt:77
+# b13cf4c7344041c6aa88fca74ca289e9
+msgid "After translation, re-adding the .po to the locale, the files are compiled to .mo files: ::"
+msgstr ""
+
+#: ../../technical/i18n.txt:82
+# a5420d064be84f9ca179dad8a1cadaca
+msgid "If you use OSX remove before the bloody Apple files with: find . -name \".AppleDouble\" -depth -exec rm -Rf {} \\;"
+msgstr ""
+
+#: ../../technical/i18n.txt:86
+# 34f907832f3e454a92fbf492281d3b07
+msgid "Transifex"
+msgstr ""
+
+#: ../../technical/i18n.txt:88
+# 356be0a63e73496dbc6a7fc6895fe328
+msgid "The Transifex service is used for the translation: https://www.transifex.net/projects/p/domoweb/"
+msgstr ""
+
+#: ../../technical/index.txt:3
+# f2f5007c63154c3e9ae977e304d106a2
+msgid "General description"
+msgstr ""
+
+#: ../../technical/index.txt:8
+# 4d95f336b69d4f15abb2b9ca1ef1a9fd
+msgid "Django and CherryPy"
+msgstr ""
+
+#: ../../technical/index.txt:10
+# ef5b07ba064f4494889ecc6d333a82eb
+msgid "Django is the core of Domoweb. Django is a high-level Python Web framework with a very flexible template system. Unfortunately the web server provided with Django is not multitasks and not suitable for production environment. Instead of having the user to install himself Apache or other web server, we decided to use the CherryPy web server in order to provided a easy and quick solution."
+msgstr ""
+
+#: ../../technical/index.txt:14
+# ccf6c14f81124a4c8399ee873e7e2e14
+msgid "https://www.djangoproject.com"
+msgstr ""
+
+#: ../../technical/index.txt:15
+# 934ddf87e4eb47a6bcbd73154a263936
+msgid "http://www.cherrypy.org"
+msgstr ""
+
+#: ../../technical/index.txt:18
+# 15533e25a41043a9ad14a30642060b55
+msgid "RINOR direct and AJAX connections"
+msgstr ""
+
+#: ../../technical/index.txt:20
+# d051b7ffca53442589bce60fe13f985f
+msgid "For easy configuration, all RINOR request are processed through Django."
+msgstr ""
+
+#: ../../technical/index.txt:22
+# 77a781c1543f47c1906f1fab1a79f8fe
+msgid "For the view generations, the pipe.py library is directly used to connect RINOR and retreive the data."
+msgstr ""
+
+#: ../../technical/index.txt:23
+# 4f7c1fe5a3da4d86a336f17fe0b362d7
+msgid "For AJAX requests from the browser, Django provides a mini REST service using the Tastypie library."
+msgstr ""
+
+#: ../../technical/index.txt:25
+# 21dd19e35df94cf083c3f08cf0ac2098
+msgid "http://django-tastypie.readthedocs.org"
+msgstr ""
+
+#: ../../technical/widget_process.txt:3
+# 32711aa00adf49e8863ed98dbcf154b9
+msgid "How Widgets are working"
+msgstr ""
+
+#: ../../technical/widget_process.txt:6
+# 9be4d69623c541ab96d26cc56cb07d28
+msgid "On Page Load"
+msgstr ""
+
+#: ../../technical/widget_process.txt:7
+# dc14100bfb24478e8c8f094fb8fbad35
+msgid "On page load, each widget JS file is loaded."
+msgstr ""
+
+#: ../../technical/widget_process.txt:11
+# add0dbf498474e0c827e81cb8c5bd549
+msgid "Create_widget() is called for each."
+msgstr ""
+
+#: ../../technical/widget_process.txt:12
+# 3892efd4421d4a3f801549bf87cd445c
+msgid "For each widget a jQuery class is created as a subclass of ui.widget_core."
+msgstr ""
+
+#: ../../technical/widget_process.txt:13
+# 8c96bfc99a2d4fda83c2446e9ef85d8f
+msgid "The widget is registred on a list, sorted by sensor/actuator type."
+msgstr ""
+
+#: ../../technical/widget_process.txt:16
+# 1208efb8a54b456d8fe168b6cadd3e90
+msgid "On Page Ready"
+msgstr ""
+
+#: ../../technical/widget_process.txt:17
+# 3c22e3605de8432188a97a0a6fec7768
+msgid "On page ready each widget/feature association is placed and configured."
+msgstr ""
+
+#: ../../technical/widget_process.txt:21
+# f65ace25b9ce4223af4e212f010f235d
+msgid "On page ready, the initAssociation is called by the DOM event."
+msgstr ""
+
+#: ../../technical/widget_process.txt:22
+# 93682ab9fc78417faa9bd1d2ccb6d41a
+msgid "An AJAX fonction contact the RINOR server and retreive the associations list."
+msgstr ""
+
+#: ../../technical/widget_process.txt:23
+# 281ce04444e24e4bbf5ccf515fe9c598
+msgid "Each feature is identified and ready to be initialised with the linked widget element."
+msgstr ""
+
+#: ../../technical/widget_process.txt:24
+# f4b0ea1727df4506b2ca7dd6fbb8c723
+msgid "The _init fonction of the feature/widget is called."
+msgstr ""
+
+#: ../../technical/widget_process.txt:25
+# e9742962a00d4e869e2db7f9010c8c83
+msgid "..."
+msgstr ""
+
+#: ../../technical/widget_process.txt:26
+# 7b6d9967501a49edab0a9fd72d767a12
+msgid "The widget is bind to the event channel to receive all event notifications."
+msgstr ""
+
+#: ../../technical/widget_process.txt:27
+# ba69c5c006dd4dd69cfc0a8152703c54
+msgid "The widget try to get his last value state."
+msgstr ""
+
+#: ../../technical/widget_process.txt:28
+# 874878a9690c49ec9e1ca426a9c76cab
+msgid "The RINOR server is connected to get the value. If the value exist in the database, the value is sent to the widget using the event channel. (Asynchrone)"
+msgstr ""
+
+#: ../../technical/widget_process.txt:30
+# a6c429239b65416a8da3846c333d9c90
+msgid "When the event is receved. The state handler fonction is called, and display the widget state."
+msgstr ""
+
+#: ../../technical/widget_process.txt:33
+# 9bee4b88ddcf4060bded0b8df836eec0
+msgid "On State Event received"
+msgstr ""
+
+#: ../../technical/widget_process.txt:37
+# 34c0d7d212c2401ab3a51a6154f4a36f
+msgid "When a state event is receved (via RINOR). The state handler fonction is called on each widget."
+msgstr ""
+
+#: ../../technical/widget_process.txt:38
+#: ../../technical/widget_process.txt:52
+# 68950dfe24044913bd4c2276dcbaadd9
+# 8306ac85e13c449aa6e7a4fe27d0a850
+msgid "If the feature matches the event identifier, the state handler process the data."
+msgstr ""
+
+#: ../../technical/widget_process.txt:39
+#: ../../technical/widget_process.txt:53
+# d9dc0cb3e5dd43fda2fa2c55fa0889be
+# 307d8a31b4a344d4842c429735bc76b7
+msgid "The new state is displayed."
+msgstr ""
+
+#: ../../technical/widget_process.txt:42
+# 7da447debbf844bca22169f51827a091
+msgid "On Command sent"
+msgstr ""
+
+#: ../../technical/widget_process.txt:46
+# 9e8bb4b909e74fafbd61b6a5c0f5ce20
+msgid "A widget action is detected (click)."
+msgstr ""
+
+#: ../../technical/widget_process.txt:47
+# c1300cbe0fa549668efde987d0dbbd77
+msgid "The widget prepare the command value to be send."
+msgstr ""
+
+#: ../../technical/widget_process.txt:48
+# a8b603005b04431ab1c3366f4c139233
+msgid "The command is send (AJAX) to the RINOR server, and the widget place himself in a waiting state."
+msgstr ""
+
+#: ../../technical/widget_process.txt:49
+# 4c49df62f5a24c7b8228f7a271d44d7c
+msgid "If the command is received and ack by the plugin..."
+msgstr ""
+
+#: ../../technical/widget_process.txt:50
+# 96ad96dc64bb4833ad5f522fdfe2560c
+msgid "The widget leave the waiting state."
+msgstr ""
+
+#: ../../technical/widget_process.txt:51
+# 6019c36b98df4dbea26c0433389ec19d
+msgid "When the confirmation state event changed is receved (via RINOR). The state handler fonction is called on the widget."
+msgstr ""
+

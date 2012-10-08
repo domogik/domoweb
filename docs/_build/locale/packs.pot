@@ -1,0 +1,290 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2012, Domogik
+# This file is distributed under the same license as the Domoweb package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Domoweb dev\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-05 20:23\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../packs/iconset.txt:3
+# 86649d4ad3274bfe9cc35fead948a494
+msgid "IconSet pack"
+msgstr ""
+
+#: ../../packs/iconset.txt:5
+# 39ec63d7e23c4e92aa24b11a61db0a42
+msgid "Each iconset are specifically created for a different section of Domoweb (page, usage, etc ...) But one type is available so far in Domoweb 0.3: 'iconset_page'"
+msgstr ""
+
+#: ../../packs/iconset.txt:9
+#: ../../packs/theme.txt:8
+# 68d670ac9ca84d988a00d4906273a94e
+# 819c64cb24364ab7af23603a5e966b37
+msgid "Pack structure"
+msgstr ""
+
+#: ../../packs/iconset.txt:11
+# 93cb6902d35c440f850b6d861c55e99e
+msgid "The iconset root folder name should be identical to the iconset id::"
+msgstr ""
+
+#: ../../packs/iconset.txt:15
+#: ../../packs/theme.txt:14
+# 28f75b6d53fc41b68dcadf84ef4e0c09
+# 82b7119a5a274a71bc45f0af8bbc83b7
+msgid "or in dev. mode::"
+msgstr ""
+
+#: ../../packs/iconset.txt:20
+#: ../../packs/theme.txt:19
+# 33304505ea8c42cc931780809e7e9aa6
+# ad0eb63472b64496896b1dbcc53cc5c7
+msgid "Naming convention"
+msgstr ""
+
+#: ../../packs/iconset.txt:22
+# 89a8570f2906453c8336c0c9c004d99f
+msgid "Each icon should be named according to the info.json section::"
+msgstr ""
+
+#: ../../packs/iconset.txt:26
+# 46d855cc39ef4d65af3e6714bc4cd154
+msgid "(ex. myicon_16.png)"
+msgstr ""
+
+#: ../../packs/iconset.txt:29
+#: ../../packs/theme.txt:24
+# 531284a9a8ad4db7adde736b343cf8cc
+# 11510d8dc7b244ca9bf6252b025b01ac
+msgid "info.json"
+msgstr ""
+
+#: ../../packs/iconset.txt:31
+#: ../../packs/theme.txt:26
+# 2213968f1d9640f28b691a69d4fe0027
+# 2b656c92a2c94042a307d8d096e89b91
+msgid "The info.json file declare all icons available in the set."
+msgstr ""
+
+#: ../../packs/iconset.txt:58
+#: ../../packs/theme.txt:45
+# e77fbf39e0074d01933b53db4b89e010
+# 9f53c8be800945f18cec82c8422c579f
+msgid "version : (see Domogik info.json documentation page)"
+msgstr ""
+
+#: ../../packs/iconset.txt:59
+#: ../../packs/theme.txt:46
+# 7bb91c7b75714df0b8d3c16ce7de3f9e
+# 6e5fcdc965944327bbaedf73bc96ba9f
+msgid "type : the type id for the widget element is 'iconset_page'."
+msgstr ""
+
+#: ../../packs/iconset.txt:60
+#: ../../packs/theme.txt:47
+# 877ad156447a4cf48f5cfe03b3254d2c
+# 8e891109fcc84e36a7deee8a74ff030f
+msgid "identity : (see Domogik info.json documentation page)"
+msgstr ""
+
+#: ../../packs/iconset.txt:61
+#: ../../packs/theme.txt:48
+# 9bdc37741d134b1d931e0114f0d50121
+# 34b03762d9054716831b273f6011615f
+msgid "images : (see Domogik info.json documentation page)"
+msgstr ""
+
+#: ../../packs/iconset.txt:62
+# 2fe567ee01c744dca6ff7b82fd748f8a
+msgid "icons : list of icons"
+msgstr ""
+
+#: ../../packs/iconset.txt:65
+#: ../../packs/theme.txt:87
+# b80cb13569d1432bb5049a247cc15777
+# 3eb78cb5ebd84b5aa99199d54cab68aa
+msgid "Internal processing and data"
+msgstr ""
+
+#: ../../packs/iconset.txt:68
+#: ../../packs/theme.txt:90
+# 620dfb96916f4439ba802921e7cfd17d
+# 3d6288184a1d43f7af576833c06dc25b
+msgid "Registration"
+msgstr ""
+
+#: ../../packs/iconset.txt:70
+# f35cfbbd417248ed9b387d34152de9cd
+msgid "When Domoweb starts the ``packs/iconsets/`` folder is parsed"
+msgstr ""
+
+#: ../../packs/iconset.txt:72
+# 39316a1ca4564e6db34f420b9f888b01
+msgid "Each icon of the iconset is registered into the domoweb 'PageIcon' database. (Visible in Domoweb Admin > Core > Domoweb Data)"
+msgstr ""
+
+#: ../../packs/iconset.txt:75
+# 5d3312be03a8487588de8ad087a64be0
+msgid "If not available the CSS file is generated .icon64-iconsetid-iconid { background-image:url(images/iconid_64.png);} .icon32-iconsetid-iconid { background-image:url(images/iconid_32.png);} .icon16-iconsetid-iconid { background-image:url(images/iconid_16.png);}"
+msgstr ""
+
+#: ../../packs/iconset.txt:81
+# 05fc25c2adea4242916fd7277faa5c0b
+msgid "Icon association"
+msgstr ""
+
+#: ../../packs/iconset.txt:83
+# dad7d01a0d684ba787b4af740261cb3f
+msgid "The couple ``iconsetid-iconid`` is attribued to the page item on the Domogik table ``ui_page``."
+msgstr ""
+
+#: ../../packs/iconset.txt:86
+# 24aece8f2c094c37a731c2daab5442b7
+msgid "Applied icon style"
+msgstr ""
+
+#: ../../packs/iconset.txt:88
+# cb9ec0689c3241dcb32a251b3f1fc4be
+msgid "To apply an icon to a HTML element, we attribute the icon css class::"
+msgstr ""
+
+#: ../../packs/index.txt:3
+# d47a5d136d0c48ff91ae13d196cb3c9a
+msgid "Before creating a pack"
+msgstr ""
+
+#: ../../packs/index.txt:6
+# fb26fe5ff4e94a44bfe968159a5eb3c7
+msgid "What are Domoweb packs ?"
+msgstr ""
+
+#: ../../packs/index.txt:8
+# 3552aaac90774362b716c602908da19a
+msgid "Packs are the first step to downloadable packages. For now each modulable code of domoweb are separated from Domoweb main code to a separated 'packs' subfolder and will sligtly move to downloadable packages along Domoweb versions."
+msgstr ""
+
+#: ../../packs/index.txt:13
+# 73e88feb2aae42278cc37c7345b81076
+msgid "Types of packs"
+msgstr ""
+
+#: ../../packs/index.txt:15
+# e529152289244a8497bc4038bb8f55bb
+msgid ":doc:`Iconsets of pages icons </packs/iconset>`"
+msgstr ""
+
+#: ../../packs/index.txt:16
+# 92464cb13bb641b9a6cb707bd64a244b
+msgid ":doc:`Page style themes </packs/theme>`"
+msgstr ""
+
+#: ../../packs/theme.txt:3
+# 8b579cb54d2749588e30ed771acfcbb1
+msgid "Theme pack"
+msgstr ""
+
+#: ../../packs/theme.txt:5
+# a8b265b56250408f9fe33c1a198b4eb8
+msgid "A theme is used to visualy style a page, in the view section."
+msgstr ""
+
+#: ../../packs/theme.txt:10
+# b1e95ad1674c42909de2b49874d01a2d
+msgid "The theme root folder name should be identical to the theme id::"
+msgstr ""
+
+#: ../../packs/theme.txt:21
+# 6d300ad8cbf549a5a65576e15ae34195
+msgid "The css file used to override the page default style should be named ``view-page.css``."
+msgstr ""
+
+#: ../../packs/theme.txt:51
+# 61bd55b0117047c0a0babb623fab7496
+msgid "Creating the css style"
+msgstr ""
+
+#: ../../packs/theme.txt:53
+# 06164e00bfbe4a90a53bd6c21b0c741f
+msgid "The theme css override style is contained in ``view-page.css``."
+msgstr ""
+
+#: ../../packs/theme.txt:55
+# 57ae77228fd242368df43e8d7b925783
+msgid "This exemple shows the theme 'flowers':"
+msgstr ""
+
+#: ../../packs/theme.txt:75
+# 2386d5b9039c460f8ec94c9e8a345ca1
+msgid "The 2 background images are png, **with alpha layer** (transparent background)."
+msgstr ""
+
+#: ../../packs/theme.txt:77
+# 850dacb753fa4dbdbd68f197528bc76e
+msgid "The css attributes used:"
+msgstr ""
+
+#: ../../packs/theme.txt:79
+# e274009301a140098cb44c54841c45ed
+msgid "``background-color`` : defines the background color for the element (behind the background image)"
+msgstr ""
+
+#: ../../packs/theme.txt:80
+# 811e3ac1161e406788750cdfd775edcd
+msgid "``background-image`` : the background image url (relative from the css file path)"
+msgstr ""
+
+#: ../../packs/theme.txt:81
+# c1e52abfa84e47acb6bd18d9fa94bd06
+msgid "``background-position: X Y`` : position de l'image, X (left, right / 0%, 100%), Y (top, bottom / 0%, 100%)"
+msgstr ""
+
+#: ../../packs/theme.txt:82
+# 847015c7d35343cc8f193eda08f48c33
+msgid "``background-repeat`` : to repeat or not the background image"
+msgstr ""
+
+#: ../../packs/theme.txt:84
+# 66ac0bc74fd0475098097f3e6f85850b
+msgid "This is a **very basic** styling: many other css attributs may be used."
+msgstr ""
+
+#: ../../packs/theme.txt:92
+# 94c2d77c7593452296bf08ab3a602d7b
+msgid "When Domoweb starts the ``packs/themes/`` folder is parsed"
+msgstr ""
+
+#: ../../packs/theme.txt:94
+# add03bd10086472fade6a15b5db58aae
+msgid "Each theme is registered into the domoweb 'PageTheme' database. (Visible in Domoweb Admin > Core > Domoweb Data)"
+msgstr ""
+
+#: ../../packs/theme.txt:97
+# 377fcca4f7304a8a895778e2ae16796e
+msgid "Theme association"
+msgstr ""
+
+#: ../../packs/theme.txt:99
+# e0e15dfd52b74a46ab57b9046aa29a7b
+msgid "The theme id is attribued to the page, in the page configuration view, and registred on the Domoweb table ``Page``. (Visible in Domoweb Admin > Core > Domoweb Data)"
+msgstr ""
+
+#: ../../packs/theme.txt:102
+# 49293336cd424b40bf96e99af281c66f
+msgid "Applied theme style"
+msgstr ""
+
+#: ../../packs/theme.txt:104
+# b85f2d80b89f4d4f9e037ce787523413
+msgid "The selected theme is simply applied in the ``page.html`` django layout using this code:"
+msgstr ""
+
