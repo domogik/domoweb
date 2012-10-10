@@ -1,6 +1,8 @@
 @charset "UTF-8";
 /* CSS Document */
-
+.icon64-usage-scene { background-image:url(scene/usage_64.png);}
+.icon32-usage-scene { background-image:url(scene/usage_32.png);}
+.icon16-usage-scene { background-image:url(scene/usage_16.png);}
 .icon64-usage-light { background-image:url(light/usage_64.png);}
 .icon32-usage-light { background-image:url(light/usage_32.png);}
 .icon16-usage-light { background-image:url(light/usage_16.png);}
@@ -66,6 +68,14 @@
 .icon16-usage-security_camera { background-image:url(security_camera/usage_16.png);}
 
 /* State icons */
+
+.icon32-usage-scene.actuator.binary.unknown { background-image:url(scene/undefined_32.png);}
+.icon32-usage-scene.actuator.binary.value_0 { background-image:url(scene/0_32.png);}
+.icon32-usage-scene.actuator.binary.value_1 { background-image:url(scene/100_32.png);}
+.icon32-usage-scene.sensor.boolean.unknown { background-image:url(scene/undefined_32.png);}
+.icon32-usage-scene.sensor.boolean.value_true { background-image:url(scene/100_32.png);}
+.icon32-usage-scene.sensor.boolean.value_false { background-image:url(scene/0_32.png);}
+
 .icon32-usage-light.actuator.binary.unknown { background-image:url(light/undefined_32.png);}
 .icon32-usage-light.actuator.binary.value_0 { background-image:url(light/0_32.png);}
 .icon32-usage-light.actuator.binary.value_1 { background-image:url(light/100_32.png);}
