@@ -75,7 +75,7 @@
               }else{
                     optest = '';
               }
-              if( $("select#sortieVrai").val() != 0){
+              if( $("select#sortieVrai").val() != 0 &&  $("select#sortieVrai").val() !='command'){
                    actiontrueadr = tableau[$("select#sortieVrai").val()][4];
                    actiontruetech = tableau[$("select#sortieVrai").val()][2];
                    debuttrue = actiontruetech.split(".");
@@ -93,6 +93,12 @@
                    actiontruetech = '';
                    actiontruecmd = '';
               }
+              if ( $("select#sortieVrai").val() == 'command'){
+                 actiontrueadr = 'command'
+                 actiontruetech = 'command'
+                 actiontruecmd = 'command'
+              }
+
               if( $("select#sortieFaux").val() != 0){
                    actionfalseadr = tableau[$("select#sortieFaux").val()][4];
                    actionfalsetech = tableau[$("select#sortieFaux").val()][2];
@@ -112,16 +118,25 @@
                    actionfalsetech = '';
                    actionfalsecmd = '';
               }
+              if ( $("select#sortieFaux").val() == 'command'){
+                 actionfalseadr = 'command'
+                 actionfalsetech = 'command'
+                 actionfalsecmd = 'command'
+              }
+
+
               actionfalseval = ''
               actiontrueval = ''
               if( TvalueFaux == 'Val'){
                   actionfalseval = $("#valueFaux").val();
+                  actionfalseval = actionfalseval.replace(/,/g,"%#");
               }
               if (TvalueFaux == 'Select'){
                   actionfalseval = $("select#valueFaux").val();;
               }
               if( TvalueVrai == 'Val'){
                   actiontrueval = $("#valueVrai").val();
+                  actiontrueval = actiontrueval.replace(/,/g,"%#");
               }
               if (TvalueVrai == 'Select'){
                   actiontrueval = $("select#valueVrai").val();;
@@ -337,68 +352,74 @@
           }
         });
 
-      $("select#sortieVrai").change(function(){
+      $("select#sortieVrai").change(function () {
           var test = $("select#sortieVrai").val();
-          var valeur = tableau[test][5];
-          var test2 = tableau[test][3];    
-          valeur = valeur.replace(/&quot;/g,'"');
-          var obj = jQuery.parseJSON(valeur);
- 
-          if (tableau[test][3]=="list"||tableau[test][3]=="binary"){
-          TvalueVrai = 'Select'
-          $("#valvrai").html("<select id='valueVrai' style='width:20em;'></select>");
-          if (test2 == "binary"){
-             $("select#valueVrai").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
-             $("select#valueVrai").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
-             }
-           else{
-             for(i=0 ;i<obj.commandValues.length;i++){
-               $("select#valueVrai").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
-               }
-             }
+          if (test == "command") {
+              TvalueVrai = 'Val'
+              $("#valvrai").html("<input id='valueVrai' style='width:20em;'></input>");
+          } else {
 
-          }
-          if (test2=="numeric"|| test2=="range"){
-          TvalueVrai = 'Val'
-          $("#valvrai").html("<input id='valueVrai' style='width:20em;'></input>");
-          }
-          if (test2=="trigger"){      
-             $("#valvrai").html("");
-          }
+              var valeur = tableau[test][5];
+              var test2 = tableau[test][3];
+              valeur = valeur.replace(/&quot;/g, '"');
+              var obj = jQuery.parseJSON(valeur);
 
-      }
-);
+              if (tableau[test][3] == "list" || tableau[test][3] == "binary") {
+                  TvalueVrai = 'Select'
+                  $("#valvrai").html("<select id='valueVrai' style='width:20em;'></select>");
+                  if (test2 == "binary") {
+                      $("select#valueVrai").append("<option value='" + obj.value0 + "'>" + obj.value0 + "</option>");
+                      $("select#valueVrai").append("<option value='" + obj.value1 + "'>" + obj.value1 + "</option>");
+                  } else {
+                      for (i = 0; i < obj.commandValues.length; i++) {
+                          $("select#valueVrai").append("<option value='" + obj.commandValues[i] + "'>" + obj.commandValues[i] + "</option>");
+                      }
+                  }
+              }
+              if (test2 == "numeric" || test2 == "range") {
+                  TvalueVrai = 'Val'
+                  $("#valvrai").html("<input id='valueVrai' style='width:20em;'></input>");
+              }
+              if (test2 == "trigger") {
+                  $("#valvrai").html("");
+              }
+          }
+      });
 
-      $("select#sortieFaux").change(function(){
-          var test = $("select#sortieFaux").val();
-          var valeur = tableau[test][5];
-          var test2 = tableau[test][3];    
-          valeur = valeur.replace(/&quot;/g,'"');
-          var obj = jQuery.parseJSON(valeur);
- 
-          if (tableau[test][3]=="list"||tableau[test][3]=="binary"){
-          TvalueFaux = 'Select' 
-          $("#valfaux").html("<select id='valueFaux' style='width:20em;'></select>");
-          if (test2 == "binary"){
-             $("select#valueFaux").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
-             $("select#valueFaux").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
-             }
-             else{
-               for(i=0 ;i<obj.commandValues.length;i++){
-                 $("select#valueFaux").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
-               } 
-             }
 
-          }
-          if (test2=="numeric"|| test2=="range"){
-             $("#valfaux").html("<input id='valueFaux' style='width:20em;'></input>");
-             TvalueFaux = 'Val'
-          }
-          if (test2=="trigger"){      
-             $("#valfaux").html("");
-          }
-      }
-);
+    $("select#sortieFaux").change(function () {
+        var test = $("select#sortieFaux").val();
+        if (test == 'command') {
+            $("#valfaux").html("<input id='valueFaux' style='width:20em;'></input>");
+            TvalueFaux = 'Val'
+        } else {
+            valeur = tableau[test][5];
+            var test2 = tableau[test][3];
+            valeur = valeur.replace(/&quot;/g, '"');
+            var obj = jQuery.parseJSON(valeur);
+
+            if (tableau[test][3] == "list" || tableau[test][3] == "binary") {
+                TvalueFaux = 'Select'
+                $("#valfaux").html("<select id='valueFaux' style='width:20em;'></select>");
+                if (test2 == "binary") {
+                    $("select#valueFaux").append("<option value='" + obj.value0 + "'>" + obj.value0 + "</option>");
+                    $("select#valueFaux").append("<option value='" + obj.value1 + "'>" + obj.value1 + "</option>");
+                } else {
+                    for (i = 0; i < obj.commandValues.length; i++) {
+                        $("select#valueFaux").append("<option value='" + obj.commandValues[i] + "'>" + obj.commandValues[i] + "</option>");
+                    }
+                }
+            }
+            if (test2 == "numeric" || test2 == "range") {
+                $("#valfaux").html("<input id='valueFaux' style='width:20em;'></input>");
+                TvalueFaux = 'Val'
+            }
+            if (test2 == "trigger") {
+                $("#valfaux").html("");
+           } 
+        }
+     });
+
 
       $(document).ready(function(){
         var i=1;
@@ -424,6 +445,7 @@
                 if (jqXHR.status == 400)
                     $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
             });
+          $('select#sortieVrai').append("<option value='command'>command line</option>");
           $("select#features2").hide();
           features2_visible = false
           $("select#test2").hide();
@@ -471,8 +493,6 @@
     <select id="sortieFaux" class='listes' style="width:30em;"></select> =>
     <span id="valfaux"></span>
     </div>
-    <h3>{% trans "Interval" %}</h3>
-    <input id="tempo"></input>
     <p>
     <button id="Creator" class='button icon16-action-save' style="width:20em;">{% trans "Create" %}</button>
     Rinor Url :{{ request.session.rinor_ip }}:{{ request.session.rinor_port }}</p> 
