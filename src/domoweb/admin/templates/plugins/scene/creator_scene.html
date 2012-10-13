@@ -17,7 +17,9 @@
         $("#Creator").click(function(){ 
              rinor_ip = "{{ request.session.rinor_ip }}";
              rinor_port = "{{ request.session.rinor_port }}";
+             description = ""
              if($('select#features1').val() != 0){
+                    device1d = tableau[$("select#features1").val()][7]+"-"+tableau[$("select#features1").val()][6];
                     device1adr = tableau[$("select#features1").val()][4];
                     device1id = tableau[$("select#features1").val()][0];
                     device1tech = tableau[$("select#features1").val()][2];
@@ -25,12 +27,14 @@
                     device1tech = debut1[0];
                     device1key = tableau[$("select#features1").val()][1];
                     }else{
+                    device1d='';
                     device1adr = '';
                     device1id = '';
                     device1tech = '';
                     device1key = '';
                     }
               if(features2_visible == true && $('select#features2').val() != 0){
+                    device2d= tableau[$("select#features2").val()][7]+"-"+tableau[$("select#features2").val()][6];
                     device2adr = tableau[$("select#features2").val()][4];
                     device2id = tableau[$("select#features2").val()][0];
                     device2tech = tableau[$("select#features2").val()][2];
@@ -38,6 +42,7 @@
                     device2tech = debut2[0];
                     device2key = tableau[$("select#features2").val()][1];
               }else{
+                    device2d = '';
                     device2adr = '';
                     device2id = '';
                     device2tech = '';
@@ -141,9 +146,17 @@
               if (TvalueVrai == 'Select'){
                   actiontrueval = $("select#valueVrai").val();;
               }
+              if ($("input#optionstart:checked").val()=="start"){
+                  option_start= "true"
+              }else{
+                  option_start= "false"
+              }
+              actriontru= tableau[$("select#sortieVrai").val()][7]+"-"+tableau[$("select#sortieVrai").val()][6]
+              actrionfal= tableau[$("select#sortieFaux").val()][7]+"-"+tableau[$("select#sortieFaux").val()][6]
 
+              description="if "+device1d+optest1+device1val+" "+optest +" "+device2d+optest2+device2val+" then "+actriontru+ " "+actiontrueval+" else "+actrionfal+" "+actionfalseval;
 
-                    value="{'device1adr':"+device1adr+",'device1id':"+device1id+",'device1tech':"+device1tech+",'device1key':"+device1key+",'device2adr':"+device2adr+",'device2id':"+device2id+",'device2tech':"+device2tech+",'device2key':"+device2key+",'device1op':"+optest1+",'device2op':"+optest2+",'device1val':"+device1val+",'device2val':"+device2val+",'opglobal':"+optest+",'actiontruetech':"+actiontruetech+",'actionfalsetech':"+actionfalsetech+",'actiontrueadr':"+actiontrueadr+",'actionfalseadr':"+actionfalseadr+",'actiontruecmd':"+actiontruecmd+",'actionfalsecmd':"+actionfalsecmd+",'actiontrueval':"+actiontrueval+",'actionfalseval':"+actionfalseval+",'rinorip':"+rinor_ip+",'rinorport':"+rinor_port+"}"        
+                    value="{'device1adr':"+device1adr+",'device1id':"+device1id+",'device1tech':"+device1tech+",'device1key':"+device1key+",'device2adr':"+device2adr+",'device2id':"+device2id+",'device2tech':"+device2tech+",'device2key':"+device2key+",'device1op':"+optest1+",'device2op':"+optest2+",'device1val':"+device1val+",'device2val':"+device2val+",'opglobal':"+optest+",'actiontruetech':"+actiontruetech+",'actionfalsetech':"+actionfalsetech+",'actiontrueadr':"+actiontrueadr+",'actionfalseadr':"+actionfalseadr+",'actiontruecmd':"+actiontruecmd+",'actionfalsecmd':"+actionfalsecmd+",'actiontrueval':"+actiontrueval+",'actionfalseval':"+actionfalseval+",'rinorip':"+rinor_ip+",'rinorport':"+rinor_port+",'option_start':"+option_start+",'descrip':"+description+"}" 
 
                  rinor.put(['api', 'command', 'scene', '0'], {"command":"Create", 'value':value})
                     .done(function(data, status, xhr){
@@ -493,7 +506,7 @@
     <select id="sortieFaux" class='listes' style="width:30em;"></select> =>
     <span id="valfaux"></span>
     </div>
-    <p>
+    <input type="checkbox" id="optionstart" checked="checked" value="start" /><label for="optionstart">{% trans "Automaticaly start the scene" %}</label> 
     <button id="Creator" class='button icon16-action-save' style="width:20em;">{% trans "Create" %}</button>
     Rinor Url :{{ request.session.rinor_ip }}:{{ request.session.rinor_port }}</p> 
 </section>
