@@ -168,7 +168,7 @@
         $("select#features1").change(function(){
           var test = $(this).val();
           var test2 = $("select#TestFeature").val();
-          if ((tableau[test][3]=="binary"||tableau[test][3]=="list") && (test2!="And" && test2!="Or" && test2!="None")){
+          if ((tableau[test][3]=="binary"||tableau[test][3]=="list"||tableau[test][3]=="boolean") && (test2!="And" && test2!="Or" && test2!="None")){
              $("select#TestFeature option").remove();
              $("select#TestFeature").append("<option value='None'>----</option>");
              $("select#features2").hide();
@@ -218,7 +218,7 @@
 
         $("select#test1").change(function(){
            var test = $("select#features1").val();
-           if (tableau[test][3]=="list"||tableau[test][3]=="binary"){
+           if (tableau[test][3]=="list"||tableau[test][3]=="binary"||tableau[test][3]=="boolean"){
               Tvalue1 = 'Select'
               $('select#test1').attr("disabled", true);
               $('select#test1 option[value="="]').attr("selected", "selected");
@@ -231,7 +231,7 @@
               var test2 = tableau[test][3];
               valeur = valeur.replace(/&quot;/g,'"');
               var obj = jQuery.parseJSON(valeur);
-              if (test2 == "binary"){
+              if (test2 == "binary"||test2=="boolean"){
                  $("select#Test_value1").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
                  $("select#Test_value1").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
               }else{
@@ -266,7 +266,7 @@
 
         $("select#test2").change(function(){
           var test = $("select#features2").val();
-          if ((tableau[test][3]=="list"||tableau[test][3]=="binary")&&($("select#TestFeature").val!="None")){ 
+          if ((tableau[test][3]=="list"||tableau[test][3]=="binary"||tableau[test][3]=="boolean")&&($("select#TestFeature").val!="None")){ 
             Tvalue2 = 'Select'
             $('select#test2').attr("disabled", true);
             $('select#test2 option[value="="]').attr("selected", "selected");
@@ -276,7 +276,7 @@
             var test2 = tableau[test][3];
             valeur = valeur.replace(/&quot;/g,'"');
             var obj = jQuery.parseJSON(valeur);
-            if (test2 == "binary"){
+            if (test2 == "binary"||test2=="boolean"){
              $("select#Test_value2").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
              $("select#Test_value2").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
              }
@@ -364,10 +364,10 @@
               valeur = valeur.replace(/&quot;/g, '"');
               var obj = jQuery.parseJSON(valeur);
 
-              if (tableau[test][3] == "list" || tableau[test][3] == "binary") {
+              if (tableau[test][3] == "list" || tableau[test][3] == "binary"||tableau[test][3]=="boolean") {
                   TvalueVrai = 'Select'
                   $("#valvrai").html("<select id='valueVrai' style='width:20em;'></select>");
-                  if (test2 == "binary") {
+                  if (test2 == "binary"||test2=="boolean") {
                       $("select#valueVrai").append("<option value='" + obj.value0 + "'>" + obj.value0 + "</option>");
                       $("select#valueVrai").append("<option value='" + obj.value1 + "'>" + obj.value1 + "</option>");
                   } else {
@@ -398,10 +398,10 @@
             valeur = valeur.replace(/&quot;/g, '"');
             var obj = jQuery.parseJSON(valeur);
 
-            if (tableau[test][3] == "list" || tableau[test][3] == "binary") {
+            if (tableau[test][3] == "list" || tableau[test][3] == "binary"||tableau[test][3]=="boolean") {
                 TvalueFaux = 'Select'
                 $("#valfaux").html("<select id='valueFaux' style='width:20em;'></select>");
-                if (test2 == "binary") {
+                if (test2 == "binary"||test2=="boolean") {
                     $("select#valueFaux").append("<option value='" + obj.value0 + "'>" + obj.value0 + "</option>");
                     $("select#valueFaux").append("<option value='" + obj.value1 + "'>" + obj.value1 + "</option>");
                 } else {

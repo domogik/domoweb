@@ -7,12 +7,12 @@ src/DomoWeb.egg-info/entry_points.txt
 src/DomoWeb.egg-info/not-zip-safe
 src/DomoWeb.egg-info/requires.txt
 src/DomoWeb.egg-info/top_level.txt
-src/DomoWeb.egg-info/.AppleDouble/.Parent
 src/domoweb/__init__.py
 src/domoweb/context_processors.py
 src/domoweb/exceptions.py
 src/domoweb/fields.py
 src/domoweb/manage.py
+src/domoweb/manifest.py
 src/domoweb/middleware.py
 src/domoweb/models.py
 src/domoweb/runserver.py
