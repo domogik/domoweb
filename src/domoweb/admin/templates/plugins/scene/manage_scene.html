@@ -1,9 +1,47 @@
 {% load i18n %}
 <script type='text/javascript'>
   $(function(){
-});
+
+   $("#specialread").click(function(){
+      data="";
+      rinor.put(['api', 'command', 'scene', '0'], {"command":"Read", 'value':'Read all scene'})
+
+                    .done(function(data, status, xhr){
+                         test=JSON.stringify(data);
+                         debut=test.search('data=');
+                         test=test.slice(debut+4);
+                         fin=test.search('}');
+                         test=test.slice(1,fin-2);
+                         i=0;
+                         text="<u>Config file:</u> <br/>"
+                         do{
+                           i=i+1;
+                           next=test.search(',');
+                           text=text+"<br/>" +i+" - "+ test.slice(0,next);
+                           test=test.slice(next+1);
+                         }
+                         while (test.search(",")>=0);
+                             $('#demo').html(text);
+                             }
+                    )
+                    .fail(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
+                   });
+      });
+
+   $(document).ready(function(){
+         $("#specialread").click();
+         $("#specialread").click();
+    });
+    });
+
+
 </script>
 <section class="subsection">
     <h2>{% trans "Manage Scene" %}</h2>
+ <p id="demo"><u>Config file:</u></p>
+ <button id='specialread' class='button icon16-action-save'>{% trans "Read file" %}</button>
+
 </section>
 
