@@ -104,7 +104,7 @@
                  actiontruecmd = 'command'
               }
 
-              if( $("select#sortieFaux").val() != 0){
+              if( $("select#sortieFaux").val() != 0 && $("select#sortieFaux").val() != 'command' ){
                    actionfalseadr = tableau[$("select#sortieFaux").val()][4];
                    actionfalsetech = tableau[$("select#sortieFaux").val()][2];
                    debutfalse = actionfalsetech.split(".");
@@ -151,16 +151,23 @@
               }else{
                   option_start= "false"
               }
-              if ($("select#sortieVrai").val()!=0){
+              if ($("select#sortieVrai").val()!=0 && $("select#sortieVrai").val() != 'command' ){
                    actriontru= tableau[$("select#sortieVrai").val()][7]+"-"+tableau[$("select#sortieVrai").val()][6]
               }else{
                    actriontru="None"
               }
-              if ($("select#sortieFaux").val()!=0){
+              if ($("select#sortieVrai").val() == 'command'){
+                   actriontru=''
+               } 
+              if ($("select#sortieFaux").val()!=0 &&$("select#sortieFaux").val() != 'command' ){
                   actrionfal= tableau[$("select#sortieFaux").val()][7]+"-"+tableau[$("select#sortieFaux").val()][6]
               }else{
                   actrionfal="None"
               }
+              if ($("select#sortieFaux").val() == 'command'){
+                   actrionfal=''
+               }
+
               description="if "+device1d+optest1+device1val+" "+optest +" "+device2d+optest2+device2val+" then "+actriontru+ " "+actiontrueval+" else "+actrionfal+" "+actionfalseval;
 
                     value="{'device1adr':"+device1adr+",'device1id':"+device1id+",'device1tech':"+device1tech+",'device1key':"+device1key+",'device2adr':"+device2adr+",'device2id':"+device2id+",'device2tech':"+device2tech+",'device2key':"+device2key+",'device1op':"+optest1+",'device2op':"+optest2+",'device1val':"+device1val+",'device2val':"+device2val+",'opglobal':"+optest+",'actiontruetech':"+actiontruetech+",'actionfalsetech':"+actionfalsetech+",'actiontrueadr':"+actiontrueadr+",'actionfalseadr':"+actionfalseadr+",'actiontruecmd':"+actiontruecmd+",'actionfalsecmd':"+actionfalsecmd+",'actiontrueval':"+actiontrueval+",'actionfalseval':"+actionfalseval+",'rinorip':"+rinor_ip+",'rinorport':"+rinor_port+",'option_start':"+option_start+",'descrip':"+description+"}" 
