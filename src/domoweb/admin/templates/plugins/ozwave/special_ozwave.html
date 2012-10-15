@@ -24,91 +24,29 @@
 {% endcomment %}
 
 {% load i18n %}
+{% load text %}
+<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwlib.js"> </script>
+
 <script type='text/javascript'>
 
    $(function(){
     var infoNode ={};
-    
-    // Constante d'entete de colonne de la table node_items 
-    var hdLiNode = {"NodeId":0, "Name":1, "Location":2, "Model":3, "Awake": 4, "Type":5, "Last update":6, "Action":7};
+    var devices = new Array();
 
-    function GetDataFromxPL (data, key) {
-        dt=JSON.stringify(data);
-        debut=dt.search(key + '=');
-        offset =key.length;
-        if (key=='count') {
-            dt=dt.slice(debut);
-         //   dt= '{' +dt;
-       //     fin=dt.search('\\');
-        }else { 
-            dt=dt.slice(debut+offset+1);
-          }; 
-        fin=dt.search('}');   
-        dt=dt.slice(0,fin-2); 
-        dt=dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"');
-        if (key=='count') {
-            fin=dt.search('}');   
-            dt=dt.slice(0,fin);
-            dt='{"count":8}';
-            };
-        return JSON.parse(dt); 
-        };
-        
-    function ParseAckXPL(xpl) {
-        var tamp=xpl;
-        var li=0;
-        var i=0;
-        var inc=1;
-        var mesxPL = {};
-        mesxPL['count']=1;
-        while (li !=-1) {
-           li = tamp.search(/[\n]|\\n/);
-           inc=1;
-           if (li !=-1) {
-             ttt = tamp.slice(li,li+2);
-                if (tamp.slice(li,li+2) == '\\n') {inc=2;};
-                ligne=tamp.slice(0,li);
-                ki = ligne.search('=');
-                if (ki !=-1) {
-                    num = parseInt(ligne.slice(ki+1));
-                    if (num) {val = num} else {val=ligne.slice(ki+1)}
-                    mesxPL[ligne.slice(0,ki)] =  val;
-                }
-                tamp=tamp.slice(li+inc)
-            };
-            };
-        console.log("*** mesxPL['count'] = " + mesxPL['count']);
-        if (mesxPL.count > 0) { 
-            for (i=0; i< mesxPL.count; i++) {
-                dt=mesxPL['value' +i];
-                dt= (dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"')) + "}";
-         //       console.log (dt);
-                mesxPL['value' +i] = JSON.parse(dt); 
-            };
-        } else {
-            console.log (" --- no data--- messxPL" + mesxPL);
-        };
-        return mesxPL;
+    function dlgInfoValue (vData) {
+         $('#tipsUpdCmdClss').html(vData.help);
+         $('#divcmdclassdialog').dialog_form('open',{
+                title: 'Node ' + vData.nodeId  +' : {% trans "Command Class informations." %} ',
+                values: {upcmdclss : vData.commandClass, upcmdclssvalue : vData.value, upcmdclssunit : vData.units},
+                onok: function(values) {
+                    var self = this;
+                    // Submit form
+                    console.log("envois de la commande......");
+                    }
+         });
     };
-        
-    function SetDataToxPL (data) {
-        dt=JSON.stringify(data);
-        console.log ("SetDataToxPL : " + dt);
-        var val = dt.replace(/[{]/g, '|').replace(/[,]/g,';').replace(/[}]/g,'\\').replace(/["]/g,"'"); 
-        console.log ("SetDataToxPL str : " + val);
-        return val;
-        };
-       
-    function getDataTableColIndex (dTab, title) {
-        var cols = dTab.aoColumns;
-        for ( var x=0, xLen=cols.length ; x<xLen ; x++ ) {
-            if ( cols[x].sTitle.toLowerCase() == title.toLowerCase() ) {
-                return x;
-                };
-            }
-        return -1;
-        };
        
     function setStatusZW(status) {
         if (status=='up') { //active
@@ -166,40 +104,65 @@
                         messXpl = ParseAckXPL(data.xpl);
                         if (messXpl['count'] != 0) {
                             var thOut = Object.keys(messXpl['value0']);  // Hypothèse, vrais pour l'intant, toutes les lignes on les mêmes entêtes !
+                            thOut.unshift('Num', 'realValue');
                             var RowN = [];
+                            var hdCmdClss = {};
+                            for (i=0; i<thOut.length; i++) {
+                                hdCmdClss[thOut[i]]= i;
+                                };
                             for (i=0; i<messXpl.count; i++) {
                                 valuesNode[i]= messXpl['value' + i];
                                 var R = [];
                                 R[0] = i + 1;
-                                for (ii=0; ii<thOut.length;ii++) {
-                                    R[ii+1] = valuesNode[i][thOut[ii]]
+                                R[1] = valuesNode[i]['value'];
+                                for (ii=2; ii<thOut.length;ii++) {
+                                    R[ii] = valuesNode[i][thOut[ii]]
                                     }
                                 RowN[i] = R;
                             }
                             console.log("Dans GetinfoValuesNode : " + RowN);
                             callback(thOut);
-                            var idDetNode = '#detNode' + nodeid; 
+                            var idDetNode = '#detNode' + nodeid;
                             $(idDetNode).dataTable({
                                     "bFilter": false,
                                     "bJQueryUI": true,
                                     "aLengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
                                     "bAutoWidth": false,
                                     "aoColumnDefs": [  
-                                        { "fnRender": function (oObj) {return setStCmdClsNode(oObj);}, "aTargets": [0] },
-                                        ],
+                                        { "fnRender": function (oObj) {return renderCmdClssNode(oObj);}, "aTargets": [0] },
+                                        { "fnRender": function (oObj) {return renderCmdClssValue(oObj);}, "aTargets": [hdCmdClss['value']] },                                                           
+                                        { "fnRender": function (oObj) {return renderCmdClssName(oObj);}, "aTargets": [hdCmdClss['commandClass']] },
+                                        ], 
+                                    "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
+                                        /* allocate change function for value the grade to the default row class name */
+                                        oSettings = this.fnSettings();
+                                        idRO= getDataTableColIndex(oSettings, 'readOnly');
+                                        if (aData[idRO]== false) {
+                                            id = "valCC" + aData[getDataTableColIndex(oSettings, 'id')];
+                                            $('#' + id).change(function () {
+                                                var nTr = this.parentNode.parentNode;
+                                                if (this.name =='CmdClssValue') {
+                                                        var oTable = $("#" + nTr.parentElement.parentElement.id).dataTable();
+                                                        var aPos = oTable.fnGetPosition(this.parentElement );
+                                                        var idC= getDataTableColIndex(oSettings, 'value');
+                                                        var ok = oTable.fnUpdate(this.value,aPos[0],idC);
+                                                };
+                                            });
+                                        }
+                                        return nRow;
+                                    },
                                     "aaData": RowN
                                     });
                             for (i=0; i<thOut.length; i++) {
-                                if (thOut[i] == 'nodeId' | thOut[i] == 'homeId' | thOut[i] == 'domogikdevice') {
-                                    $(idDetNode).dataTable().fnSetColumnVis( i+1, false ); };
-                                };
+                                if (thOut[i] == 'realValue' | thOut[i] == 'nodeId' | thOut[i] == 'homeId' | thOut[i] == 'domogikdevice' | thOut[i] == 'help' | thOut[i] == 'readOnly' | thOut[i] == 'listElems') {
+                                    $(idDetNode).dataTable().fnSetColumnVis( i, false ); };
+                                }  // redirection des events change des values read
                             return valuesNode;
-                        } else { // le Node n'as pas de command_class
+                        }  else { // le Node n'as pas de command_class
                             var thOut =[];
                             thOut[0]="No Command_Class";
                             console.log("Dans GetinfoValuesNode no Cmd-Class : " + thOut);
-                            callback(thOut);                            
-                        
+                            callback(thOut);                                                    
                         };
                     })
                     .fail(function(jqXHR, status, error){
@@ -210,7 +173,7 @@
                             return valuesNode;
                     });
         }else { valuesNode['Model'] = "NodeId not define";
-                console.log("Dans GetinfoValuesNode  pas de nodeid " + infoNode['Model']);   
+                console.log("Dans GetinfoValuesNode  pas de nodeid : " + nodeid);   
                 return valuesNode;
                 } 
         };
@@ -288,90 +251,10 @@
             };
         };
         trfunct(li, [zwNode.Node, zwNode.Name, zwNode.Location, zwNode.Model, zwNode['State sleeping'], zwNode.Type, zwNode['Last update'],""]);
-        console.log("Dans RefreshTabHtml, DataTable : " + dataT[li] + "---" + zwNode.Model);    
+        console.log("Dans RefreshTabHtml, DataTable : " + dataT[li] + "---" + zwNode.Model); 
      };   
      
-// fnRender, callback des élements du tableau autre que texte
-    function setNameNode(oObj) {
-        return "<input type='text' title='Name' value='" + oObj.aData[hdLiNode['Name']] + "'/>";
-        };
-        
-    function setStatusSleep(oObj) {
-       var status = oObj.aData[hdLiNode['Awake']];
-       if (status==true) { //Sleeping
-            textstatus = "Probablement en veille";
-            st = 'unknown'
-        } else { //actif
-            textstatus = "Actif sur le réseaux";
-            st = 'active'
-        };
-        console.log("set status sleep coloms : " + oObj.aData + " " + status);
-        return  st + "<span class='icon16-text-right  icon16-status-" + st + "' /span>";
-        };
-        
-    function setActionNode(oObj) {
-        var num = oObj.aData[hdLiNode['NodeId']];
-        var stAct = 'add';
-        var tabDet = document.getElementById("detNode" + num);
-        if (tabDet) { // DetailNode opened 
-            stAct = 'del'; 
-        };
-        var ret =  "<button id='detailnode" + num + 
-                        "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' ><span class='offscreen'>Detail Node : " + num + "</span></button>";
-         ret =  ret + "<button id='updnode" + num + 
-                        "' class='icon16-action-save buttonicon' title='Update Node' ><span class='offscreen'>Send update to Node : " + num + "</span></button>";
-        console.log("******** setActionNode : " + oObj.aData + " ret : " + ret);
-        return  ret;
-        };
-         
-    function setStCmdClsNode(oObj) {
-       var num = oObj.aData[0];
-       if (num < 10) { num = "0" + num; };
-       indexC = getDataTableColIndex(oObj.oSettings, 'domogikdevice')
-       var status = oObj.aData[indexC];
-       if (status==true) { //Available for domogik device
-            textstatus = "Device domogik";
-            st = 'primary'
-        } else { //not available
-            textstatus = "Pas de device domogik";
-            st = 'false'
-        };
-        console.log("set Device Avalaible coloms : " + oObj.aData + " " + status);
-        return  num + "<span class='icon16-text-right  icon16-status-" + st + "' /span>";
-        };
-        
-    function returnTextValue(val) {
-        if (typeof(val) != 'number') {
-            debut = val.search('value=');
-            if (debut != -1) {GetinfoValuesNode
-                val = val.slice(debut+7);
-                fin = val.search("'");
-                val = val.slice(0,fin);
-                };
-          };
-        return val;
-        };
-/* Formatage du details d'une row  */
-    function fnFormatDetails (nTr, thOut)
-    {
-        var aData = oTabNodes.fnGetData(nTr);
-        var idDetNode = 'detNode' + aData[hdLiNode['NodeId']];
-        console.log("Format detail node entête : " + thOut);
-        if (thOut.length != 1) {
-            var sOut = '<table id="' + idDetNode + '" class="simple" cellpadding="5" border="1"><thead><tr>'
-            sOut += '<th scope="col">Num</th>';
-            for (i=0; i<thOut.length; i++) {
-                sOut += '<th scope="col">' + thOut[i]+ '</th>';
-                };
-            sOut += '</tr></thead><tbody></tbody></table>';
-        } else {
-            var sOut = '<table id="' + idDetNode + '" class="e" cellpadding="5" cellspacing="5" border="0" style="padding-left:100px;">' +
-                '<tr><td> {% trans "No Command_Class for"%} :</td><td>'+aData[hdLiNode['Type']]+'</td></tr>'+
-                '</table>';
-        };
-   //     console.log (sOut);
-        return sOut;
-    };
+
 // Callback event des commandes dans la table des nodes.
 // Class button, 
     $('#node_items tbody td button').live('click', function () {
@@ -418,26 +301,43 @@
                 var values = GetinfoValuesNode(aData[hdLiNode['NodeId']], function(thOut){ oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,thOut), 'simple' );});
             /*  console.log("click detail values : " + values); */
             };
+        };
+        if (this.title == 'Cmd class details') {
+            var idDetNode = nTr.parentNode.parentNode.id;
+            aData = $('#' + idDetNode).dataTable().fnGetData(nTr);
+            editvalueNode(aData[hdCmdClss['id']], dlgInfoValue);
+            console.log("Dans click updatenode, Cmd class details, DataTable : " + aData + nTr); 
+         };
+       if (this.name == 'Send value') {
+            var idDetNode = nTr.parentNode.parentNode.id;
+            var aTable = $('#' + idDetNode).dataTable();
+            aData = aTable.fnGetData(nTr); 
+            valueId = aData[getDataTableColIndex(aTable.fnSettings(), 'id')];
+            console.log ("sending update cmd class");
+            msg = setValueNode(valueId, aData[getDataTableColIndex(aTable.fnSettings(), 'value')], aTable,nTr);
+            
         }else {
             console.log("Dans click button, DataTable : " + this.title); 
         };
- 	} ); 
- // class input   
-    $('#node_items tbody td input').live('keyup', function (e) {
-       var nTr = this.parentNode.parentNode;
-       var aData = oTabNodes.fnGetData( nTr );
-       if (this.title =='Name') {
+    }); 
+// class input   
+$('#node_items tbody td input').live('keyup', function (e) {
+   var nTr = this.parentNode.parentNode;
+   var aData = oTabNodes.fnGetData( nTr );
+   if (this.title =='Name') {
             aData[hdLiNode['Name']] = this.value;
             console.log("new value : " +aData);
         }
        else if (this.title =='Location') {
             aData[hdLiNode['Location']] = this.value;
             console.log("new value : " +aData);
-        } else {
-            console.log("Dans Nom key down, input : " + this.title); 
+        } else if (this.name =='CmdClssValue') {
+                    console.log (" Dans Nom key down, CmdClssValue :" + nTr.id);
+            } else {
+                console.log("Dans Nom key down, input : " + this.title + "--" + this.value +"--" + this);
             };
-    });  
-    
+    });
+
     $("#specialsave").click(function(){
         var msg = {};
         msg['command'] = "Refresh";
@@ -451,7 +351,6 @@
                     $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") please check your device configuration");
             });
     });
-        
     
    $(document).ready(function(){
          oTabNodes = $("#node_items").dataTable({
@@ -467,10 +366,73 @@
                 ],
             "aaSorting": [[0, 'asc']]
             } );
+        var msg = {};
+        msg['command'] = "Refresh";
+        var val = {};
+        val['request'] ='GetValueTypes';
+        val['listetypes'] ='valuestype';
+        msg['value'] = SetDataToxPL (val);
+        rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+            .done(function(data, status, xhr){
+                listTypesVal = GetDataFromxPL(data, 'data');
+                console.log("*** listTypesVal : " + listTypesVal);
+            /*    for (type in listTypesVal) {
+                    $('select#listtest').append("<option value='"+type+"'>"+type+"</option>");
+                    }; */
+                    // Gestion des commandes class sous forme de dialogue
+                $('#divcmdclassdialog').dialog_form({
+                        tips: "{% trans 'Update values of command class: ' %}" ,
+                        tipsid: 'tipsUpdCmdClss',
+                        fields: [
+                            {name : 'upcmdclss', type:'text', label:"{% trans 'CommandClass' %}", required: false, options: {min: 1, max: 80}},
+                            {name : 'upcmdclsstype', type:'select', label:"{% trans 'type' %}", required: false,
+                                options: {
+                                    placeholder: "{% trans 'select a type' %}",
+                                },
+                                items: [function(){
+                                  it= [];
+                                  for (type in listTypesVal )
+                                    it.add("{value:'"+ type +"', label: '" + type +"'}");
+                                   return it;
+                                  }
+                                ],
+                            },
+                            {name : 'upcmdclssvalue', type:'text', label:"{% trans 'Value' %}", required: false, options: {min: 1, max: 80}},
+                            {name : 'upcmdclssunit', type:'text', label:'{% trans "Units" %}', required: false, options: {min: 1, max: 80}},
+                            {name : 'upcmdclssdescription', type:'text', label:'{% trans "Description" %}', required: false, options: {min: 1, max: 80}},
+                            {name : 'upcmdclssgenre', type:'text', label:'{% trans "Genre" %}', required: false, options: {min: 1, max: 80}}
+                            ]
+                    }); 
+                })
+            .fail(function(jqXHR, status, error){
+               if (jqXHR.status == 400)
+                    $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
+            });
+    
+         rinor.get(['api', 'feature'])
+            .done(function(data, status, xhr){
+                var i=0;
+                $.each(data.objects, function(index, object) {
+                    devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
+                    if (object.device_feature_model.feature_type == "actuator"){
+                       $('select#alarmdevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
+                    }
+                    i=i+1;
+                });
+                console.log("devices.length : " + devices.length);
+                for(i=0 ;i<devices[1].length;i++){
+                    console.log("devices[1][" + i + "] : " + devices[1][i]);
+                };
+           })
+            .fail(function(jqXHR, status, error){
+                if (jqXHR.status == 400)
+                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
+            }); 
+            
+
          $("#specialsubmit").click();
     });
 });
-
 
 
 </script>
@@ -508,7 +470,8 @@
         <p>
             <button id='specialsubmit' class='button icon16-action-reset'>{% trans "Refresh" %}</button>
             <button id='specialsave' class='button icon16-action-save'>{% trans "Save config" %}</button> 
-            <span class='subtitle'>{% trans " Updade Node button before saving" %}
+            <span class='subtitle'>{% trans " Updade Node button before saving" %}</span>
+    <!--         <select id='listtest' class='list'>{% trans "liste test" %}</select>  -->
         </p>
 </section>
 <section class="subsection">
@@ -545,3 +508,4 @@
         </table>
         </div>
 </section>
+<div id="divcmdclassdialog"></div>
