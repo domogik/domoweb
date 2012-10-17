@@ -195,6 +195,7 @@
         $("select#features1").change(function(){
           var test = $(this).val();
           var test2 = $("select#TestFeature").val();
+          if (test !='0'){
           if ((tableau[test][3]=="binary"||tableau[test][3]=="list"||tableau[test][3]=="boolean") && (test2!="And" && test2!="Or" && test2!="None")){
              $("select#TestFeature option").remove();
              $("select#TestFeature").append("<option value='None'>----</option>");
@@ -225,6 +226,7 @@
              value1_visible = false
           }
           $("select#test1").change();
+        }
         });    
 
         $("select#features2").change(function(){
