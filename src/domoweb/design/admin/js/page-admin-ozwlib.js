@@ -1,3 +1,5 @@
+    var netWorkZW ={};
+    var listNodes = new Array();
     var listTypesVal = {};
     var hdCmdClss = new Array();
     
@@ -82,7 +84,18 @@ function GetDataFromxPL (data, key) {
             }
         return -1;
         };    
-
+// Gestion des tables de données
+    function RefreshDataNode(infonode) {
+        var idx = listNodes.indexOf(infonode)
+        if (idx != -1) {
+            listNodes[idx] = infonode;
+        } else {
+            listNodes.push(infonode);
+        };
+    };
+        
+        
+        
 // fnRender, callback des élements du tableau autre que texte
     function setNameNode(oObj) {
         return "<input type='text' title='Name' value='" + oObj.aData[hdLiNode['Name']] + "'/>";
