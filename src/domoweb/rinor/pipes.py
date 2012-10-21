@@ -172,6 +172,9 @@ class PagePipe(RinorPipe):
             except Page.DoesNotExist:
                 pass
             else:
+                # Delete Widgets
+                WidgetInstancePipe().delete_page_list(id)
+                # Delete page
                 page.delete()
         if len(_data[self.index]) > 0:
             return _data[self.index][0]
@@ -285,15 +288,24 @@ class FeaturePipe(RinorPipe):
     dependencies = ['device']
 
 class WidgetInstancePipe(RinorPipe):
-    cache_expiry = 3600
+    cache_expiry = 0
     paths = []
     
     def get_page_list(self, id):
         instances = WidgetInstance.objects.filter(page_id=id).order_by('order')
         for instance in instances:
-            instance.feature = FeaturePipe().get_pk(instance.feature_id)
+            feature = FeaturePipe().get_pk(instance.feature_id)
+            if feature != None:
+                instance.feature = feature
+            else:
+                # The feature does not exist anymore
+                # We delete the widget instance
+                instance.delete()
         return instances
     
+    def delete_page_list(self, id):
+        WidgetInstance.objects.filter(page_id=id).delete()
+        
 class DeviceExtendedPipe(RinorPipe):
     cache_expiry = 3600
     paths = []

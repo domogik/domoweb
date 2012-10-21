@@ -101,7 +101,8 @@ class RinorPipe():
         for obj in data:
             if (obj.id == int(pk)):
                 return obj
-        raise RinorError(404, "PK Not found")
+        return None
+#        raise RinorError(404, "PK Not found")
     
     @classmethod
     def clear_cache(self):
