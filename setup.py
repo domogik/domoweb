@@ -66,6 +66,7 @@ d_files = [
         ('/etc/default/', ['src/examples/default/domoweb'])
 ]
 
+# Still needed for 'install' mode, because setuptools does not add html files in .egg
 d_files.extend(list_all_files('src/domoweb/templates/', '/usr/share/domoweb/templates/')),
 d_files.extend(list_all_files('src/domoweb/config/templates/', '/usr/share/domoweb/config/templates/')),
 d_files.extend(list_all_files('src/domoweb/admin/templates/', '/usr/share/domoweb/admin/templates/')),

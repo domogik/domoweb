@@ -105,7 +105,7 @@ SECRET_KEY = 'i#=g$uo$$qn&0qtz!sbimt%#d+lb!stt#12hr@%vp-u)yw3s+b'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-#    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
     'django.template.loaders.eggs.Loader',
 )
@@ -171,14 +171,15 @@ LOGIN_URL = '%s/login' % ADMIN_URL
 LOGOUT_URL = '%s/logout' % ADMIN_URL
 LOGIN_REDIRECT_URL = '%s' % ADMIN_URL
 
+# Still needed for 'install' mode, because setuptools does not add html files in .egg
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or
     # "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-#    '%s/templates/' % PROJECT_PATH,
-#    '%s/config/templates/' % PROJECT_PATH,
-#    '%s/view/templates/' % PROJECT_PATH,
-#    '%s/admin/templates/' % PROJECT_PATH,
-#    '%s/rinor/templates/' % PROJECT_PATH,
+    '%s/templates/' % PROJECT_PATH,
+    '%s/config/templates/' % PROJECT_PATH,
+    '%s/view/templates/' % PROJECT_PATH,
+    '%s/admin/templates/' % PROJECT_PATH,
+    '%s/rinor/templates/' % PROJECT_PATH,
 )

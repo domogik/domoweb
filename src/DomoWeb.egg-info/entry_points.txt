@@ -1,3 +1,3 @@
 [console_scripts]
-dmg_domoweb = domoweb.runserver:rundevelop
+dmg_domoweb = domoweb.runserver:runinstall
 
