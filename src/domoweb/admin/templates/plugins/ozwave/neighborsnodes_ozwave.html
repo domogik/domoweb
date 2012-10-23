@@ -34,7 +34,9 @@
 $(function(){
 
     $("#refreshneighbors").click(function(){
-        stage.reset();
+        buildKineticNeighbors();
+    /*    stage.reset();
+        initScrollbars();
         var xc= stage.getWidth() / 2;
         var yc= stage.getHeight() / 2
         var stepR = 80;
@@ -55,7 +57,7 @@ $(function(){
                 } else { a= a + 40;
                 };
             };
-            listNodes[i].Cnode = new CNode(x,y,r,listNodes[i],layer);
+            listNodes[i].Cnode = new CNode(x,y,r,listNodes[i],nodeLayer);
           };
         for (var i=0; i<listNodes.length;i++)  {         
             for (var ii=0; ii<listNodes[i].Neighbors.length;ii++) {
@@ -68,28 +70,34 @@ $(function(){
             };
         };
         stage.add(linkLayer);        
-        stage.add(layer);
+        stage.add(nodeLayer);
         stage.add(tooltipLayer);
+        stage.add(scrollLayer); */
     });
-    
-    $(document).ready(function(){
-       var T = document.getElementById("graphneighbors"); 
+
+/*   $(document).ready(function(){
+      var cont =  document.getElementById("containerneighbors");
+      var w = cont.getBoundingClientRect();
        stage = new Kinetic.Stage({
           container: 'containerneighbors',
-          width: 850,
+          width: 850, //w.width - 25,
           height: 500
         });
-        layer = new Kinetic.Layer();
+        nodeLayer = new Kinetic.Layer();
         linkLayer = new Kinetic.Layer();
-        $("#showneighbors").click();
-        var T =document.getElementById("graphneighbors");
-   });
+        scrollLayer = new Kinetic.Layer();
+        areas = new Kinetic.Group();
+        scrollbars = new Kinetic.Group();
+        $("#refreshneighbors").click();
+   }); */
 })
 </script>
 <section id="graphneighbors" class="subsection">
     <h2>{% trans "Zwave neighbors" %}  &nbsp;&nbsp;&nbsp;&nbsp;
             <button id='refreshneighbors' class='button icon16-action-reset'>{% trans "Refresh neighbors" %}</button>
+            <span>  {% trans "IN BETA TESTING" %}</span>
             <li id='listenodes'>IN BETA TEST</li>
     </h2>
-    <div id="containerneighbors" style="width:360px; height:360px; margin-left: 80px;"></div>
+    <div id="containerneighbors" ></div> 
+ <!--   <div id="containerneighbors" style="width:850px; height:500px; margin-left: 0px;"></div> -->
 </section>

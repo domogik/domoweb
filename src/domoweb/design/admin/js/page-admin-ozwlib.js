@@ -2,7 +2,7 @@
     var listNodes = new Array();
     var listTypesVal = {};
     var hdCmdClss = new Array();
-    
+    var initialized = false;
     // Constante d'entete de colonne de la table node_items 
     var hdLiNode = {"NodeId":0, "Name":1, "Location":2, "Model":3, "Awake": 4, "Type":5, "Last update":6, "Action":7};
 

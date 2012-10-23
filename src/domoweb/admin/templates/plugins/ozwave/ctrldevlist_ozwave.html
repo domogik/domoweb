@@ -231,8 +231,22 @@
                     i++;
                     nId++;
                     };
-                };
+                if  (initialized) {
+                    buildKineticNeighbors();   
+                } else { 
+                    var cont = document.getElementsByClassName("subsection")
+                    var w = 840;
+                    for (var i=0; i < cont.length; i++) {
+                        if (cont[i].offsetWidth != 0) {
+                            w = cont[i].offsetWidth - 30;
+                            break;
+                            };
+                        };
+                    initstage(w);
+                    };
+                initialized = true;
             };
+        };
             
     function RefreshTabHtml(zwNode) {
         console.log("Dans RefreshTabHtml, " + zwNode);
@@ -435,7 +449,7 @@ $('#node_items tbody td input').live('keyup', function (e) {
 
 
 </script>
-<section class="subsection">
+<section class="subsection" id="zwnetworksection">
 
     <h2>{% trans "Zwave controller" %}  &nbsp;&nbsp;&nbsp;&nbsp;
             <div id='iconstatuszw'> <span class='label'>{% trans "Status"%}:</span>
