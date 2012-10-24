@@ -85,13 +85,18 @@ function GetDataFromxPL (data, key) {
         return -1;
         };    
 // Gestion des tables de données
-    function RefreshDataNode(infonode) {
+    function RefreshDataNode(infonode, last) {
         var idx = listNodes.indexOf(infonode)
         if (idx != -1) {
             listNodes[idx] = infonode;
         } else {
             listNodes.push(infonode);
         };
+        if (last) { 
+            if  (initialized) {buildKineticNeighbors();   
+                } else {initstage(); };
+            initialized = true;
+            };
     };
         
         

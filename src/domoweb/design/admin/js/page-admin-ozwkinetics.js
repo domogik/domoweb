@@ -267,33 +267,39 @@ function buildKineticNeighbors() {
         stage.add(scrollLayer);
     };
 
-function initstage(width){
-       var cont =  document.getElementById("graphneighbors");
-       var w = cont.offsetWidth;
-       stage = new Kinetic.Stage({
-          container: 'containerneighbors',
-          width: width,
-          height: 500
-        });
-        nodeLayer = new Kinetic.Layer();
-        linkLayer = new Kinetic.Layer();
-        scrollLayer = new Kinetic.Layer();
-        areas = new Kinetic.Group();
-        scrollbars = new Kinetic.Group();
+function initstage(){
+    var cont = document.getElementsByClassName("subsection")
+    var width = 810;
+    for (var i=0; i < cont.length; i++) {
+        if (cont[i].offsetWidth != 0) {
+            width = cont[i].offsetWidth - 30;
+            break;
+            };
+        };
+   stage = new Kinetic.Stage({
+      container: 'containerneighbors',
+      width: width,
+      height: 500
+    });
+    nodeLayer = new Kinetic.Layer();
+    linkLayer = new Kinetic.Layer();
+    scrollLayer = new Kinetic.Layer();
+    areas = new Kinetic.Group();
+    scrollbars = new Kinetic.Group();
 
-        tooltip = new Kinetic.Text({
-            text: "essais",
-            fontFamily: "Calibri",
-            fontSize: 12,
-            padding: 5,
-            textFill: "white",
-            fill: "black",
-            alpha: 0.75,
-            visible: false
-        });
-        tooltipLayer = new Kinetic.Layer();
-        buildKineticNeighbors();
-   };
+    tooltip = new Kinetic.Text({
+        text: "essais",
+        fontFamily: "Calibri",
+        fontSize: 12,
+        padding: 5,
+        textFill: "white",
+        fill: "black",
+        alpha: 0.75,
+        visible: false
+    });
+    tooltipLayer = new Kinetic.Layer();
+    buildKineticNeighbors();
+};
 
 window.onload = function() {
     var s= 0;

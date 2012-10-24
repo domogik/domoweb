@@ -58,7 +58,7 @@
             .html("<span class='label'>Etat:</span><span class='offscreen'>" + textstatus + "</span>");
         }
         
-    function GetinfoNode (nodeid) {
+    function GetinfoNode (nodeid, last) {
         infoNode ={};
         if (nodeid) {
                 var msg = {};
@@ -73,7 +73,7 @@
                         var dt=JSON.stringify(infoNode);
                         console.log("Dans getinfonode : " + infoNode['Model']);
                         $.notification('debug',"Node : " + infoNode['Model'] + " info refreshed" );
-                        RefreshDataNode(infoNode);
+                        RefreshDataNode(infoNode, last);
                         RefreshTabHtml(infoNode);
                     })
                     .fail(function(jqXHR, status, error){
@@ -223,28 +223,16 @@
     function RefreshNodes(netWorkZW) {
            console.log("Dans RefreshNode, après .done" + JSON.stringify(netWorkZW));
             if (netWorkZW) {
-                var i=0;
-                var nId=0;
-                while (nId< netWorkZW.ListNodeId.length) {
-                    GetinfoNode(netWorkZW.ListNodeId[nId]);
+                for (var nId=0; nId< netWorkZW.ListNodeId.length; nId++) {
+                    GetinfoNode(netWorkZW.ListNodeId[nId], ((nId +1) == netWorkZW.ListNodeId.length));
                     console.log("While refreshnode nodeID: " + netWorkZW.ListNodeId[nId]);
-                    i++;
-                    nId++;
                     };
-                if  (initialized) {
+      /*          if  (initialized) {
                     buildKineticNeighbors();   
                 } else { 
-                    var cont = document.getElementsByClassName("subsection")
-                    var w = 840;
-                    for (var i=0; i < cont.length; i++) {
-                        if (cont[i].offsetWidth != 0) {
-                            w = cont[i].offsetWidth - 30;
-                            break;
-                            };
-                        };
-                    initstage(w);
+                    initstage();
                     };
-                initialized = true;
+                initialized = true; */
             };
         };
             
