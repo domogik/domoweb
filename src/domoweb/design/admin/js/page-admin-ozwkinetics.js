@@ -251,11 +251,11 @@ function buildKineticNeighbors() {
             };
             listNodes[i].Cnode = new CNode(x,y,r,listNodes[i],nodeLayer);
           };
-        for (var i=0; i<listNodes.length;i++)  {         
-            for (var ii=0; ii<listNodes[i].Neighbors.length;ii++) {
-                for (var id2=0; id2<listNodes[i].Neighbors.length;id2++) {
-                    if (listNodes[id2].Node == listNodes[i].Neighbors[ii]) { 
-                        Link = new CLink(listNodes[i].Cnode, listNodes[id2].Cnode, linkLayer);
+        for (var id1=0; id1<listNodes.length;id1++)  {         
+            for (var in1=0; in1<listNodes[id1].Neighbors.length;in1++) {
+                for (var id2=0; id2<listNodes.length;id2++) {
+                    if (listNodes[id2].Node == listNodes[id1].Neighbors[in1]) { 
+                        Link = new CLink(listNodes[id1].Cnode, listNodes[id2].Cnode, linkLayer);
                         break;
                     };
                 };
