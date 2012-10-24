@@ -76,7 +76,7 @@ d_files.extend(list_all_files('src/domoweb/locale/', '/usr/share/domoweb/locale/
 
 setup(
     name = 'DomoWeb',
-    version = '0.2.0',
+    version = '0.3.dev',
     url = 'http://www.domogik.org/',
     description = 'Domogik Web UI',
     author = 'Domogik team',
