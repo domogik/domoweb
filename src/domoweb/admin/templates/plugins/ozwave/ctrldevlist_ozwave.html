@@ -25,9 +25,13 @@
 
 {% load i18n %}
 {% load text %}
+
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwlib.js"> </script>
+
+<link href="/design/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
+
 <script type='text/javascript'>
 
    $(function(){
@@ -132,28 +136,23 @@
                                         { "fnRender": function (oObj) {return renderCmdClssValue(oObj);}, "aTargets": [hdCmdClss['value']] },                                                           
                                         { "fnRender": function (oObj) {return renderCmdClssName(oObj);}, "aTargets": [hdCmdClss['commandClass']] },
                                         ], 
-                                    "fnRowCallback": function( nRow, aData, iDisplayIndex ) {
-                                        /* allocate change function for value the grade to the default row class name */
-                                        oSettings = this.fnSettings();
-                                        idRO= getDataTableColIndex(oSettings, 'readOnly');
-                                        if (aData[idRO]== false) {
-                                            id = "valCC" + aData[getDataTableColIndex(oSettings, 'id')];
-                                            $('#' + id).change(function () {
+                                    "fnDrawCallback": function( oSettings ) {
+                                        handleChangeVCC();   
+                                     /*   $('.ccvalue').change(function () { // '#' + id
                                                 var nTr = this.parentNode.parentNode;
                                                 if (this.name =='CmdClssValue') {
                                                         var oTable = $("#" + nTr.parentElement.parentElement.id).dataTable();
                                                         var aPos = oTable.fnGetPosition(this.parentElement );
                                                         var idC= getDataTableColIndex(oSettings, 'value');
-                                                        var ok = oTable.fnUpdate(this.value,aPos[0],idC);
+                                                        var ok = oTable.fnUpdate(this.value,aPos[0],idC,false);
                                                 };
-                                            });
-                                        }
-                                        return nRow;
+                                        }); */
                                     },
+                                    "sPaginationType": "full_numbers",
                                     "aaData": RowN
                                     });
                             for (i=0; i<thOut.length; i++) {
-                                if (thOut[i] == 'realValue' | thOut[i] == 'nodeId' | thOut[i] == 'homeId' | thOut[i] == 'domogikdevice' | thOut[i] == 'help' | thOut[i] == 'readOnly' | thOut[i] == 'listElems') {
+                                if (thOut[i] == 'realValue' | thOut[i] == 'nodeId' | thOut[i] == 'homeId' | thOut[i] == 'domogikdevice' | thOut[i] == 'help' | thOut[i] == 'readOnly' | thOut[i] == 'listElems' | thOut[i] == 'id') {
                                     $(idDetNode).dataTable().fnSetColumnVis( i, false ); };
                                 }  // redirection des events change des values read
                             return valuesNode;
@@ -227,12 +226,6 @@
                     GetinfoNode(netWorkZW.ListNodeId[nId], ((nId +1) == netWorkZW.ListNodeId.length));
                     console.log("While refreshnode nodeID: " + netWorkZW.ListNodeId[nId]);
                     };
-      /*          if  (initialized) {
-                    buildKineticNeighbors();   
-                } else { 
-                    initstage();
-                    };
-                initialized = true; */
             };
         };
             
@@ -301,7 +294,7 @@
                 this.attributes["class"].value = "icon16-action-del buttonicon"; //nodeValue
                 //send update nodes values
                 var values = GetinfoValuesNode(aData[hdLiNode['NodeId']], function(thOut){ oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,thOut), 'simple' );});
-            /*  console.log("click detail values : " + values); */
+        /*  console.log("click detail values : " + values); */
             };
         };
         if (this.title == 'Cmd class details') {

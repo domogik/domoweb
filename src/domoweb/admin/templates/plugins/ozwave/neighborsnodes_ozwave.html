@@ -35,44 +35,6 @@ $(function(){
 
     $("#refreshneighbors").click(function(){
         buildKineticNeighbors();
-    /*    stage.reset();
-        initScrollbars();
-        var xc= stage.getWidth() / 2;
-        var yc= stage.getHeight() / 2
-        var stepR = 80;
-        var Ray = 100;
-        var a = 0,x=0,y=0; sta=20;
-        var r=100;
-        for (var i=0; i<listNodes.length;i++) {
-  //        $('#listenodes').html(listNodes[i].Model);
-            if (listNodes[i].Type == 'Static PC Controller') {r = 40;
-                x= xc;
-                y= yc;
-            } else {r=25;
-                x= xc + Ray * Math.cos(a*Math.PI/180);
-                y= yc + Ray * Math.sin(a*Math.PI/180);
-                if (a > 330) { a = sta;
-                    sta = sta +20;
-                    Ray = Ray + stepR;
-                } else { a= a + 40;
-                };
-            };
-            listNodes[i].Cnode = new CNode(x,y,r,listNodes[i],nodeLayer);
-          };
-        for (var i=0; i<listNodes.length;i++)  {         
-            for (var ii=0; ii<listNodes[i].Neighbors.length;ii++) {
-                for (var id2=0; id2<listNodes[i].Neighbors.length;id2++) {
-                    if (listNodes[id2].Node == listNodes[i].Neighbors[ii]) { 
-                        Link = new CLink(listNodes[i].Cnode, listNodes[id2].Cnode, linkLayer);
-                        break;
-                    };
-                };
-            };
-        };
-        stage.add(linkLayer);        
-        stage.add(nodeLayer);
-        stage.add(tooltipLayer);
-        stage.add(scrollLayer); */
     });
 
 /*   $(document).ready(function(){

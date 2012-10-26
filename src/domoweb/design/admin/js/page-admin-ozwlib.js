@@ -197,22 +197,22 @@ function GetDataFromxPL (data, key) {
                     opt = "<option value=true>true</option>" +
                              "<option selected value=" + value +">" + value + "</option>" 
                 }
-                ret ="<select id='" + id + "' name='CmdClssValue' class='listes' style='width:7em'>" + opt + "</select>";
+                ret ="<select id='" + id + "' name='CmdClssValue' class='listes ccvalue' style='width:7em'>" + opt + "</select>";
             };
             if (type=='Byte') {
-                ret ="<input id='" + id + "' name='CmdClssValue' type='number' min='0' max='255' style='width:3em' value='"+ value +"'></input>";
+                ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue' type='number' min='0' max='255' style='width:3em' value='"+ value +"'></input>";
             };
             if (type=='Short') {
                 ret ="<input id='" + id + "' name='CmdClssValue' type='number' min='0' max='65535' style='width:6em' value='"+ value +"'></input>";
             };
             if (type=='Int' | type=='Decimal') {
-                ret ="<input id='" + id + "' name='CmdClssValue' type='number' style='width:8em' value='"+ value +"'></input>";
+                ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue' type='number' style='width:8em' value='"+ value +"'></input>";
             };
             if (type=='String') {
-                ret ="<input id='" + id + "' name='CmdClssValue' type='text' value='"+ value +"'></input>";
+                ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue' type='text' value='"+ value +"'></input>";
             };
              if (type=='Schedule') {
-                ret ="<input id='" + id + "' name='CmdClssValue' type='date' value='"+ value +"'></input>";
+                ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue' type='date' value='"+ value +"'></input>";
             };
              if (type=='List') {
                 var listElems = oObj.aData[getDataTableColIndex(oObj.oSettings, 'listElems')];
@@ -224,10 +224,10 @@ function GetDataFromxPL (data, key) {
                         opt= opt + "<option selected value='" + value +"'>" + value + "</option>";
                      }
                  }
-                ret ="<select id='" + id + "' name='CmdClssValue' class='liste' style='width:15em'>" + opt + "</select>";
+                ret ="<select id='" + id + "' name='CmdClssValue' class='liste ccvalue' style='width:15em'>" + opt + "</select>";
             };realvalue
             if (type=='Button') {
-                ret ="<input id='" + id + "' name='CmdClssValue' type='button' value='"+ value +"'></input>"; 
+                ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue' type='button' value='"+ value +"'></input>"; 
             };
             if (modify) {
                 ret = ret + "<button id='send" + vId +"' class='button icon16-action-update buttonicon' name='Send value' title='Send value'><span class='offscreen'>Send value</span></button>";
@@ -236,6 +236,20 @@ function GetDataFromxPL (data, key) {
         return ret
     };
 
+    function handleChangeVCC (){
+        $('.ccvalue').change(function () { // '#' + id
+                var nTr = this.parentNode.parentNode;
+                if (this.name =='CmdClssValue') {
+                        var oTable = $("#" + nTr.parentElement.parentElement.id).dataTable();
+                        var aPos = oTable.fnGetPosition(this.parentElement );
+                        var oSettings = oTable.fnSettings();
+                        var idC= getDataTableColIndex(oSettings, 'value');
+                        var ok = oTable.fnUpdate(this.value,aPos[0],idC,false);
+                        handleChangeVCC ();
+                };
+        });
+    }
+        
     function returnTextValue(val) {
         if (typeof(val) != 'number') {
             debut = val.search('value=');
