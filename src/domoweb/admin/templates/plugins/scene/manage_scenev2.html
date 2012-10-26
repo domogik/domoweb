@@ -1,0 +1,65 @@
+{% load i18n %}
+<script type='text/javascript'>
+  $(function(){
+
+   $("#specialread").click(function(){
+      data="";
+      rinor.put(['api', 'command', 'scene', '0'], {"command":"Read", 'value':'Read all scene'})
+
+                    .done(function(data, status, xhr){
+                         test=JSON.stringify(data);
+                         debut=test.search('data=');
+                         test=test.slice(debut+4);
+                         fin=test.search('}');
+                         test=test.slice(1,fin-2);
+                         i=0;
+                         text="<u>Config file:</u> <br/>"
+                         do{
+                           i=i+1;
+                           next=test.search(',');
+                           text=text+"<br/>" +i+" - "+ test.slice(0,next);
+                           test=test.slice(next+1);
+                         }
+                         while (test.search(",")>=0);
+                             $('#demo').html(text);
+                             }
+                    )
+                    .fail(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
+                   });
+      });
+
+   $(document).ready(function(){
+        var i=1;
+        rinor.get(['api', 'feature'])
+            .done(function(data, status, xhr){
+                $.each(data.objects, function(index, object) {
+  //tableau[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
+                   if(object.device_feature_model.id=='scene.stat.status'){
+                   i++;
+                                          $('#Scene_list').append("<li class='scenetabrow' id='device_" + i + "'>" + object.device.name + "<input type='button' class='delete_scene'>delete</input></li>")
+                    }
+                    });
+           })
+            .fail(function(jqXHR, status, error){
+                if (jqXHR.status == 400)
+                    $.notification('error', '{% trans 'Device list not retrieved' %} (' + jqXHR.responseText + ')');
+            });
+
+
+    });
+    });
+
+
+</script>
+<section class="subsection">
+    <h2>{% trans "Manage Scene" %}</h2>
+ <p id="demo"><u>Config file:</u></p>
+ <button id='specialread' class='button icon16-action-save'>{% trans "Read file" %}</button>
+ <ul id='Scene_list'>
+ 
+ </ul>
+
+</section>
+
