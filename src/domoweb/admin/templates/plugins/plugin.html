@@ -117,13 +117,7 @@
             <li><a href="#tabs-4">{% trans "Creator" %}</a></li>
         {% endif %}
         {% if plugin.id == "scene" %}
-            <li><a href="#tabs-6">{% trans "Creator V2" %}</a></li>
-        {% endif %}
-        {% if plugin.id == "scene" %}
             <li><a href="#tabs-5">{% trans "Manage" %}</a></li>
-        {% endif %}
-        {% if plugin.id == "scene" %}
-            <li><a href="#tabs-7">{% trans "Manage V2" %}</a></li>
         {% endif %}
         {% if plugin.id == "telldus" %}
             <li><a href="#tabs-5">{% trans "Helper" %}</a></li>
@@ -179,16 +173,6 @@
     {% if plugin.id == "scene" %}
         <div id="tabs-4">
             {% include "plugins/scene/creator_scene.html" %}
-        </div>
-    {% endif %}
-    {% if plugin.id == "scene" %}
-        <div id="tabs-6">
-            {% include "plugins/scene/creator_scenev2.html" %}
-        </div>
-    {% endif %}
-    {% if plugin.id == "scene" %}
-        <div id="tabs-7">
-            {% include "plugins/scene/manage_scenev2.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "scene" %}

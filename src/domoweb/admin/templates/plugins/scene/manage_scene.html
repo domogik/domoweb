@@ -62,16 +62,7 @@
      };
 
    $(document).ready(function(){
-      oTabJobs = $("#Scene_tab").dataTable({
-            "bFilter": false,
-            "aoColumnDefs": [
-                { "fnRender": function (oObj) {return setUptime(oObj);}, "aTargets": [ hdLiNode['Uptime'] ] },
-                { "fnRender": function (oObj) {return setRuntime(oObj);}, "aTargets": [ hdLiNode['Runtime'] ] },
-                { "fnRender": function (oObj) {return setCommands(oObj);}, "aTargets": [hdLiNode['Commands'] ] },
-                { "bSortable": false, "aTargets": [ hdLiNode['Commands'] ] },
-                ],
-            "aaSorting": [[0, 'asc']]
-            } );
+ 
 
          $("#specialread").click();
     });

@@ -102,7 +102,7 @@ function actionchange(number) {
             option_start = 'false';
         }
         description = $('#description').val();
-        condition = $('#condition').val();
+        condition = $('#Condition').val();
         for (i=1; i<101; i++) {
         	maVariable = $('select#features_'+i).val();
         	test = typeof(maVariable);
@@ -134,7 +134,7 @@ function actionchange(number) {
         var action1 = JSON.stringify(action);
         var devices1 = JSON.stringify(device);
 
-        value = "{'devices':"+devices1+",'action':"+action1+",'rinor':"+rinorip+"}";
+        value = "{'start_run':'"+ option_start +"','condition':'"+condition+"','devices':"+devices1+",'action':"+action1+",'rinor':'"+rinorip+"'}";
         //value = '';
         rinor.put(['api', 'command', 'scene', '0'], {'command': 'Create','value': value })
             .done(function (data, status, xhr) {
