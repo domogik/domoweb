@@ -66,8 +66,8 @@ function actionchange(number) {
                 }
             }
         }
-        if (test2 == 'numeric' || test2 == 'range') {
-            $('#valueaction_' + number).html("<input id='value_action_" + number + "' style='width:20em;'></input>");
+        if (test2 == 'numeric' || test2 == 'range'|| test2=='string') {
+            $('#valueaction_' + number).html("<input type ='text' id='value_action_" + number + "' style='width:20em;'></input>");
         }
         if (test2 == 'trigger') {
             $('#valueaction_' + number).html('');
@@ -111,23 +111,36 @@ function actionchange(number) {
 		 	device_id = tableau[maVariable][0];
 		 	device_tech = tableau[maVariable][2];
 		 	debut1 = device_tech.split('.');
-	            	device1_tech = debut1[0];
+	            	device_tech = debut1[0];
 	            	device_key = tableau[maVariable][1];
-	            	device_op = '';
-	            	device_val = '';
+	            	device_op = $('select#test_'+i).val();
+	            	device_val = $('#Test_value'+i).val();
 	            	device['device'+i] = {'adr':device_adr,'id':device_id,'tech':device_tech,'key':device_key,'op':device_op,'value':device_val,'type':'devices'};
        	}
        	 
        	maVariable = $('select#action_'+i).val();
-        	test = typeof(maVariable);
-              if(typeof(maVariable) != 'undefined' && maVariable != '0'){ 
+        	
+              if(typeof(maVariable) != 'undefined' && maVariable != '0'){
+                     if (maVariable != 'command'){
                      action_adr = tableau[maVariable][4]; 
                      action_type = $('select#Type_'+i).val();
 		 	action_tech = tableau[maVariable][2];
-		 	action_cmd = '';
+		 	
 		 	debut1 = action_tech.split('.');
 	            	action_tech = debut1[0];
 	            	action_val = '';
+	            	
+	        	test = tableau[maVariable][5];
+        	       test = test.replace(/&quot;/g, "'");
+       	       test = test.replace(/{/g, '');
+       	       test = test.replace(/}/g, '');
+	              test = test.replace(/:/g, ',');
+       	       test = test.replace(/'/g, '');
+       	       test = test.split(',');
+	              action_cmd = test[1]
+	            	}
+	            	action_val = $('#value_action_'+i).val();
+	            	
 	            	action['action'+i] = {'address':action_adr,'techno':action_tech,'command':action_cmd,'value':action_val,'type':action_type};
        	}
         }
@@ -147,184 +160,7 @@ function actionchange(number) {
         });
     });
     
-    $('#Creator2').click(function () {
-        rinor_ip = '{{ request.session.rinor_ip }}';
-        rinor_port = '{{ request.session.rinor_port }}';
-        description = ''
-        if ($('select#features1').val() != 0) {
-            device1d = tableau[$('select#features1').val()][7] + '-' + tableau[$('select#features1').val()][6];
-            device1adr = tableau[$('select#features1').val()][4];
-            device1id = tableau[$('select#features1').val()][0];
-            device1tech = tableau[$('select#features1').val()][2];
-            debut1 = device1tech.split('.');
-            device1tech = debut1[0];
-            device1key = tableau[$('select#features1').val()][1];
-        } else {
-            device1d = '';
-            device1adr = '';
-            device1id = '';
-            device1tech = '';
-            device1key = '';
-        }
-        if (features2_visible == true && $('select#features2').val() != 0) {
-            device2d = tableau[$('select#features2').val()][7] + '-' + tableau[$('select#features2').val()][6];
-            device2adr = tableau[$('select#features2').val()][4];
-            device2id = tableau[$('select#features2').val()][0];
-            device2tech = tableau[$('select#features2').val()][2];
-            debut2 = device2tech.split('.');
-            device2tech = debut2[0];
-            device2key = tableau[$('select#features2').val()][1];
-        } else {
-            device2d = '';
-            device2adr = '';
-            device2id = '';
-            device2tech = '';
-            device2key = '';
-        }
-        if (test1_visible == true && $('select#test1').val() != 0) {
-            optest1 = $('select#test1').val();
-        } else {
-            optest1 = '';
-        }
-
-        device1val = '';
-        if (Tvalue1 == 'Val') {
-            device1val = $('#Test_value1').val();
-        }
-        if (Tvalue1 == 'Select') {
-            device1val = $('select#Test_value1').val();
-        }
-
-        device2val = '';
-        if (Tvalue2 == 'Val') {
-            device2val = $('#Test_value2').val();
-        }
-        if (Tvalue2 == 'Select') {
-            device2val = $('select#Test_value2').val();
-        }
-
-        if (test2_visible == true && $('select#test2').val() != 0) {
-            optest2 = $('select#test2').val();
-        } else {
-            optest2 = '';
-        }
-        if ($('select#TestFeature').val() != 'None') {
-            optest = $('select#TestFeature').val();
-        } else {
-            optest = '';
-        }
-        if ($('select#sortieVrai').val() != 0 && $('select#sortieVrai').val() != 'command') {
-            actiontrueadr = tableau[$('select#sortieVrai').val()][4];
-            actiontruetech = tableau[$('select#sortieVrai').val()][2];
-            debuttrue = actiontruetech.split('.');
-            actiontruetech = debuttrue[0];
-            test = tableau[$('select#sortieVrai').val()][5];
-            test = test.replace(/&quot;/g, "'");
-            test = test.replace(/{/g, '');
-            test = test.replace(/}/g, '');
-            test = test.replace(/:/g, ',');
-            test = test.replace(/'/g, '');
-            test = test.split(',');
-            actiontruecmd = test[1];
-        } else {
-            actiontrueadr = '';
-            actiontruetech = '';
-            actiontruecmd = '';
-        }
-        if ($('select#sortieVrai').val() == 'command') {
-            actiontrueadr = 'command'
-            actiontruetech = 'command'
-            actiontruecmd = 'command'
-        }
-
-        if ($('select#sortieFaux').val() != 0 && $('select#sortieFaux').val() != 'command') {
-            actionfalseadr = tableau[$('select#sortieFaux').val()][4];
-            actionfalsetech = tableau[$('select#sortieFaux').val()][2];
-            debutfalse = actionfalsetech.split('.');
-            actionfalsetech = debutfalse[0];
-            test = tableau[$('select#sortieFaux').val()][5];
-            test = test.replace(/&quot;/g, "'");
-            test = test.replace(/{/g, '');
-            test = test.replace(/}/g, '');
-            test = test.replace(/:/g, ',');
-            test = test.replace(/'/g, '');
-            test = test.split(',');
-            actionfalsecmd = test[1]
-
-        } else {
-            actionfalseadr = '';
-            actionfalsetech = '';
-            actionfalsecmd = '';
-        }
-        if ($('select#sortieFaux').val() == 'command') {
-            actionfalseadr = 'command'
-            actionfalsetech = 'command'
-            actionfalsecmd = 'command'
-        }
-
-
-        actionfalseval = ''
-        actiontrueval = ''
-        if (TvalueFaux == 'Val') {
-            actionfalseval = $('#valueFaux').val();
-            actionfalseval = actionfalseval.replace(/,/g, '%#');
-        }
-        if (TvalueFaux == 'Select') {
-            actionfalseval = $('select#valueFaux').val();;
-        }
-        if (TvalueVrai == 'Val') {
-            actiontrueval = $('#valueVrai').val();
-            actiontrueval = actiontrueval.replace(/,/g, '%#');
-        }
-        if (TvalueVrai == 'Select') {
-            actiontrueval = $('select#valueVrai').val();;
-        }
-        if ($('input#optionstart:checked').val() == 'start') {
-            option_start = 'true'
-        } else {
-            option_start = 'false'
-        }
-        if ($('select#sortieVrai').val() != 0 && $('select#sortieVrai').val() != 'command') {
-            actriontru = tableau[$('select#sortieVrai').val()][7] + '-' + tableau[$('select#sortieVrai').val()][6]
-        } else {
-            actriontru = 'None'
-        }
-        if ($('select#sortieVrai').val() == 'command') {
-            actriontru = ''
-        }
-        if ($('select#sortieFaux').val() != 0 && $('select#sortieFaux').val() != 'command') {
-            actrionfal = tableau[$('select#sortieFaux').val()][7] + '-' + tableau[$('select#sortieFaux').val()][6]
-        } else {
-            actrionfal = 'None'
-        }
-        if ($('select#sortieFaux').val() == 'command') {
-            actrionfal = ''
-        }
-
-        description = 'if ' + device1d + optest1 + device1val + ' ' + optest + ' ' + device2d + optest2 + device2val + ' then ' + actriontru + ' ' + actiontrueval + ' else ' + actrionfal + ' ' + actionfalseval;
-
-        value = "{'device1adr':'+device1adr+','device1id':'+device1id+','device1tech':'+device1tech+','device1key':'+device1key+','device2adr':'+device2adr+','device2id':'+device2id+','device2tech':'+device2tech+','device2key':'+device2key+','device1op':'+optest1+','device2op':'+optest2+','device1val':'+device1val+','device2val':'+device2val+','opglobal':'+optest+','actiontruetech':'+actiontruetech+','actionfalsetech':'+actionfalsetech+','actiontrueadr':'+actiontrueadr+','actionfalseadr':'+actionfalseadr+','actiontruecmd':'+actiontruecmd+','actionfalsecmd':'+actionfalsecmd+','actiontrueval':'+actiontrueval+','actionfalseval':'+actionfalseval+','rinorip':'+rinor_ip+','rinorport':'+rinor_port+','option_start':'+option_start+','descrip':'+description+'}"
-
-        rinor.put(['api', 'command', 'scene', '0'], {
-            'command': 'Create',
-            'value': value
-        })
-            .done(function (data, status, xhr) {
-            test = JSON.stringify(data);
-            debut = test.search('data=');
-            test = test.slice(debut + 4);
-            fin = test.search('}');
-            test = test.slice(1, fin - 2);
-            if (test.search('Error') >= 0) {
-                $.notification('error', test);
-            } else {
-                $.notification('info', test);
-            }
-        })
-            .fail(function (jqXHR, status, error) {
-            if (jqXHR.status == 400) $.notification('error', '{% trans ' Data not sent ' %} (' + jqXHR.responseText + ')');
-        });
-    });
+ 
 
     $(document).ready(function () {
         var i = 1;
