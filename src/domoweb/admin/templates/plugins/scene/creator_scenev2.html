@@ -123,7 +123,7 @@ function actionchange(number) {
               if(typeof(maVariable) != 'undefined' && maVariable != '0'){
                      if (maVariable != 'command'){
                      action_adr = tableau[maVariable][4]; 
-                     action_type = $('select#Type_'+i).val();
+                     action_type = "Action "+$('select#Type_'+i).val();
 		 	action_tech = tableau[maVariable][2];
 		 	
 		 	debut1 = action_tech.split('.');
@@ -152,8 +152,15 @@ function actionchange(number) {
         rinor.put(['api', 'command', 'scene', '0'], {'command': 'Create','value': value })
             .done(function (data, status, xhr) {
             test = JSON.stringify(data);
-                $.notification('info', test);
-            
+            debut=test.search('data=');
+            test=test.slice(debut+4);
+            fin=test.search('}');
+            test=test.slice(1,fin-2);
+            if (test.search('Error')>=0){
+                $.notification('error', test);
+            }else{
+                $.notification('info',test );
+            }
         })
             .fail(function (jqXHR, status, error) {
             if (jqXHR.status == 400) $.notification('error', '{% trans ' Data not sent ' %} (' + jqXHR.responseText + ')');
@@ -182,7 +189,7 @@ function actionchange(number) {
             });
         })
             .fail(function (jqXHR, status, error) {
-            if (jqXHR.status == 400) $.notification('error', '{% trans ' Device list not retrieved ' %} (' + jqXHR.responseText + ')');
+            if (jqXHR.status == 400) $.notification('error', '{% trans ' Device list not retrieved from rinor' %} (' + jqXHR.responseText + ')');
         });
         $('select#action_1').append("<option value='command'>command line</option>");
     });
