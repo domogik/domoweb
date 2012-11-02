@@ -160,7 +160,16 @@ function actionchange(number) {
                 $.notification('error', test);
             }else{
                 $.notification('info',test );
-            }
+
+                rinor.post(['api', 'device'], {'name': test, 'address': test, 'type_id': 'scene.stat', 'usage_id': 'scene', 'description': description, 'reference': ''})
+                    .done(function(data, status, xhr){
+                        $.reloadPage({'status': 'success', 'msg': "{% trans "New device added" %} '" + data.name + "'", 'id': data.device_usage_id});                                   
+                    })
+                    .fail(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', "{% trans "device not created" %} (" + jqXHR.responseText + ")");
+                    });
+                }
         })
             .fail(function (jqXHR, status, error) {
             if (jqXHR.status == 400) $.notification('error', '{% trans ' Data not sent ' %} (' + jqXHR.responseText + ')');
@@ -178,13 +187,13 @@ function actionchange(number) {
         rinor.get(['api', 'feature'])
             .done(function (data, status, xhr) {
             $.each(data.objects, function (index, object) {
-                tableau[i] = [object.device_id, object.device_feature_model.stat_key, object.device.device_type_id, object.device_feature_model.value_type, object.device.address, object.device_feature_model.parameters, object.device_feature_model.name, object.device.name];
                 if (object.device_feature_model.feature_type == 'actuator') {
                     $('select#action_1').append("<option value='" + i + "'>" + object.device.name + " - " + object.device_feature_model.name + "</option>");
                 }
                 if (object.device_feature_model.name != 'Trigger') {
                     $('select#features_1').append("<option value='" + i + "'>" + object.device.name + " - " + object.device_feature_model.name + "</option>");
                 }
+                tableau[i] = [object.device_id, object.device_feature_model.stat_key, object.device.device_type_id, object.device_feature_model.value_type, object.device.address, object.device_feature_model.parameters, object.device_feature_model.name, object.device.name];
                 i = i + 1;
             });
         })
