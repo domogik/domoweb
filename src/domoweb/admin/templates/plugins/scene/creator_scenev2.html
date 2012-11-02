@@ -122,6 +122,10 @@ function actionchange(number) {
 	            	device_key = tableau[maVariable][1];
 	            	device_op = $('select#test_'+i).val();
 	            	device_val = $('#Test_value'+i).val();
+	            	if (device_op == 'None' || device_val == 'None'){
+	            	device_op = '';
+	            	device_val ='';
+	            	}
 	            	device['device'+i] = {'adr':device_adr,'id':device_id,'tech':device_tech,'key':device_key,'op':device_op,'value':device_val,'type':'devices'};
        	}
        	 
