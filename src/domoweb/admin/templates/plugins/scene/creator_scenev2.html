@@ -149,6 +149,7 @@ function actionchange(number) {
 
         value = "{'start_run':'"+ option_start +"','condition':'"+condition+"','devices':"+devices1+",'action':"+action1+",'rinor':'"+rinorip+"'}";
         //value = '';
+        if (condition != ''){
         rinor.put(['api', 'command', 'scene', '0'], {'command': 'Create','value': value })
             .done(function (data, status, xhr) {
             test = JSON.stringify(data);
@@ -174,6 +175,9 @@ function actionchange(number) {
             .fail(function (jqXHR, status, error) {
             if (jqXHR.status == 400) $.notification('error', '{% trans ' Data not sent ' %} (' + jqXHR.responseText + ')');
         });
+        }else{
+           alert('condition empty')
+        }
     });
     
  
