@@ -91,6 +91,13 @@ function actionchange(number) {
     var actionNumber = 0
 
     $('#Creator').click(function () {
+    rinor.get(['api','plugin'])
+               .done(function(data, status, xhr){
+                  for(i=0;i<100;i++){
+                      if (data.objects[0]['list'][i]['id'] == "scene"){
+                       if(data.objects[0]['list'][i]['status'] == "ON"){
+
+                          
         device = {};
         action = {};
         rinor_ip = '{{ request.session.rinor_ip }}';
@@ -178,6 +185,12 @@ function actionchange(number) {
         }else{
            alert('condition empty')
         }
+                            }else{
+                            alert("plugin is not started")
+                            }
+                     }    
+                     }              
+                   });
     });
     
  

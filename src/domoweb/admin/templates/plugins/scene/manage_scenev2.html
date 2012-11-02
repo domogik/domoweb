@@ -2,6 +2,7 @@
 <script type='text/javascript'>
 	var table = new Array();
 	var nb_ligne=1;
+       var plugin_scene_status = "OFF";
 	
 function delscene(number) {
     alert(table[number]+ ' was delete')
@@ -61,11 +62,24 @@ function delall(){
                     rinor.get(['api','state','last','1',object.device_id, 'stats'])
                          .done(function(data, status, xhr){
                           valeur_stat = data[0].value;
+                          
                            rinor.get(['api','state','last','1',object.device_id, 'run'])
                             .done(function(data, status, xhr){
                                valeur_run = data[0].value;
-                               matabme = "<tr class='scenetabrow' id='device_scene_iRef'><td><center>" + object.device.name +"</center></td><td>"+object.device.description +"</td><td><center> "+valeur_run+"</center> </td><td><center> "+valeur_stat+" </center></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='startscene(iRef)'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='stopscene(iRef)'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='delscene(iRef)'/></td></tr>"
-                               $('#Scene_table').append(matabme.replace(/iRef/g, nb_ligne));
+                               rinor.get(['api','plugin'])
+                                   .done(function(data, status, xhr){
+                                  for(i=0;i<data.objects[0]['list'].length;i++){
+                                      if (data.objects[0]['list'][i]['id'] == "scene"){
+                                          if(data.objects[0]['list'][i]['status'] == "OFF"){
+                                              valeur_run = 'plugin stopped';
+                                           }
+                                       }
+                                   }
+                                   matabme = "<tr class='scenetabrow' id='device_scene_iRef'><td><center>" + object.device.name +"</center></td><td>"+object.device.description +"</td><td><center> "+valeur_run+"</center> </td><td><center> "+valeur_stat+" </center></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='startscene(iRef)'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='stopscene(iRef)'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='delscene(iRef)'/></td></tr>"
+                                  $('#Scene_table').append(matabme.replace(/iRef/g, nb_ligne));
+                               });
+                               
+
                              })
                       })
                     }
@@ -82,6 +96,7 @@ function delall(){
 
 
    $(document).ready(function(){
+   
         table = [];
         nb_ligne=1;
         rinor.get(['api', 'feature'])
@@ -96,12 +111,25 @@ function delall(){
                     rinor.get(['api','state','last','1',object.device_id, 'stats'])
                          .done(function(data, status, xhr){
                           valeur_stat = data[0].value;
-                           rinor.get(['api','state','last','1',object.device_id, 'run'])
+                          
+                            rinor.get(['api','state','last','1',object.device_id, 'run'])
                             .done(function(data, status, xhr){
                                valeur_run = data[0].value;
-                               matabme = "<tr class='scenetabrow' id='device_scene_iRef'><td><center>" + object.device.name +"</center></td><td>"+object.device.description +"</td><td><center> "+valeur_run+"</center> </td><td><center> "+valeur_stat+" </center></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='startscene(iRef)'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='stopscene(iRef)'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='delscene(iRef)'/></td></tr>"
-                               $('#Scene_table').append(matabme.replace(/iRef/g, nb_ligne));
-                             })                        
+                               rinor.get(['api','plugin'])
+                                   .done(function(data, status, xhr){
+                                  for(i=0;i<data.objects[0]['list'].length;i++){
+                                      if (data.objects[0]['list'][i]['id'] == "scene"){
+                                          if(data.objects[0]['list'][i]['status'] == "OFF"){
+                                              valeur_run = 'plugin stopped';
+                                           }
+                                       }
+                                   }
+                                   matabme = "<tr class='scenetabrow' id='device_scene_iRef'><td><center>" + object.device.name +"</center></td><td>"+object.device.description +"</td><td><center> "+valeur_run+"</center> </td><td><center> "+valeur_stat+" </center></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='startscene(iRef)'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='stopscene(iRef)'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='delscene(iRef)'/></td></tr>"
+                                  $('#Scene_table').append(matabme.replace(/iRef/g, nb_ligne));
+                               });
+                               
+
+                             })
                       })
                     }
                     });
