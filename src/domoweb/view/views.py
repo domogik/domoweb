@@ -147,8 +147,9 @@ def page_elements(request, id):
         features = request.POST["features"].split(',')
         widgets = request.POST["widgets"].split(',')
         for i, feature in enumerate(features):
-            w = WidgetInstance(order=i, page_id=id, feature_id=feature, widget_id=widgets[i])
-            w.save()
+            if feature:
+                w = WidgetInstance(order=i, page_id=id, feature_id=feature, widget_id=widgets[i])
+                w.save()
         return redirect('page_view', id=id) # Redirect after POST
 
     devices = DeviceExtendedPipe().get_list()
