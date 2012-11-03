@@ -175,7 +175,20 @@ function actionchange(number) {
 
                 rinor.post(['api', 'device'], {'name': test, 'address': test, 'type_id': 'scene.stat', 'usage_id': 'scene', 'description': description, 'reference': ''})
                     .done(function(data, status, xhr){
-                        $.reloadPage({'status': 'success', 'msg': "{% trans "New device added" %} '" + data.name + "'", 'id': data.device_usage_id});                                   
+                        scene_name = data.name;
+                        identity_id = data.device_usage_id;
+                        if (option_start=='true'){
+                            rinor.put(['api', 'command', 'scene',test], {"command":"start"})
+                            .done(function(data, status, xhr){
+                            $.reloadPage({'status': 'success', 'msg': "{% trans "New device added" %} '" + scene_name + "'", 'id': identity_id});                                   
+                            })
+                        }else{
+                            rinor.put(['api', 'command', 'scene',test], {"command":"stop"})
+                            .done(function(data, status, xhr){
+                            $.reloadPage({'status': 'success', 'msg': "{% trans "New device added" %} '" + scene_name + "'", 'id': identity_id});                                   
+                            })
+                        }
+                        
                     })
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
