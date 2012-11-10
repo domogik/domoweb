@@ -1,0 +1,96 @@
+==================
+Pages organisation
+==================
+
+The 'Pages' system replace the fixed Areas/Rooms system.
+It uses the MODIFIED PREORDER TREE TRAVERSAL algorithm.
+
+http://www.sitepoint.com/hierarchical-data-database-2/
+
+
+.. note::
+    *   A page doesn't have any defined purpose and can be used for elements grouping.
+    *   The pages can be hierarchically organized.
+    *   The initial page is 'Home'
+
+.. image:: pages_tree.png
+
+== ============ ==== =====
+id name         left right
+== ============ ==== =====
+1  Home         1    18
+2  House        2    11
+3  Living room  5    8
+4  Kitchen      3    4
+5  Security     12   17
+6  Cameras      15   16
+7  TV           6    7
+8  Heating      9    10
+== ============ ==== =====
+
+.. image:: pages_view.png
+
+Retrieve section of the tree
+============================
+The following exemple retrieve the 'House' pages: ::
+
+    SELECT * FROM ui_page WHERE lft BETWEEN (SELECT lft FROM ui_page WHERE id = 2) AND (SELECT rgt FROM ui_page WHERE id = 2) ORDER BY lft ASC;  
+
+Retrieve a Page path
+====================
+The following exemple retrieve the 'TV' pages: ::
+
+    SELECT * FROM ui_page WHERE lft < (SELECT lft FROM ui_page WHERE id = 7) AND rgt > (SELECT rgt FROM ui_page WHERE id = 7) ORDER BY lft ASC;  
+
+Add a Page
+==========
+The following exemple add a 'Music' page in 'Livingroom': ::
+
+    SET @r = SELECT rgt FROM ui_page WHERE id = 3;
+    UPDATE ui_page SET rgt=rgt+2 WHERE rgt>=@r;
+    UPDATE ui_page SET lft=lft+2 WHERE lft>=@r;
+    INSERT INTO ui_page SET lft=@r-2, rgt=@r-1, name='Music';  
+
+The following exemple insert a 'Floor' page between 'Livingroom' and 'House': ::
+
+    SET @l = SELECT lft FROM ui_page WHERE id = 3;
+    SET @r = SELECT rgt FROM ui_page WHERE id = 3;
+    
+    # Update nodes
+    UPDATE ui_page SET rgt=rgt+2 WHERE rgt>@r;
+    UPDATE ui_page SET lft=lft+2 WHERE lft>@r;
+    
+    # Update child nodes
+    UPDATE ui_page SET rgt=rgt+1 WHERE lft>=@l AND rgt<=@r;
+    UPDATE ui_page SET lft=lft+1 WHERE lft>=@l AND rgt<=@r;
+    
+    INSERT INTO ui_page SET lft=@l, rgt=@r+2, name='Floor';  
+
+Move a Page
+===========
+
+* With sub-Pages
+* Without sub-Pages
+
+Delete a Page 
+=============
+
+* With sub-Pages
+
+The following exemple delete the 'House' page and all sub-pages: ::
+
+    SET @l = SELECT lft FROM ui_page WHERE id = 2;
+    SET @r = SELECT rgt FROM ui_page WHERE id = 2;
+    SET @c = (SELECT count(id) FROM ui_page WHERE lft >= @l AND lft < @r) * 2;
+    DELETE FROM ui_page WHERE lft >= @l AND lft < @r;
+    UPDATE ui_page SET rgt=rgt-@c WHERE rgt>@r;
+    UPDATE ui_page SET lft=lft-@c WHERE lft>@r;
+
+* Without sub-Pages
+
+The following exemple delete the 'Heating' page: ::
+
+    SET @r = SELECT rgt FROM ui_page WHERE id = 8;
+    DELETE FROM ui_page WHERE id = 8;
+    UPDATE ui_page SET rgt=rgt-2 WHERE rgt>@r;
+    UPDATE ui_page SET lft=lft-2 WHERE lft>@r;
