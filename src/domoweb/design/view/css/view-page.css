@@ -159,6 +159,10 @@ footer {
     text-align: center;
 }
 
+#treeroot a:hover {
+    z-index: 99;
+}
+
 #treeroot a .pagename {
     color: #000000;
     text-decoration: none;
