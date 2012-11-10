@@ -485,25 +485,33 @@ class HostResource(RinorResource):
         authorization = Authorization()
         rinor_pipe = HostPipe()
 
-class PageResource(RinorResource):
+class PageResource(ModelResource):
     # fields must map to the attributes in the Row class
-    id = fields.IntegerField(attribute = 'id')
-    name = fields.CharField(attribute = 'name')
-    description = fields.CharField(attribute = 'description')
+#    id = fields.IntegerField(attribute = 'id')
+#    name = fields.CharField(attribute = 'name')
+#    description = fields.CharField(attribute = 'description')
     
     class Meta:
+        queryset = Page.objects.all()
         resource_name = 'page'
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'put', 'delete']
         authentication = Authentication()
         authorization = Authorization()
-        rinor_pipe = PagePipe()
-
+        always_return_data = True
+    
     def obj_create(self, bundle, request=None, **kwargs):
-        return self._meta.rinor_pipe.post_list(bundle)
+        bundle.obj = Page.add(name=bundle.data["name"], parent_id=bundle.data["parent_id"])
+        print bundle.obj
+        if 'description' in bundle.data:
+            bundle.obj.description = bundle.data["description"]
+        if 'icon_id' in bundle.data:
+            bundle.obj.icon = PageIcon.objects.get(id=bundle.data["icon_id"])
+        if 'theme_id' in bundle.data:
+            bundle.obj.theme = PageTheme.objects.get(id=bundle.data["theme_id"])
+        print bundle.obj
 
-    def obj_update(self, bundle, request=None, **kwargs):
-        return self._meta.rinor_pipe.put_detail(kwargs['pk'], bundle)
+        # Save parent
+        bundle.obj.save()
 
-    def obj_delete(self, request=None, **kwargs):
-        return self._meta.rinor_pipe.delete_detail(kwargs["pk"])
+        return bundle

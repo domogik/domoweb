@@ -29,7 +29,7 @@
         $("a#save").click(function(){
             $("#pageForm").submit();
         });
-        $('#id_theme_id').chosen();
+        $('#id_theme').chosen();
     }); // end ready
 
 {% endblock %}
@@ -81,11 +81,11 @@
                     {{ form.description }}
                 </div>
                 <div class='row'>
-                    {{ form.theme_id.errors }}
-                    <label for="{{ form.theme_id.auto_id }}" class="{% if form.theme_id.field.required %} required{% endif %}">
-                       {{ form.theme_id.label }} {% if form.theme_id.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                    {{ form.theme.errors }}
+                    <label for="{{ form.theme.auto_id }}" class="{% if form.theme.field.required %} required{% endif %}">
+                       {{ form.theme.label }} {% if form.theme.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
                     </label>
-                    {{ form.theme_id }}
+                    {{ form.theme }}
                 </div>
             </div>
             <div class="columnright">

@@ -112,131 +112,6 @@ class HelperPipe(RinorPipe):
             raise RinorError(_data.code, _data.description)
         return _data[self.index]
 
-class PagePipe(RinorPipe):
-    cache_expiry = 3600
-    list_path = "/base/page/list"
-    add_path = "/base/page/add"
-    update_path = "/base/page/update"
-    delete_path = "/base/page/del"
-    path_path = "/base/page/path"
-    index = 'page'
-    paths = []
-
-
-    def put_detail(self, id, bundle):
-        params = ['id', id, 'name', bundle["name"]]
-        if 'description' in bundle:
-            params.extend(['description', bundle["description"]])
-        if 'icon' in bundle:
-            params.extend(['icon', bundle["icon"]])
-        _data = self._put_data(self.update_path, params)
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        else:
-            # save the django params
-            try:
-                page = Page.objects.get(id=id)
-            except Page.DoesNotExist:
-                page = Page(id=id)
-            if 'theme_id' in bundle:
-                page.theme_id = bundle["theme_id"]
-            page.save()
-
-        return _data[self.index][0]
-
-    def post_list(self, bundle):
-        params = ['name', bundle["name"], 'parent', bundle["parent"]]
-        if 'description' in bundle:
-            params.extend(['description', bundle["description"]])
-        if 'icon' in bundle:
-            params.extend(['icon', bundle["icon"]])
-        _data = self._post_data(self.add_path, params)
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        else:
-            data = _data[self.index][0]
-            # save the django params
-            page = Page(id=data.id)
-            if 'theme_id' in bundle:
-                page.theme_id = bundle["theme_id"]
-            page.save()
-        return data
-        
-    def delete_detail(self, id):
-        _data = self._delete_data(self.delete_path, [id])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        else:
-            try:
-                page = Page.objects.get(id=id)
-            except Page.DoesNotExist:
-                pass
-            else:
-                # Delete Widgets
-                WidgetInstancePipe().delete_page_list(id)
-                # Delete page
-                page.delete()
-        if len(_data[self.index]) > 0:
-            return _data[self.index][0]
-        else:
-            return None
-
-    def get_list(self):
-        data = self._get_data(self.list_path)
-        if data.status == "ERROR":
-            raise RinorError(data.code, data.description)
-        pages = data[self.index]
-        for page in pages:
-            try:
-                model = Page.objects.get(id=page.id)
-            except Page.DoesNotExist:
-                page.theme_id = ''
-            else:
-                page.theme_id = model.theme_id
-        return pages
-        
-    def get_tree(self):
-        data = self.get_list()
-        _current_path = []
-        top_node = None
-        
-        if data:
-            for obj in data:
-                obj.childrens = []
-                obj.leafs = 0
-                # If right = left + 1 then it is a leaf
-                obj.is_leaf = ((obj.left + 1) == obj.right)
-                if top_node == None:
-                    top_node = obj
-                    obj.level = 0
-                    obj.max_level = 0
-                    _current_path.append(obj)
-                else:
-                    while (obj.left > _current_path[-1].right): # Level down
-                        top = _current_path.pop()
-                        _current_path[-1].leafs = _current_path[-1].leafs + top.leafs
-                    obj.level = len(_current_path)
-                    if obj.level > top_node.max_level:
-                        # Save the number of levels in the root node
-                        top_node.max_level = obj.level
-                    _current_path[-1].childrens.append(obj)
-                    if not obj.is_leaf:
-                        _current_path.append(obj) # Level up
-                    else:
-                        _current_path[-1].leafs = _current_path[-1].leafs + 1
-            while (len(_current_path) > 1): # Level down
-                top = _current_path.pop()
-                _current_path[-1].leafs = _current_path[-1].leafs + top.leafs
-
-        return top_node
-
-    def get_path(self, id):
-        url = "%s/%s" % (self.path_path, id)
-        data = self._get_data(url)
-        if data.status == "ERROR":
-            raise RinorError(data.code, data.description)
-        return data[self.index]
-
 class DeviceTypePipe(RinorPipe):
     cache_expiry = 0
     list_path = "/base/device_type/list"
@@ -292,7 +167,7 @@ class WidgetInstancePipe(RinorPipe):
     paths = []
     
     def get_page_list(self, id):
-        instances = WidgetInstance.objects.filter(page_id=id).order_by('order')
+        instances = WidgetInstance.objects.filter(page__id=id).order_by('order')
         for instance in instances:
             feature = FeaturePipe().get_pk(instance.feature_id)
             if feature != None:
@@ -302,10 +177,7 @@ class WidgetInstancePipe(RinorPipe):
                 # We delete the widget instance
                 instance.delete()
         return instances
-    
-    def delete_page_list(self, id):
-        WidgetInstance.objects.filter(page_id=id).delete()
-        
+
 class DeviceExtendedPipe(RinorPipe):
     cache_expiry = 3600
     paths = []

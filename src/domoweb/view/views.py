@@ -53,16 +53,18 @@ class PageForm(forms.Form):
     name = forms.CharField(max_length=50, label=_("Page name"), widget=forms.TextInput(attrs={'class':'icon32-form-tag'}), required=True)
     description = forms.CharField(label=_("Page description"), widget=forms.Textarea(attrs={'class':'icon32-form-edit'}), required=False)
     icon = fields.IconChoiceField(label=_("Choose the icon"), required=False, empty_label="No icon", queryset=PageIcon.objects.all())
-    theme_id = ThemeChoiceField(label=_("Choose a theme"), required=False, empty_label="No theme", queryset=PageTheme.objects.all())
-    
+    theme = ThemeChoiceField(label=_("Choose a theme"), required=False, empty_label="No theme", queryset=PageTheme.objects.all())
+
+"""    
     def clean(self):
         cd = self.cleaned_data
         if cd['icon']:
-            cd['icon'] = cd['icon'].id
+            cd['icon'] = cd['icon_id'].id
         else:
             cd['icon'] = ''
         return cd
-    
+"""
+
 def page(request, id=1):
     """
     Method called when a ui page is accessed
@@ -70,9 +72,9 @@ def page(request, id=1):
     @return an HttpResponse object
     """
 
-    page = PagePipe().get_pk(id)
-    page_path = PagePipe().get_path(id)
-    page_tree = PagePipe().get_tree()
+    page = Page.objects.get(id=id)
+    page_path = Page.objects.get_path(id)
+    page_tree = Page.objects.get_tree()
     
     page_title = page.name
 
@@ -105,7 +107,7 @@ def page_configuration(request, id):
     @return an HttpResponse object
     """
 
-    page = PagePipe().get_pk(id)
+    page = Page.objects.get(id=id)
     page_title = "%s %s" % (page.name, _("Configuration"))
 
     iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
@@ -114,12 +116,14 @@ def page_configuration(request, id):
         form = PageForm(request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
             cd = form.cleaned_data
-            params = {'name': cd["name"], 'description': cd["description"], 'icon': cd["icon"], 'theme_id': cd["theme_id"]}
-            PagePipe().put_detail(id, params)
-            
+            page.name = cd["name"]
+            page.description = cd["description"]
+            page.icon = cd["icon"]
+            page.theme = cd["theme"]
+            page.save()
             return redirect('page_view', id=id) # Redirect after POST
     else:
-        form = PageForm(initial={'name': page.name, 'description': page.description, 'icon': page.icon, 'theme_id': page.theme_id})
+        form = PageForm(initial={'name': page.name, 'description': page.description, 'icon': page.icon, 'theme': page.theme})
 
     return go_to_page(
         request, 'configuration.html',
@@ -137,7 +141,7 @@ def page_elements(request, id):
     @return an HttpResponse object
     """
 
-    page = PagePipe().get_pk(id)
+    page = Page.objects.get(id=id)
     page_title = "%s %s" % (page.name, _("Widgets"))
 
     iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
@@ -148,7 +152,7 @@ def page_elements(request, id):
         widgets = request.POST["widgets"].split(',')
         for i, feature in enumerate(features):
             if feature:
-                w = WidgetInstance(order=i, page_id=id, feature_id=feature, widget_id=widgets[i])
+                w = WidgetInstance(order=i, page=page, feature_id=feature, widget_id=widgets[i])
                 w.save()
         return redirect('page_view', id=id) # Redirect after POST
 

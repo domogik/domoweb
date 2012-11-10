@@ -67,7 +67,7 @@
     <link href="{{ static_design_url }}/view/css/view-page.css" rel="stylesheet" type="text/css" />
     
     {% if page.theme_id %}
-    <link href="{{ static_themes_url }}/{{ page.theme_id }}/view-page.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_themes_url }}/{{ page.theme.id }}/view-page.css" rel="stylesheet" type="text/css" />
     {% endif %}
 
     {% for iconset in iconsets %}
@@ -118,7 +118,7 @@
 
 {% block body %}
     <header role='banner'>
-        <h1 class="icon64-{{ page.icon }}">{{ page_title }}</h1>
+        <h1 class="icon64-{{ page.icon.id }}">{{ page_title }}</h1>
         <div class="description">{{ page.description }}</div>
         <nav role="navigation">
             <ul id="mainmenu">
@@ -207,7 +207,7 @@
         <ul id="treeroot">
         {% recursemenu page_tree 70 %}
             <li id="page_{{ node.id }}" class="level_{{ node.level }}">
-                <a href="{% url page_view node.id %}" class="icon32-{{ node.icon }}" style="-moz-transform: translate({{ node.x }}px,{{ node.y }}px);-webkit-transform: translate({{ node.x }}px,{{ node.y }}px);transform: translate({{ node.x }}px,{{ node.y }}px)"><span class="pagename">{{ node.name }}</span></a>
+                <a href="{% url page_view node.id %}" class="icon32-{{ node.icon.id }}" style="-moz-transform: translate({{ node.x }}px,{{ node.y }}px);-webkit-transform: translate({{ node.x }}px,{{ node.y }}px);transform: translate({{ node.x }}px,{{ node.y }}px)"><span class="pagename">{{ node.name }}</span></a>
                 {% if not node.is_leaf %}
                 <ul class="children">
                     {{ children }}
