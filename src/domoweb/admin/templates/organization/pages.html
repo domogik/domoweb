@@ -78,9 +78,9 @@
             });
         })
         .bind("create.jstree", function (e, tree) {
-            var parent = tree.rslt.parent.attr("id").replace("page_","");
+            var parent_id = tree.rslt.parent.attr("id").replace("page_","");
             var name = tree.rslt.name
-            rinor.post(['api', 'page'], {'name': name, 'parent': parent})
+            rinor.post(['api', 'page'], {'name': name, 'parent_id': parent_id})
                 .done(function(data, status, xhr){
                     $(tree.rslt.obj).attr("id", "page_" + data.id);
                 })

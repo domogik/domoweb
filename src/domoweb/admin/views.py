@@ -169,7 +169,7 @@ def admin_organization_pages(request):
     page_title = _("Pages organization")
 
     id = request.GET.get('id', 0)
-    pages = PagePipe().get_tree()
+    pages = Page.objects.get_tree()
 
     return go_to_page(
         request, 'organization/pages.html',

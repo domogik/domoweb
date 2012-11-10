@@ -9,6 +9,8 @@ class Migration(DataMigration):
     def forwards(self, orm):
         "Write your forwards methods here."
         # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
+        WidgetInstance = orm['domoweb.WidgetInstance']
+        WidgetInstance.objects.all().delete()
         Page = orm['domoweb.Page']
         Page.objects.all().delete()
         page = Page()
