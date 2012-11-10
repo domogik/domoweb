@@ -193,7 +193,7 @@ function init_django_db {
     echo $ret
     if echo $ret|grep -qs '(*) 0001_initial'; then
         echo "Apply migration script"
-        python ./src/domoweb/manage.py migrate domoweb
+        python ./src/domoweb/manage.py migrate domoweb --delete-ghost-migrations
     else
         echo "Init migration DB"
         python ./src/domoweb/manage.py migrate domoweb 0001 --fake
