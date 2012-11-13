@@ -33,7 +33,7 @@ class EventPipe(RinorPipe):
         else:
             if (len(_devices_list) > 0):
                 _devices = [str(id) for id in _devices_list]
-                _data = self._get_data(self.new_path, _devices)               
+                _data = self._get_data(self.new_path, _devices)
                 _event = _data.event[0]
                 _ticket = _event.ticket_id
                 today = datetime.datetime.today()

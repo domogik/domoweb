@@ -79,8 +79,9 @@ After translation, re-adding the .po to the locale, the files are compiled to .m
     $ django-admin.py compilemessages
 
 .. note::
-    If you use OSX remove before the bloody Apple files with:
-    find . -name ".AppleDouble" -depth -exec rm -Rf {} \;
+    If you use OSX remove before the bloody Apple files with: ::
+
+        find . -name ".AppleDouble" -depth -exec rm -Rf {} \;
 
 Transifex
 =========

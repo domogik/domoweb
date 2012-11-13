@@ -86,8 +86,8 @@ LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
   ('en', 'English'),
-  ('fr', 'Francais'),
-  ('it', 'Italiano'),
+  ('fr', 'Français'),
+  ('nl_BE', 'Flemish'),
 )
 
 LOCALE_PATHS = (
