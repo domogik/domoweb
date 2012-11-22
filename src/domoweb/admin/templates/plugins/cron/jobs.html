@@ -24,7 +24,7 @@
 
     $(function(){
 
-        var hdLiNode = {"JobId":0, "Type":1, "Status":2, "Runs":3, "APS": 4, "Uptime":5, "Runtime":6, "Commands":7};
+        var hdLiNode = {"JobId":0, "Type":1, "Label":2, "Status":3, "Runs":4, "APS":5, "Uptime":6, "Runtime":7, "Commands":8};
 
     function GetDeviceFromxPL (data) {
         dt=JSON.stringify(data);
@@ -75,8 +75,8 @@
                     for (i=0; i<jobs.length; i++) {
                         //console.log("Parcours des jobs : " + i +" "+jobs[i][0]);
                         $('#cron_items').dataTable().fnAddData([
-                            jobs[i][0], jobs[i][2], jobs[i][1], jobs[i][3], jobs[i][4],
-                            jobs[i][5], jobs[i][6], ""
+                            jobs[i][0], jobs[i][2], jobs[i][3], jobs[i][1], jobs[i][4], jobs[i][5],
+                            jobs[i][6], jobs[i][7], ""
                             ]);
                     };
                 })
@@ -97,13 +97,13 @@
         if (dataT) {
             for (i=0; i<dataT.length; i++) {
                 if (dataT[i][hdLiNode['JobId']]==jobid) {
-					if (status=='halted') {
-						$('#cron_items').dataTable().fnDeleteRow(i);;
-						return ;
-					}
-					var trfunct = function(li,dr){$('#cron_items').dataTable().fnUpdate(dr,li);};
-					var li = i;
-					break;
+                    if (status=='halted') {
+                        $('#cron_items').dataTable().fnDeleteRow(i);;
+                        return ;
+                    }
+                    var trfunct = function(li,dr){$('#cron_items').dataTable().fnUpdate(dr,li);};
+                    var li = i;
+                    break;
                 };
             };
         };
@@ -119,7 +119,13 @@
         if (device['apjobs']) {
             apjobs=device['apjobs'];
         };
-        trfunct(li, [device['device'], devicetype, device['current'],
+        //hack for old releases of cron plugin
+        //can be remove in the future of 20121122
+        var label=null;
+        if (device['label']) {
+            label=device['label'];
+        };
+        trfunct(li, [device['device'], devicetype, label, device['current'],
                      device['runs'], apjobs, device['elapsed'],
                      device['runtime'],""]);
 //        console.log("Dans RefreshTabHtmlJob, DataTable : " + dataT[li]);
@@ -241,6 +247,7 @@
                 <tr>
                     <th scope='col'>{% trans "JobId" %}</th>
                     <th scope='col'>{% trans "Type" %}</th>
+                    <th scope='col'>{% trans "Label" %}</th>
                     <th scope='col'>{% trans "Status" %}</th>
                     <th scope='col'>{% trans "Runs" %}</th>
                     <th scope='col'>{% trans "APS" %}</th>

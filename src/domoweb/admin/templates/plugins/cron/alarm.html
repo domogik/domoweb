@@ -20,11 +20,13 @@
 
 {% load i18n %}
 
-<link rel="stylesheet" media="all" type="text/css" href="{{ static_design_url }}/llibraries/jquery-ui-1.8.16.custom/css/smoothness/jquery-ui-1.8.16.custom.css" />
-<link rel="stylesheet" media="all" type="text/css" href="{{ static_design_url }}/libraries/jquery-ui-timepicker/css/jquery-ui-timepicker-addon.css" />
+<link rel="stylesheet" media="all" type="text/css" href="{{ static_design_url }}/u/libraries/jquery-ui-1.8.23.custom/css/smoothness/jquery-ui-1.8.23.custom.css" />
+<link rel="stylesheet" media="all" type="text/css" href="{{ static_design_url }}/u/libraries/jquery-ui-datepicker-1.8.23/css/jquery-ui-datepicker.css" />
+<link rel="stylesheet" media="all" type="text/css" href="{{ static_design_url }}/u/libraries/jquery-ui-timepicker/css/jquery-ui-timepicker-addon.css" />
 
-<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-ui-timepicker/js/jquery-ui-timepicker-addon.js"></script>
-<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-ui-timepicker/js/jquery-ui-sliderAccess.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/u/libraries/jquery-ui-1.8.23.custom/js/jquery-ui-1.8.23.custom.min.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/u/libraries/jquery-ui-datepicker-1.8.23/js/jquery-ui-datepicker.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/u/libraries/jquery-ui-timepicker/js/jquery-ui-timepicker-addon.js"></script>
 
 <script type='text/javascript'>
     var devices = new Array();
@@ -37,15 +39,16 @@
              var name = "";
              var devicetype = "alarm";
              //When creating device in UI, we use rinor has nested schema
-             var nstschema = "rinor";
-             var nstdevice = "";
+             var nstschema = "None";
+             var nstdevice = $("#alarmname").val();
              var nstid = 0;
-             var nsttechno = "";
-             var nstcommand = "";
-             var nstvalue0 = "";
-             var nstvalue1 = "";
+             var nsttechno = "None";
+             var nstcommand = "sensor";
+             var nstvalue0 = "high";
+             var nstvalue1 = "low";
              var alarm = "";
              if($('select#alarmdevice').val() != 0){
+                    nstschema = "rinor";
                     nstdevice = devices[$("select#alarmdevice").val()][4];
                     nstid = devices[$("select#alarmdevice").val()][0];
                     var testvalue = devices[$("select#alarmdevice").val()][2].split(".");
@@ -103,12 +106,18 @@
 
         $("select#alarmdevice").change(function(){
               var test = $("select#alarmdevice").val();
-              var valeur = devices[test][5];
-              var test2 = devices[test][3];
-              valeur = valeur.replace(/&quot;/g,'"');
-              var obj = jQuery.parseJSON(valeur);
-
-              if (devices[test][3]=="list"||devices[test][3]=="binary"){
+              //console.log("select#alarmdevice : " + test);
+              if (test!=0){
+                  var valeur = devices[test][5];
+                  var test2 = devices[test][3];
+                  valeur = valeur.replace(/&quot;/g,'"');
+                  var obj = jQuery.parseJSON(valeur);
+              }
+              if (test==0){
+                 $("#grp_alarmdevice_begin").html("");
+                 $("#grp_alarmdevice_end").html("");
+              }
+              else if (devices[test][3]=="list"||devices[test][3]=="binary"){
                   $("#grp_alarmdevice_begin").html("<select id='alarmdevice_begin' style='width:20em;'></select>");
                   $("#grp_alarmdevice_end").html("<select id='alarmdevice_end' style='width:20em;'></select>");
                   if (test2 == "binary"){
@@ -148,6 +157,7 @@
         //$('#alarmstophour').timepicker({});
         rinor.get(['api', 'feature'])
             .done(function(data, status, xhr){
+                $('select#alarmdevice').append("<option value='0'>"+"{% trans "None" %}"+"</option>");
                 $.each(data.objects, function(index, object) {
                     devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
                     if (object.device_feature_model.feature_type == "actuator"){
@@ -160,7 +170,8 @@
                 //    console.log("devices[1][" + i + "] : " + devices[1][i]);
                 //}
                 $("select#alarmdevice").change();
-           })
+            })
+
             .fail(function(jqXHR, status, error){
                 if (jqXHR.status == 400)
                     $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");

@@ -20,12 +20,6 @@
 
 {% load i18n %}
 
-<link rel="stylesheet" media="all" type="text/css" href="{{ static_design_url }}/llibraries/jquery-ui-1.8.16.custom/css/smoothness/jquery-ui-1.8.16.custom.css" />
-<link rel="stylesheet" media="all" type="text/css" href="{{ static_design_url }}/libraries/jquery-ui-timepicker/css/jquery-ui-timepicker-addon.css" />
-
-<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-ui-timepicker/js/jquery-ui-timepicker-addon.js"></script>
-<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-ui-timepicker/js/jquery-ui-sliderAccess.js"></script>
-
 <script type='text/javascript'>
     var devices = new Array();
 
@@ -37,14 +31,15 @@
              var name = "";
              var devicetype = "date";
              //When creating device in UI, we use rinor has nested schema
-             var nstschema = "rinor";
-             var nstdevice = "";
+             var nstschema = "None";
+             var nstdevice = $("#datename").val();
              var nstid = 0;
-             var nsttechno = "";
-             var nstcommand = "";
-             var nstvalue0 = "";
+             var nsttechno = "None";
+             var nstcommand = "sensor";
+             var nstvalue0 = "high";
              var alarm = "";
              if($('select#datedevice').val() != 0){
+                    nstschema = "rinor";
                     nstdevice = devices[$("select#datedevice").val()][4];
                     nstid = devices[$("select#datedevice").val()][0];
                     var testvalue = devices[$("select#datedevice").val()][2].split(".");
@@ -93,12 +88,17 @@
 
         $("select#datedevice").change(function(){
               var test = $("select#datedevice").val();
-              var valeur = devices[test][5];
-              var test2 = devices[test][3];
-              valeur = valeur.replace(/&quot;/g,'"');
-              var obj = jQuery.parseJSON(valeur);
-
-              if (devices[test][3]=="list"||devices[test][3]=="binary"){
+              //console.log("select#alarmdevice : " + test);
+              if (test!=0){
+                  var valeur = devices[test][5];
+                  var test2 = devices[test][3];
+                  valeur = valeur.replace(/&quot;/g,'"');
+                  var obj = jQuery.parseJSON(valeur);
+              }
+              if (test==0){
+                 $("#datedevice_value").html("");
+              }
+              else if (devices[test][3]=="list"||devices[test][3]=="binary"){
                   $("#grp_datedevice_value").html("<select id='datedevice_value' style='width:20em;'></select>");
                   if (test2 == "binary"){
                      $("select#datedevice_value").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
@@ -124,6 +124,7 @@
         //$('#datedate').datepicker({});
         rinor.get(['api', 'feature'])
             .done(function(data, status, xhr){
+                $('select#datedevice').append("<option value='0'>"+"{% trans "None" %}"+"</option>");
                 $.each(data.objects, function(index, object) {
                     devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
                     if (object.device_feature_model.feature_type == "actuator"){
