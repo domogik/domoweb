@@ -91,7 +91,7 @@
 //        console.log("Dans RefreshTabHtmlJob, " + device);
         var cron_items = document.getElementById("cron_items");
         var jobid = device['device'];
-        var status = device['current'];
+        var status = device['state'];
         var dataT = $('#cron_items').dataTable().fnGetData();
         var trfunct= function(li,dr){$('#cron_items').dataTable().fnAddData(dr);};
         if (dataT) {
@@ -125,7 +125,7 @@
         if (device['label']) {
             label=device['label'];
         };
-        trfunct(li, [device['device'], devicetype, label, device['current'],
+        trfunct(li, [device['device'], devicetype, label, device['state'],
                      device['runs'], apjobs, device['elapsed'],
                      device['runtime'],""]);
 //        console.log("Dans RefreshTabHtmlJob, DataTable : " + dataT[li]);

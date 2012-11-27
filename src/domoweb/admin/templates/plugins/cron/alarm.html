@@ -30,6 +30,7 @@
 
 <script type='text/javascript'>
     var devices = new Array();
+    var numalarmdayshours = -1
 
     $(function(){
 
@@ -46,7 +47,14 @@
              var nstcommand = "sensor";
              var nstvalue0 = "high";
              var nstvalue1 = "low";
+<<<<<<< local
+             var alarms = "";
+=======
+>>>>>>> other
              var alarm = "";
+             var days = "";
+             var starthour = "";
+             var stophour = "";
              if($('select#alarmdevice').val() != 0){
                     nstschema = "rinor";
                     nstdevice = devices[$("select#alarmdevice").val()][4];
@@ -72,13 +80,23 @@
                     nstvalue1 = testvalue;
              };
              name = $("#alarmname").val();
-             alarm = $("#alarmdays").val() + "," + $("#alarmstarthour").val();
-             if (($("#alarmstophour").val() != null) && ($("#alarmstophour").val() != "")) {
-                    alarm = alarm + "-" + $("#alarmstophour").val();
-             };
+             for(i=0 ; i<=numalarmdayshours ; i++ )
+             {
+                 days = $("#alarmdays"+i).val();
+                 starthour = $("#alarmstarthour"+i).val();
+                 stophour = $("#alarmstophour"+i).val();
+                 if ((days != null) && (days != "") && (starthour != null) && (starthour != "")) {
+                     alarm = days + "," + starthour;
+                     if ((stophour != null) && (stophour != "")) {
+                            alarm = alarm + "-" + stophour;
+                     };
+                 alarms = alarms + "'alarm"+i+"':'" + alarm + "',";
+                 console.log("alarms : " + alarms);
+                 };
+             }
              var value = "{ 'device':'" + name + "','devicetype':'" + devicetype +
-                         "','alarm':'" + alarm +
-                         "','nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
+                         "'," + alarms +
+                         "'nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
                          "','nst-techno':'" + nsttechno + "','nst-command':'" + nstcommand +
                          "','nst-value0':'" + nstvalue0 + "','nst-value1':'" + nstvalue1 +
                          "','rinorip':'" + rinor_ip + "','rinorport':'" + rinor_port + "'}";
@@ -150,9 +168,46 @@
         //}
       });
 
+    $('#delalarmdayshours').click(function () {
+        if (numalarmdayshours>0) {
+            $('#tablealarm'+numalarmdayshours).remove();
+            numalarmdayshours--
+        }
+    });
+
+    $('#addalarmdayshours').click(function () {
+        // the subviews rendered with placeholders
+        numalarmdayshours++
+        var newTR = "<table id='tablealarm"+numalarmdayshours+"'>"+"\n"
+        newTR = newTR + "<tr>"+"\n"
+        if (numalarmdayshours>0) {
+            newTR = newTR + "<td colspan=2 >&nbsp;</td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+            newTR = newTR + "<tr>"+"\n"
+        }
+
+        newTR = newTR + "<td><label for='alarmdays"+numalarmdayshours+"'>{% trans 'The days of the week : a combination of MoTuWeThFrSaSu' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input type='text' id='alarmdays"+numalarmdayshours+"' name='days'/></td>"+"\n"
+        newTR = newTR + "</tr>"+"\n"
+        newTR = newTR + "<td><label for='alarmstarthour"+numalarmdayshours+"'>{% trans 'Start hour of the timer (ie 8:00)' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input type='text' id='alarmstarthour"+numalarmdayshours+"' name='starthour'/></td>"+"\n"
+        newTR = newTR + "</tr>"+"\n"
+        newTR = newTR + "<tr>"+"\n"
+        newTR = newTR + "<td><label for='alarmstophour"+numalarmdayshours+"'>{% trans 'Stop hour of the timer (ie 11:00). Could be left blank.' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input type='text' id='alarmstophour"+numalarmdayshours+"' name='stophour'/></td>"+"\n"
+        newTR = newTR + "</tr>"+"\n"
+        if (numalarmdayshours>0) {
+            newTR = newTR + "<tr>"+"\n"
+            newTR = newTR + "<td colspan=2 ><button id='addalarmdayshours"+numalarmdayshours+"' class='button icon16-action-del' onclick=\"document.getElementById(\'alarmdays_div\').removeChild(document.getElementById(\'tablealarm"+numalarmdayshours+"\'));\">{% trans "Remove" %}</button></td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+        }
+        newTR = newTR + "</table>"+"\n"
+        $('#alarmdays_div').append(newTR);
+    });
 
       $(document).ready(function(){
         var i=1;
+        $('#addalarmdayshours').click();
         //$('#alarmstarthour').timepicker({});
         //$('#alarmstophour').timepicker({});
         rinor.get(['api', 'feature'])
@@ -194,18 +249,11 @@
             </fieldset>
             <fieldset>
                 <legend><h4>{% trans 'Days and hours'%}</h4></legend>
+                    <div id="alarmdays_div">
+                    </div>
                     <table>
                         <tr>
-                            <td><label for='alarmdays'>{% trans 'The days of the week : a combination of MoTuWeThFrSaSu' %}</label></td>
-                            <td><input type='text' id='alarmdays' name='days'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='alarmstarthour'>{% trans 'Start hour of the timer (ie 8:00)' %}</label></td>
-                            <td><input type='text' id='alarmstarthour' name='starthour'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='alarmstophour'>{% trans 'Stop hour of the timer (ie 11:00). Could be left blank.' %}:</label></td>
-                            <td><input type='text' id='alarmstophour' name='stophour'/></td>
+                            <td colspan=2><button id='addalarmdayshours' class='button icon16-action-add' >{% trans "Add" %}</button></td>
                         </tr>
                     </table>
             </fieldset>

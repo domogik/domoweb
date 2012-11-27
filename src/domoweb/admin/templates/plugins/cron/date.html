@@ -75,14 +75,12 @@
                         test=test.slice(1,fin-2);
                         $.notification('error',test);
                      }else{
-                        $("#speciallist").click();
                         $.notification('info',"Alarm " + name + " created");
                      }
                 })
-
                 .fail(function(jqXHR, status, error){
                     if (jqXHR.status == 400)
-                        $.notification('error', "{% trans "Can't create date" %} (" + jqXHR.responseText + ")");
+                        $.notification('error', "{% trans "Can't create date alarm" %} (" + jqXHR.responseText + ")");
                 });
         });
 
