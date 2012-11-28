@@ -321,6 +321,11 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type):
     )
 
 @admin_required
+def admin_del_device(request, device_id, plugin_host, plugin_id, plugin_type):
+    DeviceExtendedPipe().delete_detail(device_id)
+    return redirect('admin_plugins_plugin_view', plugin_host=plugin_host, plugin_id=plugin_id, plugin_type=plugin_type) # Redirect after POST
+
+@admin_required
 def admin_core_helpers(request):
     """
     Method called when the admin helpers tool page is accessed
