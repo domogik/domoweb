@@ -101,8 +101,8 @@
 {% block right %}
     <div id="tabs">
         <ul>
-            <li><a href="#tabs-1">{% trans "Informations" %}</a></li>
-            <li><a href="#tabs-2">{% trans "Devices" %}</a></li>
+            <li><a href="#tabs-1">{% trans "Devices" %}</a></li>
+            <li><a href="#tabs-2">{% trans "Informations" %}</a></li>
             <li><a href="#tabs-3">{% trans "Requirements" %}</a></li>
             <li><a href="#tabs-4">{% trans "Configuration" %}</a></li>
         {% if plugin.id == "knx" %}
@@ -129,8 +129,8 @@
             <li><a href="#tabs-10">{% trans "Log" %}</a></li>
         {% endif %}
         </ul>
-        <div id="tabs-1">{% include "plugins/informations.html" %}</div>
-        <div id="tabs-2">{% include "plugins/devices.html" %}</div>
+        <div id="tabs-1">{% include "plugins/devices.html" %}</div>
+        <div id="tabs-2">{% include "plugins/informations.html" %}</div>
         <div id="tabs-3">{% include "plugins/requirements.html" %}</div>
         <div id="tabs-4">{% include "plugins/configuration.html" %}</div>
     {% if plugin.id == "knx" %}

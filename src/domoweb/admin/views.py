@@ -165,7 +165,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     @return an HttpResponse object
     """
 
-    devices = None #DeviceExtendedPipe().get_list()
+    devices = DeviceExtendedPipe().get_list()
     plugin = PluginPipe().get_detail(plugin_host, plugin_id)
     print plugin
     types = DeviceTypePipe().get_list_by_technology(plugin.technology)
@@ -215,9 +215,15 @@ class SelectIcon(Select):
     
 class DeviceForm(forms.Form):
     name = forms.CharField(max_length=50, label=_("Name"), required=True)
-    usage_id = forms.ChoiceField(widget=SelectIcon, label=_("Usage"), required=True, choices=DeviceUsagePipe().get_tuples('name'))
+    usage_id = forms.ChoiceField(widget=SelectIcon, label=_("Usage"), required=True)
     reference = forms.CharField(max_length=50, label=_("Hardware/Software Reference"), required=False)
     type_id = forms.CharField(widget=forms.HiddenInput, required=True)
+
+    def __init__(self, *args, **kwargs):
+        # This should be done before any references to self.fields
+        super(DeviceForm, self).__init__(*args, **kwargs)
+        #init the choice list on Form init (and not on django load)
+        self.fields["usage_id"].choices = DeviceUsagePipe().get_tuples('name')
 
     def save(self):
         cd = self.cleaned_data
@@ -242,7 +248,7 @@ class ParametersForm(forms.Form):
     def validate(self): self.full_clean()
 
     
-#@admin_required
+@admin_required
 def admin_add_device(request, plugin_host, plugin_id, plugin_type):
     page_title = _("Add device")
 
@@ -258,22 +264,24 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type):
     commands = []
     for command in parameters["xpl_cmd"]:
         commandid = command.id.replace('.','-')
-        commandparametersform = None
+        commanddict = {'id':commandid, 'name':command.name}
         if command.params:
             commandparametersform = ParametersForm(auto_id='cmd_' + commandid + '_%s')
             for parameter in command.params:
                 commandparametersform.addCharField(parameter.key, parameter.description, required=True)
-        commands.append({'id':commandid, 'name':command.name, 'form':commandparametersform})
+            commandict['form'] = commandparametersform
+        commands.append(commanddict)
 
     stats = []
     for stat in parameters["xpl_stat"]:
         statid = stat.id.replace('.','-')
-        statparametersform = None
+        statdict = {'id':statid, 'name':stat.name }
         if stat.params:
             statparametersform = ParametersForm(auto_id='stat_' + commandid + '_%s')
             for parameter in stat.params:
                 statparametersform.addCharField(parameter.key, parameter.description, required=True)
-        stats.append({'id':statid, 'name':stat.name, 'form':statparametersform})
+            statdict['form'] = statparametersform
+        stats.append(statdict)
 
     if request.method == 'POST':
         valid = True
@@ -284,12 +292,13 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type):
             globalparametersform.validate()
             valid = valid and globalparametersform.is_valid()
         for command in commands:
-            if command.form:
+            print command
+            if 'form' in command:
                 command.form.setData(request.POST)
                 command.form.validate()
                 valid = valid and command.form.is_valid()
         for stat in stats:
-            if stat.form:
+            if 'form' in stat:
                 stat.form.setData(request.POST)
                 stat.form.validate()
                 valid = valid and stat.form.is_valid()

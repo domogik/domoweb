@@ -28,7 +28,6 @@
     <table class='simple'>
         <tr>
             <th>{% trans "Name" %}</th>
-            <th>{% trans "Address" %}</th>
             <th>{% trans "Reference" %}</th>
             <th>{% trans "Type" %}</th>
             <th>Actions</th>
@@ -36,13 +35,12 @@
         {% for device in devices_list %}
         <tr class="{% cycle 'odd' 'even' %}">
             <td>{{ device.name|stripnl }}</td>
-            <td>{{ device.address|stripnl }}</td>
             <td>{{ device.reference|stripnl }}</td>
             <td><div class='icon16-text icon16-technology-{{ device.device_type.device_technology_id }}'>{{ device.device_type.device_technology_id }}.{{ device.device_type.name }}</td>
             <td>
                 <ul class="actions">
-                    <li><button id='del{{ device.id }}' class='icon16-action-del buttonicon' title="{% trans "Delete" %} '{{ device.name }}'"><span class='offscreen'>{% trans "Delete" %} {{ device.name }}</span></button></li>
-                    <li><button id="update{{ device.id }}" class="icon16-action-update buttonicon" title="{% trans "Modify" %} '{{ device.name }}'"><span class='offscreen'>{% trans "Modify" %} {{ device.name }}</span></button></li>
+                    <!--li><button id='del{{ device.id }}' class='icon16-action-del buttonicon' title="{% trans "Delete" %} '{{ device.name }}'"><span class='offscreen'>{% trans "Delete" %} {{ device.name }}</span></button></li-->
+                    <!--li><button id="update{{ device.id }}" class="icon16-action-update buttonicon" title="{% trans "Modify" %} '{{ device.name }}'"><span class='offscreen'>{% trans "Modify" %} {{ device.name }}</span></button></li-->
                 </ul>
             </td>
         </tr>
