@@ -87,17 +87,17 @@ class RinorMiddleware(object):
     def process_exception(self, request, exception):
         if isinstance(exception, RinorError):
             t = loader.get_template('error/RinorError.html')
-            c = Context({'code':exception.code, 'reason':exception.reason})
+            c = RequestContext(request, {'code':exception.code, 'reason':exception.reason})
             return HttpResponseServerError(t.render(c))
         elif isinstance(exception, BadStatusLine):
             t = loader.get_template('error/BadStatusLine.html')
-            c = Context()
+            c = RequestContext(request)
             return HttpResponseServerError(t.render(c))
         elif isinstance(exception, RinorNotAvailable):
             _ip = Parameter.objects.get(key='rinor_ip')
             _port = Parameter.objects.get(key='rinor_port')
             t = loader.get_template('error/RinorNotAvailable.html')
-            c = Context({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
+            c = RequestContext(request, {'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
             return HttpResponseServerError(t.render(c))
         return
 

@@ -119,12 +119,36 @@ class DeviceTypePipe(RinorPipe):
     paths = []
     dependencies = ['package']
 
+    def get_list_by_technology(self, technology_id):
+        # get one object from data source
+        data = self.get_list()
+        listdata = []
+        for obj in data:
+            if (obj.device_technology_id == technology_id):
+                listdata.append(obj)
+        return listdata
+
 class DeviceUsagePipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/device_usage/list"
     index = 'device_usage'
     paths = []
-    
+
+class DeviceParametersPipe(RinorPipe):
+    cache_expiry = 3600
+    list_path = "/base/deviceparams"
+    index = 'deviceparams'
+    paths = []
+
+    def get_detail(self, id):
+        _data = self._get_data("%s/%s" % (self.list_path, id))
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)        
+        if len(_data[self.index]) > 0:
+            return _data[self.index][0]
+        else:
+            return None
+        
 class DevicePipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/device/list"
@@ -134,14 +158,14 @@ class DevicePipe(RinorPipe):
     index = 'device'
     paths = []
 
-    def post_list(self, name, address, type_id, usage_id, description, reference):
-        _data = self._post_data(self.add_path, ['name', name, 'address', address, 'type_id', type_id, 'usage_id', usage_id, 'description', description, 'reference', reference])
+    def post_list(self, name, type_id, usage_id, reference):
+        _data = self._post_data(self.add_path, ['name', name, 'type_id', type_id, 'usage_id', usage_id, 'description', '', 'reference', reference])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]
 
-    def put_detail(self, id, name, address, usage_id, description, reference):
-        _data = self._put_data(self.update_path, ['id', id, 'name', name, 'address', address, 'usage_id', usage_id, 'description', description, 'reference', reference])
+    def put_detail(self, id, name, usage_id, reference):
+        _data = self._put_data(self.update_path, ['id', id, 'name', name, 'usage_id', usage_id, 'description', '', 'reference', reference])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
         return _data[self.index][0]

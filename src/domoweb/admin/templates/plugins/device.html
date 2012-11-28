@@ -1,0 +1,110 @@
+{% extends "layouts/base_without_nav.html" %}
+
+{% load i18n %}
+{% load text %}
+{% block js_script %}
+    $(function(){
+        $('#DeviceForm').stepy(); 
+    });
+{% endblock %}
+
+{% block css %}
+    <link href="{{ static_design_url }}/libraries/jquery.stepy-1.1.0/css/jquery.stepy.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        fieldset { border:none; width:320px;}
+        legend { font-size:18px; margin:0px; padding:10px 0px; color:#b0232a; font-weight:bold;}
+        label { display:block; margin:15px 0 5px;}
+        input[type=text], input[type=password] { width:300px; padding:5px; border:solid 1px #000;}
+        .prev, .next { background-color:#b0232a; padding:5px 10px; color:#fff; text-decoration:none;}
+        .prev:hover, .next:hover { background-color:#000; text-decoration:none;}
+        .prev { float:left;}
+        .next { float:right;}
+        #steps { list-style:none; width:100%; overflow:hidden; margin:0px; padding:0px;}
+        #steps li {font-size:24px; float:left; padding:10px; color:#b0b1b3;}
+        #steps li span {font-size:11px; display:block;}
+        #steps li.current { color:#000;}
+    </style>
+{% endblock %}
+{% block js_include %}
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.stepy-1.1.0/js/jquery.stepy.min.js"></script>
+{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <form id="DeviceForm" method='post'>{% csrf_token %}
+        <fieldset title="{% trans "Information" %}">
+            <legend>{% trans "Device identity" %}</legend>
+            {{ deviceform.non_field_errors }}
+            {% for hidden in deviceform.hidden_fields %}
+            {{ hidden }}
+            {% endfor %}                
+            {% for field in deviceform.visible_fields %}
+                <div class='row'>
+                    {{ field.errors }}
+                    <label for="{{ field.auto_id }}" class="{% if field.field.required %} required{% endif %}">
+                       {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                    </label>
+                    {{ field }}
+                </div>
+            {% endfor %}                
+        </fieldset>
+        {% if globalparametersform %}
+        <fieldset title="{% trans "Parameters" %}">
+            <legend>{% trans "Global device parameters" %}</legend>
+            {{ globalparametersform.non_field_errors }}
+            {% for field in globalparametersform %}
+                <div class='row'>
+                    {{ field.errors }}
+                    <label for="{{ field.auto_id }}" class="{% if field.field.required %} required{% endif %}">
+                       {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                    </label>
+                    {{ field }}
+                </div>
+            {% endfor %}                
+        </fieldset>
+        {% endif %}
+        <fieldset title="{% trans "Commands" %}">
+            <legend>{% trans "Individual command parameters" %}</legend>
+            {% for command in commands %}
+                <h2>{{ command.name }}</h2>
+                {% if command.form %}
+                    {{ command.form.non_field_errors }}
+                    {% for field in command.form %}
+                        <div class='row'>
+                            {{ field.errors }}
+                            <label for="{{ field.auto_id }}" class="{% if field.field.required %} required{% endif %}">
+                               {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                            </label>
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>{% trans "No Parameters for this command" %}</p>
+                {% endif %}
+                <hr />
+            {% endfor %}
+        </fieldset>
+        <fieldset title="{% trans "Stats" %}">
+            <legend>{% trans "Individual stat parameters" %}</legend>
+            {% for stat in stats %}
+                <h2>{{ stat.name }}</h2>
+                {% if stat.form %}
+                    {{ stat.form.non_field_errors }}
+                    {% for field in stat.form %}
+                        <div class='row'>
+                            {{ field.errors }}
+                            <label for="{{ field.auto_id }}" class="{% if field.field.required %} required{% endif %}">
+                               {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                            </label>
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>{% trans "No Parameters for this stat" %}</p>
+                {% endif %}
+                <hr />
+            {% endfor %}
+        </fieldset>
+        <input type="submit" class="finish" value="{% trans "Create" %}" />
+    </form>
+{% endblock %}

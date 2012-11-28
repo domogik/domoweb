@@ -52,3 +52,6 @@ class RinorNotAvailable(DomoWebBaseException):
 
 class RinorError(DomoWebBaseException):
     pass
+
+class ActionNotAllowed(DomoWebBaseException):
+    pass

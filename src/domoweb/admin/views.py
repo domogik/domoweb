@@ -45,11 +45,15 @@ from django.shortcuts import redirect
 from django.template import RequestContext
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ugettext
+from django.utils.encoding import force_unicode
+from django.utils.html import escape, conditional_escape
 from django.contrib import messages
 from django.conf import settings
+from django import forms
+from django.forms.widgets import Select
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.exceptions import RinorError, RinorNotConfigured
+from domoweb.exceptions import RinorError, RinorNotConfigured, ActionNotAllowed
 from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, PageTheme, Page
 
 def login(request):
@@ -131,33 +135,6 @@ def admin_management_accounts(request):
         people_list=people
     )
 
-
-@admin_required
-def admin_organization_devices(request):
-    """
-    Method called when the admin devices organization page is accessed
-    @param request : HTTP request
-    @return an HttpResponse object
-    """
-
-    page_title = _("Devices organization")
-
-    id = request.GET.get('id', 0)
-    devices = DeviceExtendedPipe().get_list()
-    usages = DeviceUsagePipe().get_list()
-    types = DeviceTypePipe().get_list()
-
-    return go_to_page(
-        request, 'organization/devices.html',
-        page_title,
-        nav1_admin = "selected",
-        nav2_organization_devices = "selected",
-        id=id,
-        devices_list=devices,
-        usages_list=usages,
-        types_list=types
-    )
-
 @admin_required
 def admin_organization_pages(request):
     """
@@ -187,8 +164,11 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     @param request : HTTP request
     @return an HttpResponse object
     """
-    
+
+    devices = None #DeviceExtendedPipe().get_list()
     plugin = PluginPipe().get_detail(plugin_host, plugin_id)
+    print plugin
+    types = DeviceTypePipe().get_list_by_technology(plugin.technology)
     if plugin_type == "plugin":
         page_title = _("Plugin")
         dependencies = PluginDependencyPipe().get_list(plugin_host, plugin_id)
@@ -199,8 +179,11 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
             nav1_admin = "selected",
             nav2_plugins_plugin = "selected",
             plugin=plugin,
+            plugin_type=plugin_type,
             dependencies=dependencies,
-            udevrules=udevrules
+            udevrules=udevrules,
+            devices_list=devices,
+            types_list=types,
         )
     if plugin_type == "external":
         page_title = _("External Member")
@@ -209,9 +192,124 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
             page_title,
             nav1_admin = "selected",
             nav2_plugins_plugin = "selected",
-            plugin=plugin
+            plugin=plugin,
+            plugin_type=plugin_type,
+            devices_list=devices,
+            types_list=types,
         )
 
+class SelectIcon(Select):
+    def render_option(self, selected_choices, option_value, option_label):
+        option_value = force_unicode(option_value)
+        class_html = ' class="icon16-usage-%s"' % option_value
+        if option_value in selected_choices:
+            selected_html = ' selected="selected"'
+            if not self.allow_multiple_selected:
+                # Only allow for a single selection.
+                selected_choices.remove(option_value)
+        else:
+            selected_html = ''
+        return '<option value="%s"%s%s>%s</option>' % (
+            escape(option_value), selected_html, class_html,
+            conditional_escape(force_unicode(option_label)))
+    
+class DeviceForm(forms.Form):
+    name = forms.CharField(max_length=50, label=_("Name"), required=True)
+    usage_id = forms.ChoiceField(widget=SelectIcon, label=_("Usage"), required=True, choices=DeviceUsagePipe().get_tuples('name'))
+    reference = forms.CharField(max_length=50, label=_("Hardware/Software Reference"), required=False)
+    type_id = forms.CharField(widget=forms.HiddenInput, required=True)
+
+    def save(self):
+        cd = self.cleaned_data
+        device = DevicePipe().post_list(name=cd["name"], type_id = cd["type_id"], usage_id = cd["usage_id"], reference = cd["reference"])
+        return device
+
+class ParametersForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        # This should be done before any references to self.fields
+        super(ParametersForm, self).__init__(*args, **kwargs)
+
+    def addCharField(self, key, label, required=False, max_length=50):
+        self.fields[key] = forms.CharField(label=label, required=required, max_length=max_length)
+
+    def setData(self, kwds):
+        """Set the data to include in the form"""
+        for name,field in self.fields.items():
+            self.data[name] = field.widget.value_from_datadict(
+                                kwds, self.files, self.add_prefix(name))
+        self.is_bound = True
+
+    def validate(self): self.full_clean()
+
+    
+#@admin_required
+def admin_add_device(request, plugin_host, plugin_id, plugin_type):
+    page_title = _("Add device")
+
+    type_id = request.GET['type_id']
+    parameters = DeviceParametersPipe().get_detail(type_id)
+
+    globalparametersform = None
+    if parameters["global"] :
+        globalparametersform = ParametersForm(auto_id='global_%s')
+        for parameter in parameters["global"]:
+            globalparametersform.addCharField(parameter.key, parameter.description, required=True)
+
+    commands = []
+    for command in parameters["xpl_cmd"]:
+        commandid = command.id.replace('.','-')
+        commandparametersform = None
+        if command.params:
+            commandparametersform = ParametersForm(auto_id='cmd_' + commandid + '_%s')
+            for parameter in command.params:
+                commandparametersform.addCharField(parameter.key, parameter.description, required=True)
+        commands.append({'id':commandid, 'name':command.name, 'form':commandparametersform})
+
+    stats = []
+    for stat in parameters["xpl_stat"]:
+        statid = stat.id.replace('.','-')
+        statparametersform = None
+        if stat.params:
+            statparametersform = ParametersForm(auto_id='stat_' + commandid + '_%s')
+            for parameter in stat.params:
+                statparametersform.addCharField(parameter.key, parameter.description, required=True)
+        stats.append({'id':statid, 'name':stat.name, 'form':statparametersform})
+
+    if request.method == 'POST':
+        valid = True
+        deviceform = DeviceForm(request.POST) # A form bound to the POST data
+        valid = valid and deviceform.is_valid()
+        if globalparametersform:
+            globalparametersform.setData(request.POST)
+            globalparametersform.validate()
+            valid = valid and globalparametersform.is_valid()
+        for command in commands:
+            if command.form:
+                command.form.setData(request.POST)
+                command.form.validate()
+                valid = valid and command.form.is_valid()
+        for stat in stats:
+            if stat.form:
+                stat.form.setData(request.POST)
+                stat.form.validate()
+                valid = valid and stat.form.is_valid()
+        if valid:
+            device = deviceform.save()
+            return redirect('admin_plugins_plugin_view', plugin_host=plugin_host, plugin_id=plugin_id, plugin_type=plugin_type) # Redirect after POST
+    else:
+        deviceform = DeviceForm(auto_id='main_%s', initial={'type_id': type_id})
+
+    return go_to_page(
+        request, 'plugins/device.html',
+        page_title,
+        plugin_host=plugin_host,
+        plugin_id=plugin_id,
+        plugin_type=plugin_type,
+        deviceform=deviceform,
+        globalparametersform=globalparametersform,
+        commands=commands,
+        stats=stats,
+    )
 
 @admin_required
 def admin_core_helpers(request):

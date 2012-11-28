@@ -32,6 +32,7 @@ src/domoweb/migrations/0001_initial.py
 src/domoweb/migrations/0002_auto__add_page__add_pagetheme.py
 src/domoweb/migrations/0003_auto__del_field_page_theme_id__add_field_page_left__add_field_page_rig.py
 src/domoweb/migrations/0004_root_page.py
+src/domoweb/migrations/0005_auto__chg_field_page_right__del_unique_page_right__chg_field_page_id__.py
 src/domoweb/migrations/__init__.py
 src/domoweb/rinor/__init__.py
 src/domoweb/rinor/events.py

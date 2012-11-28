@@ -76,13 +76,13 @@ d_files.extend(list_all_files('src/domoweb/locale/', '/usr/share/domoweb/locale/
 
 setup(
     name = 'DomoWeb',
-    version = '0.3.dev',
+    version = '0.4.dev',
     url = 'http://www.domogik.org/',
     description = 'Domogik Web UI',
     author = 'Domogik team',
     author_email = 'domogik-general@lists.labs.libre-entreprise.org',
     install_requires=['setuptools',
-                      'django == 1.4',
+                      'django == 1.4.2',
                       'django-tastypie >= 0.9.11',
                       'django-tables2',
                       'simplejson >= 1.9.2',
@@ -91,7 +91,6 @@ setup(
                       'CherryPy >= 3.2.2',
                       'south',
                       'manifesto'],
-    #                      'rpc4django'],
     zip_safe = False,
     license = 'GPL v3',
     # namespace_packages = ['domogik', 'mpris', 'tools'],

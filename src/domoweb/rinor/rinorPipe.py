@@ -94,6 +94,13 @@ class RinorPipe():
         for item in _list:
             _dict[item.id] = item
         return _dict
+
+    def get_tuples(self, key):
+        _list = self.get_list()
+        _tuples = []
+        for item in _list:
+            _tuples.append((item.id, item[key]))
+        return _tuples
     
     def get_pk(self, pk):
         # get one object from data source
