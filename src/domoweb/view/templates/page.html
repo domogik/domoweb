@@ -119,7 +119,7 @@
 {% block body %}
     <header role='banner'>
         <h1 class="icon64-{{ page.icon.id }}">{{ page_title }}</h1>
-        <div class="description">{{ page.description }}</div>
+        <div class="description">{% if page.description %}{{ page.description }}{% endif %}</div>
         <nav role="navigation">
             <ul id="mainmenu">
             {% if not is_user_connected %}
