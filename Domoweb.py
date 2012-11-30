@@ -79,6 +79,24 @@ def main():
     domoweb.VERSION = "dev.%s" % commands.getoutput("cd %s ; hg id -n 2>/dev/null" % domoweb.PROJECTPATH)
     engine.log("Version : %s" % domoweb.VERSION)
 
+    # Check log folder
+    if not os.path.isdir("/var/log/domoweb"):
+        sys.stderr.write("Error: /var/log/domoweb do not exist")
+        sys.exit(1)
+
+    # Check run folder
+    if not os.path.isdir("/var/run/domoweb"):
+        sys.stderr.write("Error: /var/run/domoweb do not exist")
+        sys.exit(1)
+    
+    # Check config file
+    SERVER_CONFIG = '/etc/domoweb/domoweb.cfg'
+    if not os.path.isfile(SERVER_CONFIG):
+        sys.stderr.write("Error: Can't find the file '%s'\n" % SERVER_CONFIG)
+        sys.exit(1)
+
+    cherrypy.config.update(SERVER_CONFIG)
+
     url_prefix = cherrypy.config.get("domoweb.url_prefix", "")
     if url_prefix != "":
         url_prefix += "/"
@@ -106,14 +124,6 @@ def main():
             }
         }
     }
-
-    SERVER_CONFIG = '/etc/domoweb/domoweb.cfg'
-
-    try:
-        cherrypy.config.update(SERVER_CONFIG)
-    except IOError:
-        sys.stderr.write("Error: Can't find the file '%s'\n" % SERVER_CONFIG)
-        sys.exit(1)
 
     plugins.PIDFile(engine, "/var/run/domoweb/domoweb.pid").subscribe()
 
