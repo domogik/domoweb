@@ -23,6 +23,10 @@
 
 $(function(){
    $("#loglist").click(function() {
+         if (plugin_is_running() == false) {
+             $.notification('error', "{% trans "Plugin must be started to add a job" %}");
+             return
+         }
         var value = $("#nblines").val();
         rinor.put(['api', 'command', '{{ plugin.id }}', '{{ plugin.id }}'], {"command":'log', "value":value})
            .done(function(data, status, xhr){

@@ -1,0 +1,356 @@
+{% comment %}
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Sébastien GALLET <bibi21000@gmail.com>
+{% endcomment %}
+
+{% load i18n %}
+
+<script type='text/javascript'>
+    var devices = new Array();
+    var numintervals = -1
+
+    $(function(){
+
+        $("#specialcreateinterval").click(function(){
+             if (plugin_is_running() == false) {
+                 $.notification('error', "{% trans "Plugin must be started to add a job" %}");
+                 return
+             }
+             var rinor_ip = "{{ request.session.rinor_ip }}";
+             var rinor_port = "{{ request.session.rinor_port }}";
+             var name = "";
+             var devicetype = "interval";
+             //When creating device in UI, we use rinor has nested schema
+             var nstschema = "None";
+             var nstdevice = $("#intervalname").val();
+             var nstid = 0;
+             var nsttechno = "None";
+             var nstcommand = "sensor";
+             var nstvalue0 = "high";
+             var nstvalue1 = "low";
+             var intervals = "";
+             var interval = "";
+             var weeks = "";
+             var days = "";
+             var hours = "";
+             var minutes = "";
+             var seconds = "";
+             if($('select#intervaldevice').val() != 0){
+                    nstschema = "rinor";
+                    nstdevice = devices[$("select#intervaldevice").val()][4];
+                    nstid = devices[$("select#intervaldevice").val()][0];
+                    var testvalue = devices[$("select#intervaldevice").val()][2].split(".");
+                    nsttechno = testvalue[0];
+                    testvalue = devices[$("select#intervaldevice").val()][5];
+                    testvalue = testvalue.replace(/&quot;/g,'"');
+                    var obj = jQuery.parseJSON(testvalue);
+                    //console.log("obj.command : " + obj['command']);
+                    nstcommand = obj['command'];
+                    // Must check if fields are select or input
+                    testvalue =  $("#intervaldevice_begin").val();
+                    if ( ! testvalue) {
+                        testvalue =  $("select#intervaldevice_begin").val();
+                    }
+                    //console.log("select#intervaldevice_begin : " + $("select#intervaldevice_begin").val());
+                    nstvalue0 = testvalue;
+                    testvalue =  $("#intervaldevice_end").val();
+                    if ( !testvalue ) {
+                        testvalue =  $("select#intervaldevice_end").val();
+                    }
+                    nstvalue1 = testvalue;
+             };
+             name = $("#intervalname").val();
+             if (check_job_name(name) != true) {
+                 $("#intervalname").focus();
+                 $.notification('error', "{% trans "Bad job name" %}");
+                 return
+             }
+
+             for(i=0 ; i<=numintervals ; i++ )
+             {
+                 weeks = $("#intervalweek"+i).val();
+                 if ( (weeks != null) && (weeks != "") ) {
+                     if ((weeks == null) || (weeks == "") || (check_number(weeks) != true)) {
+                         $("#intervalweek"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     interval = "'weeks':'" + weeks + "',";
+                 }
+                 intervals = intervals + interval;
+                     //console.log("intervals : " + intervals);
+                 days = $("#intervalday"+i).val();
+                 if ( (days != null) && (days != "") ) {
+                     if ((days == null) || (days == "") || (check_number(days) != true)) {
+                         $("#intervalday"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     interval = "'days':'" + days + "',";
+                 }
+                 intervals = intervals + interval;
+                     //console.log("intervals : " + intervals);
+                 hours = $("#intervalhour"+i).val();
+                 if ( (hours != null) && (hours != "") ) {
+                     if ((hours == null) || (hours == "") || (check_number(hours) != true)) {
+                         $("#intervalhour"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     interval = "'hours':'" + hours + "',";
+                 }
+                 intervals = intervals + interval;
+                 minutes = $("#intervalminute"+i).val();
+                 if ( (minutes != null) && (minutes != "") ) {
+                     if ((minutes == null) || (minutes == "") || (check_number(minutes) != true)) {
+                         $("#intervalminute"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     interval = "'minutes':'" + minutes + "',";
+                 }
+                 intervals = intervals + interval;
+                 seconds = $("#intervalsecond"+i).val();
+                 if ( (seconds != null) && (seconds != "") ) {
+                     if ((seconds == null) || (seconds == "") || (check_number(seconds) != true)) {
+                         $("#intervalsecond"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     interval = "'seconds':'" + seconds + "',";
+                 }
+                 intervals = intervals + interval;
+                 duration = $("#intervalduration"+i).val();
+                 if ( (duration != null) && (duration != "") ) {
+                     if ((duration == null) || (duration == "") || (check_number(duration) != true)) {
+                         $("#intervalduration"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     interval = "'duration':'" + duration + "',";
+                 }
+                 intervals = intervals + interval;
+             }
+             if ( intervals == "") {
+                 $.notification('error', "{% trans "Missing parameters" %}");
+                 return
+             }
+             var value = "{ 'device':'" + name + "','devicetype':'" + devicetype +
+                         "'," + intervals +
+                         "'nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
+                         "','nst-techno':'" + nsttechno + "','nst-command':'" + nstcommand +
+                         "','nst-value0':'" + nstvalue0 + "','nst-value1':'" + nstvalue1 +
+                         "','rinorip':'" + rinor_ip + "','rinorport':'" + rinor_port + "'}";
+
+             rinor.put(['api', 'command', 'cron', 'UI'], {"command":"create-interval", 'value' : value})
+                .done(function(data, status, xhr){
+                     test=JSON.stringify(data);
+                     debut=test.search('error=');
+                     if (debut != -1) {
+                        test=test.slice(debut+5);
+                        fin=test.search('}');
+                        test=test.slice(1,fin-2);
+                        $("#speciallist").click();
+                        $.notification('error',test);
+                     }else{
+                        $("#speciallist").click();
+                        $.notification('info',"Alarm " + name + " created");
+                     }
+                })
+
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Can't create interval" %} (" + jqXHR.responseText + ")");
+                });
+        });
+
+        $("select#intervaldevice").change(function(){
+              var test = $("select#intervaldevice").val();
+              //console.log("select#intervaldevice : " + test);
+              if (test!=0){
+                  var valeur = devices[test][5];
+                  var test2 = devices[test][3];
+                  valeur = valeur.replace(/&quot;/g,'"');
+                  var obj = jQuery.parseJSON(valeur);
+              }
+              if (test==0){
+                 $("#grp_intervaldevice_begin").html("");
+                 $("#grp_intervaldevice_end").html("");
+              }
+              else if (devices[test][3]=="list"||devices[test][3]=="binary"){
+                  $("#grp_intervaldevice_begin").html("<select id='intervaldevice_begin' style='width:20em;'></select>");
+                  $("#grp_intervaldevice_end").html("<select id='intervaldevice_end' style='width:20em;'></select>");
+                  if (test2 == "binary"){
+                     $("select#intervaldevice_begin").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+                     $("select#intervaldevice_begin").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+                     $("select#intervaldevice_end").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+                     $("select#intervaldevice_end").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+                  }
+                  else {
+                     for(i=0 ;i<obj.commandValues.length;i++){
+                       $("select#intervaldevice_begin").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+                       $("select#intervaldevice_end").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+                       }
+                  }
+              }
+              else if (test2=="numeric"|| test2=="range"){
+                 $("#grp_intervaldevice_begin").html("<input id='intervaldevice_begin' style='width:20em;'></input>");
+                 $("#grp_intervaldevice_end").html("<input id='intervaldevice_end' style='width:20em;'></input>");
+              }
+              else if (test2=="trigger"){
+                 $("#grp_intervaldevice_begin").html("");
+                 $("#grp_intervaldevice_end").html("");
+              }
+        //console.log("select#intervaldevice_begin : " + $("select#intervaldevice_begin").val());
+        //if ($("#intervaldevice_begin").val()) {
+        //    console.log("intervaldevice_begin : " + $("#intervaldevice_begin").val());
+        //}
+        //if ($("select#intervaldevice_begin").val()) {
+        //    console.log("intervaldevice_begin : " + $("select#intervaldevice_begin").val());
+        //}
+      });
+
+    $('#delintervals').click(function () {
+        if (numintervals>0) {
+            $('#tableinterval'+numintervals).remove();
+            numintervals--
+        }
+    });
+
+    $('#addintervals').click(function () {
+        // the subviews rendered with placeholders
+        numintervals++
+        //console.log("Num interval = " + numintervals);
+        var newTR = "<table id='tableinterval"+numintervals+"'>"+"\n"
+        newTR = newTR + "<tr>"+"\n"
+        if (numintervals>0) {
+            newTR = newTR + "<td colspan=2 >&nbsp;</td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+            newTR = newTR + "<tr>"+"\n"
+        }
+
+        newTR = newTR + "<td><label for='intervalweek"+numintervals+"'>{% trans 'Weeks:' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input type='text' id='intervalweek"+numintervals+"' name='week'/></td>"+"\n"
+        newTR = newTR + "</tr>"+"\n"
+        newTR = newTR + "<tr>"+"\n"
+        newTR = newTR + "<td><label for='intervalday"+numintervals+"'>{% trans 'Days:' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input type='text' id='intervalday"+numintervals+"' name='day'/></td>"+"\n"
+        newTR = newTR + "</tr>"+"\n"
+        newTR = newTR + "<tr>"+"\n"
+        newTR = newTR + "<td><label for='intervalhour"+numintervals+"'>{% trans 'Hours:' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input type='text' id='intervalhour"+numintervals+"' name='hour'/></td>"+"\n"
+        newTR = newTR + "</tr>"+"\n"
+        newTR = newTR + "<tr>"+"\n"
+        newTR = newTR + "<td><label for='intervalminute"+numintervals+"'>{% trans 'Minutes::' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input type='text' id='intervalminute"+numintervals+"' name='minute'/></td>"+"\n"
+        newTR = newTR + "</tr>"+"\n"
+        newTR = newTR + "<tr>"+"\n"
+        newTR = newTR + "<td><label for='intervalsecond"+numintervals+"'>{% trans 'Seconds:' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input type='text' id='intervalsecond"+numintervals+"' name='second'/></td>"+"\n"
+        newTR = newTR + "</tr>"+"\n"
+        newTR = newTR + "<tr>"+"\n"
+        newTR = newTR + "<td><label for='intervalduration"+numintervals+"'>{% trans 'Duration of the command (in seconds).<br/>After this delay, the same message is send again' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input type='text' id='intervalduration"+numintervals+"' name='second'/></td>"+"\n"
+        newTR = newTR + "</tr>"+"\n"
+        if (numintervals>0) {
+            newTR = newTR + "<tr>"+"\n"
+            newTR = newTR + "<td colspan=2 ><button id='addintervals"+numintervals+"' class='button icon16-action-del' onclick=\"document.getElementById(\'intervals_div\').removeChild(document.getElementById(\'tableinterval"+numintervals+"\'));\">{% trans "Remove" %}</button></td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+        }
+        newTR = newTR + "</table>"+"\n"
+        $('#intervals_div').append(newTR);
+    });
+
+      $(document).ready(function(){
+        var i=1;
+        //console.log("i = " + i);
+        $('#addintervals').click();
+        //console.log("i2 = " + i);
+        //$('#intervalstarthour').timepicker({});
+        //$('#intervalstophour').timepicker({});
+        rinor.get(['api', 'feature'])
+            .done(function(data, status, xhr){
+                $('select#intervaldevice').append("<option value='0'>"+"{% trans "None" %}"+"</option>");
+                $.each(data.objects, function(index, object) {
+                    devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
+                    if (object.device_feature_model.feature_type == "actuator"){
+                       $('select#intervaldevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
+                    }
+                    i=i+1;
+                });
+                //console.log("devices.length : " + devices.length);
+                //for(i=0 ;i<devices[1].length;i++){
+                //    console.log("devices[1][" + i + "] : " + devices[1][i]);
+                //}
+                $("select#intervaldevice").change();
+            })
+
+            .fail(function(jqXHR, status, error){
+                if (jqXHR.status == 400)
+                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
+            });
+     });
+    });
+
+</script>
+<section class="subsection">
+    <h3>{% trans "Create a interval." %}</h3>
+    <p>{% trans "With this kind of timer you can activate a switch, a dimmer, a scene, ... every specified interval. The on command is send at the specified interval and the off command is sent after duration." %}</p>
+            <fieldset>
+                <legend><h4>{% trans 'Name'%}</h4></legend>
+                    <table>
+                        <tr>
+                            <td><label for='intervalname'>{% trans 'The name of the interval / device.' %}</label></td>
+                            <td><input type='text' id='intervalname' name='name'/></td>
+                        </tr>
+                    </table>
+            </fieldset>
+            <fieldset>
+                <legend><h4>{% trans 'Interval'%}</h4></legend>
+                    <div id="intervals_div">
+                    </div>
+                   <table>
+                        <tr>
+                            <td colspan=2><button id='addintervals' hidden='true' class='button icon16-action-add' >{% trans "Add" %}</button></td>
+                        </tr>
+                    </table>
+            </fieldset>
+            <fieldset>
+                <legend><h4>{% trans 'Device to use'%}</h4></legend>
+                    <table>
+                        <tr>
+                            <td><label for='intervaldevice'>{% trans "Device" %}:</label></td>
+                            <td><select id="intervaldevice" class='listes' style="width:30em;"></select></td>
+                        </tr>
+                        <tr>
+                            <td><label for='grp_intervaldevice_begin'>{% trans "The command / value to use at the begin of the cycle." %}:</label></td>
+                            <td><span id="grp_intervaldevice_begin"></span></td>
+                        </tr>
+                        <tr>
+                            <td><label for='grp_intervaldevice_end'>{% trans "The command / value to use at the end of the cycle." %}:</label></td>
+                            <td><span id="grp_intervaldevice_end"></span></td>
+                        </tr>
+                    </table>
+            </fieldset>
+        <p>
+            <button id='specialcreateinterval' class='button icon16-action-save'>{% trans "Create" %}</button>
+            <button id='specialcancelinterval' class='button icon16-action-reset'>{% trans "Cancel" %}</button>
+        </p>
+</section>
+
+

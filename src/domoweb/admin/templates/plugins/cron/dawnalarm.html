@@ -22,10 +22,15 @@
 
 <script type='text/javascript'>
     var devices = new Array();
+    var numdawnalarmdayshours = -1
 
     $(function(){
 
         $("#specialcreatedawnalarm").click(function(){
+             if (plugin_is_running() == false) {
+                 $.notification('error', "{% trans "Plugin must be started to add a job" %}");
+                 return
+             }
              var rinor_ip = "{{ request.session.rinor_ip }}";
              var rinor_port = "{{ request.session.rinor_port }}";
              var name = "";
@@ -37,7 +42,14 @@
              var nsttechno = "";
              var nstcommand = "";
              var nstvalue0 = "";
+             var alarms = "";
              var alarm = "";
+             var days = "";
+             var starthour = "";
+             var stophour = "";
+             var offhour = "";
+             var dimlevels = "";
+             var current_dow = "";
              if($('select#dawnalarmdevice').val() != 0){
                     nstdevice = devices[$("select#dawnalarmdevice").val()][4];
                     nstid = devices[$("select#dawnalarmdevice").val()][0];
@@ -50,14 +62,82 @@
                     nstcommand = obj['command'];
              };
              name = $("#dawnalarmname").val();
-             alarm = $("#dawnalarmdays").val() + "," + $("#dawnalarmstarthour").val();
-             alarm = alarm + "-" + $("#dawnalarmstophour").val();
-             if (($("#dawnalarmdimlevels").val() != null) && ($("#dawnalarmdimlevels").val() != "")) {
-                    alarm = alarm + "," + $("#dawnalarmdimlevels").val();
-             };
+             if (check_job_name(name) != true) {
+                 $("#dawnalarmname").focus();
+                 $.notification('error', "{% trans "Bad job name" %}");
+                 return
+             }
+
+             dimlevels = $("#dawnalarmdimlevels").val();
+             if (check_dim_levels(dimlevels) != true) {
+                 $("#dawnalarmdimlevels").focus();
+                 $.notification('error', "{% trans "Bad syntax" %}");
+                 return
+             }
+
+             for(i=0 ; i<=numdawnalarmdayshours ; i++ )
+             {
+
+
+                 //alarm = $("#dawnalarmdays").val() + "," + $("#dawnalarmstarthour").val();
+                 //alarm = alarm + "-" + $("#dawnalarmstophour").val();
+                 //if (($("#dawnalarmdimlevels").val() != null) && ($("#dawnalarmdimlevels").val() != "")) {
+                 //     alarm = alarm + "," + $("#dawnalarmdimlevels").val();
+                 // };
+
+
+                 days = $("#dawnalarmdays"+i).val();
+                 starthour = $("#dawnalarmstarthour"+i).val();
+                 stophour = $("#dawnalarmstophour"+i).val();
+                 offhour = $("#dawnalarmoffhour"+i).val();
+                 if ( (days != null) && (days != "") ) {
+                     if ((days == null) || (days == "") || (check_days_of_week(days) != true)) {
+                         $("#dawnalarmdays"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     if ((check_dow_overlapped(days,current_dow) != true)) {
+                         $("#dawnalarmdays"+i).focus();
+                         $.notification('error', "{% trans "Overlapped days." %}");
+                         return
+                     }
+                     current_dow = current_dow + days;
+                     if ((starthour == null) || (starthour == "") || (check_time(starthour) != true)) {
+                         $("#dawnalarmstarthour"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     if ((stophour == null) || (stophour == "") || (check_time(stophour) != true)) {
+                         $("#dawnalarmstophour"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     alarm = days + "," + starthour + "-" + stophour;
+                     if ((offhour != null) && (offhour != "")) {
+                         if (check_time(offhour) != true) {
+                             $("#dawnalarmoffhour"+i).focus();
+                             $.notification('error', "{% trans "Bad syntax" %}");
+                             return
+                         } else {
+                            alarm = alarm + "-" + offhour;
+                         }
+                     };
+                     if ((dimlevels != null) && (dimlevels != "")) {
+                        alarm = alarm + "," + dimlevels;
+                        alarms = alarms + "'alarm"+i+"':'" + alarm + "',";
+                     } else {
+                        alarms = alarms + "'alarm"+i+"':'" + alarm + "',";
+                     }
+                     //console.log("alarms : " + alarms);
+                 }
+             }
+             if ( alarms == "") {
+                 $.notification('error', "{% trans "Missing parameters" %}");
+                 return
+             }
              var value = "{ 'device':'" + name + "','devicetype':'" + devicetype +
-                         "','alarm':'" + alarm +
-                         "','nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
+                         "'," + alarms +
+                         "'nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
                          "','nst-techno':'" + nsttechno + "','nst-command':'" + nstcommand +
                          "','nst-value0':'" + "0" +
                          "','rinorip':'" + rinor_ip + "','rinorport':'" + rinor_port + "'}";
@@ -70,10 +150,11 @@
                         test=test.slice(debut+5);
                         fin=test.search('}');
                         test=test.slice(1,fin-2);
+                        $("#speciallist").click();
                         $.notification('error',test);
                      }else{
                         $("#speciallist").click();
-                        $.notification('info',"Alarm " + name + " created");
+                        $.notification('info',"Dawn alarm " + name + " created");
                      }
                 })
 
@@ -83,8 +164,43 @@
                 });
         });
 
+        $('#adddawnalarmdayshours').click(function () {
+            // the subviews rendered with placeholders
+            numdawnalarmdayshours++
+            var newTR = "<table id='tabledawnalarm"+numdawnalarmdayshours+"'>"+"\n"
+            newTR = newTR + "<tr>"+"\n"
+            if (numdawnalarmdayshours>0) {
+                newTR = newTR + "<td colspan=2 >&nbsp;</td>"+"\n"
+                newTR = newTR + "</tr>"+"\n"
+                newTR = newTR + "<tr>"+"\n"
+            }
+
+            newTR = newTR + "<td><label for='dawnalarmdays"+numdawnalarmdayshours+"'>{% trans 'The days of the week : a combination of MoTuWeThFrSaSu' %}</label></td>"+"\n"
+            newTR = newTR + "<td><input type='text' id='dawnalarmdays"+numdawnalarmdayshours+"' name='days'/></td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+            newTR = newTR + "<td><label for='dawnalarmstarthour"+numdawnalarmdayshours+"'>{% trans 'The begin of the dawn cycle (ie 8:00)' %}</label></td>"+"\n"
+            newTR = newTR + "<td><input type='text' id='dawnalarmstarthour"+numdawnalarmdayshours+"' name='starthour'/></td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+            newTR = newTR + "<tr>"+"\n"
+            newTR = newTR + "<td><label for='dawnalarmstophour"+numdawnalarmdayshours+"'>{% trans 'The end of the dawn cycle (ie 11:00)' %}</label></td>"+"\n"
+            newTR = newTR + "<td><input type='text' id='dawnalarmstophour"+numdawnalarmdayshours+"' name='stophour'/></td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+            newTR = newTR + "<tr>"+"\n"
+            newTR = newTR + "<td><label for='dawnalarmoffhour"+numdawnalarmdayshours+"'>{% trans 'The time when turning off the light (ie 12:00). Could be left blank.' %}</label></td>"+"\n"
+            newTR = newTR + "<td><input type='text' id='dawnalarmoffhour"+numdawnalarmdayshours+"' name='stophour'/></td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+            if (numdawnalarmdayshours>0) {
+                newTR = newTR + "<tr>"+"\n"
+                newTR = newTR + "<td colspan=2 ><button id='adddawnalarmdayshours"+numdawnalarmdayshours+"' class='button icon16-action-del' onclick=\"document.getElementById(\'dawnalarmdays_div\').removeChild(document.getElementById(\'tabledawnalarm"+numdawnalarmdayshours+"\'));\">{% trans "Remove" %}</button></td>"+"\n"
+                newTR = newTR + "</tr>"+"\n"
+            }
+            newTR = newTR + "</table>"+"\n"
+            $('#dawnalarmdays_div').append(newTR);
+        });
+
       $(document).ready(function(){
         var i=1;
+        $('#adddawnalarmdayshours').click();
         //$('#dawnalarmstarthour').timepicker({});
         //$('#dawnalarmstophour').timepicker({});
         rinor.get(['api', 'feature'])
@@ -124,18 +240,11 @@
             </fieldset>
             <fieldset>
                 <legend><h4>{% trans 'Days and hours'%}</h4></legend>
+                    <div id="dawnalarmdays_div">
+                    </div>
                     <table>
                         <tr>
-                            <td><label for='dawnalarmdays'>{% trans 'The days of the week : a combination of MoTuWeThFrSaSu' %}</label></td>
-                            <td><input type='text' id='dawnalarmdays' name='days'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='dawnalarmstarthour'>{% trans 'The begin of the dawn cycle (ie 8:00).' %}</label></td>
-                            <td><input type='text' id='dawnalarmstarthour' name='starthour'/></td>
-                        </tr>
-                        <tr>
-                            <td><label for='dawnalarmstophour'>{% trans 'The end of the awn cycle (ie 11:00).' %}:</label></td>
-                            <td><input type='text' id='dawnalarmstophour' name='stophour'/></td>
+                            <td colspan=2><button id='adddawnalarmdayshours' class='button icon16-action-add' >{% trans "Add" %}</button></td>
                         </tr>
                     </table>
             </fieldset>
