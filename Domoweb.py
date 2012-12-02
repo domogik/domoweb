@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import sys
-if sys.version_info < (2, 5):
-    print "Sorry, requires Python 2.5, 2.6 or 2.7."
+if sys.version_info < (2, 6):
+    print "Sorry, requires Python 2.6 or 2.7."
     sys.exit(1)    
 
 import os, os.path
@@ -70,6 +70,23 @@ def loadThemes(root):
                     t.save()
 def main():
     """Main function that is called at the startup of Domoweb"""
+    from optparse import OptionParser
+
+    p = OptionParser()
+
+    # define command line options
+    """
+    p.add_option('-d', '--daemon',
+                 dest='daemon',
+                 action='store_true',
+                 help='Run as a daemon')
+    """
+    # parse command line for defined options
+    options, args = p.parse_args()
+
+#    if options.daemon:
+#        daemonize()
+
     engine = cherrypy.engine
 
     domoweb.FULLPATH = os.path.normpath(os.path.abspath(__file__))
@@ -90,7 +107,7 @@ def main():
         sys.exit(1)
     
     # Check config file
-    SERVER_CONFIG = '/etc/domoweb/domoweb.cfg'
+    SERVER_CONFIG = '/etc/domoweb.cfg'
     if not os.path.isfile(SERVER_CONFIG):
         sys.stderr.write("Error: Can't find the file '%s'\n" % SERVER_CONFIG)
         sys.exit(1)

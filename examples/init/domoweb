@@ -33,10 +33,8 @@ CUSTOM_PATH=""
 [ -f /etc/conf.d/domoweb ] && . /etc/conf.d/domoweb
 [ -f /etc/default/domoweb ] && . /etc/default/domoweb
 
-
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$CUSTOM_PATH:
-NAME=dmg_domoweb
-DAEMON=$(which $NAME)
+NAME=Domoweb.py
+DAEMON=/usr/bin/python
 LOGFILE=/var/log/domoweb/console.log
 PIDFILE=/var/run/domoweb/domoweb.pid
 
@@ -53,7 +51,7 @@ function start_django {
     [ ! -d /var/log/domoweb ] && \
         /bin/mkdir /var/log/domoweb
     /bin/chown -Rf ${DOMOWEB_USER}:root /var/log/domoweb
-    /bin/su - ${DOMOWEB_USER} -c "$DAEMON >$LOGFILE 2>&1 &"
+    /bin/su - ${DOMOWEB_USER} -c "$DAEMON $DOMOWEB_PATH/$NAME >$LOGFILE 2>&1 &"
     if [ $? -gt 0 ]; then
         echo " An error occured during DomoWeb startup."
         exit 1

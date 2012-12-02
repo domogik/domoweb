@@ -2,3 +2,4 @@
 
 #Start domoweb daemon under this user
 DOMOWEB_USER=domoweb
+DOMOWEB_PATH=/usr/share/domoweb
