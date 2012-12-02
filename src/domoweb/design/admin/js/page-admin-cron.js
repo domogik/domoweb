@@ -1,11 +1,5 @@
 function plugin_is_running() {
-    //console.log("button name "+document.getElementById('buttonstatus').name)
-    //console.log("button type "+document.getElementById('buttonstatus').type)
-    //console.log("button value "+document.getElementById('buttonstatus').value)
-    //console.log("button innerHTML "+document.getElementById('buttonstatus').innerHTML)
-    //console.log("button title "+document.getElementById('buttonstatus').title)
-    //console.log("button style "+document.getElementById('buttonstatus').style)
-    //console.log("button className "+document.getElementById('buttonstatus').className)
+    // Check that the plugin is running
     if (document.getElementById('buttonstatus').className == "button icon16-status-active") {
         return false
     }
@@ -13,6 +7,7 @@ function plugin_is_running() {
 }
 
 function check_job_name(name) {
+    // Check that the job name is valid
     if ((name == null) || (name == "")) {
         return false;
     }
@@ -26,6 +21,7 @@ function check_job_name(name) {
 }
 
 function check_days_of_week(dow) {
+    // Check that the days_of_week is correct : MoTuWeThFrSaSu
     var temp = dow;
     temp = temp.replace(/Mo/,'');
     temp = temp.replace(/Tu/,'');
@@ -41,6 +37,7 @@ function check_days_of_week(dow) {
 }
 
 function check_dow_overlapped(dow1,dow2) {
+    // Check that 2 days_of_week doesn't overlappes : ie MoTuWeThFrSaSu and Mo
     var temp1 = dow1;
     var temp2 = dow2;
     while ( temp1.length != 0) {
@@ -104,6 +101,7 @@ function check_dow_overlapped(dow1,dow2) {
 }
 
 function check_number(num) {
+    // Check that a number is valid
     var temp = num;
     temp = temp.replace(/0/g,'');
     temp = temp.replace(/1/g,'');
@@ -122,10 +120,12 @@ function check_number(num) {
 }
 
 function check_dim_levels(levels) {
+    // Check that the dim levels are valid : 10,20,30,...
     return true;
 }
 
 function check_time(hour) {
+    // Check that a time is valid : 10:30 or 8:00
     var temp = hour.split(':');
     //console.log("convert "+temp[0]+" "+temp[1])
     if ((temp[0] == null) || (temp[0].length>2) || (temp[1] == null) || (temp[1].length>2)) {
@@ -146,6 +146,7 @@ function check_time(hour) {
 }
 
 function check_xpldate(date) {
+    // Check that an xpldate is valid : 20121201203000
     var year = parseInt(date.substring(0,4),10);
     var month = parseInt(date.substring(4,6),10);
     var day = parseInt(date.substring(6,8),10);
@@ -197,6 +198,7 @@ return true;
 }
 
 function check_year(year) {
+    // Check that a year is valid : 2012
     var myear = parseInt(year, 10);
     try {
         var date = new Date();
@@ -214,6 +216,7 @@ return true;
 }
 
 function check_month(year,month) {
+    // Check that a year/month is valid : 2012,1-12
     var myear = parseInt(year, 10);
     var mmonth = parseInt(month,10);
     var ok = false
@@ -239,6 +242,7 @@ return true;
 }
 
 function check_day(year,month,day) {
+    // Check that a year/month/day is valid : 2012,1-12,0-(28,29,30,31)
     var myear = parseInt(year, 10);
     var mmonth = parseInt(month,10);
     var mday = parseInt(day,10);
@@ -272,6 +276,7 @@ return true;
 }
 
 function check_hour(hour) {
+    // Check that a hour is valid : 0..23
     var mhour = parseInt(hour,10);
     var ok = false
     try {
@@ -290,6 +295,7 @@ return true;
 }
 
 function check_minute(minute) {
+    // Check that a minute is valid : 0..59
     var mminute = parseInt(minute,10);
     var ok = false
     try {
@@ -308,6 +314,7 @@ return true;
 }
 
 function check_second(second) {
+    // Check that a second is valid : 0..59
     var msecond = parseInt(second,10);
     var ok = false
     try {

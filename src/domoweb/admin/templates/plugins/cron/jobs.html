@@ -19,8 +19,10 @@
 {% endcomment %}
 
 {% load i18n %}
+<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-cron.js"></script>
+<link href="/design/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
 <script type='text/javascript'>
 
     $(function(){
@@ -233,6 +235,8 @@
       $(document).ready(function(){
          oTabJobs = $("#cron_items").dataTable({
             "bFilter": false,
+            "bAutoWidth": false,
+            "bJQueryUI": true,
             "aoColumnDefs": [
                 { "fnRender": function (oObj) {return setUptime(oObj);}, "aTargets": [ hdLiNode['Uptime'] ] },
                 { "fnRender": function (oObj) {return setRuntime(oObj);}, "aTargets": [ hdLiNode['Runtime'] ] },
@@ -271,6 +275,15 @@
                     <th scope='col'>{% trans "Runtime (s/h/d)" %}</th>
                     <th scope='col'>{% trans "Full Runtime (s/h/d)" %}</th>
                     <th scope='col'>{% trans "Commands" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <table class='simple'>
+            <thead>
+                <tr>
+                    <td>&nbsp;</td>
                 </tr>
             </thead>
             <tbody>
