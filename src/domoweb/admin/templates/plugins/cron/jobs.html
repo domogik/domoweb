@@ -22,7 +22,7 @@
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-cron.js"></script>
-<link href="/design/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
 <script type='text/javascript'>
 
     $(function(){
@@ -244,7 +244,7 @@
                 { "fnRender": function (oObj) {return setCommands(oObj);}, "aTargets": [hdLiNode['Commands'] ] },
                 { "bSortable": false, "aTargets": [ hdLiNode['Commands'] ] },
                 ],
-            "aaSorting": [[0, 'asc']],
+            "aaSorting": [[1, 'asc']],
             "sPaginationType": "full_numbers"
             } );
          if (plugin_is_running() ) {
