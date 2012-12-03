@@ -34,6 +34,16 @@ def main():
     from optparse import OptionParser
     p = OptionParser(usage="usage: %prog [options]",
                           version="Install for Domoweb 0.4")
+
+    p.add_option('--uninstall',
+             dest='uninstall',
+             action="store_true",
+             help="Uninstall Domoweb")
+
+    p.add_option('--simul',
+             dest='simul',
+             action="store_true",
+             help="Simulation mode for Uninstall")
     
     p.add_option('--nodeps',
              dest='nodeps',
@@ -78,6 +88,14 @@ def main():
     # parse command line for defined options
     options, args = p.parse_args()
     
+    # Initial Clean
+    clean()
+
+    # Uninstall
+    if options.uninstall:
+        uninstall(options.simul)
+        sys.exit(0)
+        
     # Dependencies
     if options.nodeps:
         warning('Not installing dependencies')
@@ -376,6 +394,57 @@ def getDjangoUrl():
     config.read("/etc/domoweb.cfg")
     cherrypy = dict(config.items('global'))
     return "http://127.0.0.1:%s/" % (cherrypy['server.socket_port'])
+
+def clean():
+    import commands
+    status,output = commands.getstatusoutput('which dmg_domoweb')
+    if status == 0:
+        info("Deleting %s shortcut" % output)            
+        os.remove(output)
     
+    from distutils.sysconfig import get_python_lib
+    sitepackages = get_python_lib()
+    dirList=os.listdir(sitepackages)
+    for fname in dirList:
+        try:
+            fname.index('Domoweb')
+        except ValueError:
+            pass
+        else:
+            fullpath = os.path.join(sitepackages, fname)
+            if os.path.isdir(fullpath):
+                info("Deleting old dir %s" % fullpath)
+                shutil.rmtree(fullpath)
+            else:
+                info("Deleting old file %s" % fullpath)
+                os.remove(fullpath)
+
+def uninstall(simul):
+    ok("This script will uninstall Domoweb")
+    if simul: warning('Simulation mode: not deleting')
+    sure = raw_input('Are you sure ? [y/N] ')
+    if sure == 'Y' or sure == 'y':
+        if os.path.isfile('/etc/default/domoweb'):
+            info('Deleting /etc/default/domoweb')
+            if not simul: os.remove('/etc/default/domoweb')
+        if os.path.isfile('/etc/init.d/domoweb'):
+            info('Deleting /etc/init.d/domoweb')
+            if not simul: os.remove('/etc/init.d/domoweb')
+        if os.path.isfile('/etc/rc.d/domoweb'):
+            info('Deleting /etc/rc.d/domoweb')
+            if not simul: os.remove('/etc/rc.d/domoweb')
+        if os.path.isfile('/etc/domoweb.cfg'):
+            info('Deleting config file /etc/domoweb.cfg')
+            if not simul: os.remove('/etc/domoweb.cfg')            
+        if os.path.isdir('/var/lib/domoweb'):
+            info('Deleting /var/lib/domoweb')
+            if not simul: shutil.rmtree('/var/lib/domoweb')
+        if os.path.isdir('/var/log/domoweb'):
+            info('Deleting /var/log/domoweb')
+            if not simul: shutil.rmtree('/var/log/domoweb')
+        ok('Deleting complete')
+    else:
+        warning("Aborting...")
+        
 if __name__ == "__main__":
     main()
