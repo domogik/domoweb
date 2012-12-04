@@ -21,11 +21,16 @@
 
 
 {% load i18n %}
+
 {% block js_script %}
 $(function(){
     // Accordion
 	$("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:2});
     
+    // Tabs
+    $("#tabs").tabs();
+
+
     {% ifequal plugin.status "ON" %}
         setStatus(true);
     {% else %}
@@ -110,8 +115,10 @@ function sortOptions(a, b){
 {% block css %}
     <link href="{{ static_design_url }}/admin/css/page-admin-plugins.css" rel="stylesheet" type="text/css" />
     <link href="{{ static_design_url }}/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 {% block js_include %}
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
 {% endblock %}
 {% block title %}{{ page_title }}{% endblock %}
 
@@ -119,33 +126,47 @@ function sortOptions(a, b){
     <h1 class="ident icon64-plugin-{{ plugin.id }} icon64-resize" style='background-image:url({{ admin_url }}/resource/icon/package/installed/external/{{ plugin.id }})'>
         <span class="title">{% trans "External member" %} '{{ plugin.id }}'</span>
     </h1>
-    <ul class='infos'>
-        <li><span class='label'>{% trans "Version" %}:</span> {{ plugin.version }}</li>
-        <li><span class='label'>{% trans "Documentation" %}:</span> <a href='{{ plugin.documentation }}'>{% trans "Wiki" %}</a></li>
-        <li><span class='label'>{% trans "Host" %}:</span> {{ plugin.host }}</li>
-        {% ifnotequal plugin.id "rest" %}
-            <li><span class='label'>{% trans "Technology" %}:</span> {{ plugin.technology }}</li>
-            <li><div id='iconstatus'></div></li>
-        {% endifnotequal %}
-    </ul>
 {% endblock %}
 
 {% block right %}
-    <section class="subsection">
-        <h2>{% trans "Description" %}</h2>
-        <p>{{ plugin.description|linebreaksbr }}</p>
-    </section>
-
-    <section class="subsection">
-        <h2>{% trans "Configuration" %}</h2>
-        <div id='configuration'>
-            <table id='configuration_items' class='simple'>
-                <thead>
-                    <tr><th scope='col'>{% trans "Key" %}</th><th scope='col'>{% trans "Value" %}</th></tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </section>
+	<div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">{% trans "Devices" %}</a></li>
+            <li><a href="#tabs-2">{% trans "Informations" %}</a></li>
+            <li><a href="#tabs-3">{% trans "Configuration" %}</a></li>
+	</ul>
+        <div id="tabs-1">{% include "plugins/devices.html" %}</div>
+	<div id="tabs-2">
+	    <section class="subsection">
+		    <h2>{% trans "Informations" %}</h2>
+		    <ul class='infos'>
+			    <li><span class='label'>{% trans "Version" %}:</span> {{ plugin.version }}</li>
+			    <li><span class='label'>{% trans "Documentation" %}:</span> <a href='{{ plugin.documentation }}'>{% trans "Wiki" %}</a></li>
+			    <li><span class='label'>{% trans "Host" %}:</span> {{ plugin.host }}</li>
+			    {% ifnotequal plugin.id "rest" %}
+				    <li><span class='label'>{% trans "Technology" %}:</span> {{ plugin.technology }}</li>
+				    <li><div id='iconstatus'></div></li>
+			    {% endifnotequal %}
+		    </ul>
+	    </section>
+	    <section class="subsection">
+		    <h2>{% trans "Description" %}</h2>
+		    <p>{{ plugin.description|linebreaksbr }}</p>
+	    </section>			
+	</div>
+        <div id="tabs-3">
+			<section class="subsection">
+				<h2>{% trans "Configuration" %}</h2>
+				<div id='configuration'>
+					<table id='configuration_items' class='simple'>
+						<thead>
+							<tr><th scope='col'>{% trans "Key" %}</th><th scope='col'>{% trans "Value" %}</th></tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</section>
+		</div>
+	</div>
 {% endblock %}

@@ -1,0 +1,61 @@
+{% load i18n %}
+{% load text %}
+
+<script type='text/javascript'>
+    $(function(){
+        $('#SignupForm').stepy({
+            next: function(index) {
+                if (index == 2) {
+                    var type_id = $('select#type').val();
+                    rinor.get(['api', 'deviceparameters', type_id])
+                    .done(function(data, status, xhr){
+                        console.log(data);
+                    })
+                    .fail(function(jqXHR, status, error){
+                    })
+                    .always(function(){
+                        $('#SignupForm').stepy('step', 2);
+                    });
+                    return false;
+                }
+            },
+        }); 
+    });
+</script>
+
+<section class="subsection">
+    <h2>{% trans "Devices list" %}</h2>
+    <table class='simple'>
+        <tr>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Reference" %}</th>
+            <th>{% trans "Type" %}</th>
+            <th>Actions</th>
+        </tr>
+        {% for device in devices_list %}
+        <tr class="{% cycle 'odd' 'even' %}">
+            <td>{{ device.name|stripnl }}</td>
+            <td>{{ device.reference|stripnl }}</td>
+            <td><div class='icon16-text icon16-technology-{{ device.device_type.device_technology_id }}'>{{ device.device_type.device_technology_id }}.{{ device.device_type.name }}</td>
+            <td>
+                <ul class="actions">
+                    <li><a href='{% url admin_del_device_view device.id plugin.host plugin.id plugin_type %}' id='del{{ device.id }}' class='icon16-action-del buttonicon' title="{% trans "Delete" %} '{{ device.name }}'"><span class='offscreen'>{% trans "Delete" %} {{ device.name }}</span></a></li>
+                    <!--li><button id="update{{ device.id }}" class="icon16-action-update buttonicon" title="{% trans "Modify" %} '{{ device.name }}'"><span class='offscreen'>{% trans "Modify" %} {{ device.name }}</span></button></li-->
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <form action='{% url admin_add_device_view plugin.host plugin.id plugin_type %}' method='GET'>
+        <select id='type_id' aria-required="true" name='type_id'>
+            <option value=''>{% trans "Choose type" %}</option>
+            {% regroup types_list|dictsort:"device_technology_id" by device_technology as technologies_list %}
+            {% for technology in technologies_list %}
+                {% for type in technology.list %}
+                <option value='{{ type.id }}'>{{ type.name }}</option>
+                {% endfor %}
+            {% endfor %} 
+        </select>
+        <input type='submit' value='Create device' />
+    </form>
+</section>
