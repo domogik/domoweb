@@ -74,6 +74,10 @@ function helperrinor (args) {
 
 $(function(){
    $("#helperexecute").click(function() {
+        if (plugin_is_running() == false) {
+           $.notification('error', "{% trans "Plugin must be started to add a job" %}");
+           return
+        }
         var formval = $("#command").val();
         var data=formval.split(/[ ]/);
         var args = {}
@@ -88,6 +92,10 @@ $(function(){
         }
     });
    $("#helperhelp").click(function() {
+         if (plugin_is_running() == false) {
+             $.notification('error', "{% trans "Plugin must be started to add a job" %}");
+             return
+         }
         var args = {}
         args["command"] = "help";
         helperrinor(args)

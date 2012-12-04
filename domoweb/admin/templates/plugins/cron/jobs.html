@@ -19,12 +19,15 @@
 {% endcomment %}
 
 {% load i18n %}
+<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-cron.js"></script>
+<link href="{{ static_design_url }}/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
 <script type='text/javascript'>
 
     $(function(){
 
-        var hdLiNode = {"JobId":0, "Type":1, "Label":2, "Status":3, "Runs":4, "APS":5, "Uptime":6, "Runtime":7, "Commands":8};
+        var hdLiNode = {"JobId":0, "Type":1, "Label":2, "Status":3, "Runs":4, "APS":5, "Uptime":6, "Runtime":7, "FullRuntime":8, "Commands":9};
 
     function GetDeviceFromxPL (data) {
         dt=JSON.stringify(data);
@@ -61,7 +64,12 @@
         };
 
        $("#speciallist").click(function() {
-           RefreshTabHtml();
+           if (plugin_is_running() == false) {
+               $.notification('error', "{% trans "Plugin must be started to get list of jobs" %}");
+               return
+           } else {
+               RefreshTabHtml();
+           }
        });
 
     function RefreshTabHtml() {
@@ -76,7 +84,7 @@
                         //console.log("Parcours des jobs : " + i +" "+jobs[i][0]);
                         $('#cron_items').dataTable().fnAddData([
                             jobs[i][0], jobs[i][2], jobs[i][3], jobs[i][1], jobs[i][4], jobs[i][5],
-                            jobs[i][6], jobs[i][7], ""
+                            jobs[i][6], jobs[i][7], jobs[i][8], ""
                             ]);
                     };
                 })
@@ -127,7 +135,7 @@
         };
         trfunct(li, [device['device'], devicetype, label, device['state'],
                      device['runs'], apjobs, device['elapsed'],
-                     device['runtime'],""]);
+                     device['runtime'], device['fullruntime'], ""]);
 //        console.log("Dans RefreshTabHtmlJob, DataTable : " + dataT[li]);
      };
 
@@ -141,6 +149,12 @@
         var uptimeh = parseFloat(oObj.aData[hdLiNode['Runtime']])/3600;
         var uptimed = parseFloat(oObj.aData[hdLiNode['Runtime']])/3600/24;
         return oObj.aData[hdLiNode['Runtime']] + " / " + uptimeh.toFixed(2) + " / " + uptimed.toFixed(2);
+        };
+
+    function setFullRuntime(oObj) {
+        var uptimeh = parseFloat(oObj.aData[hdLiNode['FullRuntime']])/3600;
+        var uptimed = parseFloat(oObj.aData[hdLiNode['FullRuntime']])/3600/24;
+        return oObj.aData[hdLiNode['FullRuntime']] + " / " + uptimeh.toFixed(2) + " / " + uptimed.toFixed(2);
         };
 
     function setCommands(oObj) {
@@ -221,15 +235,21 @@
       $(document).ready(function(){
          oTabJobs = $("#cron_items").dataTable({
             "bFilter": false,
+            "bAutoWidth": false,
+            "bJQueryUI": true,
             "aoColumnDefs": [
                 { "fnRender": function (oObj) {return setUptime(oObj);}, "aTargets": [ hdLiNode['Uptime'] ] },
                 { "fnRender": function (oObj) {return setRuntime(oObj);}, "aTargets": [ hdLiNode['Runtime'] ] },
+                { "fnRender": function (oObj) {return setFullRuntime(oObj);}, "aTargets": [ hdLiNode['FullRuntime'] ] },
                 { "fnRender": function (oObj) {return setCommands(oObj);}, "aTargets": [hdLiNode['Commands'] ] },
                 { "bSortable": false, "aTargets": [ hdLiNode['Commands'] ] },
                 ],
-            "aaSorting": [[0, 'asc']]
+            "aaSorting": [[1, 'asc']],
+            "sPaginationType": "full_numbers"
             } );
-         $("#speciallist").click();
+         if (plugin_is_running() ) {
+                $("#speciallist").click();
+         }
     });
 
     });
@@ -253,7 +273,17 @@
                     <th scope='col'>{% trans "APS" %}</th>
                     <th scope='col'>{% trans "Uptime (s/h/d)" %}</th>
                     <th scope='col'>{% trans "Runtime (s/h/d)" %}</th>
+                    <th scope='col'>{% trans "Full Runtime (s/h/d)" %}</th>
                     <th scope='col'>{% trans "Commands" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <table class='simple'>
+            <thead>
+                <tr>
+                    <td>&nbsp;</td>
                 </tr>
             </thead>
             <tbody>
