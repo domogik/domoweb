@@ -112,6 +112,8 @@ def main():
         user = options.user
     else:
         user = raw_input('Which user will run domogik (default : domoweb)? ')
+        if not user:
+            user = 'domoweb'
     test_user(user)
     
     # Domoweb folders creation
@@ -242,8 +244,6 @@ def createFolder(path, user):
     
 def test_user(user):
     info("Looking for user %s" % user)
-    if not user:
-        user = 'domoweb'
     try:
         pw = pwd.getpwnam(user)
     except KeyError:
