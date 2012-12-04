@@ -1,0 +1,183 @@
+{% comment %}
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Sébastien GALLET <bibi21000@gmail.com>
+{% endcomment %}
+
+{% load i18n %}
+
+<script type='text/javascript'>
+    var devices = new Array();
+
+    $(function(){
+
+        $("#specialcreatedate").click(function(){
+             var rinor_ip = "{{ request.session.rinor_ip }}";
+             var rinor_port = "{{ request.session.rinor_port }}";
+             var name = "";
+             var devicetype = "date";
+             //When creating device in UI, we use rinor has nested schema
+             var nstschema = "None";
+             var nstdevice = $("#datename").val();
+             var nstid = 0;
+             var nsttechno = "None";
+             var nstcommand = "sensor";
+             var nstvalue0 = "high";
+             var alarm = "";
+             if($('select#datedevice').val() != 0){
+                    nstschema = "rinor";
+                    nstdevice = devices[$("select#datedevice").val()][4];
+                    nstid = devices[$("select#datedevice").val()][0];
+                    var testvalue = devices[$("select#datedevice").val()][2].split(".");
+                    nsttechno = testvalue[0];
+                    testvalue = devices[$("select#datedevice").val()][5];
+                    testvalue = testvalue.replace(/&quot;/g,'"');
+                    var obj = jQuery.parseJSON(testvalue);
+                    //console.log("obj.command : " + obj['command']);
+                    nstcommand = obj['command'];
+                    // Must check if fields are selct or input
+                    testvalue =  $("#datedevice_value").val();
+                    if ( ! testvalue) {
+                        testvalue =  $("select#datedevice_value").val();
+                    }
+                    nstvalue0 = testvalue;
+             };
+             name = $("#datename").val();
+             alarm = $("#datedate").val();
+             var value = "{ 'device':'" + name + "','devicetype':'" + devicetype +
+                         "','date':'" + alarm +
+                         "','nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
+                         "','nst-techno':'" + nsttechno + "','nst-command':'" + nstcommand +
+                         "','nst-value0':'" + nstvalue0 +
+                         "','rinorip':'" + rinor_ip + "','rinorport':'" + rinor_port + "'}";
+
+             rinor.put(['api', 'command', 'cron', 'UI'], {"command":"create-date", 'value' : value})
+                .done(function(data, status, xhr){
+                     test=JSON.stringify(data);
+                     debut=test.search('error=');
+                     if (debut != -1) {
+                        test=test.slice(debut+5);
+                        fin=test.search('}');
+                        test=test.slice(1,fin-2);
+                        $.notification('error',test);
+                     }else{
+                        $.notification('info',"Alarm " + name + " created");
+                     }
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Can't create date alarm" %} (" + jqXHR.responseText + ")");
+                });
+        });
+
+        $("select#datedevice").change(function(){
+              var test = $("select#datedevice").val();
+              //console.log("select#alarmdevice : " + test);
+              if (test!=0){
+                  var valeur = devices[test][5];
+                  var test2 = devices[test][3];
+                  valeur = valeur.replace(/&quot;/g,'"');
+                  var obj = jQuery.parseJSON(valeur);
+              }
+              if (test==0){
+                 $("#datedevice_value").html("");
+              }
+              else if (devices[test][3]=="list"||devices[test][3]=="binary"){
+                  $("#grp_datedevice_value").html("<select id='datedevice_value' style='width:20em;'></select>");
+                  if (test2 == "binary"){
+                     $("select#datedevice_value").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+                     $("select#datedevice_value").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+                  }
+                  else {
+                     for(i=0 ;i<obj.commandValues.length;i++){
+                       $("select#datedevice_value").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+                       }
+                  }
+              }
+              else if (test2=="numeric"|| test2=="range"){
+                 $("#grp_datedevice_value").html("<input id='datedevice_value' style='width:20em;'></input>");
+              }
+              else if (test2=="trigger"){
+                 $("#grp_datedevice_value").html("");
+              }
+      });
+
+
+      $(document).ready(function(){
+        var i=1;
+        //$('#datedate').datepicker({});
+        rinor.get(['api', 'feature'])
+            .done(function(data, status, xhr){
+                $('select#datedevice').append("<option value='0'>"+"{% trans "None" %}"+"</option>");
+                $.each(data.objects, function(index, object) {
+                    devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
+                    if (object.device_feature_model.feature_type == "actuator"){
+                       $('select#datedevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
+                    }
+                    i=i+1;
+                });
+                $("select#datedevice").change();
+           })
+            .fail(function(jqXHR, status, error){
+                if (jqXHR.status == 400)
+                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
+            });
+     });
+    });
+
+</script>
+<section class="subsection">
+    <h3>{% trans "Create a date alarm." %}</h3>
+    <p>{% trans "With this kind of timer you can activate a switch, a dimmer, ... at a specified date (and time of course). The date format is YYYYMMDDHHMMSS." %}</p>
+            <fieldset>
+                <legend><h4>{% trans 'Name'%}</h4></legend>
+                    <table>
+                        <tr>
+                            <td><label for='datename'>{% trans 'The name of the date / device.' %}</label></td>
+                            <td><input type='text' id='datename' name='name'/></td>
+                        </tr>
+                    </table>
+            </fieldset>
+            <fieldset>
+                <legend><h4>{% trans 'Date'%}</h4></legend>
+                    <table>
+                        <tr>
+                            <td><label for='datedate'>{% trans 'The date in format YYYYMMDDHHMMSS' %}</label></td>
+                            <td><input type='text' id='datedate' name='days'/></td>
+                        </tr>
+                    </table>
+            </fieldset>
+            <fieldset>
+                <legend><h4>{% trans 'Device to use'%}</h4></legend>
+                    <table>
+                        <tr>
+                            <td><label for='datedevice'>{% trans "Device" %}:</label></td>
+                            <td><select id="datedevice" class='listes' style="width:30em;"></select></td>
+                        </tr>
+                        <tr>
+                            <td><label for='grp_datedevice_value'>{% trans "The command / value to use." %}:</label></td>
+                            <td><span id="grp_datedevice_value"></span></td>
+                        </tr>
+                    </table>
+            </fieldset>
+        <p>
+            <button id='specialcreatedate' class='button icon16-action-save'>{% trans "Create" %}</button>
+            <button id='specialcanceldate' class='button icon16-action-reset'>{% trans "Cancel" %}</button>
+        </p>
+</section>
+
+

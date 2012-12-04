@@ -7,10 +7,9 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.utils import translation
 from httplib import BadStatusLine
-from domoweb.models import Parameter, Widget, PageIcon, PageTheme
+from domoweb.models import Parameter
 from domoweb.rinor.pipes import InfoPipe
 import os
-import simplejson
 
 class RinorMiddleware(object):
 
@@ -100,51 +99,3 @@ class RinorMiddleware(object):
             c = Context({'rinor_url':"http://%s:%s" % (_ip.value, _port.value)})
             return HttpResponseServerError(t.render(c))
         return
-
-class LaunchMiddleware:
-    def __init__(self):
-        # List available widgets
-        Widget.objects.all().delete()
-        STATIC_WIDGETS_ROOT = os.environ['DOMOWEB_WIDGETS_ROOT']
-        if os.path.isdir(STATIC_WIDGETS_ROOT):
-            for file in os.listdir(STATIC_WIDGETS_ROOT):
-                if not file.startswith('.'): # not hidden file
-                    main = os.path.join(STATIC_WIDGETS_ROOT, file, "main.js")
-                    if os.path.isfile(main):
-                        w = Widget(id=file)
-                        w.save()
-
-        # List available page iconsets
-        PageIcon.objects.all().delete()
-        STATIC_ICONSETS_ROOT = os.environ['DOMOWEB_ICONSETS_ROOT']
-        STATIC_ICONSETS_PAGE = os.path.join(STATIC_ICONSETS_ROOT, "page")
-        if os.path.isdir(STATIC_ICONSETS_PAGE):
-            for file in os.listdir(STATIC_ICONSETS_PAGE):
-                if not file.startswith('.'): # not hidden file
-                    info = os.path.join(STATIC_ICONSETS_PAGE, file, "info.json")
-                    if os.path.isfile(info):
-                        iconset_file = open(info, "r")
-                        iconset_json = simplejson.load(iconset_file)
-                        iconset_id = iconset_json["identity"]["id"]
-                        iconset_name = iconset_json["identity"]["name"]
-                        for icon in iconset_json["icons"]:
-                            id = iconset_id + '-' + icon["id"]
-                            i = PageIcon(id=id, iconset_id=iconset_id, iconset_name=iconset_name, icon_id=icon["id"], label=icon["label"])
-                            i.save()
-
-        # List available page themes
-        PageTheme.objects.all().delete()
-        STATIC_THEMES_ROOT = os.environ['DOMOWEB_THEMES_ROOT']
-        if os.path.isdir(STATIC_THEMES_ROOT):
-            for file in os.listdir(STATIC_THEMES_ROOT):
-                if not file.startswith('.'): # not hidden file
-                    info = os.path.join(STATIC_THEMES_ROOT, file, "info.json")
-                    if os.path.isfile(info):
-                        theme_file = open(info, "r")
-                        theme_json = simplejson.load(theme_file)
-                        theme_id = theme_json["identity"]["id"]
-                        theme_name = theme_json["identity"]["name"]
-                        t = PageTheme(id=theme_id, label=theme_name)
-                        t.save()
-
-        raise MiddlewareNotUsed
