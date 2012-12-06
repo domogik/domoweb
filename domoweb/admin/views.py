@@ -225,11 +225,6 @@ class DeviceForm(forms.Form):
         #init the choice list on Form init (and not on django load)
         self.fields["usage_id"].choices = DeviceUsagePipe().get_tuples('name')
 
-    def save(self):
-        cd = self.cleaned_data
-        device = DevicePipe().post_list(name=cd["name"], type_id = cd["type_id"], usage_id = cd["usage_id"], reference = cd["reference"])
-        return device
-
 class ParametersForm(forms.Form):
     def __init__(self, *args, **kwargs):
         # This should be done before any references to self.fields
@@ -247,8 +242,7 @@ class ParametersForm(forms.Form):
 
     def validate(self): self.full_clean()
 
-    
-@admin_required
+#@admin_required
 def admin_add_device(request, plugin_host, plugin_id, plugin_type):
     page_title = _("Add device")
 
@@ -303,7 +297,9 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type):
                 stat.form.validate()
                 valid = valid and stat.form.is_valid()
         if valid:
-            device = deviceform.save()
+            cd = deviceform.cleaned_data
+            device = DevicePipe().post_list(name=cd["name"], type_id = cd["type_id"], usage_id = cd["usage_id"], reference = cd["reference"])
+            print device
             return redirect('admin_plugins_plugin_view', plugin_host=plugin_host, plugin_id=plugin_id, plugin_type=plugin_type) # Redirect after POST
     else:
         deviceform = DeviceForm(auto_id='main_%s', initial={'type_id': type_id})
