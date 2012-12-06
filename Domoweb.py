@@ -196,9 +196,9 @@ class CoreAppPlugin(plugins.SimplePlugin):
         settings.configure(
             DEBUG = True,
             TEMPLATE_DEBUG = True,            
-            RINOR_MIN_API = '0.6',
-            RINOR_MAX_API = '0.6', #included
-            DMG_MIN_VERSION = '0.2.0-alpha1',
+            RINOR_MIN_API = '0.7',
+            RINOR_MAX_API = '0.7', #included
+            DMG_MIN_VERSION = '0.3',
             
             PROJECT_PATH = self.project['path'],
             URL_PREFIX = self.project['prefix'],

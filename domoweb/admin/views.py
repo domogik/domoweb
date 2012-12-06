@@ -53,7 +53,7 @@ from django import forms
 from django.forms.widgets import Select
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.exceptions import RinorError, RinorNotConfigured, ActionNotAllowed
+from domoweb.exceptions import RinorError, RinorNotConfigured
 from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, PageTheme, Page
 
 def login(request):
