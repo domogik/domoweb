@@ -158,7 +158,7 @@ def main():
     engine.log("Loading Themes")
     loadThemes(os.path.join(domoweb.PACKSPATH, "themes"))
 
-    MQPlugin(engine).subscribe()
+#    MQPlugin(engine).subscribe()
     EventsPlugin(engine, project).subscribe()
     CorePlugin(engine, project).subscribe()
     
