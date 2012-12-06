@@ -270,7 +270,9 @@ def install_dependencies():
                           'Distutils2',
                           'CherryPy >= 3.2.2',
                           'south',
-                          'manifesto'])
+                          'manifesto',
+                          'pyzmq',
+                          'ws4py',])
 
 def updateDb(user):
     from django.core import management

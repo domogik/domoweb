@@ -12,15 +12,15 @@ import commands
 import simplejson
 
 import cherrypy
-#import cherrypy.lib.auth_basic
-from cherrypy.process import wspbus, plugins
-from httplogger import HTTPLogger
+from cherrypy.process import plugins
 
 from django.conf import settings
-from django.core.handlers.wsgi import WSGIHandler
 
 import domoweb
-from events import *
+from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
+from mqPlugin import MQPlugin
+from eventsPlugin import EventsPlugin
+from corePlugin import CorePlugin
 
 def loadWidgets(root):
     from domoweb.models import Widget
@@ -144,7 +144,13 @@ def main():
 
     plugins.PIDFile(engine, "/var/run/domoweb/domoweb.pid").subscribe()
 
-    coreapp = CoreAppPlugin(engine, project)
+    # Loading WebSocket service
+    WebSocketPlugin(engine).subscribe()
+    cherrypy.tools.websocket = WebSocketTool()
+
+    # Loading django config for database connection
+    load_django_config(project)
+
     engine.log("Loading Widgets")
     loadWidgets(os.path.join(domoweb.PACKSPATH, "widgets"))
     engine.log("Loading Iconsets")
@@ -152,13 +158,16 @@ def main():
     engine.log("Loading Themes")
     loadThemes(os.path.join(domoweb.PACKSPATH, "themes"))
 
+    MQPlugin(engine).subscribe()
     EventsPlugin(engine, project).subscribe()
-    coreapp.subscribe()
+    CorePlugin(engine, project).subscribe()
+    
     engine.signal_handler.subscribe()
     if hasattr(engine, "console_control_handler"):
         engine.console_control_handler.subscribe()
     engine.start()
     engine.block()
+
 
 '''
 def runinstall():
@@ -173,140 +182,103 @@ def runinstall():
     Server().run(PROJECT_PATH, PROJECT_PACKS)
 '''
 
-class EventsPlugin(plugins.SimplePlugin):
-    def __init__(self, bus, project):
-        self.project = project
-        plugins.SimplePlugin.__init__(self, bus)
-
-    def start(self):
-        self.bus.log("Mounting Events url")
-        cherrypy.tree.mount(Events(), '/%sevents' % self.project['prefix'])
-
-class CoreAppPlugin(plugins.SimplePlugin):
-    """
-    CherryPy engine plugin to configure and mount
-    the Django application onto the CherryPy server.
-    """
-
-    def __init__(self, bus, project):
-        self.project = project
-        plugins.SimplePlugin.__init__(self, bus)
-        self.bus.log("Configuring the Django application")
-
-        settings.configure(
-            DEBUG = True,
-            TEMPLATE_DEBUG = True,            
-            RINOR_MIN_API = '0.6',
-            RINOR_MAX_API = '0.6', #included
-            DMG_MIN_VERSION = '0.2.0-alpha1',
-            
-            PROJECT_PATH = self.project['path'],
-            URL_PREFIX = self.project['prefix'],
-            REST_URL = "/%srinor" % self.project['prefix'],
-            EVENTS_URL = "/%sevents" % self.project['prefix'],
-            CONFIG_URL = "/%sconfig" % self.project['prefix'],
-            ADMIN_URL = "/%sadmin" % self.project['prefix'],
-            VIEW_URL = "/%sview" % self.project['prefix'],
-            LOGIN_URL = '%sadmin/login' % self.project['prefix'],
-            LOGOUT_URL = '%sadmin/logout' % self.project['prefix'],
-            LOGIN_REDIRECT_URL = '%sadmin' % self.project['prefix'],
-
-            STATIC_DESIGN_URL = self.project['statics']['design']['url'],
-            STATIC_WIDGETS_URL = self.project['statics']['widgets']['url'],
-            STATIC_THEMES_URL = self.project['statics']['themes']['url'],
-            STATIC_ICONSETS_URL = self.project['statics']['iconsets']['url'],
-            DOMOWEB_VERSION = self.project['version'],
-            DATABASES = {
-                'default': {
-                    'ENGINE': 'django.db.backends.sqlite3',
-                    'NAME': "/var/lib/domoweb/domoweb.db",
-                }
-            },
-            TIME_ZONE = 'Europe/Paris',
-            LANGUAGE_CODE = 'en',
-            LANGUAGES = (
-              ('en', 'English'),
-              ('fr', 'Fran?ais'),
-              ('nl_BE', 'Flemish'),
-            ),
-            LOCALE_PATHS = (
-                '%s/domoweb/locale' % self.project['path'],
-            ),
-            DEFAULT_CHARSET = 'utf-8',
-            SITE_ID = 1,
-            USE_I18N = True,
-            SECRET_KEY = 'i#=g$uo$$qn&0qtz!sbimt%#d+lb!stt#12hr@%vp-u)yw3s+b',
-            TEMPLATE_LOADERS = (
-                'django.template.loaders.filesystem.Loader',
-                'django.template.loaders.app_directories.Loader',
-                'django.template.loaders.eggs.Loader',
-            ),
-            MIDDLEWARE_CLASSES = (
-                'django.contrib.sessions.middleware.SessionMiddleware',
-                'django.middleware.locale.LocaleMiddleware',
-                'django.middleware.common.CommonMiddleware',
-                'django.contrib.auth.middleware.AuthenticationMiddleware',
-                'django.contrib.messages.middleware.MessageMiddleware',
-                'domoweb.middleware.RinorMiddleware',
-            ),
-            ROOT_URLCONF = 'domoweb.urls',
-            TEMPLATE_CONTEXT_PROCESSORS = (
-                'django.contrib.auth.context_processors.auth',
-                'django.core.context_processors.debug',
-                'django.core.context_processors.i18n',
-                'django.core.context_processors.request',
-                'django.contrib.messages.context_processors.messages',
-                'domoweb.context_processors.domoweb',
-            ),
-            INSTALLED_APPS = (
-                'django.contrib.auth',
-                'django.contrib.contenttypes',
-                'django.contrib.sessions',
-                'django.contrib.messages',
-                'django.contrib.sites',
-                'django.contrib.admin',
-                'tastypie',
-                'manifesto',
-                'django_tables2',
-                'domoweb',
-                'domoweb.config',
-                'domoweb.view',
-                'domoweb.admin',
-                'domoweb.rinor',
-            ),
-            MANIFESTO_EXCLUDED_MANIFESTS = (
-                    'randomapp.manifest.WrongManifest',
-            ),
-            SESSION_ENGINE = 'django.contrib.sessions.backends.cache',
-            MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage',
-            API_LIMIT_PER_PAGE = 0, #Tastypie
-            TEMPLATE_DIRS = (
-                '%s/domoweb/templates/' % self.project['path'],
-                '%s/domoweb/config/templates/' % self.project['path'],
-                '%s/domoweb/view/templates/' % self.project['path'],
-                '%s/domoweb/admin/templates/' % self.project['path'],
-                '%s/domoweb/rinor/templates/' % self.project['path'],
-            ),
-        )
+def load_django_config(project):
+    cherrypy.engine.log("Configuring the Django application")
+    settings.configure(
+        DEBUG = True,
+        TEMPLATE_DEBUG = True,            
+        RINOR_MIN_API = '0.6',
+        RINOR_MAX_API = '0.6', #included
+        DMG_MIN_VERSION = '0.2.0-alpha1',
         
-    def start(self):
-        self.bus.log("Mounting the Django application")
-        """
-        CherryPy WSGI server doesn't offer a log
-        facility, we add a straightforward WSGI middleware to do so, based
-        on the CherryPy built-in logger.
-        """
-        cherrypy.tree.graft(HTTPLogger(WSGIHandler()))
-        
-        self.bus.log("Setting up the static directory to be served")
+        PROJECT_PATH = project['path'],
+        URL_PREFIX = project['prefix'],
+        REST_URL = "/%srinor" % project['prefix'],
+        EVENTS_URL = "/%sevents" % project['prefix'],
+        CONFIG_URL = "/%sconfig" % project['prefix'],
+        ADMIN_URL = "/%sadmin" % project['prefix'],
+        VIEW_URL = "/%sview" % project['prefix'],
+        LOGIN_URL = '%sadmin/login' % project['prefix'],
+        LOGOUT_URL = '%sadmin/logout' % project['prefix'],
+        LOGIN_REDIRECT_URL = '%sadmin' % project['prefix'],
 
-        for (id, static) in self.project['statics'].items():
-            static_handler = cherrypy.tools.staticdir.handler(
-                section="/",
-                dir=static['root'],
-            )
-            cherrypy.tree.mount(static_handler, static['url'])
-            print "Mounted '%s' on '%s'" % (static['root'], static['url'])
+        STATIC_DESIGN_URL = project['statics']['design']['url'],
+        STATIC_WIDGETS_URL = project['statics']['widgets']['url'],
+        STATIC_THEMES_URL = project['statics']['themes']['url'],
+        STATIC_ICONSETS_URL = project['statics']['iconsets']['url'],
+        DOMOWEB_VERSION = project['version'],
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': "/var/lib/domoweb/domoweb.db",
+            }
+        },
+        TIME_ZONE = 'Europe/Paris',
+        LANGUAGE_CODE = 'en',
+        LANGUAGES = (
+          ('en', 'English'),
+          ('fr', 'Fran?ais'),
+          ('nl_BE', 'Flemish'),
+        ),
+        LOCALE_PATHS = (
+            '%s/domoweb/locale' % project['path'],
+        ),
+        DEFAULT_CHARSET = 'utf-8',
+        SITE_ID = 1,
+        USE_I18N = True,
+        SECRET_KEY = 'i#=g$uo$$qn&0qtz!sbimt%#d+lb!stt#12hr@%vp-u)yw3s+b',
+        TEMPLATE_LOADERS = (
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+            'django.template.loaders.eggs.Loader',
+        ),
+        MIDDLEWARE_CLASSES = (
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.middleware.locale.LocaleMiddleware',
+            'django.middleware.common.CommonMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'django.contrib.messages.middleware.MessageMiddleware',
+            'domoweb.middleware.RinorMiddleware',
+        ),
+        ROOT_URLCONF = 'domoweb.urls',
+        TEMPLATE_CONTEXT_PROCESSORS = (
+            'django.contrib.auth.context_processors.auth',
+            'django.core.context_processors.debug',
+            'django.core.context_processors.i18n',
+            'django.core.context_processors.request',
+            'django.contrib.messages.context_processors.messages',
+            'domoweb.context_processors.domoweb',
+        ),
+        INSTALLED_APPS = (
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
+            'django.contrib.sessions',
+            'django.contrib.messages',
+            'django.contrib.sites',
+            'django.contrib.admin',
+            'tastypie',
+            'manifesto',
+            'django_tables2',
+            'domoweb',
+            'domoweb.config',
+            'domoweb.view',
+            'domoweb.admin',
+            'domoweb.rinor',
+        ),
+        MANIFESTO_EXCLUDED_MANIFESTS = (
+                'randomapp.manifest.WrongManifest',
+        ),
+        SESSION_ENGINE = 'django.contrib.sessions.backends.cache',
+        MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage',
+        API_LIMIT_PER_PAGE = 0, #Tastypie
+        TEMPLATE_DIRS = (
+            '%s/domoweb/templates/' % project['path'],
+            '%s/domoweb/config/templates/' % project['path'],
+            '%s/domoweb/view/templates/' % project['path'],
+            '%s/domoweb/admin/templates/' % project['path'],
+            '%s/domoweb/rinor/templates/' % project['path'],
+        ),
+    )
 
 if __name__ == '__main__':
     main()    
