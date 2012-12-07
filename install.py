@@ -272,7 +272,7 @@ def install_dependencies():
                           'south',
                           'manifesto',
                           'pyzmq',
-                          'ws4py',])
+                          'ws4py'])
 
 def updateDb(user):
     from django.core import management

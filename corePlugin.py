@@ -3,6 +3,7 @@ import cherrypy
 from cherrypy.process import plugins
 from django.core.handlers.wsgi import WSGIHandler
 from httplogger import HTTPLogger
+from ws4py.messaging import TextMessage
 
 class CorePlugin(plugins.SimplePlugin):
     """
@@ -13,22 +14,20 @@ class CorePlugin(plugins.SimplePlugin):
     def __init__(self, bus, project):
         self.project = project
         plugins.SimplePlugin.__init__(self, bus)
-        
+        self.bus.subscribe('loader-status', self.loader)
+
     def start(self):
-        self.bus.log("Mounting the Django application")
+        pass
+    
+    def loader(self, status):
         """
         CherryPy WSGI server doesn't offer a log
         facility, we add a straightforward WSGI middleware to do so, based
         on the CherryPy built-in logger.
         """
-        cherrypy.tree.graft(HTTPLogger(WSGIHandler()))
-        
-        self.bus.log("Setting up the static directory to be served")
+        if status == 'finished':
+            self.bus.log("Mounting the Django application")
+            cherrypy.tree.graft(HTTPLogger(WSGIHandler()))
+            cherrypy.engine.publish('websocket-broadcast', TextMessage('domoweb-ready'))
 
-        for (id, static) in self.project['statics'].items():
-            static_handler = cherrypy.tools.staticdir.handler(
-                section="/",
-                dir=static['root'],
-            )
-            cherrypy.tree.mount(static_handler, static['url'])
-            print "Mounted '%s' on '%s'" % (static['root'], static['url'])
+

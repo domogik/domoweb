@@ -9,65 +9,18 @@ import os, os.path
 import pwd
 import commands
 #import pickle
-import simplejson
 
 import cherrypy
 from cherrypy.process import plugins
-
 from django.conf import settings
 
 import domoweb
-from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
+from wsPlugin import WSPlugin
 from mqPlugin import MQPlugin
 from eventsPlugin import EventsPlugin
 from corePlugin import CorePlugin
+from loaderPlugin import LoaderPlugin
 
-def loadWidgets(root):
-    from domoweb.models import Widget
-    # List available widgets
-    Widget.objects.all().delete()
-    if os.path.isdir(root):
-        for file in os.listdir(root):
-            if not file.startswith('.'): # not hidden file
-                main = os.path.join(root, file, "main.js")
-                if os.path.isfile(main):
-                    w = Widget(id=file)
-                    w.save()
-
-def loadIconsets(root):
-    from domoweb.models import PageIcon
-    # List available page iconsets
-    PageIcon.objects.all().delete()
-    STATIC_ICONSETS_PAGE = os.path.join(root, "page")
-    if os.path.isdir(STATIC_ICONSETS_PAGE):
-        for file in os.listdir(STATIC_ICONSETS_PAGE):
-            if not file.startswith('.'): # not hidden file
-                info = os.path.join(STATIC_ICONSETS_PAGE, file, "info.json")
-                if os.path.isfile(info):
-                    iconset_file = open(info, "r")
-                    iconset_json = simplejson.load(iconset_file)
-                    iconset_id = iconset_json["identity"]["id"]
-                    iconset_name = iconset_json["identity"]["name"]
-                    for icon in iconset_json["icons"]:
-                        id = iconset_id + '-' + icon["id"]
-                        i = PageIcon(id=id, iconset_id=iconset_id, iconset_name=iconset_name, icon_id=icon["id"], label=icon["label"])
-                        i.save()
-
-def loadThemes(root):
-    from domoweb.models import PageTheme
-    # List available page themes
-    PageTheme.objects.all().delete()
-    if os.path.isdir(root):
-        for file in os.listdir(root):
-            if not file.startswith('.'): # not hidden file
-                info = os.path.join(root, file, "info.json")
-                if os.path.isfile(info):
-                    theme_file = open(info, "r")
-                    theme_json = simplejson.load(theme_file)
-                    theme_id = theme_json["identity"]["id"]
-                    theme_name = theme_json["identity"]["name"]
-                    t = PageTheme(id=theme_id, label=theme_name)
-                    t.save()
 def main():
     """Main function that is called at the startup of Domoweb"""
     from optparse import OptionParser
@@ -117,16 +70,19 @@ def main():
     url_prefix = cherrypy.config.get("domoweb.url_prefix", "")
     if url_prefix != "":
         url_prefix += "/"
-
+    
     project = {
         'path' : domoweb.PROJECTPATH,
         'version' : domoweb.VERSION,
         'prefix' : url_prefix,
+        'websocket' : {
+            'url' : "/%sws/" % (url_prefix),
+        },
         'statics' : {
-            'design' : {
-                'url' : "/%sdesign" % url_prefix,
-                'root' : os.path.join(domoweb.PROJECTPATH, "static")
-            },
+            'url' : "/%sdesign" % url_prefix,
+            'root' : os.path.join(domoweb.PROJECTPATH, "static")
+        },
+        'packs' : {
             'widgets' : {
                 'url' : "/%swidgets" % url_prefix,
                 'root' : os.path.join(domoweb.PACKSPATH, "widgets")
@@ -143,20 +99,11 @@ def main():
     }
 
     plugins.PIDFile(engine, "/var/run/domoweb/domoweb.pid").subscribe()
-
-    # Loading WebSocket service
-    WebSocketPlugin(engine).subscribe()
-    cherrypy.tools.websocket = WebSocketTool()
+    WSPlugin(engine).subscribe()
 
     # Loading django config for database connection
-    load_django_config(project)
-
-    engine.log("Loading Widgets")
-    loadWidgets(os.path.join(domoweb.PACKSPATH, "widgets"))
-    engine.log("Loading Iconsets")
-    loadIconsets(os.path.join(domoweb.PACKSPATH, "iconsets"))
-    engine.log("Loading Themes")
-    loadThemes(os.path.join(domoweb.PACKSPATH, "themes"))
+    load_config(project)
+    LoaderPlugin(engine, project).subscribe()
 
 #    MQPlugin(engine).subscribe()
     EventsPlugin(engine, project).subscribe()
@@ -167,7 +114,6 @@ def main():
         engine.console_control_handler.subscribe()
     engine.start()
     engine.block()
-
 
 '''
 def runinstall():
@@ -181,8 +127,7 @@ def runinstall():
     os.environ['DOMOWEB_REV']=data['rev']
     Server().run(PROJECT_PATH, PROJECT_PACKS)
 '''
-
-def load_django_config(project):
+def load_config(project):
     cherrypy.engine.log("Configuring the Django application")
     settings.configure(
         DEBUG = True,
@@ -202,10 +147,10 @@ def load_django_config(project):
         LOGOUT_URL = '%sadmin/logout' % project['prefix'],
         LOGIN_REDIRECT_URL = '%sadmin' % project['prefix'],
 
-        STATIC_DESIGN_URL = project['statics']['design']['url'],
-        STATIC_WIDGETS_URL = project['statics']['widgets']['url'],
-        STATIC_THEMES_URL = project['statics']['themes']['url'],
-        STATIC_ICONSETS_URL = project['statics']['iconsets']['url'],
+        STATIC_DESIGN_URL = project['statics']['url'],
+        STATIC_WIDGETS_URL = project['packs']['widgets']['url'],
+        STATIC_THEMES_URL = project['packs']['themes']['url'],
+        STATIC_ICONSETS_URL = project['packs']['iconsets']['url'],
         DOMOWEB_VERSION = project['version'],
         DATABASES = {
             'default': {
@@ -230,7 +175,7 @@ def load_django_config(project):
         TEMPLATE_LOADERS = (
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
-            'django.template.loaders.eggs.Loader',
+#            'django.template.loaders.eggs.Loader',
         ),
         MIDDLEWARE_CLASSES = (
             'django.contrib.sessions.middleware.SessionMiddleware',
@@ -256,8 +201,9 @@ def load_django_config(project):
             'django.contrib.messages',
             'django.contrib.sites',
             'django.contrib.admin',
-            'tastypie',
             'manifesto',
+            'south',
+            'tastypie',
             'django_tables2',
             'domoweb',
             'domoweb.config',

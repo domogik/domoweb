@@ -6,16 +6,11 @@ import threading
 import zmq
 from time import sleep, time
 from cherrypy.process import plugins
-from ws4py.websocket import WebSocket
 from ws4py.messaging import TextMessage
 
 MSG_VERSION = "0_1"
 PORT_PUB = "tcp://192.168.5.25:5559"
 PORT_SUB = "tcp://192.168.5.25:5560"
-
-class MQWebSocketHandler(WebSocket):
-    def received_message(self, m):
-        pass
 
 class MQBroadcaster(threading.Thread):
     def run(self):
@@ -38,13 +33,6 @@ class MQPlugin(plugins.SimplePlugin):
         
     def start(self):
         self.task.start()
-        cherrypy.tree.mount(WS(), '/ws', {
-            '/': {
-                'tools.websocket.on': True,
-                'tools.websocket.handler_cls': MQWebSocketHandler
-                }
-            }
-        )
         cherrypy.tree.mount(MQ(), '/mq')
     def stop(self):
         self.task.stop()
@@ -95,11 +83,6 @@ class MQ(object):
 </body>
 </html>
 """ % {'host': '192.168.5.251', 'port': '40404'}
-
-class WS(object):
-    @cherrypy.expose
-    def index(self):
-        cherrypy.log("Handler created: %s" % repr(cherrypy.request.ws_handler))
 
 class MessagingEvent:
     def __init__(self):
