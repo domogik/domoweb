@@ -7,6 +7,7 @@ Table Of Content
 .. toctree::
 
     /index
+    /installation/index
     /technical/index
     /technical/widget_process
     /technical/i18n
