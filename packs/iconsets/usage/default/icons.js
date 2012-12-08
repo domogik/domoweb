@@ -21,26 +21,26 @@ range['christmas_tree'] = [0, 100];
 range['water_tank'] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 range['security_camera'] = [0, 100];
 range['portal'] = [0, 50, 100];
-
+range['cron'] = [0, 100];
 
 function findRangeIcon(usage, percent) {
-	var nearest, last_d_memorized = 101;
-	var set = range[usage];
-	// We iterate on the array...
-	for (var i = 0; i < set.length ;i++) {
-		// if we found the desired number, we return it.
-		var value = set[i];
-		if (value == percent) {
-			return value;
-		} else {
-			// else, we consider the difference between the desired number and the current number in the array.
-			var d = Math.abs(percent - value);
-			if (d < last_d_memorized) {
-				// For the moment, this value is the nearest to the desired number...
-				nearest = value;
-				last_d_memorized = d; //is the actual shortest found delta 
-			}
-		}
-	}
-	return nearest;
+    var nearest, last_d_memorized = 101;
+    var set = range[usage];
+    // We iterate on the array...
+    for (var i = 0; i < set.length ;i++) {
+        // if we found the desired number, we return it.
+        var value = set[i];
+        if (value == percent) {
+            return value;
+        } else {
+            // else, we consider the difference between the desired number and the current number in the array.
+            var d = Math.abs(percent - value);
+            if (d < last_d_memorized) {
+                // For the moment, this value is the nearest to the desired number...
+                nearest = value;
+                last_d_memorized = d; //is the actual shortest found delta
+            }
+        }
+    }
+    return nearest;
 }
