@@ -5,7 +5,7 @@ if sys.version_info < (2, 6):
     sys.exit(1)
 
 import os
-euid = os.geteuid() 
+euid = os.geteuid()
 if euid != 0:
     print "Please restart this script as root!"
     sys.exit(1)
@@ -28,7 +28,7 @@ def warning(msg):
     print "%s ==> %s  %s" % (WARNING,msg,ENDC)
 def fail(msg):
     print "%s ==> %s  %s" % (FAIL,msg,ENDC)
-    
+
 def main():
     """Main function that is called at the install of Domoweb."""
     from optparse import OptionParser
@@ -44,12 +44,12 @@ def main():
              dest='simul',
              action="store_true",
              help="Simulation mode for Uninstall")
-    
+
     p.add_option('--nodeps',
              dest='nodeps',
              action="store_true",
              help="Do not install dependencies")
-    
+
     p.add_option('-u', '--user',
              dest='user',
              default=None,
@@ -84,10 +84,10 @@ def main():
              dest='notest',
              action="store_true",
              help="Do not test Domoweb Installation")
-    
+
     # parse command line for defined options
     options, args = p.parse_args()
-    
+
     # Initial Clean
     clean()
 
@@ -95,7 +95,7 @@ def main():
     if options.uninstall:
         uninstall(options.simul)
         sys.exit(0)
-        
+
     # Dependencies
     if options.nodeps:
         warning('Not installing dependencies')
@@ -115,7 +115,7 @@ def main():
         if not user:
             user = 'domoweb'
     test_user(user)
-    
+
     # Domoweb folders creation
     info("Checking %s folder" % options.libdir)
     createFolder(options.libdir, user)
@@ -161,7 +161,7 @@ def main():
             ok("            or /etc/rc.d/domoweb start             <==")
             ok(" DomoWeb UI is available on                        <==")
             ok(" %49s <==" % django_url)
-            ok(" Default login is 'admin', password is '123'       <==") 
+            ok(" Default login is 'admin', password is '123'       <==")
             ok("================================================== <==")
         except:
             fail(sys.exc_info()[1])
@@ -175,7 +175,7 @@ def upgradeOld():
         os.rmdir('/etc/domoweb/')
 
 def installConfig(user):
-    info("Installing /etc/domoweb.cfg")    
+    info("Installing /etc/domoweb.cfg")
     uid = pwd.getpwnam(user).pw_uid
     installpath = "%s/examples/config/domoweb.cfg" % os.path.dirname(os.path.abspath(__file__))
     if os.path.isfile('/etc/domoweb.cfg'):
@@ -188,7 +188,7 @@ def installConfig(user):
         os.chown(path, uid, -1)
 
 def installDefault(user):
-    info("Installing /etc/default/domoweb")    
+    info("Installing /etc/default/domoweb")
     installpath = "%s/examples/default/domoweb" % os.path.dirname(os.path.abspath(__file__))
 
     if not os.path.isdir('/etc/default/'):
@@ -201,10 +201,10 @@ def installDefault(user):
         fail("Can't find /etc/default/domoweb!")
         sys.exit(1)
 
-    info("Configuring /etc/default/domoweb")    
+    info("Configuring /etc/default/domoweb")
     with open('/etc/default/domoweb') as f:
         s = f.read()
-        
+
     s = re.sub(r'DOMOWEB_USER=.*', ('DOMOWEB_USER=%s' % user), s)
     s = re.sub(r'DOMOWEB_PATH=.*', ('DOMOWEB_PATH=%s' % os.path.dirname(os.path.abspath(__file__))), s)
 
@@ -214,11 +214,11 @@ def installDefault(user):
 def installInit():
     installpath = "%s/examples/init/domoweb" % os.path.dirname(os.path.abspath(__file__))
     if os.path.isdir('/etc/init.d/'):
-        info("Installing /etc/init.d/domoweb")    
+        info("Installing /etc/init.d/domoweb")
         shutil.copy(installpath, '/etc/init.d/')
         os.chmod('/etc/init.d/domoweb', 0755)
     elif os.path.isdir('/etc/rc.d/'):
-        info("Installing /etc/rc.d/domoweb")    
+        info("Installing /etc/rc.d/domoweb")
         shutil.copy(installpath, '/etc/rc.d/')
         os.chmod('/etc/rc.d/domoweb', 0755)
     else:
@@ -231,17 +231,17 @@ def installLogrotate():
         info("Installing /etc/logrotate/domoweb")
         shutil.copy(installpath, '/etc/logrotate.d/')
         os.chmod('/etc/logrotate.d/domoweb', 0644)
-    
+
 def createFolder(path, user):
     if not os.path.isdir(path):
         info("%s do not exist... creation" % path)
-        os.makedirs(d)
+        os.makedirs(path)
 
     uid = pwd.getpwnam(user).pw_uid
     info("Updating rights for user %s[%s]" % (user, uid))
     os.chown(path, uid, -1)
     os.chmod(path, 0755)
-    
+
 def test_user(user):
     info("Looking for user %s" % user)
     try:
@@ -258,7 +258,7 @@ def test_user(user):
             sys.exit(1)
     else:
         ok("User %s found" % user)
-    
+
 def install_dependencies():
     from setuptools.command import easy_install
     easy_install.main( ['setuptools',
@@ -277,7 +277,7 @@ def install_dependencies():
 def updateDb(user):
     from django.core import management
     from django.conf import settings
-    from StringIO import StringIO 
+    from StringIO import StringIO
     settings.configure(
         DEBUG = False,
         DATABASES = {
@@ -342,7 +342,7 @@ def testConfigFiles():
     assert not (os.path.isfile("/etc/conf.d/domoweb") and os.path.isfile("/etc/default/domoweb")), \
             "Global config file found at 2 locations. Please put it only at /etc/default/domoweb or \
             /etc/conf.d/domoweb"
-    
+
     if os.path.isfile("/etc/default/domoweb"):
         file = "/etc/default/domoweb"
     else:
@@ -372,7 +372,7 @@ def testConfigFiles():
     import ConfigParser
     config = ConfigParser.ConfigParser()
     config.read("/etc/domoweb.cfg")
-    
+
     #check [global] section
     django = dict(config.items('global'))
     ok("Config file correctly loaded")
@@ -389,7 +389,7 @@ def testDB():
     assert os.path.isfile("/var/lib/domoweb/domoweb.db"), \
             "/var/lib/domoweb/domoweb.db not found"
     ok("/var/lib/domoweb/domoweb.db found")
-    
+
 def getDjangoUrl():
     import ConfigParser
     config = ConfigParser.ConfigParser()
@@ -401,9 +401,9 @@ def clean():
     import commands
     status,output = commands.getstatusoutput('which dmg_domoweb')
     if status == 0:
-        info("Deleting %s shortcut" % output)            
+        info("Deleting %s shortcut" % output)
         os.remove(output)
-    
+
     from distutils.sysconfig import get_python_lib
     sitepackages = get_python_lib()
     dirList=os.listdir(sitepackages)
@@ -437,7 +437,7 @@ def uninstall(simul):
             if not simul: os.remove('/etc/rc.d/domoweb')
         if os.path.isfile('/etc/domoweb.cfg'):
             info('Deleting config file /etc/domoweb.cfg')
-            if not simul: os.remove('/etc/domoweb.cfg')            
+            if not simul: os.remove('/etc/domoweb.cfg')
         if os.path.isdir('/var/lib/domoweb'):
             info('Deleting /var/lib/domoweb')
             if not simul: shutil.rmtree('/var/lib/domoweb')
@@ -447,6 +447,6 @@ def uninstall(simul):
         ok('Deleting complete')
     else:
         warning("Aborting...")
-        
+
 if __name__ == "__main__":
     main()
