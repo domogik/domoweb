@@ -182,10 +182,10 @@ def installConfig(user):
         keep = raw_input('You already have Domoweb configuration files. Do you want to keep them ? [Y/n] ')
         if keep == 'N' or keep == 'n':
             shutil.copy(installpath, '/etc/')
-            os.chown(path, uid, -1)
+            os.chown('/etc/domoweb.cfg', uid, -1)
     else:
         shutil.copy(installpath, '/etc/')
-        os.chown(path, uid, -1)
+        os.chown('/etc/domoweb.cfg', uid, -1)
 
 def installDefault(user):
     info("Installing /etc/default/domoweb")
