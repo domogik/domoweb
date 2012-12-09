@@ -1,0 +1,18 @@
+======================
+Before creating a pack
+======================
+
+What are Domoweb packs ?
+========================
+
+Packs are the first step to downloadable packages.
+For now each modulable code of domoweb are separated from Domoweb main code to a separated 'packs' subfolder
+and will sligtly move to downloadable packages along Domoweb versions.
+
+Types of packs
+==============
+
+* :doc:`Iconsets of pages icons </packs/iconset>`
+* :doc:`Page style themes </packs/theme>`
+* :doc:`Widgets Sets </packs/widgetset>`
+

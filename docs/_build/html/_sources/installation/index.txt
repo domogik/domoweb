@@ -1,0 +1,200 @@
+============
+Installation
+============
+
+Get the sources
+===============
+
+ZIP Package
+-----------
+Go on `Download <http://wiki.domogik.org/Download>`_ to get Domoweb.
+You will get a file named **domoweb-<release>.tgz**. Download it and extract it: ::
+
+    $ wget http://repo.domogik.org/...
+    $ tar xvzf domoweb-<release>.tgz
+    $ cd domoweb-<release>
+
+Repository versions
+-------------------
+.. note:: The repository installation require mercurial to be installed.
+
+.. code-block:: bash
+
+    $ hg clone http://hg.domogik.org/domoweb/
+    destination directory: domoweb
+    requesting all changes
+    adding changesets
+    adding manifests
+    adding file changes
+    added 585 changesets with 6180 changes to 4526 files (+5 heads)
+    updating to branch default
+    resolving manifests
+    getting Domoweb.py
+    getting README.txt
+    ...
+    1640 files updated, 0 files merged, 0 files removed, 0 files unresolved
+
+Launch the installation script
+==============================
+The folder where you run install.py will become the final domoweb folder.
+So if you want to make a clean install of domoweb you should copy Domoweb to his final place before running the install script. ::
+
+    sudo mv domoweb /usr/share
+
+Then run the install script.
+If needed the install script provide options: ::
+
+    $ sudo python install.py -h
+    Usage: install.py [options]
+    
+    Options:
+      --version             show program's version number and exit
+      -h, --help            show this help message and exit
+      --uninstall           Uninstall Domoweb
+      --simul               Simulation mode for Uninstall
+      --nodeps              Do not install dependencies
+      -u USER, --user=USER  User that will run Domoweb (default: domoweb)
+      --libdir=LIBDIR       Folder for domoweb lib files (default:
+                            /var/lib/domoweb)
+      --logdir=LOGDIR       Folder for domoweb log files (default:
+                            /var/log/domoweb)
+      --piddir=PIDDIR       Folder for domoweb pid files (default:
+                            /var/run/domoweb)
+      --noconfig            Do not install Init and /etc files
+      --nodbupdate          Do not update the Domoweb DB
+      --notest              Do not test Domoweb Installation
+
+
+If you are ready launch it: ::
+
+    $ sudo ./install.py
+
+The first step will install all required dependencies. ::
+
+     [ Installing setuptools... ] 
+    Setuptools version 0.6c11 or greater has been installed.
+    (Run "ez_setup.py -U setuptools" to reinstall or upgrade.)
+     [ Installing dependencies... ] 
+    Searching for django==1.4
+    Best match: Django 1.4
+    Processing Django-1.4-py2.7.egg
+    Django 1.4 is already the active version in easy-install.pth
+    Installing django-admin.py script to /usr/bin
+    
+    Using /usr/lib/python2.7/site-packages/Django-1.4-py2.7.egg
+    Processing dependencies for django==1.4
+    Finished processing dependencies for django==1.4
+    ...
+
+System user that will launch DomoWeb. You should keep the default choice.
+
+    [ Checking user ] 
+   Which user will run domogik (default : domoweb)?
+    [ Looking for user domoweb ] 
+    ==> User domoweb found
+    
+The script will now create the required folders, and assign them to the domoweb user. ::
+
+    [ Checking /var/lib/domoweb folder ] 
+    [ Updating rights for user domoweb[1000] ] 
+    [ Checking /var/log/domoweb folder ] 
+    [ Updating rights for user domoweb[1000] ] 
+    [ Checking /var/run/domoweb folder ] 
+    [ Updating rights for user domoweb[1000] ]
+
+If you already have DomoWeb configuration files, you will be asked for keeping them or not. ::
+
+    [ Installing /etc/domoweb.cfg ] 
+   You already have Domoweb configuration files. Do you want to keep them ? [Y/n] Y
+
+The script will next install the system files. ::
+
+    [ Installing /etc/default/domoweb ] 
+    [ Configuring /etc/default/domoweb ] 
+    [ Installing /etc/rc.d/domoweb ] 
+    [ Installing /etc/logrotate/domoweb ]
+    
+Database creation or update if already exist. ::
+
+    [ Updating Domoweb DB... ] 
+    Syncing...
+    Creating tables ...
+    Installing custom SQL ...
+    Installing indexes ...
+    Installed 0 object(s) from 0 fixture(s)
+    
+    Synced:
+     > django.contrib.auth
+     > django.contrib.contenttypes
+     > django.contrib.sessions
+     > django.contrib.messages
+     > django.contrib.sites
+     > django.contrib.admin
+     > south
+    
+    Not synced (use migrations):
+     - domoweb
+    (use ./manage.py migrate to migrate these)
+    
+     domoweb
+      (*) 0001_initial
+      (*) 0002_auto__add_page__add_pagetheme
+      (*) 0003_auto__del_field_page_theme_id__add_field_page_left__add_field_page_rig
+      (*) 0004_root_page
+      (*) 0005_auto__chg_field_page_right__del_unique_page_right__chg_field_page_id__
+    
+    
+     [ Apply DB migration script ] 
+    Running migrations for domoweb:
+    - Nothing to migrate.
+     - Loading initial data for domoweb.
+    Installed 0 object(s) from 0 fixture(s)
+    
+The final test to check the Domoweb installation. ::
+    
+     ==> Everything seems to be good, DomoWeb should be installed correctly.  
+     ==> Testing installation  
+    Please press Enter when ready.
+
+    [ Test imports ] 
+    ==> Imports are good  
+    [ Checking global config file ] 
+    ==> Global config file exists and contains right stuff  
+    [ Test user / config file ] 
+    ==> Domogik's user exists and has a config file  
+    [ Check user config file contents ] 
+    ==> Config file correctly loaded  
+    [ Checking init.d / rc.d ] 
+    ==> /etc/init.d/domoweb or /etc/rc.d/domoweb found with good permissions  
+    [ Checking Domoweb DB ] 
+    ==> /var/lib/domoweb/domoweb.db found  
+
+    ==> ================================================== <==  
+    ==>  Everything seems ok, you should be able to start  <==  
+    ==>       DomoWeb with /etc/init.d/domoweb start       <==  
+    ==>             or /etc/rc.d/domoweb start             <==  
+    ==>  DomoWeb UI is available on                        <==  
+    ==>                            http://127.0.0.1:40404/ <==  
+    ==>  Default login is 'admin', password is '123'       <==  
+    ==> ================================================== <==
+
+Start Domoweb
+=============
+
+.. code-block:: bash
+
+    sudo /etc/init.d/domoweb start
+
+Now, you can access UI on this url : http://127.0.0.1:40404/(external link)
+
+To access to the administration panel :
+
+    login : admin
+    password : 123
+    
+Uninstall
+=========
+
+.. code-block:: bash
+
+    $ sudo python install.py --uninstall

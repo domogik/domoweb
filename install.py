@@ -297,19 +297,11 @@ def updateDb(user):
             'south',
         ),
     )
+
+    info("Initialisation DB migration")
     management.call_command("syncdb", interactive=False)
-    sys.stdout = buffer = StringIO()
-    management.call_command("migrate", show_list=True, interactive=False)
-    sys.stdout = sys.__stdout__
-    print buffer.getvalue()
-    try:
-        buffer.getvalue().index('(*) 0001_initial')
-    except ValueError:
-        info("Initialisation DB migration")
-        management.call_command("migrate", "domoweb", "0001", fake=True)
-    else:
-        info("Apply DB migration script")
-        management.call_command("migrate", "domoweb", delete_ghosts=True)
+    info("Apply DB migration scripts")
+    management.call_command("migrate", "domoweb", delete_ghosts=True)
 
     uid = pwd.getpwnam(user).pw_uid
     os.chown('/var/lib/domoweb/domoweb.db', uid, -1)

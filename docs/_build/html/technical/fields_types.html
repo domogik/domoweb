@@ -1,0 +1,232 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Types for generating UI fields &mdash; Domoweb dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Domoweb dev documentation" href="../index.html" />
+    <link rel="next" title="Before creating a pack" href="../packs/index.html" />
+    <link rel="prev" title="How i18n is implemented" href="i18n.html" /> 
+  </head>
+  <body>
+
+    <div class="document">
+  <div id="custom-doc" class="yui-t6">
+    <div id="hd">
+      <h1><a href="../index.html">Domoweb dev documentation</a></h1>
+      <div id="global-nav">
+        <a title="Home page" href="../index.html">Home</a>  |
+        <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+        <a title="Global index" href="../genindex.html">Index</a>  |
+      </div>
+      <div class="nav">
+    &laquo; <a href="i18n.html" title="How i18n is implemented">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a>
+   |
+    <a href="../packs/index.html" title="Before creating a pack">next</a> &raquo;</div>
+    </div>
+    
+    <div id="bd">
+      <div id="yui-main">
+        <div class="yui-b">
+          <div class="yui-g" id="technical-fields_types">
+            
+  <div class="section" id="types-for-generating-ui-fields">
+<h1>Types for generating UI fields<a class="headerlink" href="#types-for-generating-ui-fields" title="Permalink to this headline">¶</a></h1>
+<p>The following types are used to define a data value type and generate the appropriate field in the UI.</p>
+<div class="section" id="type-boolean">
+<h2>Type: boolean<a class="headerlink" href="#type-boolean" title="Permalink to this headline">¶</a></h2>
+<p>Validation: Validates that the value is True (e.g. the check box is checked) if the field has required=true.
+Errors: required</p>
+</div>
+<div class="section" id="type-string">
+<h2>Type: string<a class="headerlink" href="#type-string" title="Permalink to this headline">¶</a></h2>
+<p>Parameters:
+<a href="#id1"><span class="problematic" id="id2">*</span></a>max_length (optional)
+<a href="#id3"><span class="problematic" id="id4">*</span></a>min_length (optional)
+<a href="#id5"><span class="problematic" id="id6">*</span></a>mask (optional)
+Validation: Validates max_length or min_length, if they are provided. Otherwise, all inputs are valid.
+Errors: required, max_length, min_length</p>
+</div>
+<div class="section" id="type-choice">
+<h2>Type: choice<a class="headerlink" href="#type-choice" title="Permalink to this headline">¶</a></h2>
+<p>Parameters:
+<a href="#id7"><span class="problematic" id="id8">*</span></a>choices : An iterable (e.g., a list or tuple) of 2-tuples to use as choices for this field.
+Validation: Validates that the given value exists in the list of choices.
+Errors: required, invalid_choice</p>
+</div>
+<div class="section" id="type-multiplechoice">
+<h2>Type: multiplechoice<a class="headerlink" href="#type-multiplechoice" title="Permalink to this headline">¶</a></h2>
+<p>Will return a list of values separated with &#8216;,&#8217;
+Parameters:
+<a href="#id9"><span class="problematic" id="id10">*</span></a>choices : An iterable (e.g., a list or tuple) of 2-tuples to use as choices for this field.
+Validation: Validates that the given values exists in the list of choices.
+Errors: required, invalid_choice</p>
+</div>
+<div class="section" id="type-date">
+<h2>Type: date<a class="headerlink" href="#type-date" title="Permalink to this headline">¶</a></h2>
+<p>Parameters:
+<a href="#id11"><span class="problematic" id="id12">*</span></a>input_formats (optional, default is %Y-%m-%d =&gt; &#8216;2006-10-25&#8217;)
+Validation: Validates that the given value respect the particular date format.
+Errors: required, invalid</p>
+</div>
+<div class="section" id="type-time">
+<h2>Type: time<a class="headerlink" href="#type-time" title="Permalink to this headline">¶</a></h2>
+<p>Parameters:
+<a href="#id13"><span class="problematic" id="id14">*</span></a>input_formats (optional, default is %H:%M:%S =&gt; &#8216;14:30:59&#8217;)
+Validation: Validates that the given value respect the particular time format.
+Errors: required, invalid</p>
+</div>
+<div class="section" id="type-datetime">
+<h2>Type: datetime<a class="headerlink" href="#type-datetime" title="Permalink to this headline">¶</a></h2>
+<p>Parameters:
+<a href="#id15"><span class="problematic" id="id16">*</span></a>input_formats (optional, default is %Y-%m-%d %H:%M:%S =&gt; &#8216;2006-10-25 14:30:59&#8217;)
+Validation: Validates that the given value respect the particular datetime format.
+Errors: required, invalid</p>
+</div>
+<div class="section" id="type-float">
+<h2>Type: float<a class="headerlink" href="#type-float" title="Permalink to this headline">¶</a></h2>
+<p>Parameters:
+<a href="#id17"><span class="problematic" id="id18">*</span></a>max_value (optional)
+<a href="#id19"><span class="problematic" id="id20">*</span></a>min_value (optional)
+These control the range of values permitted in the field.
+Validation: Validates that the given value is an float.
+Errors: required, invalid, max_value, min_value</p>
+</div>
+<div class="section" id="type-integer">
+<h2>Type: integer<a class="headerlink" href="#type-integer" title="Permalink to this headline">¶</a></h2>
+<p>Parameters:
+<a href="#id21"><span class="problematic" id="id22">*</span></a>max_value (optional)
+<a href="#id23"><span class="problematic" id="id24">*</span></a>min_value (optional)
+These control the range of values permitted in the field.
+Validation: Validates that the given value is an integer.
+Errors: required, invalid, max_value, min_value</p>
+</div>
+<div class="section" id="type-email">
+<h2>Type: email<a class="headerlink" href="#type-email" title="Permalink to this headline">¶</a></h2>
+<p>Validation: Validates that the given value is a valid email address.
+Errors: required, invalid</p>
+</div>
+<div class="section" id="type-ipaddress">
+<h2>Type: ipaddress<a class="headerlink" href="#type-ipaddress" title="Permalink to this headline">¶</a></h2>
+<p>Validation: Validates that the given value is a valid IPv4 address.
+Errors: required, invalid</p>
+</div>
+<div class="section" id="type-url">
+<h2>Type: url<a class="headerlink" href="#type-url" title="Permalink to this headline">¶</a></h2>
+<p>Parameters:
+<a href="#id25"><span class="problematic" id="id26">*</span></a>max_length (optional)
+<a href="#id27"><span class="problematic" id="id28">*</span></a>min_length (optional)
+Validation: Validates that the given value is a valid URL.
+Errors: required, invalid</p>
+</div>
+</div>
+
+
+          </div>         
+        </div>
+      </div>
+      
+        
+          <div class="yui-b" id="sidebar">
+            
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Types for generating UI fields</a><ul>
+<li><a class="reference internal" href="#type-boolean">Type: boolean</a></li>
+<li><a class="reference internal" href="#type-string">Type: string</a></li>
+<li><a class="reference internal" href="#type-choice">Type: choice</a></li>
+<li><a class="reference internal" href="#type-multiplechoice">Type: multiplechoice</a></li>
+<li><a class="reference internal" href="#type-date">Type: date</a></li>
+<li><a class="reference internal" href="#type-time">Type: time</a></li>
+<li><a class="reference internal" href="#type-datetime">Type: datetime</a></li>
+<li><a class="reference internal" href="#type-float">Type: float</a></li>
+<li><a class="reference internal" href="#type-integer">Type: integer</a></li>
+<li><a class="reference internal" href="#type-email">Type: email</a></li>
+<li><a class="reference internal" href="#type-ipaddress">Type: ipaddress</a></li>
+<li><a class="reference internal" href="#type-url">Type: url</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Prev: <a href="i18n.html">How i18n is implemented</a></li>
+    
+    
+      <li>Next: <a href="../packs/index.html">Before creating a pack</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">Domoweb dev documentation</a>
+        
+        <ul><li>Types for generating UI fields</li></ul>
+        
+      </li>
+  </ul>  
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/technical/fields_types.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+          </div> 
+        
+      
+    </div>
+    
+    <div id="ft">
+      <div class="nav">
+    &laquo; <a href="i18n.html" title="How i18n is implemented">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a>
+   |
+    <a href="../packs/index.html" title="Before creating a pack">next</a> &raquo;</div>
+    </div>
+  </div>
+
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

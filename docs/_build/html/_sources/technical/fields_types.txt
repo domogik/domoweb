@@ -1,0 +1,103 @@
+==============================
+Types for generating UI fields
+==============================
+
+The following types are used to define a data value type and generate the appropriate field in the UI.
+
+Type: boolean
+=============
+
+Validation: Validates that the value is True (e.g. the check box is checked) if the field has required=true.
+Errors: required
+
+Type: string
+============
+
+Parameters:
+*max_length (optional)
+*min_length (optional)
+*mask (optional)
+Validation: Validates max_length or min_length, if they are provided. Otherwise, all inputs are valid.
+Errors: required, max_length, min_length
+
+Type: choice
+============
+
+Parameters:
+*choices : An iterable (e.g., a list or tuple) of 2-tuples to use as choices for this field.
+Validation: Validates that the given value exists in the list of choices.
+Errors: required, invalid_choice
+
+Type: multiplechoice
+====================
+
+Will return a list of values separated with ','
+Parameters:
+*choices : An iterable (e.g., a list or tuple) of 2-tuples to use as choices for this field.
+Validation: Validates that the given values exists in the list of choices.
+Errors: required, invalid_choice
+
+Type: date
+==========
+
+Parameters:
+*input_formats (optional, default is %Y-%m-%d => '2006-10-25')
+Validation: Validates that the given value respect the particular date format.
+Errors: required, invalid
+
+Type: time
+==========
+
+Parameters:
+*input_formats (optional, default is %H:%M:%S => '14:30:59')
+Validation: Validates that the given value respect the particular time format.
+Errors: required, invalid
+
+Type: datetime
+==============
+
+Parameters:
+*input_formats (optional, default is %Y-%m-%d %H:%M:%S => '2006-10-25 14:30:59')
+Validation: Validates that the given value respect the particular datetime format.
+Errors: required, invalid
+
+Type: float
+===========
+
+Parameters:
+*max_value (optional)
+*min_value (optional)
+These control the range of values permitted in the field.
+Validation: Validates that the given value is an float.
+Errors: required, invalid, max_value, min_value
+
+Type: integer
+=============
+
+Parameters:
+*max_value (optional)
+*min_value (optional)
+These control the range of values permitted in the field.
+Validation: Validates that the given value is an integer.
+Errors: required, invalid, max_value, min_value
+
+Type: email
+===========
+
+Validation: Validates that the given value is a valid email address.
+Errors: required, invalid
+
+Type: ipaddress
+===============
+
+Validation: Validates that the given value is a valid IPv4 address.
+Errors: required, invalid
+
+Type: url
+=========
+
+Parameters:
+*max_length (optional)
+*min_length (optional)
+Validation: Validates that the given value is a valid URL.
+Errors: required, invalid

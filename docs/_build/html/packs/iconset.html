@@ -1,0 +1,232 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>IconSet pack &mdash; Domoweb dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Domoweb dev documentation" href="../index.html" />
+    <link rel="next" title="Theme pack" href="theme.html" />
+    <link rel="prev" title="Before creating a pack" href="index.html" /> 
+  </head>
+  <body>
+
+    <div class="document">
+  <div id="custom-doc" class="yui-t6">
+    <div id="hd">
+      <h1><a href="../index.html">Domoweb dev documentation</a></h1>
+      <div id="global-nav">
+        <a title="Home page" href="../index.html">Home</a>  |
+        <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+        <a title="Global index" href="../genindex.html">Index</a>  |
+      </div>
+      <div class="nav">
+    &laquo; <a href="index.html" title="Before creating a pack">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a>
+   |
+    <a href="theme.html" title="Theme pack">next</a> &raquo;</div>
+    </div>
+    
+    <div id="bd">
+      <div id="yui-main">
+        <div class="yui-b">
+          <div class="yui-g" id="packs-iconset">
+            
+  <div class="section" id="iconset-pack">
+<h1>IconSet pack<a class="headerlink" href="#iconset-pack" title="Permalink to this headline">¶</a></h1>
+<p>Each iconset are specifically created for a different section of Domoweb (page, usage, etc ...)
+But one type is available so far in Domoweb 0.3: &#8216;iconset_page&#8217;</p>
+<div class="section" id="pack-structure">
+<h2>Pack structure<a class="headerlink" href="#pack-structure" title="Permalink to this headline">¶</a></h2>
+<p>The iconset root folder name should be identical to the iconset id:</p>
+<div class="highlight-python"><pre>/var/lib/domoweb/packs/iconsets/page/&lt; id &gt;/...</pre>
+</div>
+<p>or in dev. mode:</p>
+<div class="highlight-python"><pre>../src/packs/iconsets/page/&lt; id &gt;/...</pre>
+</div>
+<div class="section" id="naming-convention">
+<h3>Naming convention<a class="headerlink" href="#naming-convention" title="Permalink to this headline">¶</a></h3>
+<p>Each icon should be named according to the info.json section:</p>
+<div class="highlight-python"><pre>&lt; id &gt;_&lt; size &gt;.png</pre>
+</div>
+<p>(ex. myicon_16.png)</p>
+</div>
+<div class="section" id="info-json">
+<h3>info.json<a class="headerlink" href="#info-json" title="Permalink to this headline">¶</a></h3>
+<p>The info.json file declare all icons available in the set.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="nx">json_version</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nx">identity</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;iconset_page&#39;</span><span class="p">,</span>
+        <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;myicons&#39;</span><span class="p">,</span>
+        <span class="nx">version</span><span class="o">:</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;My iconset&#39;</span><span class="p">,</span>
+        <span class="nx">description</span><span class="o">:</span> <span class="s1">&#39;Description for iconset..&#39;</span><span class="p">,</span>
+        <span class="nx">creator</span><span class="o">:</span> <span class="s1">&#39;Domogik&#39;</span><span class="p">,</span>
+        <span class="nx">creator_email</span><span class="o">:</span> <span class="s1">&#39;xx@xxx.xx&#39;</span><span class="p">,</span>
+        <span class="p">...</span>
+    <span class="p">},</span>
+    <span class="nx">images</span><span class="o">:</span> <span class="p">{...},</span>
+    <span class="nx">icons</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;myicon&#39;</span><span class="p">,</span>
+            <span class="nx">label</span><span class="o">:</span> <span class="s1">&#39;My Icon&#39;</span><span class="p">,</span>
+            <span class="nx">sizes</span><span class="o">:</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span>
+        <span class="p">},</span>
+        <span class="p">{...},</span>
+    <span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>version : (see Domogik info.json documentation page)</li>
+<li>type : the type id for the widget element is &#8216;iconset_page&#8217;.</li>
+<li>identity : (see Domogik info.json documentation page)</li>
+<li>images : (see Domogik info.json documentation page)</li>
+<li>icons : list of icons</li>
+</ul>
+</div>
+</div>
+<div class="section" id="internal-processing-and-data">
+<h2>Internal processing and data<a class="headerlink" href="#internal-processing-and-data" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="registration">
+<h3>Registration<a class="headerlink" href="#registration" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p class="first">When Domoweb starts the <tt class="docutils literal"><span class="pre">packs/iconsets/</span></tt> folder is parsed</p>
+</li>
+<li><dl class="first docutils">
+<dt>If the json version is supported:</dt>
+<dd><ul class="first last simple">
+<li>Each icon of the iconset is registered into the domoweb &#8216;PageIcon&#8217; database. (Visible in Domoweb Admin &gt; Core &gt; Domoweb Data)</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">If not available the CSS file is generated
+.icon64-iconsetid-iconid { background-image:url(images/iconid_64.png);}
+.icon32-iconsetid-iconid { background-image:url(images/iconid_32.png);}
+.icon16-iconsetid-iconid { background-image:url(images/iconid_16.png);}</p>
+</div>
+</div>
+<div class="section" id="icon-association">
+<h3>Icon association<a class="headerlink" href="#icon-association" title="Permalink to this headline">¶</a></h3>
+<p>The couple <tt class="docutils literal"><span class="pre">iconsetid-iconid</span></tt> is attribued to the page item on the Domogik table <tt class="docutils literal"><span class="pre">ui_page</span></tt>.</p>
+</div>
+<div class="section" id="applied-icon-style">
+<h3>Applied icon style<a class="headerlink" href="#applied-icon-style" title="Permalink to this headline">¶</a></h3>
+<p>To apply an icon to a HTML element, we attribute the icon css class:</p>
+<div class="highlight-python"><pre>class='icon&lt;size&gt;-iconsetid-iconid'</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>         
+        </div>
+      </div>
+      
+        
+          <div class="yui-b" id="sidebar">
+            
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">IconSet pack</a><ul>
+<li><a class="reference internal" href="#pack-structure">Pack structure</a><ul>
+<li><a class="reference internal" href="#naming-convention">Naming convention</a></li>
+<li><a class="reference internal" href="#info-json">info.json</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#internal-processing-and-data">Internal processing and data</a><ul>
+<li><a class="reference internal" href="#registration">Registration</a></li>
+<li><a class="reference internal" href="#icon-association">Icon association</a></li>
+<li><a class="reference internal" href="#applied-icon-style">Applied icon style</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Prev: <a href="index.html">Before creating a pack</a></li>
+    
+    
+      <li>Next: <a href="theme.html">Theme pack</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">Domoweb dev documentation</a>
+        
+        <ul><li>IconSet pack</li></ul>
+        
+      </li>
+  </ul>  
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/packs/iconset.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+          </div> 
+        
+      
+    </div>
+    
+    <div id="ft">
+      <div class="nav">
+    &laquo; <a href="index.html" title="Before creating a pack">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a>
+   |
+    <a href="theme.html" title="Theme pack">next</a> &raquo;</div>
+    </div>
+  </div>
+
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>
