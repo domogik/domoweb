@@ -256,6 +256,7 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type):
             globalparametersform.addCharField(parameter.key, parameter.description, required=True)
 
     commands = []
+    """
     for command in parameters["xpl_cmd"]:
         commandid = command.id.replace('.','-')
         commanddict = {'id':commandid, 'name':command.name}
@@ -265,8 +266,9 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type):
                 commandparametersform.addCharField(parameter.key, parameter.description, required=True)
             commandict['form'] = commandparametersform
         commands.append(commanddict)
-
+    """
     stats = []
+    """
     for stat in parameters["xpl_stat"]:
         statid = stat.id.replace('.','-')
         statdict = {'id':statid, 'name':stat.name }
@@ -276,7 +278,8 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type):
                 statparametersform.addCharField(parameter.key, parameter.description, required=True)
             statdict['form'] = statparametersform
         stats.append(statdict)
-
+    """
+    
     if request.method == 'POST':
         valid = True
         deviceform = DeviceForm(request.POST) # A form bound to the POST data
@@ -285,6 +288,7 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type):
             globalparametersform.setData(request.POST)
             globalparametersform.validate()
             valid = valid and globalparametersform.is_valid()
+        """
         for command in commands:
             print command
             if 'form' in command:
@@ -296,6 +300,7 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type):
                 stat.form.setData(request.POST)
                 stat.form.validate()
                 valid = valid and stat.form.is_valid()
+        """
         if valid:
             cd = deviceform.cleaned_data
             device = DevicePipe().post_list(name=cd["name"], type_id = cd["type_id"], usage_id = cd["usage_id"], reference = cd["reference"])
