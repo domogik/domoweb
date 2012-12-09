@@ -85,6 +85,11 @@ def main():
              action="store_true",
              help="Do not test Domoweb Installation")
 
+    p.add_option('--db',
+             dest='db',
+             default='/var/lib/domoweb/domoweb.db',
+             help="Force domoweb DB file (default: /var/lib/domoweb/domoweb.db)")
+
     # parse command line for defined options
     options, args = p.parse_args()
 
@@ -139,7 +144,7 @@ def main():
         warning('Not updating Domoweb DB')
     else:
         info("Updating Domoweb DB...")
-        updateDb(user)
+        updateDb(user, options.db)
 
    # Test installation
     if options.notest:
@@ -152,7 +157,7 @@ def main():
             testImports()
             testConfigFiles()
             testInit()
-            testDB()
+            testDB(options.db)
             django_url = getDjangoUrl()
             print "\n\n"
             ok("================================================== <==")
@@ -274,7 +279,7 @@ def install_dependencies():
                           'pyzmq',
                           'ws4py'])
 
-def updateDb(user):
+def updateDb(user, db):
     from django.core import management
     from django.conf import settings
     from StringIO import StringIO
@@ -283,7 +288,7 @@ def updateDb(user):
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': "/var/lib/domoweb/domoweb.db",
+                'NAME': db,
             }
         },
         INSTALLED_APPS = (
@@ -304,7 +309,7 @@ def updateDb(user):
     management.call_command("migrate", "domoweb", delete_ghosts=True)
 
     uid = pwd.getpwnam(user).pw_uid
-    os.chown('/var/lib/domoweb/domoweb.db', uid, -1)
+    os.chown(db, uid, -1)
 
 def testImports():
     good = True
@@ -376,11 +381,11 @@ def testInit():
             Please copy src/examples/init/domoweb to /etc/init.d or /etc/rc.d depending on your system, and chmod +x /etc/init.d/domoweb"
     ok("/etc/init.d/domoweb or /etc/rc.d/domoweb found with good permissions")
 
-def testDB():
+def testDB(db):
     info("Checking Domoweb DB")
-    assert os.path.isfile("/var/lib/domoweb/domoweb.db"), \
-            "/var/lib/domoweb/domoweb.db not found"
-    ok("/var/lib/domoweb/domoweb.db found")
+    assert os.path.isfile(db), \
+            "%s not found" % db
+    ok("%s found" % db)
 
 def getDjangoUrl():
     import ConfigParser
