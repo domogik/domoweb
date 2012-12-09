@@ -81,6 +81,11 @@ def main():
                  action='store_true',
                  help='Run as a daemon')
     """
+    p.add_option('--db',
+             dest='db',
+             default='/var/lib/domoweb/domoweb.db',
+             help="Force domoweb DB file (default: /var/lib/domoweb/domoweb.db)")
+    
     # parse command line for defined options
     options, args = p.parse_args()
 
@@ -122,6 +127,7 @@ def main():
         'path' : domoweb.PROJECTPATH,
         'version' : domoweb.VERSION,
         'prefix' : url_prefix,
+        'dbfile' : options.db,
         'statics' : {
             'design' : {
                 'url' : "/%sdesign" % url_prefix,
@@ -219,7 +225,7 @@ class CoreAppPlugin(plugins.SimplePlugin):
             DATABASES = {
                 'default': {
                     'ENGINE': 'django.db.backends.sqlite3',
-                    'NAME': "/var/lib/domoweb/domoweb.db",
+                    'NAME': project['dbfile'],
                 }
             },
             TIME_ZONE = 'Europe/Paris',
