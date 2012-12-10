@@ -1,104 +1,128 @@
-    var netWorkZW ={};
-    var listNodes = new Array();
-    var listTypesVal = {};
-    var hdCmdClss = new Array();
-    var initialized = false;
-    // Constante d'entete de colonne de la table node_items 
-    var hdLiNode = {"NodeId":0, "Name":1, "Location":2, "Model":3, "Awake": 4, "Type":5, "Last update":6, "Action":7};
+var netWorkZW = {};
+var listNodes = new Array();
+var listTypesVal = {};
+var hdCmdClss = new Array();
+var initialized = false;
+// Constante d'entete de colonne de la table node_items 
+var hdLiNode = {"NodeId": 0, "Name": 1, "Location": 2, "Model": 3, "Awake":  4, "Type": 5, "Last update": 6, "Action": 7};
+var mbrGrpSt = {0: 'unknown', 1: 'confirmed', 2: 'to confirm', 3: 'to update'};
 
 function GetDataFromxPL (data, key) {
-        dt=JSON.stringify(data);
-        debut=dt.search(key + '=');
-        offset =key.length;
-        if (key=='count') {
-            dt=dt.slice(debut);
-         //   dt= '{' +dt;
-       //     fin=dt.search('\\');
-        }else { 
-            dt=dt.slice(debut+offset+1);
-          }; 
+    var dt=JSON.stringify(data);
+    var debut=dt.search(key + '=');
+    var offset =key.length;
+    if (key=='count') {
+        dt=dt.slice(debut);
+    }else { 
+        dt=dt.slice(debut+offset+1);
+      }; 
+    var fin=dt.search('}');   
+    dt=dt.slice(0,fin-2); 
+//    dt=dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"');
+    dt= dt.replace(/&ouvr;/g,'{').replace(/&ferm;/g,'}').replace(/&quot;/g,'"');
+
+    if (key=='count') {
         fin=dt.search('}');   
-        dt=dt.slice(0,fin-2); 
-        dt=dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"');
-        if (key=='count') {
-            fin=dt.search('}');   
-            dt=dt.slice(0,fin);
-            dt='{"count":8}';
-            };
-        return JSON.parse(dt); 
-            
+        dt=dt.slice(0,fin);
+        dt='{"count":8}';
         };
-     function ParseAckXPL(xpl) {
-        var tamp=xpl;
-        var li=0;
-        var i=0;
-        var inc=1;
-        var mesxPL = {};
-        mesxPL['count']=1;
-        console.log("****** xpl brut :");
-        while (li !=-1) {
-           li = tamp.search(/[\n]|\\n/);
-           inc=1;
-           if (li !=-1) {
-             ttt = tamp.slice(li,li+2);
-                if (tamp.slice(li,li+2) == '\\n') {inc=2;};
-                ligne=tamp.slice(0,li);
-                ki = ligne.search('=');
-                if (ki !=-1) {
-                    num = parseInt(ligne.slice(ki+1));
-                    if (num) {val = num} else {val=ligne.slice(ki+1)}
-                    mesxPL[ligne.slice(0,ki)] =  val;
-                }
-                tamp=tamp.slice(li+inc)
-            };
-            };
-        console.log("*** mesxPL['count'] = " + mesxPL['count']);
-        if (mesxPL.count > 0) { 
-            for (i=0; i< mesxPL.count; i++) {
-                dt=mesxPL['value' +i];
-                dt= (dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"')) + "}";
-                console.log (dt);
-                mesxPL['value' +i] = JSON.parse(dt); 
-                console.log (mesxPL['value' +i]);
-            };
-        } else {
-            console.log (" --- no data--- messxPL" + mesxPL);
-        };
-        return mesxPL;
-    };
+    console.log("GetDataFromxPL dt = " + dt);
+    return JSON.parse(dt); 
+};
         
-    function SetDataToxPL (data) {
-        dt=JSON.stringify(data);
-        console.log ("SetDataToxPL : " + dt);
-        var val = dt.replace(/[{]/g, '|').replace(/[,]/g,';').replace(/[}]/g,'\\').replace(/["]/g,"'"); 
-        console.log ("SetDataToxPL str : " + val);
-        return val;
-    };
-    
-    function getDataTableColIndex (dTab, title) {
-        var cols = dTab.aoColumns;
-        for ( var x=0, xLen=cols.length ; x<xLen ; x++ ) {
-            if ( cols[x].sTitle.toLowerCase() == title.toLowerCase() ) {
-                return x;
+ function ParseAckXPL(xpl) {
+    var tamp=xpl;
+    var li=0;
+    var inc=1;
+    var mesxPL = {};
+//      mesxPL['count']=1;
+    console.log("****** xpl brut :");
+    while (li !=-1) {
+       li = tamp.search(/[\n]|\\n/);
+       inc=1;
+       if (li !=-1) {
+         ttt = tamp.slice(li,li+2);
+            if (tamp.slice(li,li+2) == '\\n') {inc=2;};
+            ligne=tamp.slice(0,li);
+            ki = ligne.search('=');
+            if (ki !=-1) {
+                num = parseInt(ligne.slice(ki+1));
+                if (num) {val = num;} else {val=ligne.slice(ki+1);}
+                mesxPL[ligne.slice(0,ki)] =  val;
+            }
+            tamp=tamp.slice(li+inc);
+        };
+        };
+        var ks = Object.keys(mesxPL), dt = "";
+        for ( var i=0; i< ks.length; i++) {
+            if (typeof mesxPL[ks[i]] =="string") {
+                if  (mesxPL[ks[i]].slice(0,6) == "&ouvr;") {
+                    dt=mesxPL[ks[i]];
+   //                 dt= (dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"')) + "}";
+                    dt= dt.replace(/&ouvr;/g,'{').replace(/&ferm;/g,'}').replace(/&quot;/g,'"');
+                    console.log (dt);
+                    mesxPL[ks[i]] = JSON.parse(dt);
                 };
             }
-        return -1;
-        };    
-// Gestion des tables de données
-    function RefreshDataNode(infonode, last) {
-        var idx = listNodes.indexOf(infonode)
-        if (idx != -1) {
-            listNodes[idx] = infonode;
-        } else {
-            listNodes.push(infonode);
+            console.log (mesxPL[ks[i]]);
         };
-        if (last) { 
-            if  (initialized) {buildKineticNeighbors();   
-                } else {initstage(); };
-            initialized = true;
+//     };
+    return mesxPL;
+};
+    
+function SetDataToxPL (data) {
+    dt=JSON.stringify(data);
+    console.log ("SetDataToxPL : " + dt);
+//var val = dt.replace(/[{]/g, '|').replace(/[,]/g,';').replace(/[}]/g,'\\').replace(/["]/g,"'"); 
+    var val = dt.replace(/["]/g,"&quot;").replace(/[{]/g,"&ouvr;").replace(/[}]/g,"&ferm;") ; 
+    console.log ("SetDataToxPL str : " + val);
+    return val;
+};
+    
+function getDataTableColIndex (dTab, title) {
+    var cols = dTab.aoColumns;
+    for ( var x=0, xLen=cols.length ; x<xLen ; x++ ) {
+        if ( cols[x].sTitle.toLowerCase() == title.toLowerCase() ) {
+            return x;
             };
+        }
+    return -1;
+};
+    
+// Gestion des tables de données
+function RefreshDataNode(infonode, last) {
+    var idx = -1;
+    for (var i = 0; i < listNodes.length; i++) {
+        if (listNodes[i].Node == infonode.Node) {
+            idx = i;
+            break;
+        };
     };
-        
+    if (idx != -1) {
+        listNodes[idx] = infonode;
+    } else {
+        listNodes.push(infonode);
+    };
+    if (last) {
+        if  (initialized) {setTimeout(function () {buildKineticNeighbors();},1000);   
+            } else {setTimeout(function () {initNeighborsStage();},1000); };
+        initialized = true;
+        };
+};
+    
+function GetZWNodeById (nodeiId) {
+    var retval = false;
+    for (var i=0; i< listNodes.length; i++) {
+        if (listNodes[i].Node == nodeiId) {
+            return listNodes[i];
+        };
+    };
+    return false;
+};
+    
+    function SetStatusMemberGrp(infonode,group,member,status) {
+        console.log ('Set status :' + status);
+    }
         
         
 // fnRender, callback des élements du tableau autre que texte
@@ -110,10 +134,10 @@ function GetDataFromxPL (data, key) {
        var status = oObj.aData[hdLiNode['Awake']];
        if (status==true) { //Sleeping
             textstatus = "Probablement en veille";
-            st = 'unknown'
+            st = 'unknown';
         } else { //actif
             textstatus = "Actif sur le réseaux";
-            st = 'active'
+            st = 'active';
         };
         console.log("set status sleep coloms : " + oObj.aData + " " + status);
         return  st + "<span class='icon16-text-right  icon16-status-" + st + "' /span>";
@@ -130,15 +154,23 @@ function GetDataFromxPL (data, key) {
                         "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' ><span class='offscreen'>Detail Node : " + num + "</span></button>";
          ret =  ret + "<button id='updnode" + num + 
                         "' class='icon16-action-save buttonicon' title='Update Node' ><span class='offscreen'>Send update to Node : " + num + "</span></button>";
- //       console.log("******** setActionNode : " + oObj.aData + " ret : " + ret);
+      
+        for (var i=0; i< listNodes.length; i++) {
+            if (listNodes[i].Node == num && listNodes[i].Groups.length > 0) {
+                ret =  ret + "<button id='updnode" + num + 
+                        "' class='icon16-action-customize buttonicon' title='Edit association' name='Node groups' ><span class='offscreen'>Edit association Node : " + num + "</span></button>";
+                };
+            };
+ //   
+        console.log("******** setActionNode : " + oObj.aData + " ret : " + ret);
         return  ret;
         };
          
     function renderCmdClssNode(oObj) {
         var num = oObj.aData[0];
         if (num < 10) { num = "0" + num; };
-        indexSt = getDataTableColIndex(oObj.oSettings, 'domogikdevice')
-        indexH = getDataTableColIndex(oObj.oSettings, 'help')
+        indexSt = getDataTableColIndex(oObj.oSettings, 'domogikdevice');
+        indexH = getDataTableColIndex(oObj.oSettings, 'help');
         var status = oObj.aData[indexSt];
         var readOnly = oObj.aData[getDataTableColIndex(oObj.oSettings, 'readOnly')];
         var help = gettext(oObj.aData[indexH]);
@@ -157,10 +189,10 @@ function GetDataFromxPL (data, key) {
         };
         if (status!="") { //Available for domogik device
             textstatus = gettext("Named domogik device : " + status);
-            st = 'primary'
+            st = 'primary';
         } else { //not available
             textstatus = gettext("Not available for domogik device");
-            st = 'false'
+            st = 'false';
         };
         return  num + "<span class='icon16-text-right icon16-status-" + st + "' title='" + textstatus + "'></span>" +rw + extra;
         };
@@ -174,7 +206,7 @@ function GetDataFromxPL (data, key) {
         
     function renderCmdClssValue(oObj){
         var vId = oObj.aData[getDataTableColIndex(oObj.oSettings, 'id')];
-        var id = "valCC" + vId 
+        var id = "valCC" + vId;
         var detCS = document.getElementById("detCS" + id);
         var readOnly = oObj.aData[getDataTableColIndex(oObj.oSettings, 'readOnly')];
         var value = oObj.aData[getDataTableColIndex(oObj.oSettings, 'value')];
@@ -192,10 +224,10 @@ function GetDataFromxPL (data, key) {
                 modify =  (realvalue != value);
                 if (value) {
                     opt = "<option selected value=" + value +">" + value + "</option>" +
-                             "<option value=false>false</option>"
+                             "<option value=false>false</option>";
                 } else {
                     opt = "<option value=true>true</option>" +
-                             "<option selected value=" + value +">" + value + "</option>" 
+                             "<option selected value=" + value +">" + value + "</option>" ;
                 }
                 ret ="<select id='" + id + "' name='CmdClssValue' class='listes ccvalue' style='width:7em'>" + opt + "</select>";
             };
@@ -253,7 +285,7 @@ function GetDataFromxPL (data, key) {
     function returnTextValue(val) {
         if (typeof(val) != 'number') {
             debut = val.search('value=');
-            if (debut != -1) {GetinfoValuesNode
+            if (debut != -1) {
                 val = val.slice(debut+7);
                 fin = val.search("'");
                 val = val.slice(0,fin);
@@ -270,7 +302,6 @@ function GetDataFromxPL (data, key) {
         console.log("Format detail node entête : " + thOut);
         if (thOut.length != 1) {
             var sOut = '<table id="' + idDetNode + '" class="simple" cellpadding="5" border="1"><thead><tr>'
-     //       sOut += '<th scope="col">Num</th><th scope="col">realValue</th>';
             for (i=0; i<thOut.length; i++) {
                 sOut += '<th scope="col">' + thOut[i]+ '</th>';
                 };
@@ -283,41 +314,58 @@ function GetDataFromxPL (data, key) {
    //     console.log (sOut);
         return sOut;
     };
+        
+function GetinfoNode (nodeid, callback, last) {
+    var infoNode ={};
+    if (nodeid) {
+            var msg = {};
+            msg['command'] = "Refresh";
+            var val = {};
+            val['request'] ='GetNodeInfo';
+            val['node'] =nodeid;
+            msg['value'] = SetDataToxPL (val);
+            rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+                .done(function(data, status, xhr){
+                    infoNode = ParseAckXPL(data.xpl)
+                    var dt=JSON.stringify(infoNode.data);
+                    console.log("Dans getinfonode : " + infoNode.data['Model']);
+                    $.notification('debug',"Node : " + infoNode.data['Model'] + " info refreshed" );
+                    infoNode.data['Groups'] = [];
+                    for (var i=0; i< infoNode.countgrps; i++) {
+                        infoNode.data['Groups'].push(infoNode['group' +i]);
+                        ii=0;
+                        mb = 'g'+i+'m'+ii;
+                        members=[];
+                        while (infoNode[mb]) {
+                            members.push(infoNode[mb]);
+                            ii++;
+                            mb = 'g'+i+'m'+ii;
+                        }; 
+                       infoNode.data['Groups'][i]['members'] = members;  
+                    };
+                    RefreshDataNode(infoNode.data, last);
+                    callback(infoNode.data);
+                })
+                .fail(function(jqXHR, status, error){
+                   if (jqXHR.status == 400)
+                        $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
+                        infoNode['Node'] =   nodeid;
+                        infoNode['Model'] = "NodeId not define";
+                        return infoNode;
+                });
+    }else { infoNode['Model'] = "NodeId not define";
+            console.log("Dans getinfonode  pas de nodeid " + infoNode['Model']);   
+            return infoNode;
+            } 
+};
 
-// Gestion d'edition des values 
-    function editvalueNode (valueid, callback) {
-        var valueNode = [];
-        var messXpl = {};
-        if (valueid) {
-                var msg = {};
-                msg['command'] = "Refresh";
-                var val = {};
-                val['request'] ='GetValueInfos';
-                val['valueid'] =valueid;
-                msg['value'] = SetDataToxPL (val);
-                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-                    .done(function(data, status, xhr){
-                        messXpl = GetDataFromxPL(data, 'data');
-                        if (messXpl['error'] == "") {
-                            console.log("Dans GetinfoValuesNode : " + messXpl);
-                            callback(messXpl);             
-                            return messXpl;
-                        } else { // Erreur dans la lib python
-                            console.log("Dans GetValueNode error : " + messXpl['error']);
-                            return messXpl['error']             
-                        };
-                    })
-                    .fail(function(jqXHR, status, error){
-                       if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
-                            valueNode['ValueId'] =   ValueId;
-                            valueNode['Model'] = "ValueId not define";
-                            return valueNode;
-                    });
-        } else { valueNode['Model'] = "ValueId not define";
-                console.log("Dans GetValueNode pas de valueid : " + valueid);   
-                return valueNode;
-                }   
+    // Gestion d'edition des associations 
+    function editNodeAss (zwNode, callback) {
+        if (zwNode) {
+            GetinfoNode (zwNode.Node, callback, false);
+        } else {
+            console.log("Dans editNodeAss pas de node : " + valueid);   
+        }
     };
 
     function setValueNode(valueid, value, aTable, nTr) {
@@ -349,13 +397,57 @@ function GetDataFromxPL (data, key) {
                     })
                     .fail(function(jqXHR, status, error){
                        if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
-                            messXpl['ValueId'] =   ValueId;
-                            messXpl['Model'] = "ValueId not define";
+                            $.notification('error', '{% trans "New value not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
+                            messXpl['Error'] =  "New value not sent";
+                            messXpl['ValueId'] =   valueid;
+                            messXpl['New value'] = val['newValue'];
                             return messXpl;
                     });
-        } else { messXpl['Model'] = "ValueId not define";
+        } else { messXpl['Error'] = "valueId not define";
                 console.log("Dans setValueNode pas de valueid : " + valueid);   
+                return messXpl;
+                }
+    };
+    function setGroupsNode(stage, node, newgrps, callback) {
+        var messXpl = {};
+        if (node) {
+                var msg = {};
+                msg['command'] = "Refresh";
+                var val = {};
+                val['request'] ='setGroups';
+                val['node'] = node.Node;
+                var grps =[];
+                for (var i=0; i<newgrps.length; i++){
+                    grps.push({'idx': newgrps[i].index, 'mbs': newgrps[i].members});
+                };
+                val['ngrps'] = grps;
+                var strtemp = SetDataToxPL (val);
+                msg['value'] =  strtemp;
+                console.log(strtemp);
+                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+                    .done(function(data, status, xhr){
+                        messXpl = GetDataFromxPL(data, 'data');
+                        if (messXpl['error'] == "") {
+                            console.log("Dans setGroupsNode : " + messXpl);
+                            callback(stage, node.Node, messXpl['groups']);
+                            
+                            return messXpl;
+                            
+                        } else { // Erreur dans la lib python
+                            console.log("Dans setGroupsNode error : " + messXpl['error']);                            
+                            return messXpl['error']             
+                        };
+                    })
+                    .fail(function(jqXHR, status, error){
+                       if (jqXHR.status == 400)
+                            $.notification('error', '{% trans "New association not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
+                            messXpl['Error'] = "New association not sent";
+                            messXpl['NodeId'] = node.Node;
+                            messXpl['Model'] = node.Model;
+                            return messXpl;
+                    });
+        } else { messXpl['Error'] = "Node not define";
+                console.log("Dans setGroupsNode pas de node : " + node);   
                 return messXpl;
                 }
     };

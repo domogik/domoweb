@@ -29,8 +29,10 @@
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwlib.js"> </script>
+<script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwkinetics.js"> </script>
+<script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwdialogs.js"> </script>
 
-<link href="/design/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
 
 <script type='text/javascript'>
 
@@ -38,18 +40,41 @@
     var infoNode ={};
     var devices = new Array();
 
-    function dlgInfoValue (vData) {
-         $('#tipsUpdCmdClss').html(vData.help);
-         $('#divcmdclassdialog').dialog_form('open',{
-                title: 'Node ' + vData.nodeId  +' : {% trans "Command Class informations." %} ',
-                values: {upcmdclss : vData.commandClass, upcmdclssvalue : vData.value, upcmdclssunit : vData.units},
+    function dlgNodeAss (vData) {
+        var d = "{{ static_design_url }}";
+        $('#divNodeAssDialog').dialog_association({
+        tips: "{% trans 'Node associations groups : ' %}" ,
+        st_design_url: d
+        } );
+
+        $('#divNodeAssDialog').dialog_association('open',{
+                title: 'Node ' + vData.Node  +' : {% trans "Edit associations groups." %} ',
+                node: vData,
                 onok: function(values) {
                     var self = this;
-                    // Submit form
+                    var v = $('#divNodeAssDialog').dialog_association('setnewgroups', this);
                     console.log("envois de la commande......");
+                    setGroupsNode(v.stage, v.node, v.newgrps, RefreshGroups);
                     }
-         });
-    };
+        });
+        /* Add a function to create a device */
+        $('#divNodeAssDialog').dialog_association('addbutton', {
+            title: '{% trans "Reset" %}',
+            button: "#resetDialogButton",
+            onok: function(values) {
+                var self = this;
+                // Submit form
+        /*        rinor.post(['api', 'device'], {'name': values.adddevicename, 'address': values.adddeviceaddress, 'type_id': values.adddevicetype, 'usage_id': values.adddeviceusage, 'description': values.adddevicedescription, 'reference': values.adddevicereference})
+                    .done(function(data, status, xhr){
+                        $.reloadPage({'status': 'success', 'msg': "{% trans "New device added" %} '" + data.name + "'", 'id': data.device_usage_id});                                   
+                    })
+                    .fail(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', "{% trans "device not created" %} (" + jqXHR.responseText + ")");
+                    }); */
+            }
+        });
+        };
        
     function setStatusZW(status) {
         if (status=='up') { //active
@@ -62,36 +87,6 @@
             .html("<span class='label'>Etat:</span><span class='offscreen'>" + textstatus + "</span>");
         }
         
-    function GetinfoNode (nodeid, last) {
-        infoNode ={};
-        if (nodeid) {
-                var msg = {};
-                msg['command'] = "Refresh";
-                var val = {};
-                val['request'] ='GetNodeInfo';
-                val['node'] =nodeid;
-                msg['value'] = SetDataToxPL (val);
-                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-                    .done(function(data, status, xhr){
-                        infoNode = GetDataFromxPL(data, 'data');
-                        var dt=JSON.stringify(infoNode);
-                        console.log("Dans getinfonode : " + infoNode['Model']);
-                        $.notification('debug',"Node : " + infoNode['Model'] + " info refreshed" );
-                        RefreshDataNode(infoNode, last);
-                        RefreshTabHtml(infoNode);
-                    })
-                    .fail(function(jqXHR, status, error){
-                       if (jqXHR.status == 400)
-                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") please check your device configuration");
-                            infoNode['Node'] =   nodeid;
-                            infoNode['Model'] = "NodeId not define";
-                            return infoNode;
-                    });
-        }else { infoNode['Model'] = "NodeId not define";
-                console.log("Dans getinfonode  pas de nodeid " + infoNode['Model']);   
-                return infoNode;
-                } 
-        };
     function GetinfoValuesNode (nodeid, callback) {
         var valuesNode = [];
         var messXpl = {};
@@ -138,15 +133,6 @@
                                         ], 
                                     "fnDrawCallback": function( oSettings ) {
                                         handleChangeVCC();   
-                                     /*   $('.ccvalue').change(function () { // '#' + id
-                                                var nTr = this.parentNode.parentNode;
-                                                if (this.name =='CmdClssValue') {
-                                                        var oTable = $("#" + nTr.parentElement.parentElement.id).dataTable();
-                                                        var aPos = oTable.fnGetPosition(this.parentElement );
-                                                        var idC= getDataTableColIndex(oSettings, 'value');
-                                                        var ok = oTable.fnUpdate(this.value,aPos[0],idC,false);
-                                                };
-                                        }); */
                                     },
                                     "sPaginationType": "full_numbers",
                                     "aaData": RowN
@@ -223,7 +209,7 @@
            console.log("Dans RefreshNode, après .done" + JSON.stringify(netWorkZW));
             if (netWorkZW) {
                 for (var nId=0; nId< netWorkZW.ListNodeId.length; nId++) {
-                    GetinfoNode(netWorkZW.ListNodeId[nId], ((nId +1) == netWorkZW.ListNodeId.length));
+                    GetinfoNode(netWorkZW.ListNodeId[nId], RefreshTabHtml, ((nId +1) == netWorkZW.ListNodeId.length));
                     console.log("While refreshnode nodeID: " + netWorkZW.ListNodeId[nId]);
                     };
             };
@@ -297,11 +283,10 @@
         /*  console.log("click detail values : " + values); */
             };
         };
-        if (this.title == 'Cmd class details') {
-            var idDetNode = nTr.parentNode.parentNode.id;
-            aData = $('#' + idDetNode).dataTable().fnGetData(nTr);
-            editvalueNode(aData[hdCmdClss['id']], dlgInfoValue);
-            console.log("Dans click updatenode, Cmd class details, DataTable : " + aData + nTr); 
+        if (this.name == 'Node groups') {
+            var zwNode = GetZWNodeById(aData[hdLiNode['NodeId']]);
+            editNodeAss(zwNode, dlgNodeAss);
+            console.log("Dans click Node Associations, Node : " + zwNode.Node); 
          };
        if (this.name == 'Send value') {
             var idDetNode = nTr.parentNode.parentNode.id;
@@ -331,12 +316,13 @@ $('#node_items tbody td input').live('keyup', function (e) {
             } else {
                 console.log("Dans Nom key down, input : " + this.title + "--" + this.value +"--" + this);
             };
-    });
+});
 
     $("#specialsave").click(function(){
         var msg = {};
         msg['command'] = "Refresh";
-        msg['value'] = "|'request':'SaveConfig'\\";
+ //       msg['value'] = "|'request':'SaveConfig'\\";
+        msg['value'] = SetDataToxPL({"request":"SaveConfig"});
         rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
             .done(function(data, status, xhr){
             $.notification('info',"Request : " + " saving config ok" );
@@ -371,33 +357,6 @@ $('#node_items tbody td input').live('keyup', function (e) {
             .done(function(data, status, xhr){
                 listTypesVal = GetDataFromxPL(data, 'data');
                 console.log("*** listTypesVal : " + listTypesVal);
-            /*    for (type in listTypesVal) {
-                    $('select#listtest').append("<option value='"+type+"'>"+type+"</option>");
-                    }; */
-                    // Gestion des commandes class sous forme de dialogue
-                $('#divcmdclassdialog').dialog_form({
-                        tips: "{% trans 'Update values of command class: ' %}" ,
-                        tipsid: 'tipsUpdCmdClss',
-                        fields: [
-                            {name : 'upcmdclss', type:'text', label:"{% trans 'CommandClass' %}", required: false, options: {min: 1, max: 80}},
-                            {name : 'upcmdclsstype', type:'select', label:"{% trans 'type' %}", required: false,
-                                options: {
-                                    placeholder: "{% trans 'select a type' %}",
-                                },
-                                items: [function(){
-                                  it= [];
-                                  for (type in listTypesVal )
-                                    it.add("{value:'"+ type +"', label: '" + type +"'}");
-                                   return it;
-                                  }
-                                ],
-                            },
-                            {name : 'upcmdclssvalue', type:'text', label:"{% trans 'Value' %}", required: false, options: {min: 1, max: 80}},
-                            {name : 'upcmdclssunit', type:'text', label:'{% trans "Units" %}', required: false, options: {min: 1, max: 80}},
-                            {name : 'upcmdclssdescription', type:'text', label:'{% trans "Description" %}', required: false, options: {min: 1, max: 80}},
-                            {name : 'upcmdclssgenre', type:'text', label:'{% trans "Genre" %}', required: false, options: {min: 1, max: 80}}
-                            ]
-                    }); 
                 })
             .fail(function(jqXHR, status, error){
                if (jqXHR.status == 400)
@@ -502,4 +461,4 @@ $('#node_items tbody td input').live('keyup', function (e) {
         </table>
         </div>
 </section>
-<div id="divcmdclassdialog"></div>
+<div id="divNodeAssDialog"></div>
