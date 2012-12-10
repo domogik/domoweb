@@ -39,7 +39,7 @@ from tastypie.api import Api
 from domoweb.rinor.resources import *
 
 rinor_api = Api(api_name='api')
-rinor_api.register(FeatureResource())
+#rinor_api.register(FeatureResource())
 rinor_api.register(StateResource())
 rinor_api.register(PluginResource())
 rinor_api.register(PluginDetailResource())

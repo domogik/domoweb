@@ -178,13 +178,14 @@ class DevicePipe(RinorPipe):
             return _data[self.index][0]
         else:
             return None
-
+"""
 class FeaturePipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/feature/list"
     index = 'feature'
     paths = []
     dependencies = ['device']
+"""
 
 class WidgetInstancePipe(RinorPipe):
     cache_expiry = 0
@@ -192,14 +193,14 @@ class WidgetInstancePipe(RinorPipe):
     
     def get_page_list(self, id):
         instances = WidgetInstance.objects.filter(page__id=id).order_by('order')
-        for instance in instances:
-            feature = FeaturePipe().get_pk(instance.feature_id)
-            if feature != None:
-                instance.feature = feature
-            else:
+#        for instance in instances:
+#            feature = FeaturePipe().get_pk(instance.feature_id)
+#            if feature != None:
+#                instance.feature = feature
+#            else:
                 # The feature does not exist anymore
                 # We delete the widget instance
-                instance.delete()
+#                instance.delete()
         return instances
 
 class DeviceExtendedPipe(RinorPipe):
@@ -208,12 +209,12 @@ class DeviceExtendedPipe(RinorPipe):
 
     def get_list(self):
         _devices = DevicePipe().get_list()
-        _features = FeaturePipe().get_list()
-        for device in _devices:
-            device['features'] = []
-            for feature in _features:
-                if feature.device_id == device.id:
-                    device['features'].append(feature)
+#        _features = FeaturePipe().get_list()
+#        for device in _devices:
+#            device['features'] = []
+#            for feature in _features:
+#                if feature.device_id == device.id:
+#                    device['features'].append(feature)
 
         return _devices
 
@@ -224,13 +225,13 @@ class DeviceExtendedPipe(RinorPipe):
         return DevicePipe().put_detail(id, name, address, usage_id, description, reference)
 
     def delete_detail(self, id):
-        _features = FeaturePipe().get_list()
-        for feature in _features:
-            if feature.device_id == id:
-                _associations = AssociationPipe().get_list('feature', feature.id)
-                for association in _associations:
-                    UiConfigPipe().delete_reference('association', association.id)        
-                AssociationPipe().delete_feature(feature.id)
+#        _features = FeaturePipe().get_list()
+#        for feature in _features:
+#            if feature.device_id == id:
+#                _associations = AssociationPipe().get_list('feature', feature.id)
+#                for association in _associations:
+#                    UiConfigPipe().delete_reference('association', association.id)        
+#                AssociationPipe().delete_feature(feature.id)
         _device = DevicePipe().delete_detail(id)
         return _device
 

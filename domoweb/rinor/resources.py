@@ -43,6 +43,7 @@ from tastypie import fields
 from tastypie.http import *
 from tastypie.utils import trailing_slash
 
+"""
 class FeatureResource(RinorResource):
     # fields must map to the attributes in the Row class
     id = fields.IntegerField(attribute = 'id')
@@ -56,6 +57,7 @@ class FeatureResource(RinorResource):
         authentication = Authentication()
         authorization = Authorization()
         rinor_pipe = FeaturePipe()
+"""
 
 class StateResource(RinorResource):
     
