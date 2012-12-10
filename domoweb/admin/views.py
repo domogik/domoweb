@@ -304,7 +304,7 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type):
         if valid:
             cd = deviceform.cleaned_data
             device = DevicePipe().post_list(name=cd["name"], type_id = cd["type_id"], usage_id = cd["usage_id"], reference = cd["reference"])
-            print device
+            DevicePipe().put_params(id=device.id, parameters=globalparametersform.cleaned_data)
             return redirect('admin_plugins_plugin_view', plugin_host=plugin_host, plugin_id=plugin_id, plugin_type=plugin_type) # Redirect after POST
     else:
         deviceform = DeviceForm(auto_id='main_%s', initial={'type_id': type_id})

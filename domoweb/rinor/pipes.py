@@ -155,6 +155,7 @@ class DevicePipe(RinorPipe):
     add_path = "/base/device/add"
     update_path = "/base/device/update"
     delete_path = "/base/device/del"
+    addparams_path = "/base/device/addglobal"
     index = 'device'
     paths = []
 
@@ -178,6 +179,16 @@ class DevicePipe(RinorPipe):
             return _data[self.index][0]
         else:
             return None
+    
+    def put_params(self, id, parameters):
+        params = ['id', id]
+        params.extend(list(reduce(lambda x, y: x + y, parameters.items())))
+        
+        _data = self._put_data(self.addparams_path, params)
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)
+        return None
+
 """
 class FeaturePipe(RinorPipe):
     cache_expiry = 3600
