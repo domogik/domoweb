@@ -136,7 +136,7 @@ class DeviceUsagePipe(RinorPipe):
 
 class DeviceParametersPipe(RinorPipe):
     cache_expiry = 3600
-    list_path = "/base/deviceparams"
+    list_path = "/base/device/params"
     index = 'deviceparams'
     paths = []
 
