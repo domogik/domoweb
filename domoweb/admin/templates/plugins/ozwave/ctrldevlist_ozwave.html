@@ -57,23 +57,23 @@
                     setGroupsNode(v.stage, v.node, v.newgrps, RefreshGroups);
                     }
         });
-        /* Add a function to create a device */
+      /* Add a function to create a device 
         $('#divNodeAssDialog').dialog_association('addbutton', {
             title: '{% trans "Reset" %}',
             button: "#resetDialogButton",
             onok: function(values) {
                 var self = this;
                 // Submit form
-        /*        rinor.post(['api', 'device'], {'name': values.adddevicename, 'address': values.adddeviceaddress, 'type_id': values.adddevicetype, 'usage_id': values.adddeviceusage, 'description': values.adddevicedescription, 'reference': values.adddevicereference})
+               rinor.post(['api', 'device'], {'name': values.adddevicename, 'address': values.adddeviceaddress, 'type_id': values.adddevicetype, 'usage_id': values.adddeviceusage, 'description': values.adddevicedescription, 'reference': values.adddevicereference})
                     .done(function(data, status, xhr){
                         $.reloadPage({'status': 'success', 'msg': "{% trans "New device added" %} '" + data.name + "'", 'id': data.device_usage_id});                                   
                     })
                     .fail(function(jqXHR, status, error){
                         if (jqXHR.status == 400)
                             $.notification('error', "{% trans "device not created" %} (" + jqXHR.responseText + ")");
-                    }); */
+                    });
             }
-        });
+        }); */
         };
        
     function setStatusZW(status) {
@@ -207,33 +207,39 @@
     
     function RefreshNodes(netWorkZW) {
            console.log("Dans RefreshNode, après .done" + JSON.stringify(netWorkZW));
-            if (netWorkZW) {
-                for (var nId=0; nId< netWorkZW.ListNodeId.length; nId++) {
-                    GetinfoNode(netWorkZW.ListNodeId[nId], RefreshTabHtml, ((nId +1) == netWorkZW.ListNodeId.length));
-                    console.log("While refreshnode nodeID: " + netWorkZW.ListNodeId[nId]);
-                    };
+            if (netWorkZW.ListNodeId) {
+                var queue = netWorkZW.ListNodeId.slice(1);
+                GetinfoNode(netWorkZW.ListNodeId[0], RefreshTabHtml, queue );
             };
         };
             
     function RefreshTabHtml(zwNode) {
-        console.log("Dans RefreshTabHtml, " + zwNode);
+      if (zwNode) {  
+        console.log("Dans RefreshTabHtml, " + JSON.stringify(zwNode));
         var node_items = document.getElementById("node_items");
         var nodeid=zwNode.Node;
         var iid= "node_" + nodeid;
         var dataT = $('#node_items').dataTable().fnGetData();
-        var trfunct= function(li,dr){$('#node_items').dataTable().fnAddData(dr);};        
+        var dataLi = [zwNode.Node, zwNode.Name, zwNode.Location, zwNode.Model, zwNode['State sleeping'], zwNode.Type, zwNode['Last update'],""];
+        var li= -1;
         if (dataT) {
             for (i=0; i<dataT.length; i++) {
                 if (dataT[i][hdLiNode['NodeId']]==nodeid) {
-                    var trfunct= function(li,dr){$('#node_items').dataTable().fnUpdate(dr,li);};
-                    var li= i;
+                    li= i;
+               //     $('#node_items').dataTable().fnUpdate(dataLi,li);   fnUpdate bugg si mise à jour de toute la ligne !!!!
+                    for (var ic = 0; ic<dataLi.length; ic++){ 
+                        $('#node_items').dataTable().fnUpdate(dataLi[ic], li, ic);
+                        };
                     break;
                 };
             };
         };
-        trfunct(li, [zwNode.Node, zwNode.Name, zwNode.Location, zwNode.Model, zwNode['State sleeping'], zwNode.Type, zwNode['Last update'],""]);
+        if (li == -1) {
+            $('#node_items').dataTable().fnAddData(dataLi);
+            };
         console.log("Dans RefreshTabHtml, DataTable : " + dataT[li] + "---" + zwNode.Model); 
-     };   
+     }; 
+    };   
      
 
 // Callback event des commandes dans la table des nodes.
@@ -338,11 +344,15 @@ $('#node_items tbody td input').live('keyup', function (e) {
             "bFilter": false,
             "bAutoWidth": false,
             "aoColumnDefs": [  
-                { "fnRender": function (oObj) {return setNameNode(oObj);}, "aTargets": [ hdLiNode['Name'] ] },
-                { "fnRender": function (oObj) {return  "<input type='text' title='Location' value='" + 
+                { "fnRender": function (oObj) {
+                    return setNameNode(oObj);}, "aTargets": [ hdLiNode['Name'] ] },
+                { "fnRender": function (oObj) {
+                    return  "<input type='text' title='Location' value='" + 
                                                 oObj.aData[hdLiNode['Location']] + "'/>";}, "aTargets": [ hdLiNode['Location'] ] },
-                { "fnRender": function (oObj) {return setStatusSleep(oObj);}, "aTargets": [ hdLiNode['Awake'] ] },
-                { "fnRender": function (oObj) {return setActionNode(oObj);}, "aTargets": [hdLiNode['Action'] ] },      
+                { "fnRender": function (oObj) {
+                    return setStatusSleep(oObj);}, "aTargets": [ hdLiNode['Awake'] ] },
+                { "fnRender": function (oObj) {
+                    return setActionNode(oObj);}, "aTargets": [hdLiNode['Action'] ] },      
                 { "bSortable": false, "aTargets": [ hdLiNode['Action'] ] }, 
                 ],
             "aaSorting": [[0, 'asc']]
@@ -357,33 +367,13 @@ $('#node_items tbody td input').live('keyup', function (e) {
             .done(function(data, status, xhr){
                 listTypesVal = GetDataFromxPL(data, 'data');
                 console.log("*** listTypesVal : " + listTypesVal);
+                $("#specialsubmit").click();
                 })
             .fail(function(jqXHR, status, error){
                if (jqXHR.status == 400)
                     $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
+                    $("#specialsubmit").click();
             });
-    
-         rinor.get(['api', 'feature'])
-            .done(function(data, status, xhr){
-                var i=0;
-                $.each(data.objects, function(index, object) {
-                    devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
-                    if (object.device_feature_model.feature_type == "actuator"){
-                       $('select#alarmdevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
-                    }
-                    i=i+1;
-                });
-                console.log("devices.length : " + devices.length);
-                for(i=0 ;i<devices[1].length;i++){
-                    console.log("devices[1][" + i + "] : " + devices[1][i]);
-                };
-           })
-            .fail(function(jqXHR, status, error){
-                if (jqXHR.status == 400)
-                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
-            }); 
-
-         $("#specialsubmit").click();
     });
 });
 

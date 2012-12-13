@@ -315,7 +315,7 @@ function GetZWNodeById (nodeiId) {
         return sOut;
     };
         
-function GetinfoNode (nodeid, callback, last) {
+function GetinfoNode (nodeid, callback, queue) {
     var infoNode ={};
     if (nodeid) {
             var msg = {};
@@ -343,8 +343,15 @@ function GetinfoNode (nodeid, callback, last) {
                         }; 
                        infoNode.data['Groups'][i]['members'] = members;  
                     };
-                    RefreshDataNode(infoNode.data, last);
+                    RefreshDataNode(infoNode.data, (queue.length == 0));
                     callback(infoNode.data);
+                    console.log("Node is refreshed, nodeID: " + nodeid);
+                    if (queue.length !=0) {
+                        nodeid = queue[0];
+                        queue = queue.slice(1);
+                        GetinfoNode(nodeid, callback, queue);
+                    };
+                        
                 })
                 .fail(function(jqXHR, status, error){
                    if (jqXHR.status == 400)
