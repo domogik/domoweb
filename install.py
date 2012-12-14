@@ -276,7 +276,6 @@ def install_dependencies():
                           'CherryPy >= 3.2.2',
                           'south',
                           'manifesto',
-                          'pyzmq',
                           'ws4py'])
 
 def updateDb(user, db):
