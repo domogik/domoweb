@@ -12,7 +12,7 @@ function getLabelDevice(node) {
     };
 };
 
-KtxNodeNeighbor = function  (x,y,r,node,layer,stage) {
+KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
     this.pictNodeNeig = new Kinetic.Group({
           x: x,
           y: y,
@@ -92,7 +92,7 @@ KtxNodeNeighbor = function  (x,y,r,node,layer,stage) {
     this.layer.add(this.pictNodeNeig); 
 };
 
-KtxNodeNeighbor.prototype.addlink = function(linker) {
+KtcNodeNeighbor.prototype.addlink = function(linker) {
     var idx = this.links.indexOf(linker);
     if (idx == -1) {
         this.links.push(linker);
@@ -100,7 +100,7 @@ KtxNodeNeighbor.prototype.addlink = function(linker) {
     };
 };               
 
-KtxNodeNeighbor.prototype.removelink= function(linker) {
+KtcNodeNeighbor.prototype.removelink= function(linker) {
     var idx = this.links.indexOf(linker);
     if (idx == -1) {
         this.links.splice(idx, 1);
@@ -157,7 +157,7 @@ CLink.prototype.draw= function() {
     this.layer.draw();
 };
 
-KtxNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
+KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
     this.pictNodeGrp = new Kinetic.Group({
           x: x,
           y: y,
@@ -348,12 +348,12 @@ KtxNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
     this.layer.add(this.pictNodeGrp); 
 };
 
-KtxNodeGrp.prototype.isMember = function() {
+KtcNodeGrp.prototype.isMember = function() {
     if (this.grpAss == this.layer) { return null;
     } else { return this.grpAss;};
 };
 
-KtxNodeGrp.prototype.inGroup = function() {
+KtcNodeGrp.prototype.inGroup = function() {
     var stage = this.pictNodeGrp.getStage();
     var groups = stage.get('.ngroupass');
     var retval = null, isSelf=-1;
@@ -372,15 +372,15 @@ KtxNodeGrp.prototype.inGroup = function() {
     return retval;
 };
 
-KtxNodeGrp.prototype.duplicateIt = function() {
+KtcNodeGrp.prototype.duplicateIt = function() {
     var x = this.pictNodeGrp.getX(), y = this.pictNodeGrp.getY();
     var r = this.pictureImg.getRadius().x;
     var stage = this.pictNodeGrp.getStage();
-    var n = new KtxNodeGrp(this.xOrg, this.yOrg, this.rOrg, this.nodeObj ,stage.elemsLayer,stage);
+    var n = new KtcNodeGrp(this.xOrg, this.yOrg, this.rOrg, this.nodeObj ,stage.elemsLayer,stage);
     stage.draw();
 };
 
-KtxNodeGrp.prototype.removeIt = function() {
+KtcNodeGrp.prototype.removeIt = function() {
     var stage = this.pictNodeGrp.getStage();
     this.pictNodeGrp.removeChildren();
     this.pictNodeGrp.setListening(false);
@@ -392,7 +392,7 @@ KtxNodeGrp.prototype.removeIt = function() {
     stage.draw();
 };
 
-KtxNodeGrp.prototype.setimgstate = function(state, img) {
+KtcNodeGrp.prototype.setimgstate = function(state, img) {
     if (this.state != state) {
         this.state = state;
         switch (state) {
@@ -428,7 +428,7 @@ KtxNodeGrp.prototype.setimgstate = function(state, img) {
     };
 };
 
-KtxNodeGrp.prototype.setState = function(state, inGrpAss) {
+KtcNodeGrp.prototype.setState = function(state, inGrpAss) {
      var img = this.kImg;
      if (img) { // le node detruit genère quand même un move event après sa destruction;
          var zstate = state, stOrg = false;
@@ -474,7 +474,7 @@ function initScrollbars(stage) {
         width: stage.getWidth() - 30,
         height: 20,
         fill: "black",
-      alpha: 0.3
+        opacity: 0.3
     });
 
     var hscroll = new Kinetic.Rect({
@@ -489,7 +489,7 @@ function initScrollbars(stage) {
         left: 0,
         right: stage.getWidth() - 160
         },
-        alpha: 0.9,
+        opacity: 0.9,
         stroke: "black",
         strokeWidth: 1
     });
@@ -500,7 +500,7 @@ function initScrollbars(stage) {
         width: 20,
         height: stage.getHeight() - 30,
         fill: "black",
-        alpha: 0.3
+        opacity: 0.3
     });
 
     var vscroll = new Kinetic.Rect({
@@ -515,7 +515,7 @@ function initScrollbars(stage) {
         top: 0,
         bottom: stage.getHeight() - 100
         },
-        alpha: 0.9,
+        opacity: 0.9,
         stroke: "black",
         strokeWidth: 1
     });
@@ -577,13 +577,13 @@ function buildKineticNeighbors() {
                 } else { a= a + 40;
                 };
             };
-            listNodes[i].ktxNode = new KtxNodeNeighbor(x,y,r,listNodes[i],nodeLayer,nborsStage);
+            listNodes[i].ktcNode = new KtcNodeNeighbor(x,y,r,listNodes[i],nodeLayer,nborsStage);
           };
         for (var id1=0; id1<listNodes.length;id1++)  {         
             for (var in1=0; in1<listNodes[id1].Neighbors.length;in1++) {
                 for (var id2=0; id2<listNodes.length;id2++) {
                     if (listNodes[id2].Node == listNodes[id1].Neighbors[in1]) { 
-                        Link = new CLink(listNodes[id1].ktxNode, listNodes[id2].ktxNode, linkLayer);
+                        Link = new CLink(listNodes[id1].ktcNode, listNodes[id2].ktcNode, linkLayer);
                         break;
                     };
                 };
@@ -622,7 +622,7 @@ function initNeighborsStage(){
         padding: 5,
         textFill: "white",
         fill: "black",
-        alpha: 0.75,
+        opacity: 0.75,
         visible: false
     });
     tooltipLayer = new Kinetic.Layer();
@@ -652,14 +652,17 @@ function stageGrps(contName) {
         padding: 5,
         textFill: "white",
         fill: "black",
-        alpha: 0.75,
+        opacity: 0.75,
         visible: false
     });
     grpsStage.tooltipLayer = new Kinetic.Layer();
     grpsStage.tooltipLayer.add(grpsStage.tooltip);
     grpsStage.grpsLayer = new Kinetic.Layer();
     grpsStage.elemsLayer = new Kinetic.Layer();
+    grpsStage.carouLayer = new Kinetic.Layer();
     grpsStage.add(grpsStage.grpsLayer);
+//    grpsStage.carouLayer.add(grpsStage.elemsLayer);
+    grpsStage.add(grpsStage.carouLayer);
     grpsStage.add(grpsStage.elemsLayer);    
     grpsStage.add(grpsStage.tooltipLayer);
     return grpsStage;
@@ -676,7 +679,7 @@ function getFreePosGrp(tabN) {
     return retval;
 };
 
-KtxGrpAss = function (x,y,w,h,grp,stage) { 
+KtcGrpAss = function (x,y,w,h,grp,stage) { 
     var nbCol = 3, hHead = 50, r = 25;
     var nbLi = Math.ceil(grp.maxAssociations / nbCol);
     pas = 2*r +10;
@@ -731,7 +734,7 @@ KtxGrpAss = function (x,y,w,h,grp,stage) {
     var m;
     for (i=0; i < grp.members.length; i++){
         posm = getFreePosGrp(this.tabN);
-        m = new KtxNodeGrp(this.tabN[posm].x,this.tabN[posm].y,r,GetZWNodeById(grp.members[i].id),stage.grpsLayer,stage,this);
+        m = new KtcNodeGrp(this.tabN[posm].x,this.tabN[posm].y,r,GetZWNodeById(grp.members[i].id),stage.grpsLayer,stage,this);
         this.tabN[posm].kN = m;
         this.members.push(grp.members[i]);
         this.picture.add(m.pictNodeGrp);
@@ -747,14 +750,14 @@ KtxGrpAss = function (x,y,w,h,grp,stage) {
     });
 };
 
-KtxGrpAss.prototype.getDim = function (){
+KtcGrpAss.prototype.getDim = function (){
     var retval={};
     retval.pos=this.picture.getPosition();
     retval.size= this.picture.children[0].getSize(); // pas de getsize sur contenair en lib v3.10
     return retval;
 };
     
-KtxGrpAss.prototype.isAMember = function (nodeObj) {
+KtcGrpAss.prototype.isAMember = function (nodeObj) {
     var retval = null;
     for (var i=0; i<this.members.length; i++) {
         if (this.members[i].id == nodeObj.Node) { 
@@ -765,7 +768,7 @@ KtxGrpAss.prototype.isAMember = function (nodeObj) {
     return retval
 };
 
-KtxGrpAss.prototype.addNode = function (kNode) {
+KtcGrpAss.prototype.addNode = function (kNode) {
     if (!this.isAMember(kNode.nodeObj)) {
         if (this.members.length<this.grpAss.maxAssociations) {
             var state = 'to update';
@@ -793,7 +796,7 @@ KtxGrpAss.prototype.addNode = function (kNode) {
     } else { return false;};
 };
 
-KtxGrpAss.prototype.delNode = function (kNode) {
+KtcGrpAss.prototype.delNode = function (kNode) {
     var idx =-1;
     for (var i =0; i< this.members.length; i++) {
         if (this.members[i].id == kNode.nodeObj.Node) {
@@ -816,6 +819,114 @@ KtxGrpAss.prototype.delNode = function (kNode) {
 function ResetGroups(stage, nodeP) {
     console.log("reset intial groups");
 };
+
+function initGoAction (go) {
+    go.on('mouseover', function() {      
+        var stage = this.getStage();
+        document.body.style.cursor = "pointer";
+        this.setOpacity(0.5);
+        this.attrs.anim.start();
+        stage.carouLayer.speed = 1;
+        this.attrs.layer.draw();
+        });
+    go.on("mouseout", function() {
+        var stage = this.getStage();
+        document.body.style.cursor = "default";
+        this.setOpacity(1);
+        this.attrs.anim.stop();
+        stage.carouLayer.speed = 1;
+        this.attrs.layer.draw();
+    });
+    go.on("click", function() {
+        var stage = this.getStage();
+        var x = stage.elemsLayer.getX();
+        this.attrs.anim.stop();
+        stage.carouLayer.speed = 1;
+        this.setOpacity(1);
+        this.attrs.layer.draw();
+    });
+};
+
+KtcInitCarouselNodes = function (r, wArea, stage) {
+    var hArea = 2*r + 4;
+    var maxSpeed = 10;
+    var bgCoul = $('#divNodeAssDialog').css("background-color");
+    var bord1 = new Kinetic.Rect({
+        x: 0,
+        y: 0,
+        width: hArea,
+        height: hArea,
+        fill: bgCoul,
+        opacity: 1
+    });
+    var bord2 = new Kinetic.Rect({
+        x: stage.getWidth() - hArea,
+        y: 0,
+        width: hArea,
+        height: hArea,
+        fill: bgCoul,
+        opacity: 1
+    });
+    this.wArea = wArea;
+    this.layer = stage.carouLayer;
+    this.layer.add(bord1);
+    this.layer.add(bord2);
+    this.imgGoLeft = new Image();
+    var img = this.imgGoLeft;
+    var layer = this.layer;
+    this.imgGoLeft.onload = function () {
+        var goL = new Kinetic.Image({
+            x: 0,
+            y: 0,
+            image: img,
+            width: 64,
+            height: 64,
+            name:  'left',
+            visible: true,
+            layer: layer,
+            anim: new Kinetic.Animation(function(frame) {
+                    var x = stage.elemsLayer.getX() - ((100/frame.timeDiff) * stage.carouLayer.speed);
+                    if (x <= -wArea) { x = stage.getWidth() - (2*hArea) + wArea;}
+                    stage.elemsLayer.setX(x);
+                    stage.carouLayer.moveToTop();
+              //    console.log('Caroussel left');
+                    if (stage.carouLayer.speed < maxSpeed) { stage.carouLayer.speed = stage.carouLayer.speed+ 0.1;}
+                  }, stage.elemsLayer),
+        });
+        initGoAction(goL);
+        layer.add(goL);
+        layer.draw();
+    };
+    this.imgGoLeft.src =  '/design/common/images/action/go_left_64.png';      
+    this.imgGoRight = new Image();
+    var imgR = this.imgGoRight;
+    this.imgGoRight.onload = function () {
+        var goR = new Kinetic.Image({
+            x: stage.getWidth() - 64,
+            y: 0,
+            image: imgR,
+            width: 64,
+            height: 64,
+            name:  'right',
+            visible: true,
+            layer: layer,
+            anim: new Kinetic.Animation(function(frame) {
+                    var x = stage.elemsLayer.getX() + ((100/frame.timeDiff) * stage.carouLayer.speed);
+                    if (x >= stage.getWidth() - hArea) {
+                        x=hArea - wArea ;}
+                    stage.elemsLayer.setX(x);
+                    stage.carouLayer.moveToTop();
+           //       console.log('Caroussel right');
+                    if (stage.carouLayer.speed < maxSpeed) { stage.carouLayer.speed=stage.carouLayer.speed+0.1;}
+                  }, stage.elemsLayer),
+        });
+        initGoAction(goR);
+        layer.add(goR);
+        layer.draw();
+    };
+    this.imgGoRight.src =  '/design/common/images/action/go_right_64.png'; 
+};
+    
 
 function RefreshGroups(stage, nodeP, newGroups) {
     console.log("Refresh state members groups");
@@ -866,7 +977,7 @@ function CreateGroups(stage, nodeP, st_design_url) {
         };
         x= (ccol * (wg+spw)) + wn + spw;
         y= (cli * (hg+sph)) + hn + sph;
-        imgGrp = new KtxGrpAss(x,y,wg,hg,nodeP.Groups[gi], stage);
+        imgGrp = new KtcGrpAss(x,y,wg,hg,nodeP.Groups[gi], stage);
         dimGrp = imgGrp.getDim();
     };
     w = stage.getWidth() - 2*wn;
@@ -874,40 +985,19 @@ function CreateGroups(stage, nodeP, st_design_url) {
     nbcol = Math.ceil(w / (wn+spw));
     nbli = Math.ceil(h / (hn+sph));
     var r =  Math.floor((wn-2) / 2);
-    if ((listNodes.length - 1) > nbcol) {
-        ccol= 0;
-        cli  = nbli;
-    } else {
-        ccol = Math.floor((listNodes.length - 1) / 2);
-        cli = nbli;
-    };
+    ccol = 0;
+    stage.carouLayer.setY(stage.getHeight() - (2*r + 4));
+    stage.elemsLayer.setPosition(64, stage.getHeight() - (2*r + 4));
     for (var ni=0; ni < listNodes.length; ni++) {
         if (listNodes[ni] .Node != nodeP.Node) {
             x= (ccol * (wn+spw))+r+4;
-            y= (cli * (hn+sph))+r+4;
-            new KtxNodeGrp(x,y,r,listNodes[ni] ,stage.elemsLayer,stage);
-            if (cli == nbli || cli === 0) {
-                if (ccol < nbcol) { ccol++;
-                } else { ccol = 0;
-                    if (cli == nbli) {cli=0;
-                    } else cli = nbli - 1;
-                };
-            } else {
-                if (ccol === 0) { ccol = nbcol;
-                } else {
-                    if (cli > 1) {
-                        ccol = 0;
-                        cli--;
-                    } else {
-                        cli = nbli -1;
-                        if (ccol == nbcol) { ccol=1;
-                        } else { ccol++;
-                        };
-                    };
-                };
-            };
+            y= r+2,
+            new KtcNodeGrp(x,y,r,listNodes[ni] ,stage.elemsLayer,stage);
+            ccol++;
         };
     };
+    stage.carouLayer.speed = 1;
+    KtcInitCarouselNodes(r, x+r+4, stage)
     stage.draw();
 };
 

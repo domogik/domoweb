@@ -346,7 +346,7 @@ function GetinfoNode (nodeid, callback, queue) {
                     RefreshDataNode(infoNode.data, (queue.length == 0));
                     callback(infoNode.data);
                     console.log("Node is refreshed, nodeID: " + nodeid);
-                    if (queue.length !=0) {
+                    if (queue && queue.length !=0) {
                         nodeid = queue[0];
                         queue = queue.slice(1);
                         GetinfoNode(nodeid, callback, queue);

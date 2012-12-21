@@ -112,12 +112,23 @@
                                 valuesNode[i]= messXpl['value' + i];
                                 var R = [];
                                 R[0] = i + 1;
-                                R[1] = valuesNode[i]['value'];
-                                for (ii=2; ii<thOut.length;ii++) {
-                                    R[ii] = valuesNode[i][thOut[ii]]
-                                    }
+                                try {
+                                    R[1] = valuesNode[i]['value'];
+                                    for (ii=2; ii<thOut.length;ii++) {
+                                        R[ii] = valuesNode[i][thOut[ii]]
+                                    };
+                                } catch (err) {
+                                    R[1] = 'Error';
+                                    for (ii=2; ii<thOut.length;ii++) {
+                                        R[ii] = 'no data';
+                                    };
+                                    R[3] = err;
+                                    R[6] = 'Error';
+                                    R[7] = 'Value lost during Xpl rinor transmission';
+                                    R[16] = "";
+                                };
                                 RowN[i] = R;
-                            }
+                            };
                             console.log("Dans GetinfoValuesNode : " + RowN);
                             callback(thOut);
                             var idDetNode = '#detNode' + nodeid;
