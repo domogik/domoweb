@@ -235,7 +235,7 @@ function GetZWNodeById (nodeiId) {
                 ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue' type='number' min='0' max='255' style='width:3em' value='"+ value +"'></input>";
             };
             if (type=='Short') {
-                ret ="<input id='" + id + "' name='CmdClssValue' type='number' min='0' max='65535' style='width:6em' value='"+ value +"'></input>";
+                ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue' type='number' min='0' max='65535' style='width:6em' value='"+ value +"'></input>";
             };
             if (type=='Int' | type=='Decimal') {
                 ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue' type='number' style='width:8em' value='"+ value +"'></input>";
