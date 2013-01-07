@@ -43,7 +43,7 @@ if [ $UID != 0 ];then
     exit 1;
 fi
 
-function start_django {
+function start_domoweb {
     echo -n " * Starting DomoWeb..."
     [ ! -d /var/run/domoweb ] && \
         /bin/mkdir /var/run/domoweb
@@ -60,7 +60,7 @@ function start_django {
     fi
 }
 
-function stop_django {
+function stop_domoweb {
     echo -n " * Stopping DomoWeb..."
     kill $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
     sleep 1
@@ -69,8 +69,8 @@ function stop_django {
     echo " Done."
 }
 
-function killall_django {
-    stop_django
+function killall_domoweb {
+    stop_domoweb
     echo -n " * Killing all DomoWeb..."
     for pid in `ps ax | grep "$NAME" | grep -v grep | awk '{print $1}'`; do
         kill -9 $pid 2>/dev/null 1>&2
@@ -78,36 +78,32 @@ function killall_django {
     echo " Done."
 }
 
-function status_django {
+function status_domoweb {
     [ ! -f $PIDFILE ] && \
         echo " * DomoWeb is not running (can't find pid file)" &&
         exit 0
-    RUNNING=$(pgrep "$NAME" | grep -c $(cat $PIDFILE 2>/dev/null))
-    if [ $RUNNING"u" == "1u" ]; then
-        echo " * DomoWeb is running"
-    else
-        echo " * DomoWeb is not running"
-    fi
+    RUNNING=$(cat $PIDFILE)
+    echo " * DomoWeb is running under pid $RUNNING"
 }
 
 case "$1" in
     start)
         [ -f $PIDFILE ] && echo "Domoweb seems to be running. Please stop it." && exit 0
-        start_django
+        start_domoweb
     ;;
     stop)
-        stop_django
+        stop_domoweb
     ;;
     status)
-        status_django
+        status_domoweb
     ;;
     killall)
-        killall_django
+        killall_domoweb
     ;;
     restart)
-        stop_django
+        stop_domoweb
         sleep 3
-        start_django
+        start_domoweb
     ;;
     *)
     echo "usage: $0 {start|stop|restart|status|killall}"
