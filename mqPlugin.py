@@ -3,7 +3,7 @@ import os
 import logging
 import cherrypy
 import threading
-import zmq
+#import zmq
 from time import sleep, time
 from cherrypy.process import plugins
 from ws4py.messaging import TextMessage
