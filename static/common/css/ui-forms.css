@@ -6,10 +6,15 @@
     margin:0;
 }
 
+.row {
+    padding:0.5em;
+}
+
 label {
-    display:block;
-    height:1.6em;
-    line-height:1.6em;
+    color: #444444;
+    display: block;
+    font: bold 10px verdana;
+    margin:15px 0 5px;
 }
 
 label.inline {
@@ -59,12 +64,15 @@ select.medium {
 
 select.large {
     width:22em;
+    padding:5px;
 }
 
 fieldset {
     margin:0;
     border:none;
 }
+
+input[type=text], input[type=password] { width:300px; padding:5px; border:solid 1px #000;}
 
 input[type='text'].required,input[type='password'].required {
     border:2px solid #000000;
@@ -73,3 +81,14 @@ input[type='text'].required,input[type='password'].required {
 input[type='text'].state-error, input[type='password'].state-error {
     border:2px solid #991A1A;    
 }
+
+.stepy-titles li {
+    float: none;
+    display: inline-block;
+}
+
+legend { font-size:18px; margin:0px; padding:10px 0px; color:#b0232a; font-weight:bold;}
+.prev, .next { background-color:#b0232a; padding:5px 10px; color:#fff; text-decoration:none;}
+.prev:hover, .next:hover { background-color:#000; text-decoration:none;}
+.prev { float:left;}
+.next { float:right;}

@@ -1,24 +1,18 @@
-{% extends "layouts/base_without_nav.html" %}
+{% extends "layouts/base_centered_panel.html" %}
 
 {% load i18n %}
 {% load text %}
 {% block js_script %}
     $(function(){
-        $('#DeviceForm').stepy(); 
+        $('#DeviceForm').stepy();
+        $('#main_usage_id').addClass('large').chosen();
     });
 {% endblock %}
 
 {% block css %}
+    <link href="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
     <link href="{{ static_design_url }}/libraries/jquery.stepy-1.1.0/css/jquery.stepy.css" rel="stylesheet" type="text/css" />
     <style type="text/css">
-        fieldset { border:none; width:320px;}
-        legend { font-size:18px; margin:0px; padding:10px 0px; color:#b0232a; font-weight:bold;}
-        label { display:block; margin:15px 0 5px;}
-        input[type=text], input[type=password] { width:300px; padding:5px; border:solid 1px #000;}
-        .prev, .next { background-color:#b0232a; padding:5px 10px; color:#fff; text-decoration:none;}
-        .prev:hover, .next:hover { background-color:#000; text-decoration:none;}
-        .prev { float:left;}
-        .next { float:right;}
         #steps { list-style:none; width:100%; overflow:hidden; margin:0px; padding:0px;}
         #steps li {font-size:24px; float:left; padding:10px; color:#b0b1b3;}
         #steps li span {font-size:11px; display:block;}
@@ -26,6 +20,7 @@
     </style>
 {% endblock %}
 {% block js_include %}
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
     <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.stepy-1.1.0/js/jquery.stepy.min.js"></script>
 {% endblock %}
 {% block title %}{{ page_title }}{% endblock %}

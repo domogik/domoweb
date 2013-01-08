@@ -46,16 +46,15 @@
         </tr>
         {% endfor %}
     </table>
-    <form action='{% url admin_add_device_view plugin.host plugin.id plugin_type %}' method='GET'>
-        <select id='type_id' aria-required="true" name='type_id'>
-            <option value=''>{% trans "Choose type" %}</option>
-            {% regroup types_list|dictsort:"device_technology_id" by device_technology as technologies_list %}
-            {% for technology in technologies_list %}
-                {% for type in technology.list %}
-                <option value='{{ type.id }}'>{{ type.name }}</option>
-                {% endfor %}
-            {% endfor %} 
-        </select>
-        <input type='submit' value='Create device' />
-    </form>
+</section>
+<section class="subsection">
+    <h2>{% trans "Create new" %}</h2>
+    <ul class='inline'>
+        {% regroup types_list|dictsort:"device_technology_id" by device_technology as technologies_list %}
+        {% for technology in technologies_list %}
+            {% for type in technology.list %}
+            <li><a href='{% url admin_add_device_view plugin.host plugin.id plugin_type type.id  %}' class='buttontext'>{{ type.name }}</a></li>
+            {% endfor %}
+        {% endfor %} 
+    </ul>
 </section>

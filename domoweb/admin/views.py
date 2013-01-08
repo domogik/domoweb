@@ -243,10 +243,8 @@ class ParametersForm(forms.Form):
     def validate(self): self.full_clean()
 
 #@admin_required
-def admin_add_device(request, plugin_host, plugin_id, plugin_type):
+def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
     page_title = _("Add device")
-
-    type_id = request.GET['type_id']
     parameters = DeviceParametersPipe().get_detail(type_id)
 
     globalparametersform = None
