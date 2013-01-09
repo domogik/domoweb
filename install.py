@@ -387,7 +387,7 @@ def testInit():
             Please copy src/examples/init/domoweb to /etc/init.d or /etc/rc.d depending on your system, and chmod +x /etc/init.d/domoweb"
     ok("/etc/init.d/domoweb or /etc/rc.d/domoweb found with good permissions")
 
-def testDB():
+def testDB(db):
     info("Checking Domoweb DB")
     assert os.path.isfile(db), \
             "%s not found" % db
