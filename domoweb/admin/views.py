@@ -169,6 +169,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     plugin = PluginPipe().get_detail(plugin_host, plugin_id)
     print plugin
     types = DeviceTypePipe().get_list_by_technology(plugin.technology)
+    products = ProductsPipe().get_list(plugin_id)
     if plugin_type == "plugin":
         page_title = _("Plugin")
         dependencies = PluginDependencyPipe().get_list(plugin_host, plugin_id)
@@ -184,6 +185,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
             udevrules=udevrules,
             devices_list=devices,
             types_list=types,
+	    product_list=products,
         )
     if plugin_type == "external":
         page_title = _("External Member")
@@ -196,6 +198,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
             plugin_type=plugin_type,
             devices_list=devices,
             types_list=types,
+	    product_list=products,
         )
 
 class SelectIcon(Select):

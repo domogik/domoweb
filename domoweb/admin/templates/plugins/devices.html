@@ -48,7 +48,14 @@
     </table>
 </section>
 <section class="subsection">
-    <h2>{% trans "Create new" %}</h2>
+    <h2>{% trans "Create new by product" %}</h2>
+    {{ products_list }}
+    <ul class='inline'>
+        {% for prod in product_list %}
+            <li><a href='{% url admin_add_device_view plugin.host plugin.id plugin_type prod.type %}' class='buttontext'>{{ prod.name }}</a></li>
+        {% endfor %} 
+    </ul>
+    <h2>{% trans "Create new by device type" %}</h2>
     <ul class='inline'>
         {% regroup types_list|dictsort:"device_technology_id" by device_technology as technologies_list %}
         {% for technology in technologies_list %}

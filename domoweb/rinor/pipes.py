@@ -112,6 +112,25 @@ class HelperPipe(RinorPipe):
             raise RinorError(_data.code, _data.description)
         return _data[self.index]
 
+class ProductsPipe(RinorPipe):
+    cache_expiry = 0
+    list_path = "/plugin/products"
+    index = 'pluginProducts'
+    paths = []
+    dependencies = ['package']
+
+    def get_list(self, plugin):
+        _data = self._get_data("%s/%s" % (self.list_path, plugin))
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)        
+        if len(_data[self.index]) > 0:
+            listdata = []
+            for obj in _data[self.index]:
+                listdata.append(obj)
+            return listdata
+        else:
+            return None
+
 class DeviceTypePipe(RinorPipe):
     cache_expiry = 0
     list_path = "/base/device_type/list"
@@ -120,6 +139,7 @@ class DeviceTypePipe(RinorPipe):
     dependencies = ['package']
 
     def get_list_by_technology(self, technology_id):
+
         # get one object from data source
         data = self.get_list()
         listdata = []
