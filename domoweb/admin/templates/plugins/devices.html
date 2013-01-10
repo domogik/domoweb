@@ -49,7 +49,6 @@
 </section>
 <section class="subsection">
     <h2>{% trans "Create new by product" %}</h2>
-    {{ products_list }}
     <ul class='inline'>
         {% for prod in product_list %}
             <li><a href='{% url admin_add_device_view plugin.host plugin.id plugin_type prod.type %}' class='buttontext'>{{ prod.name }}</a></li>
