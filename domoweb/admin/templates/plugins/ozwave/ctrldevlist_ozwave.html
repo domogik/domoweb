@@ -27,10 +27,12 @@
 {% load text %}
 
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.qtip-1.0.0-rc3/jquery.qtip-1.0.0-rc3.min.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwlib.js"> </script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwkinetics.js"> </script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwdialogs.js"> </script>
+<script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwdlgctrlaction.js"> </script>
 
 <link href="{{ static_design_url }}/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
 
@@ -56,26 +58,9 @@
                     console.log("envois de la commande......");
                     setGroupsNode(v.stage, v.node, v.newgrps, RefreshGroups);
                     }
-        });
-      /* Add a function to create a device 
-        $('#divNodeAssDialog').dialog_association('addbutton', {
-            title: '{% trans "Reset" %}',
-            button: "#resetDialogButton",
-            onok: function(values) {
-                var self = this;
-                // Submit form
-               rinor.post(['api', 'device'], {'name': values.adddevicename, 'address': values.adddeviceaddress, 'type_id': values.adddevicetype, 'usage_id': values.adddeviceusage, 'description': values.adddevicedescription, 'reference': values.adddevicereference})
-                    .done(function(data, status, xhr){
-                        $.reloadPage({'status': 'success', 'msg': "{% trans "New device added" %} '" + data.name + "'", 'id': data.device_usage_id});                                   
-                    })
-                    .fail(function(jqXHR, status, error){
-                        if (jqXHR.status == 400)
-                            $.notification('error', "{% trans "device not created" %} (" + jqXHR.responseText + ")");
-                    });
-            }
-        }); */
-        };
-       
+            });
+        }
+        
     function setStatusZW(status) {
         if (status=='up') { //active
             textstatus = "En cours d'execution";
@@ -142,17 +127,28 @@
                                         { "fnRender": function (oObj) {return renderCmdClssValue(oObj);}, "aTargets": [hdCmdClss['value']] },                                                           
                                         { "fnRender": function (oObj) {return renderCmdClssName(oObj);}, "aTargets": [hdCmdClss['commandClass']] },
                                         ], 
-                                    "fnDrawCallback": function( oSettings ) {
-                                        handleChangeVCC();   
+                                    "fnDrawCallback": function( oSettings) {
+                                        handleChangeVCC();
+                                        var iId = getDataTableColIndex(oSettings, 'id');
+                                        var vId = '';
+                                        var start = oSettings._iDisplayStart;
+                                        var stop =  oSettings._iDisplayEnd;
+                                        for (i=start; i<stop; i++) {
+                                            vId = RowN[i][iId]
+                                            createToolTip('#st' + vId, 'bottom');
+                                            createToolTip('#hn' + vId, 'bottom');
+                                            createToolTip('#adr' + vId, 'bottom');
+                                            createToolTip('#hc' + vId, 'top');
+                                            };
+                                        for (i=0; i<thOut.length; i++) {
+                                            if (thOut[i] == 'realValue' | thOut[i] == 'nodeId' | thOut[i] == 'homeId' | thOut[i] == 'domogikdevice' | thOut[i] == 'help' | thOut[i] == 'readOnly' | thOut[i] == 'listElems' | thOut[i] == 'id') {
+                                                $(idDetNode).dataTable().fnSetColumnVis( i, false ); };
+                                            }
                                     },
                                     "sPaginationType": "full_numbers",
                                     "aaData": RowN
                                     });
-                            for (i=0; i<thOut.length; i++) {
-                                if (thOut[i] == 'realValue' | thOut[i] == 'nodeId' | thOut[i] == 'homeId' | thOut[i] == 'domogikdevice' | thOut[i] == 'help' | thOut[i] == 'readOnly' | thOut[i] == 'listElems' | thOut[i] == 'id') {
-                                    $(idDetNode).dataTable().fnSetColumnVis( i, false ); };
-                                }  // redirection des events change des values read
-                            return valuesNode;
+                           return valuesNode;
                         }  else { // le Node n'as pas de command_class
                             var thOut =[];
                             thOut[0]="No Command_Class";
@@ -258,7 +254,7 @@
     $('#node_items tbody td button').live('click', function () {
         var nTr = this.parentNode.parentNode;
         var aData = oTabNodes.fnGetData( nTr );
-        if (this.title =='Update Node') {
+        if (this.name =='Update node') {
             console.log("Dans click updatenode, DataTable : " + aData);   
             // Lancer la sauvegarde vers plugin
                 var msg = {};
@@ -286,7 +282,7 @@
                             return infoNode;
                     });
         };
-        if (this.title =='Detail Node') {
+        if (this.name =='Detail node') {
             var t =  this.attributes["class"].value; //nodeValue
             if (t.search('action-del') != -1 ) {
 			// This row is already open - close it 
@@ -363,6 +359,8 @@ $('#node_items tbody td input').live('keyup', function (e) {
                 { "fnRender": function (oObj) {
                     return setStatusSleep(oObj);}, "aTargets": [ hdLiNode['Awake'] ] },
                 { "fnRender": function (oObj) {
+                    return setTypeInfos(oObj);}, "aTargets": [ hdLiNode['Type'] ] },
+                { "fnRender": function (oObj) {
                     return setActionNode(oObj);}, "aTargets": [hdLiNode['Action'] ] },      
                 { "bSortable": false, "aTargets": [ hdLiNode['Action'] ] }, 
                 ],
@@ -371,18 +369,35 @@ $('#node_items tbody td input').live('keyup', function (e) {
         var msg = {};
         msg['command'] = "Refresh";
         var val = {};
-        val['request'] ='GetValueTypes';
-        val['listetypes'] ='valuestype';
+        val['request'] ='GetListCmdsCtrl';
+        val['listetypes'] ='cmdsctrl';
         msg['value'] = SetDataToxPL (val);
         rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
             .done(function(data, status, xhr){
-                listTypesVal = GetDataFromxPL(data, 'data');
-                console.log("*** listTypesVal : " + listTypesVal);
+                var messXpl = ParseAckXPL(data.xpl);
+                if (messXpl['error'] ='ok') {
+                    var i =1; 
+                    var nCmd={};
+                    for (item in messXpl) {
+                        if ('item'+i == item ) {
+                            nCmd = Object.keys(messXpl['item'+i]);
+                            listCmdCtrl[nCmd[0]] = messXpl['item'+i][nCmd[0]];
+                            i = i+ 1;
+                        };
+                    }
+                };    
+                console.log("*** listCmdCtrl : " + listCmdCtrl);
                 $("#specialsubmit").click();
+                var items=[];
+                for (cmd in listCmdCtrl) {
+                     items.push({value: cmd, label: cmd , title:  listCmdCtrl[cmd], icon: 'icon16-technology-ozwave'});
+                    }; 
+                dlgCtrlAction(items);
+          //      $('*[title]').tooltip_right();
                 })
             .fail(function(jqXHR, status, error){
                if (jqXHR.status == 400)
-                    $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
+                    $.notification('error', '{% trans "Data not recept" %} (' + jqXHR.responseText + ') please check your device configuration');
                     $("#specialsubmit").click();
             });
     });
@@ -425,7 +440,7 @@ $('#node_items tbody td input').live('keyup', function (e) {
             <button id='specialsubmit' class='button icon16-action-reset'>{% trans "Refresh" %}</button>
             <button id='specialsave' class='button icon16-action-save'>{% trans "Save config" %}</button> 
             <span class='subtitle'>{% trans " Updade Node button before saving" %}</span>
-    <!--         <select id='listtest' class='list'>{% trans "liste test" %}</select>  -->
+            <button id='ctrlactions' class='button icon16-action-customize'>{% trans "Controller Actions" %}</button> 
         </p>
 </section>
 <section class="subsection">
@@ -463,3 +478,4 @@ $('#node_items tbody td input').live('keyup', function (e) {
         </div>
 </section>
 <div id="divNodeAssDialog"></div>
+<div id="divCtrlActionDialog"></div>

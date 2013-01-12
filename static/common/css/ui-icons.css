@@ -522,6 +522,12 @@
 .icon64-technology-knx {background-image:url(../images/technologies/knx_64.png);}
 .icon32-technology-knx {background-image:url(../images/technologies/knx_32.png);}
 .icon16-technology-knx {background-image:url(../images/technologies/knx_16.png);}
+.icon64-technology-zwave {background-image:url(../images/technologies/zwave_64.png);}
+.icon32-technology-zwave {background-image:url(../images/technologies/zwave_32.png);}
+.icon16-technology-zwave {background-image:url(../images/technologies/zwave_16.png);}
+.icon64-technology-ozwave {background-image:url(../images/technologies/ozwave_64.png);}
+.icon32-technology-ozwave {background-image:url(../images/technologies/ozwave_32.png);}
+.icon16-technology-ozwave {background-image:url(../images/technologies/ozwave_16.png);}
 
 /* Status icons */
 .icon64-status-true {background-image:url(../images/status/check_64.png);}
