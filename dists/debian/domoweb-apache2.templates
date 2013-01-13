@@ -1,0 +1,27 @@
+Template: domoweb-apache2/servername
+Type: string
+Description: The local name of your web server.
+ This should be the name of your computer on your network or
+ ie domoweb.localdomain
+Default: mycomputer.localdomain
+
+Template: domoweb-apache2/aliasname
+Type: string
+Description: An alias to join your web server.
+ This sould be the name of your computer on the Internet (fdqn)
+ ie domoweb.example.com. Let it to the defaul value if don't wan't that.
+Default: domoweb.localdomain
+
+Template: domoweb-apache2/domowebserverip
+Type: string
+Description: The ip address of the domoweb server.
+Default: 127.0.0.1
+
+Template: domoweb-apache2/authuser
+Type: string
+Description: The user to use to authenticate.
+Default: domoapache
+
+Template: domoweb-apache2/authpasswd
+Type: password
+Description: The password to use to authenticate.
