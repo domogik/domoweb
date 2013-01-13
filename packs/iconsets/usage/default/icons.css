@@ -69,6 +69,12 @@
 .icon64-usage-cron { background-image:url(cron/usage_64.png);}
 .icon32-usage-cron { background-image:url(cron/usage_32.png);}
 .icon16-usage-cron { background-image:url(cron/usage_16.png);}
+.icon64-usage-door { background-image:url(door/usage_64.png);}
+.icon32-usage-door { background-image:url(door/usage_32.png);}
+.icon16-usage-door { background-image:url(door/usage_16.png);}
+.icon64-usage-window { background-image:url(window/usage_64.png);}
+.icon32-usage-window { background-image:url(window/usage_32.png);}
+.icon16-usage-window { background-image:url(window/usage_16.png);}
 
 /* State icons */
 
@@ -469,3 +475,37 @@
 .icon32-usage-portal.sensor.number.known { background-image:url(portal/100_32.png);}
 .icon32-usage-portal.sensor.string.unknown { background-image:url(portal/undefined_32.png);}
 .icon32-usage-portal.sensor.string.known { background-image:url(portal/100_32.png);}
+
+.icon32-usage-door.actuator.binary.unknown { background-image:url(door/undefined_32.png);}
+.icon32-usage-door.actuator.binary.value_0 { background-image:url(door/0_32.png);}
+.icon32-usage-door.actuator.binary.value_1 { background-image:url(door/100_32.png);}
+.icon32-usage-door.actuator.trigger { background-image:url(door/undefined_32.png);}
+.icon32-usage-door.actuator.number { background-image:url(door/100_32.png);}
+.icon32-usage-door.actuator.range.unknown { background-image:url(door/undefined_32.png);}
+.icon32-usage-door.actuator.range.value_0 { background-image:url(door/0_32.png);}
+.icon32-usage-door.actuator.range.value_50 { background-image:url(door/50_32.png);}
+.icon32-usage-door.actuator.range.value_100 { background-image:url(door/100_32.png);}
+.icon32-usage-door.sensor.boolean.unknown { background-image:url(door/undefined_32.png);}
+.icon32-usage-door.sensor.boolean.value_true { background-image:url(door/100_32.png);}
+.icon32-usage-door.sensor.boolean.value_false { background-image:url(door/0_32.png);}
+.icon32-usage-door.sensor.number.unknown { background-image:url(door/undefined_32.png);}
+.icon32-usage-door.sensor.number.known { background-image:url(door/100_32.png);}
+.icon32-usage-door.sensor.string.unknown { background-image:url(door/undefined_32.png);}
+.icon32-usage-door.sensor.string.known { background-image:url(door/100_32.png);}
+
+.icon32-usage-window.actuator.binary.unknown { background-image:url(window/undefined_32.png);}
+.icon32-usage-window.actuator.binary.value_0 { background-image:url(window/0_32.png);}
+.icon32-usage-window.actuator.binary.value_1 { background-image:url(window/100_32.png);}
+.icon32-usage-window.actuator.trigger { background-image:url(window/undefined_32.png);}
+.icon32-usage-window.actuator.number { background-image:url(window/100_32.png);}
+.icon32-usage-window.actuator.range.unknown { background-image:url(window/undefined_32.png);}
+.icon32-usage-window.actuator.range.value_0 { background-image:url(window/0_32.png);}
+.icon32-usage-window.actuator.range.value_50 { background-image:url(window/50_32.png);}
+.icon32-usage-window.actuator.range.value_100 { background-image:url(window/100_32.png);}
+.icon32-usage-window.sensor.boolean.unknown { background-image:url(window/undefined_32.png);}
+.icon32-usage-window.sensor.boolean.value_true { background-image:url(window/100_32.png);}
+.icon32-usage-window.sensor.boolean.value_false { background-image:url(window/0_32.png);}
+.icon32-usage-window.sensor.number.unknown { background-image:url(window/undefined_32.png);}
+.icon32-usage-window.sensor.number.known { background-image:url(window/100_32.png);}
+.icon32-usage-window.sensor.string.unknown { background-image:url(window/undefined_32.png);}
+.icon32-usage-window.sensor.string.known { background-image:url(window/100_32.png);}
