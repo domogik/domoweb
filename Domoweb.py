@@ -16,7 +16,7 @@ from django.conf import settings
 
 import domoweb
 from wsPlugin import WSPlugin
-from mqPlugin import MQPlugin
+#from mqPlugin import MQPlugin
 from eventsPlugin import EventsPlugin
 from corePlugin import CorePlugin
 from loaderPlugin import LoaderPlugin
