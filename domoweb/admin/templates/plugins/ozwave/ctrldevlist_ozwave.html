@@ -71,7 +71,7 @@
             .attr('class', "icon16-text-right icon16-status-plugin-" + status)
             .html("<span class='label'>Etat:</span><span class='offscreen'>" + textstatus + "</span>");
         }
-        
+    
     function GetinfoValuesNode (nodeid, callback) {
         var valuesNode = [];
         var messXpl = {};
@@ -198,6 +198,9 @@
                     setStatusZW('up')
                     $.notification('debug',"device : " + netWorkZW['Primary controller'] + " info refreshed" );
                     var node_items = document.getElementById("node_items");
+                    SetStatusZWDevices('infoIconInitNodes', netWorkZW['Init state']);
+                    $('#infoIconInitNodes').attr('title', netWorkZW['Init state']);
+                    $('#infoTextInitNodes').text("{% trans "Devices initialisation : " %}" );
                     RefreshNodes(netWorkZW);
                 } else {
                     $('#homeid').html(netWorkZW['error']);
@@ -231,7 +234,7 @@
         var li= -1;
         if (dataT) {
             for (i=0; i<dataT.length; i++) {
-                if (dataT[i][hdLiNode['NodeId']]==nodeid) {
+                if (getNodeIdFromHtml(dataT[i][hdLiNode['NodeId']])==nodeid) {
                     li= i;
                //     $('#node_items').dataTable().fnUpdate(dataLi,li);   fnUpdate bugg si mise à jour de toute la ligne !!!!
                     for (var ic = 0; ic<dataLi.length; ic++){ 
@@ -254,35 +257,38 @@
     $('#node_items tbody td button').live('click', function () {
         var nTr = this.parentNode.parentNode;
         var aData = oTabNodes.fnGetData( nTr );
+        var notfind = true;
         if (this.name =='Update node') {
+            notfind = false;
             console.log("Dans click updatenode, DataTable : " + aData);   
             // Lancer la sauvegarde vers plugin
-                var msg = {};
-                msg['command'] = "Refresh";
-                var val = {};
-                val['request'] ='SetNodeNameLoc';
-                val['node'] =aData[hdLiNode['NodeId']];
-                val['newname'] = returnTextValue(aData[hdLiNode['Name']]);
-                val['newloc'] = returnTextValue(aData[hdLiNode['Location']]);
-                msg['value'] = SetDataToxPL (val);
-                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-                    .done(function(data, status, xhr){
-                        infoNode = GetDataFromxPL(data,  'data');
-                        var dt=JSON.stringify(infoNode);
-                        console.log("Dans Update Node : " + infoNode['Model']);
-                        $.notification('debug',"Node : " + infoNode['Model'] + " name and  location update" );
-                        RefreshTabHtml(infoNode);
-                        return  infoNode;
-                    })
-                    .fail(function(jqXHR, status, error){
-                       if (jqXHR.status == 400)
-                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") {% trans "please check your device configuration" %}");
-                            infoNode['Node'] =   nodeid;
-                            infoNode['Model'] = "NodeId not define";
-                            return infoNode;
-                    });
+            var msg = {};
+            msg['command'] = "Refresh";
+            var val = {};
+            val['request'] ='SetNodeNameLoc';
+            val['node'] =getNodeIdFromHtml(aData[hdLiNode['NodeId']]);
+            val['newname'] = returnTextValue(aData[hdLiNode['Name']]);
+            val['newloc'] = returnTextValue(aData[hdLiNode['Location']]);
+            msg['value'] = SetDataToxPL (val);
+            rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+                .done(function(data, status, xhr){
+                    infoNode = GetDataFromxPL(data,  'data');
+                    var dt=JSON.stringify(infoNode);
+                    console.log("Dans Update Node : " + infoNode['Model']);
+                    $.notification('debug',"Node : " + infoNode['Model'] + " name and  location update" );
+                    RefreshTabHtml(infoNode);
+                    return  infoNode;
+                })
+                .fail(function(jqXHR, status, error){
+                   if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") {% trans "please check your device configuration" %}");
+                        infoNode['Node'] =   nodeid;
+                        infoNode['Model'] = "NodeId not define";
+                        return infoNode;
+                });
         };
         if (this.name =='Detail node') {
+            notfind = false;
             var t =  this.attributes["class"].value; //nodeValue
             if (t.search('action-del') != -1 ) {
 			// This row is already open - close it 
@@ -292,25 +298,27 @@
                 // Open this row 
                 this.attributes["class"].value = "icon16-action-del buttonicon"; //nodeValue
                 //send update nodes values
-                var values = GetinfoValuesNode(aData[hdLiNode['NodeId']], function(thOut){ oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,thOut), 'simple' );});
+                var values = GetinfoValuesNode(getNodeIdFromHtml(aData[hdLiNode['NodeId']]), function(thOut){ oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,thOut), 'simple' );});
         /*  console.log("click detail values : " + values); */
             };
         };
         if (this.name == 'Node groups') {
-            var zwNode = GetZWNodeById(aData[hdLiNode['NodeId']]);
+            notfind = false;
+            var zwNode = GetZWNodeById(getNodeIdFromHtml(aData[hdLiNode['NodeId']]));
             editNodeAss(zwNode, dlgNodeAss);
             console.log("Dans click Node Associations, Node : " + zwNode.Node); 
          };
        if (this.name == 'Send value') {
+            notfind = false;
             var idDetNode = nTr.parentNode.parentNode.id;
             var aTable = $('#' + idDetNode).dataTable();
             aData = aTable.fnGetData(nTr); 
             valueId = aData[getDataTableColIndex(aTable.fnSettings(), 'id')];
             console.log ("sending update cmd class");
             msg = setValueNode(valueId, aData[getDataTableColIndex(aTable.fnSettings(), 'value')], aTable,nTr);
-            
-        }else {
-            console.log("Dans click button, DataTable : " + this.title); 
+        };
+        if (notfind) {
+            console.log("Dans click button, no action find : " + this.name); 
         };
     }); 
 // class input   
@@ -352,6 +360,8 @@ $('#node_items tbody td input').live('keyup', function (e) {
             "bAutoWidth": false,
             "aoColumnDefs": [  
                 { "fnRender": function (oObj) {
+                    return setStatusDeviceZW(oObj);}, "aTargets": [ hdLiNode['NodeId'] ] },
+                { "fnRender": function (oObj) {
                     return setNameNode(oObj);}, "aTargets": [ hdLiNode['Name'] ] },
                 { "fnRender": function (oObj) {
                     return  "<input type='text' title='Location' value='" + 
@@ -372,6 +382,7 @@ $('#node_items tbody td input').live('keyup', function (e) {
         val['request'] ='GetListCmdsCtrl';
         val['listetypes'] ='cmdsctrl';
         msg['value'] = SetDataToxPL (val);
+        createToolTip('#infoIconInitNodes', 'top');
         rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
             .done(function(data, status, xhr){
                 var messXpl = ParseAckXPL(data.xpl);
@@ -444,7 +455,13 @@ $('#node_items tbody td input').live('keyup', function (e) {
         </p>
 </section>
 <section class="subsection">
-    <h2>{% trans "Zwave Network device" %}</h2>
+    <h2>{% trans "Zwave Network device" %}&nbsp;&nbsp;----&nbsp;&nbsp;
+            <span id='infoTextInitNodes' class='label'>{% trans "devices not initialised"%}</span>
+            <div id='infoIconInitNodes' class='icon16-text icon16-status-unknown' title='{% trans "devices not initialised"%}'>
+                <span class='offscreen'>{% trans "devices not initialised"%}</span>
+            </div>
+            
+    </h2>
     <table class='simple'><tbody>
         <tr>
             <td>{% trans "Description of zwave network with devices capacities" %}</td>

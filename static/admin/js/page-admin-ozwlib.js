@@ -148,19 +148,56 @@ function GetZWNodeById (nodeiId) {
     return false;
 };
     
-    function SetStatusMemberGrp(infonode,group,member,status) {
-        console.log ('Set status :' + status);
-    }
+function SetStatusMemberGrp(infonode,group,member,status) {
+    console.log ('Set status :' + status);
+}
         
-        
+function SetStatusZWDevices(idObj, status) {
+     if (status == 'Uninitialized') { st = 'status-unknown'};
+     if (status == 'Completed') { st = 'status-active'};
+     if (status == 'In progress - Devices initializing') { st = 'action-processing_f6f6f6'};
+     if (status == 'Out of operation') { st = 'status-warning'};
+     $('#'+ idObj).removeClass().addClass('icon16-text icon16-'+ st);
+     t = gettext(status)
+     $('#'+idObj).qtip('api').updateContent(t);
+};
+
 // fnRender, callback des élements du tableau autre que texte ou enrichis
+    function getNodeIdFromHtml(texte) {
+        if (typeof texte=="string") {
+            return parseInt (texte.substring(0, texte.indexOf('<span'))); 
+        } else { return texte}
+    }
+    
+    
+    
+    function setStatusDeviceZW(oObj) {
+        /* {0:,
+              1:'Initialized - not known', 
+              2:'Completed',
+              3:'In progress - Devices initializing',
+              4:'In progress - Linked to controller',
+              5:'In progress - Can receive messages', 
+              6:'Out of operation'} */
+        var nodeId = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
+        var node = GetZWNodeById(nodeId);
+        var status = 'status-unknown';
+        if (node.InitState =='Uninitialized') {status = 'status-unknown';};
+        if (node.InitState =='Initialized - not known') {status = 'status-active';};
+        if (node.InitState =='Completed') {status ='status-active';};
+        if (node.InitState.indexOf('In progress') !=-1) {status ='action-processing_f6f6f6';};
+        if (node.InitState =='Out of operation') {status ='status-warning';};
+        return  nodeId + "<span id='nodestate" + nodeId + "'class='icon16-text-right  icon16-" + status + "' title='" + node.InitState + "' /span>";
+        }
+
+
     function setNameNode(oObj) {
         return "<input type='text' title='Name' value='" + oObj.aData[hdLiNode['Name']] + "'/>";
         };
         
     function setStatusSleep(oObj) {
         var status = oObj.aData[hdLiNode['Awake']];
-        var nodeId = oObj.aData[hdLiNode['NodeId']];
+        var nodeId = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
         if (status==true) { //Sleeping
             textstatus = 'Probably sleep';
             st = 'unknown';
@@ -174,7 +211,7 @@ function GetZWNodeById (nodeiId) {
 
     function setTypeInfos(oObj) {
         var typeName = oObj.aData[hdLiNode['Type']];
-        var nodeId = oObj.aData[hdLiNode['NodeId']];
+        var nodeId = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
         var node = GetZWNodeById(nodeId);
         var text = '';
         if (node.Capabilities.length > 1) {text= 'Capabilities :\n';
@@ -186,7 +223,7 @@ function GetZWNodeById (nodeiId) {
         };
 
     function setActionNode(oObj) {
-        var num = oObj.aData[hdLiNode['NodeId']];
+        var num = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
         var stAct = 'add';
         var tabDet = document.getElementById("detNode" + num);
         if (tabDet) { // DetailNode opened 
@@ -339,7 +376,7 @@ function GetZWNodeById (nodeiId) {
     function fnFormatDetails (nTr, thOut)
     {
         var aData = oTabNodes.fnGetData(nTr);
-        var idDetNode = 'detNode' + aData[hdLiNode['NodeId']];
+        var idDetNode = 'detNode' + getNodeIdFromHtml(aData[hdLiNode['NodeId']]);
         console.log("Format detail node entête : " + thOut);
         if (thOut.length != 1) {
             var sOut = '<table id="' + idDetNode + '" class="simple" cellpadding="5" border="1"><thead><tr>'
@@ -387,6 +424,7 @@ function GetinfoNode (nodeid, callback, queue) {
                     RefreshDataNode(infoNode.data, (queue.length == 0));
                     callback(infoNode.data);
                     console.log("Node is refreshed, nodeID: " + nodeid);
+                    createToolTip('#nodestate' + nodeid, 'left');
                     createToolTip('#detailnode' + nodeid, 'right');
                     createToolTip('#updnode' + nodeid, 'right');
                     createToolTip('#updassoc' + nodeid, 'right');
