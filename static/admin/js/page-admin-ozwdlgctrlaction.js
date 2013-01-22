@@ -1,7 +1,7 @@
  /* Librairie pour boite de dialogue action du controlleur   */ 
 var RunningCtrlAction ={};
 var ListeningStateCtrl = false;
-var Action = {action: 'undefine', cmd: 'undefine', cmdsource: 'undefine', cptmsg: 0, nodeid: 0, arg :{}, id: 0};
+var Action = {action: 'undefine', cmd: 'undefine', cmdsource: 'undefine', cptmsg: 0, nodeid: 0, highpower:'False' , arg :{}, id: 0};
 var InterListening = setInterval(listeningCtrlState, 17000);
 
 BtOnOff = function (parentid , id, backgrds,  texts, callbackClick){
@@ -33,9 +33,11 @@ BtOnOff.prototype.setStatus = function(status) {
         $('#offscreen'+this.id).text(t);
      //   $('#'+this.id).attr('title', t);
         $('#'+this.id).qtip('api').updateContent(t);
-        this.status = st;    
-    }
-    return this.status;
+        this.status = st;  
+        return this.status;
+    } else {
+        return this.status;
+    };
 };
 
 BtOnOff.prototype.toggle = function() {
@@ -57,7 +59,7 @@ function dlgCtrlAction (vData) {
     $('#divCtrlActionDialog').dialog_formctrlaction({
         tips: gettext("Some actions block controller activity, you must unlock it after session action fisnished.") ,
         tipsid: 'tipsCtrlActions',
-        sstips: gettext("Action status and user informations"),
+        sstips: gettext("Status and user informations last action :"),
         sstipsid : 'tipsStatusActions',
         fields: [
             {name : 'selectActCtrl', type:'select', label: gettext("Chose controller action :"), required: false,
@@ -67,15 +69,25 @@ function dlgCtrlAction (vData) {
                 items: vData, 
             },
             {name : 'actNodeID', type:'text', label:"Node number", required: false, options: {min: 1, max: 3}},
-            {name : 'actRemoveNode', type:'checkbox', label:"for example", required: false, options: {min: 1, max: 80}}
+            {name : 'actHighPower', type:'checkbox', label:"High power", required: false},
+            {name : 'actArgs', type:'text', label:"Argument", required: false, options: {min: 1, max: 3}}
             ]
         }); 
         
-    $('#divCtrlActionDialog').append("<li class='tip' id='tipsInfoCmd'>"+gettext("No action")+"</li>");
+    $('#divCtrlActionDialog').append("<li class='label' id='tipsInfoCmd'>"+gettext("No action")+"</li>" );     
+    $('#actHighPower').attr('title', gettext('Used only with the AddDevice, AddController, RemoveDevice and RemoveController commands.' +
+                                        'Usually when adding or removing devices, the controller operates at low power so that the controller ' +
+                                        'must be physically close to the device for security reasons. '+
+                                        'If high Power is true, the controller will operate at normal power levels instead. Defaults to false.'));
     $('#selectActCtrl').after($('#tipsInfoCmd'));
     RunningCtrlAction = new BtOnOff('divCtrlActionDialog', 'runCtrlAction', ['button icon16-action-play', 'button icon16-action-processing_ffffff'],
                         ['Start action', 'Stop action'], handle_RequestCtrlAction);
     $('#selectActCtrl').before($('#runCtrlAction'));
+    $('#tipsStatusActions').removeClass('tip').addClass('icon16-text-right icon16-status-true');
+    $('#tipsStatusActions').css('font-size', 12);
+    $('#tipsInfoCmd').css('font-size', 12);
+    $('label[for=actArgs],#actArgs').hide(); // Not Used at this time
+    createToolTip('#actHighPower', 'left');
     $('#divCtrlActionDialog').dialog_formctrlaction('addbutton', {
         title: gettext("Controller actions (in BETA version)"),
         button: "#ctrlactions",
@@ -86,81 +98,166 @@ function dlgCtrlAction (vData) {
         }
     });
 
-    $('#selectActCtrl').live('change', function(e, sel) {
+    $('#selectActCtrl').on('change', function(e, sel) {
         var elem = $(e.target);
         console.log('select change :', listCmdCtrl[sel.selected]);
         $('#tipsInfoCmd').text(listCmdCtrl[sel.selected]);
+        $('label[for=actArgs],#actArgs').hide(); // Not Used at this time
         switch (sel.selected) {
             case AVAILABLECMDS[0] :  // 'None'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').hide();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[1] :  // 'AddDevice'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').hide();
+                $('label[for=actHighPower],#actHighPower').show();
                 break;
             case AVAILABLECMDS[2] :  // 'CreateNewPrimary'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').hide();
+                $('label[for=actHighPower],#actHighPower').show();
                 break;
             case AVAILABLECMDS[3] :  // 'ReceiveConfiguration'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').hide();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[4] :  // 'RemoveDevice'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').hide();
+                $('label[for=actHighPower],#actHighPower').show();
                 break;
             case AVAILABLECMDS[5] :  // 'RemoveFailedNode'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').show();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[6] :  // 'HasNodeFailed'
-                $('#actNodeID').show();
-                $('#actRemoveNode').show();
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').show();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[7] :  // 'ReplaceFailedNode'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').show();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[8] :  // 'TransferPrimaryRole'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').hide();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[9] :  // 'RequestNetworkUpdate'
-                $('#actNodeID').hide();
-                $('#actRemoveNode').hide();
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').hide();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[10] :  // 'RequestNodeNeighborUpdate'
-                $('#actNodeID').show();
-                $('#actRemoveNode').hide();
-                console.log('ctrl new select action')
+                $('label[for=actNodeID],#actNodeID').show();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[11] :  // 'AssignReturnRoute'
-                console.log('ctrl new select action')
+                $('label[for=actNodeID],#actNodeID').show();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[12] :  // 'DeleteAllReturnRoutes'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').show();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[13] :  // 'SendNodeInformation'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').show();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[14] :  // 'ReplicationSend'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').hide();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[15] :  // 'CreateButton'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').show();
+                $('label[for=actHighPower],#actHighPower').hide();
                 break;
             case AVAILABLECMDS[16] :  // 'DeleteButton'
-                console.log('ctrl new select action');
+                $('label[for=actNodeID],#actNodeID').show();
+                $('label[for=actHighPower],#actHighPower').hide();
+                $('label[for=actArgs],#actArgs').show(); // Probably  Used for id
                 break;
             default :
+                $('label[for=actNodeID],#actNodeID').hide();
+                $('label[for=actHighPower],#actHighPower').hide();
                 console.log('ctrl unknoww action : ', sel.selected);
         }
     });
 }
 
+function updateStateAction(state, locked = false){
+    if (state != 'running') {
+            $('#selectActCtrl').disabled = false;
+            RunningCtrlAction.locked = locked;
+            RunningCtrlAction.setStatus(0);
+            ListeningStateCtrl = false;
+    } else {
+           $('#selectActCtrl').disabled = true;
+            RunningCtrlAction.locked = locked;
+            RunningCtrlAction.setStatus(1);
+            ListeningStateCtrl = true;
+    };
+};
+
+function checkStatesCtrl(state) {
+    switch (state) {
+        case 'Normal' :
+            console.log('Callback ctrl action status : '+ messXpl['cmdstate']);
+            updateStateAction('stop');
+            $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-status-true');
+            break;
+        case 'Starting' :
+            console.log('Callback ctrl action status : '+ messXpl['cmdstate'], ', start listening .....');
+            updateStateAction('running'); 
+            $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-action-play');
+            break;
+        case 'Cancel' :
+            console.log('Callback ctrl action status : '+ messXpl['cmdstate']);
+            updateStateAction('stop');
+            $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-action-cancel');
+            break;
+        case 'Error' :
+            console.log('Callback ctrl action status : '+ messXpl['cmdstate']);
+            updateStateAction('stop');
+            $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-status-warning');
+            break;
+        case 'Waiting' :play
+            console.log('Callback ctrl action status : '+ messXpl['cmdstate']);
+            $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-action-processing_f6f6f6');
+            updateStateAction('running');
+            break;
+        case 'Sleeping' :
+            console.log('Callback ctrl action status : '+ messXpl['cmdstate']);
+            $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-status-inactive');
+            break;
+       case 'InProgress' :
+            console.log('Callback ctrl action status : '+ messXpl['cmdstate'], ', continue listening .....');
+            updateStateAction('running');
+            $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-action-processing_f6f6f6');
+            break;
+        case 'Completed' :
+            console.log('Callback ctrl action status : '+ messXpl['cmdstate']);
+            updateStateAction('stop');
+            $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-status-success');
+           break;
+        case 'Failed' :
+            console.log('Callback ctrl action status : '+ messXpl['cmdstate']);
+            updateStateAction('stop');
+            $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-status-false');
+            break;
+        case 'NodeOK' :
+            console.log('Callback ctrl action status : '+ messXpl['cmdstate']);
+            $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-status-success');
+            break;
+        case 'NodeFailed' :
+            console.log('Callback ctrl action status : '+ messXpl['cmdstate']);
+            $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-status-warning');
+            break;
+    };
+};
+
 function handle_RequestCtrlAction(cmd) {
     var a1 = $('#selectActCtrl');
-    a1.attr('disabled', 'disabled');
     var a = a1[0];
     var action = a.value;
     if (action) {
-        a1.disabled = true;
+        updateStateAction('running');
         var msg = {};
         msg['command'] = "Refresh";
         Action.action = action;
@@ -171,6 +268,11 @@ function handle_RequestCtrlAction(cmd) {
             var n = parseInt($('#actNodeID').val());
             Action.nodeid = n;
         } else {Action.nodeid = 0;}
+        Action.highpower = 'False'
+        if ($('#actHighPower').is(':visible')) {
+            var n = $('#actHighPower').is(':checked');
+            if (n) {Action.highpower =  'True';};
+        };
         Action.arg = {};
         action.id = Math.floor((Math.random()*1000)+1);
         var val = Action;
@@ -179,33 +281,30 @@ function handle_RequestCtrlAction(cmd) {
         rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
             .done(function(data, status, xhr){
                 messXpl = GetDataFromxPL(data, 'data');
-                $('#tipsStatusActions').text('Commande status : ' +messXpl['cmdstate'] + ' , information : ' + messXpl['message']);
+                $('#tipsStatusActions').text('Action "' + messXpl['action'] + '" ,status "' +messXpl['cmdstate'] +
+                                                            '", information : ' + messXpl['message']);
                 if (messXpl['error'] == "") {
-                    console.log("Dans controleur action : " + messXpl);
-                    $.notification('debug','Controleur received action : ' +  + '  '  + messXpl['action'] + ', commande :' + messXpl['cmdstate']  );
-                    if (messXpl['cmdstate'] != 'running') {
-                         a1.disabled = false;
-                        ListeningStateCtrl = false
-                    } else {
-                        ListeningStateCtrl = true
-                        // listeningCtrlState(Action); 
-                    };
+                    console.log("Dans handle_RequestCtrlAction : " + JSON.stringify(messXpl));
+                    $.notification('debug','Controleur received action : ' + messXpl['action'] + ', commande :' + messXpl['cmdstate']  );
+                    updateStateAction(messXpl['cmdstate']);
+                    checkStatesCtrl('Starting');
                     return messXpl;
                 } else { // Erreur dans la lib python
-                    a1.disabled = false;
                     console.log("no controleur action, error : " + messXpl['error']);                          
                     $.notification('error', 'Action  (' + action+ ') command (' +cmd + ') Controller report : ' + messXpl['error'] + ', ' +
                                         messXpl['error_msg'] + ', please check input');
-                    ListeningStateCtrl = false;
-                    return messXpl['error']             
+                    updateStateAction('stop');
+                    checkStatesCtrl(messXpl['state']);
+                    return messXpl['error'];
                 };
             })
             .fail(function(jqXHR, status, error){
                if (jqXHR.status == 400)
                     $.notification('error', 'No confirmation for controller action : (' + action + ') please check your configuration');
+                    var messXpl ={};
                     messXpl['Error'] =  "New action send";
                     messXpl['action'] =  Action;
-                    ListeningStateCtrl = false;
+                    updateStateAction('stop');
                     return messXpl;
             });
         };
@@ -281,86 +380,35 @@ function listeningCtrlState() {
                 messXpl = GetDataFromxPL(data, 'data');
                 if (messXpl['cmd'] == 'getState') {
                     if (messXpl['id'] == Action.id) {
-                        switch (messXpl['state']) {
-                            case 'Normal' :
-                                console.log('Callback ctrl action sattus : '+ messXpl['cmdstate']);
-                                RunningCtrlAction.locked = false;
-                                RunningCtrlAction.setStatus(0);
-                                ListeningStateCtrl = false;
-                                break;
-                            case 'Starting' :
-                                console.log('Callback ctrl action sattus : '+ messXpl['cmdstate'], ', start listening .....');
-                                RunningCtrlAction.setStatus(1);
-                                RunningCtrlAction.locked = true;
-                                ListeningStateCtrl = true;  // Boucle tant que pas d'arrêt                        
-                            case 'Cancel' :
-                                console.log('Callback ctrl action sattus : '+ messXpl['cmdstate']);
-                                RunningCtrlAction.locked = false;
-                                RunningCtrlAction.setStatus(0);
-                                ListeningStateCtrl = false;
-                                break;
-                            case 'Error' :
-                                console.log('Callback ctrl action sattus : '+ messXpl['cmdstate']);
-                                RunningCtrlAction.locked = false;
-                                RunningCtrlAction.setStatus(0);
-                                ListeningStateCtrl = false;
-                                break;
-                            case 'Waiting' :
-                                console.log('Callback ctrl action sattus : '+ messXpl['cmdstate']);
-                                ListeningStateCtrl = true;  // Boucle tant que pas d'arrêt
-                                break;
-                            case 'Sleeping' :
-                                console.log('Callback ctrl action sattus : '+ messXpl['cmdstate']);
-                                break;
-                           case 'InProgress' :
-                                console.log('Callback ctrl action sattus : '+ messXpl['cmdstate'], ', continue listening .....');
-                                RunningCtrlAction.setStatus(1);
-                                RunningCtrlAction.locked = true;
-                                ListeningStateCtrl = true;  // Boucle tant que pas d'arrêt
-                                break;
-                            case 'Completed' :
-                                console.log('Callback ctrl action sattus : '+ messXpl['cmdstate']);
-                                RunningCtrlAction.locked = false;
-                                RunningCtrlAction.setStatus(0);
-                                ListeningStateCtrl = false;
-                               break;
-                            case 'Failed' :
-                                console.log('Callback ctrl action sattus : '+ messXpl['cmdstate']);
-                                RunningCtrlAction.locked = false;
-                                RunningCtrlAction.setStatus(0);
-                                ListeningStateCtrl = false;
-                                break;
-                            case 'NodeOK' :
-                                console.log('Callback ctrl action sattus : '+ messXpl['cmdstate']);
-                                break;
-                            case 'NodeFailed' :
-                                console.log('Callback ctrl action sattus : '+ messXpl['cmdstate']);
-                                break;
-                        };
+                        checkStatesCtrl(messXpl['state']);
                     };
                 };
-                $('#tipsStatusActions').text('Commande status : ' +messXpl['cmdstate'] + ' , information : ' + messXpl['message']);
+                $('#tipsStatusActions').text('Action "' + messXpl['action'] + '" ,status "' +messXpl['state'] +
+                                                            '", information : ' + messXpl['message']);
                 if (messXpl['error'] == "") {
-                    console.log("Dans controleur action : " + messXpl);
+                    console.log("Dans listeningCtrlState : " + JSON.stringify(messXpl));
                     $.notification('debug','Controleur received action : ' + messXpl['cmd'] + '  '  + messXpl['action'] + ', commande :' + messXpl['cmdstate']  );
-                    if (messXpl['cmdstate'] != 'running') {$('#selectActCtrl').disabled = false;};
+                    if (messXpl['cmdstate'] != 'running') {
+                        updateStateAction('stop');
+                    };
                     return messXpl;
                 } else { // Erreur dans la lib python
-                    $('#selectActCtrl').disabled = false;
+                    updateStateAction('stop');
                     console.log("no controleur action, error : " + messXpl['error']);                          
                     $.notification('error', 'Action  (' + Action['action']+ ') command (' + Action['cmd'] + ') report : ' + messXpl['error'] + ', please check input');
                     return messXpl['error']             
                 };
             })
             .fail(function(jqXHR, status, error){
-               if (jqXHR.status == 400) {
+                var messXpl ={};
+                if (jqXHR.status == 400) {
                     $('#selectActCtrl').disabled = false;
                    $.notification('error', 'No listening for controller action : (' + Action['action'] + ') please check your configuration');
                     messXpl['Error'] =  "Listening action";
                     messXpl['action'] =  Action;
-                    ListeningStateCtrl = false;
+                    updateStateAction('stop');
                     return messXpl;
-               } else {
+                } else {
                     $.notification('info', 'Continue listening for controller action : (' + Action['action'] + ') Waiting');
                     ListeningStateCtrl = true;  // Boucle tant que pas d'arrêt
                     return messXpl;

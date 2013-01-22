@@ -100,7 +100,8 @@
                 }
                 self._allFields.push(field);
             });
-            this.element.append("<div class='tip'>" + o.sstips + "</div><ul class='tip' id='" + o.sstipsid + "'></ul>");
+       //     this.element.append("<div class='tip'>" + o.sstips + "</div><ul class='tip' id='" + o.sstipsid + "'></ul>");
+            this.element.append("<div class='tip' id='" + o.sstipsid + "'>" + o.sstips + "</div>");
 
             this.element.dialog({
                 autoOpen: false,

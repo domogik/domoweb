@@ -254,75 +254,75 @@
 
 // Callback event des commandes dans la table des nodes.
 // Class button, 
-    $('#node_items tbody td button').live('click', function () {
-        var nTr = this.parentNode.parentNode;
-        var aData = oTabNodes.fnGetData( nTr );
-        var notfind = true;
-        if (this.name =='Update node') {
-            notfind = false;
-            console.log("Dans click updatenode, DataTable : " + aData);   
-            // Lancer la sauvegarde vers plugin
-            var msg = {};
-            msg['command'] = "Refresh";
-            var val = {};
-            val['request'] ='SetNodeNameLoc';
-            val['node'] =getNodeIdFromHtml(aData[hdLiNode['NodeId']]);
-            val['newname'] = returnTextValue(aData[hdLiNode['Name']]);
-            val['newloc'] = returnTextValue(aData[hdLiNode['Location']]);
-            msg['value'] = SetDataToxPL (val);
-            rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-                .done(function(data, status, xhr){
-                    infoNode = GetDataFromxPL(data,  'data');
-                    var dt=JSON.stringify(infoNode);
-                    console.log("Dans Update Node : " + infoNode['Model']);
-                    $.notification('debug',"Node : " + infoNode['Model'] + " name and  location update" );
-                    RefreshTabHtml(infoNode);
-                    return  infoNode;
-                })
-                .fail(function(jqXHR, status, error){
-                   if (jqXHR.status == 400)
-                        $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") {% trans "please check your device configuration" %}");
-                        infoNode['Node'] =   nodeid;
-                        infoNode['Model'] = "NodeId not define";
-                        return infoNode;
-                });
+$('body').on('click','#node_items tbody td button', function () {
+    var nTr = this.parentNode.parentNode;
+    var aData = oTabNodes.fnGetData( nTr );
+    var notfind = true;
+    if (this.name =='Update node') {
+        notfind = false;
+        console.log("Dans click updatenode, DataTable : " + aData);   
+        // Lancer la sauvegarde vers plugin
+        var msg = {};
+        msg['command'] = "Refresh";
+        var val = {};
+        val['request'] ='SetNodeNameLoc';
+        val['node'] =getNodeIdFromHtml(aData[hdLiNode['NodeId']]);
+        val['newname'] = returnTextValue(aData[hdLiNode['Name']]);
+        val['newloc'] = returnTextValue(aData[hdLiNode['Location']]);
+        msg['value'] = SetDataToxPL (val);
+        rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+            .done(function(data, status, xhr){
+                infoNode = GetDataFromxPL(data,  'data');
+                var dt=JSON.stringify(infoNode);
+                console.log("Dans Update Node : " + infoNode['Model']);
+                $.notification('debug',"Node : " + infoNode['Model'] + " name and  location update" );
+                RefreshTabHtml(infoNode);
+                return  infoNode;
+            })
+            .fail(function(jqXHR, status, error){
+               if (jqXHR.status == 400)
+                    $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") {% trans "please check your device configuration" %}");
+                    infoNode['Node'] =   nodeid;
+                    infoNode['Model'] = "NodeId not define";
+                    return infoNode;
+            });
+    };
+    if (this.name =='Detail node') {
+        notfind = false;
+        var t =  this.attributes["class"].value; //nodeValue
+        if (t.search('action-del') != -1 ) {
+        // This row is already open - close it 
+            this.attributes["class"].value = "icon16-action-add buttonicon"; //nodeValue
+            oTabNodes.fnClose( nTr );
+        }else {
+            // Open this row 
+            this.attributes["class"].value = "icon16-action-del buttonicon"; //nodeValue
+            //send update nodes values
+            var values = GetinfoValuesNode(getNodeIdFromHtml(aData[hdLiNode['NodeId']]), function(thOut){ oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,thOut), 'simple' );});
+    /*  console.log("click detail values : " + values); */
         };
-        if (this.name =='Detail node') {
-            notfind = false;
-            var t =  this.attributes["class"].value; //nodeValue
-            if (t.search('action-del') != -1 ) {
-			// This row is already open - close it 
-                this.attributes["class"].value = "icon16-action-add buttonicon"; //nodeValue
-                oTabNodes.fnClose( nTr );
-            }else {
-                // Open this row 
-                this.attributes["class"].value = "icon16-action-del buttonicon"; //nodeValue
-                //send update nodes values
-                var values = GetinfoValuesNode(getNodeIdFromHtml(aData[hdLiNode['NodeId']]), function(thOut){ oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,thOut), 'simple' );});
-        /*  console.log("click detail values : " + values); */
-            };
-        };
-        if (this.name == 'Node groups') {
-            notfind = false;
-            var zwNode = GetZWNodeById(getNodeIdFromHtml(aData[hdLiNode['NodeId']]));
-            editNodeAss(zwNode, dlgNodeAss);
-            console.log("Dans click Node Associations, Node : " + zwNode.Node); 
-         };
-       if (this.name == 'Send value') {
-            notfind = false;
-            var idDetNode = nTr.parentNode.parentNode.id;
-            var aTable = $('#' + idDetNode).dataTable();
-            aData = aTable.fnGetData(nTr); 
-            valueId = aData[getDataTableColIndex(aTable.fnSettings(), 'id')];
-            console.log ("sending update cmd class");
-            msg = setValueNode(valueId, aData[getDataTableColIndex(aTable.fnSettings(), 'value')], aTable,nTr);
-        };
-        if (notfind) {
-            console.log("Dans click button, no action find : " + this.name); 
-        };
-    }); 
+    };
+    if (this.name == 'Node groups') {
+        notfind = false;
+        var zwNode = GetZWNodeById(getNodeIdFromHtml(aData[hdLiNode['NodeId']]));
+        editNodeAss(zwNode, dlgNodeAss);
+        console.log("Dans click Node Associations, Node : " + zwNode.Node); 
+     };
+   if (this.name == 'Send value') {
+        notfind = false;
+        var idDetNode = nTr.parentNode.parentNode.id;
+        var aTable = $('#' + idDetNode).dataTable();
+        aData = aTable.fnGetData(nTr); 
+        valueId = aData[getDataTableColIndex(aTable.fnSettings(), 'id')];
+        console.log ("sending update cmd class");
+        msg = setValueNode(valueId, aData[getDataTableColIndex(aTable.fnSettings(), 'value')], aTable,nTr);
+    };
+    if (notfind) {
+        console.log("Dans click button, no action find : " + this.name); 
+    };
+}); 
 // class input   
-$('#node_items tbody td input').live('keyup', function (e) {
+$('body').on('keyup', '#node_items tbody td input',function (e) {
    var nTr = this.parentNode.parentNode;
    var aData = oTabNodes.fnGetData( nTr );
    if (this.title =='Name') {
