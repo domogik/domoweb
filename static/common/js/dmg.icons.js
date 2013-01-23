@@ -21,7 +21,8 @@ range['christmas_tree'] = [0, 100];
 range['water_tank'] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 range['security_camera'] = [0, 100];
 range['portal'] = [0, 50, 100];
-
+range['door'] = [0, 50, 100];
+range['window'] = [0, 50, 100];
 
 function findRangeIcon(usage, percent) {
 	var nearest, last_d_memorized = 101;

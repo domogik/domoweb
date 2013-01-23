@@ -1,6 +1,7 @@
 var netWorkZW = {};
 var listNodes = new Array();
 var listTypesVal = {};
+var listCmdCtrl = {};
 var hdCmdClss = new Array();
 var initialized = false;
 // Constante d'entete de colonne de la table node_items 
@@ -19,7 +20,7 @@ function GetDataFromxPL (data, key) {
     var fin=dt.search('}');   
     dt=dt.slice(0,fin-2); 
 //    dt=dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"');
-    dt= dt.replace(/&ouvr;/g,'{').replace(/&ferm;/g,'}').replace(/&quot;/g,'"');
+    dt= dt.replace(/&ouvr;/g,'{').replace(/&ferm;/g,'}').replace(/&quot;/g,'"').replace(/&squot;/g,"'");
 
     if (key=='count') {
         fin=dt.search('}');   
@@ -59,7 +60,7 @@ function GetDataFromxPL (data, key) {
                 if  (mesxPL[ks[i]].slice(0,6) == "&ouvr;") {
                     dt=mesxPL[ks[i]];
    //                 dt= (dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"')) + "}";
-                    dt= dt.replace(/&ouvr;/g,'{').replace(/&ferm;/g,'}').replace(/&quot;/g,'"');
+                    dt= dt.replace(/&ouvr;/g,'{').replace(/&ferm;/g,'}').replace(/&quot;/g,'"').replace(/&squot;/g,"'");
                     console.log (dt);
                     mesxPL[ks[i]] = JSON.parse(dt);
                 };
@@ -87,6 +88,33 @@ function getDataTableColIndex (dTab, title) {
             };
         }
     return -1;
+};
+
+function createToolTip(domObj, position) {
+    var d = $(domObj);
+    $(domObj).each(function (index) {
+        if (this.haveqtip) {
+            console.log("ToolTip existant");
+        } else {
+            this.haveqtip = true;
+            if (this.title !='') {
+                switch (position) {
+                    case 'left' :
+                         $('#' + this.id +'[title]').tooltip_left();
+                        break;            
+                    case 'right' :
+                         $('#' + this.id + '[title]').tooltip_right();
+                        break;  
+                    case 'top' :
+                         $('#' + this.id + '[title]').tooltip_top();
+                        break;
+                    case 'bottom' :
+                         $('#' + this.id + '[title]').tooltip_bottom();
+                        break;
+                }
+            };
+        };
+    });
 };
     
 // Gestion des tables de données
@@ -120,49 +148,97 @@ function GetZWNodeById (nodeiId) {
     return false;
 };
     
-    function SetStatusMemberGrp(infonode,group,member,status) {
-        console.log ('Set status :' + status);
+function SetStatusMemberGrp(infonode,group,member,status) {
+    console.log ('Set status :' + status);
+}
+        
+function SetStatusZWDevices(idObj, status) {
+     if (status == 'Uninitialized') { st = 'status-unknown'};
+     if (status == 'Completed') { st = 'status-active'};
+     if (status == 'In progress - Devices initializing') { st = 'action-processing_f6f6f6'};
+     if (status == 'Out of operation') { st = 'status-warning'};
+     $('#'+ idObj).removeClass().addClass('icon16-text icon16-'+ st);
+     t = gettext(status)
+     $('#'+idObj).qtip('api').updateContent(t);
+};
+
+// fnRender, callback des élements du tableau autre que texte ou enrichis
+    function getNodeIdFromHtml(texte) {
+        if (typeof texte=="string") {
+            return parseInt (texte.substring(0, texte.indexOf('<span'))); 
+        } else { return texte}
     }
-        
-        
-// fnRender, callback des élements du tableau autre que texte
+    
+    
+    
+    function setStatusDeviceZW(oObj) {
+        /* {0:,
+              1:'Initialized - not known', 
+              2:'Completed',
+              3:'In progress - Devices initializing',
+              4:'In progress - Linked to controller',
+              5:'In progress - Can receive messages', 
+              6:'Out of operation'} */
+        var nodeId = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
+        var node = GetZWNodeById(nodeId);
+        var status = 'status-unknown';
+        if (node.InitState =='Uninitialized') {status = 'status-unknown';};
+        if (node.InitState =='Initialized - not known') {status = 'status-active';};
+        if (node.InitState =='Completed') {status ='status-active';};
+        if (node.InitState.indexOf('In progress') !=-1) {status ='action-processing_f6f6f6';};
+        if (node.InitState =='Out of operation') {status ='status-warning';};
+        return  nodeId + "<span id='nodestate" + nodeId + "'class='icon16-text-right  icon16-" + status + "' title='" + node.InitState + "' /span>";
+        }
+
+
     function setNameNode(oObj) {
         return "<input type='text' title='Name' value='" + oObj.aData[hdLiNode['Name']] + "'/>";
         };
         
     function setStatusSleep(oObj) {
-       var status = oObj.aData[hdLiNode['Awake']];
-       if (status==true) { //Sleeping
-            textstatus = "Probablement en veille";
+        var status = oObj.aData[hdLiNode['Awake']];
+        var nodeId = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
+        if (status==true) { //Sleeping
+            textstatus = 'Probably sleep';
             st = 'unknown';
         } else { //actif
-            textstatus = "Actif sur le réseaux";
+            textstatus = 'Active on network';
             st = 'active';
         };
         console.log("set status sleep coloms : " + oObj.aData + " " + status);
-        return  st + "<span class='icon16-text-right  icon16-status-" + st + "' /span>";
+        return  st + "<span id='infosleepnode" + nodeId + "'class='icon16-text-right  icon16-status-" + st + "' title='" + textstatus + "' /span>";
         };
-        
+
+    function setTypeInfos(oObj) {
+        var typeName = oObj.aData[hdLiNode['Type']];
+        var nodeId = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
+        var node = GetZWNodeById(nodeId);
+        var text = '';
+        if (node.Capabilities.length > 1) {text= 'Capabilities :\n';
+        } else {text= 'Capability :\n';};
+        for (i=0; i<node.Capabilities.length; i++) {
+            text = text + " -- " + node.Capabilities[i] + '\n';
+        }
+        return  typeName + "<span id='infotypenode" + nodeId +"' class='icon16-text-right icon16-status-info' title='" + text + "' /span>";
+        };
+
     function setActionNode(oObj) {
-        var num = oObj.aData[hdLiNode['NodeId']];
+        var num = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
         var stAct = 'add';
         var tabDet = document.getElementById("detNode" + num);
         if (tabDet) { // DetailNode opened 
             stAct = 'del'; 
         };
         var ret =  "<button id='detailnode" + num + 
-                        "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' ><span class='offscreen'>Detail Node : " + num + "</span></button>";
+                        "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' name='Detail node'><span class='offscreen'>Detail Node : " + num + "</span></button>";
          ret =  ret + "<button id='updnode" + num + 
-                        "' class='icon16-action-save buttonicon' title='Update Node' ><span class='offscreen'>Send update to Node : " + num + "</span></button>";
-      
+                        "' class='icon16-action-save buttonicon' title='Update Node' name='Update node'><span class='offscreen'>Send update to Node : " + num + "</span></button>";
         for (var i=0; i< listNodes.length; i++) {
             if (listNodes[i].Node == num && listNodes[i].Groups.length > 0) {
-                ret =  ret + "<button id='updnode" + num + 
+                ret =  ret + "<button id='updassoc" + num + 
                         "' class='icon16-action-customize buttonicon' title='Edit association' name='Node groups' ><span class='offscreen'>Edit association Node : " + num + "</span></button>";
                 };
             };
- //   
-        console.log("******** setActionNode : " + oObj.aData + " ret : " + ret);
         return  ret;
         };
          
@@ -174,16 +250,17 @@ function GetZWNodeById (nodeiId) {
         var status = oObj.aData[indexSt];
         var readOnly = oObj.aData[getDataTableColIndex(oObj.oSettings, 'readOnly')];
         var help = gettext(oObj.aData[indexH]);
-       if (readOnly==true) {
+        var vId = oObj.aData[getDataTableColIndex(oObj.oSettings, 'id')];
+        if (readOnly==true) {
             textRW = gettext("Read only");
             st ='active';
         } else {            
             textRW = gettext("Read and Write");
             st ='inactive';
         };
-         var rw=  " <span class='icon16-text-right icon16-status-" + st +"' title='" + textRW + "'></span>";
+         var rw=  " <span id='st"+vId +"' class='icon16-text-right icon16-status-" + st +"' title='" + textRW + "'></span>";
         if (help!="") {
-            extra = "  <span class='icon16-text-right icon16-status-info' title='" + help + "'></span>";
+            extra = "  <span id='hn"+vId +"' class='icon16-text-right icon16-status-info' title='" + help + "'></span>";
         } else {
             extra ="";
         };
@@ -194,13 +271,14 @@ function GetZWNodeById (nodeiId) {
             textstatus = gettext("Not available for domogik device");
             st = 'false';
         };
-        return  num + "<span class='icon16-text-right icon16-status-" + st + "' title='" + textstatus + "'></span>" +rw + extra;
+        return  num + "<span  id='adr"+vId +"'class='icon16-text-right icon16-status-" + st + "' title='" + textstatus + "'></span>" +rw + extra;
         };
 
     function renderCmdClssName(oObj) {
         var CmdClss = oObj.aData[getDataTableColIndex(oObj.oSettings, 'commandClass')];
         var help = gettext(oObj.aData[getDataTableColIndex(oObj.oSettings, 'help')]);
-        return   "<span title='" + help + "'>" + CmdClss + "</span>";
+        var vId = oObj.aData[getDataTableColIndex(oObj.oSettings, 'id')];
+        return   "<span id='hc"+vId +"'title='" + help + "'>" + CmdClss + "</span>";
         };
         
         
@@ -280,7 +358,7 @@ function GetZWNodeById (nodeiId) {
                         handleChangeVCC ();
                 };
         });
-    }
+    };
         
     function returnTextValue(val) {
         if (typeof(val) != 'number') {
@@ -298,7 +376,7 @@ function GetZWNodeById (nodeiId) {
     function fnFormatDetails (nTr, thOut)
     {
         var aData = oTabNodes.fnGetData(nTr);
-        var idDetNode = 'detNode' + aData[hdLiNode['NodeId']];
+        var idDetNode = 'detNode' + getNodeIdFromHtml(aData[hdLiNode['NodeId']]);
         console.log("Format detail node entête : " + thOut);
         if (thOut.length != 1) {
             var sOut = '<table id="' + idDetNode + '" class="simple" cellpadding="5" border="1"><thead><tr>'
@@ -346,12 +424,17 @@ function GetinfoNode (nodeid, callback, queue) {
                     RefreshDataNode(infoNode.data, (queue.length == 0));
                     callback(infoNode.data);
                     console.log("Node is refreshed, nodeID: " + nodeid);
+                    createToolTip('#nodestate' + nodeid, 'left');
+                    createToolTip('#detailnode' + nodeid, 'right');
+                    createToolTip('#updnode' + nodeid, 'right');
+                    createToolTip('#updassoc' + nodeid, 'right');
+                    createToolTip('#infotypenode' + nodeid, 'bottom');
+                    createToolTip('#infosleepnode' + nodeid, 'bottom');
                     if (queue && queue.length !=0) {
                         nodeid = queue[0];
                         queue = queue.slice(1);
                         GetinfoNode(nodeid, callback, queue);
                     };
-                        
                 })
                 .fail(function(jqXHR, status, error){
                    if (jqXHR.status == 400)

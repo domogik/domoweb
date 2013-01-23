@@ -65,6 +65,12 @@
 .icon64-usage-portal { background-image:url(../images/device_usage/portal/usage_64.png);}
 .icon32-usage-portal { background-image:url(../images/device_usage/portal/usage_32.png);}
 .icon16-usage-portal { background-image:url(../images/device_usage/portal/usage_16.png);}
+.icon64-usage-door { background-image:url(../images/device_usage/door/usage_64.png);}
+.icon32-usage-door { background-image:url(../images/device_usage/door/usage_32.png);}
+.icon16-usage-door { background-image:url(../images/device_usage/door/usage_16.png);}
+.icon64-usage-window { background-image:url(../images/device_usage/window/usage_64.png);}
+.icon32-usage-window { background-image:url(../images/device_usage/window/usage_32.png);}
+.icon16-usage-window { background-image:url(../images/device_usage/window/usage_16.png);}
 .icon64-usage-security_camera { background-image:url(../images/device_usage/security_camera/usage_64.png);}
 .icon32-usage-security_camera { background-image:url(../images/device_usage/security_camera/usage_32.png);}
 .icon16-usage-security_camera { background-image:url(../images/device_usage/security_camera/usage_16.png);}
@@ -461,6 +467,40 @@
 .icon32-usage-portal.sensor.string.unknown { background-image:url(../images/device_usage/portal/undefined_32.png);}
 .icon32-usage-portal.sensor.string.known { background-image:url(../images/device_usage/portal/100_32.png);}
 
+.icon32-usage-door.actuator.binary.unknown { background-image:url(../images/device_usage/door/undefined_32.png);}
+.icon32-usage-door.actuator.binary.value_0 { background-image:url(../images/device_usage/door/0_32.png);}
+.icon32-usage-door.actuator.binary.value_1 { background-image:url(../images/device_usage/door/100_32.png);}
+.icon32-usage-door.actuator.trigger { background-image:url(../images/device_usage/door/undefined_32.png);}
+.icon32-usage-door.actuator.number { background-image:url(../images/device_usage/door/100_32.png);}
+.icon32-usage-door.actuator.range.unknown { background-image:url(../images/device_usage/door/undefined_32.png);}
+.icon32-usage-door.actuator.range.value_0 { background-image:url(../images/device_usage/door/0_32.png);}
+.icon32-usage-door.actuator.range.value_50 { background-image:url(../images/device_usage/door/50_32.png);}
+.icon32-usage-door.actuator.range.value_100 { background-image:url(../images/device_usage/door/100_32.png);}
+.icon32-usage-door.sensor.boolean.unknown { background-image:url(../images/device_usage/door/undefined_32.png);}
+.icon32-usage-door.sensor.boolean.value_true { background-image:url(../images/device_usage/door/100_32.png);}
+.icon32-usage-door.sensor.boolean.value_false { background-image:url(../images/device_usage/door/0_32.png);}
+.icon32-usage-door.sensor.number.unknown { background-image:url(../images/device_usage/door/undefined_32.png);}
+.icon32-usage-door.sensor.number.known { background-image:url(../images/device_usage/door/100_32.png);}
+.icon32-usage-door.sensor.string.unknown { background-image:url(../images/device_usage/door/undefined_32.png);}
+.icon32-usage-door.sensor.string.known { background-image:url(../images/device_usage/door/100_32.png);}
+
+.icon32-usage-window.actuator.binary.unknown { background-image:url(../images/device_usage/window/undefined_32.png);}
+.icon32-usage-window.actuator.binary.value_0 { background-image:url(../images/device_usage/window/0_32.png);}
+.icon32-usage-window.actuator.binary.value_1 { background-image:url(../images/device_usage/window/100_32.png);}
+.icon32-usage-window.actuator.trigger { background-image:url(../images/device_usage/window/undefined_32.png);}
+.icon32-usage-window.actuator.number { background-image:url(../images/device_usage/window/100_32.png);}
+.icon32-usage-window.actuator.range.unknown { background-image:url(../images/device_usage/window/undefined_32.png);}
+.icon32-usage-window.actuator.range.value_0 { background-image:url(../images/device_usage/window/0_32.png);}
+.icon32-usage-window.actuator.range.value_50 { background-image:url(../images/device_usage/window/50_32.png);}
+.icon32-usage-window.actuator.range.value_100 { background-image:url(../images/device_usage/window/100_32.png);}
+.icon32-usage-window.sensor.boolean.unknown { background-image:url(../images/device_usage/window/undefined_32.png);}
+.icon32-usage-window.sensor.boolean.value_true { background-image:url(../images/device_usage/window/100_32.png);}
+.icon32-usage-window.sensor.boolean.value_false { background-image:url(../images/device_usage/window/0_32.png);}
+.icon32-usage-window.sensor.number.unknown { background-image:url(../images/device_usage/window/undefined_32.png);}
+.icon32-usage-window.sensor.number.known { background-image:url(../images/device_usage/window/100_32.png);}
+.icon32-usage-window.sensor.string.unknown { background-image:url(../images/device_usage/window/undefined_32.png);}
+.icon32-usage-window.sensor.string.known { background-image:url(../images/device_usage/window/100_32.png);}
+
 /* Menu */
 .icon32-menu-helpers { background-image:url(../images/menu/terminal_32.png);}
 
@@ -522,6 +562,12 @@
 .icon64-technology-knx {background-image:url(../images/technologies/knx_64.png);}
 .icon32-technology-knx {background-image:url(../images/technologies/knx_32.png);}
 .icon16-technology-knx {background-image:url(../images/technologies/knx_16.png);}
+.icon64-technology-zwave {background-image:url(../images/technologies/zwave_64.png);}
+.icon32-technology-zwave {background-image:url(../images/technologies/zwave_32.png);}
+.icon16-technology-zwave {background-image:url(../images/technologies/zwave_16.png);}
+.icon64-technology-ozwave {background-image:url(../images/technologies/ozwave_64.png);}
+.icon32-technology-ozwave {background-image:url(../images/technologies/ozwave_32.png);}
+.icon16-technology-ozwave {background-image:url(../images/technologies/ozwave_16.png);}
 
 /* Status icons */
 .icon64-status-true {background-image:url(../images/status/check_64.png);}

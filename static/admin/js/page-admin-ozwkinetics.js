@@ -484,10 +484,17 @@ function initScrollbars(stage) {
         height: 20,
         fill: "#9f005b",
         draggable: true,
-        dragConstraint: "horizontal",
-        dragBounds: {
-        left: 0,
-        right: stage.getWidth() - 160
+        dragBoundFunc: function(pos) { // horizontal
+            var newX = 0;
+            if ((pos.x > 0) && ( pos.x < stage.getWidth() - 160)) { 
+                newX = pos.x;
+            } else if (pos.x > (stage.getWidth() - 160)) {
+                newX = stage.getWidth() - 160;
+            };
+            return {
+                x: newX,
+                y: this.getY() 
+            };
         },
         opacity: 0.9,
         stroke: "black",
@@ -510,10 +517,17 @@ function initScrollbars(stage) {
         height: 70,
         fill: "#9f005b",
         draggable: true,
-        dragConstraint: "vertical",
-        dragBounds: {
-        top: 0,
-        bottom: stage.getHeight() - 100
+        dragBoundFunc: function(pos) { // horizontal
+            var newY = 0;
+            if ((pos.y > 0) && ( pos.y < stage.getHeight() - 100)) { 
+                newY = pos.y;
+            } else if (pos.y > (stage.getHeight() - 100)) {
+                newY = stage.getHeight() - 100;
+            };
+            return {
+                x: this.getX(),
+                y: newY
+            };
         },
         opacity: 0.9,
         stroke: "black",
