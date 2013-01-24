@@ -50,17 +50,72 @@
         } );
 
         $('#divNodeAssDialog').dialog_association('open',{
-                title: 'Node ' + vData.Node  +' : {% trans "Edit associations groups." %} ',
-                node: vData,
-                onok: function(values) {
-                    var self = this;
-                    var v = $('#divNodeAssDialog').dialog_association('setnewgroups', this);
-                    console.log("envois de la commande......");
-                    setGroupsNode(v.stage, v.node, v.newgrps, RefreshGroups);
-                    }
-            });
+            title: 'Node ' + vData.Node  +' : {% trans "Edit associations groups." %} ',
+            node: vData,
+            onok: function(values) {
+                var self = this;
+                var v = $('#divNodeAssDialog').dialog_association('setnewgroups', this);
+                console.log("envois de la commande......");
+                setGroupsNode(v.stage, v.node, v.newgrps, RefreshGroups);
+            }
+        });
+    }
+
+   $('#reset_confirmation').dialog_confirmation({
+            title: "{% trans 'Confirmation' %}",
+            content: "{% trans "Please confirm to " %}"
+    });
+    
+    $('#reset_confirmation').dialog_confirmation('addbutton', {
+        button: "#softReset",
+        name: "Soft Reset a PC Z-Wave Controller. \nResets a controller without erasing its network configuration settings.",
+        onok: function() {
+            var msg = {};
+            msg['command'] = "Refresh";
+            var val = {};
+            val['request'] ='ctrlSoftReset';
+            msg['value'] = SetDataToxPL (val);
+            rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+                .done(function(data, status, xhr){
+                    messXpl = GetDataFromxPL(data, 'data');
+                    if (messXpl['error'] == "") {
+                        $.notification('success',"{% trans "Controleur received soft reset, you can do a refresh network." %}" );
+                   } else {
+                        $.notification('error',"{% trans "Controleur not received soft reset, error : " %}" +  messXpl['error']);
+                  } 
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Controleur not received soft reset" %} (" + jqXHR.responseText + ")");
+                });
         }
-        
+    });
+    
+    $('#reset_confirmation').dialog_confirmation('addbutton', {
+        button: "#hardReset",
+        name: "Hard Reset  a PC Z-Wave Controller. \nResets a controller and erases its network configuration settings. " +
+               "The controller becomes a primary controller ready to add devices to a new network.",
+        onok: function() {
+            var msg = {};
+            msg['command'] = "Refresh";
+            var val = {};
+            val['request'] ='ctrlHardReset';
+            msg['value'] = SetDataToxPL (val);
+            rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+                .done(function(data, status, xhr){
+                    messXpl = GetDataFromxPL(data, 'data');
+                    if (messXpl['error'] == "") {
+                        $.notification('success',"{% trans "Controleur received hard reset, you can do new node inclusion." %}" );
+                   } else {
+                        $.notification('error',"{% trans "Controleur not received hard reset, error : " %}" +  messXpl['error']);
+                   } 
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Controleur not received hard reset" %} (" + jqXHR.responseText + ")");
+                });
+        }
+    });
     function setStatusZW(status) {
         if (status=='up') { //active
             textstatus = "En cours d'execution";
@@ -196,7 +251,7 @@
                     $('#libctrlver').html(netWorkZW['Version']);                    
                     console.log("Dans Submit, .done: " + netWorkZW['Model']);
                     setStatusZW('up')
-                    $.notification('debug',"device : " + netWorkZW['Primary controller'] + " info refreshed" );
+                    $.notification('success',"device : " + netWorkZW['Primary controller'] + " info refreshed" );
                     var node_items = document.getElementById("node_items");
                     SetStatusZWDevices('infoIconInitNodes', netWorkZW['Init state']);
                     $('#infoIconInitNodes').attr('title', netWorkZW['Init state']);
@@ -290,13 +345,13 @@ $('body').on('click','#node_items tbody td button', function () {
     if (this.name =='Detail node') {
         notfind = false;
         var t =  this.attributes["class"].value; //nodeValue
-        if (t.search('action-del') != -1 ) {
+        if (t.search('action-zoomout') != -1 ) {
         // This row is already open - close it 
-            this.attributes["class"].value = "icon16-action-add buttonicon"; //nodeValue
+            this.attributes["class"].value = "icon16-action-zoomin buttonicon"; //nodeValue
             oTabNodes.fnClose( nTr );
         }else {
             // Open this row 
-            this.attributes["class"].value = "icon16-action-del buttonicon"; //nodeValue
+            this.attributes["class"].value = "icon16-action-zoomout buttonicon"; //nodeValue
             //send update nodes values
             var values = GetinfoValuesNode(getNodeIdFromHtml(aData[hdLiNode['NodeId']]), function(thOut){ oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,thOut), 'simple' );});
     /*  console.log("click detail values : " + values); */
@@ -346,7 +401,7 @@ $('body').on('keyup', '#node_items tbody td input',function (e) {
         msg['value'] = SetDataToxPL({"request":"SaveConfig"});
         rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
             .done(function(data, status, xhr){
-            $.notification('info',"Request : " + " saving config ok" );
+            $.notification('success',"Request : " + " saving config ok" );
             })
             .fail(function(jqXHR, status, error){
                 if (jqXHR.status == 400)
@@ -451,7 +506,9 @@ $('body').on('keyup', '#node_items tbody td input',function (e) {
             <button id='specialsubmit' class='button icon16-action-reset'>{% trans "Refresh" %}</button>
             <button id='specialsave' class='button icon16-action-save'>{% trans "Save config" %}</button> 
             <span class='subtitle'>{% trans " Updade Node button before saving" %}</span>
-            <button id='ctrlactions' class='button icon16-action-customize'>{% trans "Controller Actions" %}</button> 
+            <button id='ctrlactions' class='button icon16-action-actions '>{% trans "Controller Actions" %}</button> 
+            <button id='softReset' class='button icon16-action-btreset ' title="{% trans "Soft reset" %}">{% trans "Soft reset" %}</button>
+            <button id='hardReset' class='button icon16-action-btreset ' title="{% trans "Hard reset" %}">{% trans "Hard reset" %}</button>
         </p>
 </section>
 <section class="subsection">
@@ -496,3 +553,4 @@ $('body').on('keyup', '#node_items tbody td input',function (e) {
 </section>
 <div id="divNodeAssDialog"></div>
 <div id="divCtrlActionDialog"></div>
+<div id="reset_confirmation"></div>

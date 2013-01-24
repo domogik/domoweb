@@ -83,6 +83,7 @@ function dlgCtrlAction (vData) {
     RunningCtrlAction = new BtOnOff('divCtrlActionDialog', 'runCtrlAction', ['button icon16-action-play', 'button icon16-action-processing_ffffff'],
                         ['Start action', 'Stop action'], handle_RequestCtrlAction);
     $('#selectActCtrl').before($('#runCtrlAction'));
+    $('#selectActCtrl').attr('lockSelect','');
     $('#tipsStatusActions').removeClass('tip').addClass('icon16-text-right icon16-status-true');
     $('#tipsStatusActions').css('font-size', 12);
     $('#tipsInfoCmd').css('font-size', 12);
@@ -99,96 +100,108 @@ function dlgCtrlAction (vData) {
     });
 
     $('#selectActCtrl').on('change', function(e, sel) {
-        var elem = $(e.target);
-        console.log('select change :', listCmdCtrl[sel.selected]);
-        $('#tipsInfoCmd').text(listCmdCtrl[sel.selected]);
-        $('label[for=actArgs],#actArgs').hide(); // Not Used at this time
-        switch (sel.selected) {
-            case AVAILABLECMDS[0] :  // 'None'
-                $('label[for=actNodeID],#actNodeID').hide();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[1] :  // 'AddDevice'
-                $('label[for=actNodeID],#actNodeID').hide();
-                $('label[for=actHighPower],#actHighPower').show();
-                break;
-            case AVAILABLECMDS[2] :  // 'CreateNewPrimary'
-                $('label[for=actNodeID],#actNodeID').hide();
-                $('label[for=actHighPower],#actHighPower').show();
-                break;
-            case AVAILABLECMDS[3] :  // 'ReceiveConfiguration'
-                $('label[for=actNodeID],#actNodeID').hide();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[4] :  // 'RemoveDevice'
-                $('label[for=actNodeID],#actNodeID').hide();
-                $('label[for=actHighPower],#actHighPower').show();
-                break;
-            case AVAILABLECMDS[5] :  // 'RemoveFailedNode'
-                $('label[for=actNodeID],#actNodeID').show();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[6] :  // 'HasNodeFailed'
-                $('label[for=actNodeID],#actNodeID').show();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[7] :  // 'ReplaceFailedNode'
-                $('label[for=actNodeID],#actNodeID').show();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[8] :  // 'TransferPrimaryRole'
-                $('label[for=actNodeID],#actNodeID').hide();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[9] :  // 'RequestNetworkUpdate'
-                $('label[for=actNodeID],#actNodeID').hide();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[10] :  // 'RequestNodeNeighborUpdate'
-                $('label[for=actNodeID],#actNodeID').show();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[11] :  // 'AssignReturnRoute'
-                $('label[for=actNodeID],#actNodeID').show();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[12] :  // 'DeleteAllReturnRoutes'
-                $('label[for=actNodeID],#actNodeID').show();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[13] :  // 'SendNodeInformation'
-                $('label[for=actNodeID],#actNodeID').show();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[14] :  // 'ReplicationSend'
-                $('label[for=actNodeID],#actNodeID').hide();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[15] :  // 'CreateButton'
-                $('label[for=actNodeID],#actNodeID').show();
-                $('label[for=actHighPower],#actHighPower').hide();
-                break;
-            case AVAILABLECMDS[16] :  // 'DeleteButton'
-                $('label[for=actNodeID],#actNodeID').show();
-                $('label[for=actHighPower],#actHighPower').hide();
-                $('label[for=actArgs],#actArgs').show(); // Probably  Used for id
-                break;
-            default :
-                $('label[for=actNodeID],#actNodeID').hide();
-                $('label[for=actHighPower],#actHighPower').hide();
-                console.log('ctrl unknoww action : ', sel.selected);
-        }
+        var lockSelect = $('#selectActCtrl').attr('lockSelect');
+        if (lockSelect == '') {
+            var elem = $(e.target);
+            console.log('select change :', listCmdCtrl[sel.selected]);
+            $('#tipsInfoCmd').text(listCmdCtrl[sel.selected]);
+            $('label[for=actArgs],#actArgs').hide(); // Not Used at this time
+            switch (sel.selected) {
+                case AVAILABLECMDS[0] :  // 'None'
+                    $('label[for=actNodeID],#actNodeID').hide();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    break;
+                case AVAILABLECMDS[1] :  // 'AddDevice'
+                    $('label[for=actNodeID],#actNodeID').hide();
+                    $('label[for=actHighPower],#actHighPower').show();
+                    break;
+                case AVAILABLECMDS[2] :  // 'CreateNewPrimary'
+                    $('label[for=actNodeID],#actNodeID').hide();
+                    $('label[for=actHighPower],#actHighPower').show();
+                    break;
+                case AVAILABLECMDS[3] :  // 'ReceiveConfiguration'
+                    $('label[for=actNodeID],#actNodeID').hide();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    break;
+                case AVAILABLECMDS[4] :  // 'RemoveDevice'
+                    $('label[for=actNodeID],#actNodeID').hide();
+                    $('label[for=actHighPower],#actHighPower').show();
+                    break;
+                case AVAILABLECMDS[5] :  // 'RemoveFailedNode'
+                    $('label[for=actNodeID],#actNodeID').show();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    break;
+                case AVAILABLECMDS[6] :  // 'HasNodeFailed'
+                    $('label[for=actNodeID],#actNodeID').show();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    break;
+                case AVAILABLECMDS[7] :  // 'ReplaceFailedNode'
+                    $('label[for=actNodeID],#actNodeID').show();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    break;
+                case AVAILABLECMDS[8] :  // 'TransferPrimaryRole'
+                    $('label[for=actNodeID],#actNodeID').hide();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    break;
+                case AVAILABLECMDS[9] :  // 'RequestNetworkUpdate'
+                    $('label[for=actNodeID],#actNodeID').hide();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    break;
+                case AVAILABLECMDS[10] :  // 'RequestNodeNeighborUpdate'
+                    $('label[for=actNodeID],#actNodeID').show();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    break;
+                case AVAILABLECMDS[11] :  // 'AssignReturnRoute'
+                    $('label[for=actNodeID],#actNodeID').show();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    $('label[for=actArgs],#actArgs').show(); //  Used for node to 
+                    var t= $('#tipsInfoCmd').text();
+                    $('#tipsInfoCmd').text(t + ' "Node number" = The node that we will use the route., "Argument" = The node that we will change the route.');
+                    break;
+                case AVAILABLECMDS[12] :  // 'DeleteAllReturnRoutes'
+                    $('label[for=actNodeID],#actNodeID').show();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    break;
+                case AVAILABLECMDS[13] :  // 'SendNodeInformation'
+                    $('label[for=actNodeID],#actNodeID').show();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    break;
+                case AVAILABLECMDS[14] :  // 'ReplicationSend'
+                    $('label[for=actNodeID],#actNodeID').hide();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    break;
+                case AVAILABLECMDS[15] :   // 'CreateButton'
+                    $('label[for=actNodeID],#actNodeID').show();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    $('label[for=actArgs],#actArgs').show(); // Probably  Used for id 
+                    break;
+
+             /*    case AVAILABLECMDS[16] :  // 'DeleteButton' */
+                case AVAILABLECMDS[16] : // 'DeleteButton'
+                    $('label[for=actNodeID],#actNodeID').show();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    $('label[for=actArgs],#actArgs').show(); // Probably  Used for id 
+                    break;
+                default :
+                    $('label[for=actNodeID],#actNodeID').hide();
+                    $('label[for=actHighPower],#actHighPower').hide();
+                    console.log('ctrl unknoww action : ', sel.selected);
+            };
+        } else {
+            $('#selectActCtrl options[value='+lockSelect+']').attr("selected", "selected");
+        };
+        console.log('rerer');
     });
 }
 
 function updateStateAction(state, locked = false){
     if (state != 'running') {
-            $('#selectActCtrl').disabled = false;
+            $('#selectActCtrl').attr('lockSelect','');
             RunningCtrlAction.locked = locked;
             RunningCtrlAction.setStatus(0);
             ListeningStateCtrl = false;
     } else {
-           $('#selectActCtrl').disabled = true;
+           $('#selectActCtrl').attr('lockSelect', Action.action);
             RunningCtrlAction.locked = locked;
             RunningCtrlAction.setStatus(1);
             ListeningStateCtrl = true;
@@ -217,7 +230,7 @@ function checkStatesCtrl(state) {
             updateStateAction('stop');
             $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-status-warning');
             break;
-        case 'Waiting' :play
+        case 'Waiting' :
             console.log('Callback ctrl action status : '+ messXpl['cmdstate']);
             $('#tipsStatusActions').removeClass().addClass('icon16-text-right icon16-action-processing_f6f6f6');
             updateStateAction('running');
@@ -285,7 +298,7 @@ function handle_RequestCtrlAction(cmd) {
                                                             '", information : ' + messXpl['message']);
                 if (messXpl['error'] == "") {
                     console.log("Dans handle_RequestCtrlAction : " + JSON.stringify(messXpl));
-                    $.notification('debug','Controleur received action : ' + messXpl['action'] + ', commande :' + messXpl['cmdstate']  );
+                    $.notification('success','Controleur received action : ' + messXpl['action'] + ', commande : ' + messXpl['cmdstate']  );
                     updateStateAction(messXpl['cmdstate']);
                     checkStatesCtrl('Starting');
                     return messXpl;
@@ -368,7 +381,6 @@ retour
 function listeningCtrlState() {
     if (ListeningStateCtrl) {
         Action.cptmsg = Action.cptmsg + 1;
-        var timeOutMax = 60000 
         var msg = {};
         msg['command'] = "Refresh";
         var val = Action;
@@ -387,19 +399,23 @@ function listeningCtrlState() {
                                                             '", information : ' + messXpl['message']);
                 if (messXpl['error'] == "") {
                     console.log("Dans listeningCtrlState : " + JSON.stringify(messXpl));
-                    $.notification('debug','Controleur received action : ' + messXpl['cmd'] + '  '  + messXpl['action'] + ', commande :' + messXpl['cmdstate']  );
+                    $.notification('success','Controleur received action : ' + messXpl['cmd'] + '  '  + messXpl['action'] + ', commande : ' + messXpl['cmdstate']  );
                     if (messXpl['cmdstate'] != 'running') {
                         updateStateAction('stop');
+                        checkStatesCtrl(messXpl['state']);
                     };
                     return messXpl;
                 } else { // Erreur dans la lib python
                     updateStateAction('stop');
+                    checkStatesCtrl(messXpl['state']);
                     console.log("no controleur action, error : " + messXpl['error']);                          
                     $.notification('error', 'Action  (' + Action['action']+ ') command (' + Action['cmd'] + ') report : ' + messXpl['error'] + ', please check input');
                     return messXpl['error']             
                 };
             })
             .fail(function(jqXHR, status, error){
+                $('.jGrowl-notification.error').remove();
+                $('.jGrowl-notification.info').remove();
                 var messXpl ={};
                 if (jqXHR.status == 400) {
                     $('#selectActCtrl').disabled = false;
@@ -407,10 +423,14 @@ function listeningCtrlState() {
                     messXpl['Error'] =  "Listening action";
                     messXpl['action'] =  Action;
                     updateStateAction('stop');
+                    checkStatesCtrl(messXpl['state']);
                     return messXpl;
                 } else {
-                    $.notification('info', 'Continue listening for controller action : (' + Action['action'] + ') Waiting');
+                    var t = (15 * Action['cptmsg']) + 5;
+                    $.notification('info', 'Continue listening for controller action : (' + Action['action'] + ') Waiting since : ' +  t + ' sec.');
                     ListeningStateCtrl = true;  // Boucle tant que pas d'arrêt
+                    updateStateAction('running');
+                    checkStatesCtrl(messXpl['state']);
                     return messXpl;
                };
             });

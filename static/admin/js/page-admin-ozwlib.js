@@ -224,10 +224,10 @@ function SetStatusZWDevices(idObj, status) {
 
     function setActionNode(oObj) {
         var num = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
-        var stAct = 'add';
+        var stAct = 'zoomin';
         var tabDet = document.getElementById("detNode" + num);
         if (tabDet) { // DetailNode opened 
-            stAct = 'del'; 
+            stAct = 'zoomout'; 
         };
         var ret =  "<button id='detailnode" + num + 
                         "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' name='Detail node'><span class='offscreen'>Detail Node : " + num + "</span></button>";
@@ -236,7 +236,7 @@ function SetStatusZWDevices(idObj, status) {
         for (var i=0; i< listNodes.length; i++) {
             if (listNodes[i].Node == num && listNodes[i].Groups.length > 0) {
                 ret =  ret + "<button id='updassoc" + num + 
-                        "' class='icon16-action-customize buttonicon' title='Edit association' name='Node groups' ><span class='offscreen'>Edit association Node : " + num + "</span></button>";
+                        "' class='icon16-action-groups buttonicon' title='Edit association' name='Node groups' ><span class='offscreen'>Edit association Node : " + num + "</span></button>";
                 };
             };
         return  ret;
@@ -407,7 +407,7 @@ function GetinfoNode (nodeid, callback, queue) {
                     infoNode = ParseAckXPL(data.xpl)
                     var dt=JSON.stringify(infoNode.data);
                     console.log("Dans getinfonode : " + infoNode.data['Model']);
-                    $.notification('debug',"Node : " + infoNode.data['Model'] + " info refreshed" );
+                    $.notification('success',"Node : " + infoNode.data['Model'] + " info refreshed" );
                     infoNode.data['Groups'] = [];
                     for (var i=0; i< infoNode.countgrps; i++) {
                         infoNode.data['Groups'].push(infoNode['group' +i]);
