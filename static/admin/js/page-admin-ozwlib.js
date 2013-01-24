@@ -458,7 +458,7 @@ function GetinfoNode (nodeid, callback, queue) {
         }
     };
 
-    function setValueNode(valueid, value, aTable, nTr) {
+    function setValueNode(nodeId, valueid, value, aTable, nTr) {
         var messXpl = {};
         if (valueid) {
                 var msg = {};
@@ -466,6 +466,7 @@ function GetinfoNode (nodeid, callback, queue) {
                 var val = {};
                 val['request'] ='setValue';
                 val['valueid'] = valueid;
+                val['node'] = nodeId;
                 var obj = $('#valCC' + valueid);
                 val['newValue'] = $('#valCC' + valueid).val();
                 msg['value'] = SetDataToxPL (val);
@@ -479,8 +480,10 @@ function GetinfoNode (nodeid, callback, queue) {
                             var aPos = aTable.fnGetPosition(obj[0].parentElement);
                             var ok = aTable.fnUpdate(messXpl['value'],aPos[0],idC, false);
                             $('#send' + valueid).remove();
+                            $.notification('success', gettext( "Value updated"));
                             return messXpl;
                         } else { // Erreur dans la lib python
+                            $.notification('error', gettext("Value not updated, error : ") + messXpl['error']);
                             console.log("Dans setValueNode error : " + messXpl['error']);                            
                             return messXpl['error']             
                         };

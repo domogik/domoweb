@@ -368,9 +368,10 @@ $('body').on('click','#node_items tbody td button', function () {
         var idDetNode = nTr.parentNode.parentNode.id;
         var aTable = $('#' + idDetNode).dataTable();
         aData = aTable.fnGetData(nTr); 
-        valueId = aData[getDataTableColIndex(aTable.fnSettings(), 'id')];
+        var nodeId = parseInt(idDetNode.slice(7)); // detNodeX
+        var valueId = aData[getDataTableColIndex(aTable.fnSettings(), 'id')];
         console.log ("sending update cmd class");
-        msg = setValueNode(valueId, aData[getDataTableColIndex(aTable.fnSettings(), 'value')], aTable,nTr);
+        msg = setValueNode(nodeId, valueId, aData[getDataTableColIndex(aTable.fnSettings(), 'value')], aTable,nTr);
     };
     if (notfind) {
         console.log("Dans click button, no action find : " + this.name); 
