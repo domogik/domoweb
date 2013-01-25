@@ -33,20 +33,81 @@
 <script type='text/javascript'>
 $(function(){
 
-    $("#refreshneighbors").click(function(){
-        buildKineticNeighbors();
+    $("#refreshGenStats").click(function(){
+        var msg = {};
+        msg['command'] = "Refresh";
+        var val = {};
+        val['request'] ='GetGeneralStats';
+        msg['value'] = SetDataToxPL (val);
+        rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+            .done(function(data, status, xhr){
+                var messXpl = ParseAckXPL(data.xpl);
+                var stats = messXpl['data'];
+                if (messXpl['error'] =='no') {
+                    var rows = [];
+                    for (var item in HEADSTATISTIC) {
+                        rows.push([HEADSTATISTIC[item], stats[item]]);
+                    }
+                    $('#tabGenStat').dataTable().fnClearTable(false),
+                    $('#tabGenStat').dataTable().fnAddData(rows);
+                    $('#elapstime').html(stats['elapsedtime'] +  ' sec.');
+                    $('#msgqueue').html(stats['msqueue']);
+                };
+                })
+            .fail(function(jqXHR, status, error){
+               if (jqXHR.status == 400)
+                    $.notification('error', '{% trans "Data not recept" %} (' + jqXHR.responseText + ') please check your device configuration');
+            });
+        return false;
     });
 
-/*   $(document).ready(function(){
-   }); */
+    $("#refreshneighbors").click(function(){
+        buildKineticNeighbors();
+        return false;
+    });
+
+   $(document).ready(function(){
+        $('#tabGenStat').dataTable({
+            "bFilter": false,
+            "bPaginate": false,
+            "bSort": false,
+            "bInfo": false,
+            "bAutoWidth": false,
+        } );
+   });
 })
 </script>
 <section id="graphneighbors" class="subsection">
     <h2>{% trans "Zwave neighbors" %}  &nbsp;&nbsp;&nbsp;&nbsp;
-            <button id='refreshneighbors' class='button icon16-action-reset'>{% trans "Refresh neighbors" %}</button>
-            <span>  {% trans "IN BETA TESTING" %}</span>
-            <li id='listenodes'>IN BETA TEST</li>
+        <button id='refreshneighbors' class='button icon16-action-reset'>{% trans "Refresh graph" %}</button>&nbsp;&nbsp;
+        <span>  {% trans "IN BETA TESTING" %}</span>
     </h2>
     <div id="containerneighbors" ></div> 
- <!--   <div id="containerneighbors" style="width:850px; height:500px; margin-left: 0px;"></div> -->
+</section>
+<section id="zwstatistic" class="subsection">
+    <h2>{% trans "Network statistic" %}  &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id='refreshGenStats' class='button icon16-action-reset'>{% trans "Refresh statistic" %}</button>&nbsp;&nbsp;
+        <form id='controllerform'>
+            <ul class='infos'><font size=3>
+                <li>
+                    <span class='label'>{% trans "Controller run time" %}   :   </span>&nbsp;<span class='subtitle' id='elapstime'><u>00:00:00</u></span>
+                </li>
+                 <li>
+                    <span class='label'>{% trans "Number of messages in the outgoing send queue" %}  :  </span>&nbsp;<span class='subtitle' id='msgqueue'><u>0</u></span>
+                </li></font> 
+            </ul>
+        </form>
+    </h2>
+    <div id='networkstat'>
+        <table id='tabGenStat' class='simple'>
+            <thead>
+                <tr>
+                    <th scope='col'>{% trans "Description " %}</th>
+                    <th scope='col'>{% trans "Value " %}</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+    </table>
+    </div>
 </section>

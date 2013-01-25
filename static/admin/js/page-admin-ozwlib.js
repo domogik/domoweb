@@ -7,6 +7,27 @@ var initialized = false;
 // Constante d'entete de colonne de la table node_items 
 var hdLiNode = {"NodeId": 0, "Name": 1, "Location": 2, "Model": 3, "Awake":  4, "Type": 5, "Last update": 6, "Action": 7};
 var mbrGrpSt = {0: 'unknown', 1: 'confirmed', 2: 'to confirm', 3: 'to update'};
+var HEADSTATISTIC = {"SOFCnt" : gettext("Star of Frame (SOF) bytes received"),
+                                 "ACKWaiting" : gettext("Unsolicited messages while waiting for an ACK"),
+                                 "readAborts" : gettext("Reads aborted due to timeouts"),
+                                 "badChecksum" : gettext("Bad checksum errors"),
+                                 "readCnt" : gettext("[Device] Messages successfully received"),
+                                 "writeCnt" : gettext("[Device] Messages successfully sent"),
+                                 "CANCnt" : gettext("Controller Area Network (CAN) received from controller"),
+                                 "NAKCnt" : gettext("No Acknowledge (NAK) received from controller"),
+                                 "ACKCnt" : gettext("Acknowledgements (ACK) received from controller"),
+                                 "OOFCnt" : gettext("Out of frame data flow errors"),
+                                 "dropped" : gettext("Messages dropped and not delivered"),
+                                 "retries" : gettext("Messages retransmitted"),
+                                 "callbacks" : gettext("Number of unexpected callbacks"),
+                                 "badroutes" : gettext("Number of failed messages due to bad route response"),
+                                 "noack" : gettext("Number of no ACK returned errors"),
+                                 "netbusy" : gettext("Number of network busy/failure messages"),
+                                 "nondelivery" : gettext("Number of messages not delivered to network"),
+                                 "routedbusy" : gettext("Number of messages received with routed busy status"),
+                                 "broadcastReadCnt" : gettext("Number of broadcasts read"),
+                                 "broadcastWriteCnt" : gettext("Number of broadcasts sent")
+                                }
 
 function GetDataFromxPL (data, key) {
     var dt=JSON.stringify(data);

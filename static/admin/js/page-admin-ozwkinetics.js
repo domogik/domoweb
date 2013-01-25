@@ -543,7 +543,6 @@ function initScrollbars(stage) {
     scrollLayer.beforeDraw(function() {
         var x = -1 * ((hscroll.getPosition().x + (hscroll.getWidth() /2)) - (hscrollArea.getWidth()/2));
         var y = -1 * ((vscroll.getPosition().y + (vscroll.getHeight() /2)) - (vscrollArea.getHeight()/2));
-        $("#listenodes").html("x = " + x + " ,y = " + y);
         nodeLayer.setPosition(x,y);
         linkLayer.setPosition(x,y);
         nodeLayer.draw();
