@@ -41,7 +41,7 @@ from django.utils.translation import ugettext as _
 from django import forms
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.models import Widget, PageIcon, WidgetInstance, PageTheme
+from domoweb.models import Widget, PageIcon, WidgetInstance, PageTheme, DeviceType, DeviceUsage
 from domoweb import fields
     
 class ThemeChoiceField(forms.ModelChoiceField):
@@ -83,8 +83,8 @@ def page(request, id=1):
     widgets = WidgetInstance.objects.filter(page_id=id).values('widget_id').distinct()
     widgetinstances = WidgetInstancePipe().get_page_list(id)
 
-    usageDict = DeviceUsagePipe().get_dict()
-    typeDict = DeviceTypePipe().get_dict()
+    usageDict = DeviceUsage.objects.all_dict()
+    typeDict = DeviceType.objects.all_dict()
 
     return go_to_page(
         request, 'page.html',

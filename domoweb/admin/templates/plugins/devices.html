@@ -36,7 +36,7 @@
         <tr class="{% cycle 'odd' 'even' %}">
             <td>{{ device.name|stripnl }}</td>
             <td>{{ device.reference|stripnl }}</td>
-            <td><div class='icon16-text icon16-technology-{{ device.device_type.device_technology_id }}'>{{ device.device_type.device_technology_id }}.{{ device.device_type.name }}</td>
+            <td>{{ device.type.name }}</td>
             <td>
                 <ul class="actions">
                     <li><a href='{% url admin_del_device_view device.id plugin.host plugin.id plugin_type %}' id='del{{ device.id }}' class='icon16-action-del buttonicon' title="{% trans "Delete" %} '{{ device.name }}'"><span class='offscreen'>{% trans "Delete" %} {{ device.name }}</span></a></li>

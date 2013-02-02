@@ -54,7 +54,7 @@ from django.forms.widgets import Select
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, PageTheme, Page
+from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, PageTheme, Page, DeviceType, DeviceUsage, Device
 
 def login(request):
     """
@@ -165,10 +165,9 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     @return an HttpResponse object
     """
 
-    devices = DeviceExtendedPipe().get_list()
     plugin = PluginPipe().get_detail(plugin_host, plugin_id)
-    print plugin
-    types = DeviceTypePipe().get_list_by_technology(plugin.technology)
+    devices = Device.objects.filter(type__device_technology_id=plugin.technology)
+    types = DeviceType.objects.filter(device_technology_id=plugin.technology)
     products = ProductsPipe().get_list(plugin_id)
     if plugin_type == "plugin":
         page_title = _("Plugin")
@@ -215,10 +214,14 @@ class SelectIcon(Select):
         return '<option value="%s"%s%s>%s</option>' % (
             escape(option_value), selected_html, class_html,
             conditional_escape(force_unicode(option_label)))
+
+class MyModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.name
     
 class DeviceForm(forms.Form):
     name = forms.CharField(max_length=50, label=_("Name"), required=True)
-    usage_id = forms.ChoiceField(widget=SelectIcon, label=_("Usage"), required=True)
+    usage_id = MyModelChoiceField(widget=SelectIcon, queryset=DeviceUsage.objects.all(), label=_("Usage"), required=True)
     reference = forms.CharField(max_length=50, label=_("Hardware/Software Reference"), required=False)
     type_id = forms.CharField(widget=forms.HiddenInput, required=True)
 
@@ -226,8 +229,17 @@ class DeviceForm(forms.Form):
         # This should be done before any references to self.fields
         super(DeviceForm, self).__init__(*args, **kwargs)
         #init the choice list on Form init (and not on django load)
-        self.fields["usage_id"].choices = DeviceUsagePipe().get_tuples('name')
+#        self.fields["usage_id"] = 
 
+    def clean(self):
+        cleaned_data = super(DeviceForm, self).clean()
+        usage = cleaned_data.get("usage_id")
+        if usage:
+            cleaned_data["usage_id"] = usage.id
+
+        # Always return the full collection of cleaned data.
+        return cleaned_data
+    
 class ParametersForm(forms.Form):
     def __init__(self, *args, **kwargs):
         # This should be done before any references to self.fields
@@ -245,7 +257,7 @@ class ParametersForm(forms.Form):
 
     def validate(self): self.full_clean()
 
-#@admin_required
+@admin_required
 def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
     page_title = _("Add device")
     parameters = DeviceParametersPipe().get_detail(type_id)
@@ -304,8 +316,8 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
         """
         if valid:
             cd = deviceform.cleaned_data
-            device = DevicePipe().post_list(name=cd["name"], type_id = cd["type_id"], usage_id = cd["usage_id"], reference = cd["reference"])
-            DevicePipe().put_params(id=device.id, parameters=globalparametersform.cleaned_data)
+            device = Device.create(cd["name"], cd["type_id"], cd["usage_id"], cd["reference"])
+            device.create_params(parameters=globalparametersform.cleaned_data)
             return redirect('admin_plugins_plugin_view', plugin_host=plugin_host, plugin_id=plugin_id, plugin_type=plugin_type) # Redirect after POST
     else:
         deviceform = DeviceForm(auto_id='main_%s', initial={'type_id': type_id})
@@ -324,7 +336,7 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
 
 @admin_required
 def admin_del_device(request, device_id, plugin_host, plugin_id, plugin_type):
-    DeviceExtendedPipe().delete_detail(device_id)
+    Device.objects.get(id=device_id).delete()
     return redirect('admin_plugins_plugin_view', plugin_host=plugin_host, plugin_id=plugin_id, plugin_type=plugin_type) # Redirect after POST
 
 @admin_required

@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models import F
 from django.core.exceptions import PermissionDenied
+from exceptions import RinorNotConfigured, RinorError
+from restModel import RestModel
 
 class Parameter(models.Model):
     key = models.CharField(max_length=30, primary_key=True)
@@ -136,3 +138,117 @@ class WidgetInstance(models.Model):
     order = models.IntegerField()
     widget = models.ForeignKey(Widget, on_delete=models.DO_NOTHING)
     feature_id = models.IntegerField()
+
+class DeviceType(RestModel):
+    id = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=50)
+    device_technology_id = models.CharField(max_length=50)
+    
+    list_path = "/base/device_type/list"
+    index = 'device_type'
+
+    @staticmethod
+    def refresh():
+        _data = DeviceType.get_list();
+        DeviceType.objects.all().delete()
+        for record in _data:
+            r = DeviceType(id=record.id, name=record.name, device_technology_id=record.device_technology_id)
+            r.save()
+
+class DeviceUsage(RestModel):
+    id = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=50)
+    default_options = models.CharField(max_length=255)
+    
+    list_path = "/base/device_usage/list"
+    index = 'device_usage'
+
+    @staticmethod
+    def refresh():
+        _data = DeviceUsage.get_list();
+        DeviceUsage.objects.all().delete()
+        for record in _data:
+            r = DeviceUsage(id=record.id, name=record.name, default_options=record.default_options)
+            r.save()
+
+class Device(RestModel):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=255)
+    reference = models.CharField(max_length=255)
+    usage = models.ForeignKey(DeviceUsage, blank=True, null=True, on_delete=models.DO_NOTHING)
+    type = models.ForeignKey(DeviceType, blank=True, null=True, on_delete=models.DO_NOTHING)
+
+    list_path = "/base/device/list"
+    delete_path = "/base/device/del"
+    create_path = "/base/device/add"
+    addparams_path = "/base/device/addglobal"
+    index = 'device'
+
+    @staticmethod
+    def refresh():
+        _data = Device.get_list();
+        Device.objects.all().delete()
+        Command.objects.all().delete()
+        Sensor.objects.all().delete()
+        for record in _data:
+            Device.create_from_json(record)
+
+    def delete(self, *args, **kwargs):
+        Device.delete_details(self.id)
+        super(Device, self).delete(*args, **kwargs)
+
+    @classmethod
+    def create(cls, name, type_id, usage_id, reference):
+        data = ['name', name, 'type_id', type_id, 'usage_id', usage_id, 'description', '', 'reference', reference]
+        rinor_device = cls.post_list(data)
+        device = cls.create_from_json(rinor_device)
+        return device
+    
+    @classmethod
+    def create_from_json(cls, data):
+        device = cls(id=data.id, name=data.name, type_id=data.device_type_id, usage_id=data.device_usage_id, reference=data.reference)
+        device.save()
+        if "command" in data:
+            for command in data.command:
+                c = Command(id=command.id, name=command.name, device=device, reference=command.reference)
+                c.save()
+                for param in command.command_param:
+                    p = CommandParam(command=c, key=param.key, value_type=param.value_type, values=param['values'])
+                    p.save()
+        if "sensor" in data:
+            for sensor in data.sensor:
+                s = Sensor(id=sensor.id, name=sensor.name, device=device, reference=sensor.reference, value_type=sensor.value_type, unit=sensor.unit, values=sensor['values'], last_value=sensor.last_value, last_received=sensor.last_received)
+                s.save()
+        return device
+
+    def create_params(self, parameters):
+        params = ['id', self.id]
+        params.extend(list(reduce(lambda x, y: x + y, parameters.items())))
+        _data = Device._put_data(Device.addparams_path, params)
+        if _data.status == "ERROR":
+            raise RinorError(_data.code, _data.description)
+        
+class Command(RestModel):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=50)
+    device = models.ForeignKey(Device)
+    reference = models.CharField(max_length=50)
+
+class CommandParam(RestModel):
+    id = models.AutoField(primary_key=True)
+    command = models.ForeignKey(Command)
+    key = models.CharField(max_length=50)
+    value_type = models.CharField(max_length=50)
+    values = models.CharField(max_length=50)
+    
+class Sensor(RestModel):
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=50)
+    device = models.ForeignKey(Device)
+    reference = models.CharField(max_length=50)
+    value_type = models.CharField(max_length=50)
+    unit = models.CharField(max_length=50)
+    values = models.CharField(max_length=50)
+    last_value = models.CharField(max_length=50)
+    last_received = models.CharField(max_length=50)

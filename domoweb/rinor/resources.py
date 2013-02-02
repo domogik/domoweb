@@ -195,7 +195,7 @@ class PluginConfigResource(RinorResource):
 
     def obj_update(self, bundle, request=None, **kwargs):
         return self._meta.rinor_pipe.set_detail(kwargs['hostname'], kwargs['id'], kwargs['key'], bundle['value'])
-
+"""
 class DeviceResource(RinorResource):
     # fields must map to the attributes in the Row class
     id = fields.IntegerField(attribute = 'id')
@@ -210,7 +210,7 @@ class DeviceResource(RinorResource):
         detail_allowed_methods = ['get', 'put', 'delete']
         authentication = Authentication()
         authorization = Authorization()
-        rinor_pipe = DeviceExtendedPipe()
+#        rinor_pipe = DeviceExtendedPipe()
 
     def obj_create(self, bundle, request=None, **kwargs):
         return self._meta.rinor_pipe.post_list(bundle["name"], bundle["address"], bundle["type_id"], bundle["usage_id"], bundle["description"], bundle["reference"])
@@ -220,7 +220,7 @@ class DeviceResource(RinorResource):
 
     def obj_delete(self, request=None, **kwargs):
         return self._meta.rinor_pipe.delete_detail(kwargs["pk"])
-        
+"""
 class UserResource(RinorResource):
     # fields must map to the attributes in the Row class
     id = fields.IntegerField(attribute = 'id')

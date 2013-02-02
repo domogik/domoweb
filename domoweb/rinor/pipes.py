@@ -131,29 +131,6 @@ class ProductsPipe(RinorPipe):
         else:
             return None
 
-class DeviceTypePipe(RinorPipe):
-    cache_expiry = 0
-    list_path = "/base/device_type/list"
-    index = 'device_type'
-    paths = []
-    dependencies = ['package']
-
-    def get_list_by_technology(self, technology_id):
-
-        # get one object from data source
-        data = self.get_list()
-        listdata = []
-        for obj in data:
-            if (obj.device_technology_id == technology_id):
-                listdata.append(obj)
-        return listdata
-
-class DeviceUsagePipe(RinorPipe):
-    cache_expiry = 3600
-    list_path = "/base/device_usage/list"
-    index = 'device_usage'
-    paths = []
-
 class DeviceParametersPipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/device/params"
@@ -168,7 +145,8 @@ class DeviceParametersPipe(RinorPipe):
             return _data[self.index][0]
         else:
             return None
-        
+
+"""
 class DevicePipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/device/list"
@@ -209,7 +187,7 @@ class DevicePipe(RinorPipe):
             raise RinorError(_data.code, _data.description)
         return None
 
-"""
+
 class FeaturePipe(RinorPipe):
     cache_expiry = 3600
     list_path = "/base/feature/list"
@@ -233,7 +211,7 @@ class WidgetInstancePipe(RinorPipe):
                 # We delete the widget instance
 #                instance.delete()
         return instances
-
+"""
 class DeviceExtendedPipe(RinorPipe):
     cache_expiry = 3600
     paths = []
@@ -265,7 +243,7 @@ class DeviceExtendedPipe(RinorPipe):
 #                AssociationPipe().delete_feature(feature.id)
         _device = DevicePipe().delete_detail(id)
         return _device
-
+"""
 class StatePipe(RinorPipe):
     cache_expiry = 0
     list_path = "/stats"

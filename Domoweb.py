@@ -68,6 +68,28 @@ def loadThemes(root):
                     theme_name = theme_json["identity"]["name"]
                     t = PageTheme(id=theme_id, label=theme_name)
                     t.save()
+
+def loadRinorModels():
+    from domoweb.restModel import RestModel
+    from domoweb.models import Parameter, DeviceType, DeviceUsage, Device
+    try:
+        ip = Parameter.objects.get(key='rinor_ip')
+        port = Parameter.objects.get(key='rinor_port')
+    except Parameter.DoesNotExist:
+        raise RinorNotConfigured
+    else:
+        try:
+            prefix = Parameter.objects.get(key='rinor_prefix')
+        except Parameter.DoesNotExist:
+            uri = "http://%s:%s" % (ip.value, port.value)
+        else:
+            uri = "http://%s:%s/%s" % (ip.value, port.value, prefix.value)
+
+        RestModel.setRestUri(uri)
+        DeviceType.refresh()
+        DeviceUsage.refresh()
+        Device.refresh()
+    
 def main():
     """Main function that is called at the startup of Domoweb"""
     from optparse import OptionParser
@@ -156,7 +178,9 @@ def main():
     engine.log("Loading Iconsets")
     loadIconsets(os.path.join(domoweb.PACKSPATH, "iconsets"))
     engine.log("Loading Themes")
-    loadThemes(os.path.join(domoweb.PACKSPATH, "themes"))
+    loadThemes(os.path.join(domoweb.PACKSPATH, "themes"))    
+    engine.log("Loading Rinor Data")
+    loadRinorModels()
 
     EventsPlugin(engine, project).subscribe()
     coreapp.subscribe()
@@ -226,6 +250,12 @@ class CoreAppPlugin(plugins.SimplePlugin):
                 'default': {
                     'ENGINE': 'django.db.backends.sqlite3',
                     'NAME': project['dbfile'],
+                },
+                'users': {
+                    'NAME': '',
+                    'ENGINE': 'django.db.backends.mysql',
+                    'USER': '',
+                    'PASSWORD': ''
                 }
             },
             TIME_ZONE = 'Europe/Paris',

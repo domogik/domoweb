@@ -240,7 +240,7 @@ def installLogrotate():
 def createFolder(path, user):
     if not os.path.isdir(path):
         info("%s do not exist... creation" % path)
-        os.makedirs(d)
+        os.makedirs(path)
 
     uid = pwd.getpwnam(user).pw_uid
     info("Updating rights for user %s[%s]" % (user, uid))
