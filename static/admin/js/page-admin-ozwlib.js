@@ -96,7 +96,7 @@ function SetDataToxPL (data) {
     dt=JSON.stringify(data);
     console.log ("SetDataToxPL : " + dt);
 //var val = dt.replace(/[{]/g, '|').replace(/[,]/g,';').replace(/[}]/g,'\\').replace(/["]/g,"'"); 
-    var val = dt.replace(/["]/g,"&quot;").replace(/[{]/g,"&ouvr;").replace(/[}]/g,"&ferm;") ; 
+    var val = dt.replace(/["]/g,"&quot;").replace(/[{]/g,"&ouvr;").replace(/[}]/g,"&ferm;").replace(/true/g,"True").replace(/false/g,"False") ; 
     console.log ("SetDataToxPL str : " + val);
     return val;
 };
@@ -115,7 +115,7 @@ function createToolTip(domObj, position) {
     var d = $(domObj);
     $(domObj).each(function (index) {
         if (this.haveqtip) {
-            console.log("ToolTip existant");
+            return;
         } else {
             this.haveqtip = true;
             if (this.title !='') {
@@ -190,8 +190,6 @@ function SetStatusZWDevices(idObj, status) {
         } else { return texte}
     }
     
-    
-    
     function setStatusDeviceZW(oObj) {
         /* {0:,
               1:'Initialized - not known', 
@@ -210,7 +208,6 @@ function SetStatusZWDevices(idObj, status) {
         if (node.InitState =='Out of operation') {status ='status-warning';};
         return  nodeId + "<span id='nodestate" + nodeId + "'class='icon16-text-right  icon16-" + status + "' title='" + node.InitState + "' /span>";
         }
-
 
     function setNameNode(oObj) {
         return "<input type='text' title='Name' value='" + oObj.aData[hdLiNode['Name']] + "'/>";
@@ -358,7 +355,8 @@ function SetStatusZWDevices(idObj, status) {
                 ret ="<select id='" + id + "' name='CmdClssValue' class='liste ccvalue' style='width:15em'>" + opt + "</select>";
             };realvalue
             if (type=='Button') {
-                ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue' type='button' value='"+ value +"'></input>"; 
+                value = oObj.aData[getDataTableColIndex(oObj.oSettings, 'label')];
+                ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue ccbt' type='button' value='" + value +"'></input>"; //
             };
             if (modify) {
                 ret = ret + "<button id='send" + vId +"' class='button icon16-action-update buttonicon' name='Send value' title='Send value'><span class='offscreen'>Send value</span></button>";
@@ -378,6 +376,17 @@ function SetStatusZWDevices(idObj, status) {
                         var ok = oTable.fnUpdate(this.value,aPos[0],idC,false);
                         handleChangeVCC ();
                 };
+        });
+        var b = $('.ccbt');
+        $('.ccbt').unbind('click').click(function (e){
+            var nTr = this.parentNode.parentNode;
+            var idDetNode = nTr.parentNode.parentNode.id;
+            var aTable = $('#' + idDetNode).dataTable();
+            var aData = aTable.fnGetData(nTr); 
+            var nodeId = parseInt(idDetNode.slice(7)); // detNodeX
+            var valueId = aData[getDataTableColIndex(aTable.fnSettings(), 'id')];
+            console.log ("sending button action for cmd class");
+            msg = setValueNode(nodeId, valueId, false, aTable,nTr, true); // force la valeur à true
         });
     };
         
@@ -479,7 +488,7 @@ function GetinfoNode (nodeid, callback, queue) {
         }
     };
 
-    function setValueNode(nodeId, valueid, value, aTable, nTr) {
+    function setValueNode(nodeId, valueid, value, aTable, nTr, newvalue = "none") {
         var messXpl = {};
         if (valueid) {
                 var msg = {};
@@ -489,7 +498,11 @@ function GetinfoNode (nodeid, callback, queue) {
                 val['valueid'] = valueid;
                 val['node'] = nodeId;
                 var obj = $('#valCC' + valueid);
-                val['newValue'] = $('#valCC' + valueid).val();
+                if  (newvalue == "none") {
+                    val['newValue'] = obj.val();
+                } else {
+                    val['newValue'] = newvalue
+                };
                 msg['value'] = SetDataToxPL (val);
                 rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
                     .done(function(data, status, xhr){

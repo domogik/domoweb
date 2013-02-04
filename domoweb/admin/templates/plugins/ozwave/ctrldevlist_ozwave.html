@@ -367,7 +367,7 @@ $('body').on('click','#node_items tbody td button', function () {
         notfind = false;
         var idDetNode = nTr.parentNode.parentNode.id;
         var aTable = $('#' + idDetNode).dataTable();
-        aData = aTable.fnGetData(nTr); 
+        var aData = aTable.fnGetData(nTr); 
         var nodeId = parseInt(idDetNode.slice(7)); // detNodeX
         var valueId = aData[getDataTableColIndex(aTable.fnSettings(), 'id')];
         console.log ("sending update cmd class");
