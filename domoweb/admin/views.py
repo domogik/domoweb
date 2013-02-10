@@ -594,3 +594,39 @@ def admin_core_devicesstats(request):
         nav2_core_domowebdata = "selected",
         parameter_data = Parameter.objects.all()
     )
+
+class DeviceUpgradeForm(forms.Form):
+    old = forms.ChoiceField(label=_("Old device"), required=True)
+    new = forms.ChoiceField(label=_("New device"), required=True)
+
+    def __init__(self, *args, **kwargs):
+        # This should be done before any references to self.fields
+        super(DeviceUpgradeForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        return super(DeviceUpgradeForm, self).clean()
+ 
+@admin_required
+def admin_core_deviceupgrade(request):
+    """
+    Method called when the admin Domoweb Data page is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+    
+    page_title = _("Devices Upgrade")
+    
+    dev = Device.list_upgrade()   
+    frm = DeviceUpgradeForm(auto_id='main_%s')
+
+    frm.fields['old'].choices = dev[0]['old']
+    frm.fields['new'].choices = dev[0]['new']
+ 
+    return go_to_page(
+        request, 'core/deviceupgrade.html',
+        page_title,
+        frm = frm,
+        nav1_admin = "selected",
+        nav2_core_deviceupgrade = "selected",
+        parameter_data = Parameter.objects.all()
+    )
