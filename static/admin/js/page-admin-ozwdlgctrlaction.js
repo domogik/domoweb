@@ -194,7 +194,8 @@ function dlgCtrlAction (vData) {
     });
 }
 
-function updateStateAction(state, locked = false){
+function updateStateAction(state, locked){
+    if (locked === undefined) { locked = false; }
     if (state != 'running') {
             $('#selectActCtrl').attr('lockSelect','');
             RunningCtrlAction.locked = locked;

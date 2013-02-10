@@ -488,7 +488,8 @@ function GetinfoNode (nodeid, callback, queue) {
         }
     };
 
-    function setValueNode(nodeId, valueid, value, aTable, nTr, newvalue = "none") {
+    function setValueNode(nodeId, valueid, value, aTable, nTr, newvalue) {
+        if (newvalue === undefined) { newvalue = "none"; }
         var messXpl = {};
         if (valueid) {
                 var msg = {};
