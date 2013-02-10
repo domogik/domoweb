@@ -90,6 +90,11 @@ def main():
              default='/var/lib/domoweb/domoweb.db',
              help="Force domoweb DB file (default: /var/lib/domoweb/domoweb.db)")
 
+    p.add_option('--rootdir',
+             dest='rootdir',
+             default=os.path.dirname(os.path.abspath(__file__)),
+             help="Folder for Domoweb main files")
+
     # parse command line for defined options
     options, args = p.parse_args()
 
@@ -211,7 +216,7 @@ def installDefault(user):
         s = f.read()
 
     s = re.sub(r'DOMOWEB_USER=.*', ('DOMOWEB_USER=%s' % user), s)
-    s = re.sub(r'DOMOWEB_PATH=.*', ('DOMOWEB_PATH=%s' % os.path.dirname(os.path.abspath(__file__))), s)
+    s = re.sub(r'DOMOWEB_PATH=.*', ('DOMOWEB_PATH=%s' % rootdir), s)
 
     with open('/etc/default/domoweb', "w") as f:
         f.write(s)
