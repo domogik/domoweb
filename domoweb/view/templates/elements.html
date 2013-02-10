@@ -41,13 +41,16 @@
         $.initAssociations({{ page.id }});
         
         $("a#save").click(function(){
-            var features = new Array()
+            var featuresids = new Array()
+            var featurestypes = new Array()
             var widgets = new Array()
             $("#widgetsmatrix .shape").each(function(index, element) {
-                features.push($(element).data('featureid'));
+                featurestypes.push($(element).data('featuretype'));
+                featuresids.push($(element).data('featureid'));
                 widgets.push($(element).data('widgetid'));
             });
-            $("#pageForm input[name='features']").val(features.join(','));
+            $("#pageForm input[name='featurestypes']").val(featurestypes.join(','));
+            $("#pageForm input[name='featuresids']").val(featuresids.join(','));
             $("#pageForm input[name='widgets']").val(widgets.join(','));
             $("#pageForm").submit();
         });
@@ -56,6 +59,7 @@
         $("#widgetinstance_{{ instance.id }}").widget_shape({
             widgetid: '{{ instance.widget_id }}',
             featureid: '{{ instance.feature_id }}',
+            featuretype: '{{ instance.feature_type }}',
             featurename: '{{ instance.feature.device_feature_model.name }}',
             devicename: '{{ instance.feature.device.name }}',
             associationid: '{{ instance.id }}',
@@ -102,12 +106,12 @@
         <div id='dialog' title='Place yours widgets'>
             <div id='devices'>
                 <ul>
-                {% regroup devices|dictsort:"device_usage_id" by device_usage as usages %}
+                {% regroup devices|dictsort:"usage_id" by usage as usages %}
                 {% for usage in usages %}
-                    <li><div class='usage icon16-usage-{{ usage.grouper.id }}'>{{usage.grouper.name }}</div>
+                    <li><div class='subcategory icon16-usage-{{ usage.grouper.id }}'>{{usage.grouper.name }}</div>
                         <ul>
                             {% for device in usage.list %}
-                            <li><button id='showdevice{{device.id}}' deviceid='{{device.id}}' class='device icon16-technology-{{ device.device_type.device_technology_id }}'>{{ device.name }} ({{ device.address }})</button></li>
+                            <li><button id='showdevice{{device.id}}' deviceid='{{device.id}}' class='device icon16-technology-{{ device.type.device_technology_id }}'>{{ device.name }} ({{ device.type.name }})</button></li>
                             {% endfor %}
                         </ul>
                     </li>
@@ -117,9 +121,20 @@
             <div id='features'>
                 {% for device in devices %}
                 <ul id="features{{device.id}}" class='features'>
-                    {% for feature in device.features %}
-                    <li><button id='showfeature{{feature.id}}' class='feature' featureid='{{ feature.id }}' devicename='{{device.name }}' featuremodel='{{ feature.device_feature_model.id }}' featurename='{{ feature.device_feature_model.name }}' featuretype='{{ feature.device_feature_model.feature_type }}.{{ feature.device_feature_model.value_type }}'>{{ feature.device_feature_model.name }}</button></li>
-                    {% endfor %}
+                    <li><div class='subcategory'>Sensors</div>
+                        <ul>
+                            {% for sensor in device.sensor_set.all %}
+                            <li><button id='showsensor{{sensor.id}}' class='feature' featureid='{{ sensor.id }}' devicename='{{device.name }}' featurename='{{ sensor.name }}' featuretype='sensor.{{ sensor.value_type }}'>{{ sensor.name }}</button></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li><div class='subcategory'>Commands</div>
+                        <ul>
+                            {% for command in device.command_set.all %}
+                            <li><button id='showcommand{{command.id}}' class='feature' featureid='{{ command.id }}' devicename='{{device.name }}' featurename='{{ command.name }}' featuretype='actuator.{{ command.value_type }}'>{{ command.name }}</button></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
                 </ul>
                 {% endfor %}
             </div>
@@ -150,7 +165,8 @@
             {% endfor %}
         </div>
         <form action="{% url page_elements_view page.id %}" id="pageForm" method="post">
-            <input type="hidden" name="features" />
+            <input type="hidden" name="featurestypes" />
+            <input type="hidden" name="featuresids" />
             <input type="hidden" name="widgets" />
         </form>
     </div>

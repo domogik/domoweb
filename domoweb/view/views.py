@@ -41,7 +41,7 @@ from django.utils.translation import ugettext as _
 from django import forms
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.models import Widget, PageIcon, WidgetInstance, PageTheme, DeviceType, DeviceUsage
+from domoweb.models import Widget, PageIcon, WidgetInstance, PageTheme, DeviceType, DeviceUsage, Device
 from domoweb import fields
     
 class ThemeChoiceField(forms.ModelChoiceField):
@@ -148,15 +148,17 @@ def page_elements(request, id):
 
     if request.method == 'POST': # If the form has been submitted...
         widgetinstances = WidgetInstance.objects.filter(page_id=id).delete()
-        features = request.POST["features"].split(',')
+        featuresids = request.POST["featuresids"].split(',')
+        featurestypes = request.POST["featurestypes"].split(',')
         widgets = request.POST["widgets"].split(',')
-        for i, feature in enumerate(features):
+        for i, feature in enumerate(featuresids):
             if feature:
-                w = WidgetInstance(order=i, page=page, feature_id=feature, widget_id=widgets[i])
+                featuretype = featurestypes[i].split('.')[0]
+                w = WidgetInstance(order=i, page=page, feature_id=feature, feature_type=featuretype, widget_id=widgets[i])
                 w.save()
         return redirect('page_view', id=id) # Redirect after POST
 
-    devices = DeviceExtendedPipe().get_list()
+    devices = Device.objects.all()
     widgets = Widget.objects.all()
     widgetinstances = WidgetInstancePipe().get_page_list(id)
     

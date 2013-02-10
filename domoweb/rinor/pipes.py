@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.cache import cache
 from domoweb.rinor.rinorPipe import RinorPipe
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import WidgetInstance, Page
+from domoweb.models import WidgetInstance, Page, Device
 
 def select_sublist(list_of_dicts, **kwargs):
     return [d for d in list_of_dicts 
@@ -26,7 +26,7 @@ class EventPipe(RinorPipe):
         yield 'event: message\ndata: {}\n\n'
         # Get all the devices ids
         try:
-            _devices_list = DevicePipe().get_dict().keys()
+            _devices_list = Device.objects.values_list('id', flat=True).distinct()
         except RinorNotConfigured:
             today = datetime.datetime.today()
             cherrypy.log("{0} -- EVENTS : RINOR not configured yet".format(today.strftime("%Y%m%d-%H%M%S")))

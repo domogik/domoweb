@@ -138,6 +138,7 @@ class WidgetInstance(models.Model):
     order = models.IntegerField()
     widget = models.ForeignKey(Widget, on_delete=models.DO_NOTHING)
     feature_id = models.IntegerField()
+    feature_type = models.CharField(max_length=50, default="")
 
 class DeviceType(RestModel):
     id = models.CharField(max_length=50, primary_key=True)
@@ -183,6 +184,7 @@ class Device(RestModel):
     delete_path = "/base/device/del"
     create_path = "/base/device/add"
     addparams_path = "/base/device/addglobal"
+    listupgrade_path = "/base/device/list-upgrade"
     index = 'device'
 
     @staticmethod
@@ -228,7 +230,14 @@ class Device(RestModel):
         _data = Device._put_data(Device.addparams_path, params)
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
-        
+    
+    @classmethod
+    def list_upgrade(cls):
+        data = cls._get_data(cls.listupgrade_path)
+        if data.status == "ERROR":
+            raise RinorError(data.code, data.description)
+        return data[cls.index]
+    
 class Command(RestModel):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)

@@ -29,10 +29,10 @@
 
     $(function(){
         {% for instance in widgetinstances %}
-            var parameters_usage = $.stringToJSON(device_usages["{{instance.feature.device.device_usage_id}}"].default_options);
+            var parameters_usage = $.stringToJSON(device_usages["{{instance.feature.device.usage_id}}"].default_options);
             var parameters_type = $.stringToJSON("{{instance.feature.device_feature_model.parameters|safe}}");
             var options = {
-                usage: "{{ instance.feature.device.device_usage_id }}",
+                usage: "{{ instance.feature.device.usage_id }}",
                 devicename: "{{ instance.feature.device.name }}",
                 featurename: "{{ instance.feature.device_feature_model.name }}",
                 devicetechnology: device_types["{{ instance.feature.device.device_type_id }}"].device_technology_id,

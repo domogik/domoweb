@@ -7,6 +7,7 @@ function ondrop(event, ui) {
     item.widget_shape({
         widgetid: ui.draggable.data('widgetid'),
         featureid: ui.draggable.data('featureid'),
+        featuretype: ui.draggable.data('featuretype'),
         featurename: ui.draggable.data('featurename'),
         devicename: ui.draggable.data('devicename'),
         associationid: ui.draggable.data('associationid'),
@@ -31,7 +32,7 @@ $(function(){
         position: ['middle', 100],
         resizable: true,
         modal: true,
-		draggable: false,
+	draggable: false,
     });
 
     $("a#showwidgets").click(function(){
@@ -118,6 +119,7 @@ $(function(){
                             widgetwidth: o.width,
                             widgetheight: o.height,
                             featureid: o.featureid,
+                            featuretype: o.featuretype,
                             featurename: o.featurename,
                             devicename: o.devicename
                         });
@@ -159,6 +161,7 @@ $(function(){
                 widgetwidth: o.width,
                 widgetheight: o.height,
                 featureid: o.featureid,
+                featuretype: o.featuretype,
                 featurename: o.featurename,
                 devicename: o.devicename,
                 draggable: {
@@ -190,7 +193,7 @@ $(function(){
             this.element.addClass('shape');
             this.element.removeAttr('style');
             this.element.attr('role', 'listitem');
-			this.element.addClass('size' + o.width + 'x' + o.height);
+	    this.element.addClass('size' + o.width + 'x' + o.height);
             this.element.attr("tabindex", 0);
             this.element.empty();
             this.element.append("<div class='sizetext'>" + o.width + 'x' + o.height + "</div>");
@@ -198,6 +201,7 @@ $(function(){
                 'devicename':o.devicename,
                 'featurename':o.featurename,
                 'featureid':o.featureid,
+                'featuretype':o.featuretype,
                 'widgetwidth': o.width,
                 'widgetheight':o.height,
                 'widgetid': o.widgetid,
@@ -216,6 +220,7 @@ $(function(){
             var place_id = zone.data('place');
             var widget_id = model.data('widgetid');
             var feature_id = model.data('featureid');
+            var feature_type = model.data('featuretype');
         },
 
         initAssociations: function(page_id) {           
@@ -228,33 +233,6 @@ $(function(){
                     drop: ondrop
             })
                 .data({'page_id':page_id});
-    
-            /*
-            rinor.get(['api', 'association', page_id]
-                .done(function(data, status, xhr){
-                    $.each(data.objects, function(index, association) {
-                        var model = $("<div id='" + association.id + "' role='listitem'></div>");
-                        model.widget_shape({
-                            widgetid: association.widget,
-                            featureid: association.device_feature_id,
-                            featurename: association.feature.device_feature_model.name,
-                            devicename: association.feature.device.name,
-                            associationid: association.id,
-                            draggable: {
-                                helper: false,
-                                revert: 'invalid',
-                                drag: ondrag,
-                                stop: onstop
-                            },
-                            deletable: true
-                        });
-                        $("." + association.place).append(model);
-                    });
-                })
-                .fail(function(jqXHR, status, error){
-                    if (jqXHR.status == 400)
-                        $.notification('error', jqXHR.responseText);
-                });    */            
         }
     });
     

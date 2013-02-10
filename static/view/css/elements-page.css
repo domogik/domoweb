@@ -45,7 +45,7 @@ padding: 0.4em 0 0.4em 0;
 width:90%;
 text-align:left;
 }
-#devices .usage { /* Usage level */
+.subcategory {
 border-top: #cccccc solid 1px;
 border-bottom: #cccccc solid 1px;
 padding: 0.4em 0 0.4em 0;
