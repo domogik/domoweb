@@ -238,7 +238,7 @@ def installDefault(user):
         s = f.read()
 
     s = re.sub(r'DOMOWEB_USER=.*', ('DOMOWEB_USER=%s' % user), s)
-    s = re.sub(r'DOMOWEB_PATH=.*', ('DOMOWEB_PATH=%s' % rootdir), s)
+    s = re.sub(r'DOMOWEB_PATH=.*', ('DOMOWEB_PATH=%s' % options.rootdir), s)
 
     with open('/etc/default/domoweb', "w") as f:
         f.write(s)
