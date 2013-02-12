@@ -55,7 +55,25 @@
 
 {% block right %}
     <div id="tabs">
-            {{ frm }}
+        <p>Via this page you can transfer device stats from an old device (<=0.3) to a new device (>=4.0)</p>
+        {{ msg }}
+        <form id="UpgradeForm" method='post'>{% csrf_token %}
+            <fieldset title="{% trans "Upgrade Information" %}">
+                {{ frm.non_field_errors }}
+                {% for hidden in frm.hidden_fields %}
+                {{ hidden }}
+                {% endfor %}
+                {% for field in frm.visible_fields %}
+                    <div class='row'>
+                        {{ field.errors }}
+                        <label for="{{ field.auto_id }}" class="{% if field.field.required %} required{% endif %}">
+                           {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                        </label>
+                        {{ field }}
+                    </div>
+                {% endfor %}
+            </fieldset>
+            <input type="submit" class="finish" value="{% trans "Upgrade" %}" />
+        </form>
     </div>
-
 {% endblock %}

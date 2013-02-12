@@ -613,12 +613,29 @@ def admin_core_deviceupgrade(request):
     @param request : HTTP request
     @return an HttpResponse object
     """
+
+    msg = ''
+    # handle the post form
+    if request.method == 'POST':
+        dev = Device.list_upgrade()   
+        frm = DeviceUpgradeForm(request.POST)
+        frm.fields['old'].choices = dev[0]['old']
+        frm.fields['new'].choices = dev[0]['new']
+        if frm.is_valid():
+            cleaned_data = frm.clean()
+            old = cleaned_data['old']
+            new = cleaned_data['new']
+	    msg = 'post done ' + old + '  ' + new
+            old = old.split('-')
+            new = new.split('-')
+            Device.do_upgrade(old[0], old[1], new[0], new[1])       
+        else:
+            msg = frm._errors
     
+    # do the real output
     page_title = _("Devices Upgrade")
-    
     dev = Device.list_upgrade()   
     frm = DeviceUpgradeForm(auto_id='main_%s')
-
     frm.fields['old'].choices = dev[0]['old']
     frm.fields['new'].choices = dev[0]['new']
  
@@ -626,6 +643,7 @@ def admin_core_deviceupgrade(request):
         request, 'core/deviceupgrade.html',
         page_title,
         frm = frm,
+        msg = msg,
         nav1_admin = "selected",
         nav2_core_deviceupgrade = "selected",
         parameter_data = Parameter.objects.all()

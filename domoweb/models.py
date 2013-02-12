@@ -185,6 +185,7 @@ class Device(RestModel):
     create_path = "/base/device/add"
     addparams_path = "/base/device/addglobal"
     listupgrade_path = "/base/device/list-upgrade"
+    doupgrade_path = "/base/device/upgrade"
     index = 'device'
 
     @staticmethod
@@ -237,6 +238,13 @@ class Device(RestModel):
         if data.status == "ERROR":
             raise RinorError(data.code, data.description)
         return data[cls.index]
+
+    @classmethod
+    def do_upgrade(cls, odid, oskey, ndid, nsid):
+        data = ['oldid', odid, 'oldskey', oskey, 'newdid', ndid, 'newsensorid', nsid]
+        ret = cls._post_data(cls.doupgrade_path, data)
+        if ret.status == "ERROR":
+            raise RinorError(ret.code, ret.description)
     
 class Command(RestModel):
     id = models.IntegerField(primary_key=True)
