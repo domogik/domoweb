@@ -61,6 +61,43 @@ $(function(){
         return false;
     });
 
+    $("#refreshNodeStats").click(function(){
+        var msg = {};
+        msg['command'] = "Refresh";
+        var val = {};
+        val['request'] ='GetNodeStats';
+        val['node'] = parseInt($('#nodeIdStats').val());
+        msg['value'] = SetDataToxPL (val);
+        rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+            .done(function(data, status, xhr){
+                var messXpl = ParseAckXPL(data.xpl);
+                var stats = messXpl['data'];
+                if (messXpl['error'] =='no') {
+                    var rows = [];
+                    for (var item in NODESTATISTIC) {
+                        if (stats[item]) {
+                            rows.push([NODESTATISTIC[item], stats[item]]);
+                            };
+                    };
+                    for (item in messXpl) {
+                        if (item.indexOf('item') != -1) {
+                            description = NODESTATISTIC['commandClassId'] + messXpl[item]['commandClassId'] + '<br>' + 
+                                                  ' &nbsp;&nbsp;&nbsp;&nbsp; --- ' + NODESTATISTIC['sentCntCC'] + '<br>' +
+                                                  ' &nbsp;&nbsp;&nbsp;&nbsp; --- ' + NODESTATISTIC['receivedCntCC'] ;
+                            rows.push([description,  '<br>' + messXpl[item]['sentCnt'] + '<br>' + messXpl[item]['receivedCnt']]);
+                            };
+                    };
+                    $('#tabNodeStat').dataTable().fnClearTable(false),
+                    $('#tabNodeStat').dataTable().fnAddData(rows);
+                };
+                })
+            .fail(function(jqXHR, status, error){
+               if (jqXHR.status == 400)
+                    $.notification('error', '{% trans "Data not recept" %} (' + jqXHR.responseText + ') please check your device configuration');
+            });
+        return false;
+    });
+    
     $("#refreshneighbors").click(function(){
         buildKineticNeighbors();
         return false;
@@ -68,6 +105,13 @@ $(function(){
 
    $(document).ready(function(){
         $('#tabGenStat').dataTable({
+            "bFilter": false,
+            "bPaginate": false,
+            "bSort": false,
+            "bInfo": false,
+            "bAutoWidth": false,
+        } );
+        $('#tabNodeStat').dataTable({
             "bFilter": false,
             "bPaginate": false,
             "bSort": false,
@@ -102,8 +146,26 @@ $(function(){
         <table id='tabGenStat' class='simple'>
             <thead>
                 <tr>
-                    <th scope='col'>{% trans "Description " %}</th>
-                    <th scope='col'>{% trans "Value " %}</th>
+                    <th scope='col'>{% trans "Description" %}</th>
+                    <th scope='col'>{% trans "Value" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+    </table>
+    </div>
+</section>
+<section id="nodestatistic" class="subsection">
+    <h2>{% trans "Node statistic" %}  :&nbsp;
+        <input id='nodeIdStats' type='text' name='nodeIdStats' size='3' value=''>&nbsp;&nbsp;&nbsp;&nbsp;
+        <button id='refreshNodeStats' class='button icon16-action-reset'>{% trans "Refresh statistic" %}</button>&nbsp;&nbsp;
+    </h2>
+    <div id='nodestat'>
+        <table id='tabNodeStat' class='simple'>
+            <thead>
+                <tr>
+                    <th scope='col'>{% trans "Description" %}</th>
+                    <th scope='col'>{% trans "Value" %}</th>
                 </tr>
             </thead>
             <tbody>

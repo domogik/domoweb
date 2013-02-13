@@ -29,6 +29,25 @@ var HEADSTATISTIC = {"SOFCnt" : gettext("Star of Frame (SOF) bytes received"),
                                  "broadcastWriteCnt" : gettext("Number of broadcasts sent")
                                 }
 
+var NODESTATISTIC = {"sentCnt" : gettext("Number of messages sent from this node."),
+                                 "sentFailed" : gettext("Number of sent messages failed"),
+                                 "retries" : gettext("Number of message retries"),
+                                 "receivedCnt" : gettext("Number of messages received from this node."),
+                                 "receivedDups" : gettext("Number of duplicated messages received."),
+                                 "receivedUnsolicited" : gettext("Number of messages received unsolicited."),
+                                 "sentTS" : gettext("Last message sent time."),
+                                 "receivedTS" : gettext("Last message received time"),
+                                 "lastRequestRTT " : gettext("Last message request RTT"),
+                                 "averageRequestRTT" : gettext("Average Request Round Trip Time (ms)."),
+                                 "lastResponseRTT" : gettext("Last message response RTT"),
+                                 "averageResponseRTT" : gettext("Average Reponse round trip time."),
+                                 "quality" : gettext("Node quality measure"),
+                                 "lastReceivedMessage" : gettext("Place to hold last received message"),
+                                 "commandClassId" : gettext("Individual Stats for: "),    
+                                 "sentCntCC" : gettext("Number of messages sent from this CommandClass."),    
+                                 "receivedCntCC" : gettext("Number of messages received from this CommandClass.")
+                                }
+
 function GetDataFromxPL (data, key) {
     var dt=JSON.stringify(data);
     var debut=dt.search(key + '=');
