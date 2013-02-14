@@ -18,7 +18,6 @@ from httplogger import HTTPLogger
 
 from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
-from domoweb.exceptions import RinorNotConfigured
 
 import domoweb
 from events import *

@@ -137,6 +137,7 @@ class PluginDetailResource(RinorResource):
     version = fields.CharField(attribute = 'version')
     id = fields.CharField(attribute = 'id')
     documentation = fields.CharField(attribute = 'documentation')
+    technology = fields.CharField(attribute = 'technology')
     description = fields.CharField(attribute = 'description')
     configuration = fields.ListField(attribute = 'configuration')
 
