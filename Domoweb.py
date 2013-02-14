@@ -20,6 +20,7 @@ from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 
 import domoweb
+from domoweb.exceptions import RinorNotConfigured
 from events import *
 
 def loadWidgets(root):
