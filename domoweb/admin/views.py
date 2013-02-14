@@ -54,7 +54,7 @@ from django.forms.widgets import Select
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, PageTheme, Page, DeviceType, DeviceUsage, Device
+from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, PageTheme, Page, DeviceType, DeviceUsage, Device, Command, CommandParam, Sensor
 
 def login(request):
     """
@@ -479,7 +479,30 @@ class PageThemeTable(tables.Table):
 class PageTable(tables.Table):
     class Meta:
         model = Page
-        
+class DeviceTable(tables.Table):
+    class Meta:
+        model = Device
+
+class DeviceTypeTable(tables.Table):
+    class Meta:
+        model = DeviceType
+
+class DeviceUsageTable(tables.Table):
+    class Meta:
+        model = DeviceUsage
+
+class CommandTable(tables.Table):
+    class Meta:
+        model = Command
+
+class CommandParamTable(tables.Table):
+    class Meta:
+        model = CommandParam
+
+class SensorTable(tables.Table):
+    class Meta:
+        model = Sensor
+ 
 @admin_required
 def admin_core_domowebdata(request):
     """
@@ -496,6 +519,12 @@ def admin_core_domowebdata(request):
     widgetinstance_table = WidgetInstanceTable(WidgetInstance.objects.all())
     pagetheme_table = PageThemeTable(PageTheme.objects.all())
     page_table = PageTable(Page.objects.all())
+    device_table = DeviceTable(Device.objects.all())
+    devicetype_table = DeviceTypeTable(DeviceType.objects.all())
+    deviceusage_table = DeviceUsageTable(DeviceUsage.objects.all())
+    command_table = CommandTable(Command.objects.all())
+    commandparam_table = CommandParamTable(CommandParam.objects.all())
+    sensor_table = SensorTable(Sensor.objects.all())
     
     return go_to_page(
         request, 'core/domowebdata.html',
@@ -508,6 +537,12 @@ def admin_core_domowebdata(request):
         widgetinstance_table = widgetinstance_table,
         pagetheme_table = pagetheme_table,
         page_table = page_table,
+        device_table = device_table,
+        devicetype_table = devicetype_table,
+        deviceusage_table = deviceusage_table,
+        command_table = command_table,
+        commandparam_table = commandparam_table,
+        sensor_table = sensor_table,
     )
     
 @admin_required
