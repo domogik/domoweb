@@ -46,7 +46,7 @@ class Migration(SchemaMigration):
         },
         'domoweb.devicetype': {
             'Meta': {'object_name': 'DeviceType'},
-            'device_technology_id': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'plugin_id': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '50', 'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },

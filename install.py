@@ -187,10 +187,10 @@ def installConfig(user):
         keep = raw_input('You already have Domoweb configuration files. Do you want to keep them ? [Y/n] ')
         if keep == 'N' or keep == 'n':
             shutil.copy(installpath, '/etc/')
-            os.chown(path, uid, -1)
+            os.chown(installpath, uid, -1)
     else:
         shutil.copy(installpath, '/etc/')
-        os.chown(path, uid, -1)
+        os.chown(installpath, uid, -1)
 
 def installDefault(user):
     info("Installing /etc/default/domoweb")    
@@ -309,7 +309,7 @@ def updateDb(user, db):
         buffer.getvalue().index('(*) 0001_initial')
     except ValueError:
         info("Initialisation DB migration")
-        management.call_command("migrate", "domoweb", "0001", fake=True)
+        management.call_command("migrate", "domoweb")
     else:
         info("Apply DB migration script")
         management.call_command("migrate", "domoweb", delete_ghosts=True)

@@ -23,7 +23,7 @@ class Migration(SchemaMigration):
         db.create_table('domoweb_devicetype', (
             ('id', self.gf('django.db.models.fields.CharField')(max_length=50, primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('device_technology_id', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('plugin_id', self.gf('django.db.models.fields.CharField')(max_length=50)),
         ))
         db.send_create_signal('domoweb', ['DeviceType'])
 
@@ -116,7 +116,7 @@ class Migration(SchemaMigration):
         },
         'domoweb.devicetype': {
             'Meta': {'object_name': 'DeviceType'},
-            'device_technology_id': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'plugin_id': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '50', 'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
