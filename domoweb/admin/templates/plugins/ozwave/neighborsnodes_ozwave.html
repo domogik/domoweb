@@ -89,7 +89,9 @@ $(function(){
                     };
                     $('#tabNodeStat').dataTable().fnClearTable(false),
                     $('#tabNodeStat').dataTable().fnAddData(rows);
-                };
+                } else {
+                    $.notification('error', '{% trans "Request error" %} (' + messXpl['error'] + ') please check input');
+                    };
                 })
             .fail(function(jqXHR, status, error){
                if (jqXHR.status == 400)

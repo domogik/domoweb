@@ -13,6 +13,7 @@ function getLabelDevice(node) {
 };
 
 KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
+    this.nodeobj = node;
     this.pictNodeNeig = new Kinetic.Group({
           x: x,
           y: y,
@@ -24,7 +25,7 @@ KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
         x: 0,
         y: 0,
         radius: r,
-        fill: 'yellow',
+        fill: this.getColorState(),
         stroke: 'black',
         strokeWidth: 4,
         name:"pictureImg",
@@ -43,7 +44,6 @@ KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
     this.pictNodeNeig.add(this.pictureImg);
     this.pictNodeNeig.add(this.text);
     this.links = new Array ();
-    this.nodeobj = node;
     this.layer = layer;
     this.pictNodeNeig.on("mouseover", function() {
         var img = this.get(".pictureImg");
@@ -55,7 +55,7 @@ KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
             
     this.pictNodeNeig.on("mouseout", function() {
         var img = this.get(".pictureImg");
-        img[0].setFill("yellow");
+        img[0].setFill(this.attrs.nodeP.getColorState());
         tooltip.hide();
         img[0].setOpacity(1);
         this.parent.draw();
@@ -108,19 +108,68 @@ KtcNodeNeighbor.prototype.removelink= function(linker) {
         linker.draw();
     };
 };
-                     
+
+KtcNodeNeighbor.prototype.getColorState = function() {
+    var color = 'yellow';
+    switch (this.nodeobj['InitState']) {
+        case 'Uninitialized' : 
+            color = 'red';
+            break;
+        case 'Initialized - not known' : 
+            color = 'orange';
+            break;
+        case 'Completed' : 
+            color = 'yellow';
+            break;
+        case 'In progress - Devices initializing' : 
+            color = 'brown';
+            break;
+        case 'In progress - Linked to controller' : 
+            color = 'violet';
+            break;
+        case 'In progress - Can receive messages' : 
+            color = 'blue';
+            break;
+        case 'Out of operation' : 
+            color = 'red';
+            break;
+        case 'In progress - Can receive messages (Not linked)' : 
+            color = 'turquoise';
+            break;
+        }
+    return color;
+    };
+    
+KtcNodeNeighbor.prototype.getTypeLink = function(Node2) {
+    var indice = 1, color = 'green';
+    if (this.nodeobj.Capabilities.indexOf("Primary Controller" ) != -1 ) { indice =8;  color ='blue'}
+    if (this.nodeobj.Capabilities.indexOf("Routing") != -1) {indice = indice + 2;}
+    if (this.nodeobj.Capabilities.indexOf("Beaming" ) != -1) {indice = indice + 1;}
+    if (this.nodeobj.Capabilities.indexOf("Listening" ) != -1) { indice = indice + 3;}
+    if (this.nodeobj.Capabilities.indexOf("Security") != -1) { color ='yellow';}
+    if (this.nodeobj.Capabilities.indexOf("FLiRS") != -1) { indice = indice + 2;}
+    if (this.nodeobj['State sleeping']) {indice = indice -2; color = 'orange';}
+    if (this.nodeobj['InitState'] == 'Out of operation') {indice = 1,  color = 'red';}
+    return {'indice' : indice, 'color' : color}
+};
+        
 CLink = function (N1,N2,layer) {
             // build linelink
+    var t = N1 .getTypeLink(N2);
+    var x1 = N1.pictNodeNeig.getX(), y1 = N1.pictNodeNeig.getY();
+    var x2 = N2.pictNodeNeig.getX(), y2 = N2.pictNodeNeig.getY();   
+    var xm = (x1+x2)/2 , ym = (y1 + y2) / 2;
     this.link = new Kinetic.Line({
-      strokeWidth: 10,
-      stroke: "green",
+      strokeWidth: t['indice'], //10,
+      stroke: t['color'], // "green",
+      lineCap: 'round',
       points: [{
-        x: N1.pictNodeNeig.getX(),
-        y: N1.pictNodeNeig.getY()
-      }, {
-        x: N2.pictNodeNeig.getX(),
-        y: N2.pictNodeNeig.getY()
-      }]
+        x: x1,
+        y: y1
+          }, {
+        x: xm,
+        y: ym
+        }]
     });
     this.layer = layer;
     this.nodes = new Array (N1, N2);
@@ -146,9 +195,18 @@ CLink.prototype.removelink= function(node) {
     };
 };
 CLink.prototype.follownode = function(node) { 
-    var idx = this.nodes.indexOf(node);
-    if (idx != -1) {
-        this.link.attrs.points[idx] = node.pictNodeNeig.getPosition();
+    var id1 = this.nodes.indexOf(node);
+    var id2 =0;
+    if (id1 != -1) {
+        if (id1 ==0) {id2 =1;};
+        var p2 = this.nodes[id2].pictNodeNeig.getPosition();
+        var p1 = node.pictNodeNeig.getPosition();
+        var pm = { 'x' : (p2.x+ p1.x) /2, 'y' : (p2.y + p1.y) /2};
+        this.link.attrs.points[id1] = p1;
+        this.link.attrs.points[id2] = pm;
+        if (id2 == 0) { this.link.attrs.points[id2] = pm;
+            this.link.attrs.points[id1] = p2;
+            } 
         this.layer.draw();
         }
 };
