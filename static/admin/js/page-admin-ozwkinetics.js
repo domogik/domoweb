@@ -6,7 +6,7 @@ var tooltip;
 
 function getLabelDevice(node) {
     if (node.Name != "Undefined" && node.Name !="") {
-        return node.Name;
+        return node.Name + '\n(' + node.Node +')';
     } else {
         return "Node " + node.Node;
     };
@@ -21,43 +21,59 @@ KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
           name: 'nodeneighbor',
           nodeP : this
         });
+    var op =1;
+    if (this.nodeobj['State sleeping']) {op = 0.3; };
     this.pictureImg = new Kinetic.Circle({
         x: 0,
         y: 0,
         radius: r,
-        fill: this.getColorState(),
+        fillRadialGradientStartPoint: 0,
+        fillRadialGradientStartRadius: 0,
+        fillRadialGradientEndPoint: 0,
+        fillRadialGradientEndRadius: r,
+        fillRadialGradientColorStops: this.getColorState(),
         stroke: 'black',
-        strokeWidth: 4,
+        strokeWidth: 2,
+        shadowColor: 'black',
+        shadowBlur: 2,
+        shadowOffset: 5,
+        shadowOpacity: 0.5,
         name:"pictureImg",
+        opacity: op,
         nodeP : this
         });
+    var t = getLabelDevice(node);
+    if (t.length > ((2*r)/5)) { yt = 8-r;
+    } else {yt = -5;};
     this.text = new Kinetic.Text({
         x: -r +2,
-        y: -5,
+        y: yt,
         width:2*r-4,
-        text: getLabelDevice(node),
+        text: t,
         fontSize: 12,
         fontFamily: "Calibri",
-        textFill: "black",
+        fill: "black",
         align : "center"
     });
     this.pictNodeNeig.add(this.pictureImg);
     this.pictNodeNeig.add(this.text);
     this.links = new Array ();
     this.layer = layer;
-    this.pictNodeNeig.on("mouseover", function() {
+    this.pictNodeNeig.on("mouseover touchstart", function() {
         var img = this.get(".pictureImg");
-        img[0].setFill("blue");
+        img[0].setFillRadialGradientColorStops([0, 'turquoise', 1, 'blue']);
         img[0].setOpacity(0.5);
         this.parent.draw();
         document.body.style.cursor = "pointer";
         });
-            
-    this.pictNodeNeig.on("mouseout", function() {
+
+    this.pictNodeNeig.on("mouseout touchend", function() {
         var img = this.get(".pictureImg");
-        img[0].setFill(this.attrs.nodeP.getColorState());
+        img[0].setFillRadialGradientColorStops(this.attrs.nodeP.getColorState());
         tooltip.hide();
-        img[0].setOpacity(1);
+        var op =1;
+        if (this.attrs.nodeP.nodeobj['State sleeping']) {op = 0.3; };
+        img[0].setOpacity(op);
         this.parent.draw();
         tooltipLayer.draw();
         document.body.style.cursor = "default";
@@ -110,34 +126,34 @@ KtcNodeNeighbor.prototype.removelink= function(linker) {
 };
 
 KtcNodeNeighbor.prototype.getColorState = function() {
-    var color = 'yellow';
+    var colors = [0, 'yellow', 0.5, 'orange', 1, 'blue'];
     switch (this.nodeobj['InitState']) {
         case 'Uninitialized' : 
-            color = 'red';
+            colors = [0, 'red', 0.5, 'orange', 1, 'red'];
             break;
         case 'Initialized - not known' : 
-            color = 'orange';
+            colors = [0, 'orange', 0.5, 'orange', 1, 'yellow'];
             break;
         case 'Completed' : 
-            color = 'yellow';
+            colors = [0, 'yellow', 0.5, 'yellow', 1, 'green'];
             break;
         case 'In progress - Devices initializing' : 
-            color = 'brown';
+            colors = [0, 'orange', 0.5, 'brown', 1, 'violet'];
             break;
         case 'In progress - Linked to controller' : 
-            color = 'violet';
+            colors = [0, 'brown', 0.5, 'violet', 1, 'turquoise'];
             break;
         case 'In progress - Can receive messages' : 
-            color = 'blue';
+            colors = [0, 'violet', 0.5, 'turquoise', 1, 'blue'];
             break;
         case 'Out of operation' : 
-            color = 'red';
+            colors = [0, 'red', 0.5, 'red', 1, 'orange'];
             break;
         case 'In progress - Can receive messages (Not linked)' : 
-            color = 'turquoise';
+            colors = [0, 'turquoise', 0.7, 'yellow', 1, 'red'];
             break;
         }
-    return color;
+    return colors;
     };
     
 KtcNodeNeighbor.prototype.getTypeLink = function(Node2) {
@@ -236,7 +252,11 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         radius: r,
         fill: f,
         stroke: 'black',
-        strokeWidth: 4,
+        strokeWidth: 2,
+        shadowColor: 'black',
+        shadowBlur: 2,
+        shadowOffset: 5,
+        shadowOpacity: 0.5,
         name:"pictureImg"
         });
     this.text = new Kinetic.Text({
@@ -246,7 +266,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         text: "" + node.Node,
         fontSize: 16,
         fontFamily: "Calibri",
-        textFill: "black",
+        fill: "black",
         align : "center"
     });
     var imgstate = new Image();
@@ -290,7 +310,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
          };}, 300, self , grpAssociation);   
         
    
-    this.pictNodeGrp.on("mouseover", function() {
+    this.pictNodeGrp.on("mouseover touchstart", function() {
         var img = this.get(".pictureImg");
         if (this.attrs.nodeP.isMember()) {img[0].setFill("red");
         }else {img[0].setFill("blue");};
@@ -299,7 +319,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         document.body.style.cursor = "pointer";
         });
             
-    this.pictNodeGrp.on("mouseout", function() {
+    this.pictNodeGrp.on("mouseout touchend", function() {
         var stage = this.getStage();
         var img = this.get(".pictureImg");
         if (img.length != 0) { // le node detruit genère quand même un mouseout après sa destruction
@@ -540,7 +560,7 @@ function initScrollbars(stage) {
         y: stage.getHeight() - 20,
         width: 130,
         height: 20,
-        fill: "#9f005b",
+        fill: "#90C633",
         draggable: true,
         dragBoundFunc: function(pos) { // horizontal
             var newX = 0;
@@ -573,7 +593,7 @@ function initScrollbars(stage) {
         y: ((stage.getHeight()-30)/2) - 35,
         width: 20,
         height: 70,
-        fill: "#9f005b",
+        fill: "#90C633",
         draggable: true,
         dragBoundFunc: function(pos) { // horizontal
             var newY = 0;
@@ -592,10 +612,10 @@ function initScrollbars(stage) {
         strokeWidth: 1
     });
  // scrollbars events assignation
-    scrollbars.on("mouseover", function() {
+    scrollbars.on("mouseover touchstart", function() {
         document.body.style.cursor = "pointer";
     });
-    scrollbars.on("mouseout", function() {
+    scrollbars.on("mouseout touchend", function() {
         document.body.style.cursor = "default";
     });
     scrollLayer.beforeDraw(function() {
@@ -690,10 +710,9 @@ function initNeighborsStage(){
         text: "essais",
         fontFamily: "Calibri",
         fontSize: 12,
-        padding: 5,
-        textFill: "white",
+        padding: 15,
         fill: "black",
-        opacity: 0.75,
+        opacity: 1,
         visible: false
     });
     tooltipLayer = new Kinetic.Layer();
@@ -720,10 +739,9 @@ function stageGrps(contName) {
         text: "essais",
         fontFamily: "Calibri",
         fontSize: 12,
-        padding: 5,
-        textFill: "white",
+        padding: 15,
         fill: "black",
-        opacity: 0.75,
+        opacity: 1,
         visible: false
     });
     grpsStage.tooltipLayer = new Kinetic.Layer();
@@ -774,11 +792,13 @@ KtcGrpAss = function (x,y,w,h,grp,stage) {
         y: 0,
         width: w,
         height: h,
-        fill:{
-            start: { x: 0, y: 10 },
-            end: { x: 0, y: h-10 },
-            colorStops: [0, '#BDCB2F', 1, '#9BB528']
-          }, 
+        fillLinearGradientStartPoint: [0, 0],
+        fillLinearGradientEndPoint: [0, h],
+        fillLinearGradientColorStops: [0, '#BDCB2F', 1, '#D3F0A1'],
+        shadowColor: 'black',
+        shadowBlur: 2,
+        shadowOffset: 5,
+        shadowOpacity: 0.5,
         stroke: 'black',
         strokeWidth: 3,
         name:"goupimg"
@@ -794,7 +814,7 @@ KtcGrpAss = function (x,y,w,h,grp,stage) {
         text: "Group " + grp.index + ", " + grp.label + "\n Max members : "+grp.maxAssociations + "\n Members : " + strmembers,
         fontSize: 12,
         fontFamily: "Calibri",
-        textFill: "black",
+        fill: "black",
         align : "left"
     });
     this.grpAss=grp;
@@ -812,11 +832,11 @@ KtcGrpAss = function (x,y,w,h,grp,stage) {
     }
     this.layer.add(this.picture); 
     
-    this.picture.on("mouseover", function() {
+    this.picture.on("mouseover touchstart", function() {
          document.body.style.cursor = "pointer";
         });
             
-    this.picture.on("mouseout", function() {
+    this.picture.on("mouseout touchend", function() {
         document.body.style.cursor = "default";
     });
 };
@@ -892,7 +912,7 @@ function ResetGroups(stage, nodeP) {
 };
 
 function initGoAction (go) {
-    go.on('mouseover', function() {      
+    go.on('mouseover touchstart', function() {      
         var stage = this.getStage();
         document.body.style.cursor = "pointer";
         this.setOpacity(0.5);
@@ -900,7 +920,7 @@ function initGoAction (go) {
         stage.carouLayer.speed = 1;
         this.attrs.layer.draw();
         });
-    go.on("mouseout", function() {
+    go.on("mouseout touchend", function() {
         var stage = this.getStage();
         document.body.style.cursor = "default";
         this.setOpacity(1);
