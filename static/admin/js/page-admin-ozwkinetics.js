@@ -152,7 +152,7 @@ KtcNodeNeighbor.prototype.getColorState = function() {
         case 'In progress - Can receive messages (Not linked)' : 
             colors = [0, 'turquoise', 0.7, 'yellow', 1, 'red'];
             break;
-        }
+        };
     return colors;
     };
     
@@ -179,6 +179,7 @@ CLink = function (N1,N2,layer) {
       strokeWidth: t['indice'], //10,
       stroke: t['color'], // "green",
       lineCap: 'round',
+      name: 'linknodes',
       points: [{
         x: x1,
         y: y1
@@ -476,31 +477,31 @@ KtcNodeGrp.prototype.setimgstate = function(state, img) {
         switch (state) {
             case mbrGrpSt[0] : // 'unknown' 
                 this.imgstate.src =  '/design/common/images/status/unknown_red_32.png';
-                img.show();
+                if (img) {img.show();};
                 break;
             case mbrGrpSt[1] : // 'confirmed' 
                 this.imgstate.src = '/design/common/images/status/check_32.png';
-                img.hide();
+                if (img) {img.hide();};
                 break;
             case mbrGrpSt[2] : //'to confirm'
                 this.imgstate.src =  '/design/common/images/status/unknown_green_32.png';
-                img.show();
+                if (img) {img.show();};
                 break;
             case mbrGrpSt[3] : //'to update'
                 this.imgstate.src =  '/design/common/images/action/refresh_16.png';
-                img.show();
+                if (img) {img.show();};
                 break;
             case 'add':
                 this.imgstate.src =  '/design/common/images/action/plus_32.png';
-                img.show();
+                if (img) {img.show();};
                 break;
             case 'del':
                 this.imgstate.src = '/design/common/images/action/minus_32.png';
-                img.show();
+                if (img) {img.show();};
                 break;
              case 'unallowable':
                 this.imgstate.src =  '/design/common/images/status/wrong_32.png';
-                img.show();
+               if (img) { img.show();};
                 break;
         };
     };
@@ -552,7 +553,8 @@ function initScrollbars(stage) {
         width: stage.getWidth() - 30,
         height: 20,
         fill: "black",
-        opacity: 0.3
+        opacity: 0.3,
+        name: 'scrollbar'
     });
 
     var hscroll = new Kinetic.Rect({
@@ -576,7 +578,8 @@ function initScrollbars(stage) {
         },
         opacity: 0.9,
         stroke: "black",
-        strokeWidth: 1
+        strokeWidth: 1,
+        name: 'scrollbar'
     });
  // vertical scrollbars
     var vscrollArea = new Kinetic.Rect({
@@ -585,7 +588,8 @@ function initScrollbars(stage) {
         width: 20,
         height: stage.getHeight() - 30,
         fill: "black",
-        opacity: 0.3
+        opacity: 0.3,
+        name: 'scrollbar'
     });
 
     var vscroll = new Kinetic.Rect({
@@ -609,7 +613,8 @@ function initScrollbars(stage) {
         },
         opacity: 0.9,
         stroke: "black",
-        strokeWidth: 1
+        strokeWidth: 1,
+        name: 'scrollbar'
     });
  // scrollbars events assignation
     scrollbars.on("mouseover touchstart", function() {
@@ -646,11 +651,24 @@ function initScrollbars(stage) {
 };
 
 function buildKineticNeighbors() {
+        var L = linkLayer.get('.linknodes');   
+        L.each(function(node) {
+            L[node].destroy();
+            });
+        L = nodeLayer.get('.nodeneighbor');
+        L.each(function(node) {
+            L[node].destroy();
+            });
+        L = scrollLayer.get('.scrollbar');
+        L.each(function(node) {
+            L[node].destroy();
+            });
+        scrollLayer.removeChildren();
+        tooltipLayer.removeChildren();
         nborsStage.removeChildren();
-        linkLayer.removeChildren();        
-        nodeLayer.removeChildren();
         initScrollbars(nborsStage);
         tooltipLayer.add(tooltip);
+        nborsStage.removeChildren();  
         var xc= nborsStage.getWidth() / 2;
         var yc= nborsStage.getHeight() / 2;
         var stepR = 80;
@@ -697,10 +715,10 @@ function initNeighborsStage(){
             break;
             };
         };
-   nborsStage = new Kinetic.Stage({
-      container: 'containerneighbors',
-      width: width,
-      height: 500
+    nborsStage = new Kinetic.Stage({
+        container: 'containerneighbors',
+        width: width,
+        height: 500
     });
     nodeLayer = new Kinetic.Layer();
     linkLayer = new Kinetic.Layer();
