@@ -646,7 +646,9 @@ function initScrollbars(stage) {
 };
 
 function buildKineticNeighbors() {
-        nborsStage.reset();
+        nborsStage.removeChildren();
+        linkLayer.removeChildren();        
+        nodeLayer.removeChildren();
         initScrollbars(nborsStage);
         tooltipLayer.add(tooltip);
         var xc= nborsStage.getWidth() / 2;
