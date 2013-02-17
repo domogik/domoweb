@@ -166,8 +166,8 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     """
 
     plugin = PluginPipe().get_detail(plugin_host, plugin_id)
-    devices = Device.objects.filter(type__device_technology_id=plugin.technology)
-    types = DeviceType.objects.filter(device_technology_id=plugin.technology)
+    devices = Device.objects.filter(type__plugin_id=plugin.id)
+    types = DeviceType.objects.filter(plugin_id=plugin.id)
     products = ProductsPipe().get_list(plugin_id)
     if plugin_type == "plugin":
         page_title = _("Plugin")

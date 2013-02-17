@@ -35,7 +35,7 @@
                 usage: "{{ instance.feature.device.usage_id }}",
                 devicename: "{{ instance.feature.device.name }}",
                 featurename: "{{ instance.feature.device_feature_model.name }}",
-                devicetechnology: device_types["{{ instance.feature.device.device_type_id }}"].device_technology_id,
+                deviceplugin: device_types["{{ instance.feature.device.device_type_id }}"].plugin_id,
                 deviceaddress: "{{ instance.feature.device.address }}",
                 featureconfirmation: "{{ instance.feature.device_feature_model.return_confirmation }}",
                 deviceid: "{{ instance.feature.device_id }}",

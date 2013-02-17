@@ -111,7 +111,7 @@
                     <li><div class='subcategory icon16-usage-{{ usage.grouper.id }}'>{{usage.grouper.name }}</div>
                         <ul>
                             {% for device in usage.list %}
-                            <li><button id='showdevice{{device.id}}' deviceid='{{device.id}}' class='device icon16-technology-{{ device.type.device_technology_id }}'>{{ device.name }} ({{ device.type.name }})</button></li>
+                            <li><button id='showdevice{{device.id}}' deviceid='{{device.id}}' class='device'>{{ device.name }} ({{ device.type.name }})</button></li>
                             {% endfor %}
                         </ul>
                     </li>

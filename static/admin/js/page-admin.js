@@ -45,9 +45,9 @@ function getPluginsList() {
                     var host = this.host;
                     $.each(this.list, function() {
                         plugin_count++;
-                        var technology = this.technology.replace(' ', '');
-                        if ($("#plugins_list ul#menu_" + technology).length == 0) {
-                            $("#plugins_list").append("<li><div class='titlenav2 icon16-technology-" + technology + "'>" + technology + "</div><ul id='menu_" + technology + "'></ul></li>")
+                        var plugin = this.id.replace(' ', '');
+                        if ($("#plugins_list ul#menu_" + plugin).length == 0) {
+                            $("#plugins_list").append("<li><ul id='menu_" + plugin + "'></ul></li>")
                         }
                         var li = $("<li class='" + this.type + "'></li>");
                         var a = $("<a></a>");
@@ -75,7 +75,7 @@ function getPluginsList() {
                         }
                         a.append(status);
                         li.append(a);
-                        $("#plugins_list ul#menu_" + technology).append(li);	
+                        $("#plugins_list ul#menu_" + plugin).append(li);	
                     });
                 });
                 if (plugin_count == 0) { // If no plugin detected

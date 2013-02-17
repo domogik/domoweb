@@ -143,7 +143,7 @@ class WidgetInstance(models.Model):
 class DeviceType(RestModel):
     id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=50)
-    device_technology_id = models.CharField(max_length=50)
+    plugin_id = models.CharField(max_length=50)
     
     list_path = "/base/device_type/list"
     index = 'device_type'
@@ -153,7 +153,7 @@ class DeviceType(RestModel):
         _data = DeviceType.get_list();
         DeviceType.objects.all().delete()
         for record in _data:
-            r = DeviceType(id=record.id, name=record.name, device_technology_id=record.device_technology_id)
+            r = DeviceType(id=record.id, name=record.name, plugin_id=record.plugin_id)
             r.save()
 
 class DeviceUsage(RestModel):

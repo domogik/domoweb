@@ -144,7 +144,6 @@ function sortOptions(a, b){
 			    <li><span class='label'>{% trans "Documentation" %}:</span> <a href='{{ plugin.documentation }}'>{% trans "Wiki" %}</a></li>
 			    <li><span class='label'>{% trans "Host" %}:</span> {{ plugin.host }}</li>
 			    {% ifnotequal plugin.id "rest" %}
-				    <li><span class='label'>{% trans "Technology" %}:</span> {{ plugin.technology }}</li>
 				    <li><div id='iconstatus'></div></li>
 			    {% endifnotequal %}
 		    </ul>

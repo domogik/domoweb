@@ -77,7 +77,8 @@ def loadRinorModels():
         ip = Parameter.objects.get(key='rinor_ip')
         port = Parameter.objects.get(key='rinor_port')
     except Parameter.DoesNotExist:
-        raise RinorNotConfigured
+        #raise RinorNotConfigured
+        return
     else:
         try:
             prefix = Parameter.objects.get(key='rinor_prefix')
