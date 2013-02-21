@@ -236,7 +236,6 @@
          oTabJobs = $("#cron_items").dataTable({
             "bFilter": false,
             "bAutoWidth": false,
-            "bJQueryUI": true,
             "aoColumnDefs": [
                 { "fnRender": function (oObj) {return setUptime(oObj);}, "aTargets": [ hdLiNode['Uptime'] ] },
                 { "fnRender": function (oObj) {return setRuntime(oObj);}, "aTargets": [ hdLiNode['Runtime'] ] },
@@ -245,7 +244,8 @@
                 { "bSortable": false, "aTargets": [ hdLiNode['Commands'] ] },
                 ],
             "aaSorting": [[1, 'asc']],
-            "sPaginationType": "full_numbers"
+            "sPaginationType": "full_numbers",
+            "bJQueryUI": true
             } );
          if (plugin_is_running() ) {
                 $("#speciallist").click();

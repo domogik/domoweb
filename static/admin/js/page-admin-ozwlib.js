@@ -1,11 +1,52 @@
 var netWorkZW = {};
 var listNodes = new Array();
 var listTypesVal = {};
+var listCmdCtrl = {};
 var hdCmdClss = new Array();
 var initialized = false;
 // Constante d'entete de colonne de la table node_items 
 var hdLiNode = {"NodeId": 0, "Name": 1, "Location": 2, "Model": 3, "Awake":  4, "Type": 5, "Last update": 6, "Action": 7};
 var mbrGrpSt = {0: 'unknown', 1: 'confirmed', 2: 'to confirm', 3: 'to update'};
+var HEADSTATISTIC = {"SOFCnt" : gettext("Star of Frame (SOF) bytes received"),
+                                 "ACKWaiting" : gettext("Unsolicited messages while waiting for an ACK"),
+                                 "readAborts" : gettext("Reads aborted due to timeouts"),
+                                 "badChecksum" : gettext("Bad checksum errors"),
+                                 "readCnt" : gettext("[Device] Messages successfully received"),
+                                 "writeCnt" : gettext("[Device] Messages successfully sent"),
+                                 "CANCnt" : gettext("Controller Area Network (CAN) received from controller"),
+                                 "NAKCnt" : gettext("No Acknowledge (NAK) received from controller"),
+                                 "ACKCnt" : gettext("Acknowledgements (ACK) received from controller"),
+                                 "OOFCnt" : gettext("Out of frame data flow errors"),
+                                 "dropped" : gettext("Messages dropped and not delivered"),
+                                 "retries" : gettext("Messages retransmitted"),
+                                 "callbacks" : gettext("Number of unexpected callbacks"),
+                                 "badroutes" : gettext("Number of failed messages due to bad route response"),
+                                 "noack" : gettext("Number of no ACK returned errors"),
+                                 "netbusy" : gettext("Number of network busy/failure messages"),
+                                 "nondelivery" : gettext("Number of messages not delivered to network"),
+                                 "routedbusy" : gettext("Number of messages received with routed busy status"),
+                                 "broadcastReadCnt" : gettext("Number of broadcasts read"),
+                                 "broadcastWriteCnt" : gettext("Number of broadcasts sent")
+                                }
+
+var NODESTATISTIC = {"sentCnt" : gettext("Number of messages sent from this node."),
+                                 "sentFailed" : gettext("Number of sent messages failed"),
+                                 "retries" : gettext("Number of message retries"),
+                                 "receivedCnt" : gettext("Number of messages received from this node."),
+                                 "receivedDups" : gettext("Number of duplicated messages received."),
+                                 "receivedUnsolicited" : gettext("Number of messages received unsolicited."),
+                                 "sentTS" : gettext("Last message sent time."),
+                                 "receivedTS" : gettext("Last message received time"),
+                                 "lastRequestRTT " : gettext("Last message request RTT"),
+                                 "averageRequestRTT" : gettext("Average Request Round Trip Time (ms)."),
+                                 "lastResponseRTT" : gettext("Last message response RTT"),
+                                 "averageResponseRTT" : gettext("Average Reponse round trip time."),
+                                 "quality" : gettext("Node quality measure"),
+                                 "lastReceivedMessage" : gettext("Place to hold last received message"),
+                                 "commandClassId" : gettext("Individual Stats for: "),    
+                                 "sentCntCC" : gettext("Number of messages sent from this CommandClass."),    
+                                 "receivedCntCC" : gettext("Number of messages received from this CommandClass.")
+                                }
 
 function GetDataFromxPL (data, key) {
     var dt=JSON.stringify(data);
@@ -19,7 +60,7 @@ function GetDataFromxPL (data, key) {
     var fin=dt.search('}');   
     dt=dt.slice(0,fin-2); 
 //    dt=dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"');
-    dt= dt.replace(/&ouvr;/g,'{').replace(/&ferm;/g,'}').replace(/&quot;/g,'"');
+    dt= dt.replace(/&ouvr;/g,'{').replace(/&ferm;/g,'}').replace(/&quot;/g,'"').replace(/&squot;/g,"'");
 
     if (key=='count') {
         fin=dt.search('}');   
@@ -59,7 +100,7 @@ function GetDataFromxPL (data, key) {
                 if  (mesxPL[ks[i]].slice(0,6) == "&ouvr;") {
                     dt=mesxPL[ks[i]];
    //                 dt= (dt.replace(/[|]/g,'{').replace(/[;]/g,',').replace(/[\\]/g,'}').replace(/[']/g,'"')) + "}";
-                    dt= dt.replace(/&ouvr;/g,'{').replace(/&ferm;/g,'}').replace(/&quot;/g,'"');
+                    dt= dt.replace(/&ouvr;/g,'{').replace(/&ferm;/g,'}').replace(/&quot;/g,'"').replace(/&squot;/g,"'");
                     console.log (dt);
                     mesxPL[ks[i]] = JSON.parse(dt);
                 };
@@ -74,7 +115,7 @@ function SetDataToxPL (data) {
     dt=JSON.stringify(data);
     console.log ("SetDataToxPL : " + dt);
 //var val = dt.replace(/[{]/g, '|').replace(/[,]/g,';').replace(/[}]/g,'\\').replace(/["]/g,"'"); 
-    var val = dt.replace(/["]/g,"&quot;").replace(/[{]/g,"&ouvr;").replace(/[}]/g,"&ferm;") ; 
+    var val = dt.replace(/["]/g,"&quot;").replace(/[{]/g,"&ouvr;").replace(/[}]/g,"&ferm;").replace(/true/g,"True").replace(/false/g,"False") ; 
     console.log ("SetDataToxPL str : " + val);
     return val;
 };
@@ -87,6 +128,33 @@ function getDataTableColIndex (dTab, title) {
             };
         }
     return -1;
+};
+
+function createToolTip(domObj, position) {
+    var d = $(domObj);
+    $(domObj).each(function (index) {
+        if (this.haveqtip) {
+            return;
+        } else {
+            this.haveqtip = true;
+            if (this.title !='') {
+                switch (position) {
+                    case 'left' :
+                         $('#' + this.id +'[title]').tooltip_left();
+                        break;            
+                    case 'right' :
+                         $('#' + this.id + '[title]').tooltip_right();
+                        break;  
+                    case 'top' :
+                         $('#' + this.id + '[title]').tooltip_top();
+                        break;
+                    case 'bottom' :
+                         $('#' + this.id + '[title]').tooltip_bottom();
+                        break;
+                }
+            };
+        };
+    });
 };
     
 // Gestion des tables de données
@@ -120,49 +188,94 @@ function GetZWNodeById (nodeiId) {
     return false;
 };
     
-    function SetStatusMemberGrp(infonode,group,member,status) {
-        console.log ('Set status :' + status);
+function SetStatusMemberGrp(infonode,group,member,status) {
+    console.log ('Set status :' + status);
+}
+        
+function SetStatusZWDevices(idObj, status) {
+     if (status == 'Uninitialized') { st = 'status-unknown'};
+     if (status == 'Completed') { st = 'status-active'};
+     if (status == 'In progress - Devices initializing') { st = 'action-processing_f6f6f6'};
+     if (status == 'Out of operation') { st = 'status-warning'};
+     $('#'+ idObj).removeClass().addClass('icon16-text icon16-'+ st);
+     t = gettext(status)
+     $('#'+idObj).qtip('api').updateContent(t);
+};
+
+// fnRender, callback des élements du tableau autre que texte ou enrichis
+    function getNodeIdFromHtml(texte) {
+        if (typeof texte=="string") {
+            return parseInt (texte.substring(0, texte.indexOf('<span'))); 
+        } else { return texte}
     }
-        
-        
-// fnRender, callback des élements du tableau autre que texte
+    
+    function setStatusDeviceZW(oObj) {
+        /* {0:,
+              1:'Initialized - not known', 
+              2:'Completed',
+              3:'In progress - Devices initializing',
+              4:'In progress - Linked to controller',
+              5:'In progress - Can receive messages', 
+              6:'Out of operation'} */
+        var nodeId = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
+        var node = GetZWNodeById(nodeId);
+        var status = 'status-unknown';
+        if (node.InitState =='Uninitialized') {status = 'status-unknown';};
+        if (node.InitState =='Initialized - not known') {status = 'status-active';};
+        if (node.InitState =='Completed') {status ='status-active';};
+        if (node.InitState.indexOf('In progress') !=-1) {status ='action-processing_f6f6f6';};
+        if (node.InitState =='Out of operation') {status ='status-warning';};
+        return  nodeId + "<span id='nodestate" + nodeId + "'class='icon16-text-right  icon16-" + status + "' title='" + node.InitState + "' /span>";
+        }
+
     function setNameNode(oObj) {
         return "<input type='text' title='Name' value='" + oObj.aData[hdLiNode['Name']] + "'/>";
         };
         
     function setStatusSleep(oObj) {
-       var status = oObj.aData[hdLiNode['Awake']];
-       if (status==true) { //Sleeping
-            textstatus = "Probablement en veille";
+        var status = oObj.aData[hdLiNode['Awake']];
+        var nodeId = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
+        if (status==true) { //Sleeping
+            textstatus = 'Probably sleep';
             st = 'unknown';
         } else { //actif
-            textstatus = "Actif sur le réseaux";
+            textstatus = 'Active on network';
             st = 'active';
         };
         console.log("set status sleep coloms : " + oObj.aData + " " + status);
-        return  st + "<span class='icon16-text-right  icon16-status-" + st + "' /span>";
+        return  st + "<span id='infosleepnode" + nodeId + "'class='icon16-text-right  icon16-status-" + st + "' title='" + textstatus + "' /span>";
         };
-        
+
+    function setTypeInfos(oObj) {
+        var typeName = oObj.aData[hdLiNode['Type']];
+        var nodeId = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
+        var node = GetZWNodeById(nodeId);
+        var text = '';
+        if (node.Capabilities.length > 1) {text= 'Capabilities :\n';
+        } else {text= 'Capability :\n';};
+        for (i=0; i<node.Capabilities.length; i++) {
+            text = text + " -- " + node.Capabilities[i] + '\n';
+        }
+        return  typeName + "<span id='infotypenode" + nodeId +"' class='icon16-text-right icon16-status-info' title='" + text + "' /span>";
+        };
+
     function setActionNode(oObj) {
-        var num = oObj.aData[hdLiNode['NodeId']];
-        var stAct = 'add';
+        var num = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
+        var stAct = 'zoomin';
         var tabDet = document.getElementById("detNode" + num);
         if (tabDet) { // DetailNode opened 
-            stAct = 'del'; 
+            stAct = 'zoomout'; 
         };
         var ret =  "<button id='detailnode" + num + 
-                        "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' ><span class='offscreen'>Detail Node : " + num + "</span></button>";
+                        "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' name='Detail node'><span class='offscreen'>Detail Node : " + num + "</span></button>";
          ret =  ret + "<button id='updnode" + num + 
-                        "' class='icon16-action-save buttonicon' title='Update Node' ><span class='offscreen'>Send update to Node : " + num + "</span></button>";
-      
+                        "' class='icon16-action-save buttonicon' title='Update Node' name='Update node'><span class='offscreen'>Send update to Node : " + num + "</span></button>";
         for (var i=0; i< listNodes.length; i++) {
             if (listNodes[i].Node == num && listNodes[i].Groups.length > 0) {
-                ret =  ret + "<button id='updnode" + num + 
-                        "' class='icon16-action-customize buttonicon' title='Edit association' name='Node groups' ><span class='offscreen'>Edit association Node : " + num + "</span></button>";
+                ret =  ret + "<button id='updassoc" + num + 
+                        "' class='icon16-action-groups buttonicon' title='Edit association' name='Node groups' ><span class='offscreen'>Edit association Node : " + num + "</span></button>";
                 };
             };
- //   
-        console.log("******** setActionNode : " + oObj.aData + " ret : " + ret);
         return  ret;
         };
          
@@ -174,16 +287,17 @@ function GetZWNodeById (nodeiId) {
         var status = oObj.aData[indexSt];
         var readOnly = oObj.aData[getDataTableColIndex(oObj.oSettings, 'readOnly')];
         var help = gettext(oObj.aData[indexH]);
-       if (readOnly==true) {
+        var vId = oObj.aData[getDataTableColIndex(oObj.oSettings, 'id')];
+        if (readOnly==true) {
             textRW = gettext("Read only");
             st ='active';
         } else {            
             textRW = gettext("Read and Write");
             st ='inactive';
         };
-         var rw=  " <span class='icon16-text-right icon16-status-" + st +"' title='" + textRW + "'></span>";
+         var rw=  " <span id='st"+vId +"' class='icon16-text-right icon16-status-" + st +"' title='" + textRW + "'></span>";
         if (help!="") {
-            extra = "  <span class='icon16-text-right icon16-status-info' title='" + help + "'></span>";
+            extra = "  <span id='hn"+vId +"' class='icon16-text-right icon16-status-info' title='" + help + "'></span>";
         } else {
             extra ="";
         };
@@ -194,13 +308,14 @@ function GetZWNodeById (nodeiId) {
             textstatus = gettext("Not available for domogik device");
             st = 'false';
         };
-        return  num + "<span class='icon16-text-right icon16-status-" + st + "' title='" + textstatus + "'></span>" +rw + extra;
+        return  num + "<span  id='adr"+vId +"'class='icon16-text-right icon16-status-" + st + "' title='" + textstatus + "'></span>" +rw + extra;
         };
 
     function renderCmdClssName(oObj) {
         var CmdClss = oObj.aData[getDataTableColIndex(oObj.oSettings, 'commandClass')];
         var help = gettext(oObj.aData[getDataTableColIndex(oObj.oSettings, 'help')]);
-        return   "<span title='" + help + "'>" + CmdClss + "</span>";
+        var vId = oObj.aData[getDataTableColIndex(oObj.oSettings, 'id')];
+        return   "<span id='hc"+vId +"'title='" + help + "'>" + CmdClss + "</span>";
         };
         
         
@@ -259,7 +374,8 @@ function GetZWNodeById (nodeiId) {
                 ret ="<select id='" + id + "' name='CmdClssValue' class='liste ccvalue' style='width:15em'>" + opt + "</select>";
             };realvalue
             if (type=='Button') {
-                ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue' type='button' value='"+ value +"'></input>"; 
+                value = oObj.aData[getDataTableColIndex(oObj.oSettings, 'label')];
+                ret ="<input id='" + id + "' name='CmdClssValue' class='ccvalue ccbt' type='button' value='" + value +"'></input>"; //
             };
             if (modify) {
                 ret = ret + "<button id='send" + vId +"' class='button icon16-action-update buttonicon' name='Send value' title='Send value'><span class='offscreen'>Send value</span></button>";
@@ -280,7 +396,18 @@ function GetZWNodeById (nodeiId) {
                         handleChangeVCC ();
                 };
         });
-    }
+        var b = $('.ccbt');
+        $('.ccbt').unbind('click').click(function (e){
+            var nTr = this.parentNode.parentNode;
+            var idDetNode = nTr.parentNode.parentNode.id;
+            var aTable = $('#' + idDetNode).dataTable();
+            var aData = aTable.fnGetData(nTr); 
+            var nodeId = parseInt(idDetNode.slice(7)); // detNodeX
+            var valueId = aData[getDataTableColIndex(aTable.fnSettings(), 'id')];
+            console.log ("sending button action for cmd class");
+            msg = setValueNode(nodeId, valueId, false, aTable,nTr, true); // force la valeur à true
+        });
+    };
         
     function returnTextValue(val) {
         if (typeof(val) != 'number') {
@@ -298,7 +425,7 @@ function GetZWNodeById (nodeiId) {
     function fnFormatDetails (nTr, thOut)
     {
         var aData = oTabNodes.fnGetData(nTr);
-        var idDetNode = 'detNode' + aData[hdLiNode['NodeId']];
+        var idDetNode = 'detNode' + getNodeIdFromHtml(aData[hdLiNode['NodeId']]);
         console.log("Format detail node entête : " + thOut);
         if (thOut.length != 1) {
             var sOut = '<table id="' + idDetNode + '" class="simple" cellpadding="5" border="1"><thead><tr>'
@@ -329,7 +456,7 @@ function GetinfoNode (nodeid, callback, queue) {
                     infoNode = ParseAckXPL(data.xpl)
                     var dt=JSON.stringify(infoNode.data);
                     console.log("Dans getinfonode : " + infoNode.data['Model']);
-                    $.notification('debug',"Node : " + infoNode.data['Model'] + " info refreshed" );
+                    $.notification('success',"Node : " + infoNode.data['Model'] + " info refreshed" );
                     infoNode.data['Groups'] = [];
                     for (var i=0; i< infoNode.countgrps; i++) {
                         infoNode.data['Groups'].push(infoNode['group' +i]);
@@ -346,12 +473,17 @@ function GetinfoNode (nodeid, callback, queue) {
                     RefreshDataNode(infoNode.data, (queue.length == 0));
                     callback(infoNode.data);
                     console.log("Node is refreshed, nodeID: " + nodeid);
+                    createToolTip('#nodestate' + nodeid, 'left');
+                    createToolTip('#detailnode' + nodeid, 'right');
+                    createToolTip('#updnode' + nodeid, 'right');
+                    createToolTip('#updassoc' + nodeid, 'right');
+                    createToolTip('#infotypenode' + nodeid, 'bottom');
+                    createToolTip('#infosleepnode' + nodeid, 'bottom');
                     if (queue && queue.length !=0) {
                         nodeid = queue[0];
                         queue = queue.slice(1);
                         GetinfoNode(nodeid, callback, queue);
                     };
-                        
                 })
                 .fail(function(jqXHR, status, error){
                    if (jqXHR.status == 400)
@@ -375,7 +507,8 @@ function GetinfoNode (nodeid, callback, queue) {
         }
     };
 
-    function setValueNode(valueid, value, aTable, nTr) {
+    function setValueNode(nodeId, valueid, value, aTable, nTr, newvalue) {
+        if (newvalue === undefined) { newvalue = "none"; }
         var messXpl = {};
         if (valueid) {
                 var msg = {};
@@ -383,8 +516,13 @@ function GetinfoNode (nodeid, callback, queue) {
                 var val = {};
                 val['request'] ='setValue';
                 val['valueid'] = valueid;
+                val['node'] = nodeId;
                 var obj = $('#valCC' + valueid);
-                val['newValue'] = $('#valCC' + valueid).val();
+                if  (newvalue == "none") {
+                    val['newValue'] = obj.val();
+                } else {
+                    val['newValue'] = newvalue
+                };
                 msg['value'] = SetDataToxPL (val);
                 rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
                     .done(function(data, status, xhr){
@@ -396,8 +534,10 @@ function GetinfoNode (nodeid, callback, queue) {
                             var aPos = aTable.fnGetPosition(obj[0].parentElement);
                             var ok = aTable.fnUpdate(messXpl['value'],aPos[0],idC, false);
                             $('#send' + valueid).remove();
+                            $.notification('success', gettext( "Value updated"));
                             return messXpl;
                         } else { // Erreur dans la lib python
+                            $.notification('error', gettext("Value not updated, error : ") + messXpl['error']);
                             console.log("Dans setValueNode error : " + messXpl['error']);                            
                             return messXpl['error']             
                         };

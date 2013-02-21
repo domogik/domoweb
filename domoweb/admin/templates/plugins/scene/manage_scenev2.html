@@ -2,36 +2,36 @@
 <script type='text/javascript'>
 	var table = new Array();
 	var nb_ligne=0;
-       var plugin_scene_status = "OFF";
+        var plugin_scene_status = "OFF";
 	
-function delscene(number,name) {
-    rinor.put(['api', 'command', 'scene',name],  {"command":"delete"})
+function delscene(id,address) {
+    rinor.put(['api', 'command', 'scene',address],  {"command":"delete"})
                .done(function(data, status, xhr){
-                   rinor.delete(['api', 'device', number])
+                   rinor.delete(['api', 'device', id])
                        .done(function(data, status, xhr){
-                          $.reloadPage({'status': 'success', 'msg': "{% trans "Device deleted" %} '" + name + "'", 'id':number});                                   
+                          $.reloadPage({'status': 'success', 'msg': "{% trans "Device deleted" %} '" + name + "'", 'id':id});                                   
                        })
                })  
 };
 
-function startscene(number) {
+function startscene(id, address) {
 
-    rinor.put(['api', 'command', 'scene', number], {"command":"start"})
+    rinor.put(['api', 'command', 'scene', address], {"command":"start"})
                .done(function(data, status, xhr){
-//                      alert(table[number]+ ' was start')
+                update(id,'run');
+                setTimeout('update('+id+',"stats")',1000);
                 })
-                 $('#actualise').click();
 };
 
-function stopscene(number) {
+function stopscene(id, address) {
 
-    rinor.put(['api', 'command', 'scene',number], {"command":"stop"})
+    rinor.put(['api', 'command', 'scene',address], {"command":"stop"})
                .done(function(data, status, xhr){
-      //             alert(table[number]+ ' was stop')
+                update(id,'run');
+                update(id,'stats');
                 })
-                 $('#actualise').click();
+    
 };
-
 
 function delall(){
         for(i=1;i<nb_ligne;i++){
@@ -47,6 +47,16 @@ function update(id,key){
        })
 };
 
+function poll(){
+    $.ajax({ url: "http://192.168.1.10:40405/events/resquest/18", success: function(data){
+        //Update your dashboard gauge
+        alert(data.value);
+
+    }, dataType: "json", complete: poll, timeout: 30000 });
+};
+
+
+
   $(function(){
   
   $('#actualise').click(function () {
@@ -55,8 +65,6 @@ function update(id,key){
           update(table[i],'stats');
        }
     });
-
-
 
 
    $(document).ready(function(){
@@ -68,8 +76,10 @@ function update(id,key){
                      nb_ligne++;
                      valeur_stat = 'unknow';
                      valeur_run = 'unknow';
-                     matabme = "<tr id='device_"+ object.device.id +"'><td class='Name'><center>" + object.device.name +"</center></td><td class='Description'>"+object.device.description +"</td><td class='stat_run'><center> "+valeur_run+"</center> </td><td class='stat_stats'><center> "+valeur_stat+" </center></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='startscene("+'"'+object.device.name+'"'+")'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='stopscene("+'"'+ object.device.name +'"'+")'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='delscene("+ object.device.id+',"'+ object.device.name +'"' +")'/></td></tr>"
+                     matabme = "<tr id='device_"+ object.device.id +"'><td class='Name'><center>" + object.device.name +"</center></td><td class='Description'>"+object.device.description +"</td><td class='stat_run'><center> "+valeur_run+"</center> </td><td class='stat_stats'><center> "+valeur_stat+" </center></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='startscene("+ object.device.id+',"'+ object.device.address +'"' +")'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='stopscene("+ object.device.id+',"'+ object.device.address +'"' +")'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='delscene("+ object.device.id+',"'+ object.device.address +'"' +")'/></td></tr>"
                      $('#Scene_table').append(matabme.replace(/iRef/g, nb_ligne));
+                     update(object.device.id,'run');
+                     update(object.device.id,'stats');
                    }
              });
              });
