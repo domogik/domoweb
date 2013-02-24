@@ -20,9 +20,7 @@
         
         _init: function() {
             var self = this, o = this.options;
-            
-            if (!o.model_parameters.unit) o.model_parameters.unit = ''; // if unit not defined, display ''
-            
+
             this.element.addClass("icon32-usage-" + o.usage)
                 .addClass('clickable');
             this._value =  $("<div class='value'></div>");
@@ -60,7 +58,7 @@
             var self = this, o = this.options;
             if (value !== null && value !== '') {
                 this.element.displayIcon('known');             
-                this._value.html(value + '<br />' + o.model_parameters.unit)
+                this._value.html(value + '<br />' + o.unit)
                 if (this.previousValue) {
                     if (value == this.previousValue) {
                         this._status.attr('class', 'widget_status icon8-status-equal')
@@ -75,7 +73,7 @@
                 }
             } else { // Unknown
                 this.element.displayIcon('unknown');             
-                this._value.html('--<br />' + o.model_parameters.unit)
+                this._value.html('--<br />' + o.unit)
             }
             this.previousValue = value;
         },
@@ -179,7 +177,7 @@
                 device_id: o.deviceid,
                 key: o.key,
                 name: o.featurename,
-                unit: o.model_parameters.unit,
+                unit: o.unit,
                 type: type,
                 shift: shift
             }).always(function(){

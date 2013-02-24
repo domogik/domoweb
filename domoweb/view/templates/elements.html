@@ -56,15 +56,27 @@
         });
 
         {% for instance in widgetinstances %}
-        $("#widgetinstance_{{ instance.id }}").widget_shape({
-            widgetid: '{{ instance.widget_id }}',
-            featureid: '{{ instance.feature_id }}',
-            featuretype: '{{ instance.feature_type }}',
-            featurename: '{{ instance.feature.device_feature_model.name }}',
-            devicename: '{{ instance.feature.device.name }}',
-            associationid: '{{ instance.id }}',
-            deletable: true
-        });
+            {% if instance.sensor %}
+                $("#widgetinstance_{{ instance.id }}").widget_shape({
+                    widgetid: '{{ instance.widget_id }}',
+                    featureid: '{{ instance.sensor.id }}',
+                    featuretype: 'sensor',
+                    devicename: "{{ instance.sensor.device.name }}",
+                    featurename: "{{ instance.sensor.name }}",
+                    associationid: '{{ instance.id }}',
+                    deletable: true
+                });
+            {% else %}
+                $("#widgetinstance_{{ instance.id }}").widget_shape({
+                    widgetid: '{{ instance.widget_id }}',
+                    featureid: '{{ instance.command.id }}',
+                    featuretype: 'actuator',
+                    devicename: "{{ instance.command.device.name }}",
+                    featurename: "{{ instance.command.name }}",
+                    associationid: '{{ instance.id }}',
+                    deletable: true
+                });
+            {% endif %}
         {% endfor %}
     });
 
@@ -131,7 +143,7 @@
                     <li><div class='subcategory'>Commands</div>
                         <ul>
                             {% for command in device.command_set.all %}
-                            <li><button id='showcommand{{command.id}}' class='feature' featureid='{{ command.id }}' devicename='{{device.name }}' featurename='{{ command.name }}' featuretype='actuator.{{ command.value_type }}'>{{ command.name }}</button></li>
+                            <li><button id='showcommand{{command.id}}' class='feature' featureid='{{ command.id }}' devicename='{{device.name }}' featurename='{{ command.name }}' featuretype='actuator.{{ command.commandparam_set.all.0.value_type }}'>{{ command.name }}</button></li>
                             {% endfor %}
                         </ul>
                     </li>

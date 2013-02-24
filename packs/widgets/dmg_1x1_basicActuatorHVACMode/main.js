@@ -105,7 +105,7 @@
 
 	building_protec: function() {
         var self = this, o = this.options;
-		rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":o.model_parameters.commandValues[1]})
+		rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":o.feature_parameters.commandValues[1]})
                     .done(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
                     })
@@ -119,7 +119,7 @@
 		
 	economy: function() {
         var self = this, o = this.options;
-		rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":o.model_parameters.commandValues[2]})
+		rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":o.feature_parameters.commandValues[2]})
                     .done(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
                     })
@@ -133,7 +133,7 @@
 		
 	confort: function() {
             var self = this, o = this.options;
-		rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":o.model_parameters.commandValues[3]})
+		rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":o.feature_parameters.commandValues[3]})
                     .done(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
                     })
@@ -147,7 +147,7 @@
 		
 	stopHV: function() {
             var self = this, o = this.options;
-		rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":o.model_parameters.commandValues[0]})
+		rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":o.feature_parameters.commandValues[0]})
                     .done(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
                     })
@@ -163,13 +163,13 @@
         setValue: function(value) {
             var self = this, o = this.options;         
             this.previousValue = value;
-            if (value ==o.model_parameters.commandValues[3].toLowerCase()) {
+            if (value ==o.feature_parameters.commandValues[3].toLowerCase()) {
                value="Comfort";
-            } else if (value==o.model_parameters.commandValues[1].toLowerCase() ) {
+            } else if (value==o.feature_parameters.commandValues[1].toLowerCase() ) {
                value="No-Frezze";
-            } else if (value==o.model_parameters.commandValues[2].toLowerCase()) {
+            } else if (value==o.feature_parameters.commandValues[2].toLowerCase()) {
                value="Economy";
-            } else if (value==o.model_parameters.commandValues[0].toLowerCase()){
+            } else if (value==o.feature_parameters.commandValues[0].toLowerCase()){
                value="Standby";
             }
 	    this._status.html(value); 

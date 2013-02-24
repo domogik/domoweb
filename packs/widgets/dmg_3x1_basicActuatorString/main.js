@@ -38,8 +38,8 @@
             if (this.input.val()) {
                 this.element.startProcessingState();
                 var params = {};
-                if (o.model_parameters.command) {
-                    params["command"] = o.model_parameters.command;
+                if (o.feature_parameters.command) {
+                    params["command"] = o.feature_parameters.command;
                     params["value"] = this.input.val();                    
                 } else {
                     params["command"] = this.input.val();                    

@@ -16,9 +16,9 @@
 
         _init: function() {
             var self = this, o = this.options;
-            this.element.addClass("icon32-usage-" + o.usage)
-            this.TRUE=o.model_parameters.value1
-            this.FALSE= o.model_parameters.value0
+            this.element.addClass("icon32-usage-" + o.usage);
+            this.TRUE=o.values[1];
+            this.FALSE= o.values[0];
 
             this._status = $.getStatus();
             this.element.append(this._status);

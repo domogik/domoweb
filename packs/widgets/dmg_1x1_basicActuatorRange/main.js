@@ -17,10 +17,10 @@
         _init: function() {
             var self = this, o = this.options;
             this.isOpen = false;
-            this.min_value = parseInt(o.model_parameters.valueMin);
-            this.max_value = parseInt(o.model_parameters.valueMax);
+            this.min_value = parseInt(o.feature_parameters.valueMin);
+            this.max_value = parseInt(o.feature_parameters.valueMax);
             this.step = parseInt(o.usage_parameters.step);
-            this.unit = o.usage_parameters.unit
+            this.unit = o.unit
             if (this.unit == '%') {
                 this.modePercent = true;
                 this.displayMin = 0;
@@ -116,7 +116,7 @@
                 } else {
                     value = this._processingValue;
                 }
-                rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":value})
+                rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":value})
                     .done(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
                     })

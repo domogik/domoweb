@@ -40,8 +40,8 @@
         
         _init: function() {
             var self = this, o = this.options;
-            this.min_value = parseInt(o.model_parameters.valueMin);
-            this.max_value = parseInt(o.model_parameters.valueMax);
+            this.min_value = parseInt(o.feature_parameters.valueMin);
+            this.max_value = parseInt(o.feature_parameters.valueMax);
 
            	var bars = $("<div class='bars'></div>");
 
@@ -175,7 +175,7 @@
             var self = this, o = this.options;
             this.processingValue = Math.round((this.rotation * this.max_value / 359) + this.min_value);
             this.element.removeClass('error valid').addClass('processing');
-            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":this.processingValue})
+            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":this.processingValue})
                 .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })

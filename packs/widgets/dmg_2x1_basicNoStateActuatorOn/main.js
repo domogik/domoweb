@@ -22,8 +22,8 @@
             // Building widget content
             var main = $("<div class='main'></div>");
             var on_action = $('<div class="command on">ON</div>');
-            on_action.click(function (e) {self.action(o.model_parameters.value1);e.stopPropagation();})
-                .keypress(function (e) {if (e.which == 33 || e.which == 38) {self.action(o.model_parameters.value1); e.stopPropagation();}});
+            on_action.click(function (e) {self.action(o.values[1]);e.stopPropagation();})
+                .keypress(function (e) {if (e.which == 33 || e.which == 38) {self.action(o.values[1]); e.stopPropagation();}});
             main.append(on_action);
             
             this.element.append(main);
@@ -40,7 +40,7 @@
         action: function(command_code) {
             var self = this, o = this.options;
             //rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":command_code})
-            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":o.model_parameters.value1})
+            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":o.values[1]})
                 .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })

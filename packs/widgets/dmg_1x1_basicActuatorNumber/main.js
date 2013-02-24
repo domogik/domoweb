@@ -31,7 +31,7 @@
             this._panel.panelAddText({className:'value', r:65, deg:80});
             this._panel.hide();
 
-            var value = Math.round((o.model_parameters.valueMax - o.model_parameters.valueMin) / 2);
+            var value = Math.round((o.feature_parameters.valueMax - o.feature_parameters.valueMin) / 2);
             this.setParameter(value);
         },
 
@@ -46,9 +46,9 @@
             if (value != null) {
                 this.value = value;
                 $(".value", this._panel).text(value);
-                if (value == o.model_parameters.valueMax) {
+                if (value == o.feature_parameters.valueMax) {
                     $(".increase", this._panel).hide();
-                } else if (value == o.model_parameters.valueMin) {
+                } else if (value == o.feature_parameters.valueMin) {
                     $(".decrease", this._panel).hide();                    
                 } else {
                     $(".increase", this._panel).show();
@@ -59,7 +59,7 @@
         
         increase: function() {
             var self = this, o = this.options;
-            if (this.value < o.model_parameters.valueMax) {
+            if (this.value < o.feature_parameters.valueMax) {
     			Math.round(this.value++);
     			this.setParameter(this.value);                
             }
@@ -67,7 +67,7 @@
 		
 		decrease: function() {
             var self = this, o = this.options;
-            if (this.value > o.model_parameters.valueMin) {
+            if (this.value > o.feature_parameters.valueMin) {
     			Math.round(this.value--);
     			this.setParameter(this.value);                
             }
@@ -76,7 +76,7 @@
         action: function() {
             var self = this, o = this.options;
             self._startProcessingState();
-            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.model_parameters.command, "value":self.value})
+            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":self.value})
                 .done(function(data, status, xhr){
                 })
                 .fail(function(jqXHR, status, error){

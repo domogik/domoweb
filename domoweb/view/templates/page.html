@@ -27,6 +27,7 @@
 
     $(function(){
         {% for instance in widgetinstances %}
+            {% if instance.sensor %}
             var parameters_usage = JSON.parse('{{instance.sensor.device.usage.default_options|safe}}');
             var options = {
                 usage: "{{ instance.sensor.device.usage.id }}",
@@ -35,9 +36,31 @@
                 deviceplugin: "{{ instance.sensor.device.type.plugin_id }}",
                 deviceid: "{{ instance.sensor.device.id }}",
                 key: "{{ instance.sensor.reference }}",
+                unit: "{{ instance.sensor.unit }}",
                 usage_parameters: parameters_usage["sensor"]["{{ instance.sensor.value_type }}"],
-                feature_parameters: ""
             }
+            {% else %}
+            var parameters_usage = JSON.parse('{{instance.command.device.usage.default_options|safe}}');
+            var options = {
+                usage: "{{ instance.command.device.usage.id }}",
+                devicename: "{{ instance.command.device.name }}",
+                featurename: "{{ instance.command.name }}",
+                deviceplugin: "{{ instance.command.device.type.plugin_id }}",
+                deviceid: "{{ instance.command.device.id }}",
+                key: "{{ instance.command.reference }}",
+                usage_parameters: parameters_usage["actuator"]["{{ instance.command.commandparam_set.all.0.value_type }}"],
+                params: [
+                    {% for param in instance.command.commandparam_set.all %}
+                    {
+                        id: {{ param.id }},
+                        key: "{{ param.key }}",
+                        value_type: "{{ param.value_type }}",
+                        values: {{ param.values }},
+                    },
+                    {% endfor %}
+                ]
+            }
+            {% endif %}
             eval("$('#widgetinstance_{{ instance.id }}').{{ instance.widget_id }}(options)");
         {% endfor %}
 

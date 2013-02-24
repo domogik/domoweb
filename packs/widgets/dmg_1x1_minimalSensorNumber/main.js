@@ -17,8 +17,7 @@
 
         _init: function() {
             var self = this, o = this.options;
-            
-            if (!o.model_parameters.unit) o.model_parameters.unit = ''; // if unit not defined, display ''
+	    
             var cell = $("<div class='cell'></div>")
             this._elementValue =  $("<div class='widget_value'></div>");
             cell.append(this._elementValue);
@@ -42,9 +41,9 @@
             var self = this, o = this.options;
             if (value) {
                 var intvalue = round_number(parseFloat(value),1);
-                this._elementValue.html(intvalue + ' ' + o.model_parameters.unit)
+                this._elementValue.html(intvalue + ' ' + o.unit)
             } else { // Unknown
-                this._elementValue.html('-- ' + o.model_parameters.unit)
+                this._elementValue.html('-- ' + o.unit)
             }
         }
     });

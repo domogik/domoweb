@@ -27,7 +27,7 @@
             this.element.click(function (e) {self.action();e.stopPropagation();})
                 .keypress(function (e) {if (e.which == 13 || e.which == 32) {self.action; e.stopPropagation();}});
             this.sequence = null;
-            if (o.model_parameters.values) {
+            if (o.feature_parameters.values) {
                 $.each(map, function(key, value) {
                     this.sequence.push({'key':key, 'value':value});
                 });
@@ -46,9 +46,9 @@
             var restcommand = null;
             this.element.startProcessingState();
             if (this.sequence) {
-                restcommand = {"command":o.model_parameters.command, "value":this.sequence[this.sequenceIndex]['value']};
+                restcommand = {"command":o.feature_parameters.command, "value":this.sequence[this.sequenceIndex]['value']};
             } else {
-                restcommand = {"command":o.model_parameters.command};
+                restcommand = {"command":o.feature_parameters.command};
             }
 
             rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], restcommand)
