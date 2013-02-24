@@ -14,6 +14,7 @@ $(function(){
 
 (function($) {    
     $.extend({
+	/*
         initAssociations: function(page_id, device_usages, device_types) {
             $.each(data.objects, function(index, association) {
                 var parameters_usage = $.stringToJSON(device_usages[association.feature.device.device_usage_id].default_options);
@@ -34,7 +35,7 @@ $(function(){
                 $("#" + association.place_type + "_" + association.place_id + " ." + association.place).append(div);
                 eval("$('#widget_" + association.id + "')." + association.widget + "(options)");
             });
-        },
+        },*/
 
         stringToJSON: function(string) {
             var str = string;

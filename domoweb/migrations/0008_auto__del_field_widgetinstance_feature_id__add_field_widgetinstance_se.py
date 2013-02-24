@@ -8,15 +8,31 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'WidgetInstance.feature_type'
-        db.add_column('domoweb_widgetinstance', 'feature_type',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=50),
+        # Deleting field 'WidgetInstance.feature_id'
+        db.delete_column('domoweb_widgetinstance', 'feature_id')
+
+        # Adding field 'WidgetInstance.sensor'
+        db.add_column('domoweb_widgetinstance', 'sensor',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.Sensor'], null=True, on_delete=models.DO_NOTHING),
+                      keep_default=False)
+
+        # Adding field 'WidgetInstance.command'
+        db.add_column('domoweb_widgetinstance', 'command',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.Command'], null=True, on_delete=models.DO_NOTHING),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting field 'WidgetInstance.feature_type'
-        db.delete_column('domoweb_widgetinstance', 'feature_type')
+        # Adding field 'WidgetInstance.feature_id'
+        db.add_column('domoweb_widgetinstance', 'feature_id',
+                      self.gf('django.db.models.fields.IntegerField')(default=0),
+                      keep_default=False)
+
+        # Deleting field 'WidgetInstance.sensor'
+        db.delete_column('domoweb_widgetinstance', 'sensor_id')
+
+        # Deleting field 'WidgetInstance.command'
+        db.delete_column('domoweb_widgetinstance', 'command_id')
 
 
     models = {
@@ -46,9 +62,9 @@ class Migration(SchemaMigration):
         },
         'domoweb.devicetype': {
             'Meta': {'object_name': 'DeviceType'},
-            'plugin_id': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'id': ('django.db.models.fields.CharField', [], {'max_length': '50', 'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'plugin_id': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         'domoweb.deviceusage': {
             'Meta': {'object_name': 'DeviceUsage'},
@@ -102,11 +118,11 @@ class Migration(SchemaMigration):
         },
         'domoweb.widgetinstance': {
             'Meta': {'object_name': 'WidgetInstance'},
-            'feature_id': ('django.db.models.fields.IntegerField', [], {}),
-            'feature_type': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '50'}),
+            'command': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['domoweb.Command']", 'null': 'True', 'on_delete': 'models.DO_NOTHING'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'order': ('django.db.models.fields.IntegerField', [], {}),
             'page': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['domoweb.Page']"}),
+            'sensor': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['domoweb.Sensor']", 'null': 'True', 'on_delete': 'models.DO_NOTHING'}),
             'widget': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['domoweb.Widget']", 'on_delete': 'models.DO_NOTHING'})
         }
     }

@@ -41,7 +41,7 @@ from django.utils.translation import ugettext as _
 from django import forms
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.models import Widget, PageIcon, WidgetInstance, PageTheme, DeviceType, DeviceUsage, Device
+from domoweb.models import Widget, PageIcon, WidgetInstance, PageTheme, DeviceType, DeviceUsage, Device, Sensor, Command
 from domoweb import fields
     
 class ThemeChoiceField(forms.ModelChoiceField):
@@ -81,17 +81,17 @@ def page(request, id=1):
     iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
 
     widgets = WidgetInstance.objects.filter(page_id=id).values('widget_id').distinct()
-    widgetinstances = WidgetInstancePipe().get_page_list(id)
+    widgetinstances = WidgetInstance.get_page_list(id)
 
-    usageDict = DeviceUsage.objects.all_dict()
-    typeDict = DeviceType.objects.all_dict()
+#    usageDict = DeviceUsage.objects.all_dict()
+#    typeDict = DeviceType.objects.all_dict()
 
     return go_to_page(
         request, 'page.html',
         page_title,
         widgets=widgets,
-        device_types=convertToStr(typeDict),
-        device_usages=convertToStr(usageDict),
+#        device_types=convertToStr(typeDict),
+#        device_usages=convertToStr(usageDict),
         page=page,
         page_path=page_path,
         page_tree=page_tree,
@@ -154,13 +154,17 @@ def page_elements(request, id):
         for i, feature in enumerate(featuresids):
             if feature:
                 featuretype = featurestypes[i].split('.')[0]
-                w = WidgetInstance(order=i, page=page, feature_id=feature, feature_type=featuretype, widget_id=widgets[i])
+                w = WidgetInstance(order=i, page=page, widget_id=widgets[i])
+                if (featuretype == 'sensor'):
+                    w.sensor = Sensor.objects.get(id=feature)
+                else:
+                    w.command = Command.objects.get(id=feature)
                 w.save()
         return redirect('page_view', id=id) # Redirect after POST
 
     devices = Device.objects.all()
     widgets = Widget.objects.all()
-    widgetinstances = WidgetInstancePipe().get_page_list(id)
+    widgetinstances = WidgetInstance.get_page_list(id)
     
     return go_to_page(
         request, 'elements.html',

@@ -194,7 +194,7 @@ class FeaturePipe(RinorPipe):
     index = 'feature'
     paths = []
     dependencies = ['device']
-"""
+
 
 class WidgetInstancePipe(RinorPipe):
     cache_expiry = 0
@@ -211,7 +211,7 @@ class WidgetInstancePipe(RinorPipe):
                 # We delete the widget instance
 #                instance.delete()
         return instances
-"""
+
 class DeviceExtendedPipe(RinorPipe):
     cache_expiry = 3600
     paths = []

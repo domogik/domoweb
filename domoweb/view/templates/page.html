@@ -24,24 +24,19 @@
 {% load tree %}
 
 {% block js_script %} 
-    var device_types = {{ device_types|safe }};
-    var device_usages = {{ device_usages|safe }};
 
     $(function(){
         {% for instance in widgetinstances %}
-            var parameters_usage = $.stringToJSON(device_usages["{{instance.feature.device.usage_id}}"].default_options);
-            var parameters_type = $.stringToJSON("{{instance.feature.device_feature_model.parameters|safe}}");
+            var parameters_usage = JSON.parse('{{instance.sensor.device.usage.default_options|safe}}');
             var options = {
-                usage: "{{ instance.feature.device.usage_id }}",
-                devicename: "{{ instance.feature.device.name }}",
-                featurename: "{{ instance.feature.device_feature_model.name }}",
-                deviceplugin: device_types["{{ instance.feature.device.device_type_id }}"].plugin_id,
-                deviceaddress: "{{ instance.feature.device.address }}",
-                featureconfirmation: "{{ instance.feature.device_feature_model.return_confirmation }}",
-                deviceid: "{{ instance.feature.device_id }}",
-                key: "{{ instance.feature.device_feature_model.stat_key }}",
-                usage_parameters: parameters_usage["{{ instance.feature.device_feature_model.feature_type }}"]["{{ instance.feature.device_feature_model.value_type }}"],
-                model_parameters: parameters_type
+                usage: "{{ instance.sensor.device.usage.id }}",
+                devicename: "{{ instance.sensor.device.name }}",
+                featurename: "{{ instance.sensor.name }}",
+                deviceplugin: "{{ instance.sensor.device.type.plugin_id }}",
+                deviceid: "{{ instance.sensor.device.id }}",
+                key: "{{ instance.sensor.reference }}",
+                usage_parameters: parameters_usage["sensor"]["{{ instance.sensor.value_type }}"],
+                feature_parameters: ""
             }
             eval("$('#widgetinstance_{{ instance.id }}').{{ instance.widget_id }}(options)");
         {% endfor %}

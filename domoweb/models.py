@@ -132,14 +132,6 @@ class Page(models.Model):
         return self._max_level
     max_level = property(_get_max_level)
     
-class WidgetInstance(models.Model):
-    id = models.AutoField(primary_key=True)
-    page = models.ForeignKey(Page)
-    order = models.IntegerField()
-    widget = models.ForeignKey(Widget, on_delete=models.DO_NOTHING)
-    feature_id = models.IntegerField()
-    feature_type = models.CharField(max_length=50, default="")
-
 class DeviceType(RestModel):
     id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=50)
@@ -169,7 +161,8 @@ class DeviceUsage(RestModel):
         _data = DeviceUsage.get_list();
         DeviceUsage.objects.all().delete()
         for record in _data:
-            r = DeviceUsage(id=record.id, name=record.name, default_options=record.default_options)
+            options = record.default_options.replace('&quot;', '"')
+            r = DeviceUsage(id=record.id, name=record.name, default_options=options)
             r.save()
 
 class Device(RestModel):
@@ -269,3 +262,15 @@ class Sensor(RestModel):
     values = models.CharField(max_length=50)
     last_value = models.CharField(max_length=50)
     last_received = models.CharField(max_length=50)
+
+class WidgetInstance(models.Model):
+    id = models.AutoField(primary_key=True)
+    page = models.ForeignKey(Page)
+    order = models.IntegerField()
+    widget = models.ForeignKey(Widget, on_delete=models.DO_NOTHING)
+    sensor = models.ForeignKey(Sensor, null=True, on_delete=models.DO_NOTHING)
+    command = models.ForeignKey(Command, null=True, on_delete=models.DO_NOTHING)
+
+    @classmethod
+    def get_page_list(cls, id):
+        return cls.objects.filter(page__id=id).order_by('order')
