@@ -8,6 +8,7 @@ if sys.version_info < (2, 6):
 import os, os.path
 import pwd
 import commands
+import time
 #import pickle
 import simplejson
 
@@ -20,7 +21,7 @@ from django.conf import settings
 from django.core.handlers.wsgi import WSGIHandler
 
 import domoweb
-from domoweb.exceptions import RinorNotConfigured
+from domoweb.exceptions import RinorNotConfigured, RinorNotAvailable
 from events import *
 
 def loadWidgets(root):
@@ -86,12 +87,21 @@ def loadRinorModels():
             uri = "http://%s:%s" % (ip.value, port.value)
         else:
             uri = "http://%s:%s/%s" % (ip.value, port.value, prefix.value)
-
-        RestModel.setRestUri(uri)
-        DeviceType.refresh()
-        DeviceUsage.refresh()
-        Device.refresh()
     
+    model_loaded = False
+    i = 0
+    while not model_loaded: # Wait until RINOR respond
+        try:
+            i = i + 1
+            RestModel.setRestUri(uri)
+            DeviceType.refresh()
+            DeviceUsage.refresh()
+            Device.refresh()
+            model_loaded = True
+        except RinorNotAvailable:
+            cherrypy.engine.log("RINOR not online wait 5s before retry #%s" % i)
+            time.sleep(5)
+        
 def main():
     """Main function that is called at the startup of Domoweb"""
     from optparse import OptionParser
