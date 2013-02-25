@@ -17,21 +17,22 @@
 
         _init: function() {
             var self = this, o = this.options;
+            this.param = o.params[0];
             this.element.addClass("icon32-usage-" + o.usage)
               .processing();
             // Building widget content
             var main = $("<div class='main'></div>");
             var on_action = $('<div class="command on">ON</div>');
-            on_action.click(function (e) {self.action(o.values[1]);e.stopPropagation();})
+            on_action.click(function (e) {self.action(self.param.values[1]);e.stopPropagation();})
                 .keypress(function (e) {if (e.which == 33 || e.which == 38) {self.action(o.values[1]); e.stopPropagation();}});
             main.append(on_action);
             var off_action = $('<div class="command off">OFF</div>');
-            off_action.click(function (e) {self.action(o.values[0]);e.stopPropagation();})
+            off_action.click(function (e) {self.action(self.param.values[0]);e.stopPropagation();})
                 .keypress(function (e) {if (e.which == 34 || e.which == 40) {self.action(o.values[0]); e.stopPropagation();}});
             main.append(off_action);
             
             this.element.append(main);
-            
+
             this._initValues(1);
         },
         
@@ -43,7 +44,9 @@
         
         action: function(command_code) {
             var self = this, o = this.options;
-            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":command_code})
+      	    data = {};
+            data[this.param.key] = command_code;
+	    rinor.put(['api', 'command', o.featureid], data)
                 .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })

@@ -17,12 +17,12 @@
 
         _init: function() {
             var self = this, o = this.options;
-            this.values = o.values;
             this.element.addClass('clickable');
             this.element.append("<div class='bgd'><div class='switch'></div></div>");
             this.element.click(function (e) {self.action();e.stopPropagation();})
                 .keypress(function (e) {if (e.which == 13 || e.which == 32) {self.action; e.stopPropagation();}});                    
 
+            this.param = o.params[0];
             this._initValues(1);
         },
         
@@ -49,7 +49,9 @@
             }
             this.displayValue(this.processingValue);
 
-            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":this.values[this.processingValue]})
+       	    data = {};
+	    data[this.param.key] = this.param.values[this.processingValue];
+            rinor.put(['api', 'command', o.featureid], data)
                 .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })

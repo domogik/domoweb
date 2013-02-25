@@ -215,7 +215,8 @@ class Device(RestModel):
                     p.save()
         if "sensor" in data:
             for sensor in data.sensor:
-                s = Sensor(id=sensor.id, name=sensor.name, device=device, reference=sensor.reference, value_type=sensor.value_type, unit=sensor.unit, values=sensor['values'], last_value=sensor.last_value, last_received=sensor.last_received)
+                values = sensor['values'].replace("u'", "'") # patch for #1659
+                s = Sensor(id=sensor.id, name=sensor.name, device=device, reference=sensor.reference, value_type=sensor.value_type, unit=sensor.unit, values=values, last_value=sensor.last_value, last_received=sensor.last_received)
                 s.save()
         return device
 
