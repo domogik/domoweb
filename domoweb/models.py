@@ -207,10 +207,11 @@ class Device(RestModel):
         device.save()
         if "command" in data:
             for command in data.command:
-                c = Command(id=command.id, name=command.name, device=device, reference=command.reference)
+                c = Command(id=command.id, name=command.name, device=device, reference=command.reference, return_confirmation=command.return_confirmation)
                 c.save()
                 for param in command.command_param:
-                    p = CommandParam(command=c, key=param.key, value_type=param.value_type, values=param['values'])
+                    values = param['values'].replace("u'", "'") # patch for #1659
+                    p = CommandParam(command=c, key=param.key, value_type=param.value_type, values=values)
                     p.save()
         if "sensor" in data:
             for sensor in data.sensor:
@@ -244,7 +245,8 @@ class Command(RestModel):
     name = models.CharField(max_length=50)
     device = models.ForeignKey(Device)
     reference = models.CharField(max_length=50)
-
+    return_confirmation = models.BooleanField(default=True)
+    
 class CommandParam(RestModel):
     id = models.AutoField(primary_key=True)
     command = models.ForeignKey(Command)

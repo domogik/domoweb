@@ -146,104 +146,6 @@ class DeviceParametersPipe(RinorPipe):
         else:
             return None
 
-"""
-class DevicePipe(RinorPipe):
-    cache_expiry = 3600
-    list_path = "/base/device/list"
-    add_path = "/base/device/add"
-    update_path = "/base/device/update"
-    delete_path = "/base/device/del"
-    addparams_path = "/base/device/addglobal"
-    index = 'device'
-    paths = []
-
-    def post_list(self, name, type_id, usage_id, reference):
-        _data = self._post_data(self.add_path, ['name', name, 'type_id', type_id, 'usage_id', usage_id, 'description', '', 'reference', reference])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        return _data[self.index][0]
-
-    def put_detail(self, id, name, usage_id, reference):
-        _data = self._put_data(self.update_path, ['id', id, 'name', name, 'usage_id', usage_id, 'description', '', 'reference', reference])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        return _data[self.index][0]
-        
-    def delete_detail(self, id):
-        _data = self._delete_data(self.delete_path, [id])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        if len(_data[self.index]) > 0:
-            return _data[self.index][0]
-        else:
-            return None
-    
-    def put_params(self, id, parameters):
-        params = ['id', id]
-        params.extend(list(reduce(lambda x, y: x + y, parameters.items())))
-        
-        _data = self._put_data(self.addparams_path, params)
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        return None
-
-
-class FeaturePipe(RinorPipe):
-    cache_expiry = 3600
-    list_path = "/base/feature/list"
-    index = 'feature'
-    paths = []
-    dependencies = ['device']
-
-
-class WidgetInstancePipe(RinorPipe):
-    cache_expiry = 0
-    paths = []
-    
-    def get_page_list(self, id):
-        instances = WidgetInstance.objects.filter(page__id=id).order_by('order')
-#        for instance in instances:
-#            feature = FeaturePipe().get_pk(instance.feature_id)
-#            if feature != None:
-#                instance.feature = feature
-#            else:
-                # The feature does not exist anymore
-                # We delete the widget instance
-#                instance.delete()
-        return instances
-
-class DeviceExtendedPipe(RinorPipe):
-    cache_expiry = 3600
-    paths = []
-
-    def get_list(self):
-        _devices = DevicePipe().get_list()
-#        _features = FeaturePipe().get_list()
-#        for device in _devices:
-#            device['features'] = []
-#            for feature in _features:
-#                if feature.device_id == device.id:
-#                    device['features'].append(feature)
-
-        return _devices
-
-    def post_list(self, name, address, type_id, usage_id, description, reference):
-        return DevicePipe().post_list(name, address, type_id, usage_id, description, reference)
-
-    def put_detail(self, id, name, address, usage_id, description, reference):
-        return DevicePipe().put_detail(id, name, address, usage_id, description, reference)
-
-    def delete_detail(self, id):
-#        _features = FeaturePipe().get_list()
-#        for feature in _features:
-#            if feature.device_id == id:
-#                _associations = AssociationPipe().get_list('feature', feature.id)
-#                for association in _associations:
-#                    UiConfigPipe().delete_reference('association', association.id)        
-#                AssociationPipe().delete_feature(feature.id)
-        _device = DevicePipe().delete_detail(id)
-        return _device
-"""
 class StatePipe(RinorPipe):
     cache_expiry = 0
     list_path = "/stats"
@@ -506,23 +408,18 @@ class PluginUdevrulePipe(RinorPipe):
         
 class CommandPipe(RinorPipe):
     cache_expiry = 0
-    update_path = "/command"
+    update_path = "/cmd"
     index = 'response'
     paths = []
 
-    def put_detail(self, member, address, command, value=None):
-        if (command and len(command) > 0):
-            if (value): 
-                _data = self._put_data(self.update_path, [member, address, command, value])
-            else:
-                _data = self._put_data(self.update_path, [member, address, command])
-        else: # Ignore value if empty
-            if (value): 
-                _data = self._put_data(self.update_path, [member, address, value])
-            else:
-                raise RinorError('999', 'No command or value provided')
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
+    def put_detail(self, id, params):
+        if (params):
+            params = ['id', id] + list(reduce(lambda x, y: x + y, params.items()))
+            _data = self._put_data(self.update_path, params)
+            if _data.status == "ERROR":
+                raise RinorError(_data.code, _data.description)
+        else:
+            raise RinorError('999', 'No command or value provided')
         return _data[self.index][0]
 
 class HostPipe(RinorPipe):

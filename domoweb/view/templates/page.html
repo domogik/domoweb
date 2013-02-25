@@ -32,6 +32,7 @@
             var options = {
                 usage: "{{ instance.sensor.device.usage.id }}",
                 devicename: "{{ instance.sensor.device.name }}",
+                featureid: "{{ instance.sensor.id }}",
                 featurename: "{{ instance.sensor.name }}",
                 deviceplugin: "{{ instance.sensor.device.type.plugin_id }}",
                 deviceid: "{{ instance.sensor.device.id }}",
@@ -44,7 +45,9 @@
             var options = {
                 usage: "{{ instance.command.device.usage.id }}",
                 devicename: "{{ instance.command.device.name }}",
+                featureid: "{{ instance.command.id }}",
                 featurename: "{{ instance.command.name }}",
+                featureconfirmation: "{{ instance.command.return_confirmation }}",
                 deviceplugin: "{{ instance.command.device.type.plugin_id }}",
                 deviceid: "{{ instance.command.device.id }}",
                 key: "{{ instance.command.reference }}",
@@ -55,7 +58,7 @@
                         id: {{ param.id }},
                         key: "{{ param.key }}",
                         value_type: "{{ param.value_type }}",
-                        values: {{ param.values }},
+                        values: {{ param.values|safe }},
                     },
                     {% endfor %}
                 ]

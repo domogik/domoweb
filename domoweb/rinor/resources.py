@@ -43,22 +43,6 @@ from tastypie import fields
 from tastypie.http import *
 from tastypie.utils import trailing_slash
 
-"""
-class FeatureResource(RinorResource):
-    # fields must map to the attributes in the Row class
-    id = fields.IntegerField(attribute = 'id')
-    device_id = fields.IntegerField(attribute = 'device_id')
-    device_feature_model_id = fields.CharField(attribute = 'device_feature_model_id')
-    device = fields.DictField(attribute = 'device')
-    device_feature_model = fields.DictField(attribute = 'device_feature_model')
-
-    class Meta:
-        resource_name = 'feature'
-        authentication = Authentication()
-        authorization = Authorization()
-        rinor_pipe = FeaturePipe()
-"""
-
 class StateResource(RinorResource):
     
     class Meta:
@@ -194,32 +178,7 @@ class PluginConfigResource(RinorResource):
 
     def obj_update(self, bundle, request=None, **kwargs):
         return self._meta.rinor_pipe.set_detail(kwargs['hostname'], kwargs['id'], kwargs['key'], bundle['value'])
-"""
-class DeviceResource(RinorResource):
-    # fields must map to the attributes in the Row class
-    id = fields.IntegerField(attribute = 'id')
-    name = fields.CharField(attribute = 'name')
-    description = fields.CharField(attribute = 'description')
-    device_type_id = fields.CharField(attribute = 'device_type_id')
-#    area_id = fields.IntegerField(attribute = 'area_id')
-    
-    class Meta:
-        resource_name = 'device'
-        list_allowed_methods = ['get', 'post']
-        detail_allowed_methods = ['get', 'put', 'delete']
-        authentication = Authentication()
-        authorization = Authorization()
-#        rinor_pipe = DeviceExtendedPipe()
 
-    def obj_create(self, bundle, request=None, **kwargs):
-        return self._meta.rinor_pipe.post_list(bundle["name"], bundle["address"], bundle["type_id"], bundle["usage_id"], bundle["description"], bundle["reference"])
-
-    def obj_update(self, bundle, request=None, **kwargs):
-        return self._meta.rinor_pipe.put_detail(kwargs['pk'], bundle["name"], bundle["address"], bundle["usage_id"], bundle["description"], bundle["reference"])
-
-    def obj_delete(self, request=None, **kwargs):
-        return self._meta.rinor_pipe.delete_detail(kwargs["pk"])
-"""
 class UserResource(RinorResource):
     # fields must map to the attributes in the Row class
     id = fields.IntegerField(attribute = 'id')
@@ -450,14 +409,12 @@ class CommandResource(RinorResource):
 
     def base_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<member>[\w\d_-]+)/(?P<address>.+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/(?P<id>\d+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
 
     def obj_update(self, bundle, request=None, **kwargs):
-        if ('value' in bundle):
-            _data = self._meta.rinor_pipe.put_detail(kwargs['member'], kwargs['address'], bundle["command"], bundle["value"])
-        else:
-            _data = self._meta.rinor_pipe.put_detail(kwargs['member'], kwargs['address'], bundle["command"])
+        print bundle
+        _data = self._meta.rinor_pipe.put_detail(kwargs['id'], bundle)
         return _data
 
 class RepositoryResource(RinorResource):

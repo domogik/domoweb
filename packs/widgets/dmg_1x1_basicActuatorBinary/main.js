@@ -25,11 +25,11 @@
             this.element.click(function (e) {self.action();e.stopPropagation();})
                 .keypress(function (e) {if (e.which == 13 || e.which == 32) {self.action; e.stopPropagation();}});                    
 
-            this.values = o.values;
+            this.param = o.params[0];
             this.texts = [o.usage_parameters.state0, o.usage_parameters.state1];
             this._initValues(1);
         },
-        
+
         _statsHandler: function(stats) {
             if (stats && stats.length > 0) {
                 this.setValue(stats[0].value);
@@ -37,11 +37,11 @@
                 this.setValue(null);
             }
         },
-        
+
         _eventHandler: function(timestamp, value) {
             this.setValue(value);
         },
-        
+
         action: function() {
             var self = this, o = this.options;
             this.element.startProcessingState();
@@ -51,7 +51,9 @@
                 // Suppose the switch currently off
                 this.processingValue = 1;
             }
-            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":this.values[this.processingValue]})
+   	    data = {};
+	    data[this.param.key] = this.param.values[this.processingValue];
+            rinor.put(['api', 'command', o.featureid], data)
                 .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })
