@@ -39,4 +39,5 @@ urlpatterns = patterns('domoweb.config.views',
     url(r'^welcome$', 'config_welcome', name="config_welcome_view"),
     url(r'^configserver$', 'config_configserver', name="config_configserver_view"),
     url(r'^testserver$', 'config_testserver', name="config_testserve_view"),
+    url(r'^loadrinordata$', 'config_loadrinordata', name="config_loadrinordata_view"),
 )

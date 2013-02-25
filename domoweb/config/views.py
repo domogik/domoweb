@@ -197,3 +197,27 @@ def config_testserver(request):
         request, 'testserver.html',
         page_title,
     )
+
+def config_loadrinordata(request):
+    """
+    @param request : the HTTP request
+    @return an HttpResponse object
+    """
+    from domoweb.restModel import RestModel
+    from domoweb.models import Parameter, DeviceType, DeviceUsage, Device
+
+    ip = Parameter.objects.get(key='rinor_ip')
+    port = Parameter.objects.get(key='rinor_port')
+    try:
+        prefix = Parameter.objects.get(key='rinor_prefix')
+    except Parameter.DoesNotExist:
+        uri = "http://%s:%s" % (ip.value, port.value)
+    else:
+        uri = "http://%s:%s/%s" % (ip.value, port.value, prefix.value)
+    
+    RestModel.setRestUri(uri)
+    DeviceType.refresh()
+    DeviceUsage.refresh()
+    Device.refresh()
+
+    return redirect('index_view') # Redirect after POST

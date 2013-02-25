@@ -54,7 +54,8 @@
                     $('#internal').attr('class', 'success_message icon32-status-false').html('Successfully connected, but your Domoweb version is too old for this new version of Domogik (' + data.info.dmg_version + '), please upgrade Domoweb on ' + data.info.Host + ' <div class="build">' + data.info.Sources_version + '</div>');                                
                 } else {
                     $('#internal').attr('class', 'success_message icon32-status-true').html('Successfully connected Domogik v' + data.info.dmg_version + ' on ' + data.info.Host + ' <div class="build">' + data.info.Sources_version + '</div>');
-                    $('a.next').unbind('click').removeClass('disabled');                
+                    $('#loading_data_message').show();
+                    $('a.next').unbind('click').removeClass('disabled');           
                 }
             })
             .fail(function(jqXHR, status, error){
@@ -70,8 +71,12 @@
 {% block content %}
     <h2>{% trans "Testing Domogik Server connection" %}</h2>
     <div id='internal' class='loader'><span class='offscreen'>{% trans "Loading" %}</span></div>
+    <div id="loading_data_message" style="display:none">
+        <h2>Data loading</h2>
+        <p>When you click on Finish, Domoweb will load data from RINOR, this may take few seconds.</p>
+    </div>
     <ul class='wizard_nav'>
         <li><a href='{% url config_configserver_view %}' class='button previous'>{% trans "Previous" %}</a></li>
-        <li><a href='{% url index_view %}' class='button next'>{% trans "Finish" %}</a></li>
+        <li><a href='{% url config_loadrinordata_view %}' class='button next'>{% trans "Finish" %}</a></li>
     </ul>
 {% endblock %}

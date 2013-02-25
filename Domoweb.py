@@ -78,8 +78,7 @@ def loadRinorModels():
         ip = Parameter.objects.get(key='rinor_ip')
         port = Parameter.objects.get(key='rinor_port')
     except Parameter.DoesNotExist:
-        #raise RinorNotConfigured
-        return
+        cherrypy.engine.log("RINOR not configured, pass the data loading")
     else:
         try:
             prefix = Parameter.objects.get(key='rinor_prefix')
@@ -88,19 +87,19 @@ def loadRinorModels():
         else:
             uri = "http://%s:%s/%s" % (ip.value, port.value, prefix.value)
     
-    model_loaded = False
-    i = 0
-    while not model_loaded: # Wait until RINOR respond
-        try:
-            i = i + 1
-            RestModel.setRestUri(uri)
-            DeviceType.refresh()
-            DeviceUsage.refresh()
-            Device.refresh()
-            model_loaded = True
-        except RinorNotAvailable:
-            cherrypy.engine.log("RINOR not online wait 5s before retry #%s" % i)
-            time.sleep(5)
+        model_loaded = False
+        i = 0
+        while not model_loaded: # Wait until RINOR respond
+            try:
+                i = i + 1
+                RestModel.setRestUri(uri)
+                DeviceType.refresh()
+                DeviceUsage.refresh()
+                Device.refresh()
+                model_loaded = True
+            except RinorNotAvailable:
+                cherrypy.engine.log("RINOR not online wait 5s before retry #%s" % i)
+                time.sleep(5)
         
 def main():
     """Main function that is called at the startup of Domoweb"""
