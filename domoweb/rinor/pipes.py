@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.cache import cache
 from domoweb.rinor.rinorPipe import RinorPipe
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import WidgetInstance, Page, Device
+from domoweb.models import WidgetInstance, Page, Device, Sensor
 
 def select_sublist(list_of_dicts, **kwargs):
     return [d for d in list_of_dicts 
@@ -35,19 +35,36 @@ class EventPipe(RinorPipe):
                 _devices = [str(id) for id in _devices_list]
                 _data = self._get_data(self.new_path, _devices)
                 _event = _data.event[0]
+                cherrypy.log(simplejson.dumps(_event))
                 _ticket = _event.ticket_id
-                today = datetime.datetime.today()
-                cherrypy.log("{0} -- EVENTS : NEW".format(today.strftime("%Y%m%d-%H%M%S")))
+                time = datetime.datetime.fromtimestamp(_event.timestamp)
+                self.save_events(_event)
+                cherrypy.log("{0} -- EVENTS : NEW".format(time.strftime("%Y%m%d-%H%M%S")))
                 yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'
                 while(True):
                     _data = self._get_data(self.get_path, [_ticket])               
                     _event = _data.event[0]
-                    today = datetime.datetime.today()
-                    cherrypy.log("{0} -- EVENTS : RECEIVED".format(today.strftime("%Y%m%d-%H%M%S")))
+                    cherrypy.log(simplejson.dumps(_event))
+                    time = datetime.datetime.fromtimestamp(_event.timestamp)
+                    self.save_events(_event)
+                    cherrypy.log("{0} -- EVENTS : RECEIVED".format(time.strftime("%Y%m%d-%H%M%S")))
                     yield 'event: message\ndata: ' + simplejson.dumps(_event) + '\n\n'        
             else:
                 today = datetime.datetime.today()
                 cherrypy.log("{0} -- EVENTS : No devices yet".format(today.strftime("%Y%m%d-%H%M%S")))
+    
+    def save_events(self, events):
+        if events.data:
+            for event in events.data:
+                try:
+                    s = Sensor.objects.get(id=event.sensor)
+                except Sensor.DoesNotExist:
+                    cherrypy.log("{0} -- EVENTS : Sensor do not exist".format(today.strftime("%Y%m%d-%H%M%S")))
+                    pass
+                else:
+                    s.last_received = events.timestamp
+                    s.last_value = event.value
+                    s.save()
 
 class InfoPipe(RinorPipe):
     cache_expiry = 0

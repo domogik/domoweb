@@ -77,7 +77,7 @@ function get_widgets_options(id) {
                 self._eventsHandler(data);
             });
         },
-        
+
         _initValues: function(nb) {
             var self = this, o = this.options;
             rinor.get(['api', 'state', 'last', nb, o.deviceid, o.key])
@@ -89,7 +89,7 @@ function get_widgets_options(id) {
                         $.notification('error', gettext('Getting stats failed') + ' (' + data.description + ')');
                 });
         },
-        
+
         _eventsHandler: function(events) {
             var self = this, o = this.options;
             if (events.device_id == o.deviceid) {

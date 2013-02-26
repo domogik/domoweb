@@ -11,7 +11,7 @@
             height: 1,
             width: 1,
             displayname: true,
-			displayborder: true
+	    displayborder: true
         },
 
         _init: function() {
@@ -21,7 +21,7 @@
             this._value =  $("<div class='value'></div>");
             this.element.append(this._value);
 
-            this._initValues(1);
+            this.setValue(o.initial_value);
         },
 
         _statsHandler: function(stats) {

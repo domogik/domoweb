@@ -30,6 +30,7 @@
             <th>{% trans "Name" %}</th>
             <th>{% trans "Reference" %}</th>
             <th>{% trans "Type" %}</th>
+            <th>{% trans "Sensors" %}</th>
             <th>Actions</th>
         </tr>
         {% for device in devices_list %}
@@ -37,6 +38,11 @@
             <td>{{ device.name|stripnl }}</td>
             <td>{{ device.reference|stripnl }}</td>
             <td>{{ device.type.name }}</td>
+            <td><ul>
+                {% for sensor in device.sensor_set.all %}
+                    <li>{{ sensor.name }} : {{ sensor.last_value }} ({{ sensor.last_received|timestamp|date:"H:m:s d-m-Y" }})</li>
+                {% endfor %}
+            </td></ul>
             <td>
                 <ul class="actions">
                     <li><a href='{% url admin_del_device_view device.id plugin.host plugin.id plugin_type %}' id='del{{ device.id }}' class='icon16-action-del buttonicon' title="{% trans "Delete" %} '{{ device.name }}'"><span class='offscreen'>{% trans "Delete" %} {{ device.name }}</span></a></li>

@@ -39,6 +39,7 @@
                 key: "{{ instance.sensor.reference }}",
                 unit: "{{ instance.sensor.unit }}",
                 usage_parameters: parameters_usage["sensor"]["{{ instance.sensor.value_type }}"],
+                initial_value:"{{ instance.sensor.last_value }}",
             }
             {% else %}
             var parameters_usage = JSON.parse('{{instance.command.device.usage.default_options|safe}}');

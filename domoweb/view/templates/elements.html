@@ -54,7 +54,20 @@
             $("#pageForm input[name='widgets']").val(widgets.join(','));
             $("#pageForm").submit();
         });
-
+        
+        $("#configpanel").on("click", ".remove_widget", function() {
+            var id = $(this).data("instanceid");
+            console.log(id);
+            $("#widgetinstance_" + id).remove();
+            $("#configinstance_" + id).remove();
+        });
+        
+        $("#widgetsmatrix").on("click", ".shape", function() {
+            var id = $(this).data("associationid");
+            $("#configpanel > div").hide();
+            $("#configinstance_" + id).show();
+        });
+        
         {% for instance in widgetinstances %}
             {% if instance.sensor %}
                 $("#widgetinstance_{{ instance.id }}").widget_shape({
@@ -63,8 +76,7 @@
                     featuretype: 'sensor',
                     devicename: "{{ instance.sensor.device.name }}",
                     featurename: "{{ instance.sensor.name }}",
-                    associationid: '{{ instance.id }}',
-                    deletable: true
+                    associationid: '{{ instance.id }}'
                 });
             {% else %}
                 $("#widgetinstance_{{ instance.id }}").widget_shape({
@@ -73,8 +85,7 @@
                     featuretype: 'actuator',
                     devicename: "{{ instance.command.device.name }}",
                     featurename: "{{ instance.command.name }}",
-                    associationid: '{{ instance.id }}',
-                    deletable: true
+                    associationid: '{{ instance.id }}'
                 });
             {% endif %}
         {% endfor %}
@@ -96,8 +107,6 @@
     {% for widget in widgets %}
     <link href="{{ static_widgets_url }}/{{ widget.id }}/style.css" rel="stylesheet" type="text/css" />
     {% endfor %}
-
-
 {% endblock %}
 
 {% block title %}{{ page_title }}{% endblock %}
@@ -171,10 +180,20 @@
             </div>
         </div>
         
-        <div id='widgetsmatrix' role='list'>
-            {% for instance in widgetinstances %}
-                <div id='widgetinstance_{{ instance.id }}' role='listitem'></div>
-            {% endfor %}
+        <div id='matrixbackground'>
+            <div id='configpanel'>
+                {% for instance in widgetinstances %}
+                    <div id='configinstance_{{ instance.id }}' style='display: none'>
+                        <h2>Widget {{ instance.id }} parameters</h2>
+                        <button class='remove_widget' data-instanceid="{{ instance.id }}">{% trans "Remove" %}</button>
+                    </div>
+                {% endfor %}
+            </div>
+            <div id='widgetsmatrix' role="list">
+                {% for instance in widgetinstances %}
+                    <div id='widgetinstance_{{ instance.id }}' role='listitem' class='widgetinstance'></div>
+                {% endfor %}
+            </div>
         </div>
         <form action="{% url page_elements_view page.id %}" id="pageForm" method="post">
             <input type="hidden" name="featurestypes" />

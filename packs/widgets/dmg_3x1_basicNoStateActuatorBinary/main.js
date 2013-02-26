@@ -33,7 +33,7 @@
             
             this.element.append(main);
 
-            this._initValues(1);
+//            this._initValues(1);
         },
         
         _statsHandler: function(stats) {

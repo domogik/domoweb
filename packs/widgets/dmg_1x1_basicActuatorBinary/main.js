@@ -27,7 +27,7 @@
 
             this.param = o.params[0];
             this.texts = [o.usage_parameters.state0, o.usage_parameters.state1];
-            this._initValues(1);
+//            this.setValue(o.initial_value);
         },
 
         _statsHandler: function(stats) {

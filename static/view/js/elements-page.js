@@ -12,8 +12,7 @@ function ondrop(event, ui) {
         devicename: ui.draggable.data('devicename'),
         associationid: ui.draggable.data('associationid'),
         widgetwidth: ui.draggable.data('widgetwidth'),
-        widgetheight: ui.draggable.data('widgetheight'),
-        deletable: true
+        widgetheight: ui.draggable.data('widgetheight')
     });            
     $.addAssociation(item, $(this));            
     return false;
@@ -86,16 +85,8 @@ $(function(){
             } else {
                 return false;
             }
-        },
-        deletable: function() {
-            var self = this;
-            this.addClass('deletable')
-                .append("<button class='icon16-action-remove'><span class='offscreen'>" + gettext('Remove') + "</span></button>")
-                .find('button').click(function(){
-                    self.remove();
-                });
         }
-	});
+    });
     
     /* Mini Widget */
     $.ui.widget.subclass("ui.widget_models", {
@@ -109,7 +100,7 @@ $(function(){
             var widgets = get_widgets(o.featuretype);
             $.each(widgets, function(index, id) {
                 var woptions = get_widgets_options(id);
-                if (matchFilter(woptions.filters, o.featuremodel)) {
+                if (matchFilter(woptions.filters, o.featuretype)) {
                     var widget = $("<li><button class='widget'>" + woptions.name + "</button></li>");
                     widget.find('button').click(function() {
                         $('.widget').removeClass('selected');
@@ -209,7 +200,6 @@ $(function(){
             });
             this.element.displayName();
             if (o.draggable) this.element.draggable(o.draggable);
-            if (o.deletable) this.element.deletable();            
         }
     });
  

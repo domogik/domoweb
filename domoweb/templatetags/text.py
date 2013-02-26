@@ -32,6 +32,8 @@ from django.template.defaultfilters import stringfilter
 from django.utils.text import normalize_newlines
 from django.utils.safestring import mark_safe
 
+from datetime import datetime
+
 register = template.Library()
 
 @register.filter
@@ -87,3 +89,13 @@ def do_get_position(parser, token):
     return GetPosition(args[1], args[2], args[3])
 
 register.tag('get_position', do_get_position)
+
+
+@register.filter("timestamp")
+def timestamp(timestamp):
+    try:
+        #assume, that timestamp is given in seconds with decimal point
+        ts = float(timestamp)
+    except ValueError:
+        return None
+    return datetime.fromtimestamp(ts)
