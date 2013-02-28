@@ -23,7 +23,7 @@
                 .keypress(function (e) {if (e.which == 13 || e.which == 32) {self.action; e.stopPropagation();}});                    
 
             this.param = o.params[0];
-            this._initValues(1);
+            this.setValue(o.initial_value);
         },
         
         _statsHandler: function(stats) {
@@ -80,9 +80,9 @@
         
         setValue: function(value) {
             if (value != null) {
-                if (value == 1 || (typeof(value) == 'string' && value.toLowerCase() == this.values[1])) {
+                if (value == 1 || (typeof(value) == 'string' && value.toLowerCase() == this.param.values[1].toLowerCase())) {
                     this.currentValue = 1;
-                } else if (value == 0 || (typeof(value) == 'string' && value.toLowerCase() == this.values[0])) {
+                } else if (value == 0 || (typeof(value) == 'string' && value.toLowerCase() == this.param.values[0].toLowerCase())) {
                     this.currentValue = 0;
                 }                
             } else { // Unknown

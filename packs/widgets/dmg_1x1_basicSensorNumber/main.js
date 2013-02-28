@@ -11,7 +11,7 @@
             height: 1,
             width: 1,
             displayname: true,
-			displayborder: true
+	    displayborder: true
         },
 
         graph: null,
@@ -38,8 +38,8 @@
             this.element.click(function (e) {self._onclick();e.stopPropagation();})
                 .keypress(function (e) {if (e.which == 13 || e.which == 32) {self._onclick(); e.stopPropagation();}
                           else if (e.keyCode == 27) {self.close(); e.stopPropagation();}});
-                
-            this._initValues(1);
+
+            this.setValue(o.initial_value);
         },
 
         _statsHandler: function(stats) {

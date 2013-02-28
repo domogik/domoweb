@@ -1,20 +1,27 @@
 function ondrop(event, ui) {
-    var helper = ui.draggable.draggable( "option", "helper" );
-    var item = null;
-    item = $(ui.helper).clone();
-    item.removeAttr('style');
-    $(this).append(item);
-    item.widget_shape({
-        widgetid: ui.draggable.data('widgetid'),
-        featureid: ui.draggable.data('featureid'),
-        featuretype: ui.draggable.data('featuretype'),
-        featurename: ui.draggable.data('featurename'),
-        devicename: ui.draggable.data('devicename'),
-        associationid: ui.draggable.data('associationid'),
-        widgetwidth: ui.draggable.data('widgetwidth'),
-        widgetheight: ui.draggable.data('widgetheight')
-    });            
-    $.addAssociation(item, $(this));            
+    if ($(this).attr('id') == 'widgetsmatrix') {
+	var helper = ui.draggable.draggable( "option", "helper" );
+	var item = null;
+	item = $(ui.helper).clone();
+	item.removeAttr('style');
+    
+	$(this).append(item);
+	var randomnumber=Math.floor(Math.random()*10001)
+	id = 'n' + randomnumber;
+	item.data('instanceid', id);
+	item.attr('id', "widgetinstance_" + id);
+	item.append('<input type="hidden" name="instance[' + id + '][featureid]" value="' + ui.draggable.data('featureid') + '" />');	    
+	item.append('<input type="hidden" name="instance[' + id + '][featuretype]" value="' + ui.draggable.data('featuretype') + '" />');	    
+	item.append('<input type="hidden" name="instance[' + id + '][widgetid]" value="' + ui.draggable.data('widgetid') + '" />');	    
+    
+	$('#configpanel').append("<article id='configinstance_" + id + "' style='display: none'> \
+				<h2>Widget " + id + " parameters</h2> \
+				<p><a href='#' class='remove_widget' data-instanceid='" + id + "' role='button'>Remove</a><p> \
+			    	<div class='content'></div> \
+				</article>");
+	
+	$('#configinstance_' + id + ' .content').load(VIEW_URL + "/elements/widgetparams/" + id + "/" + ui.draggable.data('featureid') + "/" + ui.draggable.data('featuretype'));
+    }
     return false;
 }
 
@@ -25,7 +32,7 @@ function onstop(event, ui) {
 function ondrag(event, ui) {
     $(".ui-dialog").hide();
 }
-    
+	
 $(function(){    
     $('#dialog').dialog({ width:'auto',
         position: ['middle', 100],
@@ -71,12 +78,6 @@ $(function(){
 
 (function($) {    
     $.fn.extend({
-	    displayName: function(){
-            _devicename = $("<div class='identity identitydevice length" + this.data('widgetwidth') + "'>" + this.data('devicename') + "</div>");
-            this.append(_devicename);
-            _featurename = $("<div class='identity identityfeature length" + this.data('widgetheight') + "'>" + this.data('featurename') + "</div>");
-            this.append(_featurename);
-        },
         hasSize: function(width, height) {
             var id = this.data('widgetid');
             if (id) {
@@ -170,59 +171,28 @@ $(function(){
     });
     
     $.ui.widget.subclass("ui.widget_shape", {
-        // default options
-        options: {
-            deletable: false
-        },
-
         _init: function() {
             var self = this, o = this.options;
             var woptions = get_widgets_options(o.widgetid)
             if (woptions) {
                 o = $.extend ({}, woptions, o);
             }
+	    
             this.element.addClass('shape');
             this.element.removeAttr('style');
             this.element.attr('role', 'listitem');
 	    this.element.addClass('size' + o.width + 'x' + o.height);
             this.element.attr("tabindex", 0);
-            this.element.empty();
             this.element.append("<div class='sizetext'>" + o.width + 'x' + o.height + "</div>");
-            this.element.data({
-                'devicename':o.devicename,
-                'featurename':o.featurename,
+             this.element.data({
                 'featureid':o.featureid,
                 'featuretype':o.featuretype,
-                'widgetwidth': o.width,
-                'widgetheight':o.height,
                 'widgetid': o.widgetid,
-                'associationid': o.associationid
             });
-            this.element.displayName();
-            if (o.draggable) this.element.draggable(o.draggable);
-        }
-    });
- 
-    $.extend({
-        addAssociation: function(model, zone) {
-            var page_type = zone.data('page_type');
-            var page_id = zone.data('page_id');
-            var place_id = zone.data('place');
-            var widget_id = model.data('widgetid');
-            var feature_id = model.data('featureid');
-            var feature_type = model.data('featuretype');
-        },
+            this.element.append("<div class='identity identitydevice length" + o.width + "'>" + o.devicename + "</div>");
+            this.element.append("<div class='identity identityfeature length" + o.height + "'>" + o.featurename + "</div>");
 
-        initAssociations: function(page_id) {           
-            $('#widgetsmatrix').droppable({
-                    activeClass: 'state-active',
-                    hoverClass: 'state-hover',
-                    accept: function(draggable) {
-                        return (draggable.hasClass('shape'));
-                    },
-                    drop: ondrop
-            })
-                .data({'page_id':page_id});
+            if (o.draggable) this.element.draggable(o.draggable);
         }
     });
     

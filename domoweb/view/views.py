@@ -34,14 +34,14 @@ Implements
 @organization: Domogik
 """
 from django.utils.http import urlquote
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response, redirect
-from django.template import RequestContext
+from django.template import RequestContext, Context, Template
 from django.utils.translation import ugettext as _
 from django import forms
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.models import Widget, PageIcon, WidgetInstance, PageTheme, DeviceType, DeviceUsage, Device, Sensor, Command
+from domoweb.models import Widget, PageIcon, WidgetInstance, WidgetInstanceParam, WidgetInstanceSensor, WidgetInstanceCommand, PageTheme, DeviceType, DeviceUsage, Device, Sensor, Command
 from domoweb import fields
     
 class ThemeChoiceField(forms.ModelChoiceField):
@@ -83,15 +83,10 @@ def page(request, id=1):
     widgets = WidgetInstance.objects.filter(page_id=id).values('widget_id').distinct()
     widgetinstances = WidgetInstance.get_page_list(id)
 
-#    usageDict = DeviceUsage.objects.all_dict()
-#    typeDict = DeviceType.objects.all_dict()
-
     return go_to_page(
         request, 'page.html',
         page_title,
         widgets=widgets,
-#        device_types=convertToStr(typeDict),
-#        device_usages=convertToStr(usageDict),
         page=page,
         page_path=page_path,
         page_tree=page_tree,
@@ -147,19 +142,40 @@ def page_elements(request, id):
     iconsets = PageIcon.objects.values('iconset_id', 'iconset_name').distinct()
 
     if request.method == 'POST': # If the form has been submitted...
-        widgetinstances = WidgetInstance.objects.filter(page_id=id).delete()
-        featuresids = request.POST["featuresids"].split(',')
-        featurestypes = request.POST["featurestypes"].split(',')
-        widgets = request.POST["widgets"].split(',')
-        for i, feature in enumerate(featuresids):
-            if feature:
-                featuretype = featurestypes[i].split('.')[0]
-                w = WidgetInstance(order=i, page=page, widget_id=widgets[i])
-                if (featuretype == 'sensor'):
-                    w.sensor = Sensor.objects.get(id=feature)
-                else:
-                    w.command = Command.objects.get(id=feature)
+        instances = getDictArray(request.POST, 'instance')
+        keys = []
+        for key in instances.keys():
+            try:
+                keys.append(int(key)) # Convert to int and remove new instances
+            except ValueError:
+                pass
+        widgetinstances = WidgetInstance.objects.filter(page_id=id).exclude(id__in=keys).delete()
+        for instanceid, instance in instances.items():
+            if 'widgetid' in instance:
+                w = WidgetInstance(order=0, page=page, widget_id=instance['widgetid'])
                 w.save()
+                if (instance['featuretype'].startswith('sensor')):
+                    s = Sensor.objects.get(id=instance['featureid'])
+                    ws = WidgetInstanceSensor(instance=w, key="primary", sensor=s)
+                    ws.save()
+                else:
+                    c = Command.objects.get(id=instance['featureid'])
+                    wc = WidgetInstanceCommand(instance=w, key="primary", command=c)
+                    wc.save()
+                    s = Sensor.objects.get(id=instance['sensor'])
+                    ws = WidgetInstanceSensor(instance=w, key="event", sensor=s)
+                    ws.save()
+            else:
+                if 'sensor' in instance: # A command with a sensor
+                    w = WidgetInstance.objects.get(id=instanceid)
+                    s = Sensor.objects.get(id=instance['sensor'])
+                    try:
+                        ws = WidgetInstanceSensor.objects.get(instance=w, key="event")
+                        ws.sensor = s
+                        ws.save()
+                    except WidgetInstanceSensor.DoesNotExist:
+                        ws = WidgetInstanceSensor(instance=w, key="event", sensor=s)
+                        ws.save()
         return redirect('page_view', id=id) # Redirect after POST
 
     devices = Device.objects.all()
@@ -175,3 +191,19 @@ def page_elements(request, id):
         widgets=widgets,
         widgetinstances=widgetinstances,
     )
+
+@admin_required
+def page_elements_widgetparams(request, instanceid, featureid, featuretype):
+    if featuretype.startswith("sensor"):
+        html=""
+    else:
+        cmd = Command.objects.get(id=featureid)
+        t = Template("<div class='row'><label for='instance_{{ instanceid }}_sensor'>Sensor :</label>"
+                     "<select id='instance_{{ instanceid }}_sensor' name='instance[{{ instanceid }}][sensor]'>"
+                     "{% for sensor in command.device.sensor_set.all %}"
+                     "<option value='{{ sensor.id }}'>{{ sensor.name }}</option>"
+                     "{% endfor %}"
+                     "</select></div>")
+        c = Context({'command': cmd, 'instanceid': instanceid})
+        html = t.render(c)
+    return HttpResponse(html)

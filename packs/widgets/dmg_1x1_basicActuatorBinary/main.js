@@ -27,7 +27,7 @@
 
             this.param = o.params[0];
             this.texts = [o.usage_parameters.state0, o.usage_parameters.state1];
-//            this.setValue(o.initial_value);
+            this.setValue(o.initial_value);
         },
 
         _statsHandler: function(stats) {
@@ -87,9 +87,9 @@
         
         setValue: function(value) {
             if (value != null) {
-                if (value == 1 || (typeof(value) == 'string' && value.toLowerCase() == this.values[1])) {
+                if (value == 1 || (typeof(value) == 'string' && value.toLowerCase() == this.param.values[1].toLowerCase())) {
                     this.currentValue = 1;
-                } else if (value == 0 || (typeof(value) == 'string' && value.toLowerCase() == this.values[0])) {
+                } else if (value == 0 || (typeof(value) == 'string' && value.toLowerCase() == this.param.values[0].toLowerCase())) {
                     this.currentValue = 0;
                 }                
             } else { // Unknown

@@ -11,14 +11,15 @@
             height: 1,
             width: 1,
             displayname: true,
-			displayborder: true
+	    displayborder: true
         },
 
         _init: function() {
             var self = this, o = this.options;
             this.isOpen = false;
-            this.min_value = parseInt(o.feature_parameters.valueMin);
-            this.max_value = parseInt(o.feature_parameters.valueMax);
+	    this.param = o.params[0];
+            this.min_value = this.param.values[0];
+            this.max_value = this.param.values[1];
             this.step = parseInt(o.usage_parameters.step);
             this.unit = o.unit
             if (this.unit == '%') {
@@ -53,29 +54,29 @@
                 .keypress(function (e) {if (e.which == 13 || e.which == 32) {self._onclick(); e.stopPropagation();}
                           else if (e.keyCode == 27) {self.close(); e.stopPropagation();}});
 
-			this.element.keypress(function (e) {
-					switch(e.keyCode) { 
-					// User pressed "home" key
-					case 36:
-						self.max_range();
-						break;
-					// User pressed "end" key
-					case 35:
-						self.min_range();
-						break;
-					// User pressed "up" arrow
-					case 38:
-						self.plus_range();
-						break;
-					// User pressed "down" arrow
-					case 40:
-						self.minus_range();
-						break;
-					}
-					e.stopPropagation();
-				});
-            this.setValue(null);
-            this._initValues(1);
+	    this.element.keypress(function (e) {
+		switch(e.keyCode) { 
+		// User pressed "home" key
+		case 36:
+			self.max_range();
+			break;
+		// User pressed "end" key
+		case 35:
+			self.min_range();
+			break;
+		// User pressed "up" arrow
+		case 38:
+			self.plus_range();
+			break;
+		// User pressed "down" arrow
+		case 40:
+			self.minus_range();
+			break;
+		}
+		e.stopPropagation();
+	    });
+	    if (o.initial_value == "") { o.initial_value = 0; }
+            this.setValue(o.initial_value);
         },
 
         _statsHandler: function(stats) {
@@ -116,7 +117,9 @@
                 } else {
                     value = this._processingValue;
                 }
-                rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":value})
+		data = {};
+		data[this.param.key] = value;
+		rinor.put(['api', 'command', o.featureid], data)
                     .done(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
                     })
@@ -125,7 +128,7 @@
                         if (jqXHR.status == 400)
                             $.notification('error', jqXHR.responseText);
                     });
-			}
+	    }
         },
 
         _onclick: function() {
@@ -179,7 +182,7 @@
             }
         },
 
-		plus_range: function() {
+	plus_range: function() {
             var self = this, o = this.options;
             if (this.step) {
                 step = this.step;
@@ -198,7 +201,7 @@
             } else {
                 step = 1;
             }
-			var value = parseInt(this._processingValue) - step;
+		var value = parseInt(this._processingValue) - step;
       		this._resetAutoClose();
 			this._setProcessingValue(value);
 		},
@@ -232,18 +235,18 @@
             }
         },
         
-		_setProcessingValue: function(value) {
+	_setProcessingValue: function(value) {
             var self = this, o = this.options;
-			if (value >= this.displayMin && value <= this.displayMax) {
-				this._processingValue = value;
-			} else if (value < this.displayMin) {
-				this._processingValue = this.displayMin;
-			} else if (value > this.displayMax) {
-				this._processingValue = this.displayMax;
-			}
+	    if (value >= this.displayMin && value <= this.displayMax) {
+		    this._processingValue = value;
+	    } else if (value < this.displayMin) {
+		    this._processingValue = this.displayMin;
+	    } else if (value > this.displayMax) {
+		    this._processingValue = this.displayMax;
+	    }
             $('.value', this._panel).html(this._processingValue + this.unit);
             this._displayProcessingRange(this._processingValue);
-		},
+	},
 
         _displayProcessingRange: function(percent) {
             var self = this, o = this.options;

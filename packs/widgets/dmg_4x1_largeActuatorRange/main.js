@@ -6,20 +6,21 @@ const auto_send = 3000; // 3 seconds
         options: {
             version: 0.1,
             creator: 'Domogik',
-            id: 'dmg_4X1_largeActuatorRange',
+            id: 'dmg_4x1_largeActuatorRange',
             name: 'Large actuator range',
             description: 'Large actuator range with nice design',
             type: 'actuator.range',
             height: 1,
             width: 4,
             displayname: false,
-			displayborder: false
+	    displayborder: false
         },
 
         _init: function() {
             var self = this, o = this.options;
-            this.min_value = parseInt(o.feature_parameters.valueMin);
-            this.max_value = parseInt(o.feature_parameters.valueMax);
+	    this.param = o.params[0];
+            this.min_value = this.param.values[0];
+            this.max_value = this.param.values[1];
             this.step = parseInt(o.usage_parameters.step);
             this.unit = o.unit
             if (this.unit == '%') {
@@ -54,27 +55,28 @@ const auto_send = 3000; // 3 seconds
             main.append(max);
             this.element.append(main);
             this.element.keypress(function (e) {
-					e.stopPropagation();
-					switch(e.keyCode) { 
-					// User pressed "home" key
-					case 36:
-						self.max_range();
-						break;
-					// User pressed "end" key
-					case 35:
-						self.min_range();
-						break;
-					// User pressed "up" arrow
-					case 38:
-						self.plus_range();
-						break;
-					// User pressed "down" arrow
-					case 40:
-						self.minus_range();
-						break;
-					}
-				});
-            this._initValues(1);
+		    e.stopPropagation();
+		    switch(e.keyCode) { 
+		    // User pressed "home" key
+		    case 36:
+			    self.max_range();
+			    break;
+		    // User pressed "end" key
+		    case 35:
+			    self.min_range();
+			    break;
+		    // User pressed "up" arrow
+		    case 38:
+			    self.plus_range();
+			    break;
+		    // User pressed "down" arrow
+		    case 40:
+			    self.minus_range();
+			    break;
+		    }
+	    });
+	    if (o.initial_value == "") { o.initial_value = 0; }
+            this.setValue(o.initial_value);
         },
 
         _statsHandler: function(stats) {
@@ -136,7 +138,9 @@ const auto_send = 3000; // 3 seconds
                 } else {
                     value = this._processingValue;
                 }
-                rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":value})
+		data = {};
+		data[this.param.key] = value;
+		rinor.put(['api', 'command', o.featureid], data)
                     .done(function(data, status, xhr){
                         self.valid(o.featureconfirmation);
                     })
@@ -155,47 +159,47 @@ const auto_send = 3000; // 3 seconds
             } else {
                 step = 1;
             }
-  			var value = parseInt(this._processingValue) + step;
-			this._setProcessingValue(value);
+  	    var value = parseInt(this._processingValue) + step;
+	    this._setProcessingValue(value);
             this._resetAutoSend();
-		},
+	},
 		
-		minus_range: function() {
+	minus_range: function() {
             var self = this, o = this.options;
             if (this.step) {
                 step = this.step;
             } else {
                 step = 1;
             }
-  			var value = parseInt(this._processingValue) - step;
-			this._setProcessingValue(value);
+  	    var value = parseInt(this._processingValue) - step;
+	    this._setProcessingValue(value);
             this._resetAutoSend();
-		},
+	},
 		
-		max_range: function() {
+	max_range: function() {
             var self = this, o = this.options;
-			this._setProcessingValue(this.displayMax);
+	    this._setProcessingValue(this.displayMax);
             this._resetAutoSend();
-		},
+	},
 		
-		min_range: function() {
+	min_range: function() {
             var self = this, o = this.options;
-			this._setProcessingValue(this.displayMin);
+	    this._setProcessingValue(this.displayMin);
             this._resetAutoSend();
-		},
+	},
         
         _setProcessingValue: function(value) {
             var self = this, o = this.options;
-			if (value >= this.displayMin && value <= this.displayMax) {
-				this._processingValue = value;
-			} else if (value < this.displayMin) {
-				this._processingValue = this.displayMin;
-			} else if (value > this.displayMax) {
-				this._processingValue = this.displayMax;
-			}
+	    if (value >= this.displayMin && value <= this.displayMax) {
+		    this._processingValue = value;
+	    } else if (value < this.displayMin) {
+		    this._processingValue = this.displayMin;
+	    } else if (value > this.displayMax) {
+		    this._processingValue = this.displayMax;
+	    }
             this._displayValue(this._processingValue);
             this._displayRangeIndicator(this._processingValue);
-		},
+	},
         
         _displayValue: function(value) {
             var self = this, o = this.options;
@@ -229,10 +233,10 @@ const auto_send = 3000; // 3 seconds
         },
 
         _resetAutoSend: function() {
-			var self = this;
-			this.element.doTimeout( 'timeout', auto_send, function(){
-				self.action();
-			});	
-		}
+	    var self = this;
+	    this.element.doTimeout( 'timeout', auto_send, function(){
+		    self.action();
+	    });	
+	}
     });
 })(jQuery);

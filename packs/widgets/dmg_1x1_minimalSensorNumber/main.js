@@ -11,8 +11,8 @@
             height: 1,
             width: 1,
             displayname: false,
-			displayborder: true,
-			screenshot: 'images/screenshot.png'
+	    displayborder: true,
+	    screenshot: 'images/screenshot.png'
         },
 
         _init: function() {
@@ -22,7 +22,7 @@
             this._elementValue =  $("<div class='widget_value'></div>");
             cell.append(this._elementValue);
             this.element.append(cell);
-            this._initValues(1);
+            this.setValue(o.initial_value);
         },
 
         _statsHandler: function(stats) {

@@ -271,9 +271,25 @@ class WidgetInstance(models.Model):
     page = models.ForeignKey(Page)
     order = models.IntegerField()
     widget = models.ForeignKey(Widget, on_delete=models.DO_NOTHING)
-    sensor = models.ForeignKey(Sensor, null=True, on_delete=models.DO_NOTHING)
-    command = models.ForeignKey(Command, null=True, on_delete=models.DO_NOTHING)
 
     @classmethod
     def get_page_list(cls, id):
         return cls.objects.filter(page__id=id).order_by('order')
+
+class WidgetInstanceParam(models.Model):
+    id = models.AutoField(primary_key=True)
+    instance = models.ForeignKey(WidgetInstance)
+    key = models.CharField(max_length=50)
+    value = models.CharField(max_length=50)
+
+class WidgetInstanceSensor(models.Model):
+    id = models.AutoField(primary_key=True)
+    instance = models.ForeignKey(WidgetInstance)
+    key = models.CharField(max_length=50)
+    sensor = models.ForeignKey(Sensor, on_delete=models.DO_NOTHING)
+
+class WidgetInstanceCommand(models.Model):
+    id = models.AutoField(primary_key=True)
+    instance = models.ForeignKey(WidgetInstance)
+    key = models.CharField(max_length=50)
+    command = models.ForeignKey(Command, on_delete=models.DO_NOTHING)

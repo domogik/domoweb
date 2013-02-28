@@ -27,34 +27,22 @@
 
     $(function(){
         {% for instance in widgetinstances %}
-            {% if instance.sensor %}
-            var parameters_usage = JSON.parse('{{instance.sensor.device.usage.default_options|safe}}');
+            {% if instance.widgetinstancecommand_set.all.0 %}
+                {% with command=instance.widgetinstancecommand_set.all.0.command event=instance.widgetinstancesensor_set.all.0.sensor %}
+
+            var parameters_usage = JSON.parse('{{command.device.usage.default_options|safe}}');
             var options = {
-                usage: "{{ instance.sensor.device.usage.id }}",
-                devicename: "{{ instance.sensor.device.name }}",
-                featureid: "{{ instance.sensor.id }}",
-                featurename: "{{ instance.sensor.name }}",
-                deviceplugin: "{{ instance.sensor.device.type.plugin_id }}",
-                deviceid: "{{ instance.sensor.device.id }}",
-                key: "{{ instance.sensor.reference }}",
-                unit: "{{ instance.sensor.unit }}",
-                usage_parameters: parameters_usage["sensor"]["{{ instance.sensor.value_type }}"],
-                initial_value:"{{ instance.sensor.last_value }}",
-            }
-            {% else %}
-            var parameters_usage = JSON.parse('{{instance.command.device.usage.default_options|safe}}');
-            var options = {
-                usage: "{{ instance.command.device.usage.id }}",
-                devicename: "{{ instance.command.device.name }}",
-                featureid: "{{ instance.command.id }}",
-                featurename: "{{ instance.command.name }}",
-                featureconfirmation: "{{ instance.command.return_confirmation }}",
-                deviceplugin: "{{ instance.command.device.type.plugin_id }}",
-                deviceid: "{{ instance.command.device.id }}",
-                key: "{{ instance.command.reference }}",
-                usage_parameters: parameters_usage["actuator"]["{{ instance.command.commandparam_set.all.0.value_type }}"],
+                usage: "{{ command.device.usage.id }}",
+                devicename: "{{ command.device.name }}",
+                featureid: "{{ command.id }}",
+                featurename: "{{ command.name }}",
+                featureconfirmation: "{{ command.return_confirmation }}",
+                deviceplugin: "{{ command.device.type.plugin_id }}",
+                deviceid: "{{ command.device.id }}",
+                key: "{{ command.reference }}",
+                usage_parameters: parameters_usage["actuator"]["{{ command.commandparam_set.all.0.value_type }}"],
                 params: [
-                    {% for param in instance.command.commandparam_set.all %}
+                    {% for param in command.commandparam_set.all %}
                     {
                         id: {{ param.id }},
                         key: "{{ param.key }}",
@@ -62,8 +50,30 @@
                         values: {{ param.values|safe }},
                     },
                     {% endfor %}
-                ]
+                ],
+                initial_value:"{{ event.last_value }}",
+                eventid: {{ event.id }},
+                unit: "{{ event.unit }}",
             }
+                {% endwith %}
+            {% else %}
+                {% with sensor=instance.widgetinstancesensor_set.all.0.sensor %}
+
+            var parameters_usage = JSON.parse('{{sensor.device.usage.default_options|safe}}');
+            var options = {
+                usage: "{{ sensor.device.usage.id }}",
+                devicename: "{{ sensor.device.name }}",
+                featureid: "{{ sensor.id }}",
+                featurename: "{{ sensor.name }}",
+                deviceplugin: "{{ sensor.device.type.plugin_id }}",
+                deviceid: "{{ sensor.device.id }}",
+                key: "{{ sensor.reference }}",
+                unit: "{{ sensor.unit }}",
+                usage_parameters: parameters_usage["sensor"]["{{ sensor.value_type }}"],
+                initial_value:"{{ sensor.last_value }}",
+                eventid: {{ sensor.id }},
+            }
+                {% endwith %}
             {% endif %}
             eval("$('#widgetinstance_{{ instance.id }}').{{ instance.widget_id }}(options)");
         {% endfor %}

@@ -32,8 +32,6 @@
             main.append(off_action);
             
             this.element.append(main);
-
-//            this._initValues(1);
         },
         
         _statsHandler: function(stats) {

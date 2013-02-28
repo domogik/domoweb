@@ -40,12 +40,13 @@
         
         _init: function() {
             var self = this, o = this.options;
-            this.min_value = parseInt(o.feature_parameters.valueMin);
-            this.max_value = parseInt(o.feature_parameters.valueMax);
+	    this.param = o.params[0];
+            this.min_value = this.param.values[0];
+            this.max_value = this.param.values[1];
 
-           	var bars = $("<div class='bars'></div>");
+            var bars = $("<div class='bars'></div>");
 
-           	for(var i=0;i<colors.length;i++){		
+            for(var i=0;i<colors.length;i++) {		
                 deg = i*12;
                 // Create the colorbars
                 $('<div class="colorBar">').css({
@@ -55,7 +56,7 @@
                     left: Math.cos((180 - deg)/rad2deg)*80+89,
                 }).appendTo(bars);
             }
-           	this.colorBars = bars.find('.colorBar');
+            this.colorBars = bars.find('.colorBar');
             control = $("<div class='control'></div>");
             bars.append(control);
             this.element.append(bars);
@@ -142,8 +143,8 @@
                     self.action();
                 });
             });
-            
-            this._initValues(1);
+	    if (o.initial_value == "") { o.initial_value = 0; }
+            this.setValue(o.initial_value);
         },
 
         _turn: function(ratio){
@@ -175,7 +176,10 @@
             var self = this, o = this.options;
             this.processingValue = Math.round((this.rotation * this.max_value / 359) + this.min_value);
             this.element.removeClass('error valid').addClass('processing');
-            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":this.processingValue})
+	    
+	    data = {};
+	    data[this.param.key] = this.processingValue;
+	    rinor.put(['api', 'command', o.featureid], data)
                 .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })

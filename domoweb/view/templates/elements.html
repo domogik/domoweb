@@ -38,55 +38,52 @@
 
 {% block js_script %}
     $(function() {
-        $.initAssociations({{ page.id }});
-        
-        $("a#save").click(function(){
-            var featuresids = new Array()
-            var featurestypes = new Array()
-            var widgets = new Array()
-            $("#widgetsmatrix .shape").each(function(index, element) {
-                featurestypes.push($(element).data('featuretype'));
-                featuresids.push($(element).data('featureid'));
-                widgets.push($(element).data('widgetid'));
-            });
-            $("#pageForm input[name='featurestypes']").val(featurestypes.join(','));
-            $("#pageForm input[name='featuresids']").val(featuresids.join(','));
-            $("#pageForm input[name='widgets']").val(widgets.join(','));
+        $('#widgetsmatrix').droppable({
+                activeClass: 'state-active',
+                hoverClass: 'state-hover',
+                accept: function(draggable) {
+                    return (draggable.hasClass('shape'));
+                },
+                drop: ondrop
+        })
+
+        $("a#save").click(function() {
             $("#pageForm").submit();
         });
-        
+
         $("#configpanel").on("click", ".remove_widget", function() {
             var id = $(this).data("instanceid");
-            console.log(id);
             $("#widgetinstance_" + id).remove();
             $("#configinstance_" + id).remove();
         });
         
         $("#widgetsmatrix").on("click", ".shape", function() {
-            var id = $(this).data("associationid");
-            $("#configpanel > div").hide();
+            var id = $(this).data("instanceid");
+            $("#configpanel > article").hide();
             $("#configinstance_" + id).show();
         });
-        
+
         {% for instance in widgetinstances %}
-            {% if instance.sensor %}
+            {% if instance.widgetinstancecommand_set.all.0 %}
+                {% with command=instance.widgetinstancecommand_set.all.0.command %}
                 $("#widgetinstance_{{ instance.id }}").widget_shape({
                     widgetid: '{{ instance.widget_id }}',
-                    featureid: '{{ instance.sensor.id }}',
-                    featuretype: 'sensor',
-                    devicename: "{{ instance.sensor.device.name }}",
-                    featurename: "{{ instance.sensor.name }}",
-                    associationid: '{{ instance.id }}'
-                });
-            {% else %}
-                $("#widgetinstance_{{ instance.id }}").widget_shape({
-                    widgetid: '{{ instance.widget_id }}',
-                    featureid: '{{ instance.command.id }}',
+                    featureid: '{{ command.id }}',
                     featuretype: 'actuator',
-                    devicename: "{{ instance.command.device.name }}",
-                    featurename: "{{ instance.command.name }}",
-                    associationid: '{{ instance.id }}'
+                    devicename: '{{ command.device.name }}',
+                    featurename: '{{ command.name }}',
                 });
+                {% endwith %}
+            {% else %}
+                {% with sensor=instance.widgetinstancesensor_set.all.0.sensor %}
+                $("#widgetinstance_{{ instance.id }}").widget_shape({
+                    widgetid: '{{ instance.widget_id }}',
+                    featureid: '{{ sensor.id }}',
+                    featuretype: 'sensor',
+                    devicename: '{{ sensor.device.name }}',
+                    featurename: '{{ sensor.name }}',
+                });
+                {% endwith %}
             {% endif %}
         {% endfor %}
     });
@@ -180,25 +177,36 @@
             </div>
         </div>
         
-        <div id='matrixbackground'>
-            <div id='configpanel'>
-                {% for instance in widgetinstances %}
-                    <div id='configinstance_{{ instance.id }}' style='display: none'>
-                        <h2>Widget {{ instance.id }} parameters</h2>
-                        <button class='remove_widget' data-instanceid="{{ instance.id }}">{% trans "Remove" %}</button>
-                    </div>
-                {% endfor %}
-            </div>
-            <div id='widgetsmatrix' role="list">
-                {% for instance in widgetinstances %}
-                    <div id='widgetinstance_{{ instance.id }}' role='listitem' class='widgetinstance'></div>
-                {% endfor %}
-            </div>
-        </div>
         <form action="{% url page_elements_view page.id %}" id="pageForm" method="post">
-            <input type="hidden" name="featurestypes" />
-            <input type="hidden" name="featuresids" />
-            <input type="hidden" name="widgets" />
+            <div id='matrixbackground'>
+                <section id='configpanel'>
+                    {% for instance in widgetinstances %}
+                        <article id='configinstance_{{ instance.id }}' style='display: none'>
+                            <h2>Widget {{ instance.id }} parameters</h2>
+                            <p><a href='#' class='remove_widget' data-instanceid="{{ instance.id }}" role='button'>{% trans "Remove" %}</a></p>
+                            {% if instance.widgetinstancecommand_set.all.0 %}
+                                {% with command=instance.widgetinstancecommand_set.all.0.command event=instance.widgetinstancesensor_set.all.0.sensor %}
+                                <div class='row'>
+                                <label for='instance_{{ instance.id }}_sensor'>Sensor :</label>
+                                <select id='instance_{{ instance.id }}_sensor' name='instance[{{ instance.id }}][sensor]'>
+                                    {% for sensor in command.device.sensor_set.all %}
+                                    <option value='{{ sensor.id }}'{% if sensor.id = event.id %} selected{% endif %}>{{ sensor.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                </div>
+                                {% endwith %}
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </section>
+                <div id='widgetsmatrix' role="list">
+                    {% for instance in widgetinstances %}
+                        <div id='widgetinstance_{{ instance.id }}' role='listitem' class='widgetinstance' data-instanceid='{{ instance.id }}'>
+                            <input type='hidden' name='instance[{{ instance.id }}][instance]' value='{{ instance.id }}' />
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </form>
     </div>
 {% endblock %}

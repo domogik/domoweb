@@ -54,7 +54,7 @@ from django.forms.widgets import Select
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, PageTheme, Page, DeviceType, DeviceUsage, Device, Command, CommandParam, Sensor
+from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, WidgetInstanceParam, WidgetInstanceSensor, WidgetInstanceCommand, PageTheme, Page, DeviceType, DeviceUsage, Device, Command, CommandParam, Sensor
 
 def login(request):
     """
@@ -472,6 +472,18 @@ class WidgetInstanceTable(tables.Table):
     class Meta:
         model = WidgetInstance
 
+class WidgetInstanceParamTable(tables.Table):
+    class Meta:
+        model = WidgetInstanceParam
+
+class WidgetInstanceSensorTable(tables.Table):
+    class Meta:
+        model = WidgetInstanceSensor
+
+class WidgetInstanceCommandTable(tables.Table):
+    class Meta:
+        model = WidgetInstanceCommand
+
 class PageThemeTable(tables.Table):
     class Meta:
         model = PageTheme
@@ -517,6 +529,9 @@ def admin_core_domowebdata(request):
     parameter_table = ParameterTable(Parameter.objects.all())
     pageicon_table = PageIconTable(PageIcon.objects.all())
     widgetinstance_table = WidgetInstanceTable(WidgetInstance.objects.all())
+    widgetinstanceparam_table = WidgetInstanceParamTable(WidgetInstanceParam.objects.all())
+    widgetinstancesensor_table = WidgetInstanceSensorTable(WidgetInstanceSensor.objects.all())
+    widgetinstancecommand_table = WidgetInstanceCommandTable(WidgetInstanceCommand.objects.all())
     pagetheme_table = PageThemeTable(PageTheme.objects.all())
     page_table = PageTable(Page.objects.all())
     device_table = DeviceTable(Device.objects.all())
@@ -535,6 +550,9 @@ def admin_core_domowebdata(request):
         widget_table = widget_table,
         pageicon_table = pageicon_table,
         widgetinstance_table = widgetinstance_table,
+        widgetinstanceparam_table = widgetinstanceparam_table,
+        widgetinstancesensor_table = widgetinstancesensor_table,
+        widgetinstancecommand_table = widgetinstancecommand_table,
         pagetheme_table = pagetheme_table,
         page_table = page_table,
         device_table = device_table,

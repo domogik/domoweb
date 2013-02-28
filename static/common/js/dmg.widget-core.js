@@ -94,7 +94,7 @@ function get_widgets_options(id) {
             var self = this, o = this.options;
             if (events.device_id == o.deviceid) {
                 $.each(events.data, function(index, data) {
-                    if (data.key.toLowerCase() == o.key.toLowerCase()) {
+                    if (data.sensor == o.eventid) {
                         self._eventHandler(events.timestamp, data.value);
                     }
                 });

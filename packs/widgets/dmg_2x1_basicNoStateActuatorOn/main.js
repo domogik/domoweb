@@ -28,7 +28,6 @@
             
             this.element.append(main);
             this.param = o.params[0];
-            this._initValues(1);
         },
         
         _statsHandler: function(stats) {
