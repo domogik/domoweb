@@ -4,6 +4,7 @@ import os
 import threading
 import cherrypy
 import simplejson
+import time
 from cherrypy.process import plugins
 from ws4py.messaging import TextMessage
 
@@ -42,9 +43,9 @@ class LoaderTask(threading.Thread):
         self.updateStatus('theme-loaded')
         cherrypy.engine.log("Loading Rinor Data")
         self.updateStatus('rinordata-loading')
-        self.loadThemes()
+        self.loadRinorModels()
         self.updateStatus('rinordata-loaded')
-	
+
         cherrypy.engine.log("Setting up the static directory to be served")
         self.updateStatus('statics-mounting')
         for (id, static) in self.project['packs'].items():
@@ -108,6 +109,7 @@ class LoaderTask(threading.Thread):
                         t.save()
     
     def loadRinorModels(self):
+	from domoweb.exceptions import RinorNotConfigured, RinorNotAvailable
         from domoweb.restModel import RestModel
         from domoweb.models import Parameter, DeviceType, DeviceUsage, Device
         try:
@@ -208,13 +210,19 @@ class Loader(object):
                 statusText = '10&#37; - Loading iconsets';
                 break;
             case 'loader-iconsets-loaded':
-                statusText = '60&#37; - Iconsets loaded';
+                statusText = '20&#37; - Iconsets loaded';
                 break;
             case 'loader-themes-loading':
-                statusText = '60&#37; - Loading themes';
+                statusText = '20&#37; - Loading themes';
                 break;
             case 'loader-theme-loaded':
-                statusText = '90&#37; - Themes loaded';
+                statusText = '30&#37; - Themes loaded';
+                break;
+            case 'loader-rinordata-loading':
+                statusText = '30&#37; - Loading RINOR data';
+                break;
+            case 'loader-rinordata-loaded':
+                statusText = '90&#37; - RINOR data loaded';
                 break;
             case 'loader-statics-mounting':
                 statusText = '90&#37; - Mounting static folders';
