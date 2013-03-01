@@ -1,0 +1,331 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; Domoweb dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Domoweb dev documentation" href="../index.html" />
+    <link rel="next" title="General description" href="../technical/index.html" />
+    <link rel="prev" title="Domoweb" href="../index.html" /> 
+  </head>
+  <body>
+
+    <div class="document">
+  <div id="custom-doc" class="yui-t6">
+    <div id="hd">
+      <h1><a href="../index.html">Domoweb dev documentation</a></h1>
+      <div id="global-nav">
+        <a title="Home page" href="../index.html">Home</a>  |
+        <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+        <a title="Global index" href="../genindex.html">Index</a>  |
+      </div>
+      <div class="nav">
+    &laquo; <a href="../index.html" title="Domoweb">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a>
+   |
+    <a href="../technical/index.html" title="General description">next</a> &raquo;</div>
+    </div>
+    
+    <div id="bd">
+      <div id="yui-main">
+        <div class="yui-b">
+          <div class="yui-g" id="installation-index">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="get-the-sources">
+<h2>Get the sources<a class="headerlink" href="#get-the-sources" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="zip-package">
+<h3>ZIP Package<a class="headerlink" href="#zip-package" title="Permalink to this headline">¶</a></h3>
+<p>Go on <a class="reference external" href="http://wiki.domogik.org/Download">Download</a> to get Domoweb.
+You will get a file named <strong>domoweb-&lt;release&gt;.tgz</strong>. Download it and extract it:</p>
+<div class="highlight-python"><pre>$ wget http://repo.domogik.org/...
+$ tar xvzf domoweb-&lt;release&gt;.tgz
+$ cd domoweb-&lt;release&gt;</pre>
+</div>
+</div>
+<div class="section" id="repository-versions">
+<h3>Repository versions<a class="headerlink" href="#repository-versions" title="Permalink to this headline">¶</a></h3>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The repository installation require mercurial to be installed.</p>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>hg clone http://hg.domogik.org/domoweb/
+destination directory: domoweb
+requesting all changes
+adding changesets
+adding manifests
+adding file changes
+added 585 changesets with 6180 changes to 4526 files <span class="o">(</span>+5 heads<span class="o">)</span>
+updating to branch default
+resolving manifests
+getting Domoweb.py
+getting README.txt
+...
+1640 files updated, 0 files merged, 0 files removed, 0 files unresolved
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="launch-the-installation-script">
+<h2>Launch the installation script<a class="headerlink" href="#launch-the-installation-script" title="Permalink to this headline">¶</a></h2>
+<p>The folder where you run install.py will become the final domoweb folder.
+So if you want to make a clean install of domoweb you should copy Domoweb to his final place before running the install script.</p>
+<div class="highlight-python"><pre>sudo mv domoweb /usr/share</pre>
+</div>
+<p>Then run the install script.
+If needed the install script provide options:</p>
+<div class="highlight-python"><pre>$ sudo python install.py -h
+Usage: install.py [options]
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  --uninstall           Uninstall Domoweb
+  --simul               Simulation mode for Uninstall
+  --nodeps              Do not install dependencies
+  -u USER, --user=USER  User that will run Domoweb (default: domoweb)
+  --libdir=LIBDIR       Folder for domoweb lib files (default:
+                        /var/lib/domoweb)
+  --logdir=LOGDIR       Folder for domoweb log files (default:
+                        /var/log/domoweb)
+  --piddir=PIDDIR       Folder for domoweb pid files (default:
+                        /var/run/domoweb)
+  --noconfig            Do not install Init and /etc files
+  --nodbupdate          Do not update the Domoweb DB
+  --notest              Do not test Domoweb Installation</pre>
+</div>
+<p>If you are ready launch it:</p>
+<div class="highlight-python"><pre>$ sudo ./install.py</pre>
+</div>
+<p>The first step will install all required dependencies.</p>
+<div class="highlight-python"><pre> [ Installing setuptools... ]
+Setuptools version 0.6c11 or greater has been installed.
+(Run "ez_setup.py -U setuptools" to reinstall or upgrade.)
+ [ Installing dependencies... ]
+Searching for django==1.4
+Best match: Django 1.4
+Processing Django-1.4-py2.7.egg
+Django 1.4 is already the active version in easy-install.pth
+Installing django-admin.py script to /usr/bin
+
+Using /usr/lib/python2.7/site-packages/Django-1.4-py2.7.egg
+Processing dependencies for django==1.4
+Finished processing dependencies for django==1.4
+...</pre>
+</div>
+<p>System user that will launch DomoWeb. You should keep the default choice.</p>
+<blockquote>
+<div><blockquote>
+<div>[ Checking user ]</div></blockquote>
+<dl class="docutils">
+<dt>Which user will run domogik (default <span class="classifier-delimiter">:</span> <span class="classifier">domoweb)?</span></dt>
+<dd>[ Looking for user domoweb ]
+==&gt; User domoweb found</dd>
+</dl>
+</div></blockquote>
+<p>The script will now create the required folders, and assign them to the domoweb user.</p>
+<div class="highlight-python"><pre>[ Checking /var/lib/domoweb folder ]
+[ Updating rights for user domoweb[1000] ]
+[ Checking /var/log/domoweb folder ]
+[ Updating rights for user domoweb[1000] ]
+[ Checking /var/run/domoweb folder ]
+[ Updating rights for user domoweb[1000] ]</pre>
+</div>
+<p>If you already have DomoWeb configuration files, you will be asked for keeping them or not.</p>
+<div class="highlight-python"><pre> [ Installing /etc/domoweb.cfg ]
+You already have Domoweb configuration files. Do you want to keep them ? [Y/n] Y</pre>
+</div>
+<p>The script will next install the system files.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span> <span class="n">Installing</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">default</span><span class="o">/</span><span class="n">domoweb</span> <span class="p">]</span>
+<span class="p">[</span> <span class="n">Configuring</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">default</span><span class="o">/</span><span class="n">domoweb</span> <span class="p">]</span>
+<span class="p">[</span> <span class="n">Installing</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">rc</span><span class="o">.</span><span class="n">d</span><span class="o">/</span><span class="n">domoweb</span> <span class="p">]</span>
+<span class="p">[</span> <span class="n">Installing</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">logrotate</span><span class="o">/</span><span class="n">domoweb</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>Database creation or update if already exist.</p>
+<div class="highlight-python"><pre>[ Updating Domoweb DB... ]
+Syncing...
+Creating tables ...
+Installing custom SQL ...
+Installing indexes ...
+Installed 0 object(s) from 0 fixture(s)
+
+Synced:
+ &gt; django.contrib.auth
+ &gt; django.contrib.contenttypes
+ &gt; django.contrib.sessions
+ &gt; django.contrib.messages
+ &gt; django.contrib.sites
+ &gt; django.contrib.admin
+ &gt; south
+
+Not synced (use migrations):
+ - domoweb
+(use ./manage.py migrate to migrate these)
+
+ domoweb
+  (*) 0001_initial
+  (*) 0002_auto__add_page__add_pagetheme
+  (*) 0003_auto__del_field_page_theme_id__add_field_page_left__add_field_page_rig
+  (*) 0004_root_page
+  (*) 0005_auto__chg_field_page_right__del_unique_page_right__chg_field_page_id__
+
+
+ [ Apply DB migration script ]
+Running migrations for domoweb:
+- Nothing to migrate.
+ - Loading initial data for domoweb.
+Installed 0 object(s) from 0 fixture(s)</pre>
+</div>
+<p>The final test to check the Domoweb installation.</p>
+<div class="highlight-python"><pre> ==&gt; Everything seems to be good, DomoWeb should be installed correctly.
+ ==&gt; Testing installation
+Please press Enter when ready.
+
+[ Test imports ]
+==&gt; Imports are good
+[ Checking global config file ]
+==&gt; Global config file exists and contains right stuff
+[ Test user / config file ]
+==&gt; Domogik's user exists and has a config file
+[ Check user config file contents ]
+==&gt; Config file correctly loaded
+[ Checking init.d / rc.d ]
+==&gt; /etc/init.d/domoweb or /etc/rc.d/domoweb found with good permissions
+[ Checking Domoweb DB ]
+==&gt; /var/lib/domoweb/domoweb.db found
+
+==&gt; ================================================== &lt;==
+==&gt;  Everything seems ok, you should be able to start  &lt;==
+==&gt;       DomoWeb with /etc/init.d/domoweb start       &lt;==
+==&gt;             or /etc/rc.d/domoweb start             &lt;==
+==&gt;  DomoWeb UI is available on                        &lt;==
+==&gt;                            http://127.0.0.1:40404/ &lt;==
+==&gt;  Default login is 'admin', password is '123'       &lt;==
+==&gt; ================================================== &lt;==</pre>
+</div>
+</div>
+<div class="section" id="start-domoweb">
+<h2>Start Domoweb<a class="headerlink" href="#start-domoweb" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre>sudo /etc/init.d/domoweb start
+</pre></div>
+</div>
+<p>Now, you can access UI on this url : <a class="reference external" href="http://127.0.0.1:40404/(external">http://127.0.0.1:40404/(external</a> link)</p>
+<p>To access to the administration panel :</p>
+<blockquote>
+<div>login : admin
+password : 123</div></blockquote>
+</div>
+<div class="section" id="uninstall">
+<h2>Uninstall<a class="headerlink" href="#uninstall" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>sudo python install.py --uninstall
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>         
+        </div>
+      </div>
+      
+        
+          <div class="yui-b" id="sidebar">
+            
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#get-the-sources">Get the sources</a><ul>
+<li><a class="reference internal" href="#zip-package">ZIP Package</a></li>
+<li><a class="reference internal" href="#repository-versions">Repository versions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#launch-the-installation-script">Launch the installation script</a></li>
+<li><a class="reference internal" href="#start-domoweb">Start Domoweb</a></li>
+<li><a class="reference internal" href="#uninstall">Uninstall</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Prev: <a href="../index.html">Domoweb</a></li>
+    
+    
+      <li>Next: <a href="../technical/index.html">General description</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">Domoweb dev documentation</a>
+        
+        <ul><li>Installation</li></ul>
+        
+      </li>
+  </ul>  
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/installation/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+          </div> 
+        
+      
+    </div>
+    
+    <div id="ft">
+      <div class="nav">
+    &laquo; <a href="../index.html" title="Domoweb">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a>
+   |
+    <a href="../technical/index.html" title="General description">next</a> &raquo;</div>
+    </div>
+  </div>
+
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

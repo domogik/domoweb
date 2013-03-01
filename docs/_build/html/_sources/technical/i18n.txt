@@ -1,0 +1,90 @@
+=======================
+How i18n is implemented
+=======================
+
+Django Internationalization
+===========================
+
+Domoweb translation is based on Django translation process:
+https://docs.djangoproject.com/en/1.4/topics/i18n/translation/
+
+The translation process is based on gettext.
+The translations has to be implemented on three sections:
+
+* in Python view code
+* in Template code
+* in Javascript code
+
+Python views
+------------
+
+On each file: ::
+
+    from django.utils.translation import ugettext as _
+
+Then for each string: ::
+
+    def my_view(request):
+        output = _("Welcome to my site.")
+        return HttpResponse(output)
+
+
+Django templates
+----------------
+
+On each page: ::
+
+    {% load i18n %}
+
+Then for each string: ::
+
+    <title>{% trans "This is the title." %}</title>
+
+Javascript
+----------
+
+First we need to create the translation catalog: ::
+
+    js_info_dict = {
+        'packages': ('domoweb',),
+    }
+    
+    urlpatterns = patterns('',
+        (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
+    )
+
+And on main template: ::
+
+    <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+
+Then for each string: ::
+
+    string = gettext('this is to be translated')
+    
+Language files generation
+-------------------------
+
+The message file for each language needs to be created separately (with '-d djangojs' option for the JS files): ::
+
+    $ django-admin.py makemessages -l en
+    $ django-admin.py makemessages -d djangojs -l en
+    $ django-admin.py makemessages -l fr
+    $ django-admin.py makemessages -d djangojs -l fr
+    $ django-admin.py makemessages -l it
+    $ django-admin.py makemessages -d djangojs -l it
+    ...
+    
+After translation, re-adding the .po to the locale, the files are compiled to .mo files: ::
+
+    $ django-admin.py compilemessages
+
+.. note::
+    If you use OSX remove before the bloody Apple files with: ::
+
+        find . -name ".AppleDouble" -depth -exec rm -Rf {} \;
+
+Transifex
+=========
+
+The Transifex service is used for the translation:
+https://www.transifex.net/projects/p/domoweb/

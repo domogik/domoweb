@@ -1,0 +1,25 @@
+===================
+General description
+===================
+
+.. image:: RINOR_Connection.png
+
+Django and CherryPy
+===================
+
+Django is the core of Domoweb. Django is a high-level Python Web framework with a very flexible template system.
+Unfortunately the web server provided with Django is not multitasks and not suitable for production environment.
+Instead of having the user to install himself Apache or other web server, we decided to use the CherryPy web server in order to provided a easy and quick solution.
+
+*   https://www.djangoproject.com
+*   http://www.cherrypy.org
+
+RINOR direct and AJAX connections
+=================================
+
+For easy configuration, all RINOR request are processed through Django.
+
+*   For the view generations, the pipe.py library is directly used to connect RINOR and retreive the data.
+*   For AJAX requests from the browser, Django provides a mini REST service using the Tastypie library.
+
+    *   http://django-tastypie.readthedocs.org

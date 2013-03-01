@@ -48,7 +48,7 @@ function featurechange(number) {
 function actionchange(number) {
     var test = $('select#action_' + number).val();
     if (test == 'command') {
-        $('#valueaction_' + number).html("<input id='valueFaux' style='width:20em;'></input>");
+        $('#valueaction_' + number).html("<input id='value_action_"+ number +"' style='width:20em;'></input>");
     } else {
         valeur = tableau[test][5];
         var test2 = tableau[test][3];
@@ -149,7 +149,13 @@ function actionchange(number) {
        	       test = test.replace(/'/g, '');
        	       test = test.split(',');
 	              action_cmd = test[1]
-	            	}
+	            	}else{
+                        action_adr = "command"
+                        action_tech = "command"
+                        action_cmd = "command"
+                        action_type = "Action "+$('select#Type_'+i).val();
+                        }
+                        
 	            	action_val = $('#value_action_'+i).val();
 	            	
 	            	action['action'+i] = {'address':action_adr,'techno':action_tech,'command':action_cmd,'value':action_val,'type':action_type};

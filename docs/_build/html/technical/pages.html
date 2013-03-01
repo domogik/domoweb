@@ -1,0 +1,259 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Pages organisation &mdash; Domoweb dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Domoweb dev documentation" href="../index.html" /> 
+  </head>
+  <body>
+
+    <div class="document">
+  <div id="custom-doc" class="yui-t6">
+    <div id="hd">
+      <h1><a href="../index.html">Domoweb dev documentation</a></h1>
+      <div id="global-nav">
+        <a title="Home page" href="../index.html">Home</a>  |
+        <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+        <a title="Global index" href="../genindex.html">Index</a>  |
+      </div>
+      <div class="nav">
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a></div>
+    </div>
+    
+    <div id="bd">
+      <div id="yui-main">
+        <div class="yui-b">
+          <div class="yui-g" id="technical-pages">
+            
+  <div class="section" id="pages-organisation">
+<h1>Pages organisation<a class="headerlink" href="#pages-organisation" title="Permalink to this headline">¶</a></h1>
+<p>The &#8216;Pages&#8217; system replace the fixed Areas/Rooms system.
+It uses the MODIFIED PREORDER TREE TRAVERSAL algorithm.</p>
+<p><a class="reference external" href="http://www.sitepoint.com/hierarchical-data-database-2/">http://www.sitepoint.com/hierarchical-data-database-2/</a></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>A page doesn&#8217;t have any defined purpose and can be used for elements grouping.</li>
+<li>The pages can be hierarchically organized.</li>
+<li>The initial page is &#8216;Home&#8217;</li>
+</ul>
+</div>
+<img alt="../_images/pages_tree.png" src="../_images/pages_tree.png" />
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%" />
+<col width="52%" />
+<col width="17%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">id</th>
+<th class="head">name</th>
+<th class="head">left</th>
+<th class="head">right</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>Home</td>
+<td>1</td>
+<td>18</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>House</td>
+<td>2</td>
+<td>11</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>Living room</td>
+<td>5</td>
+<td>8</td>
+</tr>
+<tr class="row-odd"><td>4</td>
+<td>Kitchen</td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr class="row-even"><td>5</td>
+<td>Security</td>
+<td>12</td>
+<td>17</td>
+</tr>
+<tr class="row-odd"><td>6</td>
+<td>Cameras</td>
+<td>15</td>
+<td>16</td>
+</tr>
+<tr class="row-even"><td>7</td>
+<td>TV</td>
+<td>6</td>
+<td>7</td>
+</tr>
+<tr class="row-odd"><td>8</td>
+<td>Heating</td>
+<td>9</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<img alt="../_images/pages_view.png" src="../_images/pages_view.png" />
+<div class="section" id="retrieve-section-of-the-tree">
+<h2>Retrieve section of the tree<a class="headerlink" href="#retrieve-section-of-the-tree" title="Permalink to this headline">¶</a></h2>
+<p>The following exemple retrieve the &#8216;House&#8217; pages:</p>
+<div class="highlight-python"><pre>SELECT * FROM ui_page WHERE lft BETWEEN (SELECT lft FROM ui_page WHERE id = 2) AND (SELECT rgt FROM ui_page WHERE id = 2) ORDER BY lft ASC;</pre>
+</div>
+</div>
+<div class="section" id="retrieve-a-page-path">
+<h2>Retrieve a Page path<a class="headerlink" href="#retrieve-a-page-path" title="Permalink to this headline">¶</a></h2>
+<p>The following exemple retrieve the &#8216;TV&#8217; pages:</p>
+<div class="highlight-python"><pre>SELECT * FROM ui_page WHERE lft &lt; (SELECT lft FROM ui_page WHERE id = 7) AND rgt &gt; (SELECT rgt FROM ui_page WHERE id = 7) ORDER BY lft ASC;</pre>
+</div>
+</div>
+<div class="section" id="add-a-page">
+<h2>Add a Page<a class="headerlink" href="#add-a-page" title="Permalink to this headline">¶</a></h2>
+<p>The following exemple add a &#8216;Music&#8217; page in &#8216;Livingroom&#8217;:</p>
+<div class="highlight-python"><pre>SET @r = SELECT rgt FROM ui_page WHERE id = 3;
+UPDATE ui_page SET rgt=rgt+2 WHERE rgt&gt;=@r;
+UPDATE ui_page SET lft=lft+2 WHERE lft&gt;=@r;
+INSERT INTO ui_page SET lft=@r-2, rgt=@r-1, name='Music';</pre>
+</div>
+<p>The following exemple insert a &#8216;Floor&#8217; page between &#8216;Livingroom&#8217; and &#8216;House&#8217;:</p>
+<div class="highlight-python"><pre>SET @l = SELECT lft FROM ui_page WHERE id = 3;
+SET @r = SELECT rgt FROM ui_page WHERE id = 3;
+
+# Update nodes
+UPDATE ui_page SET rgt=rgt+2 WHERE rgt&gt;@r;
+UPDATE ui_page SET lft=lft+2 WHERE lft&gt;@r;
+
+# Update child nodes
+UPDATE ui_page SET rgt=rgt+1 WHERE lft&gt;=@l AND rgt&lt;=@r;
+UPDATE ui_page SET lft=lft+1 WHERE lft&gt;=@l AND rgt&lt;=@r;
+
+INSERT INTO ui_page SET lft=@l, rgt=@r+2, name='Floor';</pre>
+</div>
+</div>
+<div class="section" id="move-a-page">
+<h2>Move a Page<a class="headerlink" href="#move-a-page" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>With sub-Pages</li>
+<li>Without sub-Pages</li>
+</ul>
+</div>
+<div class="section" id="delete-a-page">
+<h2>Delete a Page<a class="headerlink" href="#delete-a-page" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>With sub-Pages</li>
+</ul>
+<p>The following exemple delete the &#8216;House&#8217; page and all sub-pages:</p>
+<div class="highlight-python"><pre>SET @l = SELECT lft FROM ui_page WHERE id = 2;
+SET @r = SELECT rgt FROM ui_page WHERE id = 2;
+SET @c = (SELECT count(id) FROM ui_page WHERE lft &gt;= @l AND lft &lt; @r) * 2;
+DELETE FROM ui_page WHERE lft &gt;= @l AND lft &lt; @r;
+UPDATE ui_page SET rgt=rgt-@c WHERE rgt&gt;@r;
+UPDATE ui_page SET lft=lft-@c WHERE lft&gt;@r;</pre>
+</div>
+<ul class="simple">
+<li>Without sub-Pages</li>
+</ul>
+<p>The following exemple delete the &#8216;Heating&#8217; page:</p>
+<div class="highlight-python"><pre>SET @r = SELECT rgt FROM ui_page WHERE id = 8;
+DELETE FROM ui_page WHERE id = 8;
+UPDATE ui_page SET rgt=rgt-2 WHERE rgt&gt;@r;
+UPDATE ui_page SET lft=lft-2 WHERE lft&gt;@r;</pre>
+</div>
+</div>
+</div>
+
+
+          </div>         
+        </div>
+      </div>
+      
+        
+          <div class="yui-b" id="sidebar">
+            
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Pages organisation</a><ul>
+<li><a class="reference internal" href="#retrieve-section-of-the-tree">Retrieve section of the tree</a></li>
+<li><a class="reference internal" href="#retrieve-a-page-path">Retrieve a Page path</a></li>
+<li><a class="reference internal" href="#add-a-page">Add a Page</a></li>
+<li><a class="reference internal" href="#move-a-page">Move a Page</a></li>
+<li><a class="reference internal" href="#delete-a-page">Delete a Page</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">Domoweb dev documentation</a>
+        
+        <ul><li>Pages organisation</li></ul>
+        
+      </li>
+  </ul>  
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/technical/pages.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+          </div> 
+        
+      
+    </div>
+    
+    <div id="ft">
+      <div class="nav">
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a></div>
+    </div>
+  </div>
+
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

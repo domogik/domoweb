@@ -27,10 +27,14 @@
 {% load text %}
 
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.qtip-1.0.0-rc3/jquery.qtip-1.0.0-rc3.min.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwlib.js"> </script>
+<script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwkinetics.js"> </script>
+<script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwdialogs.js"> </script>
+<script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwdlgctrlaction.js"> </script>
 
-<link href="/design/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
+<link href="{{ static_design_url }}/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
 
 <script type='text/javascript'>
 
@@ -38,19 +42,80 @@
     var infoNode ={};
     var devices = new Array();
 
-    function dlgInfoValue (vData) {
-         $('#tipsUpdCmdClss').html(vData.help);
-         $('#divcmdclassdialog').dialog_form('open',{
-                title: 'Node ' + vData.nodeId  +' : {% trans "Command Class informations." %} ',
-                values: {upcmdclss : vData.commandClass, upcmdclssvalue : vData.value, upcmdclssunit : vData.units},
-                onok: function(values) {
-                    var self = this;
-                    // Submit form
-                    console.log("envois de la commande......");
-                    }
-         });
-    };
-       
+    function dlgNodeAss (vData) {
+        var d = "{{ static_design_url }}";
+        $('#divNodeAssDialog').dialog_association({
+        tips: "{% trans 'Node associations groups : ' %}" ,
+        st_design_url: d
+        } );
+
+        $('#divNodeAssDialog').dialog_association('open',{
+            title: 'Node ' + vData.Node  +' : {% trans "Edit associations groups." %} ',
+            node: vData,
+            onok: function(values) {
+                var self = this;
+                var v = $('#divNodeAssDialog').dialog_association('setnewgroups', this);
+                console.log("envois de la commande......");
+                setGroupsNode(v.stage, v.node, v.newgrps, RefreshGroups);
+            }
+        });
+    }
+
+   $('#reset_confirmation').dialog_confirmation({
+            title: "{% trans 'Confirmation' %}",
+            content: "{% trans "Please confirm to " %}"
+    });
+    
+    $('#reset_confirmation').dialog_confirmation('addbutton', {
+        button: "#softReset",
+        name: "Soft Reset a PC Z-Wave Controller. \nResets a controller without erasing its network configuration settings.",
+        onok: function() {
+            var msg = {};
+            msg['command'] = "Refresh";
+            var val = {};
+            val['request'] ='ctrlSoftReset';
+            msg['value'] = SetDataToxPL (val);
+            rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+                .done(function(data, status, xhr){
+                    messXpl = GetDataFromxPL(data, 'data');
+                    if (messXpl['error'] == "") {
+                        $.notification('success',"{% trans "Controleur received soft reset, you can do a refresh network." %}" );
+                   } else {
+                        $.notification('error',"{% trans "Controleur not received soft reset, error : " %}" +  messXpl['error']);
+                  } 
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Controleur not received soft reset" %} (" + jqXHR.responseText + ")");
+                });
+        }
+    });
+    
+    $('#reset_confirmation').dialog_confirmation('addbutton', {
+        button: "#hardReset",
+        name: "Hard Reset  a PC Z-Wave Controller. \nResets a controller and erases its network configuration settings. " +
+               "The controller becomes a primary controller ready to add devices to a new network.",
+        onok: function() {
+            var msg = {};
+            msg['command'] = "Refresh";
+            var val = {};
+            val['request'] ='ctrlHardReset';
+            msg['value'] = SetDataToxPL (val);
+            rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+                .done(function(data, status, xhr){
+                    messXpl = GetDataFromxPL(data, 'data');
+                    if (messXpl['error'] == "") {
+                        $.notification('success',"{% trans "Controleur received hard reset, you can do new node inclusion." %}" );
+                   } else {
+                        $.notification('error',"{% trans "Controleur not received hard reset, error : " %}" +  messXpl['error']);
+                   } 
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Controleur not received hard reset" %} (" + jqXHR.responseText + ")");
+                });
+        }
+    });
     function setStatusZW(status) {
         if (status=='up') { //active
             textstatus = "En cours d'execution";
@@ -61,37 +126,7 @@
             .attr('class', "icon16-text-right icon16-status-plugin-" + status)
             .html("<span class='label'>Etat:</span><span class='offscreen'>" + textstatus + "</span>");
         }
-        
-    function GetinfoNode (nodeid, last) {
-        infoNode ={};
-        if (nodeid) {
-                var msg = {};
-                msg['command'] = "Refresh";
-                var val = {};
-                val['request'] ='GetNodeInfo';
-                val['node'] =nodeid;
-                msg['value'] = SetDataToxPL (val);
-                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-                    .done(function(data, status, xhr){
-                        infoNode = GetDataFromxPL(data, 'data');
-                        var dt=JSON.stringify(infoNode);
-                        console.log("Dans getinfonode : " + infoNode['Model']);
-                        $.notification('debug',"Node : " + infoNode['Model'] + " info refreshed" );
-                        RefreshDataNode(infoNode, last);
-                        RefreshTabHtml(infoNode);
-                    })
-                    .fail(function(jqXHR, status, error){
-                       if (jqXHR.status == 400)
-                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") please check your device configuration");
-                            infoNode['Node'] =   nodeid;
-                            infoNode['Model'] = "NodeId not define";
-                            return infoNode;
-                    });
-        }else { infoNode['Model'] = "NodeId not define";
-                console.log("Dans getinfonode  pas de nodeid " + infoNode['Model']);   
-                return infoNode;
-                } 
-        };
+    
     function GetinfoValuesNode (nodeid, callback) {
         var valuesNode = [];
         var messXpl = {};
@@ -117,12 +152,23 @@
                                 valuesNode[i]= messXpl['value' + i];
                                 var R = [];
                                 R[0] = i + 1;
-                                R[1] = valuesNode[i]['value'];
-                                for (ii=2; ii<thOut.length;ii++) {
-                                    R[ii] = valuesNode[i][thOut[ii]]
-                                    }
+                                try {
+                                    R[1] = valuesNode[i]['value'];
+                                    for (ii=2; ii<thOut.length;ii++) {
+                                        R[ii] = valuesNode[i][thOut[ii]]
+                                    };
+                                } catch (err) {
+                                    R[1] = 'Error';
+                                    for (ii=2; ii<thOut.length;ii++) {
+                                        R[ii] = 'no data';
+                                    };
+                                    R[3] = err;
+                                    R[6] = 'Error';
+                                    R[7] = 'Value lost during Xpl rinor transmission';
+                                    R[16] = "";
+                                };
                                 RowN[i] = R;
-                            }
+                            };
                             console.log("Dans GetinfoValuesNode : " + RowN);
                             callback(thOut);
                             var idDetNode = '#detNode' + nodeid;
@@ -136,26 +182,28 @@
                                         { "fnRender": function (oObj) {return renderCmdClssValue(oObj);}, "aTargets": [hdCmdClss['value']] },                                                           
                                         { "fnRender": function (oObj) {return renderCmdClssName(oObj);}, "aTargets": [hdCmdClss['commandClass']] },
                                         ], 
-                                    "fnDrawCallback": function( oSettings ) {
-                                        handleChangeVCC();   
-                                     /*   $('.ccvalue').change(function () { // '#' + id
-                                                var nTr = this.parentNode.parentNode;
-                                                if (this.name =='CmdClssValue') {
-                                                        var oTable = $("#" + nTr.parentElement.parentElement.id).dataTable();
-                                                        var aPos = oTable.fnGetPosition(this.parentElement );
-                                                        var idC= getDataTableColIndex(oSettings, 'value');
-                                                        var ok = oTable.fnUpdate(this.value,aPos[0],idC,false);
-                                                };
-                                        }); */
+                                    "fnDrawCallback": function( oSettings) {
+                                        handleChangeVCC();
+                                        var iId = getDataTableColIndex(oSettings, 'id');
+                                        var vId = '';
+                                        var start = oSettings._iDisplayStart;
+                                        var stop =  oSettings._iDisplayEnd;
+                                        for (i=start; i<stop; i++) {
+                                            vId = RowN[i][iId]
+                                            createToolTip('#st' + vId, 'bottom');
+                                            createToolTip('#hn' + vId, 'bottom');
+                                            createToolTip('#adr' + vId, 'bottom');
+                                            createToolTip('#hc' + vId, 'top');
+                                            };
+                                        for (i=0; i<thOut.length; i++) {
+                                            if (thOut[i] == 'realValue' | thOut[i] == 'nodeId' | thOut[i] == 'homeId' | thOut[i] == 'domogikdevice' | thOut[i] == 'help' | thOut[i] == 'readOnly' | thOut[i] == 'listElems' | thOut[i] == 'id') {
+                                                $(idDetNode).dataTable().fnSetColumnVis( i, false ); };
+                                            }
                                     },
                                     "sPaginationType": "full_numbers",
                                     "aaData": RowN
                                     });
-                            for (i=0; i<thOut.length; i++) {
-                                if (thOut[i] == 'realValue' | thOut[i] == 'nodeId' | thOut[i] == 'homeId' | thOut[i] == 'domogikdevice' | thOut[i] == 'help' | thOut[i] == 'readOnly' | thOut[i] == 'listElems' | thOut[i] == 'id') {
-                                    $(idDetNode).dataTable().fnSetColumnVis( i, false ); };
-                                }  // redirection des events change des values read
-                            return valuesNode;
+                           return valuesNode;
                         }  else { // le Node n'as pas de command_class
                             var thOut =[];
                             thOut[0]="No Command_Class";
@@ -203,8 +251,11 @@
                     $('#libctrlver').html(netWorkZW['Version']);                    
                     console.log("Dans Submit, .done: " + netWorkZW['Model']);
                     setStatusZW('up')
-                    $.notification('debug',"device : " + netWorkZW['Primary controller'] + " info refreshed" );
+                    $.notification('success',"device : " + netWorkZW['Primary controller'] + " info refreshed" );
                     var node_items = document.getElementById("node_items");
+                    SetStatusZWDevices('infoIconInitNodes', netWorkZW['Init state']);
+                    $('#infoIconInitNodes').attr('title', netWorkZW['Init state']);
+                    $('#infoTextInitNodes').text("{% trans "Devices initialisation : " %}" );
                     RefreshNodes(netWorkZW);
                 } else {
                     $('#homeid').html(netWorkZW['error']);
@@ -221,102 +272,113 @@
     
     function RefreshNodes(netWorkZW) {
            console.log("Dans RefreshNode, après .done" + JSON.stringify(netWorkZW));
-            if (netWorkZW) {
-                for (var nId=0; nId< netWorkZW.ListNodeId.length; nId++) {
-                    GetinfoNode(netWorkZW.ListNodeId[nId], ((nId +1) == netWorkZW.ListNodeId.length));
-                    console.log("While refreshnode nodeID: " + netWorkZW.ListNodeId[nId]);
-                    };
+            if (netWorkZW.ListNodeId) {
+                var queue = netWorkZW.ListNodeId.slice(1);
+                GetinfoNode(netWorkZW.ListNodeId[0], RefreshTabHtml, queue );
             };
         };
             
     function RefreshTabHtml(zwNode) {
-        console.log("Dans RefreshTabHtml, " + zwNode);
+      if (zwNode) {  
+        console.log("Dans RefreshTabHtml, " + JSON.stringify(zwNode));
         var node_items = document.getElementById("node_items");
         var nodeid=zwNode.Node;
         var iid= "node_" + nodeid;
         var dataT = $('#node_items').dataTable().fnGetData();
-        var trfunct= function(li,dr){$('#node_items').dataTable().fnAddData(dr);};        
+        var dataLi = [zwNode.Node, zwNode.Name, zwNode.Location, zwNode.Model, zwNode['State sleeping'], zwNode.Type, zwNode['Last update'],""];
+        var li= -1;
         if (dataT) {
             for (i=0; i<dataT.length; i++) {
-                if (dataT[i][hdLiNode['NodeId']]==nodeid) {
-                    var trfunct= function(li,dr){$('#node_items').dataTable().fnUpdate(dr,li);};
-                    var li= i;
+                if (getNodeIdFromHtml(dataT[i][hdLiNode['NodeId']])==nodeid) {
+                    li= i;
+               //     $('#node_items').dataTable().fnUpdate(dataLi,li);   fnUpdate bugg si mise à jour de toute la ligne !!!!
+                    for (var ic = 0; ic<dataLi.length; ic++){ 
+                        $('#node_items').dataTable().fnUpdate(dataLi[ic], li, ic);
+                        };
                     break;
                 };
             };
         };
-        trfunct(li, [zwNode.Node, zwNode.Name, zwNode.Location, zwNode.Model, zwNode['State sleeping'], zwNode.Type, zwNode['Last update'],""]);
+        if (li == -1) {
+            $('#node_items').dataTable().fnAddData(dataLi);
+            };
         console.log("Dans RefreshTabHtml, DataTable : " + dataT[li] + "---" + zwNode.Model); 
-     };   
+     }; 
+    };   
      
 
 // Callback event des commandes dans la table des nodes.
 // Class button, 
-    $('#node_items tbody td button').live('click', function () {
-        var nTr = this.parentNode.parentNode;
-        var aData = oTabNodes.fnGetData( nTr );
-        if (this.title =='Update Node') {
-            console.log("Dans click updatenode, DataTable : " + aData);   
-            // Lancer la sauvegarde vers plugin
-                var msg = {};
-                msg['command'] = "Refresh";
-                var val = {};
-                val['request'] ='SetNodeNameLoc';
-                val['node'] =aData[hdLiNode['NodeId']];
-                val['newname'] = returnTextValue(aData[hdLiNode['Name']]);
-                val['newloc'] = returnTextValue(aData[hdLiNode['Location']]);
-                msg['value'] = SetDataToxPL (val);
-                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-                    .done(function(data, status, xhr){
-                        infoNode = GetDataFromxPL(data,  'data');
-                        var dt=JSON.stringify(infoNode);
-                        console.log("Dans Update Node : " + infoNode['Model']);
-                        $.notification('debug',"Node : " + infoNode['Model'] + " name and  location update" );
-                        RefreshTabHtml(infoNode);
-                        return  infoNode;
-                    })
-                    .fail(function(jqXHR, status, error){
-                       if (jqXHR.status == 400)
-                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") {% trans "please check your device configuration" %}");
-                            infoNode['Node'] =   nodeid;
-                            infoNode['Model'] = "NodeId not define";
-                            return infoNode;
-                    });
-        };
-        if (this.title =='Detail Node') {
-            var t =  this.attributes["class"].value; //nodeValue
-            if (t.search('action-del') != -1 ) {
-			// This row is already open - close it 
-                this.attributes["class"].value = "icon16-action-add buttonicon"; //nodeValue
-                oTabNodes.fnClose( nTr );
-            }else {
-                // Open this row 
-                this.attributes["class"].value = "icon16-action-del buttonicon"; //nodeValue
-                //send update nodes values
-                var values = GetinfoValuesNode(aData[hdLiNode['NodeId']], function(thOut){ oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,thOut), 'simple' );});
-        /*  console.log("click detail values : " + values); */
-            };
-        };
-        if (this.title == 'Cmd class details') {
-            var idDetNode = nTr.parentNode.parentNode.id;
-            aData = $('#' + idDetNode).dataTable().fnGetData(nTr);
-            editvalueNode(aData[hdCmdClss['id']], dlgInfoValue);
-            console.log("Dans click updatenode, Cmd class details, DataTable : " + aData + nTr); 
-         };
-       if (this.name == 'Send value') {
-            var idDetNode = nTr.parentNode.parentNode.id;
-            var aTable = $('#' + idDetNode).dataTable();
-            aData = aTable.fnGetData(nTr); 
-            valueId = aData[getDataTableColIndex(aTable.fnSettings(), 'id')];
-            console.log ("sending update cmd class");
-            msg = setValueNode(valueId, aData[getDataTableColIndex(aTable.fnSettings(), 'value')], aTable,nTr);
-            
+$('body').on('click','#node_items tbody td button', function () {
+    var nTr = this.parentNode.parentNode;
+    var aData = oTabNodes.fnGetData( nTr );
+    var notfind = true;
+    if (this.name =='Update node') {
+        notfind = false;
+        console.log("Dans click updatenode, DataTable : " + aData);   
+        // Lancer la sauvegarde vers plugin
+        var msg = {};
+        msg['command'] = "Refresh";
+        var val = {};
+        val['request'] ='SetNodeNameLoc';
+        val['node'] =getNodeIdFromHtml(aData[hdLiNode['NodeId']]);
+        val['newname'] = returnTextValue(aData[hdLiNode['Name']]);
+        val['newloc'] = returnTextValue(aData[hdLiNode['Location']]);
+        msg['value'] = SetDataToxPL (val);
+        rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+            .done(function(data, status, xhr){
+                infoNode = GetDataFromxPL(data,  'data');
+                var dt=JSON.stringify(infoNode);
+                console.log("Dans Update Node : " + infoNode['Model']);
+                $.notification('debug',"Node : " + infoNode['Model'] + " name and  location update" );
+                RefreshTabHtml(infoNode);
+                return  infoNode;
+            })
+            .fail(function(jqXHR, status, error){
+               if (jqXHR.status == 400)
+                    $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ") {% trans "please check your device configuration" %}");
+                    infoNode['Node'] =   nodeid;
+                    infoNode['Model'] = "NodeId not define";
+                    return infoNode;
+            });
+    };
+    if (this.name =='Detail node') {
+        notfind = false;
+        var t =  this.attributes["class"].value; //nodeValue
+        if (t.search('action-zoomout') != -1 ) {
+        // This row is already open - close it 
+            this.attributes["class"].value = "icon16-action-zoomin buttonicon"; //nodeValue
+            oTabNodes.fnClose( nTr );
         }else {
-            console.log("Dans click button, DataTable : " + this.title); 
+            // Open this row 
+            this.attributes["class"].value = "icon16-action-zoomout buttonicon"; //nodeValue
+            //send update nodes values
+            var values = GetinfoValuesNode(getNodeIdFromHtml(aData[hdLiNode['NodeId']]), function(thOut){ oTabNodes.fnOpen( nTr, fnFormatDetails(nTr,thOut), 'simple' );});
+    /*  console.log("click detail values : " + values); */
         };
-    }); 
+    };
+    if (this.name == 'Node groups') {
+        notfind = false;
+        var zwNode = GetZWNodeById(getNodeIdFromHtml(aData[hdLiNode['NodeId']]));
+        editNodeAss(zwNode, dlgNodeAss);
+        console.log("Dans click Node Associations, Node : " + zwNode.Node); 
+     };
+   if (this.name == 'Send value') {
+        notfind = false;
+        var idDetNode = nTr.parentNode.parentNode.id;
+        var aTable = $('#' + idDetNode).dataTable();
+        var aData = aTable.fnGetData(nTr); 
+        var nodeId = parseInt(idDetNode.slice(7)); // detNodeX
+        var valueId = aData[getDataTableColIndex(aTable.fnSettings(), 'id')];
+        console.log ("sending update cmd class");
+        msg = setValueNode(nodeId, valueId, aData[getDataTableColIndex(aTable.fnSettings(), 'value')], aTable,nTr);
+    };
+    if (notfind) {
+        console.log("Dans click button, no action find : " + this.name); 
+    };
+}); 
 // class input   
-$('#node_items tbody td input').live('keyup', function (e) {
+$('body').on('keyup', '#node_items tbody td input',function (e) {
    var nTr = this.parentNode.parentNode;
    var aData = oTabNodes.fnGetData( nTr );
    if (this.title =='Name') {
@@ -331,15 +393,16 @@ $('#node_items tbody td input').live('keyup', function (e) {
             } else {
                 console.log("Dans Nom key down, input : " + this.title + "--" + this.value +"--" + this);
             };
-    });
+});
 
     $("#specialsave").click(function(){
         var msg = {};
         msg['command'] = "Refresh";
-        msg['value'] = "|'request':'SaveConfig'\\";
+ //       msg['value'] = "|'request':'SaveConfig'\\";
+        msg['value'] = SetDataToxPL({"request":"SaveConfig"});
         rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
             .done(function(data, status, xhr){
-            $.notification('info',"Request : " + " saving config ok" );
+            $.notification('success',"Request : " + " saving config ok" );
             })
             .fail(function(jqXHR, status, error){
                 if (jqXHR.status == 400)
@@ -352,11 +415,19 @@ $('#node_items tbody td input').live('keyup', function (e) {
             "bFilter": false,
             "bAutoWidth": false,
             "aoColumnDefs": [  
-                { "fnRender": function (oObj) {return setNameNode(oObj);}, "aTargets": [ hdLiNode['Name'] ] },
-                { "fnRender": function (oObj) {return  "<input type='text' title='Location' value='" + 
+                { "fnRender": function (oObj) {
+                    return setStatusDeviceZW(oObj);}, "aTargets": [ hdLiNode['NodeId'] ] },
+                { "fnRender": function (oObj) {
+                    return setNameNode(oObj);}, "aTargets": [ hdLiNode['Name'] ] },
+                { "fnRender": function (oObj) {
+                    return  "<input type='text' title='Location' value='" + 
                                                 oObj.aData[hdLiNode['Location']] + "'/>";}, "aTargets": [ hdLiNode['Location'] ] },
-                { "fnRender": function (oObj) {return setStatusSleep(oObj);}, "aTargets": [ hdLiNode['Awake'] ] },
-                { "fnRender": function (oObj) {return setActionNode(oObj);}, "aTargets": [hdLiNode['Action'] ] },      
+                { "fnRender": function (oObj) {
+                    return setStatusSleep(oObj);}, "aTargets": [ hdLiNode['Awake'] ] },
+                { "fnRender": function (oObj) {
+                    return setTypeInfos(oObj);}, "aTargets": [ hdLiNode['Type'] ] },
+                { "fnRender": function (oObj) {
+                    return setActionNode(oObj);}, "aTargets": [hdLiNode['Action'] ] },      
                 { "bSortable": false, "aTargets": [ hdLiNode['Action'] ] }, 
                 ],
             "aaSorting": [[0, 'asc']]
@@ -364,67 +435,38 @@ $('#node_items tbody td input').live('keyup', function (e) {
         var msg = {};
         msg['command'] = "Refresh";
         var val = {};
-        val['request'] ='GetValueTypes';
-        val['listetypes'] ='valuestype';
+        val['request'] ='GetListCmdsCtrl';
+        val['listetypes'] ='cmdsctrl';
         msg['value'] = SetDataToxPL (val);
+        createToolTip('#infoIconInitNodes', 'top');
         rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
             .done(function(data, status, xhr){
-                listTypesVal = GetDataFromxPL(data, 'data');
-                console.log("*** listTypesVal : " + listTypesVal);
-            /*    for (type in listTypesVal) {
-                    $('select#listtest').append("<option value='"+type+"'>"+type+"</option>");
-                    }; */
-                    // Gestion des commandes class sous forme de dialogue
-                $('#divcmdclassdialog').dialog_form({
-                        tips: "{% trans 'Update values of command class: ' %}" ,
-                        tipsid: 'tipsUpdCmdClss',
-                        fields: [
-                            {name : 'upcmdclss', type:'text', label:"{% trans 'CommandClass' %}", required: false, options: {min: 1, max: 80}},
-                            {name : 'upcmdclsstype', type:'select', label:"{% trans 'type' %}", required: false,
-                                options: {
-                                    placeholder: "{% trans 'select a type' %}",
-                                },
-                                items: [function(){
-                                  it= [];
-                                  for (type in listTypesVal )
-                                    it.add("{value:'"+ type +"', label: '" + type +"'}");
-                                   return it;
-                                  }
-                                ],
-                            },
-                            {name : 'upcmdclssvalue', type:'text', label:"{% trans 'Value' %}", required: false, options: {min: 1, max: 80}},
-                            {name : 'upcmdclssunit', type:'text', label:'{% trans "Units" %}', required: false, options: {min: 1, max: 80}},
-                            {name : 'upcmdclssdescription', type:'text', label:'{% trans "Description" %}', required: false, options: {min: 1, max: 80}},
-                            {name : 'upcmdclssgenre', type:'text', label:'{% trans "Genre" %}', required: false, options: {min: 1, max: 80}}
-                            ]
-                    }); 
+                var messXpl = ParseAckXPL(data.xpl);
+                if (messXpl['error'] ='ok') {
+                    var i =1; 
+                    var nCmd={};
+                    for (item in messXpl) {
+                        if ('item'+i == item ) {
+                            nCmd = Object.keys(messXpl['item'+i]);
+                            listCmdCtrl[nCmd[0]] = messXpl['item'+i][nCmd[0]];
+                            i = i+ 1;
+                        };
+                    }
+                };    
+                console.log("*** listCmdCtrl : " + listCmdCtrl);
+                $("#specialsubmit").click();
+                var items=[];
+                for (cmd in listCmdCtrl) {
+                     items.push({value: cmd, label: cmd , title:  listCmdCtrl[cmd], icon: 'icon16-technology-ozwave'});
+                    }; 
+                dlgCtrlAction(items);
+          //      $('*[title]').tooltip_right();
                 })
             .fail(function(jqXHR, status, error){
                if (jqXHR.status == 400)
-                    $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
+                    $.notification('error', '{% trans "Data not recept" %} (' + jqXHR.responseText + ') please check your device configuration');
+                    $("#specialsubmit").click();
             });
-    
-         rinor.get(['api', 'feature'])
-            .done(function(data, status, xhr){
-                var i=0;
-                $.each(data.objects, function(index, object) {
-                    devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
-                    if (object.device_feature_model.feature_type == "actuator"){
-                       $('select#alarmdevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
-                    }
-                    i=i+1;
-                });
-                console.log("devices.length : " + devices.length);
-                for(i=0 ;i<devices[1].length;i++){
-                    console.log("devices[1][" + i + "] : " + devices[1][i]);
-                };
-           })
-            .fail(function(jqXHR, status, error){
-                if (jqXHR.status == 400)
-                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
-            }); 
-
-         $("#specialsubmit").click();
     });
 });
 
@@ -465,11 +507,18 @@ $('#node_items tbody td input').live('keyup', function (e) {
             <button id='specialsubmit' class='button icon16-action-reset'>{% trans "Refresh" %}</button>
             <button id='specialsave' class='button icon16-action-save'>{% trans "Save config" %}</button> 
             <span class='subtitle'>{% trans " Updade Node button before saving" %}</span>
-    <!--         <select id='listtest' class='list'>{% trans "liste test" %}</select>  -->
+            <button id='ctrlactions' class='button icon16-action-actions '>{% trans "Controller Actions" %}</button> 
+            <button id='softReset' class='button icon16-action-btreset ' title="{% trans "Soft reset" %}">{% trans "Soft reset" %}</button>
+            <button id='hardReset' class='button icon16-action-btreset ' title="{% trans "Hard reset" %}">{% trans "Hard reset" %}</button>
         </p>
 </section>
 <section class="subsection">
-    <h2>{% trans "Zwave Network device" %}</h2>
+    <h2>{% trans "Zwave Network device" %}&nbsp;&nbsp;----&nbsp;&nbsp;
+            <span id='infoTextInitNodes' class='label'>{% trans "devices not initialised"%}</span>
+            <div id='infoIconInitNodes' class='icon16-text icon16-status-unknown' title='{% trans "devices not initialised"%}'>
+                <span class='offscreen'>{% trans "devices not initialised"%}</span>
+            </div>
+    </h2>
     <table class='simple'><tbody>
         <tr>
             <td>{% trans "Description of zwave network with devices capacities" %}</td>
@@ -502,4 +551,6 @@ $('#node_items tbody td input').live('keyup', function (e) {
         </table>
         </div>
 </section>
-<div id="divcmdclassdialog"></div>
+<div id="divNodeAssDialog"></div>
+<div id="divCtrlActionDialog"></div>
+<div id="reset_confirmation"></div>
