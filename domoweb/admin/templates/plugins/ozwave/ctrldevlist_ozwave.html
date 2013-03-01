@@ -29,6 +29,8 @@
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.qtip-1.0.0-rc3/jquery.qtip-1.0.0-rc3.min.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/fnReloadAjax.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/fnStandingRedraw.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwlib.js"> </script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwkinetics.js"> </script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwdialogs.js"> </script>
@@ -41,6 +43,21 @@
    $(function(){
     var infoNode ={};
     var devices = new Array();
+    
+    $.fn.dataTableExt.oApi.fnStandingRedraw = function(oSettings) {
+    if(oSettings.oFeatures.bServerSide === false){
+        var before = oSettings._iDisplayStart;
+
+        oSettings.oApi._fnReDraw(oSettings);
+
+        // iDisplayStart has been reset to zero - so lets change it back
+        oSettings._iDisplayStart = before;
+        oSettings.oApi._fnCalculateEnd(oSettings);
+    }
+     
+    // draw the 'current' page
+    oSettings.oApi._fnDraw(oSettings);
+    };
 
     function dlgNodeAss (vData) {
         var d = "{{ static_design_url }}";
@@ -224,7 +241,7 @@
                 } 
         };
 
-    $("#specialsubmit").click(function(){
+    $("#ozwrefreshnt").click(function(){
         var dmg_addr = $("#dmg_addr").val();
         var info_node = 'Actualiser';
         var msg = {};
@@ -237,7 +254,7 @@
         msg['value'] = SetDataToxPL (val);
         rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
             .done(function(data, status, xhr){
-                netWorkZW =GetDataFromxPL(data, 'data');
+                netWorkZW = GetDataFromxPL(data, 'data');
                 $('#confpath').html(netWorkZW['ConfigPath']);                    
                 $('#userpath').html(netWorkZW['UserPath']);                    
                 $('#libozwvers').html(netWorkZW['PYOZWLibVers']);
@@ -249,13 +266,13 @@
                     $('#numnodes').html(netWorkZW['Node count']);
                     $('#libctrl').html(netWorkZW['Library']);
                     $('#libctrlver').html(netWorkZW['Version']);                    
-                    console.log("Dans Submit, .done: " + netWorkZW['Model']);
+         //           console.log("Dans Refresh network .done: " + netWorkZW['Model']);
                     setStatusZW('up')
                     $.notification('success',"device : " + netWorkZW['Primary controller'] + " info refreshed" );
                     var node_items = document.getElementById("node_items");
                     SetStatusZWDevices('infoIconInitNodes', netWorkZW['Init state']);
                     $('#infoIconInitNodes').attr('title', netWorkZW['Init state']);
-                    $('#infoTextInitNodes').text("{% trans "Devices initialisation : " %}" );
+                    $('#infoTextInitNodes').text("{% trans "Network initialisation : " %}" );
                     RefreshNodes(netWorkZW);
                 } else {
                     $('#homeid').html(netWorkZW['error']);
@@ -280,11 +297,12 @@
             
     function RefreshTabHtml(zwNode) {
       if (zwNode) {  
-        console.log("Dans RefreshTabHtml, " + JSON.stringify(zwNode));
+   //     console.log("Dans RefreshTabHtml, " + JSON.stringify(zwNode));
         var node_items = document.getElementById("node_items");
         var nodeid=zwNode.Node;
         var iid= "node_" + nodeid;
-        var dataT = $('#node_items').dataTable().fnGetData();
+        var nTable = $('#node_items').dataTable()
+        var dataT = nTable.dataTable().fnGetData();
         var dataLi = [zwNode.Node, zwNode.Name, zwNode.Location, zwNode.Model, zwNode['State sleeping'], zwNode.Type, zwNode['Last update'],""];
         var li= -1;
         if (dataT) {
@@ -293,14 +311,15 @@
                     li= i;
                //     $('#node_items').dataTable().fnUpdate(dataLi,li);   fnUpdate bugg si mise à jour de toute la ligne !!!!
                     for (var ic = 0; ic<dataLi.length; ic++){ 
-                        $('#node_items').dataTable().fnUpdate(dataLi[ic], li, ic);
+                        nTable.dataTable().fnUpdate(dataLi[ic], li, ic, false);
                         };
                     break;
                 };
             };
+            nTable.fnStandingRedraw();
         };
         if (li == -1) {
-            $('#node_items').dataTable().fnAddData(dataLi);
+            nTable.dataTable().fnAddData(dataLi);
             };
         console.log("Dans RefreshTabHtml, DataTable : " + dataT[li] + "---" + zwNode.Model); 
      }; 
@@ -395,7 +414,7 @@ $('body').on('keyup', '#node_items tbody td input',function (e) {
             };
 });
 
-    $("#specialsave").click(function(){
+    $("#ozwsaveconf").click(function(){
         var msg = {};
         msg['command'] = "Refresh";
  //       msg['value'] = "|'request':'SaveConfig'\\";
@@ -411,7 +430,18 @@ $('body').on('keyup', '#node_items tbody td input',function (e) {
     });
 
    $(document).ready(function(){
-         oTabNodes = $("#node_items").dataTable({
+        cb_RefreshTabHtml = RefreshTabHtml;
+        rinor.get(['api', 'feature'])
+            .done(function(data, status, xhr){
+                $.each(data.objects, function(index, object) {
+                    if (object.device.device_type_id == "ozwave.ctrl") {ctrlDevice = object;};
+                });
+            })
+            .fail(function(jqXHR, status, error){
+                if (jqXHR.status == 400)
+                $.notification('error', "{% trans "Device list not retrieved from rinor" %} (" + jqXHR.responseText + ")");
+            });
+        oTabNodes = $("#node_items").dataTable({
             "bFilter": false,
             "bAutoWidth": false,
             "aoColumnDefs": [  
@@ -454,7 +484,7 @@ $('body').on('keyup', '#node_items tbody td input',function (e) {
                     }
                 };    
                 console.log("*** listCmdCtrl : " + listCmdCtrl);
-                $("#specialsubmit").click();
+                $("#ozwrefreshnt").click();
                 var items=[];
                 for (cmd in listCmdCtrl) {
                      items.push({value: cmd, label: cmd , title:  listCmdCtrl[cmd], icon: 'icon16-technology-ozwave'});
@@ -465,7 +495,7 @@ $('body').on('keyup', '#node_items tbody td input',function (e) {
             .fail(function(jqXHR, status, error){
                if (jqXHR.status == 400)
                     $.notification('error', '{% trans "Data not recept" %} (' + jqXHR.responseText + ') please check your device configuration');
-                    $("#specialsubmit").click();
+                    $("#ozwrefreshnt").click();
             });
     });
 });
@@ -504,8 +534,8 @@ $('body').on('keyup', '#node_items tbody td input',function (e) {
             </ul>
         </form>
         <p>
-            <button id='specialsubmit' class='button icon16-action-reset'>{% trans "Refresh" %}</button>
-            <button id='specialsave' class='button icon16-action-save'>{% trans "Save config" %}</button> 
+            <button id='ozwrefreshnt' class='button icon16-action-reset'>{% trans "Refresh" %}</button>
+            <button id='ozwsaveconf' class='button icon16-action-save'>{% trans "Save config" %}</button> 
             <span class='subtitle'>{% trans " Updade Node button before saving" %}</span>
             <button id='ctrlactions' class='button icon16-action-actions '>{% trans "Controller Actions" %}</button> 
             <button id='softReset' class='button icon16-action-btreset ' title="{% trans "Soft reset" %}">{% trans "Soft reset" %}</button>
@@ -513,10 +543,10 @@ $('body').on('keyup', '#node_items tbody td input',function (e) {
         </p>
 </section>
 <section class="subsection">
-    <h2>{% trans "Zwave Network device" %}&nbsp;&nbsp;----&nbsp;&nbsp;
-            <span id='infoTextInitNodes' class='label'>{% trans "devices not initialised"%}</span>
-            <div id='infoIconInitNodes' class='icon16-text icon16-status-unknown' title='{% trans "devices not initialised"%}'>
-                <span class='offscreen'>{% trans "devices not initialised"%}</span>
+    <h2>{% trans "Zwave Network devices" %}&nbsp;&nbsp;----&nbsp;&nbsp;
+            <span id='infoTextInitNodes' class='label'>{% trans "Network not initialised"%}</span>
+            <div id='infoIconInitNodes' class='icon16-text icon16-status-unknown' title='{% trans "Network not initialised"%}'>
+                <span class='offscreen'>{% trans "Network not initialised"%}</span>
             </div>
     </h2>
     <table class='simple'><tbody>

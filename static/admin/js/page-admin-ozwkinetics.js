@@ -88,7 +88,7 @@ KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
     this.pictNodeNeig.on("mousemove", function(){
         var mousePos = stage.getMousePosition();
         tooltip.setPosition(mousePos.x + 5, mousePos.y + 5);
-        var t = this.attrs.nodeP.nodeobj.Type;
+        var t = this.attrs.nodeP.nodeobj.Type + ', Quality : ' + this.attrs.nodeP.nodeobj.ComQuality + '%';
         for (var i=0; i<this.attrs.nodeP.nodeobj.Groups.length; i++) {
             if (this.attrs.nodeP.nodeobj.Groups[i].members.length !==0) {
                 t = t+ '\n associate with node : ';
@@ -256,7 +256,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         strokeWidth: 2,
         shadowColor: 'black',
         shadowBlur: 2,
-        shadowOffset: 5,
+        shadowOffset: 3,
         shadowOpacity: 0.5,
         name:"pictureImg"
         });
@@ -646,7 +646,7 @@ function initScrollbars(stage) {
        vscrollArea.setX(vscrollArea.getX() + dw);
        hscrollArea.setWidth(hscrollArea.getWidth() + dw);
        stage.setWidth(w.width - 25);
-       hscroll.setDragBounds({left:0, right:(stage.getWidth() - 160)});
+    //  hscroll.setDragBounds({left:0, right:(stage.getWidth() - 160)});
      };
 };
 
@@ -674,14 +674,15 @@ function buildKineticNeighbors() {
         var stepR = 80;
         var Ray = 100;
         var a = 0,x=0,y=0; sta=20;
-        var r=100;
+        var r=100, RayF = Ray;
         for (var i=0; i<listNodes.length;i++) {
             if (listNodes[i].Type == 'Static PC Controller') {r = 40;
                 x= xc;
                 y= yc;
             } else {r=25;
-                x= xc + Ray * Math.cos(a*Math.PI/180);
-                y= yc + Ray * Math.sin(a*Math.PI/180);
+                RayF = Ray + ((100 - (listNodes[i].ComQuality)) * 1.5);
+                x= xc + RayF * Math.cos(a*Math.PI/180);
+                y= yc + RayF * Math.sin(a*Math.PI/180);
                 if (a > 330) { a = sta;
                     sta = sta +20;
                     Ray = Ray + stepR;
@@ -742,7 +743,7 @@ function initNeighborsStage(){
 // Groups associations
 
 function stageGrps(contName) {
-    var width = 800, height= 570;
+    var width = 650, height= 570;
     $('#'+ contName).width(width).height(height);
     grpsStage = null;
     if (grpsStage) {
@@ -940,7 +941,7 @@ function initGoAction (go) {
         stage.carouLayer.speed = 1;
         this.attrs.layer.draw();
         });
-    go.on("mouseout touchend", function() {
+    go.on('mouseout touchend', function() {
         var stage = this.getStage();
         document.body.style.cursor = "default";
         this.setOpacity(1);
@@ -948,9 +949,9 @@ function initGoAction (go) {
         stage.carouLayer.speed = 1;
         this.attrs.layer.draw();
     });
-    go.on("click", function() {
+    go.on('click', function() {
         var stage = this.getStage();
-        var x = stage.elemsLayer.getX();
+       // var x = stage.elemsLayer.getX();
         this.attrs.anim.stop();
         stage.carouLayer.speed = 1;
         this.setOpacity(1);
@@ -959,8 +960,8 @@ function initGoAction (go) {
 };
 
 KtcInitCarouselNodes = function (r, wArea, stage) {
-    var hArea = 2*r + 4;
-    var maxSpeed = 10;
+    var hArea = 2*r + 10;
+    var maxSpeed = 60;
     var bgCoul = $('#divNodeAssDialog').css("background-color");
     var bord1 = new Kinetic.Rect({
         x: 0,
@@ -996,13 +997,14 @@ KtcInitCarouselNodes = function (r, wArea, stage) {
             visible: true,
             layer: layer,
             anim: new Kinetic.Animation(function(frame) {
-                    var x = stage.elemsLayer.getX() - ((100/frame.timeDiff) * stage.carouLayer.speed);
-                    if (x <= -wArea) { x = stage.getWidth() - (2*hArea) + wArea;}
-                    stage.elemsLayer.setX(x);
+                    var offset = stage.elemsLayer.getOffset();
+                    var x = offset.x;
+                    if (frame.timeDiff != 0) {x = offset.x - ((frame.timeDiff * stage.carouLayer.speed)/100);};
+                    if (x <= -wArea) { x = wArea;};
+                    stage.elemsLayer.setOffset(x,offset.y);
                     stage.carouLayer.moveToTop();
-              //    console.log('Caroussel left');
-                    if (stage.carouLayer.speed < maxSpeed) { stage.carouLayer.speed = stage.carouLayer.speed+ 0.1;}
-                  }, stage.elemsLayer),
+                    if (stage.carouLayer.speed < maxSpeed) { stage.carouLayer.speed = stage.carouLayer.speed + (10 / (frame.frameRate+10)) ;};
+                  }, stage.elemsLayer)
         });
         initGoAction(goL);
         layer.add(goL);
@@ -1022,14 +1024,14 @@ KtcInitCarouselNodes = function (r, wArea, stage) {
             visible: true,
             layer: layer,
             anim: new Kinetic.Animation(function(frame) {
-                    var x = stage.elemsLayer.getX() + ((100/frame.timeDiff) * stage.carouLayer.speed);
-                    if (x >= stage.getWidth() - hArea) {
-                        x=hArea - wArea ;}
-                    stage.elemsLayer.setX(x);
+                    var offset = stage.elemsLayer.getOffset();
+                    var x = offset.x;
+                    if (frame.timeDiff != 0) {x = offset.x + ((frame.timeDiff * stage.carouLayer.speed)/100);};
+                    if (x >= wArea) {x= -wArea;};
+                    stage.elemsLayer.setOffset(x, offset.y);
                     stage.carouLayer.moveToTop();
-           //       console.log('Caroussel right');
-                    if (stage.carouLayer.speed < maxSpeed) { stage.carouLayer.speed=stage.carouLayer.speed+0.1;}
-                  }, stage.elemsLayer),
+                    if (stage.carouLayer.speed < maxSpeed) { stage.carouLayer.speed=stage.carouLayer.speed+(10 / (frame.frameRate+10));};
+                  }, stage.elemsLayer)
         });
         initGoAction(goR);
         layer.add(goR);
@@ -1065,8 +1067,8 @@ function RefreshGroups(stage, nodeP, newGroups) {
 
 function CreateGroups(stage, nodeP, st_design_url) {
     var wn = 60, hn = 60;
-    var w = stage.getWidth()- (2*wn)-10;
-    var h = stage.getHeight() - (2*hn)-10;
+    var w = stage.getWidth()-10;
+    var h = stage.getHeight()-10;
     var wg = 200, hg = 300;
     var spw = 10, sph = 10;
     var nbcol=0, nbli=0;
@@ -1086,23 +1088,21 @@ function CreateGroups(stage, nodeP, st_design_url) {
         } else {
             ccol++;
         };
-        x= (ccol * (wg+spw)) + wn + spw;
-        y= (cli * (hg+sph)) + hn + sph;
+        x= (ccol * (wg+spw)) + 15;
+        y= (cli * (hg+sph)) + 15;
         imgGrp = new KtcGrpAss(x,y,wg,hg,nodeP.Groups[gi], stage);
         dimGrp = imgGrp.getDim();
     };
-    w = stage.getWidth() - 2*wn;
-    h = stage.getHeight() - 2*hn;
-    nbcol = Math.ceil(w / (wn+spw));
-    nbli = Math.ceil(h / (hn+sph));
-    var r =  Math.floor((wn-2) / 2);
+    var r =  Math.floor((wn-4) / 2);
     ccol = 0;
-    stage.carouLayer.setY(stage.getHeight() - (2*r + 4));
-    stage.elemsLayer.setPosition(64, stage.getHeight() - (2*r + 4));
+    var yCarou = stage.getHeight() - (2*r+10);
+    stage.carouLayer.setY(yCarou);
+    stage.elemsLayer.setPosition(64, yCarou);
+    stage.elemsLayer.setWidth(w - 128);
     for (var ni=0; ni < listNodes.length; ni++) {
         if (listNodes[ni] .Node != nodeP.Node) {
-            x= (ccol * (wn+spw))+r+4;
-            y= r+2,
+            x = (ccol * (wn+spw)) + r + 4;
+            y = r + 5,
             new KtcNodeGrp(x,y,r,listNodes[ni] ,stage.elemsLayer,stage);
             ccol++;
         };
