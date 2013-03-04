@@ -8,15 +8,12 @@ if sys.version_info < (2, 6):
 import os, os.path
 import pwd
 import commands
-#import pickle
 
 import cherrypy
 from cherrypy.process import plugins
 from django.conf import settings
 
 import domoweb
-from wsPlugin import WSPlugin
-#from mqPlugin import MQPlugin
 from eventsPlugin import EventsPlugin
 from corePlugin import CorePlugin
 from loaderPlugin import LoaderPlugin
