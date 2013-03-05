@@ -6,13 +6,14 @@ var tooltip;
 
 function getLabelDevice(node) {
     if (node.Name != "Undefined" && node.Name !="") {
-        return node.Name;
+        return node.Name + '\n(' + node.Node +')';
     } else {
         return "Node " + node.Node;
     };
 };
 
 KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
+    this.nodeobj = node;
     this.pictNodeNeig = new Kinetic.Group({
           x: x,
           y: y,
@@ -20,44 +21,59 @@ KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
           name: 'nodeneighbor',
           nodeP : this
         });
+    var op =1;
+    if (this.nodeobj['State sleeping']) {op = 0.3; };
     this.pictureImg = new Kinetic.Circle({
         x: 0,
         y: 0,
         radius: r,
-        fill: 'yellow',
+        fillRadialGradientStartPoint: 0,
+        fillRadialGradientStartRadius: 0,
+        fillRadialGradientEndPoint: 0,
+        fillRadialGradientEndRadius: r,
+        fillRadialGradientColorStops: this.getColorState(),
         stroke: 'black',
-        strokeWidth: 4,
+        strokeWidth: 2,
+        shadowColor: 'black',
+        shadowBlur: 2,
+        shadowOffset: 5,
+        shadowOpacity: 0.5,
         name:"pictureImg",
+        opacity: op,
         nodeP : this
         });
+    var t = getLabelDevice(node);
+    if (t.length > ((2*r)/5)) { yt = 8-r;
+    } else {yt = -5;};
     this.text = new Kinetic.Text({
         x: -r +2,
-        y: -5,
+        y: yt,
         width:2*r-4,
-        text: getLabelDevice(node),
+        text: t,
         fontSize: 12,
         fontFamily: "Calibri",
-        textFill: "black",
+        fill: "black",
         align : "center"
     });
     this.pictNodeNeig.add(this.pictureImg);
     this.pictNodeNeig.add(this.text);
     this.links = new Array ();
-    this.nodeobj = node;
     this.layer = layer;
-    this.pictNodeNeig.on("mouseover", function() {
+    this.pictNodeNeig.on("mouseover touchstart", function() {
         var img = this.get(".pictureImg");
-        img[0].setFill("blue");
+        img[0].setFillRadialGradientColorStops([0, 'turquoise', 1, 'blue']);
         img[0].setOpacity(0.5);
         this.parent.draw();
         document.body.style.cursor = "pointer";
         });
-            
-    this.pictNodeNeig.on("mouseout", function() {
+
+    this.pictNodeNeig.on("mouseout touchend", function() {
         var img = this.get(".pictureImg");
-        img[0].setFill("yellow");
+        img[0].setFillRadialGradientColorStops(this.attrs.nodeP.getColorState());
         tooltip.hide();
-        img[0].setOpacity(1);
+        var op =1;
+        if (this.attrs.nodeP.nodeobj['State sleeping']) {op = 0.3; };
+        img[0].setOpacity(op);
         this.parent.draw();
         tooltipLayer.draw();
         document.body.style.cursor = "default";
@@ -72,7 +88,7 @@ KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
     this.pictNodeNeig.on("mousemove", function(){
         var mousePos = stage.getMousePosition();
         tooltip.setPosition(mousePos.x + 5, mousePos.y + 5);
-        var t = this.attrs.nodeP.nodeobj.Type;
+        var t = this.attrs.nodeP.nodeobj.Type + ', Quality : ' + this.attrs.nodeP.nodeobj.ComQuality + '%';
         for (var i=0; i<this.attrs.nodeP.nodeobj.Groups.length; i++) {
             if (this.attrs.nodeP.nodeobj.Groups[i].members.length !==0) {
                 t = t+ '\n associate with node : ';
@@ -108,19 +124,69 @@ KtcNodeNeighbor.prototype.removelink= function(linker) {
         linker.draw();
     };
 };
-                     
+
+KtcNodeNeighbor.prototype.getColorState = function() {
+    var colors = [0, 'yellow', 0.5, 'orange', 1, 'blue'];
+    switch (this.nodeobj['InitState']) {
+        case 'Uninitialized' : 
+            colors = [0, 'red', 0.5, 'orange', 1, 'red'];
+            break;
+        case 'Initialized - not known' : 
+            colors = [0, 'orange', 0.5, 'orange', 1, 'yellow'];
+            break;
+        case 'Completed' : 
+            colors = [0, 'yellow', 0.5, 'yellow', 1, 'green'];
+            break;
+        case 'In progress - Devices initializing' : 
+            colors = [0, 'orange', 0.5, 'brown', 1, 'violet'];
+            break;
+        case 'In progress - Linked to controller' : 
+            colors = [0, 'brown', 0.5, 'violet', 1, 'turquoise'];
+            break;
+        case 'In progress - Can receive messages' : 
+            colors = [0, 'violet', 0.5, 'turquoise', 1, 'blue'];
+            break;
+        case 'Out of operation' : 
+            colors = [0, 'red', 0.5, 'red', 1, 'orange'];
+            break;
+        case 'In progress - Can receive messages (Not linked)' : 
+            colors = [0, 'turquoise', 0.7, 'yellow', 1, 'red'];
+            break;
+        };
+    return colors;
+    };
+    
+KtcNodeNeighbor.prototype.getTypeLink = function(Node2) {
+    var indice = 1, color = 'green';
+    if (this.nodeobj.Capabilities.indexOf("Primary Controller" ) != -1 ) { indice =8;  color ='blue'}
+    if (this.nodeobj.Capabilities.indexOf("Routing") != -1) {indice = indice + 2;}
+    if (this.nodeobj.Capabilities.indexOf("Beaming" ) != -1) {indice = indice + 1;}
+    if (this.nodeobj.Capabilities.indexOf("Listening" ) != -1) { indice = indice + 3;}
+    if (this.nodeobj.Capabilities.indexOf("Security") != -1) { color ='yellow';}
+    if (this.nodeobj.Capabilities.indexOf("FLiRS") != -1) { indice = indice + 2;}
+    if (this.nodeobj['State sleeping']) {indice = indice -2; color = 'orange';}
+    if (this.nodeobj['InitState'] == 'Out of operation') {indice = 1,  color = 'red';}
+    return {'indice' : indice, 'color' : color}
+};
+        
 CLink = function (N1,N2,layer) {
             // build linelink
+    var t = N1 .getTypeLink(N2);
+    var x1 = N1.pictNodeNeig.getX(), y1 = N1.pictNodeNeig.getY();
+    var x2 = N2.pictNodeNeig.getX(), y2 = N2.pictNodeNeig.getY();   
+    var xm = (x1+x2)/2 , ym = (y1 + y2) / 2;
     this.link = new Kinetic.Line({
-      strokeWidth: 10,
-      stroke: "green",
+      strokeWidth: t['indice'], //10,
+      stroke: t['color'], // "green",
+      lineCap: 'round',
+      name: 'linknodes',
       points: [{
-        x: N1.pictNodeNeig.getX(),
-        y: N1.pictNodeNeig.getY()
-      }, {
-        x: N2.pictNodeNeig.getX(),
-        y: N2.pictNodeNeig.getY()
-      }]
+        x: x1,
+        y: y1
+          }, {
+        x: xm,
+        y: ym
+        }]
     });
     this.layer = layer;
     this.nodes = new Array (N1, N2);
@@ -146,9 +212,18 @@ CLink.prototype.removelink= function(node) {
     };
 };
 CLink.prototype.follownode = function(node) { 
-    var idx = this.nodes.indexOf(node);
-    if (idx != -1) {
-        this.link.attrs.points[idx] = node.pictNodeNeig.getPosition();
+    var id1 = this.nodes.indexOf(node);
+    var id2 =0;
+    if (id1 != -1) {
+        if (id1 ==0) {id2 =1;};
+        var p2 = this.nodes[id2].pictNodeNeig.getPosition();
+        var p1 = node.pictNodeNeig.getPosition();
+        var pm = { 'x' : (p2.x+ p1.x) /2, 'y' : (p2.y + p1.y) /2};
+        this.link.attrs.points[id1] = p1;
+        this.link.attrs.points[id2] = pm;
+        if (id2 == 0) { this.link.attrs.points[id2] = pm;
+            this.link.attrs.points[id1] = p2;
+            } 
         this.layer.draw();
         }
 };
@@ -178,7 +253,11 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         radius: r,
         fill: f,
         stroke: 'black',
-        strokeWidth: 4,
+        strokeWidth: 2,
+        shadowColor: 'black',
+        shadowBlur: 2,
+        shadowOffset: 3,
+        shadowOpacity: 0.5,
         name:"pictureImg"
         });
     this.text = new Kinetic.Text({
@@ -188,7 +267,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         text: "" + node.Node,
         fontSize: 16,
         fontFamily: "Calibri",
-        textFill: "black",
+        fill: "black",
         align : "center"
     });
     var imgstate = new Image();
@@ -232,7 +311,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
          };}, 300, self , grpAssociation);   
         
    
-    this.pictNodeGrp.on("mouseover", function() {
+    this.pictNodeGrp.on("mouseover touchstart", function() {
         var img = this.get(".pictureImg");
         if (this.attrs.nodeP.isMember()) {img[0].setFill("red");
         }else {img[0].setFill("blue");};
@@ -241,7 +320,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         document.body.style.cursor = "pointer";
         });
             
-    this.pictNodeGrp.on("mouseout", function() {
+    this.pictNodeGrp.on("mouseout touchend", function() {
         var stage = this.getStage();
         var img = this.get(".pictureImg");
         if (img.length != 0) { // le node detruit genère quand même un mouseout après sa destruction
@@ -398,31 +477,31 @@ KtcNodeGrp.prototype.setimgstate = function(state, img) {
         switch (state) {
             case mbrGrpSt[0] : // 'unknown' 
                 this.imgstate.src =  '/design/common/images/status/unknown_red_32.png';
-                img.show();
+                if (img) {img.show();};
                 break;
             case mbrGrpSt[1] : // 'confirmed' 
                 this.imgstate.src = '/design/common/images/status/check_32.png';
-                img.hide();
+                if (img) {img.hide();};
                 break;
             case mbrGrpSt[2] : //'to confirm'
                 this.imgstate.src =  '/design/common/images/status/unknown_green_32.png';
-                img.show();
+                if (img) {img.show();};
                 break;
             case mbrGrpSt[3] : //'to update'
                 this.imgstate.src =  '/design/common/images/action/refresh_16.png';
-                img.show();
+                if (img) {img.show();};
                 break;
             case 'add':
                 this.imgstate.src =  '/design/common/images/action/plus_32.png';
-                img.show();
+                if (img) {img.show();};
                 break;
             case 'del':
                 this.imgstate.src = '/design/common/images/action/minus_32.png';
-                img.show();
+                if (img) {img.show();};
                 break;
              case 'unallowable':
                 this.imgstate.src =  '/design/common/images/status/wrong_32.png';
-                img.show();
+               if (img) { img.show();};
                 break;
         };
     };
@@ -474,7 +553,8 @@ function initScrollbars(stage) {
         width: stage.getWidth() - 30,
         height: 20,
         fill: "black",
-        opacity: 0.3
+        opacity: 0.3,
+        name: 'scrollbar'
     });
 
     var hscroll = new Kinetic.Rect({
@@ -482,7 +562,7 @@ function initScrollbars(stage) {
         y: stage.getHeight() - 20,
         width: 130,
         height: 20,
-        fill: "#9f005b",
+        fill: "#90C633",
         draggable: true,
         dragBoundFunc: function(pos) { // horizontal
             var newX = 0;
@@ -498,7 +578,8 @@ function initScrollbars(stage) {
         },
         opacity: 0.9,
         stroke: "black",
-        strokeWidth: 1
+        strokeWidth: 1,
+        name: 'scrollbar'
     });
  // vertical scrollbars
     var vscrollArea = new Kinetic.Rect({
@@ -507,7 +588,8 @@ function initScrollbars(stage) {
         width: 20,
         height: stage.getHeight() - 30,
         fill: "black",
-        opacity: 0.3
+        opacity: 0.3,
+        name: 'scrollbar'
     });
 
     var vscroll = new Kinetic.Rect({
@@ -515,7 +597,7 @@ function initScrollbars(stage) {
         y: ((stage.getHeight()-30)/2) - 35,
         width: 20,
         height: 70,
-        fill: "#9f005b",
+        fill: "#90C633",
         draggable: true,
         dragBoundFunc: function(pos) { // horizontal
             var newY = 0;
@@ -531,19 +613,19 @@ function initScrollbars(stage) {
         },
         opacity: 0.9,
         stroke: "black",
-        strokeWidth: 1
+        strokeWidth: 1,
+        name: 'scrollbar'
     });
  // scrollbars events assignation
-    scrollbars.on("mouseover", function() {
+    scrollbars.on("mouseover touchstart", function() {
         document.body.style.cursor = "pointer";
     });
-    scrollbars.on("mouseout", function() {
+    scrollbars.on("mouseout touchend", function() {
         document.body.style.cursor = "default";
     });
     scrollLayer.beforeDraw(function() {
         var x = -1 * ((hscroll.getPosition().x + (hscroll.getWidth() /2)) - (hscrollArea.getWidth()/2));
         var y = -1 * ((vscroll.getPosition().y + (vscroll.getHeight() /2)) - (vscrollArea.getHeight()/2));
-        $("#listenodes").html("x = " + x + " ,y = " + y);
         nodeLayer.setPosition(x,y);
         linkLayer.setPosition(x,y);
         nodeLayer.draw();
@@ -564,27 +646,43 @@ function initScrollbars(stage) {
        vscrollArea.setX(vscrollArea.getX() + dw);
        hscrollArea.setWidth(hscrollArea.getWidth() + dw);
        stage.setWidth(w.width - 25);
-       hscroll.setDragBounds({left:0, right:(stage.getWidth() - 160)});
+    //  hscroll.setDragBounds({left:0, right:(stage.getWidth() - 160)});
      };
 };
 
 function buildKineticNeighbors() {
-        nborsStage.reset();
+        var L = linkLayer.get('.linknodes');   
+        L.each(function(node) {
+            L[node].destroy();
+            });
+        L = nodeLayer.get('.nodeneighbor');
+        L.each(function(node) {
+            L[node].destroy();
+            });
+        L = scrollLayer.get('.scrollbar');
+        L.each(function(node) {
+            L[node].destroy();
+            });
+        scrollLayer.removeChildren();
+        tooltipLayer.removeChildren();
+        nborsStage.removeChildren();
         initScrollbars(nborsStage);
         tooltipLayer.add(tooltip);
+        nborsStage.removeChildren();  
         var xc= nborsStage.getWidth() / 2;
         var yc= nborsStage.getHeight() / 2;
         var stepR = 80;
         var Ray = 100;
         var a = 0,x=0,y=0; sta=20;
-        var r=100;
+        var r=100, RayF = Ray;
         for (var i=0; i<listNodes.length;i++) {
             if (listNodes[i].Type == 'Static PC Controller') {r = 40;
                 x= xc;
                 y= yc;
             } else {r=25;
-                x= xc + Ray * Math.cos(a*Math.PI/180);
-                y= yc + Ray * Math.sin(a*Math.PI/180);
+                RayF = Ray + ((100 - (listNodes[i].ComQuality)) * 1.5);
+                x= xc + RayF * Math.cos(a*Math.PI/180);
+                y= yc + RayF * Math.sin(a*Math.PI/180);
                 if (a > 330) { a = sta;
                     sta = sta +20;
                     Ray = Ray + stepR;
@@ -618,10 +716,10 @@ function initNeighborsStage(){
             break;
             };
         };
-   nborsStage = new Kinetic.Stage({
-      container: 'containerneighbors',
-      width: width,
-      height: 500
+    nborsStage = new Kinetic.Stage({
+        container: 'containerneighbors',
+        width: width,
+        height: 500
     });
     nodeLayer = new Kinetic.Layer();
     linkLayer = new Kinetic.Layer();
@@ -633,10 +731,9 @@ function initNeighborsStage(){
         text: "essais",
         fontFamily: "Calibri",
         fontSize: 12,
-        padding: 5,
-        textFill: "white",
+        padding: 15,
         fill: "black",
-        opacity: 0.75,
+        opacity: 1,
         visible: false
     });
     tooltipLayer = new Kinetic.Layer();
@@ -646,7 +743,7 @@ function initNeighborsStage(){
 // Groups associations
 
 function stageGrps(contName) {
-    var width = 800, height= 570;
+    var width = 650, height= 570;
     $('#'+ contName).width(width).height(height);
     grpsStage = null;
     if (grpsStage) {
@@ -663,10 +760,9 @@ function stageGrps(contName) {
         text: "essais",
         fontFamily: "Calibri",
         fontSize: 12,
-        padding: 5,
-        textFill: "white",
+        padding: 15,
         fill: "black",
-        opacity: 0.75,
+        opacity: 1,
         visible: false
     });
     grpsStage.tooltipLayer = new Kinetic.Layer();
@@ -717,11 +813,13 @@ KtcGrpAss = function (x,y,w,h,grp,stage) {
         y: 0,
         width: w,
         height: h,
-        fill:{
-            start: { x: 0, y: 10 },
-            end: { x: 0, y: h-10 },
-            colorStops: [0, '#BDCB2F', 1, '#9BB528']
-          }, 
+        fillLinearGradientStartPoint: [0, 0],
+        fillLinearGradientEndPoint: [0, h],
+        fillLinearGradientColorStops: [0, '#BDCB2F', 1, '#D3F0A1'],
+        shadowColor: 'black',
+        shadowBlur: 2,
+        shadowOffset: 5,
+        shadowOpacity: 0.5,
         stroke: 'black',
         strokeWidth: 3,
         name:"goupimg"
@@ -737,7 +835,7 @@ KtcGrpAss = function (x,y,w,h,grp,stage) {
         text: "Group " + grp.index + ", " + grp.label + "\n Max members : "+grp.maxAssociations + "\n Members : " + strmembers,
         fontSize: 12,
         fontFamily: "Calibri",
-        textFill: "black",
+        fill: "black",
         align : "left"
     });
     this.grpAss=grp;
@@ -755,11 +853,11 @@ KtcGrpAss = function (x,y,w,h,grp,stage) {
     }
     this.layer.add(this.picture); 
     
-    this.picture.on("mouseover", function() {
+    this.picture.on("mouseover touchstart", function() {
          document.body.style.cursor = "pointer";
         });
             
-    this.picture.on("mouseout", function() {
+    this.picture.on("mouseout touchend", function() {
         document.body.style.cursor = "default";
     });
 };
@@ -835,7 +933,7 @@ function ResetGroups(stage, nodeP) {
 };
 
 function initGoAction (go) {
-    go.on('mouseover', function() {      
+    go.on('mouseover touchstart', function() {      
         var stage = this.getStage();
         document.body.style.cursor = "pointer";
         this.setOpacity(0.5);
@@ -843,7 +941,7 @@ function initGoAction (go) {
         stage.carouLayer.speed = 1;
         this.attrs.layer.draw();
         });
-    go.on("mouseout", function() {
+    go.on('mouseout touchend', function() {
         var stage = this.getStage();
         document.body.style.cursor = "default";
         this.setOpacity(1);
@@ -851,9 +949,9 @@ function initGoAction (go) {
         stage.carouLayer.speed = 1;
         this.attrs.layer.draw();
     });
-    go.on("click", function() {
+    go.on('click', function() {
         var stage = this.getStage();
-        var x = stage.elemsLayer.getX();
+       // var x = stage.elemsLayer.getX();
         this.attrs.anim.stop();
         stage.carouLayer.speed = 1;
         this.setOpacity(1);
@@ -862,8 +960,8 @@ function initGoAction (go) {
 };
 
 KtcInitCarouselNodes = function (r, wArea, stage) {
-    var hArea = 2*r + 4;
-    var maxSpeed = 10;
+    var hArea = 2*r + 10;
+    var maxSpeed = 60;
     var bgCoul = $('#divNodeAssDialog').css("background-color");
     var bord1 = new Kinetic.Rect({
         x: 0,
@@ -899,13 +997,14 @@ KtcInitCarouselNodes = function (r, wArea, stage) {
             visible: true,
             layer: layer,
             anim: new Kinetic.Animation(function(frame) {
-                    var x = stage.elemsLayer.getX() - ((100/frame.timeDiff) * stage.carouLayer.speed);
-                    if (x <= -wArea) { x = stage.getWidth() - (2*hArea) + wArea;}
-                    stage.elemsLayer.setX(x);
+                    var offset = stage.elemsLayer.getOffset();
+                    var x = offset.x;
+                    if (frame.timeDiff != 0) {x = offset.x - ((frame.timeDiff * stage.carouLayer.speed)/100);};
+                    if (x <= -wArea) { x = wArea;};
+                    stage.elemsLayer.setOffset(x,offset.y);
                     stage.carouLayer.moveToTop();
-              //    console.log('Caroussel left');
-                    if (stage.carouLayer.speed < maxSpeed) { stage.carouLayer.speed = stage.carouLayer.speed+ 0.1;}
-                  }, stage.elemsLayer),
+                    if (stage.carouLayer.speed < maxSpeed) { stage.carouLayer.speed = stage.carouLayer.speed + (10 / (frame.frameRate+10)) ;};
+                  }, stage.elemsLayer)
         });
         initGoAction(goL);
         layer.add(goL);
@@ -925,14 +1024,14 @@ KtcInitCarouselNodes = function (r, wArea, stage) {
             visible: true,
             layer: layer,
             anim: new Kinetic.Animation(function(frame) {
-                    var x = stage.elemsLayer.getX() + ((100/frame.timeDiff) * stage.carouLayer.speed);
-                    if (x >= stage.getWidth() - hArea) {
-                        x=hArea - wArea ;}
-                    stage.elemsLayer.setX(x);
+                    var offset = stage.elemsLayer.getOffset();
+                    var x = offset.x;
+                    if (frame.timeDiff != 0) {x = offset.x + ((frame.timeDiff * stage.carouLayer.speed)/100);};
+                    if (x >= wArea) {x= -wArea;};
+                    stage.elemsLayer.setOffset(x, offset.y);
                     stage.carouLayer.moveToTop();
-           //       console.log('Caroussel right');
-                    if (stage.carouLayer.speed < maxSpeed) { stage.carouLayer.speed=stage.carouLayer.speed+0.1;}
-                  }, stage.elemsLayer),
+                    if (stage.carouLayer.speed < maxSpeed) { stage.carouLayer.speed=stage.carouLayer.speed+(10 / (frame.frameRate+10));};
+                  }, stage.elemsLayer)
         });
         initGoAction(goR);
         layer.add(goR);
@@ -968,8 +1067,8 @@ function RefreshGroups(stage, nodeP, newGroups) {
 
 function CreateGroups(stage, nodeP, st_design_url) {
     var wn = 60, hn = 60;
-    var w = stage.getWidth()- (2*wn)-10;
-    var h = stage.getHeight() - (2*hn)-10;
+    var w = stage.getWidth()-10;
+    var h = stage.getHeight()-10;
     var wg = 200, hg = 300;
     var spw = 10, sph = 10;
     var nbcol=0, nbli=0;
@@ -989,23 +1088,21 @@ function CreateGroups(stage, nodeP, st_design_url) {
         } else {
             ccol++;
         };
-        x= (ccol * (wg+spw)) + wn + spw;
-        y= (cli * (hg+sph)) + hn + sph;
+        x= (ccol * (wg+spw)) + 15;
+        y= (cli * (hg+sph)) + 15;
         imgGrp = new KtcGrpAss(x,y,wg,hg,nodeP.Groups[gi], stage);
         dimGrp = imgGrp.getDim();
     };
-    w = stage.getWidth() - 2*wn;
-    h = stage.getHeight() - 2*hn;
-    nbcol = Math.ceil(w / (wn+spw));
-    nbli = Math.ceil(h / (hn+sph));
-    var r =  Math.floor((wn-2) / 2);
+    var r =  Math.floor((wn-4) / 2);
     ccol = 0;
-    stage.carouLayer.setY(stage.getHeight() - (2*r + 4));
-    stage.elemsLayer.setPosition(64, stage.getHeight() - (2*r + 4));
+    var yCarou = stage.getHeight() - (2*r+10);
+    stage.carouLayer.setY(yCarou);
+    stage.elemsLayer.setPosition(64, yCarou);
+    stage.elemsLayer.setWidth(w - 128);
     for (var ni=0; ni < listNodes.length; ni++) {
         if (listNodes[ni] .Node != nodeP.Node) {
-            x= (ccol * (wn+spw))+r+4;
-            y= r+2,
+            x = (ccol * (wn+spw)) + r + 4;
+            y = r + 5,
             new KtcNodeGrp(x,y,r,listNodes[ni] ,stage.elemsLayer,stage);
             ccol++;
         };

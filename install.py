@@ -90,11 +90,27 @@ def main():
              default='/var/lib/domoweb/domoweb.db',
              help="Force domoweb DB file (default: /var/lib/domoweb/domoweb.db)")
 
+    p.add_option('--noclean',
+             dest='noclean',
+             action="store_true",
+             help="Do not clean old Domoweb install")
+
+    p.add_option('--nousercheck',
+             dest='nousercheck',
+             action="store_true",
+             help="Do not check for user account")
+
+    p.add_option('--nofoldercreation',
+             dest='nofoldercreation',
+             action="store_true",
+             help="Do not create folders")
+    
     # parse command line for defined options
     options, args = p.parse_args()
 
     # Initial Clean
-    clean()
+    if not options.noclean:
+        clean()
 
     # Uninstall
     if options.uninstall:
@@ -112,22 +128,28 @@ def main():
         install_dependencies()
 
     # Domoweb User
-    info("Checking user")
-    if options.user:
-        user = options.user
+    if options.nousercheck:
+        warning('Not checking user')
     else:
-        user = raw_input('Which user will run domogik (default : domoweb)? ')
-        if not user:
-            user = 'domoweb'
-    test_user(user)
+        info("Checking user")
+        if options.user:
+            user = options.user
+        else:
+            user = raw_input('Which user will run domogik (default : domoweb)? ')
+            if not user:
+                user = 'domoweb'
+        test_user(user)
 
     # Domoweb folders creation
-    info("Checking %s folder" % options.libdir)
-    createFolder(options.libdir, user)
-    info("Checking %s folder" % options.logdir)
-    createFolder(options.logdir, user)
-    info("Checking %s folder" % options.piddir)
-    createFolder(options.piddir, user)
+    if options.nofoldercreation:
+        warning('Not creating folders')
+    else:
+        info("Checking %s folder" % options.libdir)
+        createFolder(options.libdir, user)
+        info("Checking %s folder" % options.logdir)
+        createFolder(options.logdir, user)
+        info("Checking %s folder" % options.piddir)
+        createFolder(options.piddir, user)
 
     # Config files
     if options.noconfig:
@@ -268,7 +290,7 @@ def install_dependencies():
     from setuptools.command import easy_install
     easy_install.main( ['setuptools',
                           'django == 1.4',
-                          'django-tastypie >= 0.9.11',
+                          'django-tastypie == 0.9.11',
                           'django-tables2',
                           'simplejson >= 1.9.2',
                           'httplib2 >= 0.6.0',

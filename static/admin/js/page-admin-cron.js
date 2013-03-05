@@ -11,7 +11,7 @@ function check_job_name(name) {
     if ((name == null) || (name == "")) {
         return false;
     }
-    var bad_chars = " !:;,?./§ù%*µ$£+)°àç_è-('é&<>œ€}]@^\[{#~";
+    var bad_chars = " !:;,?./§ù%*µ$£+)°àçè('é&<>œ€}]@^\[{#~";
     for (var i = 0; i < name.length; i++) {
         if ( bad_chars.indexOf(name.charAt(i)) != -1 ) {
             return false;
