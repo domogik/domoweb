@@ -102,7 +102,7 @@ def main():
     }
 
     plugins.PIDFile(engine, "/var/run/domoweb/domoweb.pid").subscribe()
-    WSPlugin(engine).subscribe()
+    #WSPlugin(engine).subscribe()
 
     # Loading django config for database connection
     load_config(project)
