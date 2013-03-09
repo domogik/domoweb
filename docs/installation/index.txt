@@ -1,0 +1,81 @@
+============
+Installation
+============
+
+The Web interface is now separated from Domogik, into another project called DomoWeb
+
+The mains reasons are:
+- A different development cycle and more faster updates.
+- More targeted and shorter tests campagnes.
+- DomoWeb can be installed in a different computer than Domogik.
+
+.. note:: DomoWeb does not support Domogik 0.1, please use a higher version.
+
+Download Domoweb
+================
+
+Go on `Download <http://wiki.domogik.org/Download>`_ to get Domoweb.
+You will get a file named **domoweb-<release>.tgz**. Download it and extract it: ::
+
+    $ wget http://repo.domogik.org/...
+    $ tar xvzf domoweb-<release>.tgz
+    $ cd domoweb-<release>
+
+Install the DomoWeb development release
+================
+
+Run the installation script :
+.. note:: during installation, a new user will be created if necessary.
+
+.. code-block:: bash
+    $ cd domoweb
+    $ sudo ./install.sh
+
+You will be asked for the following questions : ::
+
+    If you want to use a proxy, please set it now. It will only be used during the installation. (ex: http://1.2.3.4:8080)
+
+During the installation, some python librairies could be downloaded. If you use a proxy, you must set it here.
+
+.. code-block:: bash
+
+    Which user will run DomoWeb, it will be created if it does not exist yet? (default : domogik)
+
+System user that will launch DomoWeb. You should keep the default choice.
+
+.. code-block:: bash
+
+    You already have DomoWeb configuration files. Do you want to keep them ? [Y/n]
+
+If you already have DomoWeb configuration files, you will be asked for keeping them or not.
+
+.. code-block:: bash
+
+    Everything seems to be good, DomoWeb should be installed correctly.             
+    I will start the test_config.py script to check it.                             
+    Please press Enter when ready.
+
+Just press enter to start the check script.
+
+.. code-block:: bash
+
+    ==> ================================================== <==                     
+    ==>  Everything seems ok, you should be able to start  <==                     
+    ==>       DomoWeb with /etc/init.d/domoweb start       <==                     
+    ==>             or /etc/rc.d/domoweb start             <==                     
+    ==> ================================================== <==
+
+Installation is finished and seems to be OK.
+
+Start DomoWeb
+=============
+
+.. code-block:: bash
+
+    sudo /etc/init.d/domoweb start
+
+Now, you can access UI on this url : http://127.0.0.1:40404/
+
+To access to the administration panel :
+* login : admin
+* password : 123
