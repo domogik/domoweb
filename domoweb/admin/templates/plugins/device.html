@@ -62,20 +62,16 @@
             <legend>{% trans "Individual command parameters" %}</legend>
             {% for command in commands %}
                 <h2>{{ command.name }}</h2>
-                {% if command.form %}
-                    {{ command.form.non_field_errors }}
-                    {% for field in command.form %}
-                        <div class='row'>
-                            {{ field.errors }}
-                            <label for="{{ field.auto_id }}" class="{% if field.field.required %} required{% endif %}">
-                               {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
-                            </label>
-                            {{ field }}
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p>{% trans "No Parameters for this command" %}</p>
-                {% endif %}
+                {{ command.non_field_errors }}
+                {% for field in command %}
+                    <div class='row'>
+                        {{ field.errors }}
+                        <label for="{{ field.auto_id }}" class="{% if field.field.required %} required{% endif %}">
+                           {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                        </label>
+                        {{ field }}
+                    </div>
+                {% endfor %}
                 <hr />
             {% endfor %}
         </fieldset>
@@ -83,20 +79,16 @@
             <legend>{% trans "Individual stat parameters" %}</legend>
             {% for stat in stats %}
                 <h2>{{ stat.name }}</h2>
-                {% if stat.form %}
-                    {{ stat.form.non_field_errors }}
-                    {% for field in stat.form %}
-                        <div class='row'>
-                            {{ field.errors }}
-                            <label for="{{ field.auto_id }}" class="{% if field.field.required %} required{% endif %}">
-                               {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
-                            </label>
-                            {{ field }}
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <p>{% trans "No Parameters for this stat" %}</p>
-                {% endif %}
+                {{ stat.non_field_errors }}
+                {% for field in stat %}
+                    <div class='row'>
+                        {{ field.errors }}
+                        <label for="{{ field.auto_id }}" class="{% if field.field.required %} required{% endif %}">
+                           {{ field.label }} {% if field.field.required %}<span class="offscreen"> {% trans "(required)" %}</span>{% endif %}</span>
+                        </label>
+                        {{ field }}
+                    </div>
+                {% endfor %}
                 <hr />
             {% endfor %}
         </fieldset>

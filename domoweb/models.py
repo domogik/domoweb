@@ -176,7 +176,9 @@ class Device(RestModel):
     list_path = "/base/device/list"
     delete_path = "/base/device/del"
     create_path = "/base/device/add"
-    addparams_path = "/base/device/addglobal"
+    addglobal_path = "/base/device/addglobal"
+    addxplcmd_path = "/base/device/xplcmdparams"
+    addxplstat_path = "/base/device/xplstatparams"
     listupgrade_path = "/base/device/list-upgrade"
     doupgrade_path = "/base/device/upgrade"
     index = 'device'
@@ -186,7 +188,10 @@ class Device(RestModel):
         _data = Device.get_list();
         Device.objects.all().delete()
         Command.objects.all().delete()
+        CommandParam.objects.all().delete()
         Sensor.objects.all().delete()
+        XPLCmd.objects.all().delete()
+        XPLStat.objects.all().delete()
         for record in _data:
             Device.create_from_json(record)
 
@@ -218,14 +223,50 @@ class Device(RestModel):
                 values = sensor['values'].replace("u'", "'") # patch for #1659
                 s = Sensor(id=sensor.id, name=sensor.name, device=device, reference=sensor.reference, value_type=sensor.value_type, unit=sensor.unit, values=values, last_value=sensor.last_value, last_received=sensor.last_received)
                 s.save()
+        if "xpl_command" in data:
+            for xpl_command in data.xpl_command:
+                c = XPLCmd(id=xpl_command.id, device_id= device.id, json_id=command.xpl_command.json_id)
+                c.save()
+        """
+        if "xpl_stat" in data:
+            for xpl_stat in data.xpl_stat:
+                c = XPLStat(id=xpl_stat.id, device_id= device.id, json_id=command.xpl_stat.json_id)
+                c.save()
+        """
         return device
 
-    def create_params(self, parameters):
+    def add_global_params(self, parameters):
         params = ['id', self.id]
         params.extend(list(reduce(lambda x, y: x + y, parameters.items())))
-        _data = Device._put_data(Device.addparams_path, params)
+        _data = Device._put_data(Device.addglobal_path, params)
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)
+
+    def add_xplcmd_params(self, id, parameters):
+        try:
+            # Find the db id, based on the json id
+            xplcmd = XPLCmd.objects.get(device_id=self.id, json_id=id)
+        except XPLCmd.DoesNotExist:
+            pass
+        else:
+            params = ['id', xplcmd.id]
+            params.extend(list(reduce(lambda x, y: x + y, parameters.items())))
+            _data = Device._put_data(Device.addxplcmd_path, params)
+            if _data.status == "ERROR":
+                raise RinorError(_data.code, _data.description)
+
+    def add_xplstat_params(self, id, parameters):
+        try:
+            # Find the db id, based on the json id
+            xplstat = XPLStat.objects.get(device_id=self.id, json_id=id)
+        except XPLStat.DoesNotExist:
+            pass
+        else:
+            params = ['id', xplstat.id]
+            params.extend(list(reduce(lambda x, y: x + y, parameters.items())))
+            _data = Device._put_data(Device.addxplstat_path, params)
+            if _data.status == "ERROR":
+                raise RinorError(_data.code, _data.description)
     
     @classmethod
     def list_upgrade(cls):
@@ -240,6 +281,16 @@ class Device(RestModel):
         ret = cls._post_data(cls.doupgrade_path, data)
         if ret.status == "ERROR":
             raise RinorError(ret.code, ret.description)
+
+class XPLCmd(RestModel):
+    id = models.IntegerField(primary_key=True)
+    device_id = models.IntegerField()
+    json_id = models.CharField(max_length=50)
+
+class XPLStat(RestModel):
+    id = models.IntegerField(primary_key=True)
+    device_id = models.IntegerField()
+    json_id = models.CharField(max_length=50)
     
 class Command(RestModel):
     id = models.IntegerField(primary_key=True)

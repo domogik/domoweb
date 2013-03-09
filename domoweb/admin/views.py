@@ -242,8 +242,16 @@ class DeviceForm(forms.Form):
     
 class ParametersForm(forms.Form):
     def __init__(self, *args, **kwargs):
+        self.name = kwargs.pop('name')
+        self.id = kwargs.pop('id')
+        self.params = kwargs.pop('params')
+        self.prefix = kwargs.pop('prefix')
+        kwargs['auto_id'] = '%s'
         # This should be done before any references to self.fields
         super(ParametersForm, self).__init__(*args, **kwargs)
+        if self.params:
+            for parameter in self.params:
+                self.addCharField(('%s-%s-%s')%(self.prefix, self.id, parameter.key), parameter.description, required=True)
 
     def addCharField(self, key, label, required=False, max_length=50):
         self.fields[key] = forms.CharField(label=label, required=required, max_length=max_length)
@@ -257,7 +265,14 @@ class ParametersForm(forms.Form):
 
     def validate(self): self.full_clean()
 
-@admin_required
+    def getData(self):
+        data = {}
+        for key, cd in self.cleaned_data.items():
+            key = key.replace(('%s-%s-')%(self.prefix, self.id), "")
+            data[key] = cd
+        return data
+    
+#@admin_required
 def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
     page_title = _("Add device")
     parameters = DeviceParametersPipe().get_detail(type_id)
@@ -269,30 +284,15 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
             globalparametersform.addCharField(parameter.key, parameter.description, required=True)
 
     commands = []
-    """
     for command in parameters["xpl_cmd"]:
-        commandid = command.id.replace('.','-')
-        commanddict = {'id':commandid, 'name':command.name}
-        if command.params:
-            commandparametersform = ParametersForm(auto_id='cmd_' + commandid + '_%s')
-            for parameter in command.params:
-                commandparametersform.addCharField(parameter.key, parameter.description, required=True)
-            commandict['form'] = commandparametersform
-        commands.append(commanddict)
-    """
+        form = ParametersForm(id=command.id, name=command.name, params=command.params, prefix='cmd')
+        commands.append(form)
+
     stats = []
-    """
     for stat in parameters["xpl_stat"]:
-        statid = stat.id.replace('.','-')
-        statdict = {'id':statid, 'name':stat.name }
-        if stat.params:
-            statparametersform = ParametersForm(auto_id='stat_' + commandid + '_%s')
-            for parameter in stat.params:
-                statparametersform.addCharField(parameter.key, parameter.description, required=True)
-            statdict['form'] = statparametersform
-        stats.append(statdict)
-    """
-    
+        form = ParametersForm(id=stat.id, name=stat.name, params=stat.params, prefix='stat')
+        stats.append(form)
+
     if request.method == 'POST':
         valid = True
         deviceform = DeviceForm(request.POST) # A form bound to the POST data
@@ -301,23 +301,23 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
             globalparametersform.setData(request.POST)
             globalparametersform.validate()
             valid = valid and globalparametersform.is_valid()
-        """
         for command in commands:
-            print command
-            if 'form' in command:
-                command.form.setData(request.POST)
-                command.form.validate()
-                valid = valid and command.form.is_valid()
+            command.setData(request.POST)
+            command.validate()
+            valid = valid and command.is_valid()
         for stat in stats:
-            if 'form' in stat:
-                stat.form.setData(request.POST)
-                stat.form.validate()
-                valid = valid and stat.form.is_valid()
-        """
+            stat.setData(request.POST)
+            stat.validate()
+            valid = valid and stat.is_valid()
         if valid:
             cd = deviceform.cleaned_data
             device = Device.create(cd["name"], cd["type_id"], cd["usage_id"], cd["reference"])
-            device.create_params(parameters=globalparametersform.cleaned_data)
+            if globalparametersform:
+                device.add_global_params(parameters=globalparametersform.cleaned_data)
+            for command in commands:
+                device.add_xplcmd_params(id=command.id, parameters=command.getData())
+            for stat in stats:
+                device.add_xplstat_params(id=stat.id, parameters=stat.getData())
             return redirect('admin_plugins_plugin_view', plugin_host=plugin_host, plugin_id=plugin_id, plugin_type=plugin_type) # Redirect after POST
     else:
         deviceform = DeviceForm(auto_id='main_%s', initial={'type_id': type_id})
@@ -678,7 +678,7 @@ def admin_core_deviceupgrade(request):
             cleaned_data = frm.clean()
             old = cleaned_data['old']
             new = cleaned_data['new']
-	    msg = 'post done ' + old + '  ' + new
+            msg = 'post done ' + old + '  ' + new
             old = old.split('-')
             new = new.split('-')
             Device.do_upgrade(old[0], old[1], new[0], new[1])       
