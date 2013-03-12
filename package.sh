@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BRANCH='0.3'
-RELEASE='beta1'
+RELEASE='beta2'
 REV=$(hg id -n)
 
 VERSION="$BRANCH-$RELEASE.$REV"
