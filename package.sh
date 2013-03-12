@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BRANCH='0.2.0'
+BRANCH='0.2.1'
 RELEASE='finale'
 REV=$(hg id -n)
 
