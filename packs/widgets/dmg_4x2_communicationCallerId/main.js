@@ -10,7 +10,7 @@
             type: 'sensor.string',
             height: 2,
             width: 4,
-            filters:['communication.caller_id.number'],
+            filters:['communication.caller_id.number', 'generic.caller_id.number'],
             displayname: true,
 			displayborder: true
         },
