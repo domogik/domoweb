@@ -225,14 +225,12 @@ class Device(RestModel):
                 s.save()
         if "xpl_command" in data:
             for xpl_command in data.xpl_command:
-                c = XPLCmd(id=xpl_command.id, device_id= device.id, json_id=command.xpl_command.json_id)
+                c = XPLCmd(id=xpl_command.id, device_id= device.id, json_id=xpl_command.json_id)
                 c.save()
-        """
         if "xpl_stat" in data:
             for xpl_stat in data.xpl_stat:
-                c = XPLStat(id=xpl_stat.id, device_id= device.id, json_id=command.xpl_stat.json_id)
+                c = XPLStat(id=xpl_stat.id, device_id= device.id, json_id=xpl_stat.json_id)
                 c.save()
-        """
         return device
 
     def add_global_params(self, parameters):
