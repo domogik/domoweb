@@ -6,6 +6,12 @@ var hdCmdClss = new Array();
 var initialized = false;
 var ctrlDevice;
 var cb_RefreshTabHtml;
+var wsDomogik;
+var wsPort;
+var tWSserverOut = (new Date()).getTime();
+var cptTimeOutWS = 0;
+
+var wsAcktOutCtrl = setInterval(wsAckTimeOutCtrl, 500);
 
 // Constante d'entete de colonne de la table node_items 
 var hdLiNode = {"NodeId": 0, "Name": 1, "Location": 2, "Model": 3, "Awake":  4, "Type": 5, "Last update": 6, "Action": 7};
@@ -45,13 +51,187 @@ var NODESTATISTIC = {"sentCnt" : gettext("Number of messages sent from this node
                                  "lastResponseRTT" : gettext("Last message response RTT"),
                                  "averageResponseRTT" : gettext("Average Reponse round trip time."),
                                  "quality" : gettext("Node quality measure"),
-                                 "lastReceivedMessage" : gettext("Place to hold last received message"),
+                                 "lastReceivedMessage" : gettext("Last received raw data message"),
                                  "commandClassId" : gettext("Individual Stats for: "),    
                                  "sentCntCC" : gettext("Number of messages sent from this CommandClass."),    
                                  "receivedCntCC" : gettext("Number of messages received from this CommandClass.")
                                 };
 
-$(function(){
+function createWebSocket(host, cbHandleMsg, cbAtOpen) {
+    if(window.MozWebSocket) {
+        window.WebSocket=window.MozWebSocket;
+    }
+    if(!window.WebSocket) {
+        alert("Your browser don't accept webSocket!");
+        return false;
+    } else {
+        if (!wsDomogik || !wsDomogik.idws) {
+            console.log('Tentative de Connection : ' + host);
+            wsDomogik = new WebSocket(host);
+            wsDomogik.idws = false;
+            wsDomogik.cbHandleMsg = cbHandleMsg;
+            wsDomogik.queueAck = [];
+            wsDomogik.host = host;
+            wsDomogik.onopen = function(event) {
+                wsDomogik.send(JSON.stringify({'header':{'type': 'ack-connect', 'idws':'request'}}));
+                wsDomogik.idws = false;
+                setStatusWS('up');
+                var d = new Date();
+                console.log('Client WebSocket State::' + 'OPEN');
+                };
+                    
+            wsDomogik.onclose = function(event) {
+                setStatusWS('down');
+                var d = new Date();
+ //               tWSserverOut = d.getTime(); 
+                console.log('Client WebSocket State::' + 'CLOSED ' + event.code + ' ' + event.reason + ' ' + event.wasClean);
+                wsDomogik.idws = false;
+                };
+            wsDomogik.onerror = function(event) {
+                $.notification('error', gettext('Client WebSocket error : ', event));
+                console.log('Client WebSocket State::' + 'ERROR', event);
+                };
+                
+            wsDomogik.sendhbeat = function() {
+                var d = new Date();
+                msg['header'] = {'type': 'req-ack'};
+                msg['request'] ='server-hbeat';
+                sendMessage(msg, function(ackMsg) {
+                    if (ackMsg['error'] =='') {
+                        if (ackMsg.header['idws'] == wsDomogik.idws) {tWSserverOut = d.getTime();
+                        }else  {
+                            $.notification('error', gettext('Plugin server bad identity, return : ') + ' : ' +ackMsg.header['idws']  + gettext(' for client : ') + wsDomogik.idws);
+                        };
+                    } else {
+                        $.notification('error', gettext('Plugin server connected with error : ') + ' : ' +ackMsg.error );
+                    };
+                    });
+                };
+            
+            wsDomogik.onmessage = function(event){
+                var d = new Date();
+                tWSserverOut = d.getTime(); 
+                try { //tente de parser data
+                        var data = jQuery.parseJSON(event.data);
+                } catch(exception) {
+                        var data = event.data;
+                    }
+                console.log ('Recu par websocket : ', data);
+                if (data.header) {
+                    if ((data.header.type  == 'confirm-connect') &&  (data.header.id == 'ozwave_serverUI')) {
+                        this.idws = data.header.idws;
+                        $.notification('success',gettext('Connection to plugin server running'))
+                        if (cbAtOpen) {cbAtOpen();};
+                    } else if (this.idws) {
+                            if (this.idws == data.header.idws) {
+                            //    console.log('handle message');
+                                var callback;
+                                if (data.header.type == 'ack') {
+                                    for (var i = 0; i < this.queueAck.length; i++) {
+                                        if (this.queueAck[i].header.idws == data.header.idws && this.queueAck[i].request ==data.request && 
+                                            this.queueAck[i].node == data.node && this.queueAck[i].valueid == data.valueid) {
+                                                if (this.queueAck[i].callback) {
+                                                    callback = this.queueAck[i].callback;
+                                                    break;
+                                            };
+                                        };
+                                    };
+                                };
+                                this.cbHandleMsg(data, callback);
+                            } else {
+                                console.log('Error bad WebSocket id : ', data.header.idws);
+                            };
+                        } else {
+                            console.log('Error WebSocket unknown, force to close.');
+                            this.close;
+                        };
+                    if (data.header.type == 'ack') {
+                        for (var i = 0; i < this.queueAck.length; i++) {
+                            if (this.queueAck[i].header.idws == data.header.idws && this.queueAck[i].request ==data.request && 
+                                this.queueAck[i].node == data.node && this.queueAck[i].valueid == data.valueid) {
+                                this.queueAck.splice(i,1);
+                            };
+                        };
+                    };
+                } else { console.log('Error bad message : no header');
+                };
+            };
+        };
+    };
+};
+    
+function sendMessage(message, callback, timeOut) {
+    var d = new Date();
+    if (wsDomogik && wsDomogik.idws) {
+        if (!timeOut) { timeOut = 15000;};
+        if (message) {
+            message['header']['idws'] =  wsDomogik.idws;
+            message['header']['ip'] = location.hostname;
+            message['header']['timestamp'] = d.getTime();
+            var data = JSON.stringify(message);
+            console.log ('Send WS msg : ', message);
+            if (message.header.type = 'req-ack') {
+                message['timeOut'] = timeOut - 500;  // retirer la fréquence de controle 
+                if (callback) {
+                    message['callback'] = callback;
+                    }
+                wsDomogik.queueAck.push(message)};
+            wsDomogik.send(data);
+            };
+    } else {
+    console.log ('Websocket non connecté ou non pret à envoyer des messages : ' , message);
+    $.notification('error', 'WebSocket not connect to plugin server, message not send : ' + JSON.stringify(message));
+    }; 
+};
+
+function wsAckTimeOutCtrl() {
+    var d = new Date();
+    if (wsDomogik) {
+        if (wsDomogik.readyState == 1) {
+            if (wsDomogik.queueAck.length !=0) {$.each(wsDomogik.queueAck, function(i) {
+                var ack = wsDomogik.queueAck[i];
+                if ((d.getTime() - ack.header.timestamp) >= (ack.timeOut )) {
+                    var t = ack.request;
+                    if (ack.node) { t =t + ' node : ' + ack.node;};
+                    if (ack.valueid) { t =t + ' Value : ' + ack.valueid;};
+                    $.notification('error', gettext('WebSocket ACK TimeOut for request : ') +  t);
+                    if (ack.header.request = 'ws-hbeat') {
+                        $.notification('error', gettext('Plugin server not response to hbeat, client deconnected.'));
+                        wsDomogik.close();
+                    };
+                    wsDomogik.queueAck.splice(i,1);
+                };
+                });
+            };
+        } else {
+            if ((d.getTime() - tWSserverOut) >= 30000) {
+                if (cptTimeOutWS>= 60) {
+                    cptTimeOutWS = 0;
+                    if (wsDomogik.idws == false) {
+                        if ((d.getTime() - tWSserverOut) >= (30000 * 3)) {
+                                wsDomogik =false;
+                            } else {
+                                $.notification('error', gettext('No connection on plugin server since ') + ((d.getTime() - tWSserverOut)/1000) + ' sec.');
+                                createWebSocket(wsDomogik.host,wsDomogik.cbHandleMsg);
+                            };
+                    } else {
+                        wsDomogik.sendhbeat();
+                    };
+                } else {cptTimeOutWS = cptTimeOutWS + 1;};
+            };
+        };
+    } else {
+        if ((d.getTime() - tWSserverOut) >= 30000) {
+            if (cptTimeOutWS>= 100) {
+                cptTimeOutWS = 0;
+                $.notification('error', gettext('wsDomogik server not identified ') + ((d.getTime() - tWSserverOut)/1000) + ' sec.')
+            } else {cptTimeOutWS = cptTimeOutWS + 1;};
+        };
+    };
+};
+
+
+function openDmg_eventListener(callback){
     var ozwes = new EventSource(EVENTS_URL + '/');
     ozwes.addEventListener('open', function (event) {
         console.log ('dmg_event open ', event);
@@ -60,21 +240,22 @@ $(function(){
         if (ctrlDevice) {
             var data = jQuery.parseJSON(event.data);
             if (data.device_id == ctrlDevice.device.id) {
+                console.log ('dmg_event recept : ', data);
                 var e={'timestamp': data.timestamp}
                 $.each(data.data, function (index, obj) {
                     e[obj.key] = obj.value;
                 });
         //        console.log ('dmg_event message for controleur zwave at ', event.timeStamp, ' data : ', data);
-                UpdCtrlEvent(e);
+                callback(e);
             };
         };
     }, true);
     ozwes.addEventListener('error', function (event) {
         console.log ('dmg_event error ', event);
-    }, false);
+        }, false);
     
-	$(window).bind('beforeunload', function () {  ozwes.close(); });
-});
+	$(window).bind('beforeunload', function () {ozwes.close(); });
+};
                                        
 function GetDataFromxPL (data, key) {
     var dt=JSON.stringify(data);
@@ -93,7 +274,6 @@ function GetDataFromxPL (data, key) {
         dt=dt.slice(0,fin);
         dt='{"count":8}';
         };
-    console.log("GetDataFromxPL dt = " + dt);
     return JSON.parse(dt); 
 };
         
@@ -136,9 +316,9 @@ function GetDataFromxPL (data, key) {
     
 function SetDataToxPL (data) {
     dt=JSON.stringify(data);
-    console.log ("SetDataToxPL : " + dt);
+  //  console.log ("SetDataToxPL : " + dt);
     var val = dt.replace(/["]/g,"&quot;").replace(/[{]/g,"&ouvr;").replace(/[}]/g,"&ferm;").replace(/true/g,"True").replace(/false/g,"False") ; 
-    console.log ("SetDataToxPL str : " + val);
+ //   console.log ("SetDataToxPL str : " + val);
     return val;
 };
     
@@ -150,6 +330,29 @@ function getDataTableColIndex (dTab, title) {
             };
         }
     return -1;
+};
+
+function getPluginInfo(callback)  {
+    var msg = {};
+    msg['command'] = "Refresh";
+    var val = {};
+    val['request'] ='GetPluginInfo';
+    msg['value'] = SetDataToxPL (val);
+    rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
+        .done(function(data, status, xhr){
+            var messXpl = GetDataFromxPL(data, 'data');
+            if (messXpl['error'] == "") {
+                wsPort = messXpl['hostport']
+                console.log('getPluginInfo : ' + messXpl['hostport']);
+                callback(wsPort);
+            } else {
+                $.notification('error',gettext("Plugin has error") + ": " + messXpl['error']);
+            } 
+        })
+        .fail(function(jqXHR, status, error){
+            if (jqXHR.status == 400)
+                $.notification('error', gextext ("Plugin not received request") + ", ("  + jqXHR.responseText + ")");
+        });
 };
 
 function createToolTip(domObj, position, text) {
@@ -205,7 +408,7 @@ function RefreshDataNode(infonode, last) {
         initialized = true;
         };
 };
-    
+
 function GetZWNodeById (nodeiId) {
     var retval = false;
     for (var i=0; i< listNodes.length; i++) {
@@ -215,20 +418,45 @@ function GetZWNodeById (nodeiId) {
     };
     return false;
 };
-    
-function SetStatusMemberGrp(infonode,group,member,status) {
-    console.log ('Set status :' + status);
-}
+
+function setStatusWS(status) {
+    if (status=='up') { //active
+        textstatus = "Connected to WS server";
+        reload ='';
+    } else { //inactive
+        textstatus = "Disconnect from server";
+        reload = "<button id='startWebsocket' class='icon16-action-reset buttonicon' title='" + gettext("Start Websocket Client") + "'</button>";
+    }
+    $("#iconstatusws").empty()
+        .attr('class', "icon16-text-right icon16-status-plugin-" + status)
+        .attr('align', 'right')
+        .html("<span class='label'>" + gettext('Server connection') + " :</span><span class='offscreen'>" + textstatus + "</span>"+reload);
+};
+
+function setStatusZW(status) {
+    if (status=='up') { //active
+        textstatus = "En cours d'execution";
+    } else { //inactive
+        textstatus = "Stoppé";
+    }
+    $("#iconstatuszw").empty()
+        .attr('class', "icon16-text-right icon16-status-plugin-" + status)
+        .html("<span class='label'>" + gettext('status') + " :</span><span class='offscreen'>" + textstatus + "</span>");
+};
         
 function SetStatusZWDevices(idObj, status) {
     status = status.toLowerCase();
-     if (status == 'uninitialized') { st = 'status-unknown'};
-     if (status == 'completed') { st = 'status-active'};
-     if (status == 'in progress - devices initializing') { st = 'action-processing_f6f6f6'};
-     if (status == 'out of operation') { st = 'status-warning'};
-     $('#'+ idObj).removeClass().addClass('icon16-text icon16-'+ st);
-     t = gettext(status)
-     $('#'+idObj).qtip('api').updateContent(t);
+    if (status == 'uninitialized') { st = 'status-unknown'};
+    if (status == 'completed') { st = 'status-active'};
+    if (status == 'in progress - devices initializing') { st = 'action-processing_f6f6f6'};
+    if (status == 'out of operation') { st = 'status-warning'};
+    $('#'+ idObj).removeClass().addClass('icon16-text icon16-'+ st);
+    t = gettext(status)
+    $('#'+idObj).qtip('api').updateContent(t);
+};
+
+function SetStatusMemberGrp(infonode,group,member,status) {
+    console.log ('Set status :' + status);
 };
 
 // fnRender, callback des élements du tableau autre que texte ou enrichis
@@ -422,14 +650,16 @@ function SetStatusZWDevices(idObj, status) {
 
     function handleChangeVCC (){
         $('.ccvalue').change(function () { // '#' + id
-                var nTr = this.parentNode.parentNode;
-                if (this.name =='CmdClssValue') {
-                        var oTable = $("#" + nTr.parentElement.parentElement.id).dataTable();
-                        var aPos = oTable.fnGetPosition(this.parentElement );
-                        var oSettings = oTable.fnSettings();
-                        var idC= getDataTableColIndex(oSettings, 'value');
-                        var ok = oTable.fnUpdate(this.value,aPos[0],idC,false);
-                        handleChangeVCC ();
+                if (this.parentNode) {
+                    var nTr = this.parentNode.parentNode;
+                    if (this.name =='CmdClssValue') {
+                            var oTable = $("#" + nTr.parentElement.parentElement.id).dataTable();
+                            var aPos = oTable.fnGetPosition(this.parentElement );
+                            var oSettings = oTable.fnSettings();
+                            var idC= getDataTableColIndex(oSettings, 'value');
+                            var ok = oTable.fnUpdate(this.value,aPos[0],idC,false);
+                            handleChangeVCC ();
+                    };
                 };
         });
         var b = $('.ccbt');
@@ -458,8 +688,7 @@ function SetStatusZWDevices(idObj, status) {
         };
         
 /* Formatage du details d'une row  */
-    function fnFormatDetails (nTr, thOut)
-    {
+    function fnFormatDetailsCmdCll (nTr, thOut) {
         var aData = oTabNodes.fnGetData(nTr);
         var idDetNode = 'detNode' + getNodeIdFromHtml(aData[hdLiNode['NodeId']]);
         console.log("Format detail node entête : " + thOut);
@@ -477,55 +706,6 @@ function SetStatusZWDevices(idObj, status) {
    //     console.log (sOut);
         return sOut;
     };
-    
-function UpdCtrlEvent (event) {
-    switch (event.type) {
-        case 'driver-ready' :
-            $.notification('info',"Controller Node : " + event.node + " , " + event.usermsg + " at " + Date(event.timestamp));
-            break;
-        case 'init-process' :
-            $.notification('info',"Node : " + event.node + " , " + event.usermsg + " at " + Date(event.timestamp));
-            if (event.node == 'controller') {
-                SetStatusZWDevices('infoIconInitNodes', event.data);
-                if (event.data == 'completed') {$("#ozwrefreshnt").click();}
-            }else{
-                zwNode = GetZWNodeById(parseInt(event.node));
-                zwNode['InitState'] = event.data;
-                RefreshDataNode(zwNode);
-                cb_RefreshTabHtml(zwNode);
-                UpNodeToolTips(zwNode.Node);
-            };
-            break;
-        case 'node-state-changed' :
-            zwNode = GetZWNodeById(parseInt(event.node));
-            $.notification('success',"Node : " + event.node + " , " + event.usermsg + " at " + Date(event.timestamp));
-            var dt = event.data.replace(/False/g,"false").replace(/True/g,"true").replace(/'/g,'"');
-            var d = jQuery.parseJSON(dt);
-            switch (d.typestate) {
-                case 'sleep' :
-                    zwNode['State sleeping'] = d['state sleeping'];
-                    zwNode['LastStatus'] = Date(event.timestamp);
-                    break;
-                case 'model' :
-                    zwNode['Model'] = d['model'];
-                    break;
-            };
-            RefreshDataNode(zwNode);
-            cb_RefreshTabHtml(zwNode);
-            UpNodeToolTips(zwNode.Node);
-            break;
-        case 'value-changed': 
-            zwNode = GetZWNodeById(parseInt(event.node));
-            var dt = event.data.replace(/False/g,"false").replace(/True/g,"true").replace(/'/g,'"');
-            console.log(dt);
-            var objValue = jQuery.parseJSON(dt);
-//            $.notification('success',"Node : " + event.node + " , " + event.usermsg + " (index " +objValue.index + ", " + 
-//                                objValue.commandclass + " : " + objValue.value + " at " + Date(event.timestamp));
-            UpCmdClssValue(zwNode, objValue, event.timestamp);
-            break;
-    };
-    console.log ('update event : ', event);
- };
  
 function UpNodeToolTips (nodeid) {
     createToolTip('#nodestate' + nodeid, 'left');
@@ -558,153 +738,87 @@ function UpCmdClssValue(zwNode, objValue, timeUpDate) {
     };
 };
     
-function GetinfoNode (nodeid, callback, queue) {
-    var infoNode ={};
+function GetinfoNode (nodeid, callback) {
     if (nodeid) {
-            var msg = {};
-            msg['command'] = "Refresh";
-            var val = {};
-            val['request'] ='GetNodeInfo';
-            val['node'] =nodeid;
-            msg['value'] = SetDataToxPL (val);
-            rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-                .done(function(data, status, xhr){
-                    infoNode = ParseAckXPL(data.xpl)
-                    var dt=JSON.stringify(infoNode.data);
-                    console.log("Dans getinfonode : " + infoNode.data['Model']);
-                    $.notification('success',"Node : " + infoNode.data['Model'] + " info refreshed" );
-                    infoNode.data['Groups'] = [];
-                    for (var i=0; i< infoNode.countgrps; i++) {
-                        infoNode.data['Groups'].push(infoNode['group' +i]);
-                        ii=0;
-                        mb = 'g'+i+'m'+ii;
-                        members=[];
-                        while (infoNode[mb]) {
-                            members.push(infoNode[mb]);
-                            ii++;
-                            mb = 'g'+i+'m'+ii;
-                        }; 
-                       infoNode.data['Groups'][i]['members'] = members;  
-                    };
-                    RefreshDataNode(infoNode.data, (queue.length == 0));
-                    callback(infoNode.data);
-                    UpNodeToolTips(nodeid);
-                    console.log("Node is refreshed, nodeID: " + nodeid);
-                    if (queue && queue.length !=0) {
-                        nodeid = queue[0];
-                        queue = queue.slice(1);
-                        GetinfoNode(nodeid, callback, queue);
-                    };
-                })
-                .fail(function(jqXHR, status, error){
-                   if (jqXHR.status == 400)
-                        $.notification('error', '{% trans "Data not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
-                        infoNode['Node'] =   nodeid;
-                        infoNode['Model'] = "NodeId not define";
-                        return infoNode;
-                });
-    }else { infoNode['Model'] = "NodeId not define";
-            console.log("Dans getinfonode  pas de nodeid " + infoNode['Model']);   
-            return infoNode;
-            } 
+        var msg = {};
+        msg['header'] = {'type': 'req-ack'};
+        msg['request'] ='GetNodeInfo';
+        msg['node'] =nodeid;
+        sendMessage(msg, callback);
+    }else { console.log("Dans getinfonode pas de nodeid "); };
 };
 
-    // Gestion d'edition des associations 
-    function editNodeAss (zwNode, callback) {
-        if (zwNode) {
-            GetinfoNode (zwNode.Node, callback, false);
-        } else {
-            console.log("Dans editNodeAss pas de node : " + valueid);   
-        }
+function GetinfoValuesNode (nodeid, callback) {
+    if (nodeid) {
+        var msg = {};
+        msg['header'] = {'type': 'req-ack'};
+        msg['request'] ='GetNodeValuesInfo';
+        msg['node'] =nodeid;
+        sendMessage(msg, callback);
     };
+};
 
-    function setValueNode(nodeId, valueid, value, aTable, nTr, newvalue) {
-        if (newvalue === undefined) { newvalue = "none"; }
-        var messXpl = {};
-        if (valueid) {
-                var msg = {};
-                msg['command'] = "Refresh";
-                var val = {};
-                val['request'] ='setValue';
-                val['valueid'] = valueid;
-                val['node'] = nodeId;
-                var obj = $('#valCC' + valueid);
-                if  (newvalue == "none") {
-                    val['newValue'] = obj.val();
-                } else {
-                    val['newValue'] = newvalue
-                };
-                msg['value'] = SetDataToxPL (val);
-                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-                    .done(function(data, status, xhr){
-                        messXpl = GetDataFromxPL(data, 'data');
-                        if (messXpl['error'] == "") {
-                            console.log("Dans setValueNode : " + messXpl);
-                            var idC= getDataTableColIndex(aTable.fnSettings(), 'realValue');
-                            var aPos = aTable.fnGetPosition(obj[0].parentElement);
-                            var ok = aTable.fnUpdate(messXpl['value'],aPos[0],idC, false);
-                            $('#send' + valueid).remove();
-                            $.notification('success', gettext( "Value updated"));
-                            return messXpl;
-                        } else { // Erreur dans la lib python
-                            $.notification('error', gettext("Value not updated, error : ") + messXpl['error']);
-                            console.log("Dans setValueNode error : " + messXpl['error']);                            
-                            return messXpl['error']             
-                        };
-                    })
-                    .fail(function(jqXHR, status, error){
-                       if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "New value not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
-                            messXpl['Error'] =  "New value not sent";
-                            messXpl['ValueId'] =   valueid;
-                            messXpl['New value'] = val['newValue'];
-                            return messXpl;
-                    });
-        } else { messXpl['Error'] = "valueId not define";
-                console.log("Dans setValueNode pas de valueid : " + valueid);   
-                return messXpl;
-                }
+function GetListCmdsCtrl (callback) {
+    var msg = {};
+    msg['header'] = {'type': 'req-ack'};
+    msg['request'] ='GetListCmdsCtrl';
+    msg['listetypes'] ='cmdsctrl';
+    sendMessage(msg, callback);
+};
+
+
+// Gestion d'edition des associations 
+function editNodeAss (zwNode, callback) {
+    if (zwNode) {
+        GetinfoNode (zwNode.Node, callback);
+    } else {
+        console.log("Dans editNodeAss pas de node : " + valueid);   
+    }
+};
+
+function setValueNode(nodeId, valueid, value, aTable, nTr, newvalue) {
+    if (newvalue === undefined) { newvalue = "none"; }
+    if (valueid) {
+        var msg = {};
+        msg['header'] = {'type': 'req-ack'};
+        msg['request'] ='setValue';
+        msg['valueid'] = valueid;
+        msg['node'] = nodeId;
+        var obj = $('#valCC' + valueid);
+        if  (newvalue == "none") {
+            msg['newValue'] = obj.val();
+        } else {
+            msg['newValue'] = newvalue
+        };
+        sendMessage(msg, aTable);
+    } else { 
+        console.log("Dans setValueNode pas de valueid : " + valueid);   
     };
+};
+    
     function setGroupsNode(stage, node, newgrps, callback) {
-        var messXpl = {};
         if (node) {
                 var msg = {};
-                msg['command'] = "Refresh";
-                var val = {};
-                val['request'] ='setGroups';
-                val['node'] = node.Node;
+                msg['header'] = {'type': 'req-ack'};
+                msg['request'] ='setGroups';
+                msg['node'] = node.Node;
                 var grps =[];
                 for (var i=0; i<newgrps.length; i++){
                     grps.push({'idx': newgrps[i].index, 'mbs': newgrps[i].members});
                 };
-                val['ngrps'] = grps;
-                var strtemp = SetDataToxPL (val);
-                msg['value'] =  strtemp;
-                console.log(strtemp);
-                rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-                    .done(function(data, status, xhr){
-                        messXpl = GetDataFromxPL(data, 'data');
-                        if (messXpl['error'] == "") {
-                            console.log("Dans setGroupsNode : " + messXpl);
-                            callback(stage, node.Node, messXpl['groups']);
-                            
-                            return messXpl;
-                            
-                        } else { // Erreur dans la lib python
-                            console.log("Dans setGroupsNode error : " + messXpl['error']);                            
-                            return messXpl['error']             
-                        };
-                    })
-                    .fail(function(jqXHR, status, error){
-                       if (jqXHR.status == 400)
-                            $.notification('error', '{% trans "New association not sent" %} (' + jqXHR.responseText + ') please check your device configuration');
-                            messXpl['Error'] = "New association not sent";
-                            messXpl['NodeId'] = node.Node;
-                            messXpl['Model'] = node.Model;
-                            return messXpl;
+                msg['ngrps'] = grps;
+                sendMessage(msg, function(data ){
+                    if (data['error'] == "") {
+                        callback(stage, node.Node, data.groups);
+                     } else { // Erreur dans la lib python
+                        console.log("Dans setGroupsNode error : " + data['error']);                            
+                         $.notification('error', gettext('groups association setting error') +' : ' + data['error'] );
+                    };
                     });
         } else { messXpl['Error'] = "Node not define";
                 console.log("Dans setGroupsNode pas de node : " + node);   
                 return messXpl;
                 }
     };
+
+    

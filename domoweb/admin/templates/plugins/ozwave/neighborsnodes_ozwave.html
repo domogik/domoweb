@@ -33,69 +33,60 @@ $(function(){
 
     $("#refreshGenStats").click(function(){
         var msg = {};
-        msg['command'] = "Refresh";
-        var val = {};
-        val['request'] ='GetGeneralStats';
-        msg['value'] = SetDataToxPL (val);
-        rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-            .done(function(data, status, xhr){
-                var messXpl = ParseAckXPL(data.xpl);
-                var stats = messXpl['data'];
-                if (messXpl['error'] =='no') {
+        msg['header'] = {'type': 'req-ack'};
+        msg['request'] ='GetGeneralStats';
+        sendMessage(msg, function(data){
+                if (data['error'] =='') {
                     var rows = [];
                     for (var item in HEADSTATISTIC) {
-                        rows.push([HEADSTATISTIC[item], stats[item]]);
+                        rows.push([HEADSTATISTIC[item], data[item]]);
                     }
                     $('#tabGenStat').dataTable().fnClearTable(false),
                     $('#tabGenStat').dataTable().fnAddData(rows);
-                    $('#elapstime').html(stats['elapsedtime'] +  ' sec.');
-                    $('#msgqueue').html(stats['msqueue']);
-                };
-                })
-            .fail(function(jqXHR, status, error){
-               if (jqXHR.status == 400)
-                    $.notification('error', '{% trans "Data not recept" %} (' + jqXHR.responseText + ') please check your device configuration');
-            });
-        return false;
+                    $('#elapstime').html(data['elapsedtime'] +  ' sec.');
+                    $('#msgqueue').html(data['msqueue']);
+                } else { 
+                    $.notification('error', '{% trans "Get Network Statistic error" %} : ' + data.error);
+                    };
+                });
     });
 
     $("#refreshNodeStats").click(function(){
         var msg = {};
-        msg['command'] = "Refresh";
-        var val = {};
-        val['request'] ='GetNodeStats';
-        val['node'] = parseInt($('#nodeIdStats').val());
-        msg['value'] = SetDataToxPL (val);
-        rinor.put(['api', 'command', 'ozwave', 'UI'], msg)
-            .done(function(data, status, xhr){
-                var messXpl = ParseAckXPL(data.xpl);
-                var stats = messXpl['data'];
-                if (messXpl['error'] =='no') {
+        msg['header'] = {'type': 'req-ack'};
+        msg['request'] ='GetNodeStats';
+        msg['node'] = parseInt($('#nodeIdStats').val());
+        sendMessage(msg, function(data) {
+                if (data['error'] =='') {
                     var rows = [];
                     for (var item in NODESTATISTIC) {
-                        if (stats[item]) {
-                            rows.push([NODESTATISTIC[item], stats[item]]);
+                        if (item in data) {
+                            if (item == 'lastReceivedMessage') {
+                                var t = '', n;
+                                for (nb in data[item]) {
+                                    if (((nb % 26) ==0) &&  (t !='')) {t =t + '<br>';};
+                                    n = data[item][nb].toString(16);
+                                    if (n.length == 1) {n = "0" + n;} ;
+                                    t = t + n + ' ';
+                                    };
+                                rows.push([NODESTATISTIC[item], t]);
+                            } else {
+                                rows.push([NODESTATISTIC[item], data[item]]);
                             };
+                        };
                     };
-                    for (item in messXpl) {
-                        if (item.indexOf('item') != -1) {
-                            description = NODESTATISTIC['commandClassId'] + messXpl[item]['commandClassId'] + '<br>' + 
+                    for (item in data.ccData) {
+                            description = NODESTATISTIC['commandClassId'] + data.ccData[item]['commandClassId'] + '<br>' + 
                                                   ' &nbsp;&nbsp;&nbsp;&nbsp; --- ' + NODESTATISTIC['sentCntCC'] + '<br>' +
                                                   ' &nbsp;&nbsp;&nbsp;&nbsp; --- ' + NODESTATISTIC['receivedCntCC'] ;
-                            rows.push([description,  '<br>' + messXpl[item]['sentCnt'] + '<br>' + messXpl[item]['receivedCnt']]);
-                            };
+                            rows.push([description,  '<br>' + data.ccData[item]['sentCnt'] + '<br>' + data.ccData[item]['receivedCnt']]);
                     };
                     $('#tabNodeStat').dataTable().fnClearTable(false),
                     $('#tabNodeStat').dataTable().fnAddData(rows);
                 } else {
-                    $.notification('error', '{% trans "Request error" %} (' + messXpl['error'] + ') please check input');
+                    $.notification('error', '{% trans "Get Node Statistic error" %}  : ' + data['error']);
                     };
-                })
-            .fail(function(jqXHR, status, error){
-               if (jqXHR.status == 400)
-                    $.notification('error', '{% trans "Data not recept" %} (' + jqXHR.responseText + ') please check your device configuration');
-            });
-        return false;
+                });
     });
     
     $("#refreshneighbors").click(function(){
