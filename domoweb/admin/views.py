@@ -242,10 +242,10 @@ class DeviceForm(forms.Form):
     
 class ParametersForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        self.name = kwargs.pop('name')
-        self.id = kwargs.pop('id')
-        self.params = kwargs.pop('params')
-        self.prefix = kwargs.pop('prefix')
+        self.name = kwargs.pop('name', None)
+        self.id = kwargs.pop('id', None)
+        self.params = kwargs.pop('params', None)
+        self.prefix = kwargs.pop('prefix', None)
         kwargs['auto_id'] = '%s'
         # This should be done before any references to self.fields
         super(ParametersForm, self).__init__(*args, **kwargs)
