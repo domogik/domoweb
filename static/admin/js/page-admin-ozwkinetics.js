@@ -168,6 +168,17 @@ KtcNodeNeighbor.prototype.getTypeLink = function(Node2) {
     if (this.nodeobj['InitState'] == 'Out of operation') {indice = 1,  color = 'red';}
     return {'indice' : indice, 'color' : color}
 };
+
+KtcNodeNeighbor.prototype.setStatus = function() {
+    this.pictureImg.setFillRadialGradientColorStops(this.getColorState());
+    tooltip.hide();
+    var op =1;
+    if (this.nodeobj['State sleeping']) {op = 0.3; };
+    this.pictureImg.setOpacity(op);
+    this.pictNodeNeig.draw();
+    tooltipLayer.draw();
+    console.log('redraw kinetic node :' + this.nodeobj.Node);
+};
         
 CLink = function (N1,N2,layer) {
             // build linelink

@@ -221,10 +221,11 @@ function wsAckTimeOutCtrl() {
             };
         };
     } else {
-        if ((d.getTime() - tWSserverOut) >= 30000) {
-            if (cptTimeOutWS>= 100) {
+        var dtout = (d.getTime() - tWSserverOut);
+        if ((dtout >= 30000) && (dtout < 900000))  {
+            if (cptTimeOutWS>= 120) {
                 cptTimeOutWS = 0;
-                $.notification('error', gettext('wsDomogik server not identified ') + ((d.getTime() - tWSserverOut)/1000) + ' sec.')
+                $.notification('error', gettext('wsDomogik server not identified ') + (dtout/1000) + ' sec.')
             } else {cptTimeOutWS = cptTimeOutWS + 1;};
         };
     };
@@ -399,6 +400,9 @@ function RefreshDataNode(infonode, last) {
     };
     if (idx != -1) {
         listNodes[idx] = infonode;
+        if (listNodes[idx].ktcNode) {
+            listNodes[idx].ktcNode.setStatus();
+            };
     } else {
         listNodes.push(infonode);
     };
@@ -430,7 +434,8 @@ function setStatusWS(status) {
     $("#iconstatusws").empty()
         .attr('class', "icon16-text-right icon16-status-plugin-" + status)
         .attr('align', 'right')
-        .html("<span class='label'>" + gettext('Server connection') + " :</span><span class='offscreen'>" + textstatus + "</span>"+reload);
+        .html("<span id='wsstatus' class='label'>" + gettext('Server connection') + " :</span><span class='offscreen'>" + textstatus + "</span>"+reload);
+    createToolTip('#wsstatus', 'bottom',textstatus);
 };
 
 function setStatusZW(status) {
