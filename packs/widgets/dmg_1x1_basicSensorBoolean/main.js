@@ -19,7 +19,8 @@
             this.element.addClass("icon32-usage-" + o.usage)
             this.TRUE=o.model_parameters.value1
             this.FALSE= o.model_parameters.value0
-
+            if (typeof(this.TRUE) == 'string') {this.TRUE=this.TRUE.toLowerCase();};
+            if (typeof(this.FALSE) == 'string') {this.FALSE=this.FALSE.toLowerCase();};
             this._status = $.getStatus();
             this.element.append(this._status);
 
@@ -38,10 +39,10 @@
             this.setValue(value);
         },
 
-        setValue: function(value, unit, previous) {
+        setValue: function(value) {
             var self = this, o = this.options;
+            if (typeof(value) == 'string') {value = value.toLowerCase();}
             if (value==this.TRUE || value==this.FALSE) {
-                value = value.toLowerCase();
                 if (value == this.TRUE) {
                     this.element.displayIcon('value_true');             
                     this._status.removeClass('icon16-status-unknown icon16-status-inactive').addClass('icon16-status-active');

@@ -43,7 +43,7 @@
 $(function(){
     var infoNode ={};
     var devices = new Array();
-    
+
     $.fn.dataTableExt.oApi.fnStandingRedraw = function(oSettings) {
     if(oSettings.oFeatures.bServerSide === false){
         var before = oSettings._iDisplayStart;
@@ -76,13 +76,13 @@ $(function(){
     }
 
     $('#reset_confirmation').dialog_confirmation({
-            title: "{% trans 'Confirmation' %}",
+            title: "{% trans 'Confirmation' %} : ",
             content: "{% trans "Please confirm to " %}"
     });
-    
+
     $('#reset_confirmation').dialog_confirmation('addbutton', {
         button: "#softReset",
-        name: "Soft Reset a PC Z-Wave Controller. \nResets a controller without erasing its network configuration settings.",
+        name: "{% trans "Soft Reset a PC Z-Wave Controller. \nResets a controller without erasing its network configuration settings." %}",
         onok: function() {
             var msg = {};
             msg['header'] = {'type': 'req-ack'};
@@ -97,11 +97,11 @@ $(function(){
             $(this).dialog('close');
         }
     });
-    
+
     $('#reset_confirmation').dialog_confirmation('addbutton', {
         button: "#hardReset",
-        name: "Hard Reset  a PC Z-Wave Controller. \nResets a controller and erases its network configuration settings. " +
-               "The controller becomes a primary controller ready to add devices to a new network.",
+        name: "{% trans "Hard Reset  a PC Z-Wave Controller. \nResets a controller and erases its network configuration settings. " %}" +
+               "{% trans "The controller becomes a primary controller ready to add devices to a new network." %}",
         onok: function() {
             var msg = {};
             msg['header'] = {'type': 'req-ack'};
@@ -116,6 +116,56 @@ $(function(){
             $(this).dialog('close');
         }
     });
+
+    $('#reset_confirmation').dialog_confirmation('addbutton', {
+        button: "#stopCtrl",
+        name: "{% trans "Stop the controller.\nMeans that any communication and commands with domogik will not be possible. But the networks is still in operation." %}",
+        onok: function() {
+            var msg = {};
+            msg['header'] = {'type': 'req-ack'};
+            msg['request'] ='StopCtrl';
+            sendMessage(msg, function(msg){
+                    if (msg.error == "") {
+                        setBtCtrlStatus('stop');
+                        setStatusZW('down');
+                        SetStatusZWDevices('infoIconInitNodes', 'uninitialized');
+                    } else {
+                        if (msg.running) {
+                            setBtCtrlStatus('stop');
+                        } else {
+                            setBtCtrlStatus('start');};
+                        $.notification('error', "{% trans "Zwave Driver (controller) stop error : " %}" + msg['error']);
+                    };
+                });
+            $(this).dialog('close');
+        }
+    });
+    
+    $("#startCtrl").click(function(){
+        var msg = {};
+        msg['header'] = {'type': 'req-ack'};
+        msg['request'] ='StartCtrl';
+        sendMessage(msg, function(msg) {
+               if (msg.error == "") {
+                    setBtCtrlStatus('start');
+                } else {
+                    if (msg.running) {setBtCtrlStatus('stop');
+                    } else {setBtCtrlStatus('start');};
+                    $.notification('error', "{% trans "Zwave Driver (controller) start error : " %}" + msg['error']);
+                };
+            });
+        return false;
+    });
+    
+    function setBtCtrlStatus(status) {
+        if (status=='start') { //active
+            $("#startCtrl").hide();
+            $("#stopCtrl").show();
+        } else { //inactive
+            $("#stopCtrl").hide();
+            $("#startCtrl").show();
+        };
+    };
     
     function handleWSmessage(msg, callback) {
         if (msg.header.type == 'ack') {
@@ -128,7 +178,7 @@ $(function(){
                     console.log("WS GetNodeInfo : " + infoNode['Model']);
                     $.notification('success',"Node : " + infoNode['Model'] + " info refreshed" );
                     var last = false;
-                    if (typeof callback == "boolean") {last = true;};
+                    if (typeof callback == "boolean") {last = callback;};
                     RefreshDataNode(infoNode, last);
                     RefreshTabHtml(infoNode);
                     UpNodeToolTips(infoNode.Node);
@@ -178,6 +228,12 @@ $(function(){
                 case 'setGroups' :
                     callback(msg.data);
                     break;
+                case 'StartCtrl' :
+                    callback(msg);
+                    break;
+                case 'StopCtrl' :
+                    callback(msg);
+                    break;
                 case 'ctrlAction' :
                     callback(msg.data);
                     break;
@@ -197,7 +253,7 @@ $(function(){
             };
         };
     };
-        
+
 function handleCtrlEvent (event) {
     var notif = '';
     if (event.notifytype) {notif = event.notifytype;
@@ -205,6 +261,14 @@ function handleCtrlEvent (event) {
     };
     switch (notif) {
         case 'driver-ready' :
+            setBtCtrlStatus('start');
+            setStatusZW('up');
+            $.notification('info',"Controller Node : " + event.node + " , " + event.usermsg + " at " + Date(event.header.timestamp));
+            break;
+        case 'driver-remove' :
+            setBtCtrlStatus('stop');
+            setStatusZW('down');
+            SetStatusZWDevices('infoIconInitNodes', 'uninitialized');
             $.notification('info',"Controller Node : " + event.node + " , " + event.usermsg + " at " + Date(event.header.timestamp));
             break;
         case 'init-process' :
@@ -213,11 +277,15 @@ function handleCtrlEvent (event) {
                 SetStatusZWDevices('infoIconInitNodes', event.data);
                 if (event.data == 'Completed') {$("#ozwrefreshnt").click();}
             }else{
-                zwNode = GetZWNodeById(parseInt(event.node));
-                zwNode['InitState'] = event.data;
-                RefreshDataNode(zwNode);
-                cb_RefreshTabHtml(zwNode);
-                UpNodeToolTips(zwNode.Node);
+                if (event.data == 'Completed') { 
+                    GetinfoNode(event.node);
+                } else {
+                    zwNode = GetZWNodeById(parseInt(event.node));
+                    zwNode['InitState'] = event.data;
+                    RefreshDataNode(zwNode);
+                    cb_RefreshTabHtml(zwNode);
+                    UpNodeToolTips(zwNode.Node);
+                    };
             };
             break;
         case 'node-state-changed' :
@@ -271,7 +339,7 @@ function handleCtrlEvent (event) {
         dlgCtrlAction(items);
     };
 
-                
+
     function RefreshNetWorkZW (data) {
         netWorkZW = data
         $('#confpath').html(netWorkZW['ConfigPath']);                    
@@ -293,9 +361,11 @@ function handleCtrlEvent (event) {
             $('#infoTextInitNodes').text("{% trans "Network initialisation : " %}");
             RefreshNodes(netWorkZW);
             SetStatusZWDevices('infoIconInitNodes', netWorkZW['Init state']);
+            setBtCtrlStatus('start');
         } else {
             $('#homeid').html(netWorkZW['error']);
             setStatusZW('down')
+            setBtCtrlStatus('stop');
         };
     };
 
@@ -311,7 +381,7 @@ function handleCtrlEvent (event) {
 
             };
         };            
-            
+
     function RefreshTabHtml(zwNode) {
       if (zwNode) {  
         var node_items = document.getElementById("node_items");
@@ -487,30 +557,52 @@ function handleCtrlEvent (event) {
         netWorkZW ={};
         listNodes = [];
         setStatusZW('down');
+        setBtCtrlStatus('stop');
         var msg = {};
         msg['header'] = {'type': 'req-ack'};
         msg['request'] ='GetNetworkID';
         sendMessage(msg);
+        return false;
     });
-        
+
     $("#ozwsaveconf").click(function(){
         var msg = {};
         msg['header'] = {'type': 'req-ack'};
         msg['request'] ='SaveConfig';
         sendMessage(msg);
+        return false;
     });
     
+    $("#startCtrl").click(function(){
+        var msg = {};
+        msg['header'] = {'type': 'req-ack'};
+        if ($('#startCtrl').hasClass('icon16-status-inactive')) {msg['request'] ='StopCtrl';
+        } else {msg['request'] ='StartCtrl';};
+    //    sendMessage(msg);
+        var st ='start'
+        setBtCtrlStatus(st);
+        return false;
+    });
+
     $("#startWebsocket").click(function(){
         var host = 'ws://' +  location.hostname + ':' + wsPort;
         createWebSocket(host, handleWSmessage);
+        return false;
     });
-    
+
     function initSequence() {
         GetListCmdsCtrl(function(){$("#ozwrefreshnt").click();});
     }; 
-    
+
    $(document).ready(function(){
         createToolTip('#infoIconInitNodes', 'top');
+        createToolTip('#startCtrl', 'top');
+        createToolTip('#stopCtrl', 'top');
+        createToolTip('#ctrlactions', 'top');
+        createToolTip('#softReset', 'top');
+        createToolTip('#hardReset', 'top');
+        createToolTip('#ozwrefreshnt', 'top');
+        createToolTip('#ozwsaveconf', 'top');
         openDmg_eventListener(handleCtrlEvent);
         getPluginInfo(function(port){var host = 'ws://' +  location.hostname + ':' + port;
                                                             createWebSocket(host, handleWSmessage, initSequence);});
@@ -566,8 +658,7 @@ function handleCtrlEvent (event) {
             <ul class='infos'>
                 <li><font size=3>
                     <span class='label'>{% trans "Home ID" %}:</span>&nbsp;<span class='subtitle' id='homeid'><u>{% trans "Undefined" %}</u></span>
-                </font> </li>
-                 <li>
+                </font> <br>
                     <span class='label'>{% trans "Contoller" %}:</span>&nbsp;<span class='subtitle' id='namectrl'><u>{% trans "Undefined" %}</u></span>
                     &nbsp;&nbsp;&nbsp;<span class='label'>{% trans "Device" %}:</span>&nbsp;<span class='subtitle' id='deviceadr'><u>{% trans "Undefined" %}</u></span>
                     &nbsp;&nbsp;&nbsp;<span class='label'>{% trans "Number of nodes" %}:</span>&nbsp;<span class='subtitle'  id='numnodes'><u>{% trans "Undefined" %}</u></span>
@@ -584,14 +675,26 @@ function handleCtrlEvent (event) {
                 </li>
             </ul>
         </form>
-        <p>
-            <button id='ozwrefreshnt' class='button icon16-action-reset'>{% trans "Refresh" %}</button>
-            <button id='ozwsaveconf' class='button icon16-action-save'>{% trans "Save config" %}</button> 
-            <span class='subtitle'>{% trans " Updade Node button before saving" %}</span>
-            <button id='ctrlactions' class='button icon16-action-actions '>{% trans "Controller Actions" %}</button> 
-            <button id='softReset' class='button icon16-action-btreset ' title="{% trans "Soft reset" %}">{% trans "Soft reset" %}</button>
-            <button id='hardReset' class='button icon16-action-btreset ' title="{% trans "Hard reset" %}">{% trans "Hard reset" %}</button>
-        </p>
+        <form><br><font size="3">
+            <b><span class='label'>{% trans "Controller commands" %}</span></b></font>
+            <ul class='infos'>
+            <table width=100%><tr>
+                <td width=30%><button id='ctrlactions' class='button icon16-action-actions' onclick='return false' title="{% trans "Handle specifics actions." %}">{% trans "Controller Actions" %}</button></td>
+                <td width=30%><button id='startCtrl' class='button icon16-status-inactive ' onclick='return false' title="{% trans "Controller stopped, Click to start it." %}">{% trans "Start controller" %}</button>
+                    <button id='stopCtrl' class='button icon16-status-active ' onclick='return false' title="{% trans "Controller runnning, Click to stop it." %}">{% trans "Stop controller" %}</button>
+                </td>
+                <td width=20% ><button id='softReset' class='button icon16-action-btreset ' onclick='return false' title="{% trans "Reseting only soft." %}">{% trans "Soft reset" %}</button></td>
+                <td width=20% ><button id='hardReset' class='button icon16-action-btreset ' onclick='return false' title="{% trans "Reseting all network." %}">{% trans "Hard reset" %}</button></td>
+            </tr></table>
+            </ul>    
+         </form>   
+        </form><br><font size="3">
+            <b><span class='label'>{% trans "Manage plugin" %}</span></b></font>
+            <ul class='infos'>
+                <button id='ozwrefreshnt' class='button icon16-action-reset' title="{% trans "Force refresh all devices info." %}">{% trans "Refresh" %}</button>
+                <button id='ozwsaveconf' class='button icon16-action-save' title="{% trans "Use 'Updade Node' button before saving openzwave config." %}">{% trans "Save config" %}</button> 
+            </ul>    
+        </form>
 </section>
 <section class="subsection">
     <h2>{% trans "Zwave Network devices" %}&nbsp;&nbsp;----&nbsp;&nbsp;

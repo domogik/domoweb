@@ -90,7 +90,7 @@ function dlgCtrlAction (vData) {
     $('label[for=actArgs],#actArgs').hide(); // Not Used at this time
     createToolTip('#actHighPower', 'left');
     $('#divCtrlActionDialog').dialog_formctrlaction('addbutton', {
-        title: gettext("Controller actions (in BETA version)"),
+        title: gettext("Controller actions"),
         button: "#ctrlactions",
         onok: function(values) {
             var self = this;

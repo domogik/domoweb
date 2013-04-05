@@ -78,7 +78,7 @@ KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
         tooltipLayer.draw();
         document.body.style.cursor = "default";
     });
-    
+
     this.pictNodeNeig.on("dragmove", function() {
       for (var i=0; i<this.attrs.nodeP.links.length;i++) {
           this.attrs.nodeP.links[i].follownode(this.attrs.nodeP);
@@ -112,17 +112,45 @@ KtcNodeNeighbor.prototype.addlink = function(linker) {
     var idx = this.links.indexOf(linker);
     if (idx == -1) {
         this.links.push(linker);
-        linker.addnode(this);           
+        linker.addnode(this);
     };
 };               
 
 KtcNodeNeighbor.prototype.removelink= function(linker) {
     var idx = this.links.indexOf(linker);
     if (idx == -1) {
+        this.links[idx].destroy();
         this.links.splice(idx, 1);
-        linker.removenode(this);           
         linker.draw();
     };
+};
+
+KtcNodeNeighbor.prototype.checklinks= function() {
+    var idn = -1;
+    for (var idx in this.links) {
+        if (this.links[idx].nodes[1].nodeobj.Node != this.nodeobj.Node) {
+            idn = this.nodeobj.Neighbors.indexOf(this.links[idx].nodes[1].nodeobj.Node);
+            if (idn == -1) { // Link must me removed
+                this.links[idx].destroy();
+                this.links.splice(idx, 1);
+            };
+        };
+    };
+    var create = true;
+    for (idn in this.nodeobj.Neighbors) {
+        create = true;
+        for (idx in this.links) {
+            if (this.links[idx].nodes[1].nodeobj.Node == this.nodeobj.Neighbors[idn]) {
+                create = false;
+                break;
+            };
+        };
+        if (create) {
+            N2 = GetZWNodeById(this.nodeobj.Neighbors[idn]);
+            if (N2) {new Clink(this, N2.ktcNode, linkLayer);};
+        };
+    };
+    linkLayer.draw();
 };
 
 KtcNodeNeighbor.prototype.getColorState = function() {
@@ -155,7 +183,7 @@ KtcNodeNeighbor.prototype.getColorState = function() {
         };
     return colors;
     };
-    
+
 KtcNodeNeighbor.prototype.getTypeLink = function(Node2) {
     var indice = 1, color = 'green';
     if (this.nodeobj.Capabilities.indexOf("Primary Controller" ) != -1 ) { indice =8;  color ='blue'}
@@ -169,17 +197,19 @@ KtcNodeNeighbor.prototype.getTypeLink = function(Node2) {
     return {'indice' : indice, 'color' : color}
 };
 
-KtcNodeNeighbor.prototype.setStatus = function() {
+KtcNodeNeighbor.prototype.update = function() {
+    this.checklinks();
     this.pictureImg.setFillRadialGradientColorStops(this.getColorState());
     tooltip.hide();
     var op =1;
     if (this.nodeobj['State sleeping']) {op = 0.3; };
     this.pictureImg.setOpacity(op);
+    for (var l in this.links)  {this.links[l].update();};
     this.pictNodeNeig.draw();
     tooltipLayer.draw();
     console.log('redraw kinetic node :' + this.nodeobj.Node);
 };
-        
+
 CLink = function (N1,N2,layer) {
             // build linelink
     var t = N1 .getTypeLink(N2);
@@ -222,6 +252,13 @@ CLink.prototype.removelink= function(node) {
         this.layer.draw();
     };
 };
+
+CLink.prototype.asnode= function(node) {
+    var id = this.nodes.indexOf(node);
+    if (id1 != -1) {return true;
+    }else {return false};
+};
+    
 CLink.prototype.follownode = function(node) { 
     var id1 = this.nodes.indexOf(node);
     var id2 =0;
@@ -239,7 +276,10 @@ CLink.prototype.follownode = function(node) {
         }
 };
 
-CLink.prototype.draw= function() {
+CLink.prototype.update= function() {
+    var t = this.nodes[0].getTypeLink(this.nodes[2]);
+    this.link.setStrokeWidth (t['indice']);
+    this.link.setStroke(t['color']);
     this.layer.draw();
 };
 
@@ -320,8 +360,8 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
              };
              self.layer.draw();
          };}, 300, self , grpAssociation);   
-        
-   
+
+
     this.pictNodeGrp.on("mouseover touchstart", function() {
         var img = this.get(".pictureImg");
         if (this.attrs.nodeP.isMember()) {img[0].setFill("red");
@@ -330,7 +370,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         this.parent.draw();
         document.body.style.cursor = "pointer";
         });
-            
+
     this.pictNodeGrp.on("mouseout touchend", function() {
         var stage = this.getStage();
         var img = this.get(".pictureImg");
@@ -345,7 +385,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         } else {
             console.log("Persistance node remove");};
     });
-    
+
     this.pictNodeGrp.on("dragstart", function() {
         var stage = this.getStage();
         console.log("dragstart node :" + this.attrs.nodeP.nodeObj.Node);
@@ -356,6 +396,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         this.attrs.nodeP.setState(newstate);        
         this.moveToTop();         
     });
+
     this.pictNodeGrp.on("dragmove", function() {
         var stage = this.getStage();
         var groups = stage.get('.ngroupass');
@@ -379,7 +420,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         this.moveToTop();         
         stage.draw();
     });
-    
+
     this.pictNodeGrp.on("dragend", function() {
         var stage = this.getStage();
         console.log("dragend node :" + this.attrs.nodeP.nodeObj.Node);
@@ -416,7 +457,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
             };        
         stage.draw();         
     });
-    
+
     this.pictNodeGrp.on("mousedown", function() {
         console.log("mousedown node :" + this.attrs.nodeP.nodeObj.Node);
         if (this.attrs.nodeP.isMember()) {
@@ -424,7 +465,7 @@ KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
         };
         this.moveToTop();         
     });
-    
+
     this.pictNodeGrp.on("mousemove touchmove", function(){
         var stage = this.getStage();
         var mousePos = stage.getMousePosition();
@@ -557,7 +598,7 @@ KtcNodeGrp.prototype.setState = function(state, inGrpAss) {
 };
 function initScrollbars(stage) {
   //  horizontal scrollbars
-    
+
     var hscrollArea = new Kinetic.Rect({
         x: 0,
         y: stage.getHeight() - 20,
@@ -642,7 +683,7 @@ function initScrollbars(stage) {
         nodeLayer.draw();
         linkLayer.draw();
     });
-    
+
     areas.add(hscrollArea);
     areas.add(vscrollArea);
     scrollbars.add(hscroll);
@@ -863,11 +904,11 @@ KtcGrpAss = function (x,y,w,h,grp,stage) {
         this.picture.add(m.pictNodeGrp);
     }
     this.layer.add(this.picture); 
-    
+
     this.picture.on("mouseover touchstart", function() {
          document.body.style.cursor = "pointer";
         });
-            
+
     this.picture.on("mouseout touchend", function() {
         document.body.style.cursor = "default";
     });
@@ -879,7 +920,7 @@ KtcGrpAss.prototype.getDim = function (){
     retval.size= this.picture.children[0].getSize(); // pas de getsize sur contenair en lib v3.10
     return retval;
 };
-    
+
 KtcGrpAss.prototype.isAMember = function (nodeObj) {
     var retval = null;
     for (var i=0; i<this.members.length; i++) {
@@ -1050,7 +1091,7 @@ KtcInitCarouselNodes = function (r, wArea, stage) {
     };
     this.imgGoRight.src =  '/design/common/images/action/go_right_64.png'; 
 };
-    
+
 
 function RefreshGroups(stage, nodeP, newGroups) {
     console.log("Refresh state members groups");
@@ -1134,10 +1175,10 @@ function SetNewGroups (stage, node) {
             };
         };
     };
-        
+
     return node.Groups;
 };
-        
+
 window.onload = function() {
     var s= 0;
       }; 

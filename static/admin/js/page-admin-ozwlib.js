@@ -79,7 +79,7 @@ function createWebSocket(host, cbHandleMsg, cbAtOpen) {
                 var d = new Date();
                 console.log('Client WebSocket State::' + 'OPEN');
                 };
-                    
+
             wsDomogik.onclose = function(event) {
                 setStatusWS('down');
                 var d = new Date();
@@ -88,10 +88,12 @@ function createWebSocket(host, cbHandleMsg, cbAtOpen) {
                 wsDomogik.idws = false;
                 };
             wsDomogik.onerror = function(event) {
-                $.notification('error', gettext('Client WebSocket error : ', event));
-                console.log('Client WebSocket State::' + 'ERROR', event);
+                if (event.target) { error = event.target.url;
+                } else { error = 'No URL definition';};
+                $.notification('error', gettext('Client WebSocket no connection on URL : ') +  error);
+                console.log('Client WebSocket no connection on URL : ' +  error);
                 };
-                
+
             wsDomogik.sendhbeat = function() {
                 var d = new Date();
                 msg['header'] = {'type': 'req-ack'};
@@ -107,7 +109,7 @@ function createWebSocket(host, cbHandleMsg, cbAtOpen) {
                     };
                     });
                 };
-            
+
             wsDomogik.onmessage = function(event){
                 var d = new Date();
                 tWSserverOut = d.getTime(); 
@@ -159,7 +161,7 @@ function createWebSocket(host, cbHandleMsg, cbAtOpen) {
         };
     };
 };
-    
+
 function sendMessage(message, callback, timeOut) {
     var d = new Date();
     if (wsDomogik && wsDomogik.idws) {
@@ -208,7 +210,7 @@ function wsAckTimeOutCtrl() {
                 if (cptTimeOutWS>= 60) {
                     cptTimeOutWS = 0;
                     if (wsDomogik.idws == false) {
-                        if ((d.getTime() - tWSserverOut) >= (30000 * 3)) {
+                        if ((d.getTime() - tWSserverOut) >= (30000 * 3.5)) {
                                 wsDomogik =false;
                             } else {
                                 $.notification('error', gettext('No connection on plugin server since ') + ((d.getTime() - tWSserverOut)/1000) + ' sec.');
@@ -254,10 +256,10 @@ function openDmg_eventListener(callback){
     ozwes.addEventListener('error', function (event) {
         console.log ('dmg_event error ', event);
         }, false);
-    
+
 	$(window).bind('beforeunload', function () {ozwes.close(); });
 };
-                                       
+
 function GetDataFromxPL (data, key) {
     var dt=JSON.stringify(data);
     var debut=dt.search(key + '=');
@@ -277,7 +279,7 @@ function GetDataFromxPL (data, key) {
         };
     return JSON.parse(dt); 
 };
-        
+
  function ParseAckXPL(xpl) {
     var tamp=xpl;
     var li=0;
@@ -314,7 +316,7 @@ function GetDataFromxPL (data, key) {
     };
     return mesxPL;
 };
-    
+
 function SetDataToxPL (data) {
     dt=JSON.stringify(data);
   //  console.log ("SetDataToxPL : " + dt);
@@ -322,7 +324,7 @@ function SetDataToxPL (data) {
  //   console.log ("SetDataToxPL str : " + val);
     return val;
 };
-    
+
 function getDataTableColIndex (dTab, title) {
     var cols = dTab.aoColumns;
     for ( var x=0, xLen=cols.length ; x<xLen ; x++ ) {
@@ -388,9 +390,9 @@ function createToolTip(domObj, position, text) {
         };
     });
 };
-    
+
 // Gestion des tables de données
-function RefreshDataNode(infonode, last) {
+function RefreshDataNode(infonode, Kbuild) {
     var idx = -1;
     for (var i = 0; i < listNodes.length; i++) {
         if (listNodes[i].Node == infonode.Node) {
@@ -401,12 +403,12 @@ function RefreshDataNode(infonode, last) {
     if (idx != -1) {
         listNodes[idx] = infonode;
         if (listNodes[idx].ktcNode) {
-            listNodes[idx].ktcNode.setStatus();
+            listNodes[idx].ktcNode.update();
             };
     } else {
         listNodes.push(infonode);
     };
-    if (last) {
+    if (Kbuild) {
         if  (initialized) {setTimeout(function () {buildKineticNeighbors();},1000);   
             } else {setTimeout(function () {initNeighborsStage();},1000); };
         initialized = true;
@@ -448,7 +450,7 @@ function setStatusZW(status) {
         .attr('class', "icon16-text-right icon16-status-plugin-" + status)
         .html("<span class='label'>" + gettext('status') + " :</span><span class='offscreen'>" + textstatus + "</span>");
 };
-        
+
 function SetStatusZWDevices(idObj, status) {
     status = status.toLowerCase();
     if (status == 'uninitialized') { st = 'status-unknown'};
@@ -470,7 +472,7 @@ function SetStatusMemberGrp(infonode,group,member,status) {
             return parseInt (texte.substring(0, texte.indexOf('<span'))); 
         } else { return texte}
     }
-    
+
     function setStatusDeviceZW(oObj) {
         /* {0:,
               1:'Initialized - not known', 
@@ -494,7 +496,7 @@ function SetStatusMemberGrp(infonode,group,member,status) {
     function setNameNode(oObj) {
         return "<input type='text' title='Name' value='" + oObj.aData[hdLiNode['Name']] + "'/>";
         };
-        
+
     function setStatusSleep(oObj) {
         var status = oObj.aData[hdLiNode['Awake']];
         var nodeId = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
@@ -547,7 +549,7 @@ function SetStatusMemberGrp(infonode,group,member,status) {
             };
         return  ret;
         };
-         
+
     function renderCmdClssNode(oObj) {
         var num = oObj.aData[0];
         if (num < 10) { num = "0" + num; };
@@ -586,8 +588,8 @@ function SetStatusMemberGrp(infonode,group,member,status) {
         var vId = oObj.aData[getDataTableColIndex(oObj.oSettings, 'id')];
         return   "<span id='hc"+vId +"'title='" + help + "'>" + CmdClss + "</span>";
         };
-        
-        
+
+
     function renderCmdClssValue(oObj){
         var vId = oObj.aData[getDataTableColIndex(oObj.oSettings, 'id')];
         var id = "valCC" + vId;
@@ -679,7 +681,7 @@ function SetStatusMemberGrp(infonode,group,member,status) {
             msg = setValueNode(nodeId, valueId, false, aTable,nTr, true); // force la valeur à true
         });
     };
-        
+
     function returnTextValue(val) {
         if (typeof(val) != 'number') {
             debut = val.search('value=');
@@ -691,7 +693,7 @@ function SetStatusMemberGrp(infonode,group,member,status) {
           };
         return val;
         };
-        
+
 /* Formatage du details d'une row  */
     function fnFormatDetailsCmdCll (nTr, thOut) {
         var aData = oTabNodes.fnGetData(nTr);
@@ -711,7 +713,7 @@ function SetStatusMemberGrp(infonode,group,member,status) {
    //     console.log (sOut);
         return sOut;
     };
- 
+
 function UpNodeToolTips (nodeid) {
     createToolTip('#nodestate' + nodeid, 'left');
     createToolTip('#detailnode' + nodeid, 'right');
@@ -720,7 +722,7 @@ function UpNodeToolTips (nodeid) {
     createToolTip('#infotypenode' + nodeid, 'bottom');
     createToolTip('#infosleepnode' + nodeid, 'bottom');
     };
-       
+
 function UpCmdClssValue(zwNode, objValue, timeUpDate) {
     var vTable = $('#detNode' + zwNode.Node).dataTable();
     if (vTable[0]) {
@@ -742,7 +744,7 @@ function UpCmdClssValue(zwNode, objValue, timeUpDate) {
         };
     };
 };
-    
+
 function GetinfoNode (nodeid, callback) {
     if (nodeid) {
         var msg = {};
@@ -800,7 +802,7 @@ function setValueNode(nodeId, valueid, value, aTable, nTr, newvalue) {
         console.log("Dans setValueNode pas de valueid : " + valueid);   
     };
 };
-    
+
     function setGroupsNode(stage, node, newgrps, callback) {
         if (node) {
                 var msg = {};
@@ -826,4 +828,4 @@ function setValueNode(nodeId, valueid, value, aTable, nTr, newvalue) {
                 }
     };
 
-    
+
