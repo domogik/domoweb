@@ -10,8 +10,9 @@ function ondrop(event, ui) {
 	id = 'n' + randomnumber;
 	item.data('instanceid', id);
 	item.attr('id', "widgetinstance_" + id);
-	item.append('<input type="hidden" name="instance[' + id + '][featureid]" value="' + ui.draggable.data('featureid') + '" />');	    
+	item.append('<input type="hidden" name="instance[' + id + '][featureid]" value="' + ui.draggable.data('featureid') + '" />');
 	item.append('<input type="hidden" name="instance[' + id + '][featuretype]" value="' + ui.draggable.data('featuretype') + '" />');	    
+	item.append('<input type="hidden" name="instance[' + id + '][datatype]" value="' + ui.draggable.data('datatype') + '" />');	    
 	item.append('<input type="hidden" name="instance[' + id + '][widgetid]" value="' + ui.draggable.data('widgetid') + '" />');	    
     
 	$('#configpanel').append("<article id='configinstance_" + id + "' style='display: none'> \
@@ -51,21 +52,23 @@ $(function(){
         $('button.device, button.feature').removeClass('selected');
         $(this).addClass('selected');
         $('.features, #widgets ul, #model dl').hide();
-        var deviceid = $(this).attr('deviceid');
+        var deviceid = $(this).data('deviceid');
         $('#features' + deviceid).show().focus();
     });
     
     $("button.feature").click(function(){
         $('button.feature').removeClass('selected');
         $(this).addClass('selected');
-        var featuretype = $(this).attr('featuretype');
-        var featureid = $(this).attr('featureid');
-        var featuremodel = $(this).attr('featuremodel');
-        var featurename = $(this).attr('featurename');
-        var devicename = $(this).attr('devicename');
+        var featuretype = $(this).data('featuretype');
+        var datatype = $(this).data('datatype');
+        var featureid = $(this).data('featureid');
+        var featuremodel = $(this).data('featuremodel');
+        var featurename = $(this).data('featurename');
+        var devicename = $(this).data('devicename');
         $("#model dl").hide();
         $("#widgets ul").widget_models({
             featuretype: featuretype,
+            datatype: datatype,
             featureid: featureid,
             featuremodel: featuremodel,
             featurename: featurename,
@@ -98,10 +101,10 @@ $(function(){
         _init: function() {
             var self = this, o = this.options;
             this.element.empty();
-            var widgets = get_widgets(o.featuretype);
+            var widgets = get_widgets(o.featuretype, o.datatype);
             $.each(widgets, function(index, id) {
                 var woptions = get_widgets_options(id);
-                if (matchFilter(woptions.filters, o.featuretype)) {
+//                if (matchFilter(woptions.filters, o.featuretype)) {
                     var widget = $("<li><button class='widget'>" + woptions.name + "</button></li>");
                     widget.find('button').click(function() {
                         $('.widget').removeClass('selected');
@@ -118,7 +121,7 @@ $(function(){
                         $("#model dl").show();
                     });
                     self.element.append(widget); 
-                }
+//                }
             });
         },
 	
@@ -154,6 +157,7 @@ $(function(){
                 widgetheight: o.height,
                 featureid: o.featureid,
                 featuretype: o.featuretype,
+                datatype: o.datatype,
                 featurename: o.featurename,
                 devicename: o.devicename,
                 draggable: {
@@ -187,6 +191,7 @@ $(function(){
              this.element.data({
                 'featureid':o.featureid,
                 'featuretype':o.featuretype,
+                'datatype':o.datatype,
                 'widgetid': o.widgetid,
             });
             this.element.append("<div class='identity identitydevice length" + o.width + "'>" + o.devicename + "</div>");

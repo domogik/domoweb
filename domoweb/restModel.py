@@ -40,15 +40,23 @@ class RestModel(models.Model):
         data = cls._get_data(cls.list_path)
         if data.status == "ERROR":
             raise RinorError(data.code, data.description)
-        return data[cls.index]
+        if cls.index:
+            result=data[cls.index]
+        else:
+            result=data
+        return result
 
     @classmethod
     def delete_details(cls, id):
         data = cls._delete_data(cls.delete_path, [id])
         if data.status == "ERROR":
             raise RinorError(data.code, data.description)
-        if len(data[cls.index]) > 0:
-            return data[cls.index][0]
+        if cls.index:
+            result=data[cls.index]
+        else:
+            result=data
+        if len(result) > 0:
+            return result[0]
         else:
             return None
 
@@ -57,7 +65,11 @@ class RestModel(models.Model):
         data = cls._post_data(cls.create_path, data)
         if data.status == "ERROR":
             raise RinorError(data.code, data.description)
-        return data[cls.index][0]
+        if cls.index:
+            result=data[cls.index]
+        else:
+            result=data
+        return result[0]
     
     @staticmethod
     def _clean_url(path, data=None):

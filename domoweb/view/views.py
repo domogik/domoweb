@@ -41,7 +41,7 @@ from django.utils.translation import ugettext as _
 from django import forms
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
-from domoweb.models import Widget, PageIcon, WidgetInstance, WidgetInstanceParam, WidgetInstanceSensor, WidgetInstanceCommand, PageTheme, DeviceType, DeviceUsage, Device, Sensor, Command
+from domoweb.models import Widget, PageIcon, WidgetInstance, WidgetInstanceParam, WidgetInstanceSensor, WidgetInstanceCommand, PageTheme, DeviceType, Device, Sensor, Command
 from domoweb import fields
     
 class ThemeChoiceField(forms.ModelChoiceField):

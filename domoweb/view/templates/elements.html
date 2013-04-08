@@ -69,7 +69,7 @@
                 $("#widgetinstance_{{ instance.id }}").widget_shape({
                     widgetid: '{{ instance.widget_id }}',
                     featureid: '{{ command.id }}',
-                    featuretype: 'actuator',
+                    featuretype: 'command',
                     devicename: '{{ command.device.name }}',
                     featurename: '{{ command.name }}',
                 });
@@ -124,16 +124,9 @@
         <div id='dialog' title='Place yours widgets'>
             <div id='devices'>
                 <ul>
-                {% regroup devices|dictsort:"usage_id" by usage as usages %}
-                {% for usage in usages %}
-                    <li><div class='subcategory icon16-usage-{{ usage.grouper.id }}'>{{usage.grouper.name }}</div>
-                        <ul>
-                            {% for device in usage.list %}
-                            <li><button id='showdevice{{device.id}}' deviceid='{{device.id}}' class='device'>{{ device.name }} ({{ device.type.name }})</button></li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                {% endfor %}
+                    {% for device in devices %}
+                    <li><button id='showdevice{{device.id}}' data-deviceid='{{device.id}}' class='device'>{{ device.name }} ({{ device.type.name }})</button></li>
+                    {% endfor %}
                 </ul>
             </div>
             <div id='features'>
@@ -142,14 +135,14 @@
                     <li><div class='subcategory'>Sensors</div>
                         <ul>
                             {% for sensor in device.sensor_set.all %}
-                            <li><button id='showsensor{{sensor.id}}' class='feature' featureid='{{ sensor.id }}' devicename='{{device.name }}' featurename='{{ sensor.name }}' featuretype='sensor.{{ sensor.value_type }}'>{{ sensor.name }}</button></li>
+                            <li><button id='showsensor{{sensor.id}}' class='feature' data-featureid='{{ sensor.id }}' data-devicename='{{device.name }}' data-featurename='{{ sensor.name }}' data-featuretype='sensor' data-datatype='{{ sensor.datatype_id }}'>{{ sensor.name }}</button></li>
                             {% endfor %}
                         </ul>
                     </li>
                     <li><div class='subcategory'>Commands</div>
                         <ul>
                             {% for command in device.command_set.all %}
-                            <li><button id='showcommand{{command.id}}' class='feature' featureid='{{ command.id }}' devicename='{{device.name }}' featurename='{{ command.name }}' featuretype='actuator.{{ command.commandparam_set.all.0.value_type }}'>{{ command.name }}</button></li>
+                            <li><button id='showcommand{{command.id}}' class='feature' data-featureid='{{ command.id }}' data-data-devicename='{{device.name }}' data-featurename='{{ command.name }}' data-featuretype='command' data-datatype='{{ command.commandparam_set.all.0.datatype_id }}'>{{ command.name }}</button></li>
                             {% endfor %}
                         </ul>
                     </li>

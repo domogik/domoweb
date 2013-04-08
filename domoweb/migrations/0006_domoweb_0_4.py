@@ -16,6 +16,33 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('domoweb', ['XPLCmd'])
 
+        # Adding model 'Device'
+        db.create_table('domoweb_device', (
+            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('description', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('reference', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.DeviceType'], null=True, on_delete=models.DO_NOTHING, blank=True)),
+        ))
+        db.send_create_signal('domoweb', ['Device'])
+
+        # Adding model 'WidgetInstanceSensor'
+        db.create_table('domoweb_widgetinstancesensor', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('instance', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.WidgetInstance'])),
+            ('key', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('sensor', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.Sensor'], on_delete=models.DO_NOTHING)),
+        ))
+        db.send_create_signal('domoweb', ['WidgetInstanceSensor'])
+
+        # Adding model 'DeviceType'
+        db.create_table('domoweb_devicetype', (
+            ('id', self.gf('django.db.models.fields.CharField')(max_length=50, primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('plugin_id', self.gf('django.db.models.fields.CharField')(max_length=50)),
+        ))
+        db.send_create_signal('domoweb', ['DeviceType'])
+
         # Adding model 'XPLStat'
         db.create_table('domoweb_xplstat', (
             ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
@@ -24,13 +51,104 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('domoweb', ['XPLStat'])
 
+        # Adding model 'Command'
+        db.create_table('domoweb_command', (
+            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('device', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.Device'])),
+            ('reference', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('return_confirmation', self.gf('django.db.models.fields.BooleanField')(default=True)),
+        ))
+        db.send_create_signal('domoweb', ['Command'])
+
+        # Adding model 'WidgetInstanceCommand'
+        db.create_table('domoweb_widgetinstancecommand', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('instance', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.WidgetInstance'])),
+            ('key', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('command', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.Command'], on_delete=models.DO_NOTHING)),
+        ))
+        db.send_create_signal('domoweb', ['WidgetInstanceCommand'])
+
+        # Adding model 'Sensor'
+        db.create_table('domoweb_sensor', (
+            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('device', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.Device'])),
+            ('reference', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('datatype', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.DataType'], on_delete=models.DO_NOTHING)),
+            ('last_value', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('last_received', self.gf('django.db.models.fields.CharField')(max_length=50)),
+        ))
+        db.send_create_signal('domoweb', ['Sensor'])
+
+        # Adding model 'CommandParam'
+        db.create_table('domoweb_commandparam', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('command', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.Command'])),
+            ('key', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('datatype', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.DataType'], on_delete=models.DO_NOTHING)),
+        ))
+        db.send_create_signal('domoweb', ['CommandParam'])
+
+        # Adding model 'DataType'
+        db.create_table('domoweb_datatype', (
+            ('id', self.gf('django.db.models.fields.CharField')(max_length=50, primary_key=True)),
+            ('parameters', self.gf('django.db.models.fields.TextField')()),
+        ))
+        db.send_create_signal('domoweb', ['DataType'])
+
+        # Adding model 'WidgetInstanceParam'
+        db.create_table('domoweb_widgetinstanceparam', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('instance', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.WidgetInstance'])),
+            ('key', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('value', self.gf('django.db.models.fields.CharField')(max_length=50)),
+        ))
+        db.send_create_signal('domoweb', ['WidgetInstanceParam'])
+
+        # Deleting field 'WidgetInstance.feature_id'
+        db.delete_column('domoweb_widgetinstance', 'feature_id')
+
 
     def backwards(self, orm):
         # Deleting model 'XPLCmd'
         db.delete_table('domoweb_xplcmd')
 
+        # Deleting model 'Device'
+        db.delete_table('domoweb_device')
+
+        # Deleting model 'WidgetInstanceSensor'
+        db.delete_table('domoweb_widgetinstancesensor')
+
+        # Deleting model 'DeviceType'
+        db.delete_table('domoweb_devicetype')
+
         # Deleting model 'XPLStat'
         db.delete_table('domoweb_xplstat')
+
+        # Deleting model 'Command'
+        db.delete_table('domoweb_command')
+
+        # Deleting model 'WidgetInstanceCommand'
+        db.delete_table('domoweb_widgetinstancecommand')
+
+        # Deleting model 'Sensor'
+        db.delete_table('domoweb_sensor')
+
+        # Deleting model 'CommandParam'
+        db.delete_table('domoweb_commandparam')
+
+        # Deleting model 'DataType'
+        db.delete_table('domoweb_datatype')
+
+        # Deleting model 'WidgetInstanceParam'
+        db.delete_table('domoweb_widgetinstanceparam')
+
+        # Adding field 'WidgetInstance.feature_id'
+        db.add_column('domoweb_widgetinstance', 'feature_id',
+                      self.gf('django.db.models.fields.IntegerField')(default=0),
+                      keep_default=False)
 
 
     models = {
@@ -45,10 +163,14 @@ class Migration(SchemaMigration):
         'domoweb.commandparam': {
             'Meta': {'object_name': 'CommandParam'},
             'command': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['domoweb.Command']"}),
+            'datatype': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['domoweb.DataType']", 'on_delete': 'models.DO_NOTHING'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'key': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'value_type': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'values': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+            'key': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+        },
+        'domoweb.datatype': {
+            'Meta': {'object_name': 'DataType'},
+            'id': ('django.db.models.fields.CharField', [], {'max_length': '50', 'primary_key': 'True'}),
+            'parameters': ('django.db.models.fields.TextField', [], {})
         },
         'domoweb.device': {
             'Meta': {'object_name': 'Device'},
@@ -56,20 +178,13 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'reference': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['domoweb.DeviceType']", 'null': 'True', 'on_delete': 'models.DO_NOTHING', 'blank': 'True'}),
-            'usage': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['domoweb.DeviceUsage']", 'null': 'True', 'on_delete': 'models.DO_NOTHING', 'blank': 'True'})
+            'type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['domoweb.DeviceType']", 'null': 'True', 'on_delete': 'models.DO_NOTHING', 'blank': 'True'})
         },
         'domoweb.devicetype': {
             'Meta': {'object_name': 'DeviceType'},
             'id': ('django.db.models.fields.CharField', [], {'max_length': '50', 'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'plugin_id': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'domoweb.deviceusage': {
-            'Meta': {'object_name': 'DeviceUsage'},
-            'default_options': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'id': ('django.db.models.fields.CharField', [], {'max_length': '50', 'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         'domoweb.page': {
             'Meta': {'object_name': 'Page'},
@@ -101,15 +216,13 @@ class Migration(SchemaMigration):
         },
         'domoweb.sensor': {
             'Meta': {'object_name': 'Sensor'},
+            'datatype': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['domoweb.DataType']", 'on_delete': 'models.DO_NOTHING'}),
             'device': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['domoweb.Device']"}),
             'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
             'last_received': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'last_value': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'reference': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'unit': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'value_type': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
-            'values': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+            'reference': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         'domoweb.widget': {
             'Meta': {'object_name': 'Widget'},

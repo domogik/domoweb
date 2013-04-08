@@ -1,24 +1,24 @@
 var widgets_list = {
-    'sensor.boolean': [],
-    'sensor.number': [],
-    'sensor.string': [],
-    'actuator.binary': [],
-    'actuator.range': [],
-    'actuator.number': [],
-    'actuator.trigger': [],
-    'actuator.string': [],
-    'actuator.list': []
+    'sensor': {},
+    'command': {}
 };
 
 var widgets_options = {};
 
-function register_widget(type, id, options) {
-    widgets_list[type].push(id);
-    widgets_options[id] = options;
+function register_widget(type, supported, id, options) {
+    if (supported) {
+        $.each(supported, function(i, data_type) {
+            if (!(data_type in widgets_list[type])) {
+                widgets_list[type][data_type] = [];
+            }
+            widgets_list[type][data_type].push(id);
+        });
+        widgets_options[id] = options;
+    }
 }
 
-function get_widgets(type) {
-    return widgets_list[type];
+function get_widgets(type, data_type) {
+    return widgets_list[type][data_type];
 }
 
 function get_widgets_options(id) {
@@ -30,12 +30,12 @@ function get_widgets_options(id) {
     $.extend({
         create_widget : function(data) {
             $.ui.widget_core.subclass('ui.' + data.options.id, data);
-            register_widget(data.options.type, data.options.id, data.options);
+            register_widget(data.options.type, data.options.supported, data.options.id, data.options);
         },
         
         create_widget_1x1_extended : function(data) {
             $.ui.widget_1x1_extended.subclass('ui.' + data.options.id, data);
-            register_widget(data.options.type, data.options.id, data.options);
+            register_widget(data.options.type, data.options.supported, data.options.id, data.options);
         }
     });
     

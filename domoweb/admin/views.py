@@ -54,7 +54,7 @@ from django.forms.widgets import Select
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, WidgetInstanceParam, WidgetInstanceSensor, WidgetInstanceCommand, PageTheme, Page, DeviceType, DeviceUsage, Device, Command, CommandParam, Sensor
+from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, WidgetInstanceParam, WidgetInstanceSensor, WidgetInstanceCommand, PageTheme, Page, DataType, DeviceType, Device, Command, CommandParam, Sensor
 
 def login(request):
     """
@@ -221,25 +221,14 @@ class MyModelChoiceField(forms.ModelChoiceField):
     
 class DeviceForm(forms.Form):
     name = forms.CharField(max_length=50, label=_("Name"), required=True)
-    usage_id = MyModelChoiceField(widget=SelectIcon, queryset=DeviceUsage.objects.all(), label=_("Usage"), required=True)
     reference = forms.CharField(max_length=50, label=_("Hardware/Software Reference"), required=False)
     type_id = forms.CharField(widget=forms.HiddenInput, required=True)
 
     def __init__(self, *args, **kwargs):
         # This should be done before any references to self.fields
         super(DeviceForm, self).__init__(*args, **kwargs)
-        #init the choice list on Form init (and not on django load)
-#        self.fields["usage_id"] = 
 
-    def clean(self):
-        cleaned_data = super(DeviceForm, self).clean()
-        usage = cleaned_data.get("usage_id")
-        if usage:
-            cleaned_data["usage_id"] = usage.id
-
-        # Always return the full collection of cleaned data.
-        return cleaned_data
-    
+   
 class ParametersForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.name = kwargs.pop('name', None)
@@ -272,7 +261,7 @@ class ParametersForm(forms.Form):
             data[key] = cd
         return data
     
-#@admin_required
+@admin_required
 def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
     page_title = _("Add device")
     parameters = DeviceParametersPipe().get_detail(type_id)
@@ -311,7 +300,7 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
             valid = valid and stat.is_valid()
         if valid:
             cd = deviceform.cleaned_data
-            device = Device.create(cd["name"], cd["type_id"], cd["usage_id"], cd["reference"])
+            device = Device.create(cd["name"], cd["type_id"], cd["reference"])
             if globalparametersform:
                 device.add_global_params(parameters=globalparametersform.cleaned_data)
             for command in commands:
@@ -491,6 +480,7 @@ class PageThemeTable(tables.Table):
 class PageTable(tables.Table):
     class Meta:
         model = Page
+
 class DeviceTable(tables.Table):
     class Meta:
         model = Device
@@ -499,9 +489,9 @@ class DeviceTypeTable(tables.Table):
     class Meta:
         model = DeviceType
 
-class DeviceUsageTable(tables.Table):
+class DataTypeTable(tables.Table):
     class Meta:
-        model = DeviceUsage
+        model = DataType
 
 class CommandTable(tables.Table):
     class Meta:
@@ -536,7 +526,7 @@ def admin_core_domowebdata(request):
     page_table = PageTable(Page.objects.all())
     device_table = DeviceTable(Device.objects.all())
     devicetype_table = DeviceTypeTable(DeviceType.objects.all())
-    deviceusage_table = DeviceUsageTable(DeviceUsage.objects.all())
+    datatype_table = DataTypeTable(DataType.objects.all())
     command_table = CommandTable(Command.objects.all())
     commandparam_table = CommandParamTable(CommandParam.objects.all())
     sensor_table = SensorTable(Sensor.objects.all())
@@ -557,7 +547,7 @@ def admin_core_domowebdata(request):
         page_table = page_table,
         device_table = device_table,
         devicetype_table = devicetype_table,
-        deviceusage_table = deviceusage_table,
+        datatype_table = datatype_table,
         command_table = command_table,
         commandparam_table = commandparam_table,
         sensor_table = sensor_table,

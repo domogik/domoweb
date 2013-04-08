@@ -7,7 +7,17 @@
             id: 'dmg_1x1_basicSensorBoolean',
             name: 'Basic widget',
             description: 'Basic widget with border and name',
-            type: 'sensor.boolean',
+            type: 'sensor',
+	    supported : ["DT_Bool",
+		"DT_Switch",
+		"DT_Enable",
+		"DT_Binary",
+		"DT_Step",
+		"DT_UpDown",
+		"DT_OpenClose",
+		"DT_Start",
+		"DT_State"
+	    ],
             height: 1,
             width: 1,
             displayname: true,
@@ -16,14 +26,12 @@
 
         _init: function() {
             var self = this, o = this.options;
-            this.element.addClass("icon32-usage-" + o.usage);
-            this.TRUE=o.values[1];
-            this.FALSE= o.values[0];
+/*            this.element.addClass("icon32-usage-" + o.usage);*/
 
             this._status = $.getStatus();
             this.element.append(this._status);
 
-            this._initValues(1);
+            this.setValue(o.initial_value);
         },
 
         _statsHandler: function(stats) {
@@ -38,23 +46,21 @@
             this.setValue(value);
         },
 
-        setValue: function(value, unit, previous) {
+        setValue: function(value) {
             var self = this, o = this.options;
-            if (value==this.TRUE || value==this.FALSE) {
-                value = value.toLowerCase();
-                if (value == this.TRUE) {
+            if (value != null) {
+                if (value == 1) {
                     this.element.displayIcon('value_true');             
                     this._status.removeClass('icon16-status-unknown icon16-status-inactive').addClass('icon16-status-active');
-                }
-                if(value== this.FALSE) { // low
+                } else {
                     this.element.displayIcon('value_false');             
                     this._status.removeClass('icon16-status-unknown icon16-status-active').addClass('icon16-status-inactive');
                 }
-                this._status.html("<div class='offscreen'>"+value+"</div>");
+/*                this._status.html("<div class='offscreen'>"+value+"</div>");*/
             } else { // Unknown
                 this.element.displayIcon('unknown');             
                 this._status.removeClass('icon16-status-active icon16-status-inactive').addClass('icon16-status-unknown');
-                this._status.html("<div class='offscreen'>Unknown</div>");
+/*                this._status.html("<div class='offscreen'>Unknown</div>");*/
             }
             this.previousValue = value;
         }

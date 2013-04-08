@@ -62,4 +62,4 @@ def run_manager(db):
     execute_manager(settings)
 
 if __name__ == "__main__":
-    run_manager("/var/lib/domoweb/domoweb-deviceparams.db")
+    run_manager("/var/lib/domoweb/domoweb.db")

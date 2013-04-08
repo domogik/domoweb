@@ -7,17 +7,18 @@
             id: 'dmg_4x2_communicationCallerId',
             name: 'Caller Id',
             description: 'Specific widget for Caller Id',
-            type: 'sensor.string',
+            type: 'sensor',
+	    supported : ["DT_Phone"],
             height: 2,
             width: 4,
             filters:['communication.caller_id.number'],
             displayname: true,
-			displayborder: true
+	    displayborder: true
         },
 
         _init: function() {
             var self = this, o = this.options;
-            this.element.addClass("icon32-usage-" + o.usage)
+/*            this.element.addClass("icon32-usage-" + o.usage)*/
             this._newbg =  $("<div class='newbg size4x2'></div>");
             this._new =  $("<div class='new'></div>");
             this._newbg.append(this._new);

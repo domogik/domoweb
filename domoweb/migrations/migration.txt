@@ -1,0 +1,20 @@
+$ ./manage.py schemamigration domoweb --auto "domoweb_0_4"
+ + Added model domoweb.XPLCmd
+ + Added model domoweb.Device
+ + Added model domoweb.WidgetInstanceSensor
+ + Added model domoweb.DeviceType
+ + Added model domoweb.WidgetInstanceCommand
+ + Added model domoweb.Command
+ + Added model domoweb.XPLStat
+ + Added model domoweb.Sensor
+ + Added model domoweb.CommandParam
+ + Added model domoweb.DataType
+ + Added model domoweb.WidgetInstanceParam
+ - Deleted field feature_id on domoweb.WidgetInstance
+Created 0006_domoweb_0_4.py. You can now apply this migration with: ./manage.py migrate domoweb
+$ ./manage.py migrate domoweb
+Running migrations for domoweb:
+ - Migrating forwards to 0006_domoweb_0_4.
+ > domoweb:0006_domoweb_0_4
+ - Loading initial data for domoweb.
+Installed 0 object(s) from 0 fixture(s)

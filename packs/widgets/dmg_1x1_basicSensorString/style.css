@@ -13,5 +13,4 @@
     font-family: Courier, monospace;
     overflow: hidden;
     text-overflow: ellipsis;
-    -moz-binding: url( 'bindings.xml#ellipsis' );
 }

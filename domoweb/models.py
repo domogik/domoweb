@@ -148,21 +148,20 @@ class DeviceType(RestModel):
             r = DeviceType(id=record.id, name=record.name, plugin_id=record.plugin_id)
             r.save()
 
-class DeviceUsage(RestModel):
+class DataType(RestModel):
     id = models.CharField(max_length=50, primary_key=True)
-    name = models.CharField(max_length=50)
-    default_options = models.CharField(max_length=255)
+    parameters = models.TextField()
     
-    list_path = "/base/device_usage/list"
-    index = 'device_usage'
+    list_path = "/base/datatype"
+    index = "datatypes"
 
     @staticmethod
     def refresh():
-        _data = DeviceUsage.get_list();
-        DeviceUsage.objects.all().delete()
-        for record in _data:
-            options = record.default_options.replace('&quot;', '"')
-            r = DeviceUsage(id=record.id, name=record.name, default_options=options)
+        import json
+        _data = DataType.get_list();
+        DataType.objects.all().delete()
+        for type, params in _data[0].iteritems():
+            r = DataType(id=type, parameters=json.dumps(params))
             r.save()
 
 class Device(RestModel):
@@ -170,7 +169,6 @@ class Device(RestModel):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
     reference = models.CharField(max_length=255)
-    usage = models.ForeignKey(DeviceUsage, blank=True, null=True, on_delete=models.DO_NOTHING)
     type = models.ForeignKey(DeviceType, blank=True, null=True, on_delete=models.DO_NOTHING)
 
     list_path = "/base/device/list"
@@ -200,28 +198,26 @@ class Device(RestModel):
         super(Device, self).delete(*args, **kwargs)
 
     @classmethod
-    def create(cls, name, type_id, usage_id, reference):
-        data = ['name', name, 'type_id', type_id, 'usage_id', usage_id, 'description', '', 'reference', reference]
+    def create(cls, name, type_id, reference):
+        data = ['name', name, 'type_id', type_id, 'usage_id', 'none', 'description', '', 'reference', reference]
         rinor_device = cls.post_list(data)
         device = cls.create_from_json(rinor_device)
         return device
     
     @classmethod
     def create_from_json(cls, data):
-        device = cls(id=data.id, name=data.name, type_id=data.device_type_id, usage_id=data.device_usage_id, reference=data.reference)
+        device = cls(id=data.id, name=data.name, type_id=data.device_type_id, reference=data.reference)
         device.save()
         if "command" in data:
             for command in data.command:
                 c = Command(id=command.id, name=command.name, device=device, reference=command.reference, return_confirmation=command.return_confirmation)
                 c.save()
                 for param in command.command_param:
-                    values = param['values'].replace("u'", "'") # patch for #1659
-                    p = CommandParam(command=c, key=param.key, value_type=param.value_type, values=values)
+                    p = CommandParam(command=c, key=param.key, datatype_id=param.data_type)
                     p.save()
         if "sensor" in data:
             for sensor in data.sensor:
-                values = sensor['values'].replace("u'", "'") # patch for #1659
-                s = Sensor(id=sensor.id, name=sensor.name, device=device, reference=sensor.reference, value_type=sensor.value_type, unit=sensor.unit, values=values, last_value=sensor.last_value, last_received=sensor.last_received)
+                s = Sensor(id=sensor.id, name=sensor.name, device=device, reference=sensor.reference, datatype_id=sensor.data_type, last_value=sensor.last_value, last_received=sensor.last_received)
                 s.save()
         if "xpl_command" in data:
             for xpl_command in data.xpl_command:
@@ -301,17 +297,14 @@ class CommandParam(RestModel):
     id = models.AutoField(primary_key=True)
     command = models.ForeignKey(Command)
     key = models.CharField(max_length=50)
-    value_type = models.CharField(max_length=50)
-    values = models.CharField(max_length=50)
+    datatype = models.ForeignKey(DataType, on_delete=models.DO_NOTHING)
     
 class Sensor(RestModel):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
     device = models.ForeignKey(Device)
     reference = models.CharField(max_length=50)
-    value_type = models.CharField(max_length=50)
-    unit = models.CharField(max_length=50)
-    values = models.CharField(max_length=50)
+    datatype = models.ForeignKey(DataType, on_delete=models.DO_NOTHING)
     last_value = models.CharField(max_length=50)
     last_received = models.CharField(max_length=50)
 

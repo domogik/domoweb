@@ -30,46 +30,42 @@
             {% if instance.widgetinstancecommand_set.all.0 %}
                 {% with command=instance.widgetinstancecommand_set.all.0.command event=instance.widgetinstancesensor_set.all.0.sensor %}
 
-            var parameters_usage = JSON.parse('{{command.device.usage.default_options|safe}}');
             var options = {
-                usage: "{{ command.device.usage.id }}",
                 devicename: "{{ command.device.name }}",
                 featureid: "{{ command.id }}",
                 featurename: "{{ command.name }}",
+                datatype: "{{ command.datatype.id }}",
+                dataparameters: {{ command.datatype.parameters|safe }},
                 featureconfirmation: "{{ command.return_confirmation }}",
                 deviceplugin: "{{ command.device.type.plugin_id }}",
                 deviceid: "{{ command.device.id }}",
                 key: "{{ command.reference }}",
-                usage_parameters: parameters_usage["actuator"]["{{ command.commandparam_set.all.0.value_type }}"],
                 params: [
                     {% for param in command.commandparam_set.all %}
                     {
                         id: {{ param.id }},
                         key: "{{ param.key }}",
-                        value_type: "{{ param.value_type }}",
-                        values: {{ param.values|safe }},
+                        datatype: "{{ param.datatype.id }}",
+                        dataparameters: {{ param.datatype.parameters|safe }},
                     },
                     {% endfor %}
                 ],
                 initial_value:"{{ event.last_value }}",
                 eventid: {{ event.id }},
-                unit: "{{ event.unit }}",
             }
                 {% endwith %}
             {% else %}
                 {% with sensor=instance.widgetinstancesensor_set.all.0.sensor %}
 
-            var parameters_usage = JSON.parse('{{sensor.device.usage.default_options|safe}}');
             var options = {
-                usage: "{{ sensor.device.usage.id }}",
                 devicename: "{{ sensor.device.name }}",
                 featureid: "{{ sensor.id }}",
                 featurename: "{{ sensor.name }}",
+                datatype: "{{ sensor.datatype.id }}",
+                dataparameters: {{ sensor.datatype.parameters|safe }},
                 deviceplugin: "{{ sensor.device.type.plugin_id }}",
                 deviceid: "{{ sensor.device.id }}",
                 key: "{{ sensor.reference }}",
-                unit: "{{ sensor.unit }}",
-                usage_parameters: parameters_usage["sensor"]["{{ sensor.value_type }}"],
                 initial_value:"{{ sensor.last_value }}",
                 eventid: {{ sensor.id }},
             }

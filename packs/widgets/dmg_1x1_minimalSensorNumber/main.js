@@ -7,7 +7,39 @@
             id: 'dmg_1x1_minimalSensorNumber',
             name: 'Mini widget',
             description: 'Mini widget without decoration, and rounded value',
-            type: 'sensor.number',
+	    supported : ["DT_Number",
+		"DT_Scaling",
+		"DT_Angle",
+		"DT_Brightness",
+		"DT_Temp",
+		"DT_TempK",
+		"DT_TempF",
+		"DT_Pression",
+		"DT_Humidity",
+		"DT_AirQuality",
+		"DT_Volt",
+		"DT_mVolt",
+		"DT_kVolt",
+		"DT_Current",
+		"DT_mCurrent",
+		"DT_kCurrent",
+		"DT_Power",
+		"DT_mPower",
+		"DT_kPower",
+		"DT_ActiveEnergy",
+		"DT_kActiveEnergy",
+		"DT_ApparantEnergy",
+		"DT_Speed",
+		"DT_kmhSpeed",
+		"DT_Year",
+		"DT_Month",
+		"DT_Day",
+		"DT_Hour",
+		"DT_minute",
+		"DT_Second",
+		"DT_mSecond",
+		"DT_Timestamp"
+	    ],
             height: 1,
             width: 1,
             displayname: false,
@@ -41,9 +73,9 @@
             var self = this, o = this.options;
             if (value) {
                 var intvalue = round_number(parseFloat(value),1);
-                this._elementValue.html(intvalue + ' ' + o.unit)
+                this._elementValue.html(intvalue + ' ' + o.dataparameters.unit)
             } else { // Unknown
-                this._elementValue.html('-- ' + o.unit)
+                this._elementValue.html('-- ' + o.dataparameters.unit)
             }
         }
     });

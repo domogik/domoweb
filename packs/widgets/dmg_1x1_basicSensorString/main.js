@@ -7,7 +7,15 @@
             id: 'dmg_1x1_basicSensorString',
             name: 'Basic widget',
             description: 'Basic widget with border and name',
-            type: 'sensor.string',
+            type: 'sensor',
+	    supported : ["DT_String",
+		"DT_Phone",
+		"DT_Hexa",
+		"DT_ColorRGBHexa",
+		"DT_DateTime",
+		"DT_Date",
+		"DT_Time"
+	    ],
             height: 1,
             width: 1,
             displayname: true,
@@ -16,7 +24,7 @@
 
         _init: function() {
             var self = this, o = this.options;
-            this.element.addClass("icon32-usage-" + o.usage)
+/*            this.element.addClass("icon32-usage-" + o.usage)*/
 
             this._value =  $("<div class='value'></div>");
             this.element.append(this._value);
