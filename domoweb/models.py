@@ -244,7 +244,8 @@ class Device(RestModel):
             pass
         else:
             params = ['id', xplcmd.id]
-            params.extend(list(reduce(lambda x, y: x + y, parameters.items())))
+            if parameters:
+                params.extend(list(reduce(lambda x, y: x + y, parameters.items())))
             _data = Device._put_data(Device.addxplcmd_path, params)
             if _data.status == "ERROR":
                 raise RinorError(_data.code, _data.description)
@@ -257,7 +258,8 @@ class Device(RestModel):
             pass
         else:
             params = ['id', xplstat.id]
-            params.extend(list(reduce(lambda x, y: x + y, parameters.items())))
+            if parameters:
+                params.extend(list(reduce(lambda x, y: x + y, parameters.items())))
             _data = Device._put_data(Device.addxplstat_path, params)
             if _data.status == "ERROR":
                 raise RinorError(_data.code, _data.description)

@@ -1,5 +1,7 @@
 import urllib
 import urllib2
+import requests
+import itertools
 from httplib import BadStatusLine
 from django.db import models
 from django.utils import simplejson
@@ -122,7 +124,44 @@ class RestModel(models.Model):
         _path = "%s%s" % (RestModel.rest_uri, _path)
         print "PUT REST : [%s]" % _path
         return _get_json(_path)
-    
+   
+def do_rinor_call(method, url, params):
+    """ do_rinor_call
+        
+        param method: methode to use, get, post, put, delete
+        param url: the url to call
+        param params: a python dict with the http parameters
+             => can also be a list (old system) but then the list will be translated to a dict
+
+        returns a python dic with 2 keys
+            status = http status code
+            data = a python dict with the decoded json
+    """
+    if type(params) == list:
+        # translate the list to a dict
+        params = dict(itertools.izip_longest(*[iter(params)] * 2, fillvalue=""))
+    if type(params) is not dict:
+        raise RinorError(reason="Params should be either a list (old system) or a dict (new system), params is a  {0}".format(type(params)))
+    try:
+        response = requests.reqiuest(method=method, url=url, params=params)
+    except ConnectionError as e:
+        raise RinorError(reason="Connection failed for '{0}'".format(url))
+    except HTTPError as e:
+        raise RinorError(reason="HTTP Error for '{0}'".format(url))
+    except Timeout as e:
+        raise RinorError(reason="Timeout for '{0}'".format(url))
+    except TooManyRedirects as e:
+        raise RinorError(reason="Too many redirects for '{0}'".format(url))
+    ret = {}
+    ret['status'] = response.status_code
+    # try to fetch the data
+    try:
+        ret['data'] = response.json()
+    except:
+        ret['data'] = response.text
+    # return the data (json or txt)
+    return ret
+
 def _get_json(uri):
     retries = 0
     attempts = 0
