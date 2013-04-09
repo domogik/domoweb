@@ -273,14 +273,20 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
             globalparametersform.addCharField(parameter.key, parameter.description, required=True)
 
     commands = []
+    hasscommandsparamters = 0
     for command in parameters["xpl_cmd"]:
         form = ParametersForm(id=command.id, name=command.name, params=command.params, prefix='cmd')
         commands.append(form)
+        if command.params:
+            hasscommandsparamters = 1
 
     stats = []
+    hasstatsparamters = 0
     for stat in parameters["xpl_stat"]:
         form = ParametersForm(id=stat.id, name=stat.name, params=stat.params, prefix='stat')
         stats.append(form)
+        if stat.params:
+            hasstatsparamters = 1
 
     if request.method == 'POST':
         valid = True
@@ -304,9 +310,11 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
             if globalparametersform:
                 device.add_global_params(parameters=globalparametersform.cleaned_data)
             for command in commands:
-                device.add_xplcmd_params(id=command.id, parameters=command.getData())
+                if command.params:
+                    device.add_xplcmd_params(id=command.id, parameters=command.getData())
             for stat in stats:
-                device.add_xplstat_params(id=stat.id, parameters=stat.getData())
+                if stat.params:
+                    device.add_xplstat_params(id=stat.id, parameters=stat.getData())
             return redirect('admin_plugins_plugin_view', plugin_host=plugin_host, plugin_id=plugin_id, plugin_type=plugin_type) # Redirect after POST
     else:
         deviceform = DeviceForm(auto_id='main_%s', initial={'type_id': type_id})
@@ -319,6 +327,8 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
         plugin_type=plugin_type,
         deviceform=deviceform,
         globalparametersform=globalparametersform,
+        hasscommansparamters=hasscommandsparamters,
+        hasstatsparamters=hasstatsparamters,
         commands=commands,
         stats=stats,
     )

@@ -58,6 +58,7 @@
             {% endfor %}                
         </fieldset>
         {% endif %}
+        {% if hascommandsparamters %}
         <fieldset title="{% trans "Commands" %}">
             <legend>{% trans "Individual command parameters" %}</legend>
             {% for command in commands %}
@@ -75,6 +76,8 @@
                 <hr />
             {% endfor %}
         </fieldset>
+        {% endif %}
+        {% if hasstatsparamters %}
         <fieldset title="{% trans "Stats" %}">
             <legend>{% trans "Individual stat parameters" %}</legend>
             {% for stat in stats %}
@@ -92,6 +95,7 @@
                 <hr />
             {% endfor %}
         </fieldset>
+        {% endif %}
         <input type="submit" class="finish" value="{% trans "Create" %}" />
     </form>
 {% endblock %}
