@@ -1,0 +1,32 @@
+#Rest proxy server http://docs.oracle.com/cd/E17904_01/webcenter.1111/e12405/wcadm_rest.htm#BABHHIFG
+
+<VirtualHost *:80>
+	ServerAdmin webmaster@example.com
+	ServerName www.example.com
+	ServerAlias localhost
+	DocumentRoot /var/www/domoweb
+
+	ErrorLog /var/log/apache2/domoweb/error.log
+	LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\"" common
+	CustomLog /var/log/apache2/domoweb/access.log common
+
+
+ProxyRequests off
+
+<Location /domoweb/>
+	ProxyHTMLInterp On
+	ProxyHTMLExtended On
+	ProxyPass http://127.0.0.1:40404/
+        ProxyPassReverse http://127.0.0.1:40404/
+	ProxyHTMLURLMap http://127.0.0.1:40404/ /domoweb/
+	ProxyHTMLURLMap / /domoweb/
+        SetOutputFilter proxy-html
+</Location>
+
+<Location /domogik/>
+        ProxyPassReverse /
+        ProxyHTMLInterp On
+        ProxyHTMLURLMap /       /domogik/
+        RequestHeader   unset   Accept-Encoding
+</Location>
+</VirtualHost>
