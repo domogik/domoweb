@@ -2,13 +2,14 @@
 
 case "$1" in
   configure | upgrade)
-        /usr/bin/python /usr/share/pyshared/domoweb/manage.py syncdb --noinput
-        /bin/chown -Rf domoweb:domoweb /var/lib/domoweb
-        /bin/chown -Rf domoweb:adm /var/log/domoweb
-        /bin/chown -Rf domoweb:root /var/run/domoweb
-        /bin/chown domoweb:root /etc/domoweb
-        /bin/chown root:root /etc/default/domoweb
-        /bin/chmod -Rf 664 /var/lib/domoweb/*
+        python /usr/share/pyshared/domoweb/manage.py syncdb --noinput
+        python /usr/lib/domoweb/generate_revision.py
+        chown -Rf domoweb:domoweb /var/lib/domoweb
+        chown -Rf domoweb:adm /var/log/domoweb
+        chown -Rf domoweb:root /var/run/domoweb
+        chown domoweb:root /etc/domoweb
+        chown root:root /etc/default/domoweb
+        chmod -Rf 664 /var/lib/domoweb/*
   ;;
 
   abort-upgrade|abort-remove|abort-configure)
