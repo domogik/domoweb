@@ -1,0 +1,2716 @@
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/alarm.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/alarm.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/alarm.html	1970-01-01 01:00:00.000000000 +0100
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/alarm.html	2013-04-15 20:02:17.000000000 +0200
+@@ -0,0 +1,310 @@
++{% comment %}
++# Copyright 2011 Domogik project
++
++# This file is part of Domogik.
++# Domogik is free software: you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation, either version 3 of the License, or
++# (at your option) any later version.
++
++# Domogik is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++
++# You should have received a copy of the GNU General Public License
++# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
++
++# Author : Sébastien GALLET <bibi21000@gmail.com>
++{% endcomment %}
++
++{% load i18n %}
++
++<script type='text/javascript'>
++    var devices = new Array();
++    var numalarmdayshours = -1
++
++    $(function(){
++
++        $("#specialcreatealarm").click(function(){
++             if (plugin_is_running() == false) {
++                 $.notification('error', "{% trans "Plugin must be started to add a job" %}");
++                 return
++             }
++             var rinor_ip = "{{ request.session.rinor_ip }}";
++             var rinor_port = "{{ request.session.rinor_port }}";
++             var name = "";
++             var devicetype = "alarm";
++             //When creating device in UI, we use rinor has nested schema
++             var nstschema = "None";
++             var nstdevice = $("#alarmname").val();
++             var nstid = 0;
++             var nsttechno = "None";
++             var nstcommand = "sensor";
++             var nstvalue0 = "high";
++             var nstvalue1 = "low";
++             var alarms = "";
++             var alarm = "";
++             var days = "";
++             var starthour = "";
++             var stophour = "";
++             var current_dow = "";
++             if($('select#alarmdevice').val() != 0){
++                    nstschema = "rinor";
++                    nstdevice = devices[$("select#alarmdevice").val()][4];
++                    nstid = devices[$("select#alarmdevice").val()][0];
++                    var testvalue = devices[$("select#alarmdevice").val()][2].split(".");
++                    nsttechno = testvalue[0];
++                    testvalue = devices[$("select#alarmdevice").val()][5];
++                    testvalue = testvalue.replace(/&quot;/g,'"');
++                    var obj = jQuery.parseJSON(testvalue);
++                    //console.log("obj.command : " + obj['command']);
++                    nstcommand = obj['command'];
++                    // Must check if fields are select or input
++                    testvalue =  $("#alarmdevice_begin").val();
++                    if ( ! testvalue) {
++                        testvalue =  $("select#alarmdevice_begin").val();
++                    }
++                    //console.log("select#alarmdevice_begin : " + $("select#alarmdevice_begin").val());
++                    nstvalue0 = testvalue;
++                    testvalue =  $("#alarmdevice_end").val();
++                    if ( !testvalue ) {
++                        testvalue =  $("select#alarmdevice_end").val();
++                    }
++                    nstvalue1 = testvalue;
++             };
++             name = $("#alarmname").val();
++             if (check_job_name(name) != true) {
++                 $("#alarmname").focus();
++                 $.notification('error', "{% trans "Bad job name" %}");
++                 return
++             }
++
++             for(i=0 ; i<=numalarmdayshours ; i++ )
++             {
++                 days = $("#alarmdays"+i).val();
++                 starthour = $("#alarmstarthour"+i).val();
++                 stophour = $("#alarmstophour"+i).val();
++                 if ( (days != null) && (days != "") ) {
++                     if ((days == null) || (days == "") || (check_days_of_week(days) != true)) {
++                         $("#alarmdays"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     if ((check_dow_overlapped(days,current_dow) != true)) {
++                         $("#alarmdays"+i).focus();
++                         $.notification('error', "{% trans "Overlapped days." %}");
++                         return
++                     }
++                     current_dow = current_dow + days;
++                     if ((starthour == null) || (starthour == "") || (check_time(starthour) != true)) {
++                         $("#alarmstarthour"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     alarm = days + "," + starthour;
++                     if ((stophour != null) && (stophour != "")) {
++                         if (check_time(stophour) != true) {
++                             $("#alarmstophour"+i).focus();
++                             $.notification('error', "{% trans "Bad syntax" %}");
++                             return
++                         } else {
++                            alarm = alarm + "-" + stophour;
++                         }
++                     };
++                     alarms = alarms + "'alarm"+i+"':'" + alarm + "',";
++                     //console.log("alarms : " + alarms);
++                 }
++             }
++             if ( alarms == "") {
++                 $.notification('error', "{% trans "Missing parameters" %}");
++                 return
++             }
++             var value = "{ 'device':'" + name + "','devicetype':'" + devicetype +
++                         "'," + alarms +
++                         "'nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
++                         "','nst-techno':'" + nsttechno + "','nst-command':'" + nstcommand +
++                         "','nst-value0':'" + nstvalue0 + "','nst-value1':'" + nstvalue1 +
++                         "','rinorip':'" + rinor_ip + "','rinorport':'" + rinor_port + "'}";
++
++             rinor.put(['api', 'command', 'cron', 'UI'], {"command":"create-alarm", 'value' : value})
++                .done(function(data, status, xhr){
++                     test=JSON.stringify(data);
++                     debut=test.search('error=');
++                     if (debut != -1) {
++                        test=test.slice(debut+5);
++                        fin=test.search('}');
++                        test=test.slice(1,fin-2);
++                        $("#speciallist").click();
++                        $.notification('error',test);
++                     }else{
++                        $("#speciallist").click();
++                        $.notification('info',"Alarm " + name + " created");
++                     }
++                })
++
++                .fail(function(jqXHR, status, error){
++                    if (jqXHR.status == 400)
++                        $.notification('error', "{% trans "Can't create alarm" %} (" + jqXHR.responseText + ")");
++                });
++        });
++
++        $("select#alarmdevice").change(function(){
++              var test = $("select#alarmdevice").val();
++              //console.log("select#alarmdevice : " + test);
++              if (test!=0){
++                  var valeur = devices[test][5];
++                  var test2 = devices[test][3];
++                  valeur = valeur.replace(/&quot;/g,'"');
++                  var obj = jQuery.parseJSON(valeur);
++              }
++              if (test==0){
++                 $("#grp_alarmdevice_begin").html("");
++                 $("#grp_alarmdevice_end").html("");
++              }
++              else if (devices[test][3]=="list"||devices[test][3]=="binary"){
++                  $("#grp_alarmdevice_begin").html("<select id='alarmdevice_begin' style='width:20em;'></select>");
++                  $("#grp_alarmdevice_end").html("<select id='alarmdevice_end' style='width:20em;'></select>");
++                  if (test2 == "binary"){
++                     $("select#alarmdevice_begin").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
++                     $("select#alarmdevice_begin").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
++                     $("select#alarmdevice_end").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
++                     $("select#alarmdevice_end").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
++                  }
++                  else {
++                     for(i=0 ;i<obj.commandValues.length;i++){
++                       $("select#alarmdevice_begin").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
++                       $("select#alarmdevice_end").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
++                       }
++                  }
++              }
++              else if (test2=="numeric"|| test2=="range"){
++                 $("#grp_alarmdevice_begin").html("<input id='alarmdevice_begin' style='width:20em;'></input>");
++                 $("#grp_alarmdevice_end").html("<input id='alarmdevice_end' style='width:20em;'></input>");
++              }
++              else if (test2=="trigger"){
++                 $("#grp_alarmdevice_begin").html("");
++                 $("#grp_alarmdevice_end").html("");
++              }
++        //console.log("select#alarmdevice_begin : " + $("select#alarmdevice_begin").val());
++        //if ($("#alarmdevice_begin").val()) {
++        //    console.log("alarmdevice_begin : " + $("#alarmdevice_begin").val());
++        //}
++        //if ($("select#alarmdevice_begin").val()) {
++        //    console.log("alarmdevice_begin : " + $("select#alarmdevice_begin").val());
++        //}
++      });
++
++    $('#delalarmdayshours').click(function () {
++        if (numalarmdayshours>0) {
++            $('#tablealarm'+numalarmdayshours).remove();
++            numalarmdayshours--
++        }
++    });
++
++    $('#addalarmdayshours').click(function () {
++        // the subviews rendered with placeholders
++        numalarmdayshours++
++        var newTR = "<table id='tablealarm"+numalarmdayshours+"'>"+"\n"
++        newTR = newTR + "<tr>"+"\n"
++        if (numalarmdayshours>0) {
++            newTR = newTR + "<td colspan=2 >&nbsp;</td>"+"\n"
++            newTR = newTR + "</tr>"+"\n"
++            newTR = newTR + "<tr>"+"\n"
++        }
++
++        newTR = newTR + "<td><label for='alarmdays"+numalarmdayshours+"'>{% trans 'The days of the week : a combination of MoTuWeThFrSaSu' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input type='text' id='alarmdays"+numalarmdayshours+"' name='days'/></td>"+"\n"
++        newTR = newTR + "</tr>"+"\n"
++        newTR = newTR + "<td><label for='alarmstarthour"+numalarmdayshours+"'>{% trans 'Start hour of the timer (ie 8:00)' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input type='text' id='alarmstarthour"+numalarmdayshours+"' name='starthour'/></td>"+"\n"
++        newTR = newTR + "</tr>"+"\n"
++        newTR = newTR + "<tr>"+"\n"
++        newTR = newTR + "<td><label for='alarmstophour"+numalarmdayshours+"'>{% trans 'Stop hour of the timer (ie 11:00). Could be left blank.' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input type='text' id='alarmstophour"+numalarmdayshours+"' name='stophour'/></td>"+"\n"
++        newTR = newTR + "</tr>"+"\n"
++        if (numalarmdayshours>0) {
++            newTR = newTR + "<tr>"+"\n"
++            newTR = newTR + "<td colspan=2 ><button id='addalarmdayshours"+numalarmdayshours+"' class='button icon16-action-del' onclick=\"document.getElementById(\'alarmdays_div\').removeChild(document.getElementById(\'tablealarm"+numalarmdayshours+"\'));\">{% trans "Remove" %}</button></td>"+"\n"
++            newTR = newTR + "</tr>"+"\n"
++        }
++        newTR = newTR + "</table>"+"\n"
++        $('#alarmdays_div').append(newTR);
++    });
++
++      $(document).ready(function(){
++        var i=1;
++        $('#addalarmdayshours').click();
++        //$('#alarmstarthour').timepicker({});
++        //$('#alarmstophour').timepicker({});
++        rinor.get(['api', 'feature'])
++            .done(function(data, status, xhr){
++                $('select#alarmdevice').append("<option value='0'>"+"{% trans "None" %}"+"</option>");
++                $.each(data.objects, function(index, object) {
++                    devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
++                    if (object.device_feature_model.feature_type == "actuator"){
++                       $('select#alarmdevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
++                    }
++                    i=i+1;
++                });
++                //console.log("devices.length : " + devices.length);
++                //for(i=0 ;i<devices[1].length;i++){
++                //    console.log("devices[1][" + i + "] : " + devices[1][i]);
++                //}
++                $("select#alarmdevice").change();
++            })
++
++            .fail(function(jqXHR, status, error){
++                if (jqXHR.status == 400)
++                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
++            });
++     });
++    });
++
++</script>
++<section class="subsection">
++    <h3>{% trans "Create an alarm." %}</h3>
++    <p>{% trans "With this kind of timer, you could switch on your bedroom ligth at 9:00 every workdays, switch off your outdoor light at 23:00, or switch on your christmas tree at 18:00 and switch it off at 22:00." %}</p>
++            <fieldset>
++                <legend><h4>{% trans 'Name'%}</h4></legend>
++                    <table>
++                        <tr>
++                            <td><label for='alarmname'>{% trans 'The name of the alarm / device.' %}</label></td>
++                            <td><input type='text' id='alarmname' name='name'/></td>
++                        </tr>
++                    </table>
++            </fieldset>
++            <fieldset>
++                <legend><h4>{% trans 'Days and hours'%}</h4></legend>
++                    <div id="alarmdays_div">
++                    </div>
++                    <table>
++                        <tr>
++                            <td colspan=2><button id='addalarmdayshours' class='button icon16-action-add' >{% trans "Add" %}</button></td>
++                        </tr>
++                    </table>
++            </fieldset>
++            <fieldset>
++                <legend><h4>{% trans 'Device to use'%}</h4></legend>
++                    <table>
++                        <tr>
++                            <td><label for='alarmdevice'>{% trans "Device" %}:</label></td>
++                            <td><select id="alarmdevice" class='listes' style="width:30em;"></select></td>
++                        </tr>
++                        <tr>
++                            <td><label for='grp_alarmdevice_begin'>{% trans "The command / value to use at the begin of the cycle." %}:</label></td>
++                            <td><span id="grp_alarmdevice_begin"></span></td>
++                        </tr>
++                        <tr>
++                            <td><label for='grp_alarmdevice_end'>{% trans "The command / value to use at the end of the cycle." %}:</label></td>
++                            <td><span id="grp_alarmdevice_end"></span></td>
++                        </tr>
++                    </table>
++            </fieldset>
++        <p>
++            <button id='specialcreatealarm' class='button icon16-action-save'>{% trans "Create" %}</button>
++            <button id='specialcancelalarm' class='button icon16-action-reset'>{% trans "Cancel" %}</button>
++        </p>
++</section>
++
++
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/date.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/date.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/date.html	1970-01-01 01:00:00.000000000 +0100
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/date.html	2013-04-15 20:02:17.000000000 +0200
+@@ -0,0 +1,339 @@
++{% comment %}
++# Copyright 2011 Domogik project
++
++# This file is part of Domogik.
++# Domogik is free software: you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation, either version 3 of the License, or
++# (at your option) any later version.
++
++# Domogik is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++
++# You should have received a copy of the GNU General Public License
++# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
++
++# Author : Sébastien GALLET <bibi21000@gmail.com>
++{% endcomment %}
++
++{% load i18n %}
++
++<script type='text/javascript'>
++    var devices = new Array();
++    var numdates = -1
++
++    $(function(){
++
++        $("#specialcreatedate").click(function(){
++             if (plugin_is_running() == false) {
++                 $.notification('error', "{% trans "Plugin must be started to add a job" %}");
++                 return
++             }
++             var rinor_ip = "{{ request.session.rinor_ip }}";
++             var rinor_port = "{{ request.session.rinor_port }}";
++             var name = "";
++             var devicetype = "date";
++             //When creating device in UI, we use rinor has nested schema
++             var nstschema = "None";
++             var nstdevice = $("#datename").val();
++             var nstid = 0;
++             var nsttechno = "None";
++             var nstcommand = "sensor";
++             var nstvalue0 = "high";
++             var nstvalue1 = "low";
++             var dates = "";
++             var date = "";
++             var year = "";
++             var month = "";
++             var day = "";
++             var hour = "";
++             var minute = "";
++             var second = "";
++             if($('select#datedevice').val() != 0){
++                    nstschema = "rinor";
++                    nstdevice = devices[$("select#datedevice").val()][4];
++                    nstid = devices[$("select#datedevice").val()][0];
++                    var testvalue = devices[$("select#datedevice").val()][2].split(".");
++                    nsttechno = testvalue[0];
++                    testvalue = devices[$("select#datedevice").val()][5];
++                    testvalue = testvalue.replace(/&quot;/g,'"');
++                    var obj = jQuery.parseJSON(testvalue);
++                    //console.log("obj.command : " + obj['command']);
++                    nstcommand = obj['command'];
++                    // Must check if fields are select or input
++                    testvalue =  $("#datedevice_begin").val();
++                    if ( ! testvalue) {
++                        testvalue =  $("select#datedevice_begin").val();
++                    }
++                    //console.log("select#datedevice_begin : " + $("select#datedevice_begin").val());
++                    nstvalue0 = testvalue;
++                    testvalue =  $("#datedevice_end").val();
++                    if ( !testvalue ) {
++                        testvalue =  $("select#datedevice_end").val();
++                    }
++                    nstvalue1 = testvalue;
++             };
++             name = $("#datename").val();
++             if (check_job_name(name) != true) {
++                 $("#datename").focus();
++                 $.notification('error', "{% trans "Bad job name" %}");
++                 return
++             }
++
++             for(i=0 ; i<=numdates ; i++ )
++             {
++                 year = $("#dateyear"+i).val();
++                 //console.log("year : |" +year+"|");
++                 if ((year != null) && (year != "")) {
++                     if ((year == null) || (year == "") || (year.length != 4)  || (check_year(year) != true)) {
++                         $("#dateyear"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     date = year;
++
++                     month = $("#datemonth"+i).val();
++                     if ((month == null) || (month == "") || (month.length != 2) || (check_month(year,month) != true)) {
++                         $("#datemonth"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     date = date + month;
++
++                     day = $("#dateday"+i).val();
++                     if ((day == null) || (day == "") || (day.length != 2)  || (check_day(year,month,day) != true)) {
++                         $("#dateday"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     date = date + day;
++
++                     hour = $("#datehour"+i).val();
++                     if ((hour == null) || (hour == "") || (hour.length != 2)  || (check_hour(hour) != true)) {
++                         $("#datehour"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     date = date + hour;
++
++                     minute = $("#dateminute"+i).val();
++                     if ((minute == null) || (minute == "") || (minute.length != 2)  || (check_minute(minute) != true)) {
++                         $("#dateminute"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     date = date + minute;
++
++                     second = $("#datesecond"+i).val();
++                     if ((second == null) || (second == "") || (second.length != 2)  || (check_second(second) != true)) {
++                         $("#datesecond"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     date = date + second;
++
++                     if (date != "") {
++                        dates = dates + "'date"+i+"':'" + date + "',";
++                        //console.log("dates : " + dates);
++                    }
++                }
++             }
++             if ( dates == "") {
++                 $.notification('error', "{% trans "Missing parameters" %}");
++                 return
++             }
++             var value = "{ 'device':'" + name + "','devicetype':'" + devicetype +
++                         "'," + dates +
++                         "'nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
++                         "','nst-techno':'" + nsttechno + "','nst-command':'" + nstcommand +
++                         "','nst-value0':'" + nstvalue0 + "','nst-value1':'" + nstvalue1 +
++                         "','rinorip':'" + rinor_ip + "','rinorport':'" + rinor_port + "'}";
++
++             rinor.put(['api', 'command', 'cron', 'UI'], {"command":"create-date", 'value' : value})
++                .done(function(data, status, xhr){
++                     test=JSON.stringify(data);
++                     debut=test.search('error=');
++                     if (debut != -1) {
++                        test=test.slice(debut+5);
++                        fin=test.search('}');
++                        test=test.slice(1,fin-2);
++                        $("#speciallist").click();
++                        $.notification('error',test);
++                     }else{
++                        $("#speciallist").click();
++                        $.notification('info',"Alarm " + name + " created");
++                     }
++                })
++
++                .fail(function(jqXHR, status, error){
++                    if (jqXHR.status == 400)
++                        $.notification('error', "{% trans "Can't create date" %} (" + jqXHR.responseText + ")");
++                });
++        });
++
++        $("select#datedevice").change(function(){
++              var test = $("select#datedevice").val();
++              //console.log("select#datedevice : " + test);
++              if (test!=0){
++                  var valeur = devices[test][5];
++                  var test2 = devices[test][3];
++                  valeur = valeur.replace(/&quot;/g,'"');
++                  var obj = jQuery.parseJSON(valeur);
++              }
++              if (test==0){
++                 $("#grp_datedevice_begin").html("");
++                 $("#grp_datedevice_end").html("");
++              }
++              else if (devices[test][3]=="list"||devices[test][3]=="binary"){
++                  $("#grp_datedevice_begin").html("<select id='datedevice_begin' style='width:20em;'></select>");
++                  $("#grp_datedevice_end").html("<select id='datedevice_end' style='width:20em;'></select>");
++                  if (test2 == "binary"){
++                     $("select#datedevice_begin").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
++                     $("select#datedevice_begin").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
++                     $("select#datedevice_end").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
++                     $("select#datedevice_end").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
++                  }
++                  else {
++                     for(i=0 ;i<obj.commandValues.length;i++){
++                       $("select#datedevice_begin").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
++                       $("select#datedevice_end").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
++                       }
++                  }
++              }
++              else if (test2=="numeric"|| test2=="range"){
++                 $("#grp_datedevice_begin").html("<input id='datedevice_begin' style='width:20em;'></input>");
++                 $("#grp_datedevice_end").html("<input id='datedevice_end' style='width:20em;'></input>");
++              }
++              else if (test2=="trigger"){
++                 $("#grp_datedevice_begin").html("");
++                 $("#grp_datedevice_end").html("");
++              }
++        //console.log("select#datedevice_begin : " + $("select#datedevice_begin").val());
++        //if ($("#datedevice_begin").val()) {
++        //    console.log("datedevice_begin : " + $("#datedevice_begin").val());
++        //}
++        //if ($("select#datedevice_begin").val()) {
++        //    console.log("datedevice_begin : " + $("select#datedevice_begin").val());
++        //}
++      });
++
++    $('#deldates').click(function () {
++        if (numdates>0) {
++            $('#tabledate'+numdates).remove();
++            numdates--
++        }
++    });
++
++    $('#adddates').click(function () {
++        // the subviews rendered with placeholders
++        numdates++
++        var newTR = "<table id='tabledate"+numdates+"'>"+"\n"
++        newTR = newTR + "<tr>"+"\n"
++        if (numdates>0) {
++            newTR = newTR + "<td colspan=6 >&nbsp;</td>"+"\n"
++            newTR = newTR + "</tr>"+"\n"
++            newTR = newTR + "<tr>"+"\n"
++        }
++
++        newTR = newTR + "<td align='right'><label for='dateyear"+numdates+"'>{% trans 'The year (ie 2012) : ' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input size='4' type='text' id='dateyear"+numdates+"' name='dates'/></td>"+"\n"
++        newTR = newTR + "<td align='right'><label for='datemonth"+numdates+"'>{% trans 'The month (ie 05) : ' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input size='2' type='text' id='datemonth"+numdates+"' name='dates'/></td>"+"\n"
++        newTR = newTR + "<td align='right'><label for='dateday"+numdates+"'>{% trans 'The day (ie 07) : ' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input size='2' type='text' id='dateday"+numdates+"' name='dates'/></td>"+"\n"
++        newTR = newTR + "</tr>"+"\n"
++        newTR = newTR + "<tr>"+"\n"
++        newTR = newTR + "<td align='right'><label for='datehour"+numdates+"'>{% trans 'The hour (ie 23) : ' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input size='2' type='text' id='datehour"+numdates+"' name='dates'/></td>"+"\n"
++        newTR = newTR + "<td align='right'><label for='dateminute"+numdates+"'>{% trans 'The minute (ie 05) : ' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input size='2' type='text' id='dateminute"+numdates+"' name='dates'/></td>"+"\n"
++        newTR = newTR + "<td align='right'><label for='datesecond"+numdates+"'>{% trans 'The second (ie 59) : ' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input size='2' type='text' id='datesecond"+numdates+"' name='dates'/></td>"+"\n"
++        newTR = newTR + "</tr>"+"\n"
++        if (numdates>0) {
++            newTR = newTR + "<tr>"+"\n"
++            newTR = newTR + "<td colspan=2 ><button id='adddates"+numdates+"' class='button icon16-action-del' onclick=\"document.getElementById(\'dates_div\').removeChild(document.getElementById(\'tabledate"+numdates+"\'));\">{% trans "Remove" %}</button></td>"+"\n"
++            newTR = newTR + "</tr>"+"\n"
++        }
++        newTR = newTR + "</table>"+"\n"
++        $('#dates_div').append(newTR);
++    });
++
++      $(document).ready(function(){
++        var i=1;
++        $('#adddates').click();
++        //$('#datestarthour').timepicker({});
++        //$('#datestophour').timepicker({});
++        rinor.get(['api', 'feature'])
++            .done(function(data, status, xhr){
++                $('select#datedevice').append("<option value='0'>"+"{% trans "None" %}"+"</option>");
++                $.each(data.objects, function(index, object) {
++                    devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
++                    if (object.device_feature_model.feature_type == "actuator"){
++                       $('select#datedevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
++                    }
++                    i=i+1;
++                });
++                //console.log("devices.length : " + devices.length);
++                //for(i=0 ;i<devices[1].length;i++){
++                //    console.log("devices[1][" + i + "] : " + devices[1][i]);
++                //}
++                $("select#datedevice").change();
++            })
++
++            .fail(function(jqXHR, status, error){
++                if (jqXHR.status == 400)
++                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
++            });
++     });
++    });
++
++</script>
++<section class="subsection">
++    <h3>{% trans "Create a date." %}</h3>
++    <p>{% trans "With this kind of timer you can activate a switch, a dimmer, ... at a specified date (and time of course). You can specify many dates. When doing that the command is switched every run : first date in the LIST command on is sent, second (always in the list, not in time chronology) command off, ..., etc, ..." %}</p>
++            <fieldset>
++                <legend><h4>{% trans 'Name'%}</h4></legend>
++                    <table>
++                        <tr>
++                            <td><label for='datename'>{% trans 'The name of the date / device.' %}</label></td>
++                            <td><input type='text' id='datename' name='name'/></td>
++                        </tr>
++                    </table>
++            </fieldset>
++            <fieldset>
++                <legend><h4>{% trans 'Date'%}</h4></legend>
++                    <div id="dates_div">
++                    </div>
++                    <table>
++                        <tr>
++                            <td colspan=2><button id='adddates' class='button icon16-action-add' >{% trans "Add" %}</button></td>
++                        </tr>
++                    </table>
++            </fieldset>
++            <fieldset>
++                <legend><h4>{% trans 'Device to use'%}</h4></legend>
++                    <table>
++                        <tr>
++                            <td><label for='datedevice'>{% trans "Device" %}:</label></td>
++                            <td><select id="datedevice" class='listes' style="width:30em;"></select></td>
++                        </tr>
++                        <tr>
++                            <td><label for='grp_datedevice_begin'>{% trans "The command / value to use at the begin of the cycle." %}:</label></td>
++                            <td><span id="grp_datedevice_begin"></span></td>
++                        </tr>
++                        <tr>
++                            <td><label for='grp_datedevice_end'>{% trans "The command / value to use at the end of the cycle." %}:</label></td>
++                            <td><span id="grp_datedevice_end"></span></td>
++                        </tr>
++                    </table>
++            </fieldset>
++        <p>
++            <button id='specialcreatedate' class='button icon16-action-save'>{% trans "Create" %}</button>
++            <button id='specialcanceldate' class='button icon16-action-reset'>{% trans "Cancel" %}</button>
++        </p>
++</section>
++
++
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/dawnalarm.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/dawnalarm.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/dawnalarm.html	1970-01-01 01:00:00.000000000 +0100
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/dawnalarm.html	2013-04-15 20:02:17.000000000 +0200
+@@ -0,0 +1,270 @@
++{% comment %}
++# Copyright 2011 Domogik project
++
++# This file is part of Domogik.
++# Domogik is free software: you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation, either version 3 of the License, or
++# (at your option) any later version.
++
++# Domogik is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++
++# You should have received a copy of the GNU General Public License
++# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
++
++# Author : Sébastien GALLET <bibi21000@gmail.com>
++{% endcomment %}
++
++{% load i18n %}
++
++<script type='text/javascript'>
++    var devices = new Array();
++    var numdawnalarmdayshours = -1
++
++    $(function(){
++
++        $("#specialcreatedawnalarm").click(function(){
++             if (plugin_is_running() == false) {
++                 $.notification('error', "{% trans "Plugin must be started to add a job" %}");
++                 return
++             }
++             var rinor_ip = "{{ request.session.rinor_ip }}";
++             var rinor_port = "{{ request.session.rinor_port }}";
++             var name = "";
++             var devicetype = "dawnalarm";
++             //When creating device in UI, we use rinor has nested schema
++             var nstschema = "rinor";
++             var nstdevice = "";
++             var nstid = 0;
++             var nsttechno = "";
++             var nstcommand = "";
++             var nstvalue0 = "";
++             var alarms = "";
++             var alarm = "";
++             var days = "";
++             var starthour = "";
++             var stophour = "";
++             var offhour = "";
++             var dimlevels = "";
++             var current_dow = "";
++             if($('select#dawnalarmdevice').val() != 0){
++                    nstdevice = devices[$("select#dawnalarmdevice").val()][4];
++                    nstid = devices[$("select#dawnalarmdevice").val()][0];
++                    var testvalue = devices[$("select#dawnalarmdevice").val()][2].split(".");
++                    nsttechno = testvalue[0];
++                    testvalue = devices[$("select#dawnalarmdevice").val()][5];
++                    testvalue = testvalue.replace(/&quot;/g,'"');
++                    var obj = jQuery.parseJSON(testvalue);
++                    //console.log("obj.command : " + obj['command']);
++                    nstcommand = obj['command'];
++             };
++             name = $("#dawnalarmname").val();
++             if (check_job_name(name) != true) {
++                 $("#dawnalarmname").focus();
++                 $.notification('error', "{% trans "Bad job name" %}");
++                 return
++             }
++
++             dimlevels = $("#dawnalarmdimlevels").val();
++             if (check_dim_levels(dimlevels) != true) {
++                 $("#dawnalarmdimlevels").focus();
++                 $.notification('error', "{% trans "Bad syntax" %}");
++                 return
++             }
++
++             for(i=0 ; i<=numdawnalarmdayshours ; i++ )
++             {
++
++
++                 //alarm = $("#dawnalarmdays").val() + "," + $("#dawnalarmstarthour").val();
++                 //alarm = alarm + "-" + $("#dawnalarmstophour").val();
++                 //if (($("#dawnalarmdimlevels").val() != null) && ($("#dawnalarmdimlevels").val() != "")) {
++                 //     alarm = alarm + "," + $("#dawnalarmdimlevels").val();
++                 // };
++
++
++                 days = $("#dawnalarmdays"+i).val();
++                 starthour = $("#dawnalarmstarthour"+i).val();
++                 stophour = $("#dawnalarmstophour"+i).val();
++                 offhour = $("#dawnalarmoffhour"+i).val();
++                 if ( (days != null) && (days != "") ) {
++                     if ((days == null) || (days == "") || (check_days_of_week(days) != true)) {
++                         $("#dawnalarmdays"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     if ((check_dow_overlapped(days,current_dow) != true)) {
++                         $("#dawnalarmdays"+i).focus();
++                         $.notification('error', "{% trans "Overlapped days." %}");
++                         return
++                     }
++                     current_dow = current_dow + days;
++                     if ((starthour == null) || (starthour == "") || (check_time(starthour) != true)) {
++                         $("#dawnalarmstarthour"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     if ((stophour == null) || (stophour == "") || (check_time(stophour) != true)) {
++                         $("#dawnalarmstophour"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     alarm = days + "," + starthour + "-" + stophour;
++                     if ((offhour != null) && (offhour != "")) {
++                         if (check_time(offhour) != true) {
++                             $("#dawnalarmoffhour"+i).focus();
++                             $.notification('error', "{% trans "Bad syntax" %}");
++                             return
++                         } else {
++                            alarm = alarm + "-" + offhour;
++                         }
++                     };
++                     if ((dimlevels != null) && (dimlevels != "")) {
++                        alarm = alarm + "," + dimlevels;
++                        alarms = alarms + "'alarm"+i+"':'" + alarm + "',";
++                     } else {
++                        alarms = alarms + "'alarm"+i+"':'" + alarm + "',";
++                     }
++                     //console.log("alarms : " + alarms);
++                 }
++             }
++             if ( alarms == "") {
++                 $.notification('error', "{% trans "Missing parameters" %}");
++                 return
++             }
++             var value = "{ 'device':'" + name + "','devicetype':'" + devicetype +
++                         "'," + alarms +
++                         "'nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
++                         "','nst-techno':'" + nsttechno + "','nst-command':'" + nstcommand +
++                         "','nst-value0':'" + "0" +
++                         "','rinorip':'" + rinor_ip + "','rinorport':'" + rinor_port + "'}";
++
++             rinor.put(['api', 'command', 'cron', 'UI'], {"command":"create-dawnalarm", 'value' : value})
++                .done(function(data, status, xhr){
++                     test=JSON.stringify(data);
++                     debut=test.search('error=');
++                     if (debut != -1) {
++                        test=test.slice(debut+5);
++                        fin=test.search('}');
++                        test=test.slice(1,fin-2);
++                        $("#speciallist").click();
++                        $.notification('error',test);
++                     }else{
++                        $("#speciallist").click();
++                        $.notification('info',"Dawn alarm " + name + " created");
++                     }
++                })
++
++                .fail(function(jqXHR, status, error){
++                    if (jqXHR.status == 400)
++                        $.notification('error', "{% trans "Can't create dawnalarm" %} (" + jqXHR.responseText + ")");
++                });
++        });
++
++        $('#adddawnalarmdayshours').click(function () {
++            // the subviews rendered with placeholders
++            numdawnalarmdayshours++
++            var newTR = "<table id='tabledawnalarm"+numdawnalarmdayshours+"'>"+"\n"
++            newTR = newTR + "<tr>"+"\n"
++            if (numdawnalarmdayshours>0) {
++                newTR = newTR + "<td colspan=2 >&nbsp;</td>"+"\n"
++                newTR = newTR + "</tr>"+"\n"
++                newTR = newTR + "<tr>"+"\n"
++            }
++
++            newTR = newTR + "<td><label for='dawnalarmdays"+numdawnalarmdayshours+"'>{% trans 'The days of the week : a combination of MoTuWeThFrSaSu' %}</label></td>"+"\n"
++            newTR = newTR + "<td><input type='text' id='dawnalarmdays"+numdawnalarmdayshours+"' name='days'/></td>"+"\n"
++            newTR = newTR + "</tr>"+"\n"
++            newTR = newTR + "<td><label for='dawnalarmstarthour"+numdawnalarmdayshours+"'>{% trans 'The begin of the dawn cycle (ie 8:00)' %}</label></td>"+"\n"
++            newTR = newTR + "<td><input type='text' id='dawnalarmstarthour"+numdawnalarmdayshours+"' name='starthour'/></td>"+"\n"
++            newTR = newTR + "</tr>"+"\n"
++            newTR = newTR + "<tr>"+"\n"
++            newTR = newTR + "<td><label for='dawnalarmstophour"+numdawnalarmdayshours+"'>{% trans 'The end of the dawn cycle (ie 11:00)' %}</label></td>"+"\n"
++            newTR = newTR + "<td><input type='text' id='dawnalarmstophour"+numdawnalarmdayshours+"' name='stophour'/></td>"+"\n"
++            newTR = newTR + "</tr>"+"\n"
++            newTR = newTR + "<tr>"+"\n"
++            newTR = newTR + "<td><label for='dawnalarmoffhour"+numdawnalarmdayshours+"'>{% trans 'The time when turning off the light (ie 12:00). Could be left blank.' %}</label></td>"+"\n"
++            newTR = newTR + "<td><input type='text' id='dawnalarmoffhour"+numdawnalarmdayshours+"' name='stophour'/></td>"+"\n"
++            newTR = newTR + "</tr>"+"\n"
++            if (numdawnalarmdayshours>0) {
++                newTR = newTR + "<tr>"+"\n"
++                newTR = newTR + "<td colspan=2 ><button id='adddawnalarmdayshours"+numdawnalarmdayshours+"' class='button icon16-action-del' onclick=\"document.getElementById(\'dawnalarmdays_div\').removeChild(document.getElementById(\'tabledawnalarm"+numdawnalarmdayshours+"\'));\">{% trans "Remove" %}</button></td>"+"\n"
++                newTR = newTR + "</tr>"+"\n"
++            }
++            newTR = newTR + "</table>"+"\n"
++            $('#dawnalarmdays_div').append(newTR);
++        });
++
++      $(document).ready(function(){
++        var i=1;
++        $('#adddawnalarmdayshours').click();
++        //$('#dawnalarmstarthour').timepicker({});
++        //$('#dawnalarmstophour').timepicker({});
++        rinor.get(['api', 'feature'])
++            .done(function(data, status, xhr){
++                $.each(data.objects, function(index, object) {
++                    devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
++                    if (object.device_feature_model.feature_type == "actuator" && object.device_feature_model.value_type == "range") {
++                       $('select#dawnalarmdevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
++                    }
++                    i=i+1;
++                });
++                //console.log("devices.length : " + devices.length);
++                //for(i=0 ;i<devices[1].length;i++){
++                //    console.log("devices[1][" + i + "] : " + devices[1][i]);
++                //}
++                $("select#dawnalarmdevice").change();
++           })
++            .fail(function(jqXHR, status, error){
++                if (jqXHR.status == 400)
++                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
++            });
++     });
++    });
++
++</script>
++<section class="subsection">
++    <h3>{% trans "Create a dawn alarm." %}</h3>
++    <p>{% trans "With this kind of timer, you could turn your dimmer in a dawn simulator. You can specify the begin and the end hours of the cycle. You can also defined your own dim levels, specialy if your lights blink with the default values. You can specify up to 10 dim levels." %}</p>
++            <fieldset>
++                <legend><h4>{% trans 'Name'%}</h4></legend>
++                    <table>
++                        <tr>
++                            <td><label for='dawnalarmname'>{% trans 'The name of the alarm / device.' %}</label></td>
++                            <td><input type='text' id='dawnalarmname' name='name'/></td>
++                        </tr>
++                    </table>
++            </fieldset>
++            <fieldset>
++                <legend><h4>{% trans 'Days and hours'%}</h4></legend>
++                    <div id="dawnalarmdays_div">
++                    </div>
++                    <table>
++                        <tr>
++                            <td colspan=2><button id='adddawnalarmdayshours' class='button icon16-action-add' >{% trans "Add" %}</button></td>
++                        </tr>
++                    </table>
++            </fieldset>
++            <fieldset>
++                <legend><h4>{% trans 'Device to use'%}</h4></legend>
++                    <table>
++                        <tr>
++                            <td><label for='dawnalarmdevice'>{% trans "Device" %}:</label></td>
++                            <td><select id="dawnalarmdevice" class='listes' style="width:30em;"></select></td>
++                        </tr>
++                        <tr>
++                            <td><label for='dawnalarmdimlevels'>{% trans 'The dim levels to use, separated by commas. Could be left blank.' %}:</label></td>
++                            <td><input type='text' id='dawnalarmdimlevels' name='stophour'/></td>
++                        </tr>
++                    </table>
++            </fieldset>
++        <p>
++            <button id='specialcreatedawnalarm' class='button icon16-action-save'>{% trans "Create" %}</button>
++            <button id='specialcanceldawnalarm' class='button icon16-action-reset'>{% trans "Cancel" %}</button>
++        </p>
++</section>
++
++
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/helper.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/helper.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/helper.html	2013-04-15 20:02:17.000000000 +0200
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/helper.html	2013-04-15 20:02:17.000000000 +0200
+@@ -68,12 +68,16 @@
+     })
+     .fail(function(jqXHR, status, error){
+         if (jqXHR.status == 400)
+-            $.notification('error', '{% trans "Cant call helper" %} (' + jqXHR.responseText + ')');
++            $.notification('error', "{% trans "Cant call helper" %} (" + jqXHR.responseText + ")");
+     });
+ }
+ 
+ $(function(){
+    $("#helperexecute").click(function() {
++        if (plugin_is_running() == false) {
++           $.notification('error', "{% trans "Plugin must be started to add a job" %}");
++           return
++        }
+         var formval = $("#command").val();
+         var data=formval.split(/[ ]/);
+         var args = {}
+@@ -84,10 +88,14 @@
+         if (data[0]) {
+             helperrinor(args)
+         } else {
+-            $.notification('error', '{% trans "Enter a command to execute. Click help to get command list." %}')
++            $.notification('error', "{% trans "Enter a command to execute. Click help to get command list." %}")
+         }
+     });
+    $("#helperhelp").click(function() {
++         if (plugin_is_running() == false) {
++             $.notification('error', "{% trans "Plugin must be started to add a job" %}");
++             return
++         }
+         var args = {}
+         args["command"] = "help";
+         helperrinor(args)
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/interval.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/interval.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/interval.html	1970-01-01 01:00:00.000000000 +0100
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/interval.html	2013-04-15 20:02:17.000000000 +0200
+@@ -0,0 +1,356 @@
++{% comment %}
++# Copyright 2011 Domogik project
++
++# This file is part of Domogik.
++# Domogik is free software: you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation, either version 3 of the License, or
++# (at your option) any later version.
++
++# Domogik is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++
++# You should have received a copy of the GNU General Public License
++# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
++
++# Author : Sébastien GALLET <bibi21000@gmail.com>
++{% endcomment %}
++
++{% load i18n %}
++
++<script type='text/javascript'>
++    var devices = new Array();
++    var numintervals = -1
++
++    $(function(){
++
++        $("#specialcreateinterval").click(function(){
++             if (plugin_is_running() == false) {
++                 $.notification('error', "{% trans "Plugin must be started to add a job" %}");
++                 return
++             }
++             var rinor_ip = "{{ request.session.rinor_ip }}";
++             var rinor_port = "{{ request.session.rinor_port }}";
++             var name = "";
++             var devicetype = "interval";
++             //When creating device in UI, we use rinor has nested schema
++             var nstschema = "None";
++             var nstdevice = $("#intervalname").val();
++             var nstid = 0;
++             var nsttechno = "None";
++             var nstcommand = "sensor";
++             var nstvalue0 = "high";
++             var nstvalue1 = "low";
++             var intervals = "";
++             var interval = "";
++             var weeks = "";
++             var days = "";
++             var hours = "";
++             var minutes = "";
++             var seconds = "";
++             if($('select#intervaldevice').val() != 0){
++                    nstschema = "rinor";
++                    nstdevice = devices[$("select#intervaldevice").val()][4];
++                    nstid = devices[$("select#intervaldevice").val()][0];
++                    var testvalue = devices[$("select#intervaldevice").val()][2].split(".");
++                    nsttechno = testvalue[0];
++                    testvalue = devices[$("select#intervaldevice").val()][5];
++                    testvalue = testvalue.replace(/&quot;/g,'"');
++                    var obj = jQuery.parseJSON(testvalue);
++                    //console.log("obj.command : " + obj['command']);
++                    nstcommand = obj['command'];
++                    // Must check if fields are select or input
++                    testvalue =  $("#intervaldevice_begin").val();
++                    if ( ! testvalue) {
++                        testvalue =  $("select#intervaldevice_begin").val();
++                    }
++                    //console.log("select#intervaldevice_begin : " + $("select#intervaldevice_begin").val());
++                    nstvalue0 = testvalue;
++                    testvalue =  $("#intervaldevice_end").val();
++                    if ( !testvalue ) {
++                        testvalue =  $("select#intervaldevice_end").val();
++                    }
++                    nstvalue1 = testvalue;
++             };
++             name = $("#intervalname").val();
++             if (check_job_name(name) != true) {
++                 $("#intervalname").focus();
++                 $.notification('error', "{% trans "Bad job name" %}");
++                 return
++             }
++
++             for(i=0 ; i<=numintervals ; i++ )
++             {
++                 weeks = $("#intervalweek"+i).val();
++                 if ( (weeks != null) && (weeks != "") ) {
++                     if ((weeks == null) || (weeks == "") || (check_number(weeks) != true)) {
++                         $("#intervalweek"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     interval = "'weeks':'" + weeks + "',";
++                 }
++                 intervals = intervals + interval;
++                     //console.log("intervals : " + intervals);
++                 days = $("#intervalday"+i).val();
++                 if ( (days != null) && (days != "") ) {
++                     if ((days == null) || (days == "") || (check_number(days) != true)) {
++                         $("#intervalday"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     interval = "'days':'" + days + "',";
++                 }
++                 intervals = intervals + interval;
++                     //console.log("intervals : " + intervals);
++                 hours = $("#intervalhour"+i).val();
++                 if ( (hours != null) && (hours != "") ) {
++                     if ((hours == null) || (hours == "") || (check_number(hours) != true)) {
++                         $("#intervalhour"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     interval = "'hours':'" + hours + "',";
++                 }
++                 intervals = intervals + interval;
++                 minutes = $("#intervalminute"+i).val();
++                 if ( (minutes != null) && (minutes != "") ) {
++                     if ((minutes == null) || (minutes == "") || (check_number(minutes) != true)) {
++                         $("#intervalminute"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     interval = "'minutes':'" + minutes + "',";
++                 }
++                 intervals = intervals + interval;
++                 seconds = $("#intervalsecond"+i).val();
++                 if ( (seconds != null) && (seconds != "") ) {
++                     if ((seconds == null) || (seconds == "") || (check_number(seconds) != true)) {
++                         $("#intervalsecond"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     interval = "'seconds':'" + seconds + "',";
++                 }
++                 intervals = intervals + interval;
++                 duration = $("#intervalduration"+i).val();
++                 if ( (duration != null) && (duration != "") ) {
++                     if ((duration == null) || (duration == "") || (check_number(duration) != true)) {
++                         $("#intervalduration"+i).focus();
++                         $.notification('error', "{% trans "Bad syntax" %}");
++                         return
++                     }
++                     interval = "'duration':'" + duration + "',";
++                 }
++                 intervals = intervals + interval;
++             }
++             if ( intervals == "") {
++                 $.notification('error', "{% trans "Missing parameters" %}");
++                 return
++             }
++             var value = "{ 'device':'" + name + "','devicetype':'" + devicetype +
++                         "'," + intervals +
++                         "'nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
++                         "','nst-techno':'" + nsttechno + "','nst-command':'" + nstcommand +
++                         "','nst-value0':'" + nstvalue0 + "','nst-value1':'" + nstvalue1 +
++                         "','rinorip':'" + rinor_ip + "','rinorport':'" + rinor_port + "'}";
++
++             rinor.put(['api', 'command', 'cron', 'UI'], {"command":"create-interval", 'value' : value})
++                .done(function(data, status, xhr){
++                     test=JSON.stringify(data);
++                     debut=test.search('error=');
++                     if (debut != -1) {
++                        test=test.slice(debut+5);
++                        fin=test.search('}');
++                        test=test.slice(1,fin-2);
++                        $("#speciallist").click();
++                        $.notification('error',test);
++                     }else{
++                        $("#speciallist").click();
++                        $.notification('info',"Alarm " + name + " created");
++                     }
++                })
++
++                .fail(function(jqXHR, status, error){
++                    if (jqXHR.status == 400)
++                        $.notification('error', "{% trans "Can't create interval" %} (" + jqXHR.responseText + ")");
++                });
++        });
++
++        $("select#intervaldevice").change(function(){
++              var test = $("select#intervaldevice").val();
++              //console.log("select#intervaldevice : " + test);
++              if (test!=0){
++                  var valeur = devices[test][5];
++                  var test2 = devices[test][3];
++                  valeur = valeur.replace(/&quot;/g,'"');
++                  var obj = jQuery.parseJSON(valeur);
++              }
++              if (test==0){
++                 $("#grp_intervaldevice_begin").html("");
++                 $("#grp_intervaldevice_end").html("");
++              }
++              else if (devices[test][3]=="list"||devices[test][3]=="binary"){
++                  $("#grp_intervaldevice_begin").html("<select id='intervaldevice_begin' style='width:20em;'></select>");
++                  $("#grp_intervaldevice_end").html("<select id='intervaldevice_end' style='width:20em;'></select>");
++                  if (test2 == "binary"){
++                     $("select#intervaldevice_begin").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
++                     $("select#intervaldevice_begin").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
++                     $("select#intervaldevice_end").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
++                     $("select#intervaldevice_end").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
++                  }
++                  else {
++                     for(i=0 ;i<obj.commandValues.length;i++){
++                       $("select#intervaldevice_begin").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
++                       $("select#intervaldevice_end").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
++                       }
++                  }
++              }
++              else if (test2=="numeric"|| test2=="range"){
++                 $("#grp_intervaldevice_begin").html("<input id='intervaldevice_begin' style='width:20em;'></input>");
++                 $("#grp_intervaldevice_end").html("<input id='intervaldevice_end' style='width:20em;'></input>");
++              }
++              else if (test2=="trigger"){
++                 $("#grp_intervaldevice_begin").html("");
++                 $("#grp_intervaldevice_end").html("");
++              }
++        //console.log("select#intervaldevice_begin : " + $("select#intervaldevice_begin").val());
++        //if ($("#intervaldevice_begin").val()) {
++        //    console.log("intervaldevice_begin : " + $("#intervaldevice_begin").val());
++        //}
++        //if ($("select#intervaldevice_begin").val()) {
++        //    console.log("intervaldevice_begin : " + $("select#intervaldevice_begin").val());
++        //}
++      });
++
++    $('#delintervals').click(function () {
++        if (numintervals>0) {
++            $('#tableinterval'+numintervals).remove();
++            numintervals--
++        }
++    });
++
++    $('#addintervals').click(function () {
++        // the subviews rendered with placeholders
++        numintervals++
++        //console.log("Num interval = " + numintervals);
++        var newTR = "<table id='tableinterval"+numintervals+"'>"+"\n"
++        newTR = newTR + "<tr>"+"\n"
++        if (numintervals>0) {
++            newTR = newTR + "<td colspan=2 >&nbsp;</td>"+"\n"
++            newTR = newTR + "</tr>"+"\n"
++            newTR = newTR + "<tr>"+"\n"
++        }
++
++        newTR = newTR + "<td><label for='intervalweek"+numintervals+"'>{% trans 'Weeks:' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input type='text' id='intervalweek"+numintervals+"' name='week'/></td>"+"\n"
++        newTR = newTR + "</tr>"+"\n"
++        newTR = newTR + "<tr>"+"\n"
++        newTR = newTR + "<td><label for='intervalday"+numintervals+"'>{% trans 'Days:' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input type='text' id='intervalday"+numintervals+"' name='day'/></td>"+"\n"
++        newTR = newTR + "</tr>"+"\n"
++        newTR = newTR + "<tr>"+"\n"
++        newTR = newTR + "<td><label for='intervalhour"+numintervals+"'>{% trans 'Hours:' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input type='text' id='intervalhour"+numintervals+"' name='hour'/></td>"+"\n"
++        newTR = newTR + "</tr>"+"\n"
++        newTR = newTR + "<tr>"+"\n"
++        newTR = newTR + "<td><label for='intervalminute"+numintervals+"'>{% trans 'Minutes::' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input type='text' id='intervalminute"+numintervals+"' name='minute'/></td>"+"\n"
++        newTR = newTR + "</tr>"+"\n"
++        newTR = newTR + "<tr>"+"\n"
++        newTR = newTR + "<td><label for='intervalsecond"+numintervals+"'>{% trans 'Seconds:' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input type='text' id='intervalsecond"+numintervals+"' name='second'/></td>"+"\n"
++        newTR = newTR + "</tr>"+"\n"
++        newTR = newTR + "<tr>"+"\n"
++        newTR = newTR + "<td><label for='intervalduration"+numintervals+"'>{% trans 'Duration of the command (in seconds).<br/>After this delay, the same message is send again' %}</label></td>"+"\n"
++        newTR = newTR + "<td><input type='text' id='intervalduration"+numintervals+"' name='second'/></td>"+"\n"
++        newTR = newTR + "</tr>"+"\n"
++        if (numintervals>0) {
++            newTR = newTR + "<tr>"+"\n"
++            newTR = newTR + "<td colspan=2 ><button id='addintervals"+numintervals+"' class='button icon16-action-del' onclick=\"document.getElementById(\'intervals_div\').removeChild(document.getElementById(\'tableinterval"+numintervals+"\'));\">{% trans "Remove" %}</button></td>"+"\n"
++            newTR = newTR + "</tr>"+"\n"
++        }
++        newTR = newTR + "</table>"+"\n"
++        $('#intervals_div').append(newTR);
++    });
++
++      $(document).ready(function(){
++        var i=1;
++        //console.log("i = " + i);
++        $('#addintervals').click();
++        //console.log("i2 = " + i);
++        //$('#intervalstarthour').timepicker({});
++        //$('#intervalstophour').timepicker({});
++        rinor.get(['api', 'feature'])
++            .done(function(data, status, xhr){
++                $('select#intervaldevice').append("<option value='0'>"+"{% trans "None" %}"+"</option>");
++                $.each(data.objects, function(index, object) {
++                    devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
++                    if (object.device_feature_model.feature_type == "actuator"){
++                       $('select#intervaldevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
++                    }
++                    i=i+1;
++                });
++                //console.log("devices.length : " + devices.length);
++                //for(i=0 ;i<devices[1].length;i++){
++                //    console.log("devices[1][" + i + "] : " + devices[1][i]);
++                //}
++                $("select#intervaldevice").change();
++            })
++
++            .fail(function(jqXHR, status, error){
++                if (jqXHR.status == 400)
++                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
++            });
++     });
++    });
++
++</script>
++<section class="subsection">
++    <h3>{% trans "Create a interval." %}</h3>
++    <p>{% trans "With this kind of timer you can activate a switch, a dimmer, a scene, ... every specified interval. The on command is send at the specified interval and the off command is sent after duration." %}</p>
++            <fieldset>
++                <legend><h4>{% trans 'Name'%}</h4></legend>
++                    <table>
++                        <tr>
++                            <td><label for='intervalname'>{% trans 'The name of the interval / device.' %}</label></td>
++                            <td><input type='text' id='intervalname' name='name'/></td>
++                        </tr>
++                    </table>
++            </fieldset>
++            <fieldset>
++                <legend><h4>{% trans 'Interval'%}</h4></legend>
++                    <div id="intervals_div">
++                    </div>
++                   <table>
++                        <tr>
++                            <td colspan=2><button id='addintervals' hidden='true' class='button icon16-action-add' >{% trans "Add" %}</button></td>
++                        </tr>
++                    </table>
++            </fieldset>
++            <fieldset>
++                <legend><h4>{% trans 'Device to use'%}</h4></legend>
++                    <table>
++                        <tr>
++                            <td><label for='intervaldevice'>{% trans "Device" %}:</label></td>
++                            <td><select id="intervaldevice" class='listes' style="width:30em;"></select></td>
++                        </tr>
++                        <tr>
++                            <td><label for='grp_intervaldevice_begin'>{% trans "The command / value to use at the begin of the cycle." %}:</label></td>
++                            <td><span id="grp_intervaldevice_begin"></span></td>
++                        </tr>
++                        <tr>
++                            <td><label for='grp_intervaldevice_end'>{% trans "The command / value to use at the end of the cycle." %}:</label></td>
++                            <td><span id="grp_intervaldevice_end"></span></td>
++                        </tr>
++                    </table>
++            </fieldset>
++        <p>
++            <button id='specialcreateinterval' class='button icon16-action-save'>{% trans "Create" %}</button>
++            <button id='specialcancelinterval' class='button icon16-action-reset'>{% trans "Cancel" %}</button>
++        </p>
++</section>
++
++
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/jobs.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/jobs.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/jobs.html	2013-04-15 20:02:17.000000000 +0200
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/jobs.html	2013-04-15 20:02:17.000000000 +0200
+@@ -20,11 +20,13 @@
+ 
+ {% load i18n %}
+ <script type="text/javascript" src="/design/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
++<script type="text/javascript" src="/design/admin/js/page-admin-cron.js"></script>
++<link href="/design/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
+ <script type='text/javascript'>
+ 
+     $(function(){
+ 
+-        var hdLiNode = {"JobId":0, "Type":1, "Status":2, "Runs":3, "APS": 4, "Uptime":5, "Runtime":6, "Commands":7};
++        var hdLiNode = {"JobId":0, "Type":1, "Label":2, "Status":3, "Runs":4, "APS":5, "Uptime":6, "Runtime":7, "FullRuntime":8, "Commands":9};
+ 
+     function GetDeviceFromxPL (data) {
+         dt=JSON.stringify(data);
+@@ -61,7 +63,12 @@
+         };
+ 
+        $("#speciallist").click(function() {
+-           RefreshTabHtml();
++           if (plugin_is_running() == false) {
++               $.notification('error', "{% trans "Plugin must be started to get list of jobs" %}");
++               return
++           } else {
++               RefreshTabHtml();
++           }
+        });
+ 
+     function RefreshTabHtml() {
+@@ -75,8 +82,8 @@
+                     for (i=0; i<jobs.length; i++) {
+                         //console.log("Parcours des jobs : " + i +" "+jobs[i][0]);
+                         $('#cron_items').dataTable().fnAddData([
+-                            jobs[i][0], jobs[i][2], jobs[i][1], jobs[i][3], jobs[i][4],
+-                            jobs[i][5], jobs[i][6], ""
++                            jobs[i][0], jobs[i][2], jobs[i][3], jobs[i][1], jobs[i][4], jobs[i][5],
++                            jobs[i][6], jobs[i][7], jobs[i][8], ""
+                             ]);
+                     };
+                 })
+@@ -90,14 +97,19 @@
+         device = GetDeviceFromxPL(data);
+ //        console.log("Dans RefreshTabHtmlJob, " + device);
+         var cron_items = document.getElementById("cron_items");
+-        var jobid=device['device'];
++        var jobid = device['device'];
++        var status = device['state'];
+         var dataT = $('#cron_items').dataTable().fnGetData();
+         var trfunct= function(li,dr){$('#cron_items').dataTable().fnAddData(dr);};
+         if (dataT) {
+             for (i=0; i<dataT.length; i++) {
+                 if (dataT[i][hdLiNode['JobId']]==jobid) {
+-                    var trfunct= function(li,dr){$('#cron_items').dataTable().fnUpdate(dr,li);};
+-                    var li= i;
++                    if (status=='halted') {
++                        $('#cron_items').dataTable().fnDeleteRow(i);;
++                        return ;
++                    }
++                    var trfunct = function(li,dr){$('#cron_items').dataTable().fnUpdate(dr,li);};
++                    var li = i;
+                     break;
+                 };
+             };
+@@ -114,9 +126,15 @@
+         if (device['apjobs']) {
+             apjobs=device['apjobs'];
+         };
+-        trfunct(li, [device['device'], devicetype, device['current'],
++        //hack for old releases of cron plugin
++        //can be remove in the future of 20121122
++        var label=null;
++        if (device['label']) {
++            label=device['label'];
++        };
++        trfunct(li, [device['device'], devicetype, label, device['state'],
+                      device['runs'], apjobs, device['elapsed'],
+-                     device['runtime'],""]);
++                     device['runtime'], device['fullruntime'], ""]);
+ //        console.log("Dans RefreshTabHtmlJob, DataTable : " + dataT[li]);
+      };
+ 
+@@ -132,6 +150,12 @@
+         return oObj.aData[hdLiNode['Runtime']] + " / " + uptimeh.toFixed(2) + " / " + uptimed.toFixed(2);
+         };
+ 
++    function setFullRuntime(oObj) {
++        var uptimeh = parseFloat(oObj.aData[hdLiNode['FullRuntime']])/3600;
++        var uptimed = parseFloat(oObj.aData[hdLiNode['FullRuntime']])/3600/24;
++        return oObj.aData[hdLiNode['FullRuntime']] + " / " + uptimeh.toFixed(2) + " / " + uptimed.toFixed(2);
++        };
++
+     function setCommands(oObj) {
+         var jobid = oObj.aData[hdLiNode['JobId']];
+         var status = oObj.aData[hdLiNode['Status']];
+@@ -162,63 +186,69 @@
+         var jobid = aData[hdLiNode['JobId']];
+         if (this.title =='Resume Alarm') {
+             //console.log("Dans click resumealarm, DataTable : " + aData);
+-                var msg = {};
+-                msg['command'] = "resume";
+-                msg['value'] = jobid;
+-                rinor.put(['api', 'command', 'cron', jobid], msg)
+-                   .done(function(data, status, xhr){
+-                        //console.log("resumealarm ok, data : " + data);
+-                        RefreshTabHtmlJob(data);
+-                    })
+-                    .fail(function(jqXHR, status, error){
+-                        if (jqXHR.status == 400)
+-                            $.notification('error', "{% trans "Can\'t resume alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
+-                    });
++            var msg = {};
++            msg['command'] = "resume";
++            msg['value'] = jobid;
++            rinor.put(['api', 'command', 'cron', jobid], msg)
++               .done(function(data, status, xhr){
++                    //console.log("resumealarm ok, data : " + data);
++                    RefreshTabHtmlJob(data);
++                })
++                .fail(function(jqXHR, status, error){
++                    if (jqXHR.status == 400)
++                        $.notification('error', "{% trans "Can\'t resume alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
++                });
+         };
+         if (this.title =='Stop Alarm') {
+-            console.log("Dans click stopalarm, DataTable : " + aData);
+-                var msg = {};
+-                msg['command'] = "stop";
+-                msg['value'] = jobid;
+-                rinor.put(['api', 'command', 'cron', jobid], msg)
+-                   .done(function(data, status, xhr){
+-                        //console.log("stopalarm ok, data : " + data);
+-                        RefreshTabHtmlJob(data);
+-                    })
+-                    .fail(function(jqXHR, status, error){
+-                        if (jqXHR.status == 400)
+-                            $.notification('error', "{% trans "Can\t stop alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
+-                    });
++            //console.log("Dans click stopalarm, DataTable : " + aData);
++            var msg = {};
++            msg['command'] = "stop";
++            msg['value'] = jobid;
++            rinor.put(['api', 'command', 'cron', jobid], msg)
++               .done(function(data, status, xhr){
++                    //console.log("stopalarm ok, data : " + data);
++                    RefreshTabHtmlJob(data);
++                })
++                .fail(function(jqXHR, status, error){
++                    if (jqXHR.status == 400)
++                        $.notification('error', "{% trans "Can\t stop alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
++                });
+         };
+         if (this.title =='Delete Alarm') {
+-            console.log("Dans click deletealarm, DataTable : " + aData);
+-                var msg = {};
+-                msg['command'] = "halt";
+-                msg['value'] = jobid;
+-                rinor.put(['api', 'command', 'cron', jobid], msg)
+-                   .done(function(data, status, xhr){
+-                        //console.log("deletealarm ok, data : " + data);
+-                        RefreshTabHtmlJob(data);
+-                    })
+-                    .fail(function(jqXHR, status, error){
+-                        if (jqXHR.status == 400)
+-                            $.notification('error', "{% trans "Can\'t delete alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
+-                    });
++            //console.log("Dans click deletealarm, DataTable : " + aData);
++            var msg = {};
++            msg['command'] = "halt";
++            msg['value'] = jobid;
++            rinor.put(['api', 'command', 'cron', jobid], msg)
++               .done(function(data, status, xhr){
++                    //console.log("deletealarm ok, data : " + data);
++                    RefreshTabHtmlJob(data);
++                })
++                .fail(function(jqXHR, status, error){
++                    if (jqXHR.status == 400)
++                        $.notification('error', "{% trans "Can\'t delete alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
++                });
+         };
+     } );
+ 
+       $(document).ready(function(){
+          oTabJobs = $("#cron_items").dataTable({
+             "bFilter": false,
++            "bAutoWidth": false,
+             "aoColumnDefs": [
+                 { "fnRender": function (oObj) {return setUptime(oObj);}, "aTargets": [ hdLiNode['Uptime'] ] },
+                 { "fnRender": function (oObj) {return setRuntime(oObj);}, "aTargets": [ hdLiNode['Runtime'] ] },
++                { "fnRender": function (oObj) {return setFullRuntime(oObj);}, "aTargets": [ hdLiNode['FullRuntime'] ] },
+                 { "fnRender": function (oObj) {return setCommands(oObj);}, "aTargets": [hdLiNode['Commands'] ] },
+                 { "bSortable": false, "aTargets": [ hdLiNode['Commands'] ] },
+                 ],
+-            "aaSorting": [[0, 'asc']]
++            "aaSorting": [[1, 'asc']],
++            "sPaginationType": "full_numbers",
++            "bJQueryUI": true
+             } );
+-         $("#speciallist").click();
++         if (plugin_is_running() ) {
++                $("#speciallist").click();
++         }
+     });
+ 
+     });
+@@ -236,15 +266,26 @@
+                 <tr>
+                     <th scope='col'>{% trans "JobId" %}</th>
+                     <th scope='col'>{% trans "Type" %}</th>
++                    <th scope='col'>{% trans "Label" %}</th>
+                     <th scope='col'>{% trans "Status" %}</th>
+                     <th scope='col'>{% trans "Runs" %}</th>
+                     <th scope='col'>{% trans "APS" %}</th>
+                     <th scope='col'>{% trans "Uptime (s/h/d)" %}</th>
+                     <th scope='col'>{% trans "Runtime (s/h/d)" %}</th>
++                    <th scope='col'>{% trans "Full Runtime (s/h/d)" %}</th>
+                     <th scope='col'>{% trans "Commands" %}</th>
+                 </tr>
+             </thead>
+             <tbody>
++            </tbody>
++        </table>
++        <table class='simple'>
++            <thead>
++                <tr>
++                    <td>&nbsp;</td>
++                </tr>
++            </thead>
++            <tbody>
+             </tbody>
+         </table>
+     </div>
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/log.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/log.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//cron/log.html	2013-04-15 20:02:17.000000000 +0200
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//cron/log.html	2013-04-15 20:02:17.000000000 +0200
+@@ -23,6 +23,10 @@
+ 
+ $(function(){
+    $("#loglist").click(function() {
++         if (plugin_is_running() == false) {
++             $.notification('error', "{% trans "Plugin must be started to add a job" %}");
++             return
++         }
+         var value = $("#nblines").val();
+         rinor.put(['api', 'command', '{{ plugin.id }}', '{{ plugin.id }}'], {"command":'log', "value":value})
+            .done(function(data, status, xhr){
+@@ -69,7 +73,7 @@
+             })
+             .fail(function(jqXHR, status, error){
+                 if (jqXHR.status == 400)
+-                    $.notification('error', '{% trans "Cant get list" %} (' + jqXHR.responseText + ')');
++                    $.notification('error', "{% trans "Cant get list" %} (" + jqXHR.responseText + ")");
+             });
+         });
+ });
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//plugin.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//plugin.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//plugin.html	2013-04-15 20:02:17.000000000 +0200
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//plugin.html	2013-04-15 20:02:55.000000000 +0200
+@@ -106,17 +106,19 @@
+         {% endif %}
+         {% if plugin.id == "cron" %}
+             <li><a href="#tabs-4">{% trans "Jobs" %}</a></li>
++            <li><a href="#tabs-5">{% trans "Alarm" %}</a></li>
++            <li><a href="#tabs-6">{% trans "Dawn Alarm" %}</a></li>
++            <li><a href="#tabs-7">{% trans "Date" %}</a></li>
++            <li><a href="#tabs-8">{% trans "Interval" %}</a></li>
++            <li><a href="#tabs-9">{% trans "Helper" %}</a></li>
++            <li><a href="#tabs-10">{% trans "Log" %}</a></li>
++        {% endif %}
++        {% if plugin.id == "scene" %}
++            <li><a href="#tabs-4">{% trans "Creator" %}</a></li>
++            <li><a href="#tabs-5">{% trans "Manage" %}</a></li>
+         {% endif %}
+         {% if plugin.id == "telldus" %}
+             <li><a href="#tabs-5">{% trans "Helper" %}</a></li>
+-        {% endif %}
+-        {% if plugin.id == "cron" %}
+-            <li><a href="#tabs-5">{% trans "Helper" %}</a></li>
+-        {% endif %}
+-        {% if plugin.id == "cron" %}
+-            <li><a href="#tabs-6">{% trans "Log" %}</a></li>
+-        {% endif %}
+-        {% if plugin.id == "telldus" %}
+             <li><a href="#tabs-6">{% trans "Log" %}</a></li>
+         {% endif %}
+         </ul>
+@@ -138,23 +140,37 @@
+         <div id="tabs-4">
+             {% include "plugins/cron/jobs.html" %}
+         </div>
+-    {% endif %}
+-    {% if plugin.id == "telldus" %}
+         <div id="tabs-5">
+-            {% include "plugins/telldus/helper.html" %}
++            {% include "plugins/cron/alarm.html" %}
+         </div>
+-    {% endif %}
+-    {% if plugin.id == "cron" %}
+-        <div id="tabs-5">
++        <div id="tabs-6">
++            {% include "plugins/cron/dawnalarm.html" %}
++        </div>
++        <div id="tabs-7">
++            {% include "plugins/cron/date.html" %}
++        </div>
++        <div id="tabs-8">
++            {% include "plugins/cron/interval.html" %}
++        </div>
++        <div id="tabs-9">
+             {% include "plugins/cron/helper.html" %}
+         </div>
+-    {% endif %}
+-    {% if plugin.id == "cron" %}
+-        <div id="tabs-6">
++        <div id="tabs-10">
+             {% include "plugins/cron/log.html" %}
+         </div>
+     {% endif %}
++    {% if plugin.id == "scene" %}
++        <div id="tabs-4">
++            {% include "plugins/scene/creator_scenev2.html" %}
++        </div>
++        <div id="tabs-5">
++            {% include "plugins/scene/manage_scenev2.html" %}
++        </div>
++    {% endif %}
+     {% if plugin.id == "telldus" %}
++        <div id="tabs-5">
++            {% include "plugins/telldus/helper.html" %}
++        </div>
+         <div id="tabs-6">
+             {% include "plugins/telldus/log.html" %}
+         </div>
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//scene/creator_scene.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//scene/creator_scene.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//scene/creator_scene.html	1970-01-01 01:00:00.000000000 +0100
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//scene/creator_scene.html	2013-04-15 20:02:17.000000000 +0200
+@@ -0,0 +1,528 @@
++{% load i18n %}
++<script type='text/javascript'>
++    $(function(){
++        var test1_visible
++        var value1_visible
++        var feature2_visible
++        var test2_visible
++        var value2_visible
++        var test_visible
++        var TvalueVrai
++        var TvalueFaux
++        var Tvalue1
++        var Tvalue2
++
++        var tableau = new Array();
++
++        $("#Creator").click(function(){ 
++             rinor_ip = "{{ request.session.rinor_ip }}";
++             rinor_port = "{{ request.session.rinor_port }}";
++             description = ""
++             if($('select#features1').val() != 0){
++                    device1d = tableau[$("select#features1").val()][7]+"-"+tableau[$("select#features1").val()][6];
++                    device1adr = tableau[$("select#features1").val()][4];
++                    device1id = tableau[$("select#features1").val()][0];
++                    device1tech = tableau[$("select#features1").val()][2];
++                    debut1 = device1tech.split(".");
++                    device1tech = debut1[0];
++                    device1key = tableau[$("select#features1").val()][1];
++                    }else{
++                    device1d='';
++                    device1adr = '';
++                    device1id = '';
++                    device1tech = '';
++                    device1key = '';
++                    }
++              if(features2_visible == true && $('select#features2').val() != 0){
++                    device2d= tableau[$("select#features2").val()][7]+"-"+tableau[$("select#features2").val()][6];
++                    device2adr = tableau[$("select#features2").val()][4];
++                    device2id = tableau[$("select#features2").val()][0];
++                    device2tech = tableau[$("select#features2").val()][2];
++                    debut2 = device2tech.split(".");
++                    device2tech = debut2[0];
++                    device2key = tableau[$("select#features2").val()][1];
++              }else{
++                    device2d = '';
++                    device2adr = '';
++                    device2id = '';
++                    device2tech = '';
++                    device2key = '';
++              }
++              if(test1_visible == true && $("select#test1").val() != 0){
++                   optest1= $("select#test1").val();
++              }else{
++                    optest1 = '';
++              }
++
++              device1val='';
++              if (Tvalue1 == 'Val'){
++                 device1val= $("#Test_value1").val();
++               }
++              if (Tvalue1 =='Select'){
++                 device1val = $("select#Test_value1").val();
++               }
++
++              device2val='';
++              if (Tvalue2 == 'Val'){
++                 device2val= $("#Test_value2").val();
++               }
++              if (Tvalue2 =='Select'){
++                 device2val=$("select#Test_value2").val();
++               }
++
++              if(test2_visible == true && $("select#test2").val() != 0){
++                   optest2= $("select#test2").val();
++              }else{
++                    optest2 = '';
++              }
++              if($("select#TestFeature").val() != 'None'){
++                   optest= $("select#TestFeature").val();
++              }else{
++                    optest = '';
++              }
++              if( $("select#sortieVrai").val() != 0 &&  $("select#sortieVrai").val() !='command'){
++                   actiontrueadr = tableau[$("select#sortieVrai").val()][4];
++                   actiontruetech = tableau[$("select#sortieVrai").val()][2];
++                   debuttrue = actiontruetech.split(".");
++                   actiontruetech = debuttrue[0];
++                   test =  tableau[$("select#sortieVrai").val()][5]; 
++                   test = test.replace(/&quot;/g,"'");
++                   test = test.replace(/{/g,"");
++                   test = test.replace(/}/g,"");
++                   test = test.replace(/:/g,",");
++                   test = test.replace(/'/g,"");
++                   test = test.split(',');
++                   actiontruecmd = test[1];
++              }else{
++                   actiontrueadr = '';
++                   actiontruetech = '';
++                   actiontruecmd = '';
++              }
++              if ( $("select#sortieVrai").val() == 'command'){
++                 actiontrueadr = 'command'
++                 actiontruetech = 'command'
++                 actiontruecmd = 'command'
++              }
++
++              if( $("select#sortieFaux").val() != 0 && $("select#sortieFaux").val() != 'command' ){
++                   actionfalseadr = tableau[$("select#sortieFaux").val()][4];
++                   actionfalsetech = tableau[$("select#sortieFaux").val()][2];
++                   debutfalse = actionfalsetech.split(".");
++                   actionfalsetech = debutfalse[0];
++                   test = tableau[$("select#sortieFaux").val()][5]; 
++                   test = test.replace(/&quot;/g,"'");
++                   test = test.replace(/{/g,"");
++                   test = test.replace(/}/g,"");
++                   test = test.replace(/:/g,",");
++                   test = test.replace(/'/g,"");
++                   test = test.split(',');
++                   actionfalsecmd = test[1]
++
++              }else{
++                   actionfalseadr = '';
++                   actionfalsetech = '';
++                   actionfalsecmd = '';
++              }
++              if ( $("select#sortieFaux").val() == 'command'){
++                 actionfalseadr = 'command'
++                 actionfalsetech = 'command'
++                 actionfalsecmd = 'command'
++              }
++
++
++              actionfalseval = ''
++              actiontrueval = ''
++              if( TvalueFaux == 'Val'){
++                  actionfalseval = $("#valueFaux").val();
++                  actionfalseval = actionfalseval.replace(/,/g,"%#");
++              }
++              if (TvalueFaux == 'Select'){
++                  actionfalseval = $("select#valueFaux").val();;
++              }
++              if( TvalueVrai == 'Val'){
++                  actiontrueval = $("#valueVrai").val();
++                  actiontrueval = actiontrueval.replace(/,/g,"%#");
++              }
++              if (TvalueVrai == 'Select'){
++                  actiontrueval = $("select#valueVrai").val();;
++              }
++              if ($("input#optionstart:checked").val()=="start"){
++                  option_start= "true"
++              }else{
++                  option_start= "false"
++              }
++              if ($("select#sortieVrai").val()!=0 && $("select#sortieVrai").val() != 'command' ){
++                   actriontru= tableau[$("select#sortieVrai").val()][7]+"-"+tableau[$("select#sortieVrai").val()][6]
++              }else{
++                   actriontru="None"
++              }
++              if ($("select#sortieVrai").val() == 'command'){
++                   actriontru=''
++               } 
++              if ($("select#sortieFaux").val()!=0 &&$("select#sortieFaux").val() != 'command' ){
++                  actrionfal= tableau[$("select#sortieFaux").val()][7]+"-"+tableau[$("select#sortieFaux").val()][6]
++              }else{
++                  actrionfal="None"
++              }
++              if ($("select#sortieFaux").val() == 'command'){
++                   actrionfal=''
++               }
++
++              description="if "+device1d+optest1+device1val+" "+optest +" "+device2d+optest2+device2val+" then "+actriontru+ " "+actiontrueval+" else "+actrionfal+" "+actionfalseval;
++
++                    value="{'device1adr':"+device1adr+",'device1id':"+device1id+",'device1tech':"+device1tech+",'device1key':"+device1key+",'device2adr':"+device2adr+",'device2id':"+device2id+",'device2tech':"+device2tech+",'device2key':"+device2key+",'device1op':"+optest1+",'device2op':"+optest2+",'device1val':"+device1val+",'device2val':"+device2val+",'opglobal':"+optest+",'actiontruetech':"+actiontruetech+",'actionfalsetech':"+actionfalsetech+",'actiontrueadr':"+actiontrueadr+",'actionfalseadr':"+actionfalseadr+",'actiontruecmd':"+actiontruecmd+",'actionfalsecmd':"+actionfalsecmd+",'actiontrueval':"+actiontrueval+",'actionfalseval':"+actionfalseval+",'rinorip':"+rinor_ip+",'rinorport':"+rinor_port+",'option_start':"+option_start+",'descrip':"+description+"}" 
++
++                 rinor.put(['api', 'command', 'scene', '0'], {"command":"Create", 'value':value})
++                    .done(function(data, status, xhr){
++                         test=JSON.stringify(data);
++                         debut=test.search('data=');
++                         test=test.slice(debut+4);
++                         fin=test.search('}');
++                         test=test.slice(1,fin-2);
++                         if (test.search('Error')>=0){
++                            $.notification('error', test);
++                         }else{
++                         $.notification('info',test );
++                         }
++                    })
++                    .fail(function(jqXHR, status, error){
++                        if (jqXHR.status == 400)
++                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
++                    });
++                  
++               });
++
++        $("select#features1").change(function(){
++          var test = $(this).val();
++          var test2 = $("select#TestFeature").val();
++          if (test !='0'){
++          if ((tableau[test][3]=="binary"||tableau[test][3]=="list"||tableau[test][3]=="boolean") && (test2!="And" && test2!="Or" && test2!="None")){
++             $("select#TestFeature option").remove();
++             $("select#TestFeature").append("<option value='None'>----</option>");
++             $("select#features2").hide();
++             features2_visible = false
++             $("select#test2").hide();
++             test2_visible = false
++             $("#value2").hide();
++             value2_visible = false
++             test2 = $("select#TestFeature").val();
++          }
++          if (test != "" && (test2=="And" || test2=="Or"|| test2=="None")){
++             $('select#test1 option').remove();
++             $('select#test1').show();
++             test1_visible = true
++             $('select#test1').append("<option value='None'>-----</option>");
++             $('select#test1').append("<option value='='>=</option>");
++             var feature=$("select#features1").val();
++             var type=tableau[test][3];
++             if (type=="number"|| type=="range"){
++               $('select#test1').append("<option value='>'>></option>");
++               $('select#test1').append("<option value='<'><</option>");
++              }
++          }else{
++             $('select#test1').hide();
++             test1_visible = false
++             $('#value1').hide();
++             value1_visible = false
++          }
++          $("select#test1").change();
++        }
++        });    
++
++        $("select#features2").change(function(){
++          var test = $(this).val();
++          var test2 = $("select#TestFeature").val();
++          if (test != "" && (test2=="And" || test2=="Or")){
++             $('select#test2').show();
++             test2_visible= true
++          }else{
++             test2_visible= false
++             $('select#test2').hide();
++             test2_visible = false
++             $('#value2').hide();
++             value2_visible = false
++          }
++          $("select#test2").change();
++        });    
++
++        $("select#test1").change(function(){
++           var test = $("select#features1").val();
++           if (tableau[test][3]=="list"||tableau[test][3]=="binary"||tableau[test][3]=="boolean"){
++              Tvalue1 = 'Select'
++              $('select#test1').attr("disabled", true);
++              $('select#test1 option[value="="]').attr("selected", "selected");
++              $("#value1").html("<select id='Test_value1' style='width:20em;'></select>");
++              $("select#TestFeature option").remove();
++              $("select#TestFeature").append("<option value='None'>----</option>");
++              $("select#TestFeature").append("<option value='And'>And</option>");
++              $("select#TestFeature").append("<option value='Or'>Or</option>");
++              var valeur = tableau[test][5];
++              var test2 = tableau[test][3];
++              valeur = valeur.replace(/&quot;/g,'"');
++              var obj = jQuery.parseJSON(valeur);
++              if (test2 == "binary"||test2=="boolean"){
++                 $("select#Test_value1").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
++                 $("select#Test_value1").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
++              }else{
++                 for(i=0 ;i<obj.commandValues.length;i++){
++                    $("select#Test_value1").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
++                 }
++            }
++            $("#value1").show();
++            value1_visible = true
++          }else {
++             Tvalue1 = 'Val'
++             $('select#test1').removeAttr("disabled");
++             $("#value1").html("<input id='Test_value1' style='width:20em;'></input>");
++             $("#value1").show();
++             value1_visible = true
++             $("select#TestFeature option").remove();
++             $("select#TestFeature").append("<option value='None'>----</option>");
++             $("select#TestFeature").append("<option value='And'>And</option>");
++             $("select#TestFeature").append("<option value='Or'>Or</option>");
++             $("select#TestFeature").append("<option value='='>=</option>");
++             $("select#TestFeature").append("<option value='>'>></option>");
++             $("select#TestFeature").append("<option value='<'><</option>");
++          }
++          if ($(this).val()!="None" && ($("select#TestFeature").val()=="And" ||$("select#TestFeature").val()=="Or"   ||$("select#TestFeature").val()=="None")){
++             $("#value1").show();
++             value1_visible = true
++          }else{
++               $("#value1").hide();
++               value1_visible = false
++          }
++        });
++
++        $("select#test2").change(function(){
++          var test = $("select#features2").val();
++          if ((tableau[test][3]=="list"||tableau[test][3]=="binary"||tableau[test][3]=="boolean")&&($("select#TestFeature").val!="None")){ 
++            Tvalue2 = 'Select'
++            $('select#test2').attr("disabled", true);
++            $('select#test2 option[value="="]').attr("selected", "selected");
++            $("#value2").html("<select id='Test_value2' style='width:20em;'></select>");
++            
++            var valeur = tableau[test][5];
++            var test2 = tableau[test][3];
++            valeur = valeur.replace(/&quot;/g,'"');
++            var obj = jQuery.parseJSON(valeur);
++            if (test2 == "binary"||test2=="boolean"){
++             $("select#Test_value2").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
++             $("select#Test_value2").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
++             }
++             else{
++              for(i=0 ;i<obj.commandValues.length;i++){
++             $("select#Test_value2").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
++             }}
++            $("#value2").show();
++            value2_visible = true
++          }
++          else {
++            Tvalue2 = 'Val'
++            $('select#test2').removeAttr("disabled");
++            $("#value2").html("<input id='Test_value2' style='width:20em;'></input>");
++            $("#value2").show();
++            value2_visible = true
++          }
++          
++          if ($(this).val()!="None" && ($("select#TestFeature").val()=="And" ||$("select#TestFeature").val()=="Or"   ||$("select#TestFeature").val()=="None")){
++             $("#value2").show();
++             value2_visible = true
++          }else{
++             $("#value2").hide();
++             value2_visible = false
++          }
++        });
++
++        $("select#TestFeature").change(function(){
++          var test= $("select#TestFeature").val();
++          if (test != "None"){
++             $("select#features2").show();
++             features2_visible = true
++             if (test !="And" && test != "Or"){
++                $("select#test1").hide();
++                test1_visible = false
++                $("#value1").hide();
++                value1_visible = false
++                $("select#test2").hide();
++                test2_visible = false
++                $("#value2").hide();
++                value2_visible = false
++                $("select#features2 option").remove();
++                var feature1= $("select#features1").val();
++                var taille=tableau.length;
++                feature1=parseInt(feature1);
++                for(i=1;i<tableau.length;i++){
++                   var tab=tableau[i];
++                   if (tableau[i][3]=="number"||tableau[i][3]=="range"){
++                      if (i!=$("select#features1").val()){
++                         $("select#features2").append("<option value='"+i+"'>"+tableau[i][8]+" - "+tableau[i][7]+"</option>");
++                      }                
++                   }  
++                  }                
++              }else{
++                $("select#features2 option").remove();
++                $("select#features2").append($("select#features1").clone().html());
++                $("select#test1").show();
++                test1_visible = true
++                $("#value1").show();
++                value1_visible = true
++                $("select#test2").show();
++                test2_visible = true
++                $("select#test2").change();
++             }
++             $("select#features2").change();
++          }else{
++             $("select#features2").hide();
++             features2_visible = false
++             $("select#test2").hide();
++             test2_visible = false
++             $("#value2").hide();
++             value2_visible = false
++          }
++        });
++
++      $("select#sortieVrai").change(function () {
++          var test = $("select#sortieVrai").val();
++          if (test == "command") {
++              TvalueVrai = 'Val'
++              $("#valvrai").html("<input id='valueVrai' style='width:20em;'></input>");
++          } else {
++
++              var valeur = tableau[test][5];
++              var test2 = tableau[test][3];
++              valeur = valeur.replace(/&quot;/g, '"');
++              var obj = jQuery.parseJSON(valeur);
++
++              if (tableau[test][3] == "list" || tableau[test][3] == "binary"||tableau[test][3]=="boolean") {
++                  TvalueVrai = 'Select'
++                  $("#valvrai").html("<select id='valueVrai' style='width:20em;'></select>");
++                  if (test2 == "binary"||test2=="boolean") {
++                      $("select#valueVrai").append("<option value='" + obj.value0 + "'>" + obj.value0 + "</option>");
++                      $("select#valueVrai").append("<option value='" + obj.value1 + "'>" + obj.value1 + "</option>");
++                  } else {
++                      for (i = 0; i < obj.commandValues.length; i++) {
++                          $("select#valueVrai").append("<option value='" + obj.commandValues[i] + "'>" + obj.commandValues[i] + "</option>");
++                      }
++                  }
++              }
++              if (test2 == "numeric" || test2 == "range") {
++                  TvalueVrai = 'Val'
++                  $("#valvrai").html("<input id='valueVrai' style='width:20em;'></input>");
++              }
++              if (test2 == "trigger") {
++                  $("#valvrai").html("");
++              }
++          }
++      });
++
++
++    $("select#sortieFaux").change(function () {
++        var test = $("select#sortieFaux").val();
++        if (test == 'command') {
++            $("#valfaux").html("<input id='valueFaux' style='width:20em;'></input>");
++            TvalueFaux = 'Val'
++        } else {
++            valeur = tableau[test][5];
++            var test2 = tableau[test][3];
++            valeur = valeur.replace(/&quot;/g, '"');
++            var obj = jQuery.parseJSON(valeur);
++
++            if (tableau[test][3] == "list" || tableau[test][3] == "binary"||tableau[test][3]=="boolean") {
++                TvalueFaux = 'Select'
++                $("#valfaux").html("<select id='valueFaux' style='width:20em;'></select>");
++                if (test2 == "binary"||test2=="boolean") {
++                    $("select#valueFaux").append("<option value='" + obj.value0 + "'>" + obj.value0 + "</option>");
++                    $("select#valueFaux").append("<option value='" + obj.value1 + "'>" + obj.value1 + "</option>");
++                } else {
++                    for (i = 0; i < obj.commandValues.length; i++) {
++                        $("select#valueFaux").append("<option value='" + obj.commandValues[i] + "'>" + obj.commandValues[i] + "</option>");
++                    }
++                }
++            }
++            if (test2 == "numeric" || test2 == "range") {
++                $("#valfaux").html("<input id='valueFaux' style='width:20em;'></input>");
++                TvalueFaux = 'Val'
++            }
++            if (test2 == "trigger") {
++                $("#valfaux").html("");
++           } 
++        }
++     });
++
++
++      $(document).ready(function(){
++        var i=1;
++        $('select#features1').append("<option value='0'>----------</option>");
++        $('select#sortieVrai').append("<option value='0'>----------</option>");
++        rinor.get(['api', 'feature'])
++            .done(function(data, status, xhr){
++                $.each(data.objects, function(index, object) {
++                    tableau[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
++                    if (object.device_feature_model.feature_type == "actuator"){
++                       $('select#sortieVrai').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
++                    }
++                    if (object.device_feature_model.name != "Trigger"){
++                       $('select#features1').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
++                    }
++                    i=i+1;
++                    });
++                
++         
++                $("select#sortieFaux").append($("select#sortieVrai").clone().html());
++           })
++            .fail(function(jqXHR, status, error){
++                if (jqXHR.status == 400)
++                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
++            });
++          $('select#sortieVrai').append("<option value='command'>command line</option>");
++          $("select#features2").hide();
++          features2_visible = false
++          $("select#test2").hide();
++          test2_visible = false
++          $("select#features1").change();
++     });
++});
++
++</script>
++<section class="subsection">
++    <h2>{% trans "Created Scene" %}</h2>
++    <h3>{% trans "If" %}</h3>   
++    <div>
++    <select id="features1" class='listes' style="width:30em;"></select>
++    <select id="test1" class='listes' style="width:10em;">
++    <option value="None">----</option>
++    <option value=">">></option>
++    <option value="<"><</option>
++    <option value="=">=</option>
++    </select>
++    <span id="value1"></span>
++    </div>
++    <div>
++    <select id="TestFeature" class='listes' style="width:10em;">
++    <option value="None">----</option>
++    <option value="And">And</option>
++    <option value="Or">Or</option>
++    </select>
++    </div>
++    <div>
++    <select id="features2" class='listes' style="width:30em;"></select>
++    <select id="test2" class='listes' style="width:10em;">
++    <option value="None">None</option>
++    <option value=">">></option>
++    <option value="<"><</option>
++    <option value="=">=</option>
++    </select>
++    <span id="value2" style="width:30em;"></span>
++    </div>
++    <div>
++    <h3>{% trans "then" %}</h3>
++    <select id="sortieVrai" class='listes' style="width:30em;"></select> =>
++    <span id="valvrai"></span>
++    <h3>{% trans "else" %}</h3>
++    <select id="sortieFaux" class='listes' style="width:30em;"></select> =>
++    <span id="valfaux"></span>
++    </div>
++    <input type="checkbox" id="optionstart" checked="checked" value="start" /><label for="optionstart">{% trans "Automaticaly start the scene" %}</label> 
++    <button id="Creator" class='button icon16-action-save' style="width:20em;">{% trans "Create" %}</button>
++    Rinor Url :{{ request.session.rinor_ip }}:{{ request.session.rinor_port }}</p> 
++</section>
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//scene/creator_scenev2.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//scene/creator_scenev2.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//scene/creator_scenev2.html	1970-01-01 01:00:00.000000000 +0100
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//scene/creator_scenev2.html	2013-04-15 20:02:17.000000000 +0200
+@@ -0,0 +1,295 @@
++{% load i18n %}
++<script type='text/javascript'>
++var tableau = new Array();
++
++function dellastdevice(number) {
++    $('#device_' + number).remove()
++};
++
++function delaction(number) {
++    $('#action_' + number).remove()
++};
++
++function featurechange(number) {
++    var test = $('select#features_' + number).val();
++    if (tableau[test][3] == 'list' || tableau[test][3] == 'binary' || tableau[test][3] == 'boolean') {
++        $("select#test_" + number + " option[value='>']").hide();
++        $("select#test_" + number + " option[value='<']").hide();
++        $('#value_' + number).html("<select id='Test_value" + number + "' style='width:20em;'></select>");
++        var valeur = tableau[test][5];
++        var test2 = tableau[test][3];
++        valeur = valeur.replace(/&quot;/g, "'");
++        var obj = eval('(' + valeur + ')');
++        if (test2 == 'binary' || test2 == 'boolean') {
++            ouioui = "<option value='" + obj.value0 + "'>" + obj.value0 + "</option>";
++            $('select#Test_value' + number).append("<option value='None'>-------</option>");
++            $('select#Test_value' + number).append("<option value='" + obj.value0 + "'>" + obj.value0 + "</option>");
++            $('select#Test_value' + number).append("<option value='" + obj.value1 + "'>" + obj.value1 + "</option>");
++        } else {
++            $("select#test_" + number + " option[value='>']").show();
++            $("select#test_" + number + " option[value='<']").show();
++            for (i = 0; i < obj.commandValues.length; i++) {
++                $('select#Test_value' + number).append("<option value='" + obj.commandValues[i] + "'>" + obj.commandValues[i] + "</option>");
++            }
++        }
++    }
++    if (tableau[test][3] == 'range' || tableau[test][3] == 'number' || tableau[test][3] == 'string') {
++        $("select#test_" + number + " option[value='>']").show();
++        $("select#test_" + number + " option[value='<']").show();
++        if (tableau[test][3] == 'string') {
++            $("select#test_" + number + " option[value='>']").hide();
++            $("select#test_" + number + " option[value='<']").hide();
++            $("select#test_" + number + " option[value='=']").attr('selected', 'selected');
++        }
++        $('#value_' + number).html("<input type='text' id='Test_value" + number + "' style='width:20em;'></select>");
++    }
++};
++
++function actionchange(number) {
++    var test = $('select#action_' + number).val();
++    if (test == 'command') {
++        $('#valueaction_' + number).html("<input id='value_action_"+ number +"' style='width:20em;'></input>");
++    } else {
++        valeur = tableau[test][5];
++        var test2 = tableau[test][3];
++        valeur = valeur.replace(/&quot;/g, "'");
++        var obj = eval('(' + valeur + ')'); //jQuery.parseJSON(valeur);
++
++        if (tableau[test][3] == 'list' || tableau[test][3] == 'binary' || tableau[test][3] == 'boolean') {
++            $('#valueaction_' + number).html("<select id='value_action_" + number + "' style='width:20em;'></select>");
++            if (test2 == 'binary' || test2 == 'boolean') {
++                $('select#value_action_' + number).append("<option value='" + obj.value0 + "'>" + obj.value0 + "</option>");
++                $('select#value_action_' + number).append("<option value='" + obj.value1 + "'>" + obj.value1 + "</option>");
++            } else {
++                for (i = 0; i < obj.commandValues.length; i++) {
++                    $('select#value_action_' + number).append("<option value='" + obj.commandValues[i] + "'>" + obj.commandValues[i] + "</option>");
++                }
++            }
++        }
++        if (test2 == 'numeric' || test2 == 'range'|| test2=='string') {
++            $('#valueaction_' + number).html("<input type ='text' id='value_action_" + number + "' style='width:20em;'></input>");
++        }
++        if (test2 == 'trigger') {
++            $('#valueaction_' + number).html('');
++        }
++    }
++};
++
++
++    $(function () {
++    var test1_visible
++    var value1_visible
++    var feature2_visible
++    var test2_visible
++    var value2_visible
++    var test_visible
++    var TvalueVrai
++    var TvalueFaux
++    var Tvalue1
++    var Tvalue2
++    var venueNumber = 0
++    var actionNumber = 0
++
++    $('#Creator').click(function () {
++    rinor.get(['api','plugin'])
++               .done(function(data, status, xhr){
++                  for(i=0;i<100;i++){
++                      if (data.objects[0]['list'][i]['id'] == "scene"){
++                       if(data.objects[0]['list'][i]['status'] == "ON"){
++
++                          
++        device = {};
++        action = {};
++        rinor_ip = '{{ request.session.rinor_ip }}';
++        rinor_port = '{{ request.session.rinor_port }}';
++        rinorip = rinor_ip +":" + rinor_port;
++        if ($('input#optionstart:checked').val() == 'start') {
++            option_start = 'true';
++        } else {
++            option_start = 'false';
++        }
++        description = $('#description').val();
++        condition = $('#Condition').val();
++        for (i=1; i<101; i++) {
++        	maVariable = $('select#features_'+i).val();
++        	test = typeof(maVariable);
++              if(typeof(maVariable) != 'undefined' && maVariable != '0'){ 
++                     device_adr = tableau[maVariable][4]; 
++		 	device_id = tableau[maVariable][0];
++		 	device_tech = tableau[maVariable][2];
++		 	debut1 = device_tech.split('.');
++	            	device_tech = debut1[0];
++	            	device_key = tableau[maVariable][1];
++	            	device_op = $('select#test_'+i).val();
++	            	device_val = $('#Test_value'+i).val();
++	            	if (device_op == 'None' || device_val == 'None'){
++	            	device_op = '';
++	            	device_val ='';
++	            	}
++	            	device['device'+i] = {'adr':device_adr,'id':device_id,'tech':device_tech,'key':device_key,'op':device_op,'value':device_val,'type':'devices'};
++       	}
++       	 
++       	maVariable = $('select#action_'+i).val();
++        	
++              if(typeof(maVariable) != 'undefined' && maVariable != '0'){
++                     if (maVariable != 'command'){
++                     action_adr = tableau[maVariable][4]; 
++                     action_type = "Action "+$('select#Type_'+i).val();
++		 	action_tech = tableau[maVariable][2];
++		 	
++		 	debut1 = action_tech.split('.');
++	            	action_tech = debut1[0];
++	            	action_val = '';
++	            	
++	        	test = tableau[maVariable][5];
++        	       test = test.replace(/&quot;/g, "'");
++       	       test = test.replace(/{/g, '');
++       	       test = test.replace(/}/g, '');
++	              test = test.replace(/:/g, ',');
++       	       test = test.replace(/'/g, '');
++       	       test = test.split(',');
++	              action_cmd = test[1]
++	            	}else{
++                        action_adr = "command"
++                        action_tech = "command"
++                        action_cmd = "command"
++                        action_type = "Action "+$('select#Type_'+i).val();
++                        }
++                        
++	            	action_val = $('#value_action_'+i).val();
++	            	
++	            	action['action'+i] = {'address':action_adr,'techno':action_tech,'command':action_cmd,'value':action_val,'type':action_type};
++       	}
++        }
++        var action1 = JSON.stringify(action);
++        var devices1 = JSON.stringify(device);
++
++        value = "{'start_run':'"+ option_start +"','condition':'"+condition+"','devices':"+devices1+",'action':"+action1+",'rinor':'"+rinorip+"'}";
++        //value = '';
++        if (condition != ''){
++        rinor.put(['api', 'command', 'scene', '0'], {'command': 'Create','value': value })
++            .done(function (data, status, xhr) {
++            test = JSON.stringify(data);
++            debut=test.search('data=');
++            test=test.slice(debut+4);
++            fin=test.search('}');
++            test=test.slice(1,fin-2);
++            if (test.search('Error')>=0){
++                $.notification('error', test);
++            }else{
++                $.notification('info',test );
++
++                rinor.post(['api', 'device'], {'name': test, 'address': test, 'type_id': 'scene.stat', 'usage_id': 'scene', 'description': description, 'reference': ''})
++                    .done(function(data, status, xhr){
++                        scene_name = data.name;
++                        identity_id = data.device_usage_id;
++                        if (option_start=='true'){
++                            rinor.put(['api', 'command', 'scene',test], {"command":"start"})
++                            .done(function(data, status, xhr){
++                            $.reloadPage({'status': 'success', 'msg': "{% trans "New device added" %} '" + scene_name + "'", 'id': identity_id});                                   
++                            })
++                        }else{
++                            rinor.put(['api', 'command', 'scene',test], {"command":"stop"})
++                            .done(function(data, status, xhr){
++                            $.reloadPage({'status': 'success', 'msg': "{% trans "New device added" %} '" + scene_name + "'", 'id': identity_id});                                   
++                            })
++                        }
++                        
++                    })
++                    .fail(function(jqXHR, status, error){
++                        if (jqXHR.status == 400)
++                            $.notification('error', "{% trans "device not created" %} (" + jqXHR.responseText + ")");
++                    });
++                }
++        })
++            .fail(function (jqXHR, status, error) {
++            if (jqXHR.status == 400) $.notification('error', '{% trans ' Data not sent ' %} (' + jqXHR.responseText + ')');
++        });
++        }else{
++           alert('condition empty')
++        }
++                            }else{
++                            alert("plugin is not started")
++                            }
++                     }    
++                     }              
++                   });
++    });
++    
++ 
++
++    $(document).ready(function () {
++        var i = 1;
++        $('#adddevices').click();
++        $('#addaction').click();
++        $('select#features_1').append("<option value='0'>----------</option>");
++        $('select#action_1').append("<option value='0'>----------</option>");
++        rinor.get(['api', 'feature'])
++            .done(function (data, status, xhr) {
++            $.each(data.objects, function (index, object) {
++                if (object.device_feature_model.feature_type == 'actuator') {
++                    $('select#action_1').append("<option value='" + i + "'>" + object.device.name + " - " + object.device_feature_model.name + "</option>");
++                }
++                if (object.device_feature_model.name != 'Trigger') {
++                    $('select#features_1').append("<option value='" + i + "'>" + object.device.name + " - " + object.device_feature_model.name + "</option>");
++                }
++                tableau[i] = [object.device_id, object.device_feature_model.stat_key, object.device.device_type_id, object.device_feature_model.value_type, object.device.address, object.device_feature_model.parameters, object.device_feature_model.name, object.device.name];
++                i = i + 1;
++            });
++        })
++            .fail(function (jqXHR, status, error) {
++            if (jqXHR.status == 400) $.notification('error', '{% trans ' Device list not retrieved from rinor' %} (' + jqXHR.responseText + ')');
++        });
++        $('select#action_1').append("<option value='command'>command line</option>");
++    });
++
++    $('#adddevices').click(function () {
++        // the subviews rendered with placeholders
++        var trVenue = new String("<li class='deivces tabrow' id='device_iRef'>deviceiRef : <select id = 'features_iRef' featureid = 'iRef' class='devicelistes' onchange='featurechange(iRef)' style='width:30em;'></select><select id = 'test_iRef' testid = 'iRef' class = 'testliste' style='width:10em;'><option value='None'>----</option><option value='>'>></option><option value='<'><</option><option value='='>=</option></select><span id='value_iRef'></span></div><input type='button' onClick='dellastdevice(iRef)' class='button icon16-action-save' style='width:2em;'>Delete</input></li>");
++        venueNumber++;
++        if (venueNumber == '1') {
++            trVenue = new String("<li class='deivces tabrow' id='device_iRef'>deviceiRef : <select id = 'features_iRef' featureid = 'iRef' class='devicelistes' onchange='featurechange(iRef)' style='width:30em;'></select><select id = 'test_iRef' testid = 'iRef' class = 'testliste' style='width:10em;'><option value='None'>----</option><option value='>'>></option><option value='<'><</option><option value='='>=</option></select><span id='value_iRef'></span></div></li>");
++        }
++        if (venueNumber < '100') {
++            $('#devices').append(trVenue.replace(/iRef/g, venueNumber));
++            $('select#features_' + venueNumber).append($('select#features_1').clone().html());
++        } else {
++            alert('100 device maxi please reload page');
++        }
++    });
++
++    $('#addaction').click(function () {
++        // the subviews rendered with placeholders
++        var trVenue = new String("<li class='actions tabrow' id='action_iRef'>Action iRef : <select id = 'Type_iRef' typeid = '0' style='width:10em;'><option value='None'>----</option><option value='True'>True</option><option value='False'>False</option></select><select id = 'action_iRef' actionid = 'iRef' class='actionslist'  onchange='actionchange(iRef)' style='width:30em;'></select> = <span id='valueaction_iRef'></span><input type='button' onClick='delaction(iRef)' class='button icon16-action-save' style='width:2em;'>Delete</input></li>");
++        actionNumber++;
++        if (actionNumber=='1'){
++	 trVenue = new String("<li class='actions tabrow' id='action_iRef'>Action iRef : <select id = 'Type_iRef' typeid = '0' style='width:10em;'><option value='None'>----</option><option value='True'>True</option><option value='False'>False</option></select><select id = 'action_iRef' actionid = 'iRef' class='actionslist'  onchange='actionchange(iRef)' style='width:30em;'></select> = <span id='valueaction_iRef'></span></li>");        
++	 }
++        $('#actions').append(trVenue.replace(/iRef/g, actionNumber));
++        $('select#action_' + actionNumber).append($('select#action_1').clone().html());
++    });
++});
++</script>
++
++<section class='subsection'>
++	<h3>Scene Name/Description</h3>
++		<input type='text' id="description" style='width:70em;'></input>
++	<h3>Devices list</h3>
++		<ul id='devices'></ul>
++		<br>
++		<input type='button' id='adddevices' value='add another device' />
++		<br>
++	<h3>Condition Test</h3>
++		<input type='text' id="Condition" style='width:70em;'></input>
++		<br>
++	<h3>Actions list</h3>
++		<ul id='actions'></ul>
++	       <br>
++	       <input type='button' id='addaction' value='add another action' />	
++	<h3>Options</h3>
++		<input type='checkbox' id='optionstart' checked='checked' value='start' />{% trans 'Automaticaly start the scene with plugin' %}
++	       <br>
++	       <button id='Creator' class='button icon16-action-save' style='width:20em;'>{% trans 'Create' %}</button>
++	       <br>Rinor Url :{{ request.session.rinor_ip }}:{{ request.session.rinor_port }}</p> 
++</section>
++
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//scene/manage_scene.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//scene/manage_scene.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//scene/manage_scene.html	1970-01-01 01:00:00.000000000 +0100
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//scene/manage_scene.html	2013-04-15 20:02:17.000000000 +0200
+@@ -0,0 +1,100 @@
++{% load i18n %}
++<script type='text/javascript'>
++  $(function(){
++
++   $("#specialread").click(function(){
++      data="";
++      rinor.put(['api', 'command', 'scene', '0'], {"command":"Read", 'value':'Read all scene'})
++
++                    .done(function(data, status, xhr){
++                         test=JSON.stringify(data);
++                         debut=test.search('data=');
++                         test=test.slice(debut+4);
++                         fin=test.search('}');
++                         test=test.slice(1,fin-2);
++                         i=0;
++                         text="<u>Config file:</u> <br/>"
++                         do{
++                           i=i+1;
++                           next=test.search(',');
++                           text=text+"<br/>" +i+" - "+ test.slice(0,next);
++                           test=test.slice(next+1);
++                         }
++                         while (test.search(",")>=0);
++                             $('#demo').html(text);
++                             }
++                    )
++                    .fail(function(jqXHR, status, error){
++                        if (jqXHR.status == 400)
++                            $.notification('error', "{% trans "Data not sent" %} (" + jqXHR.responseText + ")");
++                   });
++      });
++       $("#speciallist").click(function() {
++           RefreshTabHtml();
++       });
++
++    function RefreshTabHtml() {
++        $('#Scene_tab').dataTable().fnClearTable();
++        var Scene_tab = document.getElementById("Scene_tab");
++             rinor.put(['api', 'command', 'scene', '0'], {"command":"Read", 'value':'Read all scene'})
++               .done(function(data, status, xhr){
++                         test=JON.stringify(data);
++                         debut=test.search('data=');
++                         test=test.slice(debut+4);
++                         fin=test.search('}');
++                         test=test.slice(1,fin-2);
++                         var ret=[];
++                         var device = eval(test);
++                         for (i=0; i<devices.length; i++) {
++                            var data = devices[i].split(reg);
++                            ret.push(data);
++                          };
++ 
++                         $('#Scene_tab').dataTable().fnAddData([ 
++                            jobs[i][0], jobs[i][2], jobs[i][1], jobs[i][3], jobs[i][4],
++                            jobs[i][5], ""
++                            ]);
++                })
++                .fail(function(jqXHR, status, error){
++                    if (jqXHR.status == 400)
++                        $.notification('error', '{% trans "Cant get jobs list" %} (' + jqXHR.responseText + ")");
++                });
++     };
++
++   $(document).ready(function(){
++ 
++
++         $("#specialread").click();
++    });
++    });
++
++
++</script>
++<section class="subsection">
++    <h2>{% trans "Manage Scene" %}</h2>
++ <p id="demo"><u>Config file:</u></p>
++        <p><button id='speciallist' class='button icon16-action-reset'>{% trans "Refresh" %}</button></p>
++
++        <table id='Scenes_tab' class='simple'>
++            <thead>
++                <tr>
++                    <td></td>
++                </tr>
++                <tr>
++                    <th scope='col'>{% trans "Address" %}</th>
++                    <th scope='col'>{% trans "Condition" %}</th>
++                    <th scope='col'>{% trans "Command True" %}</th>
++                    <th scope='col'>{% trans "Command False" %}</th>
++                    <th scope='col'>{% trans "Run" %}</th>
++                    <th scope='col'>{% trans "Status" %}</th>
++                    <th scope='col'>{% trans "Commands" %}</th>
++                </tr>
++            </thead>
++            <tbody>
++            </tbody>
++        </table>
++
++
++
++</section>
++
+diff -Nru domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//scene/manage_scenev2.html domoweb-0.2.1/src/domoweb/admin/templates/plugins//scene/manage_scenev2.html
+--- domoweb-0.2.1.orig/src/domoweb/admin/templates/plugins//scene/manage_scenev2.html	1970-01-01 01:00:00.000000000 +0100
++++ domoweb-0.2.1/src/domoweb/admin/templates/plugins//scene/manage_scenev2.html	2013-04-15 20:02:17.000000000 +0200
+@@ -0,0 +1,114 @@
++{% load i18n %}
++<script type='text/javascript'>
++	var table = new Array();
++	var nb_ligne=0;
++        var plugin_scene_status = "OFF";
++	
++function delscene(id,address) {
++    rinor.put(['api', 'command', 'scene',address],  {"command":"delete"})
++               .done(function(data, status, xhr){
++                   rinor.delete(['api', 'device', id])
++                       .done(function(data, status, xhr){
++                          $.reloadPage({'status': 'success', 'msg': "{% trans "Device deleted" %} '" + name + "'", 'id':id});                                   
++                       })
++               })  
++};
++
++function startscene(id, address) {
++
++    rinor.put(['api', 'command', 'scene', address], {"command":"start"})
++               .done(function(data, status, xhr){
++                update(id,'run');
++                setTimeout('update('+id+',"stats")',1000);
++                })
++};
++
++function stopscene(id, address) {
++
++    rinor.put(['api', 'command', 'scene',address], {"command":"stop"})
++               .done(function(data, status, xhr){
++                update(id,'run');
++                update(id,'stats');
++                })
++    
++};
++
++function delall(){
++        for(i=1;i<nb_ligne;i++){
++           testid='#device_scene_' + i;
++           $('#device_scene_' + i).remove();
++        }
++};
++
++function update(id,key){
++  rinor.get(['api','state','last','1',id, key])
++       .done(function(data, status, xhr){
++             $('#device_'+ id +' .stat_'+key).html('<center>'+data[0].value+'</center>');
++       })
++};
++
++function poll(){
++    $.ajax({ url: "http://192.168.1.10:40405/events/resquest/18", success: function(data){
++        //Update your dashboard gauge
++        alert(data.value);
++
++    }, dataType: "json", complete: poll, timeout: 30000 });
++};
++
++
++
++  $(function(){
++  
++  $('#actualise').click(function () {
++       for(i=0;i<table.length;i++){
++          update(table[i],'run');
++          update(table[i],'stats');
++       }
++    });
++
++
++   $(document).ready(function(){
++        rinor.get(['api', 'feature'])
++             .done(function(data, status, xhr){
++                  $.each(data.objects, function(index, object) {
++                  if(object.device_feature_model.id=='scene.stat.status'){
++                     table[nb_ligne]= object.device.id;
++                     nb_ligne++;
++                     valeur_stat = 'unknow';
++                     valeur_run = 'unknow';
++                     matabme = "<tr id='device_"+ object.device.id +"'><td class='Name'><center>" + object.device.name +"</center></td><td class='Description'>"+object.device.description +"</td><td class='stat_run'><center> "+valeur_run+"</center> </td><td class='stat_stats'><center> "+valeur_stat+" </center></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='startscene("+ object.device.id+',"'+ object.device.address +'"' +")'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='stopscene("+ object.device.id+',"'+ object.device.address +'"' +")'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='delscene("+ object.device.id+',"'+ object.device.address +'"' +")'/></td></tr>"
++                     $('#Scene_table').append(matabme.replace(/iRef/g, nb_ligne));
++                     update(object.device.id,'run');
++                     update(object.device.id,'stats');
++                   }
++             });
++             });
++
++    });
++    
++    });
++
++
++</script>
++<section class="subsection">
++    <h2>{% trans "Manage Scene" %}</h2>
++  <button id='actualise' class='button icon16-action-save' style='width:10em;'>{% trans 'Refresh' %}</button>
++ <table id='Scene_table' class='simple'>
++<thead>
++                <tr>
++                    <td></td>
++                </tr>
++   <tr>
++       <th width=10%> Name </th>
++       <th width=65%> Description </th>
++       <th width=5%> Run </th>
++       <th width=5%> Stat </th>
++       <th width=5%> Start </th>
++       <th width=5%> Stop </th>
++       <th width=5%> Delete </th>
++   </tr>
++</table>
++
++
++</section>
++
