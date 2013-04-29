@@ -130,8 +130,8 @@ function createWebSocket(host, cbHandleMsg, cbAtOpen) {
                                 var callback;
                                 if (data.header.type == 'ack') {
                                     for (var i = 0; i < this.queueAck.length; i++) {
-                                        if (this.queueAck[i].header.idws == data.header.idws && this.queueAck[i].request ==data.request && 
-                                            this.queueAck[i].node == data.node && this.queueAck[i].valueid == data.valueid) {
+                                        if (this.queueAck[i].header.idws == data.header.idws && this.queueAck[i].request ==data.request &&
+                                            this.queueAck[i].header.idmsg == data.header.idmsg) {
                                                 if (this.queueAck[i].callback) {
                                                     callback = this.queueAck[i].callback;
                                                     break;
@@ -150,7 +150,7 @@ function createWebSocket(host, cbHandleMsg, cbAtOpen) {
                     if (data.header.type == 'ack') {
                         for (var i = 0; i < this.queueAck.length; i++) {
                             if (this.queueAck[i].header.idws == data.header.idws && this.queueAck[i].request ==data.request && 
-                                this.queueAck[i].node == data.node && this.queueAck[i].valueid == data.valueid) {
+                                this.queueAck[i].header.idmsg == data.header.idmsg) {
                                 this.queueAck.splice(i,1);
                             };
                         };
@@ -167,9 +167,10 @@ function sendMessage(message, callback, timeOut) {
     if (wsDomogik && wsDomogik.idws) {
         if (!timeOut) { timeOut = 15000;};
         if (message) {
-            message['header']['idws'] =  wsDomogik.idws;
+            message['header']['idws'] = wsDomogik.idws;
             message['header']['ip'] = location.hostname;
             message['header']['timestamp'] = d.getTime();
+            message['header']['idmsg'] = Math.floor((1000000)*Math.random()+1)
             var data = JSON.stringify(message);
             console.log ('Send WS msg : ', message);
             if (message.header.type = 'req-ack') {
@@ -197,7 +198,7 @@ function wsAckTimeOutCtrl() {
                     if (ack.node) { t =t + ' node : ' + ack.node;};
                     if (ack.valueid) { t =t + ' Value : ' + ack.valueid;};
                     $.notification('error', gettext('WebSocket ACK TimeOut for request : ') +  t);
-                    if (ack.header.request = 'ws-hbeat') {
+                    if (ack.header.request == 'ws-hbeat') {
                         $.notification('error', gettext('Plugin server not response to hbeat, client deconnected.'));
                         wsDomogik.close();
                     };
@@ -334,6 +335,14 @@ function getDataTableColIndex (dTab, title) {
         }
     return -1;
 };
+
+function plugin_is_running() {
+    // Check that the plugin is running
+    if (document.getElementById('buttonstatus').className == "button icon16-status-active") {
+        return false
+    }
+    return true
+}
 
 function getPluginInfo(callback)  {
     var msg = {};

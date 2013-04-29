@@ -106,7 +106,8 @@
         {% endif %}
         {% if plugin.id == "ozwave" %}
             <li><a href="#tabs-4">{% trans "Controller and devices" %}</a></li>
-            <li><a href="#tabs-5">{% trans "neighborhood network" %}</a></li>
+            <li><a href="#tabs-5">{% trans "Neighborhood network" %}</a></li>
+			<li><a href="#tabs-6">{% trans "Log" %}</a></li>
         {% endif %}
         {% if plugin.id == "cron" %}
             <li><a href="#tabs-4">{% trans "Jobs" %}</a></li>
@@ -146,6 +147,9 @@
         </div>
         <div id="tabs-5">
             {% include "plugins/ozwave/neighborsnodes_ozwave.html" %}
+        </div>
+		<div id="tabs-6">
+            {% include "plugins/ozwave/log_ozwave.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "cron" %}

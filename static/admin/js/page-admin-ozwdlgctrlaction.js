@@ -41,6 +41,7 @@ BtOnOff.prototype.setStatus = function(status) {
 };
 
 BtOnOff.prototype.toggle = function() {
+    var status = this.status;
     if (this.status == 0) {status = 1;
     } else {status = 0;
     };
