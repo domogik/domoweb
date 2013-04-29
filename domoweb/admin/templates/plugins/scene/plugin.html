@@ -106,39 +106,25 @@
         {% endif %}
         {% if plugin.id == "ozwave" %}
             <li><a href="#tabs-4">{% trans "Controller and devices" %}</a></li>
-        {% endif %}
-        {% if plugin.id == "ozwave" %}
-            <li><a href="#tabs-5">{% trans "neighborhood network" %}</a></li>
+            <li><a href="#tabs-5">{% trans "Neighborhood network" %}</a></li>
+			<li><a href="#tabs-6">{% trans "Log" %}</a></li>
         {% endif %}
         {% if plugin.id == "cron" %}
             <li><a href="#tabs-4">{% trans "Jobs" %}</a></li>
+            <li><a href="#tabs-5">{% trans "Alarm" %}</a></li>
+            <li><a href="#tabs-6">{% trans "Dawn Alarm" %}</a></li>
+            <li><a href="#tabs-7">{% trans "Date" %}</a></li>
+            <li><a href="#tabs-8">{% trans "Interval" %}</a></li>
+            <li><a href="#tabs-9">{% trans "Helper" %}</a></li>
+            <li><a href="#tabs-10">{% trans "Log" %}</a></li>
         {% endif %}
         {% if plugin.id == "scene" %}
             <li><a href="#tabs-4">{% trans "Creator" %}</a></li>
-        {% endif %}
-        {% if plugin.id == "scene" %}
             <li><a href="#tabs-5">{% trans "Manage" %}</a></li>
         {% endif %}
         {% if plugin.id == "telldus" %}
             <li><a href="#tabs-5">{% trans "Helper" %}</a></li>
-        {% endif %}
-        {% if plugin.id == "cron" %}
-            <li><a href="#tabs-5">{% trans "Alarm" %}</a></li>
-        {% endif %}
-        {% if plugin.id == "cron" %}
-            <li><a href="#tabs-6">{% trans "Dawn Alarm" %}</a></li>
-        {% endif %}
-        {% if plugin.id == "telldus" %}
             <li><a href="#tabs-6">{% trans "Log" %}</a></li>
-        {% endif %}
-        {% if plugin.id == "cron" %}
-            <li><a href="#tabs-7">{% trans "Date" %}</a></li>
-        {% endif %}
-        {% if plugin.id == "cron" %}
-            <li><a href="#tabs-8">{% trans "Helper" %}</a></li>
-        {% endif %}
-        {% if plugin.id == "cron" %}
-            <li><a href="#tabs-9">{% trans "Log" %}</a></li>
         {% endif %}
         </ul>
         <div id="tabs-1">
@@ -159,60 +145,50 @@
         <div id="tabs-4">
             {% include "plugins/ozwave/ctrldevlist_ozwave.html" %}
         </div>
-    {% endif %}
-    {% if plugin.id == "ozwave" %}
         <div id="tabs-5">
             {% include "plugins/ozwave/neighborsnodes_ozwave.html" %}
+        </div>
+		<div id="tabs-6">
+            {% include "plugins/ozwave/log_ozwave.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "cron" %}
         <div id="tabs-4">
             {% include "plugins/cron/jobs.html" %}
         </div>
-    {% endif %}
-    {% if plugin.id == "scene" %}
-        <div id="tabs-4">
-            {% include "plugins/scene/creator_scene.html" %}
+        <div id="tabs-5">
+            {% include "plugins/cron/alarm.html" %}
+        </div>
+        <div id="tabs-6">
+            {% include "plugins/cron/dawnalarm.html" %}
+        </div>
+        <div id="tabs-7">
+            {% include "plugins/cron/date.html" %}
+        </div>
+        <div id="tabs-8">
+            {% include "plugins/cron/interval.html" %}
+        </div>
+        <div id="tabs-9">
+            {% include "plugins/cron/helper.html" %}
+        </div>
+        <div id="tabs-10">
+            {% include "plugins/cron/log.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "scene" %}
+        <div id="tabs-4">
+            {% include "plugins/scene/creator_scenev2.html" %}
+        </div>
         <div id="tabs-5">
-            {% include "plugins/scene/manage_scene.html" %}
+            {% include "plugins/scene/manage_scenev2.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "telldus" %}
         <div id="tabs-5">
             {% include "plugins/telldus/helper.html" %}
         </div>
-    {% endif %}
-    {% if plugin.id == "cron" %}
-        <div id="tabs-5">
-            {% include "plugins/cron/alarm.html" %}
-        </div>
-    {% endif %}
-    {% if plugin.id == "cron" %}
-        <div id="tabs-6">
-            {% include "plugins/cron/dawnalarm.html" %}
-        </div>
-    {% endif %}
-    {% if plugin.id == "telldus" %}
         <div id="tabs-6">
             {% include "plugins/telldus/log.html" %}
-        </div>
-    {% endif %}
-    {% if plugin.id == "cron" %}
-        <div id="tabs-7">
-            {% include "plugins/cron/date.html" %}
-        </div>
-    {% endif %}
-    {% if plugin.id == "cron" %}
-        <div id="tabs-8">
-            {% include "plugins/cron/helper.html" %}
-        </div>
-    {% endif %}
-    {% if plugin.id == "cron" %}
-        <div id="tabs-9">
-            {% include "plugins/cron/log.html" %}
         </div>
     {% endif %}
     </div>

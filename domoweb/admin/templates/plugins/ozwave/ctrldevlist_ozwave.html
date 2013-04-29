@@ -198,6 +198,12 @@ $(function(){
                 case 'GetNodeStats' :
                     callback(msg.data);
                     break;
+                case 'TestNetwork' :
+                    callback(msg.data);
+                    break;
+                case 'TestNetworkNode' :
+                    callback(msg.data);
+                    break;
                 case 'setValue' :
                     console.log('Handle setValue');
                     if (msg.error == "") {
@@ -298,6 +304,27 @@ function handleCtrlEvent (event) {
                     break;
                 case 'model' :
                     zwNode['Model'] = event.data['model'];
+                    break;
+                case 'receviedtestmsg' :
+                    pText = $('#resultTestNode').html();
+                    switch (event.data.state) {
+                        case 'processing' :
+                            $.notification('success', event.usermsg + " at " + Date(event.header.timestamp));
+                            $('#resultTestNode').html(pText + '<li>' + event.usermsg + '</li>');
+                            break;
+                        case 'finish' :
+                            $.notification('info', event.usermsg + " at " + Date(event.header.timestamp));
+                            $('#resultTestNode').html(pText + '<li>' + event.usermsg + '</li>');
+                            break;
+                       case 'timeout' :
+                            $.notification('error', event.usermsg + " at " + Date(event.header.timestamp));
+                            $('#resultTestNode').html(pText + '<li>' + event.usermsg + '</li>');
+                            break;
+                        case 'Stopped' :
+                            $.notification('info', event.usermsg + " at " + Date(event.header.timestamp));
+                            $('#resultTestNode').html(pText + '<li>' + event.usermsg + '</li>');
+                            break;
+                        };
                     break;
             };
             RefreshDataNode(zwNode);

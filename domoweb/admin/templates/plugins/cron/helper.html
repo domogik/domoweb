@@ -39,6 +39,7 @@ function helperrinor (args) {
          test=test.replace(/[\\]{1}[n]{1}([a-zA-Z0-9]+[a-zA-Z0-9\-]*)[=]/g,'" , "$1" : "');
          //alert(test);
          //var lines=eval('(' + test + ')');
+         test=test.replace(/"{"/g,'"","');
          var lines=new Array();
          var parsed = JSON.parse(test, function(key, value) {
                 //alert("key="+key+",value="+value);

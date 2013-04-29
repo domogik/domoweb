@@ -554,6 +554,9 @@
 .icon128-action-go_left { background-image:url(../images/action/go_left_128.png);}
 .icon128-action-go_right { background-image:url(../images/action/go_right_128.png);}
 
+.icon16-action-test { background-image:url(../images/action/test_tools_16.png);}
+.icon32-action-test { background-image:url(../images/action/test_tools_32.png);}
+.icon64-action-test { background-image:url(../images/action/test_tools_64.png);}
 
 .icon16-action-processing_f6f6f6 { background-image:url(../images/action/processing_f6f6f6_16.gif);}
 .icon32-action-processing_f6f6f6 { background-image:url(../images/action/processing_f6f6f6_32.gif);}
