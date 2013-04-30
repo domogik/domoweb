@@ -296,13 +296,14 @@ function handleCtrlEvent (event) {
             break;
         case 'node-state-changed' :
             zwNode = GetZWNodeById(parseInt(event.node));
-            $.notification('success',"Node : " + event.node + " , " + event.usermsg + " at " + Date(event.header.timestamp));
             switch (event.data.typestate) {
                 case 'sleep' :
+                    $.notification('success',"Node : " + event.node + " , " + event.usermsg + " at " + Date(event.header.timestamp));
                     zwNode['State sleeping'] = event.data['state sleeping'];
                     zwNode['LastStatus'] = Date(event.header.timestamp);
                     break;
                 case 'model' :
+                    $.notification('success',"Node : " + event.node + " , " + event.usermsg + " at " + Date(event.header.timestamp));
                     zwNode['Model'] = event.data['model'];
                     break;
                 case 'receviedtestmsg' :
