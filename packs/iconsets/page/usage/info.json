@@ -21,7 +21,7 @@
             "sizes": [16, 32, 64]
         },
        {
-            "id": "light",
+            "id": "lightpage",
             "label": "Light",
             "sizes": [16, 32, 64]
         }, 
