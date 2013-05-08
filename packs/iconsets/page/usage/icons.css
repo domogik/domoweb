@@ -7,6 +7,7 @@
 .icon64-usage-heating { background-image:url(heating_64.png);}
 .icon64-usage-security { background-image:url(security_64.png);}
 .icon64-usage-appliance { background-image:url(appliance_64.png);}
+.icon64-usage-temperature { background-image:url(temperature_64.png);}
 
 .icon32-usage-light { background-image:url(light_32.png);}
 .icon32-usage-shutter { background-image:url(shutter_32.png);}
@@ -14,6 +15,7 @@
 .icon32-usage-heating { background-image:url(heating_32.png);}
 .icon32-usage-security { background-image:url(security_32.png);}
 .icon32-usage-appliance { background-image:url(appliance_32.png);}
+.icon32-usage-temperature { background-image:url(temperature_32.png);}
 
 .icon16-usage-light { background-image:url(light_16.png);}
 .icon16-usage-shutter { background-image:url(shutter_16.png);}
@@ -21,5 +23,6 @@
 .icon16-usage-heating { background-image:url(heating_16.png);}
 .icon16-usage-security { background-image:url(security_16.png);}
 .icon16-usage-appliance { background-image:url(appliance_16.png);}
+.icon16-usage-temperature { background-image:url(temperature_16.png);}
 
 
