@@ -21,11 +21,11 @@
               .processing();
             // Building widget content
             var main = $("<div class='main'></div>");
-            var on_action = $('<div class="command on">ON</div>');
+            var on_action = $('<div class="command on">'+o.usage_parameters.state1+'</div>');
             on_action.click(function (e) {self.action(o.model_parameters.value1);e.stopPropagation();})
                 .keypress(function (e) {if (e.which == 33 || e.which == 38) {self.action(o.model_parameters.value1); e.stopPropagation();}});
             main.append(on_action);
-            var off_action = $('<div class="command off">OFF</div>');
+            var off_action = $('<div class="command off">'+o.usage_parameters.state0+'</div>');
             off_action.click(function (e) {self.action(o.model_parameters.value0);e.stopPropagation();})
                 .keypress(function (e) {if (e.which == 34 || e.which == 40) {self.action(o.model_parameters.value0); e.stopPropagation();}});
             main.append(off_action);
