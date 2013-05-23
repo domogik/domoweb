@@ -1,0 +1,250 @@
+/**
+# Copyright 2013 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Plugin purpose 
+# ==============
+# Support Websocket HTML5, facilty for messaging exchange between Domogik plugin and Domoweb (or other Other Websocket client) UI.
+# Implements user interface for Domoweb
+# All message have an header JSON with keys :
+#        - 'type': give the type of message, values can  be:
+#            -'req' : a simple client resquest, this type is passed to callback.
+#            -'req-ack' : a client resquest with confirmation requested , this type is passed to callback.
+#            -'pub' : Automaticly select with server.broadcastMessage function.
+#                    Next two keys help to secure and validate the client connection.
+#            -'ack' : return by server after a 'req_ack'
+#            -'confirm-connect' : Internal server type for confirm to client connection accepted.
+#                                        This message type is send automaticly to client when he ask for connection. Add 2 keys for identity : 
+#                                    -'id' : 'ws_serverUI' : constante string
+#                                    -'idws' : peer_adresss, id that the client keeps for identification.
+#            -'ack-connect' : Internal server type to confirm that client have recept first confirmation ('confirm-connect').
+#                                  The client must send this message type to finalized connection.
+#                                  
+#            -'server-hbeat' : Internal server type for client check server running.
+#                                   server send automaticly an confirmation message. See UI client part if you implement it.
+#                                   
+#        - 'idws' : Identify resquesting client. See UI client part.
+#        - 'idmsg: Identify of individual resquet. See UI client part.
+#        - 'ip' : Identify resquesting IP client. 
+#        - 'timestamp' : A reference time when message was sent.
+#
+# See example in ws-template.html file to implement your code.
+#  You need only types : 'req', 'req-ack' for send message.
+#  And  'pub' and 'akc' for read message in callback function
+#
+# Import WebSocket server library :
+#    <script type="text/javascript" src="{{ static_design_url }}/admin/js/ws-plugin-tools.js"> </script> 
+# To create a client use function:
+#    createWebSocket(host, handleWSmessage, initSequence)
+#            @ param host : IP adresse server + port number like "ws//xxx.xxx.xxx.xxx:port
+#            @ param handleWSmessage : Callback function that websocket call on recepted message 'ack' and 'pub'
+#            @ param initSequence : Callback function that call one time at after opened client, in option not absolute necessary.
+# To send a request use function:
+#    sendMessage(msg, function(response){...your process...}, timeout); 
+#            @ param msg : your request with format : {'header' : {'type': 'req-ack'}, 'request': 'foorequest', 'fooparam':'foovalue',....}
+#                                    just give type of request : 'req' no expect response, 'req-ack' expect response,
+#                                    you must put it in 'header' and 'type'  keys, others parameters for identity will add automaticaly.
+#            @ param callback : in option, your function to call after response, she receive message response as parameter
+#            @ param timeout : in option, defaut value = 15000 ms, if your response take more change it in ms.
+#
+# Template for example with automatic connexion with domogik plugin
+# ==============
+# Author : Nico <nico84dev@gmail.com>
+**/
+<script type="text/javascript" src="{{ static_design_url }}/admin/js/ws-plugin-tools.js"> </script> 
+
+<script type='text/javascript'>
+
+// Just for this example
+function displayInfo(infos) {
+    var keepInfo =  $('#wsStatus').html();
+    $('#wsStatus').html(keepInfo + '<br>' + infos);
+};
+// Data Extraction from Xpl 
+function GetDataFromxPL (data, key) {
+    var dt=JSON.stringify(data);
+    var debut=dt.search(key + '=');
+    var offset =key.length;
+    dt=dt.slice(debut+offset+1); 
+    var fin=dt.search('}');   
+    dt=dt.slice(0,fin-2); 
+    dt= dt.replace(/&ouvr;/g,'{').replace(/&ferm;/g,'}').replace(/&quot;/g,'"').replace(/&squot;/g,"'"); // replace by your code protocol !
+    return JSON.parse(dt); 
+};
+// Data formating for Xpl
+function SetDataToxPL (data) {
+    dt=JSON.stringify(data);
+    var val = dt.replace(/["]/g,"&quot;").replace(/[{]/g,"&ouvr;").replace(/[}]/g,"&ferm;").replace(/true/g,"True").replace(/false/g,"False"); // replace by your code protocol !
+    return val;
+};
+/**
+For example, this callback function handle event from plugin
+see below openDmg_EventListener function.
+**/
+function handlePluginEvent (event) {
+    var notif = '';
+    if (event.notifytype) {notif = event.notifytype;  // In this example just a recovery of two differents type of source event (rinor or WebSocket)
+    } else {if (event.type) {notif = event.type;};
+    };
+    switch (notif) {    // our plugin give it proper notifications, this notifications comes from WebSocket event that you handle in your plugin.
+        case 'foopub1' :
+            displayInfo('Recept : ' + notif)
+            $.notification('info',"Controller Node : " + event.node + " , " + event.usermsg + " at " + Date(event.header.timestamp));
+            break;
+        case 'foopub2' :
+            displayInfo('Recept : ' + notif)
+            $.notification('info',"Controller Node : " + event.node + " , " + event.usermsg + " at " + Date(event.header.timestamp));
+            break;
+        case 'foopub3' :
+            displayInfo('Recept : ' + notif)
+            $.notification('info',"Node : " + event.node + " , " + event.usermsg + " at " + Date(event.header.timestamp));
+            break;
+        case 'plugin-state' :                                                       // this notification comes from rinor event that you handle in your plugin.
+            var s = event.data.replace(/'/g,'"')
+            console.log('event: ', event, s);
+            event.data = JSON.parse(s);
+            if (event.data.state = 'wsserver_started') {                        // Notification Case of WebSocket server started
+                wsPort = event.data.wsport;                                      // retrieve port numbers
+                var host = 'ws://' +  location.hostname + ':' + wsPort;      
+                createWebSocket(host, handleWSmessage, initSequence);      // call openning a websocket client
+            };
+            break;
+    };
+ };
+
+ /**
+ Example of Callback function calling by WebSocket client on a recepted message.
+    @ param msg : JSON data with plugin message.
+    @ param callback : function given by resquet UI when a UI send message. Called if exist, It can be a object also.
+ **/
+ function handleWSmessage(msg, callback) {
+    if (msg.header.type == 'ack') {                             // check type of message
+        switch (msg.request) {                                  // in case of an ack message handle it according to original resquet
+            case 'foorequest1' :
+                displayInfo('Response  : ' + msg.data)
+                break;
+            case 'foorequest2' :
+                displayInfo('Response : ' + msg.data)
+                if (typeof callback == "boolean") {last = callback;};       // check if callback is already a boolean, in case affect it.
+                if (typeof callback == "function") {callback(msg.data);};  // check if callback is already a function, in case call it.
+                break;
+                 if (! msg.error) {                                             // check if response have error
+                    displayInfo('No error : ' + msg.data['fooValue']);
+                 } else {$.notification('error', 'Response have error : ' + msg.error);};
+                break;
+            default :
+                callback(msg);                                                 // possibly a defaut processing case
+        };
+    } else {
+        if (msg.header.type == 'pub') {                       // Case of an pub message call an other handler, In this example it's the same that rinor event.
+            handlePluginEvent(msg);
+        };
+    };
+};
+
+/** 
+For example, we open a listener like widget who get Xpl message from a domogik device
+This devive is handle in plugin to give the status and informations about plugin.
+It's give opportunity to recover automatically port number of websocket plugin server.
+Callback parameter is a function that handle plugin informations
+**//
+function openDmg_EventListener(callback){
+    var pluginEvent = new EventSource(EVENTS_URL + '/');  // opening listener
+    pluginEvent.addEventListener('open', function (event) {
+        console.log ('dmg_event open ', event);
+    }, false);
+    pluginEvent.addEventListener('message', function (event) {   // add primary listerner who recept all devices messages
+        if (ctrlDevice) {                                               
+            var data = jQuery.parseJSON(event.data);
+            if (data.device_id == ctrlDevice.device.id) {           // add filter on our plugin for keep only relevant messages
+                console.log ('dmg_event recept : ', data);
+                var e={'timestamp': data.timestamp}
+                $.each(data.data, function (index, obj) {
+                    e[obj.key] = obj.value;
+                });
+                callback(e);                                            // callback our handler function
+            };
+        };
+    }, true);
+    pluginEvent.addEventListener('error', function (event) {   // add event on error event
+        console.log ('dmg_event error ', event);
+        }, false);
+
+	$(window).bind('beforeunload', function () {pluginEvent.close(); });  // if page is reloaded close previous listerner.
+};
+
+/**
+For example a function to retrive plugin information like websocket server port number by a rinor resquest
+Callback is function to do after getting infoormation.
+**/
+function getPluginInfo(callback)  {
+    var msg = {};
+    msg['command'] = "Refresh";
+    var val = {};
+    val['request'] ='GetPluginInfo';                                                // Internal plugin code resquest
+    msg['value'] = SetDataToxPL (val);
+    rinor.put(['api', 'command', 'YourPluginID', 'UI'], msg)
+        .done(function(data, status, xhr){
+            var messXpl = GetDataFromxPL(data, 'data');
+            if (messXpl['error'] == "") {
+                wsPort = messXpl['hostport']
+                console.log('getPluginInfo : ' + messXpl['hostport']);
+                callback(wsPort);
+            } else {
+                $.notification('error',gettext("Plugin has error") + ": " + messXpl['error']);
+            } 
+        })
+        .fail(function(jqXHR, status, error){
+            if (jqXHR.status == 400)
+                $.notification('error', gextext ("Plugin not received request") + ", ("  + jqXHR.responseText + ")");
+        });
+};
+
+$(document).ready(function(){
+    // Recovery port number the way you want 
+    // Here is an example 
+    openDmg_EventListener(handlePluginEvent)
+    /** Call a retrieve function to get WebSocket port for plugin
+        This example use rinor functionnality and callback createWebSocket with handle function parameters :
+        @ param host : IP adresse server + port number like "ws//xxx.xxx.xxx.xxx:port
+        @ param handleWSmessage : Callback function that websocket call on recepted message
+        @ param initSequence : Callback function call one time at after opned client, in option not absolute necessary.
+    **/ 
+    getPluginInfo(function(port){var host = 'ws://' +  location.hostname + ':' + port;
+                                                    createWebSocket(host, handleWSmessage, initSequence);});
+                                                            
+    /**
+    To send a resquet :
+    **/
+    var msg = {};
+    msg['header'] = {'type': 'req-ack'};    // just give type of request : 'req' no expect response, 'req-ack' expect response, give a callback function to process response.
+                                                // you must put it in 'header' and 'type' keys, others parameters for identity will add automaticaly.
+    msg['request'] ='foorequest1';         // the internal plugin request, this request will be in response msg, see handleWSmessage function
+    msg['fooparam'] ='foovalue';           // others parameters if necessary
+    sendMessage(msg, function(response){/**...your process...**//}, timeout);  // call sendMessage fonction with parameters :
+                                                // @ param msg : your request
+                                                // @ param callback : in option, your function to call after response, she receive message response as parameter
+                                                // @ param timeout : in option, defaut value = 15000 ms, if your response take more change it in ms.
+    
+});
+
+</script>
+<section class="subsection">
+    <h2>A WebSocket example usage.</h2>
+    <ul class='infos'>
+        <span id='wsStatus>WebSocket informations</span>
+    </ul>
+</section>

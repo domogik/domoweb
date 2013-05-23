@@ -1,3 +1,4 @@
+var ozwDomowebVers = "0.2b4"
 var netWorkZW = {};
 var listNodes = new Array();
 var listTypesVal = {};
@@ -6,12 +7,12 @@ var hdCmdClss = new Array();
 var initialized = false;
 var ctrlDevice;
 var cb_RefreshTabHtml;
-var wsDomogik;
-var wsPort;
-var tWSserverOut = (new Date()).getTime();
-var cptTimeOutWS = 0;
-
-var wsAcktOutCtrl = setInterval(wsAckTimeOutCtrl, 500);
+//var wsDomogik;
+//var wsPort;
+//var tWSserverOut = (new Date()).getTime();
+//var cptTimeOutWS = 0;
+//
+//var wsAcktOutCtrl = setInterval(wsAckTimeOutCtrl, 500);
 
 // Constante d'entete de colonne de la table node_items 
 var hdLiNode = {"NodeId": 0, "Name": 1, "Location": 2, "Model": 3, "Awake":  4, "Type": 5, "Last update": 6, "Action": 7};
@@ -56,184 +57,6 @@ var NODESTATISTIC = {"sentCnt" : gettext("Number of messages sent from this node
                                  "sentCntCC" : gettext("Number of messages sent from this CommandClass."),    
                                  "receivedCntCC" : gettext("Number of messages received from this CommandClass.")
                                 };
-
-function createWebSocket(host, cbHandleMsg, cbAtOpen) {
-    if(window.MozWebSocket) {
-        window.WebSocket=window.MozWebSocket;
-    }
-    if(!window.WebSocket) {
-        alert("Your browser don't accept webSocket!");
-        return false;
-    } else {
-        if (!wsDomogik || !wsDomogik.idws) {
-            console.log('Tentative de Connection : ' + host);
-            wsDomogik = new WebSocket(host);
-            wsDomogik.idws = false;
-            wsDomogik.cbHandleMsg = cbHandleMsg;
-            wsDomogik.queueAck = [];
-            wsDomogik.host = host;
-            wsDomogik.onopen = function(event) {
-                wsDomogik.send(JSON.stringify({'header':{'type': 'ack-connect', 'idws':'request'}}));
-                wsDomogik.idws = false;
-                setStatusWS('up');
-                var d = new Date();
-                console.log('Client WebSocket State::' + 'OPEN');
-                };
-
-            wsDomogik.onclose = function(event) {
-                setStatusWS('down');
-                var d = new Date();
- //               tWSserverOut = d.getTime(); 
-                console.log('Client WebSocket State::' + 'CLOSED ' + event.code + ' ' + event.reason + ' ' + event.wasClean);
-                wsDomogik.idws = false;
-                };
-            wsDomogik.onerror = function(event) {
-                if (event.target) { error = event.target.url;
-                } else { error = 'No URL definition';};
-                $.notification('error', gettext('Client WebSocket no connection on URL : ') +  error);
-                console.log('Client WebSocket no connection on URL : ' +  error);
-                };
-
-            wsDomogik.sendhbeat = function() {
-                var d = new Date();
-                msg['header'] = {'type': 'req-ack'};
-                msg['request'] ='server-hbeat';
-                sendMessage(msg, function(ackMsg) {
-                    if (ackMsg['error'] =='') {
-                        if (ackMsg.header['idws'] == wsDomogik.idws) {tWSserverOut = d.getTime();
-                        }else  {
-                            $.notification('error', gettext('Plugin server bad identity, return : ') + ' : ' +ackMsg.header['idws']  + gettext(' for client : ') + wsDomogik.idws);
-                        };
-                    } else {
-                        $.notification('error', gettext('Plugin server connected with error : ') + ' : ' +ackMsg.error );
-                    };
-                    });
-                };
-
-            wsDomogik.onmessage = function(event){
-                var d = new Date();
-                tWSserverOut = d.getTime(); 
-                try { //tente de parser data
-                        var data = jQuery.parseJSON(event.data);
-                } catch(exception) {
-                        var data = event.data;
-                    }
-                console.log ('Recu par websocket : ', data);
-                if (data.header) {
-                    if ((data.header.type  == 'confirm-connect') &&  (data.header.id == 'ozwave_serverUI')) {
-                        this.idws = data.header.idws;
-                        $.notification('success',gettext('Connection to plugin server running'))
-                        if (cbAtOpen) {cbAtOpen();};
-                    } else if (this.idws) {
-                            if (this.idws == data.header.idws) {
-                            //    console.log('handle message');
-                                var callback;
-                                if (data.header.type == 'ack') {
-                                    for (var i = 0; i < this.queueAck.length; i++) {
-                                        if (this.queueAck[i].header.idws == data.header.idws && this.queueAck[i].request ==data.request &&
-                                            this.queueAck[i].header.idmsg == data.header.idmsg) {
-                                                if (this.queueAck[i].callback) {
-                                                    callback = this.queueAck[i].callback;
-                                                    break;
-                                            };
-                                        };
-                                    };
-                                };
-                                this.cbHandleMsg(data, callback);
-                            } else {
-                                console.log('Error bad WebSocket id : ', data.header.idws);
-                            };
-                        } else {
-                            console.log('Error WebSocket unknown, force to close.');
-                            this.close;
-                        };
-                    if (data.header.type == 'ack') {
-                        for (var i = 0; i < this.queueAck.length; i++) {
-                            if (this.queueAck[i].header.idws == data.header.idws && this.queueAck[i].request ==data.request && 
-                                this.queueAck[i].header.idmsg == data.header.idmsg) {
-                                this.queueAck.splice(i,1);
-                            };
-                        };
-                    };
-                } else { console.log('Error bad message : no header');
-                };
-            };
-        };
-    };
-};
-
-function sendMessage(message, callback, timeOut) {
-    var d = new Date();
-    if (wsDomogik && wsDomogik.idws) {
-        if (!timeOut) { timeOut = 15000;};
-        if (message) {
-            message['header']['idws'] = wsDomogik.idws;
-            message['header']['ip'] = location.hostname;
-            message['header']['timestamp'] = d.getTime();
-            message['header']['idmsg'] = Math.floor((1000000)*Math.random()+1)
-            var data = JSON.stringify(message);
-            console.log ('Send WS msg : ', message);
-            if (message.header.type = 'req-ack') {
-                message['timeOut'] = timeOut - 500;  // retirer la fréquence de controle 
-                if (callback) {
-                    message['callback'] = callback;
-                    }
-                wsDomogik.queueAck.push(message)};
-            wsDomogik.send(data);
-            };
-    } else {
-    console.log ('Websocket non connecté ou non pret à envoyer des messages : ' , message);
-    $.notification('error', 'WebSocket not connect to plugin server, message not send : ' + JSON.stringify(message));
-    }; 
-};
-
-function wsAckTimeOutCtrl() {
-    var d = new Date();
-    if (wsDomogik) {
-        if (wsDomogik.readyState == 1) {
-            if (wsDomogik.queueAck.length !=0) {$.each(wsDomogik.queueAck, function(i) {
-                var ack = wsDomogik.queueAck[i];
-                if ((d.getTime() - ack.header.timestamp) >= (ack.timeOut )) {
-                    var t = ack.request;
-                    if (ack.node) { t =t + ' node : ' + ack.node;};
-                    if (ack.valueid) { t =t + ' Value : ' + ack.valueid;};
-                    $.notification('error', gettext('WebSocket ACK TimeOut for request : ') +  t);
-                    if (ack.header.request == 'ws-hbeat') {
-                        $.notification('error', gettext('Plugin server not response to hbeat, client deconnected.'));
-                        wsDomogik.close();
-                    };
-                    wsDomogik.queueAck.splice(i,1);
-                };
-                });
-            };
-        } else {
-            if ((d.getTime() - tWSserverOut) >= 30000) {
-                if (cptTimeOutWS>= 60) {
-                    cptTimeOutWS = 0;
-                    if (wsDomogik.idws == false) {
-                        if ((d.getTime() - tWSserverOut) >= (30000 * 3.5)) {
-                                wsDomogik =false;
-                            } else {
-                                $.notification('error', gettext('No connection on plugin server since ') + ((d.getTime() - tWSserverOut)/1000) + ' sec.');
-                                createWebSocket(wsDomogik.host,wsDomogik.cbHandleMsg);
-                            };
-                    } else {
-                        wsDomogik.sendhbeat();
-                    };
-                } else {cptTimeOutWS = cptTimeOutWS + 1;};
-            };
-        };
-    } else {
-        var dtout = (d.getTime() - tWSserverOut);
-        if ((dtout >= 30000) && (dtout < 900000))  {
-            if (cptTimeOutWS>= 120) {
-                cptTimeOutWS = 0;
-                $.notification('error', gettext('wsDomogik server not identified ') + (dtout/1000) + ' sec.')
-            } else {cptTimeOutWS = cptTimeOutWS + 1;};
-        };
-    };
-};
-
 
 function openDmg_eventListener(callback){
     var ozwes = new EventSource(EVENTS_URL + '/');

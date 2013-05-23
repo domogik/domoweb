@@ -31,6 +31,7 @@
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/fnReloadAjax.js"></script>
 <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/fnStandingRedraw.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/admin/js/ws-plugin-tools.js"> </script> 
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwlib.js"> </script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwkinetics.js"> </script>
 <script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-ozwdialogs.js"> </script>
@@ -252,6 +253,8 @@ $(function(){
                 case 'server-hbeat' :
                     callback(msg);
                     break;
+                default :
+                    callback(msg);
             };
         } else {
             if (msg.header.type == 'pub') {
@@ -374,6 +377,7 @@ function handleCtrlEvent (event) {
         $('#userpath').html(netWorkZW['UserPath']);                    
         $('#libozwvers').html(netWorkZW['PYOZWLibVers']);
         $('#ozwplugvers').html(netWorkZW['OZWPluginVers']);
+        $('#ozwdomowebvers').html(ozwDomowebVers);
         if (netWorkZW['error'] ==""){
             $('#homeid').html(netWorkZW['HomeID']);
             $('#namectrl').html(netWorkZW['Model']);
@@ -623,6 +627,7 @@ function handleCtrlEvent (event) {
     }; 
 
    $(document).ready(function(){
+        $('#ozwdomowebvers').html(ozwDomowebVers);
         createToolTip('#infoIconInitNodes', 'top');
         createToolTip('#startCtrl', 'top');
         createToolTip('#stopCtrl', 'top');
@@ -673,14 +678,14 @@ function handleCtrlEvent (event) {
 
 </script>
 <section class="subsection" id="zwnetworksection">
-
     <h2>{% trans "Zwave controller" %}  &nbsp;&nbsp;&nbsp;&nbsp;
             <div id='iconstatuszw'> <span class='label'>{% trans "Status"%} :</span></div> &nbsp;&nbsp;&nbsp;&nbsp;
             <div id='iconstatusws' align="right"> <span class='label'>{% trans "Server connection"%} :</span></div>
             <div align="right"><font size=2>
                 <span class='subtitle' id='libozwvers'><u>{% trans "Undefined"%}</u></span>&nbsp;&nbsp;&nbsp;&nbsp;
-                <span class='label'>{% trans "Plugin version" %}:</span>&nbsp;<span class='subtitle' id='ozwplugvers'><u>{% trans "Undefined"%}</u></span>
-            </font></div>
+                <span class='label'>{% trans "Plugin Domogik" %} :</span>&nbsp;<span class='subtitle' id='ozwplugvers'><u>{% trans "Undefined"%}</u></span>
+                <span class='label'> / {% trans "DomoWeb" %} :</span>&nbsp;<span class='subtitle' id='ozwdomowebvers'><u>{% trans "Undefined"%}</u></span>
+                </font></div>
             </h2>
         <form id='controllerform'>
             <ul class='infos'>
