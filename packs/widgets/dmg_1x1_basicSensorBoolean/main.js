@@ -21,12 +21,13 @@
             height: 1,
             width: 1,
             displayname: true,
-	    displayborder: true
+	    displayborder: true,
+	    usage: "light",
         },
 
         _init: function() {
             var self = this, o = this.options;
-/*            this.element.addClass("icon32-usage-" + o.usage);*/
+            this.element.addClass("icon32-usage-" + o.usage);
 
             this._status = $.getStatus();
             this.element.append(this._status);
@@ -48,7 +49,8 @@
 
         setValue: function(value) {
             var self = this, o = this.options;
-            if (value != null) {
+	    console.log(value);
+            if (value != null && value != "") {
                 if (value == 1) {
                     this.element.displayIcon('value_true');             
                     this._status.removeClass('icon16-status-unknown icon16-status-inactive').addClass('icon16-status-active');

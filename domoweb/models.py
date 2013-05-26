@@ -158,9 +158,9 @@ class DataType(RestModel):
     @staticmethod
     def refresh():
         import json
-        _data = DataType.get_list();
+        _data = DataType.get_list()[0];
         DataType.objects.all().delete()
-        for type, params in _data[0].iteritems():
+        for type, params in _data.iteritems():
             r = DataType(id=type, parameters=json.dumps(params))
             r.save()
 

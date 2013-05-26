@@ -34,8 +34,6 @@
                 devicename: "{{ command.device.name }}",
                 featureid: "{{ command.id }}",
                 featurename: "{{ command.name }}",
-                datatype: "{{ command.datatype.id }}",
-                dataparameters: {{ command.datatype.parameters|safe }},
                 featureconfirmation: "{{ command.return_confirmation }}",
                 deviceplugin: "{{ command.device.type.plugin_id }}",
                 deviceid: "{{ command.device.id }}",
@@ -106,7 +104,6 @@
     <link href="{{ static_design_url }}/common/css/ui-processing.css" rel="stylesheet" type="text/css" />
     <link href="{{ static_design_url }}/common/css/dmg.widget-core.css" rel="stylesheet" type="text/css" />    
     <link href="{{ static_design_url }}/common/css/dmg.widget-utils.css" rel="stylesheet" type="text/css" />    
-    <link href="{{ static_widgets_url }}/dmg_4x3_colorPicker/farbtastic.css" rel="stylesheet" type="text/css" />
 
     {% for widget in widgets %}
     <link href="{{ static_widgets_url }}/{{ widget.widget_id }}/style.css" rel="stylesheet" type="text/css" />
@@ -129,7 +126,6 @@
     <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.processing.js"></script>
     <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-core.js"></script>
     <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-utils.js"></script>
-    <script type="text/javascript" src="{{ static_widgets_url }}/dmg_4x3_colorPicker/farbtastic.js"></script>
     <script type="text/javascript" src="{{ static_design_url }}/charting/dmg.chart-core.js"></script>
     <script type="text/javascript" src="{{ static_design_url }}/charting/dmg.highcharts.js"></script>
 

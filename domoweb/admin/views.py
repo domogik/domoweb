@@ -168,7 +168,12 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
     plugin = PluginPipe().get_detail(plugin_host, plugin_id)
     devices = Device.objects.filter(type__plugin_id=plugin.id)
     types = DeviceType.objects.filter(plugin_id=plugin.id)
-    products = ProductsPipe().get_list(plugin_id)
+
+    if plugin_id == "rfxcom-lan":
+        products = ProductsPipe().get_list("rfxcom")
+    else:
+        products = ProductsPipe().get_list(plugin_id)
+
     if plugin_type == "plugin":
         page_title = _("Plugin")
         dependencies = PluginDependencyPipe().get_list(plugin_host, plugin_id)

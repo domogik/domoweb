@@ -164,8 +164,6 @@
                 self.show_graph('8h', 0);
             });
 
-
-
             var previous = $("<li class='previous'><button disabled='disabled'>Previous</button></li>");
             var next = $("<li class='next'><button disabled='disabled'>Next</button></li>");
 
@@ -207,8 +205,7 @@
                 });
             }
             chart.highcharts.show({
-                device_id: o.deviceid,
-                key: o.key,
+                feature_id: o.featureid,
                 name: o.featurename,
                 unit: o.dataparameters.unit,
                 type: type,

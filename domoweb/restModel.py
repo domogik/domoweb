@@ -180,6 +180,7 @@ def _get_json(uri):
         except BadStatusLine:
             raise RinorError(reason="No response for '%s'" % uri)
     resp = respObj.read()
+    resp = resp.replace("u'", "'") # Fix for unicode prefix.
     resp_obj = simplejson.loads(resp)
     return _objectify_json(resp_obj)
     

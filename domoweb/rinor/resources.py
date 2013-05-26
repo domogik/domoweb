@@ -55,8 +55,8 @@ class StateResource(RinorResource):
 
     def base_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/last/(?P<last>\d+)/(?P<device>\d+)/(?P<key>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_last'), name="api_dispatch_last"),
-            url(r"^(?P<resource_name>%s)/from/(?P<from>\d+)/to/(?P<to>\d+)/interval/(?P<interval>(year|month|week|day|hour|minute|second))/selector/(?P<selector>(min|max|avg|first|last))/(?P<device>\d+)/(?P<key>[\w\d_-]+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_fromto'), name="api_dispatch_fromto"),
+            url(r"^(?P<resource_name>%s)/last/(?P<last>\d+)/(?P<feature>\d+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_last'), name="api_dispatch_last"),
+            url(r"^(?P<resource_name>%s)/from/(?P<from>\d+)/to/(?P<to>\d+)/interval/(?P<interval>(year|month|week|day|hour|minute|second))/selector/(?P<selector>(min|max|avg|first|last))/(?P<feature>\d+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_fromto'), name="api_dispatch_fromto"),
         ]
     
     def dispatch_last(self, request, **kwargs):
@@ -66,13 +66,13 @@ class StateResource(RinorResource):
         return self.dispatch('fromto', request, **kwargs)
     
     def obj_get_last(self, request, **kwargs):
-        _data = self._meta.rinor_pipe.get_last(kwargs['last'], kwargs['device'], kwargs['key'])
+        _data = self._meta.rinor_pipe.get_last(kwargs['last'], kwargs['feature'])
         if not(_data):
             raise ObjectDoesNotExist()
         return _data
 
     def obj_get_fromto(self, request, **kwargs):
-        _data = self._meta.rinor_pipe.get_fromto(kwargs['from'], kwargs['to'], kwargs['interval'], kwargs['selector'], kwargs['device'], kwargs['key'])
+        _data = self._meta.rinor_pipe.get_fromto(kwargs['from'], kwargs['to'], kwargs['interval'], kwargs['selector'], kwargs['feature'])
         if not(_data):
             raise ObjectDoesNotExist()
         return _data

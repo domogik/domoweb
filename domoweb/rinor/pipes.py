@@ -169,11 +169,11 @@ class StatePipe(RinorPipe):
     index = 'stats'
     paths = []
 
-    def get_last(self, last, device, key):
+    def get_last(self, last, feature):
         if (last == 1):
-            _data = self._get_data(self.list_path, [device, key, 'lastest'])
+            _data = self._get_data(self.list_path, [feature, 'lastest'])
         else:
-            _data = self._get_data(self.list_path, [device, key, 'last', last])
+            _data = self._get_data(self.list_path, [feature, 'last', last])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:
@@ -181,8 +181,8 @@ class StatePipe(RinorPipe):
         else:
             return None
 
-    def get_fromto(self, fromTime, toTime, interval, selector, device, key):
-        _data = self._get_data(self.list_path, [device, key, 'from', fromTime, 'to', toTime, 'interval', interval, 'selector', selector])
+    def get_fromto(self, fromTime, toTime, interval, selector, feature):
+        _data = self._get_data(self.list_path, [feature, 'from', fromTime, 'to', toTime, 'interval', interval, 'selector', selector])
         if _data.status == "ERROR":
             raise RinorError(_data.code, _data.description)        
         if len(_data[self.index]) > 0:

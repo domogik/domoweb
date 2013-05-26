@@ -7,6 +7,7 @@
             id: 'dmg_1x1_minimalSensorNumber',
             name: 'Mini widget',
             description: 'Mini widget without decoration, and rounded value',
+            type: 'sensor',
 	    supported : ["DT_Number",
 		"DT_Scaling",
 		"DT_Angle",

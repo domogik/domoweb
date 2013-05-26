@@ -2,8 +2,7 @@
     var ChartCore = Class.extend({
         // default options
         defaults : {
-            device_id: null,
-            key: null,
+            feature_id: null,
             title: '',
             type: '24h',
             unit: '',
@@ -11,9 +10,9 @@
         },
         
         show: function(options) {
-			this.options = $.extend({}, this.defaults, options);
+	    this.options = $.extend({}, this.defaults, options);
             var self = this, o = this.options;
-            
+
             this.now = new Date();
             switch(o.type) {
                 case '8h':
@@ -45,21 +44,19 @@
             var restparams = null;
             switch(o.type) {
                 case '8h':
-                    restparams = ['api','state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'minute', 'selector', 'avg', o.device_id, o.key];
+                    restparams = ['api','state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'minute', 'selector', 'avg', o.feature_id];
                     break;
                 case '24h':
-                    restparams = ['api','state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'minute', 'selector', 'avg', o.device_id, o.key];
+                    restparams = ['api','state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'minute', 'selector', 'avg', o.feature_id];
                     break;
                 case '7d':
-                    restparams = ['api', 'state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'hour', 'selector', 'avg', o.device_id, o.key];
-
+                    restparams = ['api', 'state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'hour', 'selector', 'avg', o.feature_id];
                     break;
                 case 'month':
-                    restparams = ['api', 'state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'day', 'selector', 'avg', o.device_id, o.key];
+                    restparams = ['api', 'state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'day', 'selector', 'avg', o.feature_id];
                     break;
                 case 'year':
-                    restparams = ['api', 'state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'day', 'selector', 'avg', o.device_id, o.key];
-
+                    restparams = ['api', 'state', 'from', Math.round(self.from.getTime() / 1000), 'to', Math.round(self.to.getTime() / 1000),'interval', 'day', 'selector', 'avg', o.feature_id];
                     break;
             }
 

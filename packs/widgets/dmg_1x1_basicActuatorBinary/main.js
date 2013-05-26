@@ -8,7 +8,7 @@
             name: 'Basic widget',
             description: 'Basic widget with border and name',
 	    screenshot: 'dmg_1x1_basicActuatorBinary.png',
-            type: 'actuator',
+            type: 'command',
 	    supported : ["DT_Bool",
 		"DT_Switch",
 		"DT_Enable",
@@ -23,11 +23,12 @@
             width: 1,
             displayname: true,
 	    displayborder: true,
+	    usage: "light"
         },
 
         _init: function() {
             var self = this, o = this.options;
-/*            this.element.addClass("icon32-usage-" + o.usage)*/
+            this.element.addClass("icon32-usage-" + o.usage)
             this.element.addClass('clickable')
                 .processing();
             this._status = $.getStatus();
@@ -105,11 +106,11 @@
             var self = this, o = this.options;
             if (value != null) {
                 if (value == 1) {
-                    this.element.displayIcon('value_1');             
+                    this.element.displayIcon('value_true');             
                 } else {
-                    this.element.displayIcon('value_0');             
+                    this.element.displayIcon('value_false');             
                 }
-                this._status.writeStatus(o.dataparameters['labels'][value]);
+                this._status.writeStatus(this.param.dataparameters['labels'][value]);
             } else { // Unknown
                 this.element.displayIcon('unknown');                             
                 this._status.writeStatus('---');
