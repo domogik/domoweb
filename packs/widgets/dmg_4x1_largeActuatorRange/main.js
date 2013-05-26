@@ -9,20 +9,24 @@ const auto_send = 3000; // 3 seconds
             id: 'dmg_4x1_largeActuatorRange',
             name: 'Large actuator range',
             description: 'Large actuator range with nice design',
-            type: 'actuator.range',
+            type: 'command',
+	    supported : ["DT_Scaling",
+		"DT_Angle"
+	    ],
             height: 1,
             width: 4,
             displayname: false,
-	    displayborder: false
+	    displayborder: false,	    
+	    usage: "light"
         },
 
         _init: function() {
             var self = this, o = this.options;
 	    this.param = o.params[0];
-            this.min_value = this.param.values[0];
-            this.max_value = this.param.values[1];
-            this.step = parseInt(o.usage_parameters.step);
-            this.unit = o.unit
+            this.min_value = this.param.dataparameters.min;
+            this.max_value = this.param.dataparameters.max;
+            this.step = 10;
+            this.unit = this.param.dataparameters.unit
             if (this.unit == '%') {
                 this.modePercent = true;
                 this.displayMin = 0;
@@ -100,12 +104,10 @@ const auto_send = 3000; // 3 seconds
         },
 
         _value2Percent: function(value) {
-            console.log('value2Percent : ' + value + ' - ' + Math.round((value - this.min_value) * 100 / this.max_value));
             return Math.round((value - this.min_value) * 100 / this.max_value);
         },
         
         _percent2Value: function(value) {
-            console.log('percent2Value : ' + value + ' - ' + Math.round((value * this.max_value / 100) + this.min_value));
             return Math.round((value * this.max_value / 100) + this.min_value);
         },
         

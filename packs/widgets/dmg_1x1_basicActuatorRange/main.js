@@ -7,21 +7,25 @@
             id: 'dmg_1x1_basicActuatorRange',
             name: 'Basic widget',
             description: 'Basic widget with border and name',
-            type: 'actuator.range',
+            type: 'command',
+	    supported : ["DT_Scaling",
+		"DT_Angle"
+	    ],
             height: 1,
             width: 1,
             displayname: true,
-	    displayborder: true
+	    displayborder: true,
+	    usage: "light"
         },
 
         _init: function() {
             var self = this, o = this.options;
             this.isOpen = false;
 	    this.param = o.params[0];
-            this.min_value = this.param.values[0];
-            this.max_value = this.param.values[1];
-            this.step = parseInt(o.usage_parameters.step);
-            this.unit = o.unit
+            this.min_value = this.param.dataparameters.min;
+            this.max_value = this.param.dataparameters.max;
+            this.step = 10;
+            this.unit = this.param.dataparameters.unit
             if (this.unit == '%') {
                 this.modePercent = true;
                 this.displayMin = 0;

@@ -20,12 +20,16 @@
             id: 'dmg_3x3_knob',
             name: 'Shiny Knob control',
             description: 'Based on https://github.com/martinaglv/KnobKnob',
-            type: 'actuator.range',
+            type: 'command',
+	    supported : ["DT_Scaling",
+		"DT_Angle"
+	    ],
             height: 3,
             width: 3,
             displayname: false,
-			displayborder: false,
-			screenshot: 'images/screenshot.png',
+	    displayborder: false,
+	    screenshot: 'images/screenshot.png',
+	    usage: "light"
         },
 
         knob: null,
@@ -41,8 +45,8 @@
         _init: function() {
             var self = this, o = this.options;
 	    this.param = o.params[0];
-            this.min_value = this.param.values[0];
-            this.max_value = this.param.values[1];
+            this.min_value = this.param.dataparameters.min;
+            this.max_value = this.param.dataparameters.max;
 
             var bars = $("<div class='bars'></div>");
 

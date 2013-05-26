@@ -49,7 +49,6 @@
 
         setValue: function(value) {
             var self = this, o = this.options;
-	    console.log(value);
             if (value != null && value != "") {
                 if (value == 1) {
                     this.element.displayIcon('value_true');             
