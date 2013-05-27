@@ -8,11 +8,22 @@
             name: 'Shiny toggle switch',
             description: 'Shiny toggle switch using CSS3 animation',
             screenshot: 'dmg_2x1_toggleSwitch.png', 
-            type: 'actuator.binary',
+            type: 'command',
+	    supported : ["DT_Bool",
+		"DT_Switch",
+		"DT_Enable",
+		"DT_Binary",
+		"DT_Step",
+		"DT_UpDown",
+		"DT_OpenClose",
+		"DT_Start",
+		"DT_State"
+	    ],
             height: 1,
             width: 2,
             displayname: true,
-			displayborder: false
+	    displayborder: false,
+	    usage: "light"
         },
 
         _init: function() {
@@ -50,7 +61,7 @@
             this.displayValue(this.processingValue);
 
        	    data = {};
-	    data[this.param.key] = this.param.values[this.processingValue];
+	    data[this.param.key] = this.processingValue;
             rinor.put(['api', 'command', o.featureid], data)
                 .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
@@ -80,9 +91,9 @@
         
         setValue: function(value) {
             if (value != null) {
-                if (value == 1 || (typeof(value) == 'string' && value.toLowerCase() == this.param.values[1].toLowerCase())) {
+                if (value == 1) {
                     this.currentValue = 1;
-                } else if (value == 0 || (typeof(value) == 'string' && value.toLowerCase() == this.param.values[0].toLowerCase())) {
+                } else if (value == 0) {
                     this.currentValue = 0;
                 }                
             } else { // Unknown
@@ -96,9 +107,9 @@
             var self = this, o = this.options;
             if (value != null) {
                 if (value == 1) {
-                    this.element.addClass('value_1').removeClass('value_0');             
+                    this.element.addClass('value_true').removeClass('value_false');             
                 } else {
-                    this.element.addClass('value_0').removeClass('value_1');             
+                    this.element.addClass('value_false').removeClass('value_true');             
                 }
             }
         }

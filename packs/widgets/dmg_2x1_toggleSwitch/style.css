@@ -25,13 +25,13 @@
     background-repeat: no-repeat;
 }
 
-.dmg_2x1_toggleSwitch.value_0 .switch {
+.dmg_2x1_toggleSwitch.value_false .switch {
     background-image: url('images/off.png');
     margin: 0;
     margin-left: 0px;
 }
 
-.dmg_2x1_toggleSwitch.value_1 .switch {
+.dmg_2x1_toggleSwitch.value_true .switch {
     background-image: url('images/on.png');
     margin: 0;
     margin-left: 34px;

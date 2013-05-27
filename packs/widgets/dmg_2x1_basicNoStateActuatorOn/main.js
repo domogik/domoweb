@@ -8,11 +8,22 @@
             name: 'Basic Widget On',
             description: 'Only On',
 	    screenshot: 'dmg_2x1_basicNoStateActuatorOn.png',
-            type: 'actuator.binary',
+            type: 'command',
+	    supported : ["DT_Bool",
+		"DT_Switch",
+		"DT_Enable",
+		"DT_Binary",
+		"DT_Step",
+		"DT_UpDown",
+		"DT_OpenClose",
+		"DT_Start",
+		"DT_State"
+	    ],
             height: 1,
             width: 2,
             displayname: true,
-            displayborder: true
+            displayborder: true,
+	    usage: "light"
         },
 
         _init: function() {
@@ -21,7 +32,7 @@
               .processing();
             // Building widget content
             var main = $("<div class='main'></div>");
-            var on_action = $('<div class="command on">ON</div>');
+            var on_action = $('<div class="command on">' + this.param.dataparameters.labels["1"] + '</div>');
             on_action.click(function (e) {self.action();e.stopPropagation();})
                 .keypress(function (e) {if (e.which == 33 || e.which == 38) {self.action(o.values[1]); e.stopPropagation();}});
             main.append(on_action);
@@ -39,7 +50,7 @@
         action: function() {
             var self = this, o = this.options;
 	    data = {};
-	    data[this.param.key] = this.param.values[1];
+	    data[this.param.key] = 1;
 	    rinor.put(['api', 'command', o.featureid], data)
                 .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);

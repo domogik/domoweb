@@ -6,6 +6,8 @@ var widgets_list = {
 var widgets_options = {};
 
 function register_widget(type, supported, id, options) {
+    console.log(id);
+    console.log(supported);
     if (supported) {
         $.each(supported, function(i, data_type) {
             if (!(data_type in widgets_list[type])) {

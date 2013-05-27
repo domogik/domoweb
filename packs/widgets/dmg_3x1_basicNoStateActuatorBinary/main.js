@@ -8,11 +8,22 @@
             name: 'Stateless basic widget',
             description: 'Basic switch widget (x10, broken plcbus, . . .)',
             screenshot: 'dmg_3x1_basicNoStateActuatorBinary.png',
-            type: 'actuator.binary',
+            type: 'command',
+	    supported : ["DT_Bool",
+		"DT_Switch",
+		"DT_Enable",
+		"DT_Binary",
+		"DT_Step",
+		"DT_UpDown",
+		"DT_OpenClose",
+		"DT_Start",
+		"DT_State"
+	    ],
             height: 1,
             width: 3,
             displayname: true,
-            displayborder: true
+            displayborder: true,
+	    usage: "light"
         },
 
         _init: function() {
@@ -22,13 +33,13 @@
               .processing();
             // Building widget content
             var main = $("<div class='main'></div>");
-            var on_action = $('<div class="command on">ON</div>');
-            on_action.click(function (e) {self.action(self.param.values[1]);e.stopPropagation();})
-                .keypress(function (e) {if (e.which == 33 || e.which == 38) {self.action(o.values[1]); e.stopPropagation();}});
+            var on_action = $('<div class="command on">' + this.param.dataparameters.labels["1"] + '</div>');
+            on_action.click(function (e) {self.action(1);e.stopPropagation();})
+                .keypress(function (e) {if (e.which == 33 || e.which == 38) {self.action(1); e.stopPropagation();}});
             main.append(on_action);
-            var off_action = $('<div class="command off">OFF</div>');
-            off_action.click(function (e) {self.action(self.param.values[0]);e.stopPropagation();})
-                .keypress(function (e) {if (e.which == 34 || e.which == 40) {self.action(o.values[0]); e.stopPropagation();}});
+            var off_action = $('<div class="command off">' + this.param.dataparameters.labels["0"] + '</div>');
+            off_action.click(function (e) {self.action(0);e.stopPropagation();})
+                .keypress(function (e) {if (e.which == 34 || e.which == 40) {self.action(0); e.stopPropagation();}});
             main.append(off_action);
             
             this.element.append(main);
