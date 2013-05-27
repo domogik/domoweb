@@ -1,0 +1,221 @@
+{% extends "layouts/base_view.html" %}
+{% comment %}
+# Copyright 2012 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Cédric Trévisan <cedric@domogik.org>
+{% endcomment %}
+
+{% load i18n %}
+{% load text %}
+{% load tree %}
+
+{% block js_script %} 
+    var device_types = {{ device_types|safe }};
+    var device_usages = {{ device_usages|safe }};
+
+    $(function(){
+        {% for instance in widgetinstances %}
+            var parameters_usage = $.stringToJSON(device_usages["{{instance.feature.device.device_usage_id}}"].default_options);
+            var parameters_type = $.stringToJSON("{{instance.feature.device_feature_model.parameters|safe}}");
+            var options = {
+                usage: "{{ instance.feature.device.device_usage_id }}",
+                devicename: "{{ instance.feature.device.name }}",
+                featurename: "{{ instance.feature.device_feature_model.name }}",
+                devicetechnology: device_types["{{ instance.feature.device.device_type_id }}"].device_technology_id,
+                deviceaddress: "{{ instance.feature.device.address }}",
+                featureconfirmation: "{{ instance.feature.device_feature_model.return_confirmation }}",
+                deviceid: "{{ instance.feature.device_id }}",
+                key: "{{ instance.feature.device_feature_model.stat_key }}",
+                usage_parameters: parameters_usage["{{ instance.feature.device_feature_model.feature_type }}"]["{{ instance.feature.device_feature_model.value_type }}"],
+                model_parameters: parameters_type
+            }
+            eval("$('#widgetinstance_{{ instance.id }}').{{ instance.widget_id }}(options)");
+        {% endfor %}
+
+        $('#closeform').click(function() {
+            $('#loginform').hide();
+        });
+        
+        $('#loginbutton').click(function() {
+            $('#loginform').show();
+            $('#loginform #password').focus();
+        });
+        
+        $('.menu.tree a').click(function() {
+            $('#tree').toggle();
+        });
+    });
+{% endblock %}
+
+{% block css %}
+    <link href="{{ static_design_url }}/common/css/ui-buttons.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-dialog.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/view/css/view-page.css" rel="stylesheet" type="text/css" />
+    
+    {% if page.theme_id %}
+    <link href="{{ static_themes_url }}/{{ page.theme.id }}/view-page.css" rel="stylesheet" type="text/css" />
+    {% endif %}
+
+    {% for iconset in iconsets %}
+    <link href="{{ static_iconsets_url }}/page/{{ iconset.iconset_id }}/icons.css" rel="stylesheet" type="text/css" />    
+    {% endfor %}
+    <link href="{{ static_iconsets_url }}/usage/default/icons.css" rel="stylesheet" type="text/css" />    
+
+    <link href="{{ static_design_url }}/common/css/ui-processing.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/dmg.widget-core.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_design_url }}/common/css/dmg.widget-utils.css" rel="stylesheet" type="text/css" />    
+    <link href="{{ static_widgets_url }}/dmg_4x3_colorPicker/farbtastic.css" rel="stylesheet" type="text/css" />
+
+    {% for widget in widgets %}
+    <link href="{{ static_widgets_url }}/{{ widget.widget_id }}/style.css" rel="stylesheet" type="text/css" />
+    {% endfor %}
+
+{% endblock %}
+
+{% block js_include %}
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.ui.subclass/jquery.ui.subclass.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.timers-1.2/jquery.timers-1.2.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.ba-dotimeout-1.0/jquery.ba-dotimeout.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/highcharts-2.1.9/highcharts-2.1.9.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/highcharts-2.1.9/highcharts-exporting-2.1.9.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.longclick-0.3.3/jquery.longclick-0.3.3.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.transform/jquery.transform.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/simple-inheritance/simple-inheritance.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/kinetic-v4.1.2/kinetic-v4.1.2.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.rinor.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.processing.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-core.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/common/js/dmg.widget-utils.js"></script>
+    <script type="text/javascript" src="{{ static_widgets_url }}/dmg_4x3_colorPicker/farbtastic.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/charting/dmg.chart-core.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/charting/dmg.highcharts.js"></script>
+
+    {% for widget in widgets %}
+    <script type="text/javascript" src="{{ static_widgets_url }}/{{ widget.widget_id }}/main.js"></script>	
+    {% endfor %}
+
+    <script type="text/javascript" src="{{ static_design_url }}/view/js/view-page.js"></script>
+    <script type="text/javascript" src="{{ static_iconsets_url }}/usage/default/icons.js"></script>
+
+{% endblock %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block body %}
+    <header role='banner'>
+        <h1 class="icon64-{{ page.icon.id }}">{{ page_title }}</h1>
+        <div class="description">{% if page.description %}{{ page.description }}{% endif %}</div>
+        <nav role="navigation">
+            <ul id="mainmenu">
+            {% if not is_user_connected %}
+                <li><a id="loginbutton" role="button" class="button_round icon24-menu-unlock" href="#" title="{% trans "Identify yourself" %}"><span class="offscreen">{% trans "Log in" %}</span></a></li>
+            {% else %}
+                <li><a role="button" class="button_round icon24-menu-elements" href="{% url page_elements_view page.id %}" title="{% trans "Place elements" %}"><span class="offscreen">{% trans "Place elements" %}</span></a></li>
+                <li><a role="button" class="button_round icon24-menu-config" href="{% url page_configuration_view page.id %}" title="{% trans "Configure" %}"><span class="offscreen">{% trans "Configure" %}</span></a></li>
+                <li><a role="button" class="button_round icon24-menu-admin" href="{% url admin_index_view %}" title="{% trans "Admin section" %}"><span class="offscreen">{% trans "Admin section" %}</span></a></li>
+                <li><a role="button" class="button_round icon24-menu-lock" href="{% url logout_view %}?next={{ request.path }}" title="{% trans "Disconnect" %} {{ request.session.user.first_name }}"><span class="offscreen">{% trans "Log out" %} {{ request.session.user.first_name }}</span></a></li>
+            {% endif %}
+            </ul>
+        </nav>
+        {% if not is_user_connected %}
+            <form id="loginform" role="form" class="hidden" action="{% url login_view %}?next={{ request.path }}" method="post">
+                <label for="password">{% trans "Password" %}</label>
+                <input id="login" name="login" type="hidden" value="admin" />
+                <input id="password" type="password" name="password" placeholder="{% trans "Enter your password" %}" />
+                <input type="submit" value="{% trans "Login" %}" class="button icon16-menu-unlock-black" />
+                <a id="closeform" role="button" class="close icon36-action-close">
+                    <span class="offscreen">{% trans "Close" %}</span>
+                </a>
+            </form>
+        {% endif %}
+    </header>
+    <div role='main'>
+        <div id='widgetsmatrix' role='list'>
+            {% for instance in widgetinstances %}
+                <div id='widgetinstance_{{ instance.id }}' role='listitem'></div>
+            {% endfor %}
+        </div>
+    </div>
+    <footer>
+        <nav role="navigation">
+            <ul id="breadcrumb">
+                <li class="menu tree"><a href='#' role="button">&nbsp;<span class="offscreen">{% trans "Menu" %}</span></a></li>
+            {% for path in page_path %}
+                <li class="path"><a href='{% url page_view path.id %}' class="icon16-{{ path.icon }}">{{ path.name }}</a></li>
+            {% endfor %}
+            </ul>
+        </nav>
+    </footer>
+    <script>        
+      window.onload = function() {
+        {% list_levels page_tree 70 %}
+
+        var layer1 = new Kinetic.Layer();
+        {% list_levels page_tree 70 %}
+        {% for level in levels reversed %}
+            var circle{{ level.num }} = new Kinetic.Circle({
+              x: {{ level.x }},
+              y: {{ level.y }},
+              radius: {{ level.radius }},
+              fill: "rgba(255,255,255,0.4)",
+              stroke: "#dddddd",
+              strokeWidth: 1
+            });
+            layer1.add(circle{{ level.num }});
+        {% endfor %}
+        
+        var layer2 = new Kinetic.Layer();
+        {% recursemenu page_tree 70 %}
+            {% if node.level > 0 %}
+            var line{{ node.id }} = new Kinetic.Line({
+                points: [{{ node.fromx }}, {{ node.fromy }}, {{ node.x }}, {{ node.y }}],
+                stroke: "#dddddd",
+                strokeWidth: 2,
+            });
+            layer2.add(line{{ node.id }});
+            {% endif %}
+            {% if not node.is_leaf %}
+                {{ children }}
+            {% endif %}
+        {% endrecursemenu %}
+
+        var stage = new Kinetic.Stage({
+          container: "tree",
+          width: {{ page_tree.size }},
+          height: {{ page_tree.size }}
+        });
+        stage.add(layer1);
+        stage.add(layer2);
+      };
+    </script>
+    <div id="tree" style="width:{{ page_tree.size }}px; height:{{ page_tree.size }}px; margin-left: -{{ page_tree.margin }}px;">
+        <ul id="treeroot">
+        {% recursemenu page_tree 70 %}
+            <li id="page_{{ node.id }}" class="level_{{ node.level }}">
+                <a href="{% url page_view node.id %}" class="icon32-{{ node.icon.id }}" style="-moz-transform: translate({{ node.x }}px,{{ node.y }}px);-webkit-transform: translate({{ node.x }}px,{{ node.y }}px);transform: translate({{ node.x }}px,{{ node.y }}px)">
+                    <span class="pagename">{{ node.name }}</span></a>
+                {% if not node.is_leaf %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+                {% endif %}
+            </li>
+        {% endrecursemenu %}
+        </ul>
+    </div>
+{% endblock %}

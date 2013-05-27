@@ -1,0 +1,195 @@
+{% extends "layouts/base_admin.html" %}
+{% comment %}
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Cédric Trévisan <cedric@domogik.org>
+# Author : Fritz <fritz.smh@gmail.com>
+{% endcomment %}
+
+
+{% load i18n %}
+{% block js_script %}
+    var plugin_host = '{{ plugin.host }}';
+    var plugin_id = '{{ plugin.id }}';
+    $(function(){
+        // Accordion
+        $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:2});
+
+        // Tabs
+        $("#tabs").tabs();
+
+        function setStatus(status) {
+            if (status=='up') { //active
+                textstatus = "{% trans "Running" %}";
+            } else { //inactive
+                textstatus = "{% trans "Stopped" %}";
+            }
+            $("#iconstatus").empty()
+                .attr('class', "icon16-text-right icon16-status-plugin-" + status)
+                .html("<span class='label'>{% trans "Status" %}:</span><span class='offscreen'>" + textstatus + "</span>");
+        }
+
+        $("#buttonstatus").ajaxSwitch({
+            'url':['api','plugin', '{{ plugin.host }}', '{{ plugin.id }}'],
+            'successFct':function(state, status, xhr){
+                    $.doTimeout( 'list', 5000, function(){
+                        getPluginsList();
+                    });
+                    setStatus(state.id);
+                },
+            'states':[{
+                    'id':'up',
+                    'text':"{% trans "Stop plugin" %}",
+                    'data':{'command':'stop'},
+                    'successMsg':"{% trans "Plugin successfully stopped" %}",
+                    'icon':'icon16-status-inactive',
+                },{
+                    'id':'down',
+                    'text':"{% trans "Start plugin" %}",
+                    'data':{'command':'start'},
+                    'successMsg':"{% trans "Plugin successfully started" %}",
+                    'icon':'icon16-status-active',
+                }]
+            });
+
+        {% ifequal plugin.status "ON" %}
+            setStatus('up');
+            $("#buttonstatus").ajaxSwitch('run', 'up');
+        {% else %}
+            setStatus('down');
+            $("#buttonstatus").ajaxSwitch('run', 'down');
+        {% endifequal %}
+    });
+{% endblock %}
+{% block css %}
+    <link href="{{ static_design_url }}/admin/css/page-admin-plugins.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/admin/css/plugin-config.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/common/css/ui-tables.css" rel="stylesheet" type="text/css" />
+    <link href="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.dmg.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block js_include %}
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.timers-1.2/jquery.timers-1.2.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.ba-dotimeout-1.0/jquery.ba-dotimeout.min.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/admin/js/plugin-config.js"></script>
+    <script type="text/javascript" src="{{ static_design_url }}/libraries/harvesthq-chosen-v0.9.8/chosen/chosen.jquery.dmg.js"></script>
+{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block banner %}
+    <h1 class="ident icon64-plugin-{{ plugin.id }} icon64-resize" style='background-image:url({{ admin_url }}/resource/icon/package/installed/plugin/{{ plugin.id }})'>
+        <span class="title">{% trans "Plugin" %} '{{ plugin.id }}'</span>
+    </h1>
+{% endblock %}
+
+{% block right %}
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">{% trans "Informations" %}</a></li>
+            <li><a href="#tabs-2">{% trans "Requirements" %}</a></li>
+            <li><a href="#tabs-3">{% trans "Configuration" %}</a></li>
+        {% if plugin.id == "knx" %}
+            <li><a href="#tabs-4">{% trans "Special" %}</a></li>
+        {% endif %}
+        {% if plugin.id == "ozwave" %}
+            <li><a href="#tabs-4">{% trans "Controller and devices" %}</a></li>
+            <li><a href="#tabs-5">{% trans "Neighborhood network" %}</a></li>
+			<li><a href="#tabs-6">{% trans "Support tools" %}</a></li>
+        {% endif %}
+        {% if plugin.id == "cron" %}
+            <li><a href="#tabs-4">{% trans "Jobs" %}</a></li>
+            <li><a href="#tabs-5">{% trans "Alarm" %}</a></li>
+            <li><a href="#tabs-6">{% trans "Dawn Alarm" %}</a></li>
+            <li><a href="#tabs-7">{% trans "Date" %}</a></li>
+            <li><a href="#tabs-8">{% trans "Interval" %}</a></li>
+            <li><a href="#tabs-9">{% trans "Helper" %}</a></li>
+            <li><a href="#tabs-10">{% trans "Log" %}</a></li>
+        {% endif %}
+        {% if plugin.id == "scene" %}
+            <li><a href="#tabs-4">{% trans "Creator" %}</a></li>
+            <li><a href="#tabs-5">{% trans "Manage" %}</a></li>
+        {% endif %}
+        {% if plugin.id == "telldus" %}
+            <li><a href="#tabs-5">{% trans "Helper" %}</a></li>
+            <li><a href="#tabs-6">{% trans "Log" %}</a></li>
+        {% endif %}
+        </ul>
+        <div id="tabs-1">
+            {% include "plugins/informations.html" %}
+        </div>
+        <div id="tabs-2">
+            {% include "plugins/requirements.html" %}
+        </div>
+        <div id="tabs-3">
+            {% include "plugins/configuration.html" %}
+        </div>
+    {% if plugin.id == "knx" %}
+        <div id="tabs-4">
+            {% include "plugins/knx/special_knx.html" %}
+        </div>
+    {% endif %}
+    {% if plugin.id == "ozwave" %}
+        <div id="tabs-4">
+            {% include "plugins/ozwave/ctrldevlist_ozwave.html" %}
+        </div>
+        <div id="tabs-5">
+            {% include "plugins/ozwave/neighborsnodes_ozwave.html" %}
+        </div>
+		<div id="tabs-6">
+            {% include "plugins/ozwave/support-tools_ozwave.html" %}
+        </div>
+    {% endif %}
+    {% if plugin.id == "cron" %}
+        <div id="tabs-4">
+            {% include "plugins/cron/jobs.html" %}
+        </div>
+        <div id="tabs-5">
+            {% include "plugins/cron/alarm.html" %}
+        </div>
+        <div id="tabs-6">
+            {% include "plugins/cron/dawnalarm.html" %}
+        </div>
+        <div id="tabs-7">
+            {% include "plugins/cron/date.html" %}
+        </div>
+        <div id="tabs-8">
+            {% include "plugins/cron/interval.html" %}
+        </div>
+        <div id="tabs-9">
+            {% include "plugins/cron/helper.html" %}
+        </div>
+        <div id="tabs-10">
+            {% include "plugins/cron/log.html" %}
+        </div>
+    {% endif %}
+    {% if plugin.id == "scene" %}
+        <div id="tabs-4">
+            {% include "plugins/scene/creator_scenev2.html" %}
+        </div>
+        <div id="tabs-5">
+            {% include "plugins/scene/manage_scenev2.html" %}
+        </div>
+    {% endif %}
+    {% if plugin.id == "telldus" %}
+        <div id="tabs-5">
+            {% include "plugins/telldus/helper.html" %}
+        </div>
+        <div id="tabs-6">
+            {% include "plugins/telldus/log.html" %}
+        </div>
+    {% endif %}
+    </div>
+{% endblock %}

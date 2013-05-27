@@ -1,0 +1,295 @@
+{% load i18n %}
+<script type='text/javascript'>
+var tableau = new Array();
+
+function dellastdevice(number) {
+    $('#device_' + number).remove()
+};
+
+function delaction(number) {
+    $('#action_' + number).remove()
+};
+
+function featurechange(number) {
+    var test = $('select#features_' + number).val();
+    if (tableau[test][3] == 'list' || tableau[test][3] == 'binary' || tableau[test][3] == 'boolean') {
+        $("select#test_" + number + " option[value='>']").hide();
+        $("select#test_" + number + " option[value='<']").hide();
+        $('#value_' + number).html("<select id='Test_value" + number + "' style='width:20em;'></select>");
+        var valeur = tableau[test][5];
+        var test2 = tableau[test][3];
+        valeur = valeur.replace(/&quot;/g, "'");
+        var obj = eval('(' + valeur + ')');
+        if (test2 == 'binary' || test2 == 'boolean') {
+            ouioui = "<option value='" + obj.value0 + "'>" + obj.value0 + "</option>";
+            $('select#Test_value' + number).append("<option value='None'>-------</option>");
+            $('select#Test_value' + number).append("<option value='" + obj.value0 + "'>" + obj.value0 + "</option>");
+            $('select#Test_value' + number).append("<option value='" + obj.value1 + "'>" + obj.value1 + "</option>");
+        } else {
+            $("select#test_" + number + " option[value='>']").show();
+            $("select#test_" + number + " option[value='<']").show();
+            for (i = 0; i < obj.commandValues.length; i++) {
+                $('select#Test_value' + number).append("<option value='" + obj.commandValues[i] + "'>" + obj.commandValues[i] + "</option>");
+            }
+        }
+    }
+    if (tableau[test][3] == 'range' || tableau[test][3] == 'number' || tableau[test][3] == 'string') {
+        $("select#test_" + number + " option[value='>']").show();
+        $("select#test_" + number + " option[value='<']").show();
+        if (tableau[test][3] == 'string') {
+            $("select#test_" + number + " option[value='>']").hide();
+            $("select#test_" + number + " option[value='<']").hide();
+            $("select#test_" + number + " option[value='=']").attr('selected', 'selected');
+        }
+        $('#value_' + number).html("<input type='text' id='Test_value" + number + "' style='width:20em;'></select>");
+    }
+};
+
+function actionchange(number) {
+    var test = $('select#action_' + number).val();
+    if (test == 'command') {
+        $('#valueaction_' + number).html("<input id='value_action_"+ number +"' style='width:20em;'></input>");
+    } else {
+        valeur = tableau[test][5];
+        var test2 = tableau[test][3];
+        valeur = valeur.replace(/&quot;/g, "'");
+        var obj = eval('(' + valeur + ')'); //jQuery.parseJSON(valeur);
+
+        if (tableau[test][3] == 'list' || tableau[test][3] == 'binary' || tableau[test][3] == 'boolean') {
+            $('#valueaction_' + number).html("<select id='value_action_" + number + "' style='width:20em;'></select>");
+            if (test2 == 'binary' || test2 == 'boolean') {
+                $('select#value_action_' + number).append("<option value='" + obj.value0 + "'>" + obj.value0 + "</option>");
+                $('select#value_action_' + number).append("<option value='" + obj.value1 + "'>" + obj.value1 + "</option>");
+            } else {
+                for (i = 0; i < obj.commandValues.length; i++) {
+                    $('select#value_action_' + number).append("<option value='" + obj.commandValues[i] + "'>" + obj.commandValues[i] + "</option>");
+                }
+            }
+        }
+        if (test2 == 'numeric' || test2 == 'range'|| test2=='string') {
+            $('#valueaction_' + number).html("<input type ='text' id='value_action_" + number + "' style='width:20em;'></input>");
+        }
+        if (test2 == 'trigger') {
+            $('#valueaction_' + number).html('');
+        }
+    }
+};
+
+
+    $(function () {
+    var test1_visible
+    var value1_visible
+    var feature2_visible
+    var test2_visible
+    var value2_visible
+    var test_visible
+    var TvalueVrai
+    var TvalueFaux
+    var Tvalue1
+    var Tvalue2
+    var venueNumber = 0
+    var actionNumber = 0
+
+    $('#Creator').click(function () {
+    rinor.get(['api','plugin'])
+               .done(function(data, status, xhr){
+                  for(i=0;i<100;i++){
+                      if (data.objects[0]['list'][i]['id'] == "scene"){
+                       if(data.objects[0]['list'][i]['status'] == "ON"){
+
+                          
+        device = {};
+        action = {};
+        rinor_ip = '{{ request.session.rinor_ip }}';
+        rinor_port = '{{ request.session.rinor_port }}';
+        rinorip = rinor_ip +":" + rinor_port;
+        if ($('input#optionstart:checked').val() == 'start') {
+            option_start = 'true';
+        } else {
+            option_start = 'false';
+        }
+        description = $('#description').val();
+        condition = $('#Condition').val();
+        for (i=1; i<101; i++) {
+        	maVariable = $('select#features_'+i).val();
+        	test = typeof(maVariable);
+              if(typeof(maVariable) != 'undefined' && maVariable != '0'){ 
+                     device_adr = tableau[maVariable][4]; 
+		 	device_id = tableau[maVariable][0];
+		 	device_tech = tableau[maVariable][2];
+		 	debut1 = device_tech.split('.');
+	            	device_tech = debut1[0];
+	            	device_key = tableau[maVariable][1];
+	            	device_op = $('select#test_'+i).val();
+	            	device_val = $('#Test_value'+i).val();
+	            	if (device_op == 'None' || device_val == 'None'){
+	            	device_op = '';
+	            	device_val ='';
+	            	}
+	            	device['device'+i] = {'adr':device_adr,'id':device_id,'tech':device_tech,'key':device_key,'op':device_op,'value':device_val,'type':'devices'};
+       	}
+       	 
+       	maVariable = $('select#action_'+i).val();
+        	
+              if(typeof(maVariable) != 'undefined' && maVariable != '0'){
+                     if (maVariable != 'command'){
+                     action_adr = tableau[maVariable][4]; 
+                     action_type = "Action "+$('select#Type_'+i).val();
+		 	action_tech = tableau[maVariable][2];
+		 	
+		 	debut1 = action_tech.split('.');
+	            	action_tech = debut1[0];
+	            	action_val = '';
+	            	
+	        	test = tableau[maVariable][5];
+        	       test = test.replace(/&quot;/g, "'");
+       	       test = test.replace(/{/g, '');
+       	       test = test.replace(/}/g, '');
+	              test = test.replace(/:/g, ',');
+       	       test = test.replace(/'/g, '');
+       	       test = test.split(',');
+	              action_cmd = test[1]
+	            	}else{
+                        action_adr = "command"
+                        action_tech = "command"
+                        action_cmd = "command"
+                        action_type = "Action "+$('select#Type_'+i).val();
+                        }
+                        
+	            	action_val = $('#value_action_'+i).val();
+	            	
+	            	action['action'+i] = {'address':action_adr,'techno':action_tech,'command':action_cmd,'value':action_val,'type':action_type};
+       	}
+        }
+        var action1 = JSON.stringify(action);
+        var devices1 = JSON.stringify(device);
+
+        value = "{'start_run':'"+ option_start +"','condition':'"+condition+"','devices':"+devices1+",'action':"+action1+",'rinor':'"+rinorip+"'}";
+        //value = '';
+        if (condition != ''){
+        rinor.put(['api', 'command', 'scene', '0'], {'command': 'Create','value': value })
+            .done(function (data, status, xhr) {
+            test = JSON.stringify(data);
+            debut=test.search('data=');
+            test=test.slice(debut+4);
+            fin=test.search('}');
+            test=test.slice(1,fin-2);
+            if (test.search('Error')>=0){
+                $.notification('error', test);
+            }else{
+                $.notification('info',test );
+
+                rinor.post(['api', 'device'], {'name': test, 'address': test, 'type_id': 'scene.stat', 'usage_id': 'scene', 'description': description, 'reference': ''})
+                    .done(function(data, status, xhr){
+                        scene_name = data.name;
+                        identity_id = data.device_usage_id;
+                        if (option_start=='true'){
+                            rinor.put(['api', 'command', 'scene',test], {"command":"start"})
+                            .done(function(data, status, xhr){
+                            $.reloadPage({'status': 'success', 'msg': "{% trans "New device added" %} '" + scene_name + "'", 'id': identity_id});                                   
+                            })
+                        }else{
+                            rinor.put(['api', 'command', 'scene',test], {"command":"stop"})
+                            .done(function(data, status, xhr){
+                            $.reloadPage({'status': 'success', 'msg': "{% trans "New device added" %} '" + scene_name + "'", 'id': identity_id});                                   
+                            })
+                        }
+                        
+                    })
+                    .fail(function(jqXHR, status, error){
+                        if (jqXHR.status == 400)
+                            $.notification('error', "{% trans "device not created" %} (" + jqXHR.responseText + ")");
+                    });
+                }
+        })
+            .fail(function (jqXHR, status, error) {
+            if (jqXHR.status == 400) $.notification('error', '{% trans ' Data not sent ' %} (' + jqXHR.responseText + ')');
+        });
+        }else{
+           alert('condition empty')
+        }
+                            }else{
+                            alert("plugin is not started")
+                            }
+                     }    
+                     }              
+                   });
+    });
+    
+ 
+
+    $(document).ready(function () {
+        var i = 1;
+        $('#adddevices').click();
+        $('#addaction').click();
+        $('select#features_1').append("<option value='0'>----------</option>");
+        $('select#action_1').append("<option value='0'>----------</option>");
+        rinor.get(['api', 'feature'])
+            .done(function (data, status, xhr) {
+            $.each(data.objects, function (index, object) {
+                if (object.device_feature_model.feature_type == 'actuator') {
+                    $('select#action_1').append("<option value='" + i + "'>" + object.device.name + " - " + object.device_feature_model.name + "</option>");
+                }
+                if (object.device_feature_model.name != 'Trigger') {
+                    $('select#features_1').append("<option value='" + i + "'>" + object.device.name + " - " + object.device_feature_model.name + "</option>");
+                }
+                tableau[i] = [object.device_id, object.device_feature_model.stat_key, object.device.device_type_id, object.device_feature_model.value_type, object.device.address, object.device_feature_model.parameters, object.device_feature_model.name, object.device.name];
+                i = i + 1;
+            });
+        })
+            .fail(function (jqXHR, status, error) {
+            if (jqXHR.status == 400) $.notification('error', '{% trans ' Device list not retrieved from rinor' %} (' + jqXHR.responseText + ')');
+        });
+        $('select#action_1').append("<option value='command'>command line</option>");
+    });
+
+    $('#adddevices').click(function () {
+        // the subviews rendered with placeholders
+        var trVenue = new String("<li class='deivces tabrow' id='device_iRef'>deviceiRef : <select id = 'features_iRef' featureid = 'iRef' class='devicelistes' onchange='featurechange(iRef)' style='width:30em;'></select><select id = 'test_iRef' testid = 'iRef' class = 'testliste' style='width:10em;'><option value='None'>----</option><option value='>'>></option><option value='<'><</option><option value='='>=</option></select><span id='value_iRef'></span></div><input type='button' onClick='dellastdevice(iRef)' class='button icon16-action-save' style='width:2em;'>Delete</input></li>");
+        venueNumber++;
+        if (venueNumber == '1') {
+            trVenue = new String("<li class='deivces tabrow' id='device_iRef'>deviceiRef : <select id = 'features_iRef' featureid = 'iRef' class='devicelistes' onchange='featurechange(iRef)' style='width:30em;'></select><select id = 'test_iRef' testid = 'iRef' class = 'testliste' style='width:10em;'><option value='None'>----</option><option value='>'>></option><option value='<'><</option><option value='='>=</option></select><span id='value_iRef'></span></div></li>");
+        }
+        if (venueNumber < '100') {
+            $('#devices').append(trVenue.replace(/iRef/g, venueNumber));
+            $('select#features_' + venueNumber).append($('select#features_1').clone().html());
+        } else {
+            alert('100 device maxi please reload page');
+        }
+    });
+
+    $('#addaction').click(function () {
+        // the subviews rendered with placeholders
+        var trVenue = new String("<li class='actions tabrow' id='action_iRef'>Action iRef : <select id = 'Type_iRef' typeid = '0' style='width:10em;'><option value='None'>----</option><option value='True'>True</option><option value='False'>False</option></select><select id = 'action_iRef' actionid = 'iRef' class='actionslist'  onchange='actionchange(iRef)' style='width:30em;'></select> = <span id='valueaction_iRef'></span><input type='button' onClick='delaction(iRef)' class='button icon16-action-save' style='width:2em;'>Delete</input></li>");
+        actionNumber++;
+        if (actionNumber=='1'){
+	 trVenue = new String("<li class='actions tabrow' id='action_iRef'>Action iRef : <select id = 'Type_iRef' typeid = '0' style='width:10em;'><option value='None'>----</option><option value='True'>True</option><option value='False'>False</option></select><select id = 'action_iRef' actionid = 'iRef' class='actionslist'  onchange='actionchange(iRef)' style='width:30em;'></select> = <span id='valueaction_iRef'></span></li>");        
+	 }
+        $('#actions').append(trVenue.replace(/iRef/g, actionNumber));
+        $('select#action_' + actionNumber).append($('select#action_1').clone().html());
+    });
+});
+</script>
+
+<section class='subsection'>
+	<h3>Scene Name/Description</h3>
+		<input type='text' id="description" style='width:70em;'></input>
+	<h3>Devices list</h3>
+		<ul id='devices'></ul>
+		<br>
+		<input type='button' id='adddevices' value='add another device' />
+		<br>
+	<h3>Condition Test</h3>
+		<input type='text' id="Condition" style='width:70em;'></input>
+		<br>
+	<h3>Actions list</h3>
+		<ul id='actions'></ul>
+	       <br>
+	       <input type='button' id='addaction' value='add another action' />	
+	<h3>Options</h3>
+		<input type='checkbox' id='optionstart' checked='checked' value='start' />{% trans 'Automaticaly start the scene with plugin' %}
+	       <br>
+	       <button id='Creator' class='button icon16-action-save' style='width:20em;'>{% trans 'Create' %}</button>
+	       <br>Rinor Url :{{ request.session.rinor_ip }}:{{ request.session.rinor_port }}</p> 
+</section>
+

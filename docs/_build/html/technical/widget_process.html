@@ -1,0 +1,187 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>How Widgets are working &mdash; Domoweb dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Domoweb dev documentation" href="../index.html" />
+    <link rel="next" title="How i18n is implemented" href="i18n.html" />
+    <link rel="prev" title="General description" href="index.html" /> 
+  </head>
+  <body>
+
+    <div class="document">
+  <div id="custom-doc" class="yui-t6">
+    <div id="hd">
+      <h1><a href="../index.html">Domoweb dev documentation</a></h1>
+      <div id="global-nav">
+        <a title="Home page" href="../index.html">Home</a>  |
+        <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+        <a title="Global index" href="../genindex.html">Index</a>  |
+      </div>
+      <div class="nav">
+    &laquo; <a href="index.html" title="General description">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a>
+   |
+    <a href="i18n.html" title="How i18n is implemented">next</a> &raquo;</div>
+    </div>
+    
+    <div id="bd">
+      <div id="yui-main">
+        <div class="yui-b">
+          <div class="yui-g" id="technical-widget_process">
+            
+  <div class="section" id="how-widgets-are-working">
+<h1>How Widgets are working<a class="headerlink" href="#how-widgets-are-working" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="on-page-load">
+<h2>On Page Load<a class="headerlink" href="#on-page-load" title="Permalink to this headline">¶</a></h2>
+<p>On page load, each widget JS file is loaded.</p>
+<img alt="../_images/OnPageLoad.png" src="../_images/OnPageLoad.png" />
+<ol class="arabic simple">
+<li>Create_widget() is called for each.</li>
+<li>For each widget a jQuery class is created as a subclass of ui.widget_core.</li>
+<li>The widget is registred on a list, sorted by sensor/actuator type.</li>
+</ol>
+</div>
+<div class="section" id="on-page-ready">
+<h2>On Page Ready<a class="headerlink" href="#on-page-ready" title="Permalink to this headline">¶</a></h2>
+<p>On page ready each widget/feature association is placed and configured.</p>
+<img alt="../_images/OnPageReady.png" src="../_images/OnPageReady.png" />
+<ol class="arabic simple">
+<li>On page ready, the initAssociation is called by the DOM event.</li>
+<li>An AJAX fonction contact the RINOR server and retreive the associations list.</li>
+<li>Each feature is identified and ready to be initialised with the linked widget element.</li>
+<li>The _init fonction of the feature/widget is called.</li>
+<li>...</li>
+<li>The widget is bind to the event channel to receive all event notifications.</li>
+<li>The widget try to get his last value state.</li>
+<li>The RINOR server is connected to get the value.
+If the value exist in the database, the value is sent to the widget using the event channel. (Asynchrone)</li>
+<li>When the event is receved. The state handler fonction is called, and display the widget state.</li>
+</ol>
+</div>
+<div class="section" id="on-state-event-received">
+<h2>On State Event received<a class="headerlink" href="#on-state-event-received" title="Permalink to this headline">¶</a></h2>
+<img alt="../_images/OnStateEvent.png" src="../_images/OnStateEvent.png" />
+<ol class="arabic simple">
+<li>When a state event is receved (via RINOR). The state handler fonction is called on each widget.</li>
+<li>If the feature matches the event identifier, the state handler process the data.</li>
+<li>The new state is displayed.</li>
+</ol>
+</div>
+<div class="section" id="on-command-sent">
+<h2>On Command sent<a class="headerlink" href="#on-command-sent" title="Permalink to this headline">¶</a></h2>
+<img alt="../_images/OnCommand.png" src="../_images/OnCommand.png" />
+<ol class="arabic simple">
+<li>A widget action is detected (click).</li>
+<li>The widget prepare the command value to be send.</li>
+<li>The command is send (AJAX) to the RINOR server, and the widget place himself in a waiting state.</li>
+<li>If the command is received and ack by the plugin...</li>
+<li>The widget leave the waiting state.</li>
+<li>When the confirmation state event changed is receved (via RINOR). The state handler fonction is called on the widget.</li>
+<li>If the feature matches the event identifier, the state handler process the data.</li>
+<li>The new state is displayed.</li>
+</ol>
+</div>
+</div>
+
+
+          </div>         
+        </div>
+      </div>
+      
+        
+          <div class="yui-b" id="sidebar">
+            
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">How Widgets are working</a><ul>
+<li><a class="reference internal" href="#on-page-load">On Page Load</a></li>
+<li><a class="reference internal" href="#on-page-ready">On Page Ready</a></li>
+<li><a class="reference internal" href="#on-state-event-received">On State Event received</a></li>
+<li><a class="reference internal" href="#on-command-sent">On Command sent</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Prev: <a href="index.html">General description</a></li>
+    
+    
+      <li>Next: <a href="i18n.html">How i18n is implemented</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">Domoweb dev documentation</a>
+        
+        <ul><li>How Widgets are working</li></ul>
+        
+      </li>
+  </ul>  
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/technical/widget_process.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+          </div> 
+        
+      
+    </div>
+    
+    <div id="ft">
+      <div class="nav">
+    &laquo; <a href="index.html" title="General description">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a>
+   |
+    <a href="i18n.html" title="How i18n is implemented">next</a> &raquo;</div>
+    </div>
+  </div>
+
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

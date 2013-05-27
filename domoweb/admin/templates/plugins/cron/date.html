@@ -1,0 +1,339 @@
+{% comment %}
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Sébastien GALLET <bibi21000@gmail.com>
+{% endcomment %}
+
+{% load i18n %}
+
+<script type='text/javascript'>
+    var devices = new Array();
+    var numdates = -1
+
+    $(function(){
+
+        $("#specialcreatedate").click(function(){
+             if (plugin_is_running() == false) {
+                 $.notification('error', "{% trans "Plugin must be started to add a job" %}");
+                 return
+             }
+             var rinor_ip = "{{ request.session.rinor_ip }}";
+             var rinor_port = "{{ request.session.rinor_port }}";
+             var name = "";
+             var devicetype = "date";
+             //When creating device in UI, we use rinor has nested schema
+             var nstschema = "None";
+             var nstdevice = $("#datename").val();
+             var nstid = 0;
+             var nsttechno = "None";
+             var nstcommand = "sensor";
+             var nstvalue0 = "high";
+             var nstvalue1 = "low";
+             var dates = "";
+             var date = "";
+             var year = "";
+             var month = "";
+             var day = "";
+             var hour = "";
+             var minute = "";
+             var second = "";
+             if($('select#datedevice').val() != 0){
+                    nstschema = "rinor";
+                    nstdevice = devices[$("select#datedevice").val()][4];
+                    nstid = devices[$("select#datedevice").val()][0];
+                    var testvalue = devices[$("select#datedevice").val()][2].split(".");
+                    nsttechno = testvalue[0];
+                    testvalue = devices[$("select#datedevice").val()][5];
+                    testvalue = testvalue.replace(/&quot;/g,'"');
+                    var obj = jQuery.parseJSON(testvalue);
+                    //console.log("obj.command : " + obj['command']);
+                    nstcommand = obj['command'];
+                    // Must check if fields are select or input
+                    testvalue =  $("#datedevice_begin").val();
+                    if ( ! testvalue) {
+                        testvalue =  $("select#datedevice_begin").val();
+                    }
+                    //console.log("select#datedevice_begin : " + $("select#datedevice_begin").val());
+                    nstvalue0 = testvalue;
+                    testvalue =  $("#datedevice_end").val();
+                    if ( !testvalue ) {
+                        testvalue =  $("select#datedevice_end").val();
+                    }
+                    nstvalue1 = testvalue;
+             };
+             name = $("#datename").val();
+             if (check_job_name(name) != true) {
+                 $("#datename").focus();
+                 $.notification('error', "{% trans "Bad job name" %}");
+                 return
+             }
+
+             for(i=0 ; i<=numdates ; i++ )
+             {
+                 year = $("#dateyear"+i).val();
+                 //console.log("year : |" +year+"|");
+                 if ((year != null) && (year != "")) {
+                     if ((year == null) || (year == "") || (year.length != 4)  || (check_year(year) != true)) {
+                         $("#dateyear"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     date = year;
+
+                     month = $("#datemonth"+i).val();
+                     if ((month == null) || (month == "") || (month.length != 2) || (check_month(year,month) != true)) {
+                         $("#datemonth"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     date = date + month;
+
+                     day = $("#dateday"+i).val();
+                     if ((day == null) || (day == "") || (day.length != 2)  || (check_day(year,month,day) != true)) {
+                         $("#dateday"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     date = date + day;
+
+                     hour = $("#datehour"+i).val();
+                     if ((hour == null) || (hour == "") || (hour.length != 2)  || (check_hour(hour) != true)) {
+                         $("#datehour"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     date = date + hour;
+
+                     minute = $("#dateminute"+i).val();
+                     if ((minute == null) || (minute == "") || (minute.length != 2)  || (check_minute(minute) != true)) {
+                         $("#dateminute"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     date = date + minute;
+
+                     second = $("#datesecond"+i).val();
+                     if ((second == null) || (second == "") || (second.length != 2)  || (check_second(second) != true)) {
+                         $("#datesecond"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     date = date + second;
+
+                     if (date != "") {
+                        dates = dates + "'date"+i+"':'" + date + "',";
+                        //console.log("dates : " + dates);
+                    }
+                }
+             }
+             if ( dates == "") {
+                 $.notification('error', "{% trans "Missing parameters" %}");
+                 return
+             }
+             var value = "{ 'device':'" + name + "','devicetype':'" + devicetype +
+                         "'," + dates +
+                         "'nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
+                         "','nst-techno':'" + nsttechno + "','nst-command':'" + nstcommand +
+                         "','nst-value0':'" + nstvalue0 + "','nst-value1':'" + nstvalue1 +
+                         "','rinorip':'" + rinor_ip + "','rinorport':'" + rinor_port + "'}";
+
+             rinor.put(['api', 'command', 'cron', 'UI'], {"command":"create-date", 'value' : value})
+                .done(function(data, status, xhr){
+                     test=JSON.stringify(data);
+                     debut=test.search('error=');
+                     if (debut != -1) {
+                        test=test.slice(debut+5);
+                        fin=test.search('}');
+                        test=test.slice(1,fin-2);
+                        $("#speciallist").click();
+                        $.notification('error',test);
+                     }else{
+                        $("#speciallist").click();
+                        $.notification('info',"Alarm " + name + " created");
+                     }
+                })
+
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Can't create date" %} (" + jqXHR.responseText + ")");
+                });
+        });
+
+        $("select#datedevice").change(function(){
+              var test = $("select#datedevice").val();
+              //console.log("select#datedevice : " + test);
+              if (test!=0){
+                  var valeur = devices[test][5];
+                  var test2 = devices[test][3];
+                  valeur = valeur.replace(/&quot;/g,'"');
+                  var obj = jQuery.parseJSON(valeur);
+              }
+              if (test==0){
+                 $("#grp_datedevice_begin").html("");
+                 $("#grp_datedevice_end").html("");
+              }
+              else if (devices[test][3]=="list"||devices[test][3]=="binary"){
+                  $("#grp_datedevice_begin").html("<select id='datedevice_begin' style='width:20em;'></select>");
+                  $("#grp_datedevice_end").html("<select id='datedevice_end' style='width:20em;'></select>");
+                  if (test2 == "binary"){
+                     $("select#datedevice_begin").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+                     $("select#datedevice_begin").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+                     $("select#datedevice_end").append("<option value='"+obj.value0+"'>"+obj.value0+"</option>");
+                     $("select#datedevice_end").append("<option value='"+obj.value1+"'>"+obj.value1+"</option>");
+                  }
+                  else {
+                     for(i=0 ;i<obj.commandValues.length;i++){
+                       $("select#datedevice_begin").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+                       $("select#datedevice_end").append("<option value='"+obj.commandValues[i]+"'>"+obj.commandValues[i]+"</option>");
+                       }
+                  }
+              }
+              else if (test2=="numeric"|| test2=="range"){
+                 $("#grp_datedevice_begin").html("<input id='datedevice_begin' style='width:20em;'></input>");
+                 $("#grp_datedevice_end").html("<input id='datedevice_end' style='width:20em;'></input>");
+              }
+              else if (test2=="trigger"){
+                 $("#grp_datedevice_begin").html("");
+                 $("#grp_datedevice_end").html("");
+              }
+        //console.log("select#datedevice_begin : " + $("select#datedevice_begin").val());
+        //if ($("#datedevice_begin").val()) {
+        //    console.log("datedevice_begin : " + $("#datedevice_begin").val());
+        //}
+        //if ($("select#datedevice_begin").val()) {
+        //    console.log("datedevice_begin : " + $("select#datedevice_begin").val());
+        //}
+      });
+
+    $('#deldates').click(function () {
+        if (numdates>0) {
+            $('#tabledate'+numdates).remove();
+            numdates--
+        }
+    });
+
+    $('#adddates').click(function () {
+        // the subviews rendered with placeholders
+        numdates++
+        var newTR = "<table id='tabledate"+numdates+"'>"+"\n"
+        newTR = newTR + "<tr>"+"\n"
+        if (numdates>0) {
+            newTR = newTR + "<td colspan=6 >&nbsp;</td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+            newTR = newTR + "<tr>"+"\n"
+        }
+
+        newTR = newTR + "<td align='right'><label for='dateyear"+numdates+"'>{% trans 'The year (ie 2012) : ' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input size='4' type='text' id='dateyear"+numdates+"' name='dates'/></td>"+"\n"
+        newTR = newTR + "<td align='right'><label for='datemonth"+numdates+"'>{% trans 'The month (ie 05) : ' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input size='2' type='text' id='datemonth"+numdates+"' name='dates'/></td>"+"\n"
+        newTR = newTR + "<td align='right'><label for='dateday"+numdates+"'>{% trans 'The day (ie 07) : ' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input size='2' type='text' id='dateday"+numdates+"' name='dates'/></td>"+"\n"
+        newTR = newTR + "</tr>"+"\n"
+        newTR = newTR + "<tr>"+"\n"
+        newTR = newTR + "<td align='right'><label for='datehour"+numdates+"'>{% trans 'The hour (ie 23) : ' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input size='2' type='text' id='datehour"+numdates+"' name='dates'/></td>"+"\n"
+        newTR = newTR + "<td align='right'><label for='dateminute"+numdates+"'>{% trans 'The minute (ie 05) : ' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input size='2' type='text' id='dateminute"+numdates+"' name='dates'/></td>"+"\n"
+        newTR = newTR + "<td align='right'><label for='datesecond"+numdates+"'>{% trans 'The second (ie 59) : ' %}</label></td>"+"\n"
+        newTR = newTR + "<td><input size='2' type='text' id='datesecond"+numdates+"' name='dates'/></td>"+"\n"
+        newTR = newTR + "</tr>"+"\n"
+        if (numdates>0) {
+            newTR = newTR + "<tr>"+"\n"
+            newTR = newTR + "<td colspan=2 ><button id='adddates"+numdates+"' class='button icon16-action-del' onclick=\"document.getElementById(\'dates_div\').removeChild(document.getElementById(\'tabledate"+numdates+"\'));\">{% trans "Remove" %}</button></td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+        }
+        newTR = newTR + "</table>"+"\n"
+        $('#dates_div').append(newTR);
+    });
+
+      $(document).ready(function(){
+        var i=1;
+        $('#adddates').click();
+        //$('#datestarthour').timepicker({});
+        //$('#datestophour').timepicker({});
+        rinor.get(['api', 'feature'])
+            .done(function(data, status, xhr){
+                $('select#datedevice').append("<option value='0'>"+"{% trans "None" %}"+"</option>");
+                $.each(data.objects, function(index, object) {
+                    devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
+                    if (object.device_feature_model.feature_type == "actuator"){
+                       $('select#datedevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
+                    }
+                    i=i+1;
+                });
+                //console.log("devices.length : " + devices.length);
+                //for(i=0 ;i<devices[1].length;i++){
+                //    console.log("devices[1][" + i + "] : " + devices[1][i]);
+                //}
+                $("select#datedevice").change();
+            })
+
+            .fail(function(jqXHR, status, error){
+                if (jqXHR.status == 400)
+                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
+            });
+     });
+    });
+
+</script>
+<section class="subsection">
+    <h3>{% trans "Create a date." %}</h3>
+    <p>{% trans "With this kind of timer you can activate a switch, a dimmer, ... at a specified date (and time of course). You can specify many dates. When doing that the command is switched every run : first date in the LIST command on is sent, second (always in the list, not in time chronology) command off, ..., etc, ..." %}</p>
+            <fieldset>
+                <legend><h4>{% trans 'Name'%}</h4></legend>
+                    <table>
+                        <tr>
+                            <td><label for='datename'>{% trans 'The name of the date / device.' %}</label></td>
+                            <td><input type='text' id='datename' name='name'/></td>
+                        </tr>
+                    </table>
+            </fieldset>
+            <fieldset>
+                <legend><h4>{% trans 'Date'%}</h4></legend>
+                    <div id="dates_div">
+                    </div>
+                    <table>
+                        <tr>
+                            <td colspan=2><button id='adddates' class='button icon16-action-add' >{% trans "Add" %}</button></td>
+                        </tr>
+                    </table>
+            </fieldset>
+            <fieldset>
+                <legend><h4>{% trans 'Device to use'%}</h4></legend>
+                    <table>
+                        <tr>
+                            <td><label for='datedevice'>{% trans "Device" %}:</label></td>
+                            <td><select id="datedevice" class='listes' style="width:30em;"></select></td>
+                        </tr>
+                        <tr>
+                            <td><label for='grp_datedevice_begin'>{% trans "The command / value to use at the begin of the cycle." %}:</label></td>
+                            <td><span id="grp_datedevice_begin"></span></td>
+                        </tr>
+                        <tr>
+                            <td><label for='grp_datedevice_end'>{% trans "The command / value to use at the end of the cycle." %}:</label></td>
+                            <td><span id="grp_datedevice_end"></span></td>
+                        </tr>
+                    </table>
+            </fieldset>
+        <p>
+            <button id='specialcreatedate' class='button icon16-action-save'>{% trans "Create" %}</button>
+            <button id='specialcanceldate' class='button icon16-action-reset'>{% trans "Cancel" %}</button>
+        </p>
+</section>
+
+

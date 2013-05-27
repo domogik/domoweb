@@ -1,0 +1,110 @@
+==========
+Theme pack
+==========
+
+A theme is used to visualy style a page, in the view section.
+
+Pack structure
+==============
+
+The theme root folder name should be identical to the theme id::
+
+    /var/lib/domoweb/packs/theme/< id >/...
+
+or in dev. mode::
+
+    ../src/packs/theme/< id >/...
+
+Naming convention
+-----------------
+
+The css file used to override the page default style should be named ``view-page.css``.
+
+info.json
+---------
+
+The info.json file declare all icons available in the set.
+
+.. code-block:: javascript
+
+    {
+        json_version: 1,
+        identity: {
+            type: 'theme_page',
+            id: 'mytheme',
+            version: 0.1,
+            name: 'My theme',
+            description: 'Description for theme..',
+            creator: 'Domogik',
+            creator_email: 'xx@xxx.xx',
+            ...
+        },
+        images: {...},
+    }
+
+* version : (see Domogik info.json documentation page)
+* type : the type id for the widget element is 'iconset_page'.
+* identity : (see Domogik info.json documentation page)
+* images : (see Domogik info.json documentation page)
+
+Creating the css style
+======================
+
+The theme css override style is contained in ``view-page.css``.
+
+This exemple shows the theme 'flowers':
+
+.. image:: page_structure.png
+
+.. code-block:: css
+
+    body {
+        background-color:#eeeeee;
+        background-image: url(content_bgnd.png);
+        background-position: 0% 0%;
+        background-repeat: no-repeat;
+    }
+    
+    header {
+        background-color: #BDCB2F;
+        background-image: url(banner_bgnd.png);
+        background-position: 100% 50%;
+        background-repeat: no-repeat;
+    }
+
+The 2 background images are png, **with alpha layer** (transparent background).
+
+The css attributes used:
+
+* ``background-color`` : defines the background color for the element (behind the background image)
+* ``background-image`` : the background image url (relative from the css file path)
+* ``background-position: X Y`` : position de l'image, X (left, right / 0%, 100%), Y (top, bottom / 0%, 100%)
+* ``background-repeat`` : to repeat or not the background image
+
+This is a **very basic** styling: many other css attributs may be used.
+
+Internal processing and data
+============================
+
+Registration
+------------
+
+* When Domoweb starts the ``packs/themes/`` folder is parsed
+* If the json version is supported:
+    * Each theme is registered into the domoweb 'PageTheme' database. (Visible in Domoweb Admin > Core > Domoweb Data)
+
+Theme association
+-----------------
+
+The theme id is attribued to the page, in the page configuration view, and registred on the Domoweb table ``Page``. (Visible in Domoweb Admin > Core > Domoweb Data)
+
+Applied theme style
+-------------------
+
+The selected theme is simply applied in the ``page.html`` django layout using this code:
+
+.. code-block:: html+django
+
+    {% if page.theme_id %}
+        <link href="/themes/{{ page.theme_id }}/view-page.css" rel="stylesheet" type="text/css" />
+    {% endif %}

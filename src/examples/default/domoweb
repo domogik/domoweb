@@ -1,4 +1,0 @@
-# This file defines config parameters for domoweb
-
-#Start domoweb daemon under this user
-DOMOWEB_USER=domoweb

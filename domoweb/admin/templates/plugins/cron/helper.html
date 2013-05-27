@@ -1,0 +1,123 @@
+{% comment %}
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Sébastien GALLET <bibi21000@gmail.com>
+{% endcomment %}
+
+{% load i18n %}
+<script type='text/javascript'>
+
+
+function helperrinor (args) {
+    rinor.put(['api', 'command', '{{ plugin.id }}', '{{ plugin.id }}'], args)
+    .done(function(data, status, xhr){
+         //alert(JSON.stringify(data["xpl"]));
+         var test=JSON.stringify(data["xpl"]);
+         //var test=data;
+         var debut=test.search('nhelper.basic');
+         test=test.slice(debut+14);
+         test=test.slice(1,test.length-3);
+         //alert(test);
+         test=test.replace(/[\{]{1}[\\]{1}[n]{1}([a-zA-Z0-9]+[a-zA-Z0-9\-]*)[=]/g,'{"$1" : "');
+         //alert(test);
+         test=test.replace(/[\\]{1}[n]{1}[\}]{1}/g,'"}');
+         //alert(test);
+         test=test.replace(/[\\]{1}[n]{1}([a-zA-Z0-9]+[a-zA-Z0-9\-]*)[=]/g,'" , "$1" : "');
+         //alert(test);
+         //var lines=eval('(' + test + ')');
+         test=test.replace(/"{"/g,'"","');
+         var lines=new Array();
+         var parsed = JSON.parse(test, function(key, value) {
+                //alert("key="+key+",value="+value);
+                //alert(key.match(/[l]{1}[o]{1}[g]{1}[0-9]+/g));
+                if ( key.match(/[s]{1}[c]{1}[r]{1}[0-9]+/g) != null ) {
+                        i=parseInt(key.replace(/[s]{1}[c]{1}[r]{1}([0-9]+)/g,'$1'))-1;
+                        lines[i]=value;
+                        //alert("match");
+                        return value;
+                    }
+                return value;
+            });
+         i=0;
+         //alert(lines);
+         var helper_scn = document.getElementById("helper_scn");
+         while(helper_scn.rows.length>1)
+             helper_scn.deleteRow(helper_scn.rows.length-1);
+         $("#helper_scn tbody").append("<tr id='helper" + 0 + "'></tr>");
+         var hhtml = "";
+         do {
+               //alert(lines[i]);
+               hhtml = hhtml + lines[i] + "<br/>";
+               i=i+1;
+         } while (i<lines.length);
+         var tr = $("tr#helper"+0);
+         tr.append("<td>" +  hhtml + "</td>");
+    })
+    .fail(function(jqXHR, status, error){
+        if (jqXHR.status == 400)
+            $.notification('error', "{% trans "Cant call helper" %} (" + jqXHR.responseText + ")");
+    });
+}
+
+$(function(){
+   $("#helperexecute").click(function() {
+        if (plugin_is_running() == false) {
+           $.notification('error', "{% trans "Plugin must be started to add a job" %}");
+           return
+        }
+        var formval = $("#command").val();
+        var data=formval.split(/[ ]/);
+        var args = {}
+        args["command"] = data[0];
+        if (data[1]) {
+            args["value"] = data[1];
+        }
+        if (data[0]) {
+            helperrinor(args)
+        } else {
+            $.notification('error', "{% trans "Enter a command to execute. Click help to get command list." %}")
+        }
+    });
+   $("#helperhelp").click(function() {
+         if (plugin_is_running() == false) {
+             $.notification('error', "{% trans "Plugin must be started to add a job" %}");
+             return
+         }
+        var args = {}
+        args["command"] = "help";
+        helperrinor(args)
+    });
+});
+</script>
+<section class="subsection">
+    <h2>{% trans "Helper" %}</h2>
+    <div id='helper_div'>
+        <p><label for='command'>{% trans 'Command' %}:</label>
+        <input type='text' id='command' name='command' />
+        <button id='helperexecute' class='button icon16-action-save'>{% trans "Execute" %}</button>
+        <button id='helperhelp' class='button icon16-action-help'>{% trans "Help" %}</button></p>
+        <table id='helper_scn' class='simple'>
+            <thead>
+                <tr>
+                    <th scope='col'>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</section>

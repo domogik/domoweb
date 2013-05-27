@@ -1,0 +1,54 @@
+@charset "UTF-8";
+/* CSS Document */
+
+table.simple {
+    width:100%;
+}
+
+table.simple th {
+    background-color:#403E3F;
+    color:#FFF;
+}
+
+table.simple td {
+    text-align:center;
+    padding:0.2em;
+}
+
+table.simple tr.even {
+    background-color:#FFF;
+}
+/*
+ * Row highlighting
+ */
+table.simple tr.even td.highlighted {
+	background-color: #ECFFB3;
+}
+
+table.simple tr.odd td.highlighted {
+	background-color: #E6FF99;
+}
+table.simple ul.actions {
+    list-style:none;
+    margin:0;
+    padding:0;
+}
+
+table.simple ul.actions li {
+    display:inline;
+    margin:0 1em 0 0;
+    padding:0;
+}
+
+table.info { border-collapse: collapse; width: 100%; }
+table.info td, table.info th { border: solid 1px black; }
+table.info th { font-size: large; }
+table.info .e { background-color: #ccccff; font-weight: bold; padding-left: .25em; padding-right: .25em; white-space: nowrap; width: 20%; }
+table.info .h { background-color: #9999cc; font-weight: bold; }
+table.info .v { background-color: #cccccc; padding-left: .25em; }
+table.info .version { font-size: 150%; padding: .5em; text-align: center; }
+table.info td.code pre {
+    overflow: hidden;
+    font-size: 100%;
+    font-family: monospace;
+}

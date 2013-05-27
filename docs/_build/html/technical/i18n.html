@@ -1,0 +1,221 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>How i18n is implemented &mdash; Domoweb dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Domoweb dev documentation" href="../index.html" />
+    <link rel="next" title="Types for generating UI fields" href="fields_types.html" />
+    <link rel="prev" title="How Widgets are working" href="widget_process.html" /> 
+  </head>
+  <body>
+
+    <div class="document">
+  <div id="custom-doc" class="yui-t6">
+    <div id="hd">
+      <h1><a href="../index.html">Domoweb dev documentation</a></h1>
+      <div id="global-nav">
+        <a title="Home page" href="../index.html">Home</a>  |
+        <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+        <a title="Global index" href="../genindex.html">Index</a>  |
+      </div>
+      <div class="nav">
+    &laquo; <a href="widget_process.html" title="How Widgets are working">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a>
+   |
+    <a href="fields_types.html" title="Types for generating UI fields">next</a> &raquo;</div>
+    </div>
+    
+    <div id="bd">
+      <div id="yui-main">
+        <div class="yui-b">
+          <div class="yui-g" id="technical-i18n">
+            
+  <div class="section" id="how-i18n-is-implemented">
+<h1>How i18n is implemented<a class="headerlink" href="#how-i18n-is-implemented" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="django-internationalization">
+<h2>Django Internationalization<a class="headerlink" href="#django-internationalization" title="Permalink to this headline">¶</a></h2>
+<p>Domoweb translation is based on Django translation process:
+<a class="reference external" href="https://docs.djangoproject.com/en/1.4/topics/i18n/translation/">https://docs.djangoproject.com/en/1.4/topics/i18n/translation/</a></p>
+<p>The translation process is based on gettext.
+The translations has to be implemented on three sections:</p>
+<ul class="simple">
+<li>in Python view code</li>
+<li>in Template code</li>
+<li>in Javascript code</li>
+</ul>
+<div class="section" id="python-views">
+<h3>Python views<a class="headerlink" href="#python-views" title="Permalink to this headline">¶</a></h3>
+<p>On each file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext</span> <span class="k">as</span> <span class="n">_</span>
+</pre></div>
+</div>
+<p>Then for each string:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Welcome to my site.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="django-templates">
+<h3>Django templates<a class="headerlink" href="#django-templates" title="Permalink to this headline">¶</a></h3>
+<p>On each page:</p>
+<div class="highlight-python"><pre>{% load i18n %}</pre>
+</div>
+<p>Then for each string:</p>
+<div class="highlight-python"><pre>&lt;title&gt;{% trans "This is the title." %}&lt;/title&gt;</pre>
+</div>
+</div>
+<div class="section" id="javascript">
+<h3>Javascript<a class="headerlink" href="#javascript" title="Permalink to this headline">¶</a></h3>
+<p>First we need to create the translation catalog:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">js_info_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;packages&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s">&#39;domoweb&#39;</span><span class="p">,),</span>
+<span class="p">}</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">r&#39;^jsi18n/$&#39;</span><span class="p">,</span> <span class="s">&#39;django.views.i18n.javascript_catalog&#39;</span><span class="p">,</span> <span class="n">js_info_dict</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>And on main template:</p>
+<div class="highlight-python"><pre>&lt;script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"&gt;&lt;/script&gt;</pre>
+</div>
+<p>Then for each string:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">string</span> <span class="o">=</span> <span class="n">gettext</span><span class="p">(</span><span class="s">&#39;this is to be translated&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="language-files-generation">
+<h3>Language files generation<a class="headerlink" href="#language-files-generation" title="Permalink to this headline">¶</a></h3>
+<p>The message file for each language needs to be created separately (with &#8216;-d djangojs&#8217; option for the JS files):</p>
+<div class="highlight-python"><pre>$ django-admin.py makemessages -l en
+$ django-admin.py makemessages -d djangojs -l en
+$ django-admin.py makemessages -l fr
+$ django-admin.py makemessages -d djangojs -l fr
+$ django-admin.py makemessages -l it
+$ django-admin.py makemessages -d djangojs -l it
+...</pre>
+</div>
+<p>After translation, re-adding the .po to the locale, the files are compiled to .mo files:</p>
+<div class="highlight-python"><pre>$ django-admin.py compilemessages</pre>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you use OSX remove before the bloody Apple files with:</p>
+<div class="last highlight-python"><pre>find . -name ".AppleDouble" -depth -exec rm -Rf {} \;</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="transifex">
+<h2>Transifex<a class="headerlink" href="#transifex" title="Permalink to this headline">¶</a></h2>
+<p>The Transifex service is used for the translation:
+<a class="reference external" href="https://www.transifex.net/projects/p/domoweb/">https://www.transifex.net/projects/p/domoweb/</a></p>
+</div>
+</div>
+
+
+          </div>         
+        </div>
+      </div>
+      
+        
+          <div class="yui-b" id="sidebar">
+            
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">How i18n is implemented</a><ul>
+<li><a class="reference internal" href="#django-internationalization">Django Internationalization</a><ul>
+<li><a class="reference internal" href="#python-views">Python views</a></li>
+<li><a class="reference internal" href="#django-templates">Django templates</a></li>
+<li><a class="reference internal" href="#javascript">Javascript</a></li>
+<li><a class="reference internal" href="#language-files-generation">Language files generation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#transifex">Transifex</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Prev: <a href="widget_process.html">How Widgets are working</a></li>
+    
+    
+      <li>Next: <a href="fields_types.html">Types for generating UI fields</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">Domoweb dev documentation</a>
+        
+        <ul><li>How i18n is implemented</li></ul>
+        
+      </li>
+  </ul>  
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/technical/i18n.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+          </div> 
+        
+      
+    </div>
+    
+    <div id="ft">
+      <div class="nav">
+    &laquo; <a href="widget_process.html" title="How Widgets are working">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a>
+   |
+    <a href="fields_types.html" title="Types for generating UI fields">next</a> &raquo;</div>
+    </div>
+  </div>
+
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

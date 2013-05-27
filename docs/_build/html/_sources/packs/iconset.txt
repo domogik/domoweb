@@ -1,0 +1,90 @@
+============
+IconSet pack
+============
+
+Each iconset are specifically created for a different section of Domoweb (page, usage, etc ...)
+But one type is available so far in Domoweb 0.3: 'iconset_page'
+
+Pack structure
+==============
+
+The iconset root folder name should be identical to the iconset id::
+
+    /var/lib/domoweb/packs/iconsets/page/< id >/...
+
+or in dev. mode::
+
+    ../src/packs/iconsets/page/< id >/...
+
+Naming convention
+-----------------
+
+Each icon should be named according to the info.json section::
+
+    < id >_< size >.png
+
+(ex. myicon_16.png)
+
+info.json
+---------
+
+The info.json file declare all icons available in the set.
+
+.. code-block:: javascript
+
+    {
+        json_version: 1,
+        identity: {
+            type: 'iconset_page',
+            id: 'myicons',
+            version: 0.1,
+            name: 'My iconset',
+            description: 'Description for iconset..',
+            creator: 'Domogik',
+            creator_email: 'xx@xxx.xx',
+            ...
+        },
+        images: {...},
+        icons: [
+            {
+                id: 'myicon',
+                label: 'My Icon',
+                sizes: [16, 32, 64],
+            },
+            {...},
+        ],
+    }
+
+* version : (see Domogik info.json documentation page)
+* type : the type id for the widget element is 'iconset_page'.
+* identity : (see Domogik info.json documentation page)
+* images : (see Domogik info.json documentation page)
+* icons : list of icons
+
+Internal processing and data
+============================
+
+Registration
+-------------
+
+* When Domoweb starts the ``packs/iconsets/`` folder is parsed
+* If the json version is supported:
+    * Each icon of the iconset is registered into the domoweb 'PageIcon' database. (Visible in Domoweb Admin > Core > Domoweb Data)
+
+.. todo::
+    If not available the CSS file is generated
+    .icon64-iconsetid-iconid { background-image:url(images/iconid_64.png);}
+    .icon32-iconsetid-iconid { background-image:url(images/iconid_32.png);}
+    .icon16-iconsetid-iconid { background-image:url(images/iconid_16.png);}
+
+Icon association
+----------------
+
+The couple ``iconsetid-iconid`` is attribued to the page item on the Domogik table ``ui_page``.
+
+Applied icon style
+------------------
+
+To apply an icon to a HTML element, we attribute the icon css class::
+
+    class='icon<size>-iconsetid-iconid'

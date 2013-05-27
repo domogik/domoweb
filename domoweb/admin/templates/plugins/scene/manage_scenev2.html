@@ -1,0 +1,114 @@
+{% load i18n %}
+<script type='text/javascript'>
+	var table = new Array();
+	var nb_ligne=0;
+        var plugin_scene_status = "OFF";
+	
+function delscene(id,address) {
+    rinor.put(['api', 'command', 'scene',address],  {"command":"delete"})
+               .done(function(data, status, xhr){
+                   rinor.delete(['api', 'device', id])
+                       .done(function(data, status, xhr){
+                          $.reloadPage({'status': 'success', 'msg': "{% trans "Device deleted" %} '" + name + "'", 'id':id});                                   
+                       })
+               })  
+};
+
+function startscene(id, address) {
+
+    rinor.put(['api', 'command', 'scene', address], {"command":"start"})
+               .done(function(data, status, xhr){
+                update(id,'run');
+                setTimeout('update('+id+',"stats")',1000);
+                })
+};
+
+function stopscene(id, address) {
+
+    rinor.put(['api', 'command', 'scene',address], {"command":"stop"})
+               .done(function(data, status, xhr){
+                update(id,'run');
+                update(id,'stats');
+                })
+    
+};
+
+function delall(){
+        for(i=1;i<nb_ligne;i++){
+           testid='#device_scene_' + i;
+           $('#device_scene_' + i).remove();
+        }
+};
+
+function update(id,key){
+  rinor.get(['api','state','last','1',id, key])
+       .done(function(data, status, xhr){
+             $('#device_'+ id +' .stat_'+key).html('<center>'+data[0].value+'</center>');
+       })
+};
+
+function poll(){
+    $.ajax({ url: "http://192.168.1.10:40405/events/resquest/18", success: function(data){
+        //Update your dashboard gauge
+        alert(data.value);
+
+    }, dataType: "json", complete: poll, timeout: 30000 });
+};
+
+
+
+  $(function(){
+  
+  $('#actualise').click(function () {
+       for(i=0;i<table.length;i++){
+          update(table[i],'run');
+          update(table[i],'stats');
+       }
+    });
+
+
+   $(document).ready(function(){
+        rinor.get(['api', 'feature'])
+             .done(function(data, status, xhr){
+                  $.each(data.objects, function(index, object) {
+                  if(object.device_feature_model.id=='scene.stat.status'){
+                     table[nb_ligne]= object.device.id;
+                     nb_ligne++;
+                     valeur_stat = 'unknow';
+                     valeur_run = 'unknow';
+                     matabme = "<tr id='device_"+ object.device.id +"'><td class='Name'><center>" + object.device.name +"</center></td><td class='Description'>"+object.device.description +"</td><td class='stat_run'><center> "+valeur_run+"</center> </td><td class='stat_stats'><center> "+valeur_stat+" </center></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='startscene("+ object.device.id+',"'+ object.device.address +'"' +")'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='stopscene("+ object.device.id+',"'+ object.device.address +'"' +")'/></td><td><input type='button' class='button icon16-action-save' style='width:5em;' onClick='delscene("+ object.device.id+',"'+ object.device.address +'"' +")'/></td></tr>"
+                     $('#Scene_table').append(matabme.replace(/iRef/g, nb_ligne));
+                     update(object.device.id,'run');
+                     update(object.device.id,'stats');
+                   }
+             });
+             });
+
+    });
+    
+    });
+
+
+</script>
+<section class="subsection">
+    <h2>{% trans "Manage Scene" %}</h2>
+  <button id='actualise' class='button icon16-action-save' style='width:10em;'>{% trans 'Refresh' %}</button>
+ <table id='Scene_table' class='simple'>
+<thead>
+                <tr>
+                    <td></td>
+                </tr>
+   <tr>
+       <th width=10%> Name </th>
+       <th width=65%> Description </th>
+       <th width=5%> Run </th>
+       <th width=5%> Stat </th>
+       <th width=5%> Start </th>
+       <th width=5%> Stop </th>
+       <th width=5%> Delete </th>
+   </tr>
+</table>
+
+
+</section>
+

@@ -1,0 +1,325 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Widgets Sets &mdash; Domoweb dev documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'dev',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Domoweb dev documentation" href="../index.html" />
+    <link rel="prev" title="Theme pack" href="theme.html" /> 
+  </head>
+  <body>
+
+    <div class="document">
+  <div id="custom-doc" class="yui-t6">
+    <div id="hd">
+      <h1><a href="../index.html">Domoweb dev documentation</a></h1>
+      <div id="global-nav">
+        <a title="Home page" href="../index.html">Home</a>  |
+        <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+        <a title="Global index" href="../genindex.html">Index</a>  |
+      </div>
+      <div class="nav">
+    &laquo; <a href="theme.html" title="Theme pack">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a></div>
+    </div>
+    
+    <div id="bd">
+      <div id="yui-main">
+        <div class="yui-b">
+          <div class="yui-g" id="packs-widgetset">
+            
+  <div class="section" id="widgets-sets">
+<h1>Widgets Sets<a class="headerlink" href="#widgets-sets" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="structure">
+<h2>Structure<a class="headerlink" href="#structure" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Each widget id should respect a naming convention: &#8216;creator_size_shortDescription&#8217;.</li>
+</ul>
+<p>** creator: The creator name (letter/number only, no space or punctuation)
+** size: the widget size with the following format: width&#8217;x&#8217;height
+** short description (letter/number only, no space or punctuation)</p>
+<p>^(ex. dmg_1x1_BasicBooleanActuator)^</p>
+<p>The widget root folder name should be identical to the widget id.
+^/usr/share/domoweb/widgets/&lt; id &gt;/...^</p>
+<div class="section" id="info-json">
+<h3>info.json<a class="headerlink" href="#info-json" title="Permalink to this headline">¶</a></h3>
+<p>{CODE(caption=&#8221;json description file&#8221;)}
+{</p>
+<blockquote>
+<div><p>json_version: 1,
+identity: {</p>
+<blockquote>
+<div>type: &#8216;dmg_widget&#8217;,
+id: &#8216;dmg_1x1_test&#8217;,
+version: 0.1,
+name: &#8216;Basic test widget&#8217;,
+description: &#8216;Description for Basic test..&#8217;,
+creator: &#8216;Domogik&#8217;,
+creator_email: <a class="reference external" href="mailto:'xx&#37;&#52;&#48;xxx&#46;fr">'xx<span>&#64;</span>xxx<span>&#46;</span>fr</a>&#8216;,
+...</div></blockquote>
+<p>},
+images: {</p>
+<blockquote>
+<div>icon: &#8216;icon.png&#8217;,
+banner: &#8216;banner.png&#8217;,
+scrennshot: &#8216;screenshot.png&#8217;,</div></blockquote>
+<p>},
+parameters: {</p>
+<blockquote>
+<div>height: 1,
+width: 1,
+display_border: true,</div></blockquote>
+<p>},
+features: [</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd>id: &#8216;mafeature&#8217;,
+type: &#8216;sensor.boolean&#8217;,
+filters: [&#8216;...&#8217;, &#8216;...&#8217;],</dd>
+</dl>
+<p>},
+{...},</p>
+</div></blockquote>
+<p>],
+configs: [</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd>id: &#8216;maconfig&#8217;,
+type: &#8216;...&#8217;,
+default: &#8216;0&#8217;,</dd>
+</dl>
+<p>},
+{...},</p>
+</div></blockquote>
+<p>],
+css: [&#8216;style.css&#8217;, &#8216;...&#8217;],
+js: [&#8216;main.js&#8217;, &#8216;...&#8217;],</p>
+</div></blockquote>
+<p>}
+{CODE}</p>
+<ul class="simple">
+<li>version : ((Packages_info_json|see info.json page))</li>
+<li>type : the type id for the widget element is &#8216;dmg_widget&#8217;.</li>
+<li>identity : ((Packages_info_json|see info.json page))</li>
+<li>images : ((Packages_info_json|see info.json page))</li>
+<li>parameters :</li>
+</ul>
+<p>** height, width: widget size format (1 to 4)
+** display_border (default: true) : Whether or not a border should be displayed around the widget.
+* features :
+** id : string to identify the feature in the widget options
+** label : string to describe the parameter
+** type: type of selectable features
+** filters (optional) : filter the list on one of the item list.
+format : &lt;techno&gt;.&lt;device&gt;.&lt;feature&gt; (* can be used)
+* configs :
+** id : string to identify the config item in the widget options
+** label : string to describe the parameter
+** type : type of the config data
+* css : list of css files included in the &#8216;css/&#8217; folder
+* js : list javascript files included in the &#8216;js/&#8217; folder</p>
+<div class="section" id="config-types-with-available-options">
+<h4>config types with available options<a class="headerlink" href="#config-types-with-available-options" title="Permalink to this headline">¶</a></h4>
+<p><a class="reference external" href="http://wiki.domogik.org/Spec_field_types">http://wiki.domogik.org/Spec_field_types</a></p>
+</div>
+</div>
+<div class="section" id="js-main-js">
+<h3>js/main.js<a class="headerlink" href="#js-main-js" title="Permalink to this headline">¶</a></h3>
+<p>This file contains the widget main initialization functions.
+{CODE(caption=&#8221;Base structure&#8221;)}(function($) {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>$.create_widget({</dt>
+<dd><p class="first">_init: function() {
+},</p>
+<p>_statesHandler: function(states) {
+},</p>
+<p class="last">_eventHandler: function(timestamp, value) {
+},</p>
+</dd>
+</dl>
+<p>});</p>
+</div></blockquote>
+<p>})(jQuery);{CODE}</p>
+<div class="section" id="init-function">
+<h4>_init function<a class="headerlink" href="#init-function" title="Permalink to this headline">¶</a></h4>
+<p>Used to initialize the widget</p>
+</div>
+<div class="section" id="statshandler-function">
+<h4>_statsHandler function<a class="headerlink" href="#statshandler-function" title="Permalink to this headline">¶</a></h4>
+<p>Callback function used when requesting stats.</p>
+</div>
+<div class="section" id="eventhandler-function">
+<h4>_eventHandler function<a class="headerlink" href="#eventhandler-function" title="Permalink to this headline">¶</a></h4>
+<p>Callback function used when receiving event.</p>
+</div>
+</div>
+<div class="section" id="css-style-css">
+<h3>css/style.css<a class="headerlink" href="#css-style-css" title="Permalink to this headline">¶</a></h3>
+<p>The widget css stylesheet file.
+* Each rule should start with the widget id as class name (ex. .dmg_1x1_minimalSensorNumber&#8217;)</p>
+</div>
+<div class="section" id="template-py">
+<h3>template.py<a class="headerlink" href="#template-py" title="Permalink to this headline">¶</a></h3>
+<p>The content of this file will be copied inside the widget &lt;div&gt; object:
+For now only static HTML is allowed. Later we should be able to use django template tags.
+{CODE(caption=&#8221;Template&#8221;)}
+&lt;div id=&#8217;widget_instance_1&#8217; class=&#8217;widget dmg_1x1_minimalSensorNumber height_1 width_1 border&#8217;&gt;
+... content of the template.py file ...
+&lt;/div&gt;
+{CODE}</p>
+</div>
+</div>
+<div class="section" id="internal-processing-and-data">
+<h2>Internal processing and data<a class="headerlink" href="#internal-processing-and-data" title="Permalink to this headline">¶</a></h2>
+<p>{IMG(attId=&#8221;395&#8221;)}{IMG}</p>
+<div class="section" id="django-start">
+<h3>Django Start<a class="headerlink" href="#django-start" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>The &#8216;widgets&#8217; folder is parsed</li>
+<li>If the json version is supported:</li>
+</ul>
+<p>** The widget is registered in the &#8216;widget&#8217; table
+** The css &amp; js assets are registered in &#8216;widget_css&#8217; and &#8216;widget_js&#8217; tables</p>
+</div>
+<div class="section" id="placement-in-page">
+<h3>Placement in page<a class="headerlink" href="#placement-in-page" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>A new instance is created (widget_instance), with a &#8216;config&#8217; icon</li>
+<li>When &#8216;config&#8217; is clicked, a panel is opened</li>
+</ul>
+<p>** Some default options are displayed :
+<a href="#id1"><span class="problematic" id="id2">**</span></a>* name and subname (if null, nothing is displayed)
+** The features and configs items (from the info.json file section) are displayed
+* When the config panel is closed:
+** The values are saved in widget_feature/widget_config tables
+** The feature/page links are sent to RINOR via REST API, for compatibility with other UI</p>
+</div>
+<div class="section" id="page-load">
+<h3>Page load<a class="headerlink" href="#page-load" title="Permalink to this headline">¶</a></h3>
+<p>For each widget instance (widget_instance)
+* css &amp; js include tags are generated (widget_css widget_js), (no duplication)
+* widget options are generated for widget call (widget, widget_feature, widget_config)
+^{id: ..., features:[], configs:[]}^
+* widget call is generated
+^$(&#8216;#widget_instance_1&#8217;).dmg_1x1_minimalSensorNumber(options);^
+* widget template is inserted</p>
+</div>
+</div>
+</div>
+
+
+          </div>         
+        </div>
+      </div>
+      
+        
+          <div class="yui-b" id="sidebar">
+            
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Widgets Sets</a><ul>
+<li><a class="reference internal" href="#structure">Structure</a><ul>
+<li><a class="reference internal" href="#info-json">info.json</a><ul>
+<li><a class="reference internal" href="#config-types-with-available-options">config types with available options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#js-main-js">js/main.js</a><ul>
+<li><a class="reference internal" href="#init-function">_init function</a></li>
+<li><a class="reference internal" href="#statshandler-function">_statsHandler function</a></li>
+<li><a class="reference internal" href="#eventhandler-function">_eventHandler function</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#css-style-css">css/style.css</a></li>
+<li><a class="reference internal" href="#template-py">template.py</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#internal-processing-and-data">Internal processing and data</a><ul>
+<li><a class="reference internal" href="#django-start">Django Start</a></li>
+<li><a class="reference internal" href="#placement-in-page">Placement in page</a></li>
+<li><a class="reference internal" href="#page-load">Page load</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Prev: <a href="theme.html">Theme pack</a></li>
+    
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">Domoweb dev documentation</a>
+        
+        <ul><li>Widgets Sets</li></ul>
+        
+      </li>
+  </ul>  
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/packs/widgetset.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+          </div> 
+        
+      
+    </div>
+    
+    <div id="ft">
+      <div class="nav">
+    &laquo; <a href="theme.html" title="Theme pack">previous</a> 
+     |
+    <a title="Domoweb dev documentation" href="../index.html" accesskey="U">up</a></div>
+    </div>
+  </div>
+
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

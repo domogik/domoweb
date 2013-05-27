@@ -1,0 +1,270 @@
+{% comment %}
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Sébastien GALLET <bibi21000@gmail.com>
+{% endcomment %}
+
+{% load i18n %}
+
+<script type='text/javascript'>
+    var devices = new Array();
+    var numdawnalarmdayshours = -1
+
+    $(function(){
+
+        $("#specialcreatedawnalarm").click(function(){
+             if (plugin_is_running() == false) {
+                 $.notification('error', "{% trans "Plugin must be started to add a job" %}");
+                 return
+             }
+             var rinor_ip = "{{ request.session.rinor_ip }}";
+             var rinor_port = "{{ request.session.rinor_port }}";
+             var name = "";
+             var devicetype = "dawnalarm";
+             //When creating device in UI, we use rinor has nested schema
+             var nstschema = "rinor";
+             var nstdevice = "";
+             var nstid = 0;
+             var nsttechno = "";
+             var nstcommand = "";
+             var nstvalue0 = "";
+             var alarms = "";
+             var alarm = "";
+             var days = "";
+             var starthour = "";
+             var stophour = "";
+             var offhour = "";
+             var dimlevels = "";
+             var current_dow = "";
+             if($('select#dawnalarmdevice').val() != 0){
+                    nstdevice = devices[$("select#dawnalarmdevice").val()][4];
+                    nstid = devices[$("select#dawnalarmdevice").val()][0];
+                    var testvalue = devices[$("select#dawnalarmdevice").val()][2].split(".");
+                    nsttechno = testvalue[0];
+                    testvalue = devices[$("select#dawnalarmdevice").val()][5];
+                    testvalue = testvalue.replace(/&quot;/g,'"');
+                    var obj = jQuery.parseJSON(testvalue);
+                    //console.log("obj.command : " + obj['command']);
+                    nstcommand = obj['command'];
+             };
+             name = $("#dawnalarmname").val();
+             if (check_job_name(name) != true) {
+                 $("#dawnalarmname").focus();
+                 $.notification('error', "{% trans "Bad job name" %}");
+                 return
+             }
+
+             dimlevels = $("#dawnalarmdimlevels").val();
+             if (check_dim_levels(dimlevels) != true) {
+                 $("#dawnalarmdimlevels").focus();
+                 $.notification('error', "{% trans "Bad syntax" %}");
+                 return
+             }
+
+             for(i=0 ; i<=numdawnalarmdayshours ; i++ )
+             {
+
+
+                 //alarm = $("#dawnalarmdays").val() + "," + $("#dawnalarmstarthour").val();
+                 //alarm = alarm + "-" + $("#dawnalarmstophour").val();
+                 //if (($("#dawnalarmdimlevels").val() != null) && ($("#dawnalarmdimlevels").val() != "")) {
+                 //     alarm = alarm + "," + $("#dawnalarmdimlevels").val();
+                 // };
+
+
+                 days = $("#dawnalarmdays"+i).val();
+                 starthour = $("#dawnalarmstarthour"+i).val();
+                 stophour = $("#dawnalarmstophour"+i).val();
+                 offhour = $("#dawnalarmoffhour"+i).val();
+                 if ( (days != null) && (days != "") ) {
+                     if ((days == null) || (days == "") || (check_days_of_week(days) != true)) {
+                         $("#dawnalarmdays"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     if ((check_dow_overlapped(days,current_dow) != true)) {
+                         $("#dawnalarmdays"+i).focus();
+                         $.notification('error', "{% trans "Overlapped days." %}");
+                         return
+                     }
+                     current_dow = current_dow + days;
+                     if ((starthour == null) || (starthour == "") || (check_time(starthour) != true)) {
+                         $("#dawnalarmstarthour"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     if ((stophour == null) || (stophour == "") || (check_time(stophour) != true)) {
+                         $("#dawnalarmstophour"+i).focus();
+                         $.notification('error', "{% trans "Bad syntax" %}");
+                         return
+                     }
+                     alarm = days + "," + starthour + "-" + stophour;
+                     if ((offhour != null) && (offhour != "")) {
+                         if (check_time(offhour) != true) {
+                             $("#dawnalarmoffhour"+i).focus();
+                             $.notification('error', "{% trans "Bad syntax" %}");
+                             return
+                         } else {
+                            alarm = alarm + "-" + offhour;
+                         }
+                     };
+                     if ((dimlevels != null) && (dimlevels != "")) {
+                        alarm = alarm + "," + dimlevels;
+                        alarms = alarms + "'alarm"+i+"':'" + alarm + "',";
+                     } else {
+                        alarms = alarms + "'alarm"+i+"':'" + alarm + "',";
+                     }
+                     //console.log("alarms : " + alarms);
+                 }
+             }
+             if ( alarms == "") {
+                 $.notification('error', "{% trans "Missing parameters" %}");
+                 return
+             }
+             var value = "{ 'device':'" + name + "','devicetype':'" + devicetype +
+                         "'," + alarms +
+                         "'nst-schema':'" + nstschema + "','nst-device':'" + nstdevice +
+                         "','nst-techno':'" + nsttechno + "','nst-command':'" + nstcommand +
+                         "','nst-value0':'" + "0" +
+                         "','rinorip':'" + rinor_ip + "','rinorport':'" + rinor_port + "'}";
+
+             rinor.put(['api', 'command', 'cron', 'UI'], {"command":"create-dawnalarm", 'value' : value})
+                .done(function(data, status, xhr){
+                     test=JSON.stringify(data);
+                     debut=test.search('error=');
+                     if (debut != -1) {
+                        test=test.slice(debut+5);
+                        fin=test.search('}');
+                        test=test.slice(1,fin-2);
+                        $("#speciallist").click();
+                        $.notification('error',test);
+                     }else{
+                        $("#speciallist").click();
+                        $.notification('info',"Dawn alarm " + name + " created");
+                     }
+                })
+
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Can't create dawnalarm" %} (" + jqXHR.responseText + ")");
+                });
+        });
+
+        $('#adddawnalarmdayshours').click(function () {
+            // the subviews rendered with placeholders
+            numdawnalarmdayshours++
+            var newTR = "<table id='tabledawnalarm"+numdawnalarmdayshours+"'>"+"\n"
+            newTR = newTR + "<tr>"+"\n"
+            if (numdawnalarmdayshours>0) {
+                newTR = newTR + "<td colspan=2 >&nbsp;</td>"+"\n"
+                newTR = newTR + "</tr>"+"\n"
+                newTR = newTR + "<tr>"+"\n"
+            }
+
+            newTR = newTR + "<td><label for='dawnalarmdays"+numdawnalarmdayshours+"'>{% trans 'The days of the week : a combination of MoTuWeThFrSaSu' %}</label></td>"+"\n"
+            newTR = newTR + "<td><input type='text' id='dawnalarmdays"+numdawnalarmdayshours+"' name='days'/></td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+            newTR = newTR + "<td><label for='dawnalarmstarthour"+numdawnalarmdayshours+"'>{% trans 'The begin of the dawn cycle (ie 8:00)' %}</label></td>"+"\n"
+            newTR = newTR + "<td><input type='text' id='dawnalarmstarthour"+numdawnalarmdayshours+"' name='starthour'/></td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+            newTR = newTR + "<tr>"+"\n"
+            newTR = newTR + "<td><label for='dawnalarmstophour"+numdawnalarmdayshours+"'>{% trans 'The end of the dawn cycle (ie 11:00)' %}</label></td>"+"\n"
+            newTR = newTR + "<td><input type='text' id='dawnalarmstophour"+numdawnalarmdayshours+"' name='stophour'/></td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+            newTR = newTR + "<tr>"+"\n"
+            newTR = newTR + "<td><label for='dawnalarmoffhour"+numdawnalarmdayshours+"'>{% trans 'The time when turning off the light (ie 12:00). Could be left blank.' %}</label></td>"+"\n"
+            newTR = newTR + "<td><input type='text' id='dawnalarmoffhour"+numdawnalarmdayshours+"' name='stophour'/></td>"+"\n"
+            newTR = newTR + "</tr>"+"\n"
+            if (numdawnalarmdayshours>0) {
+                newTR = newTR + "<tr>"+"\n"
+                newTR = newTR + "<td colspan=2 ><button id='adddawnalarmdayshours"+numdawnalarmdayshours+"' class='button icon16-action-del' onclick=\"document.getElementById(\'dawnalarmdays_div\').removeChild(document.getElementById(\'tabledawnalarm"+numdawnalarmdayshours+"\'));\">{% trans "Remove" %}</button></td>"+"\n"
+                newTR = newTR + "</tr>"+"\n"
+            }
+            newTR = newTR + "</table>"+"\n"
+            $('#dawnalarmdays_div').append(newTR);
+        });
+
+      $(document).ready(function(){
+        var i=1;
+        $('#adddawnalarmdayshours').click();
+        //$('#dawnalarmstarthour').timepicker({});
+        //$('#dawnalarmstophour').timepicker({});
+        rinor.get(['api', 'feature'])
+            .done(function(data, status, xhr){
+                $.each(data.objects, function(index, object) {
+                    devices[i]=[object.device_id,object.device_feature_model.stat_key,object.device.device_type_id,object.device_feature_model.value_type,object.device.address,object.device_feature_model.parameters,object.device_feature_model.name,object.device.name];
+                    if (object.device_feature_model.feature_type == "actuator" && object.device_feature_model.value_type == "range") {
+                       $('select#dawnalarmdevice').append("<option value='"+i+"'>"+object.device.name+" - "+object.device_feature_model.name+"</option>");
+                    }
+                    i=i+1;
+                });
+                //console.log("devices.length : " + devices.length);
+                //for(i=0 ;i<devices[1].length;i++){
+                //    console.log("devices[1][" + i + "] : " + devices[1][i]);
+                //}
+                $("select#dawnalarmdevice").change();
+           })
+            .fail(function(jqXHR, status, error){
+                if (jqXHR.status == 400)
+                    $.notification('error', "{% trans "Device list not retrieved" %} (" + jqXHR.responseText + ")");
+            });
+     });
+    });
+
+</script>
+<section class="subsection">
+    <h3>{% trans "Create a dawn alarm." %}</h3>
+    <p>{% trans "With this kind of timer, you could turn your dimmer in a dawn simulator. You can specify the begin and the end hours of the cycle. You can also defined your own dim levels, specialy if your lights blink with the default values. You can specify up to 10 dim levels." %}</p>
+            <fieldset>
+                <legend><h4>{% trans 'Name'%}</h4></legend>
+                    <table>
+                        <tr>
+                            <td><label for='dawnalarmname'>{% trans 'The name of the alarm / device.' %}</label></td>
+                            <td><input type='text' id='dawnalarmname' name='name'/></td>
+                        </tr>
+                    </table>
+            </fieldset>
+            <fieldset>
+                <legend><h4>{% trans 'Days and hours'%}</h4></legend>
+                    <div id="dawnalarmdays_div">
+                    </div>
+                    <table>
+                        <tr>
+                            <td colspan=2><button id='adddawnalarmdayshours' class='button icon16-action-add' >{% trans "Add" %}</button></td>
+                        </tr>
+                    </table>
+            </fieldset>
+            <fieldset>
+                <legend><h4>{% trans 'Device to use'%}</h4></legend>
+                    <table>
+                        <tr>
+                            <td><label for='dawnalarmdevice'>{% trans "Device" %}:</label></td>
+                            <td><select id="dawnalarmdevice" class='listes' style="width:30em;"></select></td>
+                        </tr>
+                        <tr>
+                            <td><label for='dawnalarmdimlevels'>{% trans 'The dim levels to use, separated by commas. Could be left blank.' %}:</label></td>
+                            <td><input type='text' id='dawnalarmdimlevels' name='stophour'/></td>
+                        </tr>
+                    </table>
+            </fieldset>
+        <p>
+            <button id='specialcreatedawnalarm' class='button icon16-action-save'>{% trans "Create" %}</button>
+            <button id='specialcanceldawnalarm' class='button icon16-action-reset'>{% trans "Cancel" %}</button>
+        </p>
+</section>
+
+

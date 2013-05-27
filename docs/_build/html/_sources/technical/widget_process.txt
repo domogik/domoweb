@@ -1,0 +1,53 @@
+=======================
+How Widgets are working
+=======================
+
+On Page Load
+============
+On page load, each widget JS file is loaded.
+
+.. image:: OnPageLoad.png
+
+1.  Create_widget() is called for each.
+2.  For each widget a jQuery class is created as a subclass of ui.widget_core.
+3.  The widget is registred on a list, sorted by sensor/actuator type.
+
+On Page Ready
+=============
+On page ready each widget/feature association is placed and configured.
+
+.. image:: OnPageReady.png
+
+1.  On page ready, the initAssociation is called by the DOM event.
+2.  An AJAX fonction contact the RINOR server and retreive the associations list.
+3.  Each feature is identified and ready to be initialised with the linked widget element.
+4.  The _init fonction of the feature/widget is called.
+5.  ...
+6.  The widget is bind to the event channel to receive all event notifications.
+7.  The widget try to get his last value state.
+8.  The RINOR server is connected to get the value.
+    If the value exist in the database, the value is sent to the widget using the event channel. (Asynchrone)
+9.  When the event is receved. The state handler fonction is called, and display the widget state.
+
+On State Event received
+=======================
+
+.. image:: OnStateEvent.png
+
+1.  When a state event is receved (via RINOR). The state handler fonction is called on each widget.
+2.  If the feature matches the event identifier, the state handler process the data.
+3.  The new state is displayed.
+
+On Command sent
+===============
+
+.. image:: OnCommand.png
+
+1.  A widget action is detected (click).
+2.  The widget prepare the command value to be send.
+3.  The command is send (AJAX) to the RINOR server, and the widget place himself in a waiting state.
+4.  If the command is received and ack by the plugin...
+5.  The widget leave the waiting state.
+6.  When the confirmation state event changed is receved (via RINOR). The state handler fonction is called on the widget.
+7.  If the feature matches the event identifier, the state handler process the data.
+8.  The new state is displayed.

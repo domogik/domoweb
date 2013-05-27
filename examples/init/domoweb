@@ -1,0 +1,115 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          domoweb
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start DomoWeb UI for Domogik
+### END INIT INFO
+
+#This file is part of B{Domogik} project (U{http://www.domogik.org}).
+#
+#License
+#=======
+#
+#B{Domogik} is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#B{Domogik} is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with Domogik. If not, see U{http://www.gnu.org/licenses}.
+
+# source application-specific settings
+CUSTOM_PATH=""
+
+[ -f /etc/conf.d/domoweb ] && . /etc/conf.d/domoweb
+[ -f /etc/default/domoweb ] && . /etc/default/domoweb
+
+NAME=Domoweb.py
+DAEMON=/usr/bin/python
+LOGFILE=/var/log/domoweb/console.log
+PIDFILE=/var/run/domoweb/domoweb.pid
+
+if [ $UID != 0 ];then
+    echo "Must be run with root privileges";
+    exit 1;
+fi
+
+function start_django {
+    echo -n " * Starting DomoWeb..."
+    [ ! -d /var/run/domoweb ] && \
+        /bin/mkdir /var/run/domoweb
+    /bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
+    [ ! -d /var/log/domoweb ] && \
+        /bin/mkdir /var/log/domoweb
+    /bin/chown -Rf ${DOMOWEB_USER}:root /var/log/domoweb
+    /bin/su - ${DOMOWEB_USER} -c "$DAEMON $DOMOWEB_PATH/$NAME >$LOGFILE 2>&1 &"
+    if [ $? -gt 0 ]; then
+        echo " An error occured during DomoWeb startup."
+        exit 1
+    else
+        echo " Done."
+    fi
+}
+
+function stop_django {
+    echo -n " * Stopping DomoWeb..."
+    kill $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
+    sleep 1
+    [ -f $PIDFILE ] && kill -9 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
+    [ -f $PIDFILE ] && rm $PIDFILE
+    echo " Done."
+}
+
+function killall_django {
+    stop_django
+    echo -n " * Killing all DomoWeb..."
+    for pid in `ps ax | grep "$NAME" | grep -v grep | awk '{print $1}'`; do
+        kill -9 $pid 2>/dev/null 1>&2
+    done
+    echo " Done."
+}
+
+function status_django {
+    [ ! -f $PIDFILE ] && \
+        echo " * DomoWeb is not running (can't find pid file)" &&
+        exit 0
+    RUNNING=$(pgrep "$NAME" | grep -c $(cat $PIDFILE 2>/dev/null))
+    if [ $RUNNING"u" == "1u" ]; then
+        echo " * DomoWeb is running"
+    else
+        echo " * DomoWeb is not running"
+    fi
+}
+
+case "$1" in
+    start)
+        [ -f $PIDFILE ] && echo "Domoweb seems to be running. Please stop it." && exit 0
+        start_django
+    ;;
+    stop)
+        stop_django
+    ;;
+    status)
+        status_django
+    ;;
+    killall)
+        killall_django
+    ;;
+    restart)
+        stop_django
+        sleep 3
+        start_django
+    ;;
+    *)
+    echo "usage: $0 {start|stop|restart|status|killall}"
+esac
+exit 0

@@ -1,0 +1,293 @@
+{% comment %}
+# Copyright 2011 Domogik project
+
+# This file is part of Domogik.
+# Domogik is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Domogik is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
+
+# Author : Sébastien GALLET <bibi21000@gmail.com>
+{% endcomment %}
+
+{% load i18n %}
+<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+<script type="text/javascript" src="{{ static_design_url }}/libraries/jquery.dataTables-1.8.2/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{ static_design_url }}/admin/js/page-admin-cron.js"></script>
+<link href="{{ static_design_url }}/admin/css/page-admin-datatable_paginate.css" rel="stylesheet" type="text/css" />
+<script type='text/javascript'>
+
+    $(function(){
+
+        var hdLiNode = {"JobId":0, "Type":1, "Label":2, "Status":3, "Runs":4, "APS":5, "Uptime":6, "Runtime":7, "FullRuntime":8, "Commands":9};
+
+    function GetDeviceFromxPL (data) {
+        dt=JSON.stringify(data);
+        var key="device";
+        debut=dt.search(key + '=');
+        offset =key.length;
+        dt=dt.slice(debut);
+        fin=dt.search('}');
+        dt=dt.slice(0,fin-2);
+        dt=dt.replace(/(\\n)/g,'","').replace(/[=]/g,'":"');
+        dt='{"'+dt;
+        dt=dt+'"}';
+        //alert(dt);
+        return JSON.parse(dt);
+        };
+
+    function getJobsFromData (data) {
+            //console.log("Dans getJobsFromData, data : " + data);
+            var test=JSON.stringify(data);
+            var debut=test.search('devices=');
+            test=test.slice(debut+7);
+            var fin=test.search('}');
+            test=test.slice(1,fin-2);
+            //alert(test);
+            var reg = new RegExp("[|]+", "g");
+            var ret = [];
+            var devices = eval(test);
+//            console.log("Dans getJobsFromData, devices.length : " + devices.length);
+            for (i=0; i<devices.length; i++) {
+                var data = devices[i].split(reg);
+                ret.push(data);
+            };
+            return ret;
+        };
+
+       $("#speciallist").click(function() {
+           if (plugin_is_running() == false) {
+               $.notification('error', "{% trans "Plugin must be started to get list of jobs" %}");
+               return
+           } else {
+               RefreshTabHtml();
+           }
+       });
+
+    function RefreshTabHtml() {
+//        console.log("Dans RefreshTabHtml");
+        $('#cron_items').dataTable().fnClearTable();
+        var cron_items = document.getElementById("cron_items");
+            rinor.put(['api', 'command', 'cron', 'UI'], {"command":'list'})
+               .done(function(data, status, xhr){
+                    var jobs = getJobsFromData(data);
+                    //console.log("# jobs : " + jobs.length);
+                    for (i=0; i<jobs.length; i++) {
+                        //console.log("Parcours des jobs : " + i +" "+jobs[i][0]);
+                        $('#cron_items').dataTable().fnAddData([
+                            jobs[i][0], jobs[i][2], jobs[i][3], jobs[i][1], jobs[i][4], jobs[i][5],
+                            jobs[i][6], jobs[i][7], jobs[i][8], ""
+                            ]);
+                    };
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', '{% trans "Cant get jobs list" %} (' + jqXHR.responseText + ")");
+                });
+     };
+
+    function RefreshTabHtmlJob(data) {
+        device = GetDeviceFromxPL(data);
+//        console.log("Dans RefreshTabHtmlJob, " + device);
+        var cron_items = document.getElementById("cron_items");
+        var jobid = device['device'];
+        var status = device['state'];
+        var dataT = $('#cron_items').dataTable().fnGetData();
+        var trfunct= function(li,dr){$('#cron_items').dataTable().fnAddData(dr);};
+        if (dataT) {
+            for (i=0; i<dataT.length; i++) {
+                if (dataT[i][hdLiNode['JobId']]==jobid) {
+                    if (status=='halted') {
+                        $('#cron_items').dataTable().fnDeleteRow(i);;
+                        return ;
+                    }
+                    var trfunct = function(li,dr){$('#cron_items').dataTable().fnUpdate(dr,li);};
+                    var li = i;
+                    break;
+                };
+            };
+        };
+        //hack for old releases of cron plugin
+        //can be remove in the future of 20120820
+        var devicetype=null;
+        if (device['devicetype']) {
+            devicetype=device['devicetype'];
+        };
+        //hack for old releases of cron plugin
+        //can be remove in the future of 20120820
+        var apjobs=null;
+        if (device['apjobs']) {
+            apjobs=device['apjobs'];
+        };
+        //hack for old releases of cron plugin
+        //can be remove in the future of 20121122
+        var label=null;
+        if (device['label']) {
+            label=device['label'];
+        };
+        trfunct(li, [device['device'], devicetype, label, device['state'],
+                     device['runs'], apjobs, device['elapsed'],
+                     device['runtime'], device['fullruntime'], ""]);
+//        console.log("Dans RefreshTabHtmlJob, DataTable : " + dataT[li]);
+     };
+
+    function setUptime(oObj) {
+        var uptimeh = parseFloat(oObj.aData[hdLiNode['Uptime']])/3600;
+        var uptimed = parseFloat(oObj.aData[hdLiNode['Uptime']])/3600/24;
+        return oObj.aData[hdLiNode['Uptime']] + " / " + uptimeh.toFixed(2) + " / " + uptimed.toFixed(2);
+        };
+
+    function setRuntime(oObj) {
+        var uptimeh = parseFloat(oObj.aData[hdLiNode['Runtime']])/3600;
+        var uptimed = parseFloat(oObj.aData[hdLiNode['Runtime']])/3600/24;
+        return oObj.aData[hdLiNode['Runtime']] + " / " + uptimeh.toFixed(2) + " / " + uptimed.toFixed(2);
+        };
+
+    function setFullRuntime(oObj) {
+        var uptimeh = parseFloat(oObj.aData[hdLiNode['FullRuntime']])/3600;
+        var uptimed = parseFloat(oObj.aData[hdLiNode['FullRuntime']])/3600/24;
+        return oObj.aData[hdLiNode['FullRuntime']] + " / " + uptimeh.toFixed(2) + " / " + uptimed.toFixed(2);
+        };
+
+    function setCommands(oObj) {
+        var jobid = oObj.aData[hdLiNode['JobId']];
+        var status = oObj.aData[hdLiNode['Status']];
+        var ret = "<button id='resumealarm'" + jobid + " title='Resume Alarm' ";
+        if (status != 'stopped') {
+            ret = ret + 'disabled="disabled" '
+        };
+        ret = ret + "class='button icon16-action-play'>" + "{% trans "Resume" %}" + "</button>";
+        ret = ret + "<button id='stopalarm'" + jobid + " title='Stop Alarm' ";
+        if (status != 'started') {
+            ret = ret + 'disabled="disabled" '
+        };
+        ret = ret + "class='button icon16-action-pause'>" + "{% trans "Stop" %}" + "</button>";
+        ret = ret + "<button id='deletealarm'" + jobid + " title='Delete Alarm' ";
+        if (status == 'halted') {
+            ret = ret + 'disabled="disabled" '
+        };
+        ret = ret + " class='button icon16-action-remove'>" + "{% trans "Delete" %}" + "</button>";
+        //console.log("******** setCommands : " + oObj.aData + " ret : " + ret);
+        return  ret;
+        };
+
+// Callback event des commandes dans la table des jobs.--
+// Class button,
+    $('#cron_items tbody td button').live('click', function () {
+        var nTr = this.parentNode.parentNode;
+        var aData = oTabJobs.fnGetData( nTr );
+        var jobid = aData[hdLiNode['JobId']];
+        if (this.title =='Resume Alarm') {
+            //console.log("Dans click resumealarm, DataTable : " + aData);
+            var msg = {};
+            msg['command'] = "resume";
+            msg['value'] = jobid;
+            rinor.put(['api', 'command', 'cron', jobid], msg)
+               .done(function(data, status, xhr){
+                    //console.log("resumealarm ok, data : " + data);
+                    RefreshTabHtmlJob(data);
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Can\'t resume alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
+                });
+        };
+        if (this.title =='Stop Alarm') {
+            //console.log("Dans click stopalarm, DataTable : " + aData);
+            var msg = {};
+            msg['command'] = "stop";
+            msg['value'] = jobid;
+            rinor.put(['api', 'command', 'cron', jobid], msg)
+               .done(function(data, status, xhr){
+                    //console.log("stopalarm ok, data : " + data);
+                    RefreshTabHtmlJob(data);
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Can\t stop alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
+                });
+        };
+        if (this.title =='Delete Alarm') {
+            //console.log("Dans click deletealarm, DataTable : " + aData);
+            var msg = {};
+            msg['command'] = "halt";
+            msg['value'] = jobid;
+            rinor.put(['api', 'command', 'cron', jobid], msg)
+               .done(function(data, status, xhr){
+                    //console.log("deletealarm ok, data : " + data);
+                    RefreshTabHtmlJob(data);
+                })
+                .fail(function(jqXHR, status, error){
+                    if (jqXHR.status == 400)
+                        $.notification('error', "{% trans "Can\'t delete alarm" %} " + jobid + "(" + jqXHR.responseText + ")");
+                });
+        };
+    } );
+
+      $(document).ready(function(){
+         oTabJobs = $("#cron_items").dataTable({
+            "bFilter": false,
+            "bAutoWidth": false,
+            "aoColumnDefs": [
+                { "fnRender": function (oObj) {return setUptime(oObj);}, "aTargets": [ hdLiNode['Uptime'] ] },
+                { "fnRender": function (oObj) {return setRuntime(oObj);}, "aTargets": [ hdLiNode['Runtime'] ] },
+                { "fnRender": function (oObj) {return setFullRuntime(oObj);}, "aTargets": [ hdLiNode['FullRuntime'] ] },
+                { "fnRender": function (oObj) {return setCommands(oObj);}, "aTargets": [hdLiNode['Commands'] ] },
+                { "bSortable": false, "aTargets": [ hdLiNode['Commands'] ] },
+                ],
+            "aaSorting": [[1, 'asc']],
+            "sPaginationType": "full_numbers",
+            "bJQueryUI": true
+            } );
+         if (plugin_is_running() ) {
+                $("#speciallist").click();
+         }
+    });
+
+    });
+
+</script>
+<section class="subsection">
+    <h2>{% trans "Cron jobs" %}</h2>
+    <div id='cron_list'>
+        <p><button id='speciallist' class='button icon16-action-reset'>{% trans "Refresh" %}</button></p>
+        <table id='cron_items' class='simple'>
+            <thead>
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th scope='col'>{% trans "JobId" %}</th>
+                    <th scope='col'>{% trans "Type" %}</th>
+                    <th scope='col'>{% trans "Label" %}</th>
+                    <th scope='col'>{% trans "Status" %}</th>
+                    <th scope='col'>{% trans "Runs" %}</th>
+                    <th scope='col'>{% trans "APS" %}</th>
+                    <th scope='col'>{% trans "Uptime (s/h/d)" %}</th>
+                    <th scope='col'>{% trans "Runtime (s/h/d)" %}</th>
+                    <th scope='col'>{% trans "Full Runtime (s/h/d)" %}</th>
+                    <th scope='col'>{% trans "Commands" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <table class='simple'>
+            <thead>
+                <tr>
+                    <td>&nbsp;</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</section>
