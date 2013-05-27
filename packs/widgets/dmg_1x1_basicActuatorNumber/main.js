@@ -5,18 +5,23 @@
             version: 0.1,
             creator: 'Domogik',
             id: 'dmg_1x1_basicActuatorNumber',
-            name: 'Basic widget',
+            name: 'Basic number widget',
             description: 'Basic widget with hidden/show command',
-            type: 'actuator.number',
+            type: 'command',
+	    supported : ["DT_Scaling",
+		"DT_Angle"
+	    ],
             height: 1,
             width: 1,
             displayname: true,
-	    displayborder: true
+	    displayborder: true,
+	    usage: "light"
         },
 
         _init: function() {
             var self = this, o = this.options;
             this.isOpen = false;
+	    this.param = o.params[0];
             this.element.addClass("icon32-usage-" + o.usage)
                 .processing();
             this.element.append("<div class='openpanel'></div>");
@@ -31,7 +36,7 @@
             this._panel.panelAddText({className:'value', r:65, deg:80});
             this._panel.hide();
 
-            var value = Math.round((o.feature_parameters.valueMax - o.feature_parameters.valueMin) / 2);
+            var value = Math.round((this.param.dataparameters.max - this.param.dataparameters.min) / 2);
             this.setParameter(value);
         },
 
@@ -46,9 +51,9 @@
             if (value != null) {
                 this.value = value;
                 $(".value", this._panel).text(value);
-                if (value == o.feature_parameters.valueMax) {
+                if (value == this.param.dataparameters.max) {
                     $(".increase", this._panel).hide();
-                } else if (value == o.feature_parameters.valueMin) {
+                } else if (value == this.param.dataparameters.min) {
                     $(".decrease", this._panel).hide();                    
                 } else {
                     $(".increase", this._panel).show();
@@ -59,24 +64,26 @@
         
         increase: function() {
             var self = this, o = this.options;
-            if (this.value < o.feature_parameters.valueMax) {
-    			Math.round(this.value++);
-    			this.setParameter(this.value);                
+            if (this.value < this.param.dataparameters.max) {
+		Math.round(this.value++);
+		this.setParameter(this.value);                
             }
-		},
+	},
 		
-		decrease: function() {
+	decrease: function() {
             var self = this, o = this.options;
-            if (this.value > o.feature_parameters.valueMin) {
-    			Math.round(this.value--);
-    			this.setParameter(this.value);                
+            if (this.value > this.param.dataparameters.min) {
+		Math.round(this.value--);
+		this.setParameter(this.value);                
             }
-		},
+	},
 
         action: function() {
             var self = this, o = this.options;
             self._startProcessingState();
-            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":o.feature_parameters.command, "value":self.value})
+	    data = {};
+	    data[this.param.key] = self.value;
+	    rinor.put(['api', 'command', o.featureid], data)
                 .done(function(data, status, xhr){
                 })
                 .fail(function(jqXHR, status, error){

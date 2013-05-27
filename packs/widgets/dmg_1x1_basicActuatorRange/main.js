@@ -5,7 +5,7 @@
             version: 0.1,
             creator: 'Domogik',
             id: 'dmg_1x1_basicActuatorRange',
-            name: 'Basic widget',
+            name: 'Basic range widget',
             description: 'Basic widget with border and name',
             type: 'command',
 	    supported : ["DT_Scaling",
