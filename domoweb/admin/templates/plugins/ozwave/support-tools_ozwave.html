@@ -15,70 +15,46 @@
 # You should have received a copy of the GNU General Public License
 # along with Domogik.  If not, see <http://www.gnu.org/licenses/>.
 
-# Author : Sébastien GALLET <bibi21000@gmail.com>
+# Author : Nico <nico84dev@gmail.com>
 {% endcomment %}
 
 {% load i18n %}
 <script type='text/javascript'>
 
 $(function(){
-   $("#loglist").click(function() {
+    $("[id*='loglist']").click(function() {
          if (plugin_is_running() == false) {
-             $.notification('error', "{% trans "Plugin must be started to add a job" %}");
+             $.notification('error', "{% trans "Plugin must be started to list log" %}");
              return
          }
-        var value = $("#nblines").val();
-        rinor.put(['api', 'command', '{{ plugin.id }}', '{{ plugin.id }}'], {"command":'log', "value":value})
-           .done(function(data, status, xhr){
-                 //alert(JSON.stringify(data["xpl"]));
-                 var test=JSON.stringify(data["xpl"]);
-                 //var test=data;
-                 var debut=test.search('nhelper.basic');
-                 test=test.slice(debut+14);
-                 test=test.slice(1,test.length-3);
-                 //alert(test);
-                 test=test.replace(/[\{]{1}[\\]{1}[n]{1}([a-zA-Z0-9]+[_a-zA-Z0-9\-]*)[=]/g,'{"$1" : "');
-                 //alert(test);
-                 test=test.replace(/[\\]{1}[n]{1}[\}]{1}/g,'"}');
-                 //alert(test);
-                 test=test.replace(/[\\]{1}[n]{1}([a-zA-Z0-9]+[_a-zA-Z0-9\-]*)[=]/g,'" , "$1" : "');
-                 //alert(test);
-                 test=test.replace(/"{"/g,'"","');                
-                 //var lines=eval('(' + test + ')');
-                 var lines=new Array();
-                 var parsed = JSON.parse(test, function(key, value) {
-                        //alert("key="+key+",value="+value);
-                        //alert(key.match(/[l]{1}[o]{1}[g]{1}[0-9]+/g));
-                        if ( key.match(/[s]{1}[c]{1}[r]{1}[0-9]+/g) != null ) {
-                                i=parseInt(key.replace(/[s]{1}[c]{1}[r]{1}([0-9]+)/g,'$1'))-1;
-                                lines[i]=value;
-                                //alert("match");
-                                return value;
-                            }
-                        return value;
-                    });
-                 i=0;
-                 //alert(lines);
-                 var log_items=document.getElementById("log_items");
-                 while(log_items.rows.length>1)
-                     log_items.deleteRow(log_items.rows.length-1);
-                 $("#log_items tbody").append("<tr id='log" + 0 + "'></tr>");
-                 var hhtml = "";
-                 do {
-                       //alert(lines[i]);
-                       hhtml = hhtml + lines[i] + "<br/>";
-                       i=i+1;
-                 } while (i<lines.length);
-                 var tr = $("tr#log"+0);
-                 tr.append("<td>" +  hhtml + "</td>");
-            })
-            .fail(function(jqXHR, status, error){
-                if (jqXHR.status == 400)
-                    $.notification('error', "{% trans "Cant get list" %} (" + jqXHR.responseText + ")");
-            });
-        });
- 
-
+        var msg = {};
+        msg['header'] = {'type': 'req-ack'};
+        msg['request'] ='GetLog';
+        try {
+            msg['lines'] = parseInt($("#nblines").val());
+        } catch (err){
+            $.notification('error',"{% trans "Bad format lines number, check imput :" %}" + $("#nblines").val());
+            return;
+        } 
+        if (this.id == 'loglisttop') {
+            msg['from'] = 'top';
+        } else if (this.id == 'loglistend') {
+                msg['from'] = 'end';
+            } else return;
+        sendMessage(msg, function(data){
+                if (data['error'] =='') {
+                    var log = "";
+                    for (var i = 0; i <data.data['data'].length; i++) {
+                        log = log + data.data['data'][i] + '<br>'
+                        };
+                    $('#logDisplay').html(log);
+                } else {
+                    $('#logDisplay').html('{% trans "Get log error" %} : ' + data.error);
+                    $.notification('error', '{% trans "Get log error" %} : ' + data.error);
+                    };
+                }, 30000);
+    });
+        
     $("#refreshMemory").click(function(){
         var msg = {};
         msg['header'] = {'type': 'req-ack'};
@@ -114,7 +90,11 @@ $(function(){
     <div id='log_list'>
         <p><label for='nblines'>{% trans 'Number of lines to show' %}:</label>
         <input type='text' id='nblines' name='nblines' value="50" />
-        <button id='loglist' class='button icon16-action-reset'>{% trans "View" %}</button></p>
+        <button id='loglisttop' class='button icon16-action-reset'>{% trans "View from beginning" %}</button>
+        <button id='loglistend' class='button icon16-action-reset'>{% trans "View until end" %}</button></p>
+   <ul class='infos'>
+        <span id='logDisplay'>{% trans "Click refresh button" %}</span>
+    </ul>        
         <table id='log_items' class='simple'>
             <thead>
                 <tr>
