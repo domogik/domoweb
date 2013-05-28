@@ -1,0 +1,49 @@
+{
+    "json_version": 1,
+    "identity": {
+        "type": "iconset_page",
+        "id": "usage",
+        "version": 1,
+        "name": "Default",
+        "description": "",
+        "creator": "",
+        "creator_email": "info@domogik.org"
+    },
+    "icons": [
+       {
+            "id": "appliance",
+            "label": "Appliance",
+            "sizes": [16, 32, 64]
+        },
+       {
+            "id": "heating",
+            "label": "Heating",
+            "sizes": [16, 32, 64]
+        },
+       {
+            "id": "lightpage",
+            "label": "Light",
+            "sizes": [16, 32, 64]
+        }, 
+       {
+            "id": "security",
+            "label": "Security",
+            "sizes": [16, 32, 64]
+        },
+        {
+            "id": "shutter",
+            "label": "Shutter",
+            "sizes": [16, 32, 64]
+        },
+       {
+            "id": "temperature",
+            "label": "Temperature",
+            "sizes": [16, 32, 64]
+        }, 
+       {
+            "id": "window",
+            "label": "Window",
+            "sizes": [16, 32, 64]
+        } 
+    ]
+}

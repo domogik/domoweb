@@ -18,7 +18,16 @@ table.simple td {
 table.simple tr.even {
     background-color:#FFF;
 }
+/*
+ * Row highlighting
+ */
+table.simple tr.even td.highlighted {
+	background-color: #ECFFB3;
+}
 
+table.simple tr.odd td.highlighted {
+	background-color: #E6FF99;
+}
 table.simple ul.actions {
     list-style:none;
     margin:0;

@@ -39,11 +39,11 @@
             var self = this, o = this.options;
             this.element.dialog('option', 'title', ops.title);
             this.element.dialog('option', 'buttons', {
-                'OK': ops.onok,
-                'Cancel': function() {
+                'Send modification': ops.onok,
+                'Quit': function() {
                     $(this).dialog('close');
                  },
-                'Reset':  function(){
+                'Reset (inactive)':  function(){
                     ResetGroups(this.stageGrps, ops.node);
                 }
             });

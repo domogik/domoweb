@@ -8,41 +8,31 @@
             name: 'Stateless basic widget',
             description: 'Basic switch widget (x10, broken plcbus, . . .)',
             screenshot: 'dmg_3x1_basicNoStateActuatorBinary.png',
-            type: 'command',
-	    supported : ["DT_Bool",
-		"DT_Switch",
-		"DT_Enable",
-		"DT_Binary",
-		"DT_Step",
-		"DT_UpDown",
-		"DT_OpenClose",
-		"DT_Start",
-		"DT_State"
-	    ],
+            type: 'actuator.binary',
             height: 1,
             width: 3,
             displayname: true,
-            displayborder: true,
-	    usage: "light"
+            displayborder: true
         },
 
         _init: function() {
             var self = this, o = this.options;
-            this.param = o.params[0];
             this.element.addClass("icon32-usage-" + o.usage)
               .processing();
             // Building widget content
             var main = $("<div class='main'></div>");
-            var on_action = $('<div class="command on">' + this.param.dataparameters.labels["1"] + '</div>');
-            on_action.click(function (e) {self.action(1);e.stopPropagation();})
-                .keypress(function (e) {if (e.which == 33 || e.which == 38) {self.action(1); e.stopPropagation();}});
+            var on_action = $('<div class="command on">'+o.usage_parameters.state1+'</div>');
+            on_action.click(function (e) {self.action(o.model_parameters.value1);e.stopPropagation();})
+                .keypress(function (e) {if (e.which == 33 || e.which == 38) {self.action(o.model_parameters.value1); e.stopPropagation();}});
             main.append(on_action);
-            var off_action = $('<div class="command off">' + this.param.dataparameters.labels["0"] + '</div>');
-            off_action.click(function (e) {self.action(0);e.stopPropagation();})
-                .keypress(function (e) {if (e.which == 34 || e.which == 40) {self.action(0); e.stopPropagation();}});
+            var off_action = $('<div class="command off">'+o.usage_parameters.state0+'</div>');
+            off_action.click(function (e) {self.action(o.model_parameters.value0);e.stopPropagation();})
+                .keypress(function (e) {if (e.which == 34 || e.which == 40) {self.action(o.model_parameters.value0); e.stopPropagation();}});
             main.append(off_action);
             
             this.element.append(main);
+            
+            this._initValues(1);
         },
         
         _statsHandler: function(stats) {
@@ -53,9 +43,7 @@
         
         action: function(command_code) {
             var self = this, o = this.options;
-      	    data = {};
-            data[this.param.key] = command_code;
-	    rinor.put(['api', 'command', o.featureid], data)
+            rinor.put(['api', 'command', o.devicetechnology, o.deviceaddress], {"command":command_code})
                 .done(function(data, status, xhr){
                     self.valid(o.featureconfirmation);
                 })

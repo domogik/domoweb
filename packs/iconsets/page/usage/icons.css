@@ -1,0 +1,28 @@
+@charset "UTF-8";
+/* CSS Document */
+
+.icon64-usage-lightpage { background-image:url(lightpage_64.png);}
+.icon64-usage-shutter { background-image:url(shutter_64.png);}
+.icon64-usage-window { background-image:url(window_64.png);}
+.icon64-usage-heating { background-image:url(heating_64.png);}
+.icon64-usage-security { background-image:url(security_64.png);}
+.icon64-usage-appliance { background-image:url(appliance_64.png);}
+.icon64-usage-temperature { background-image:url(temperature_64.png);}
+
+.icon32-usage-lightpage { background-image:url(lightpage_32.png);}
+.icon32-usage-shutter { background-image:url(shutter_32.png);}
+.icon32-usage-window { background-image:url(window_32.png);}
+.icon32-usage-heating { background-image:url(heating_32.png);}
+.icon32-usage-security { background-image:url(security_32.png);}
+.icon32-usage-appliance { background-image:url(appliance_32.png);}
+.icon32-usage-temperature { background-image:url(temperature_32.png);}
+
+.icon16-usage-lightpage { background-image:url(lightpage_16.png);}
+.icon16-usage-shutter { background-image:url(shutter_16.png);}
+.icon16-usage-window { background-image:url(window_16.png);}
+.icon16-usage-heating { background-image:url(heating_16.png);}
+.icon16-usage-security { background-image:url(security_16.png);}
+.icon16-usage-appliance { background-image:url(appliance_16.png);}
+.icon16-usage-temperature { background-image:url(temperature_16.png);}
+
+
