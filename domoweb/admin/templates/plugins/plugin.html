@@ -98,25 +98,26 @@
 {% block right %}
     <div id="tabs">
         <ul>
-            <li><a href="#tabs-1">{% trans "Informations" %}</a></li>
-            <li><a href="#tabs-2">{% trans "Requirements" %}</a></li>
-            <li><a href="#tabs-3">{% trans "Configuration" %}</a></li>
+            <li><a href="#tabs-1">{% trans "Devices" %}</a></li>
+            <li><a href="#tabs-2">{% trans "Informations" %}</a></li>
+            <li><a href="#tabs-3">{% trans "Requirements" %}</a></li>
+            <li><a href="#tabs-4">{% trans "Configuration" %}</a></li>
         {% if plugin.id == "knx" %}
-            <li><a href="#tabs-4">{% trans "Special" %}</a></li>
+            <li><a href="#tabs-5">{% trans "Special" %}</a></li>
         {% endif %}
         {% if plugin.id == "ozwave" %}
-            <li><a href="#tabs-4">{% trans "Controller and devices" %}</a></li>
-            <li><a href="#tabs-5">{% trans "Neighborhood network" %}</a></li>
+            <li><a href="#tabs-5">{% trans "Controller and devices" %}</a></li>
+            <li><a href="#tabs-6">{% trans "Neighborhood network" %}</a></li>
 			<li><a href="#tabs-6">{% trans "Support tools" %}</a></li>
         {% endif %}
         {% if plugin.id == "cron" %}
-            <li><a href="#tabs-4">{% trans "Jobs" %}</a></li>
-            <li><a href="#tabs-5">{% trans "Alarm" %}</a></li>
-            <li><a href="#tabs-6">{% trans "Dawn Alarm" %}</a></li>
-            <li><a href="#tabs-7">{% trans "Date" %}</a></li>
-            <li><a href="#tabs-8">{% trans "Interval" %}</a></li>
-            <li><a href="#tabs-9">{% trans "Helper" %}</a></li>
-            <li><a href="#tabs-10">{% trans "Log" %}</a></li>
+            <li><a href="#tabs-5">{% trans "Jobs" %}</a></li>
+            <li><a href="#tabs-6">{% trans "Alarm" %}</a></li>
+            <li><a href="#tabs-7">{% trans "Dawn Alarm" %}</a></li>
+            <li><a href="#tabs-8">{% trans "Date" %}</a></li>
+            <li><a href="#tabs-9">{% trans "Interval" %}</a></li>
+            <li><a href="#tabs-10"{% trans "Helper" %}</a></li>
+            <li><a href="#tabs-11">{% trans "Log" %}</a></li>
         {% endif %}
         {% if plugin.id == "scene" %}
             <li><a href="#tabs-4">{% trans "Creator" %}</a></li>
@@ -128,50 +129,53 @@
         {% endif %}
         </ul>
         <div id="tabs-1">
-            {% include "plugins/informations.html" %}
+            {% include "plugins/devices.html" %}
         </div>
         <div id="tabs-2">
-            {% include "plugins/requirements.html" %}
+            {% include "plugins/informations.html" %}
         </div>
         <div id="tabs-3">
+            {% include "plugins/requirements.html" %}
+        </div>
+        <div id="tabs-4">
             {% include "plugins/configuration.html" %}
         </div>
     {% if plugin.id == "knx" %}
-        <div id="tabs-4">
+        <div id="tabs-5">
             {% include "plugins/knx/special_knx.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "ozwave" %}
-        <div id="tabs-4">
+        <div id="tabs-5">
             {% include "plugins/ozwave/ctrldevlist_ozwave.html" %}
         </div>
-        <div id="tabs-5">
+        <div id="tabs-6">
             {% include "plugins/ozwave/neighborsnodes_ozwave.html" %}
         </div>
-		<div id="tabs-6">
+	<div id="tabs-7">
             {% include "plugins/ozwave/support-tools_ozwave.html" %}
         </div>
     {% endif %}
     {% if plugin.id == "cron" %}
-        <div id="tabs-4">
+        <div id="tabs-5">
             {% include "plugins/cron/jobs.html" %}
         </div>
-        <div id="tabs-5">
+        <div id="tabs-6">
             {% include "plugins/cron/alarm.html" %}
         </div>
-        <div id="tabs-6">
+        <div id="tabs-7">
             {% include "plugins/cron/dawnalarm.html" %}
         </div>
-        <div id="tabs-7">
+        <div id="tabs-8">
             {% include "plugins/cron/date.html" %}
         </div>
-        <div id="tabs-8">
+        <div id="tabs-9">
             {% include "plugins/cron/interval.html" %}
         </div>
-        <div id="tabs-9">
+        <div id="tabs-10">
             {% include "plugins/cron/helper.html" %}
         </div>
-        <div id="tabs-10">
+        <div id="tabs-11">
             {% include "plugins/cron/log.html" %}
         </div>
     {% endif %}
