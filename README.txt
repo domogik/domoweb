@@ -1,3 +1,5 @@
+For cloning use: git clone --recursive git@github.com:domogik/domoweb.git
+
 Copyright 2008 Domogik project
 
 This file is part of Domogik project (http://www.domogik.org).
