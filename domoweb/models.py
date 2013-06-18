@@ -4,10 +4,43 @@ from django.core.exceptions import PermissionDenied
 from exceptions import RinorNotConfigured, RinorError
 from restModel import RestModel
 
-class Parameter(models.Model):
+class Parameter(RestModel):
     key = models.CharField(max_length=30, primary_key=True)
     value = models.CharField(max_length=255)
-    
+    list_path = ""
+    index = 'rest'
+
+    @staticmethod
+    def refresh():
+        _data = Parameter.get_list()[0];
+        sections={
+            "info": [
+                "REST_API_version",
+                "SSL",
+                "Host",
+                "Domogik_release",
+                "Domogik_version",
+                "REST_API_release",
+                "Sources_release",
+                "Sources_version"                
+            ],
+            "mq": [
+                "sub_port",
+                "ip",
+                "req_rep_port",
+                "pub_port"
+            ]
+        }
+        for section, items in sections.items():
+            for item in items:
+                key = "%s-%s" % (section, item)
+                try:
+                    p = Parameter.objects.get(key=key)
+                    p.value = _data[section][item]
+                except Parameter.DoesNotExist:
+                    p = Parameter(key=key, value=_data[section][item])
+                p.save()
+
 class Widget(models.Model):
     id = models.CharField(max_length=50, primary_key=True)
 

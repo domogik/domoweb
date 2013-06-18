@@ -131,6 +131,7 @@ class LoaderTask(threading.Thread):
                 try:
                     i = i + 1
                     RestModel.setRestUri(uri)
+                    Parameter.refresh()
                     DataType.refresh()
                     DeviceType.refresh()
                     Device.refresh()

@@ -204,7 +204,7 @@ def config_loadrinordata(request):
     @return an HttpResponse object
     """
     from domoweb.restModel import RestModel
-    from domoweb.models import Parameter, DeviceType, Device
+    from domoweb.models import Parameter, DataType, DeviceType, Device
 
     ip = Parameter.objects.get(key='rinor_ip')
     port = Parameter.objects.get(key='rinor_port')
@@ -216,6 +216,8 @@ def config_loadrinordata(request):
         uri = "http://%s:%s/%s" % (ip.value, port.value, prefix.value)
     
     RestModel.setRestUri(uri)
+    Parameter.refresh()
+    DataType.refresh()
     DeviceType.refresh()
     Device.refresh()
 
