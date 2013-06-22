@@ -129,7 +129,7 @@ class RestModel(models.Model):
         elif resp.status_code == 204:
             # ok no data returnd
             return None
-        elif resp.status_code == 400:
+        elif resp.status_code == 400 or resp.status_code == 403 or resp.status_code == 404 or resp.status_code == 500:
             # NOK, error returned
             data = resp.content.replace("u'", "'")
             data = simplejson.loads(data)
