@@ -12,7 +12,7 @@ class Parameter(RestModel):
 
     @staticmethod
     def refresh():
-        _data = Parameter.get_list()[0];
+        _data = Parameter.get_list();
         sections={
             "info": [
                 "REST_API_version",
@@ -170,7 +170,7 @@ class DeviceType(RestModel):
     name = models.CharField(max_length=50)
     plugin_id = models.CharField(max_length=50)
     
-    list_path = "/base/device_type/list"
+    list_path = "/device_type/"
     index = 'device_type'
 
     @staticmethod
@@ -185,13 +185,12 @@ class DataType(RestModel):
     id = models.CharField(max_length=50, primary_key=True)
     parameters = models.TextField()
     
-    list_path = "/base/datatype"
-    index = "datatypes"
+    list_path = "/datatype"
 
     @staticmethod
     def refresh():
         import json
-        _data = DataType.get_list()[0];
+        _data = DataType.get_list();
         DataType.objects.all().delete()
         for type, params in _data.iteritems():
             r = DataType(id=type, parameters=json.dumps(params))
@@ -204,8 +203,8 @@ class Device(RestModel):
     reference = models.CharField(max_length=255)
     type = models.ForeignKey(DeviceType, blank=True, null=True, on_delete=models.DO_NOTHING)
 
-    list_path = "/base/device/list"
-    delete_path = "/base/device/del"
+    list_path = "/device/"
+    delete_path = "/device/"
     create_path = "/base/device/add"
     addglobal_path = "/base/device/addglobal"
     addxplcmd_path = "/base/device/xplcmdparams"
