@@ -111,7 +111,7 @@ class LoaderTask(threading.Thread):
     def loadRinorModels(self):
 	from domoweb.exceptions import RinorNotConfigured, RinorNotAvailable
         from domoweb.restModel import RestModel
-        from domoweb.models import Parameter, DeviceType, DataType, Device
+        from domoweb.models import Parameter, DeviceType, DataType, Device, Client
         try:
             ip = Parameter.objects.get(key='rinor_ip')
             port = Parameter.objects.get(key='rinor_port')
@@ -132,6 +132,7 @@ class LoaderTask(threading.Thread):
                     i = i + 1
                     RestModel.setRestUri(uri)
                     Parameter.refresh()
+                    Client.init()
                     DataType.refresh()
                     DeviceType.refresh()
                     Device.refresh()

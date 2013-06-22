@@ -298,7 +298,8 @@ def install_dependencies():
                           'CherryPy >= 3.2.2',
                           'south',
                           'manifesto',
-                          'requests'])
+                          'requests',
+                            'ws4py'])
 
 def updateDb(user, db):
     from django.core import management
