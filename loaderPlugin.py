@@ -132,7 +132,7 @@ class LoaderTask(threading.Thread):
                     i = i + 1
                     RestModel.setRestUri(uri)
                     Parameter.refresh()
-                    DataType.refresh()
+#                    DataType.refresh()
                     DeviceType.refresh()
                     Device.refresh()
                     model_loaded = True

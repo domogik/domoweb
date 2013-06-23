@@ -136,6 +136,12 @@ class RestModel(models.Model):
             data = _objectify_json(data)
             raise RinorError(reason=data.msg)
             return None
+        elif resp.status_code == 404:
+            raise RinorError(reason="404 Not Found")
+            return None
+        elif resp.status_code == 500:
+            raise RinorError(reason="500 Internal Server Error")
+            return None
         else:
             raise RinorError(reason="unexpected rinor status code")
             return None

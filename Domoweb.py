@@ -109,7 +109,7 @@ def main():
     LoaderPlugin(engine, project).subscribe()
 
 #    MQPlugin(engine).subscribe()
-    EventsPlugin(engine, project).subscribe()
+#    EventsPlugin(engine, project).subscribe()
     CorePlugin(engine, project).subscribe()
     
     engine.signal_handler.subscribe()

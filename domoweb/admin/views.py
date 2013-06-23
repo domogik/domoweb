@@ -99,10 +99,10 @@ def _auth(request, next):
         account = UserPipe().get_auth(user_login, user_password)
         request.session['user'] = {
             'login': account.login,
-            'is_admin': (account.is_admin == "True"),
-            'first_name': account.person.first_name,
-            'last_name': account.person.last_name,
-            'skin_used': account.skin_used
+            'is_admin': account.is_admin,
+            'first_name': account.core_person.first_name,
+            'last_name': account.core_person.last_name,
+            'skin_used': None
         }
         if next != '':
             return HttpResponseRedirect(next)

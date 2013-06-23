@@ -84,9 +84,7 @@ class RinorPipe():
         
     def get_list(self):
         data = self._get_data(self.list_path)
-        if data.status == "ERROR":
-            raise RinorError(data.code, data.description)
-        return data[self.index]
+        return data
 
     def get_dict(self):
         _list = self.get_list()

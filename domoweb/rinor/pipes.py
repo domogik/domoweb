@@ -73,22 +73,10 @@ class InfoPipe(RinorPipe):
     paths = []
 
     def get_info(self):
-        _data = self._get_data(self.list_path)               
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        if len(_data[self.index]) > 0:
-            return _data[self.index][0]
-        else:
-            return None
+        return self._get_data(self.list_path)               
 
     def get_mode(self):
-        _data = self._get_data("/package/get-mode")               
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)
-        if len(_data['mode']) > 0:
-            return _data['mode'][0]
-        else:
-            return None
+        return self._get_data("/package/get-mode")
     
     def get_info_extended(self):
         _data = self.get_info()
@@ -192,7 +180,7 @@ class StatePipe(RinorPipe):
 
 class UserPipe(RinorPipe):
     cache_expiry = 3600
-    list_path = "/account/user/list"
+    list_path = "/account"
     add_path = "/account/user/add"
     update_path = "/account/user/update"
     delete_path = "/account/user/del"
@@ -201,13 +189,7 @@ class UserPipe(RinorPipe):
     paths = []
 
     def get_auth(self, login, password):
-        _data = self._get_data("/account/auth", [login, password])
-        if _data.status == "ERROR":
-            raise RinorError(_data.code, _data.description)        
-        if len(_data[self.index]) > 0:
-            return _data[self.index][0]
-        else:
-            return None
+        return self._get_data("/account/auth", [login, password])
 
     def post_list(self, login, password, is_admin, firstname, lastname):
         _data = self._post_data(self.add_path, ['login', login, 'password', password, 'is_admin', is_admin, 'skin_used', '', 'first_name', firstname, 'last_name', lastname])
