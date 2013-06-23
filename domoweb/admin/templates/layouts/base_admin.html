@@ -53,7 +53,6 @@
     <script type="text/javascript">
         // <![CDATA[
         $(document).ready(function(){
-            getPluginsList();
             {% if request.session.normal_mode %}
             getHostsList();
             {% endif %}
@@ -99,7 +98,33 @@
                     <li><a href="{% url admin_management_accounts_view %}" class='{{ nav2_management_accounts }}'>{% trans "Accounts" %}</a></li>
                 </ul>
                 <div class="subnav2"><a href="#">{% trans "Plugins" %}</a></div>
+
+                {% regroup clients by category as categories %}
                 <ul id="plugins_list">
+                    {% for category in categories %}
+                    <li><ul id='menu_{{ category.grouper }}'>
+                        {% for client in category.list %}
+                        <li class='{{ client.type }}'>
+                            {% if client.type == 'plugin' %}
+                                {% if client.status == 'running' %}
+                                <a class='icon16-status-plugin-up' aria-label='{% trans 'Plugin Running' %}'>
+                                {% else %}
+                                <a class='icon16-status-plugin-down' aria-label='{% trans 'Plugin Stopped' %}'>
+                                {% endif %}
+                            {% else %}
+                                {% if client.status == 'running' %}
+                                <a class='icon16-status-external-up' aria-label='{% trans 'External Running' %}'>
+                                {% else %}
+                                <a class='icon16-status-external-down' aria-label='{% trans 'External Stopped' %}'>
+                                {% endif %}
+                            {% endif %}
+                                <div><div class='host'>{{ client.host }}</div>{{ client.typeid }}</div></a>
+                        </li>
+                        {% endfor %}
+                    </ul></li>
+                    {% empty %}
+                    <li>{% trans 'No plugin enabled or installed' %}</li>
+                    {% endfor %}
                 </ul>
                 {% if request.session.normal_mode %}
                 <div class="subnav2"><a href="#">{% trans "Hosts" %}</a></div>

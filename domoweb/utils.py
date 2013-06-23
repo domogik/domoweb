@@ -8,6 +8,7 @@ from django.template import RequestContext
 from domoweb.models import Parameter
 from django.shortcuts import redirect
 from django.utils.encoding import smart_str
+from domoweb.models import Client
 
 def go_to_page(request, html_page, page_title, **attribute_list):
     """
@@ -32,6 +33,12 @@ def go_to_page(request, html_page, page_title, **attribute_list):
     response['Expires'] = '0'
     return response
 
+def go_to_page_admin(request, html_page, page_title, **attribute_list):
+    clients = Client.objects.filter(type='plugin')
+    attribute_list['clients'] = clients
+    return go_to_page(request, html_page, page_title, **attribute_list)
+
+    
 def admin_required(f):
     def wrap(request, *args, **kwargs):
         #this check the session if userid key exist, if not it will redirect to login page

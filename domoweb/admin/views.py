@@ -54,7 +54,7 @@ from django.forms.widgets import Select
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, WidgetInstanceParam, WidgetInstanceSensor, WidgetInstanceCommand, PageTheme, Page, DataType, DeviceType, Device, Command, CommandParam, Sensor
+from domoweb.models import *
 
 def login(request):
     """
@@ -126,7 +126,7 @@ def admin_management_accounts(request):
     page_title = _("Accounts management")
     users = UserPipe().get_list()
     people = PersonPipe().get_list()
-    return go_to_page(
+    return go_to_page_admin(
         request, 'management/accounts.html',
         page_title,
         nav1_admin = "selected",
@@ -147,8 +147,7 @@ def admin_organization_pages(request):
 
     id = request.GET.get('id', 0)
     pages = Page.objects.get_tree()
-
-    return go_to_page(
+    return go_to_page_admin(
         request, 'organization/pages.html',
         page_title,
         nav1_admin = "selected",
@@ -178,7 +177,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
         page_title = _("Plugin")
         dependencies = PluginDependencyPipe().get_list(plugin_host, plugin_id)
         udevrules = PluginUdevrulePipe().get_list(plugin_host, plugin_id)
-        return go_to_page(
+        return go_to_page_admin(
             request, 'plugins/plugin.html',
             page_title,
             nav1_admin = "selected",
@@ -193,7 +192,7 @@ def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
         )
     if plugin_type == "external":
         page_title = _("External Member")
-        return go_to_page(
+        return go_to_page_admin(
             request, 'plugins/external.html',
             page_title,
             nav1_admin = "selected",
@@ -324,7 +323,7 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
     else:
         deviceform = DeviceForm(auto_id='main_%s', initial={'type_id': type_id})
 
-    return go_to_page(
+    return go_to_page_admin(
         request, 'plugins/device.html',
         page_title,
         plugin_host=plugin_host,
@@ -353,7 +352,7 @@ def admin_core_helpers(request):
 
     page_title = _("Helpers tools")
 
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/helpers.html',
         page_title,
         nav1_admin = "selected",
@@ -377,7 +376,7 @@ def admin_core_rinor(request):
     for h in hosts:
         if h.primary == 'True':
             host = h.id
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/rinor.html',
         page_title,
         nav1_admin = "selected",
@@ -397,7 +396,7 @@ def admin_core_pyinfo(request):
 
     page_title = _("Python informations")
     
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/pyinfo.html',
         page_title,
         nav1_admin = "selected",
@@ -448,7 +447,7 @@ def admin_core_djangoinfo(request):
     
     page_title = _("Django informations")
     
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/djangoinfo.html',
         page_title,
         nav1_admin = "selected",
@@ -519,6 +518,10 @@ class CommandParamTable(tables.Table):
 class SensorTable(tables.Table):
     class Meta:
         model = Sensor
+
+class ClientTable(tables.Table):
+    class Meta:
+        model = Client
  
 @admin_required
 def admin_core_domowebdata(request):
@@ -545,8 +548,9 @@ def admin_core_domowebdata(request):
     command_table = CommandTable(Command.objects.all())
     commandparam_table = CommandParamTable(CommandParam.objects.all())
     sensor_table = SensorTable(Sensor.objects.all())
+    client_table = ClientTable(Client.objects.all())
     
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/domowebdata.html',
         page_title,
         nav1_admin = "selected",
@@ -566,6 +570,7 @@ def admin_core_domowebdata(request):
         command_table = command_table,
         commandparam_table = commandparam_table,
         sensor_table = sensor_table,
+		client_table = client_table,
     )
     
 @admin_required
@@ -581,7 +586,7 @@ def admin_host(request, id):
         
     page_title = _("Host %s" % id)
     
-    return go_to_page(
+    return go_to_page_admin(
         request, 'hosts/host.html',
         page_title,
         nav1_admin = "selected",
@@ -644,7 +649,7 @@ def admin_core_devicesstats(request):
     devicesevents = StatePipe().get_last(100, '*', '*')
     devicesevents.reverse()
     
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/devicesstats.html',
         page_title,
         devicesevents_list = devicesevents,
@@ -697,7 +702,7 @@ def admin_core_deviceupgrade(request):
     frm.fields['old'].choices = dev[0]['old']
     frm.fields['new'].choices = dev[0]['new']
  
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/deviceupgrade.html',
         page_title,
         frm = frm,
