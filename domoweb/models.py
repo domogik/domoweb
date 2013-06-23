@@ -1,8 +1,10 @@
+import json
 from django.db import models
 from django.db.models import F
 from django.core.exceptions import PermissionDenied
 from exceptions import RinorNotConfigured, RinorError
 from restModel import RestModel
+from mqModel import MQModel, MQEvent
 
 class Parameter(RestModel):
     key = models.CharField(max_length=30, primary_key=True)
@@ -369,3 +371,57 @@ class WidgetInstanceCommand(models.Model):
     instance = models.ForeignKey(WidgetInstance)
     key = models.CharField(max_length=50)
     command = models.ForeignKey(Command, on_delete=models.DO_NOTHING)
+
+class Client(MQModel):
+    id = models.CharField(max_length=50, primary_key=True)
+    host = models.CharField(max_length=50)
+    pid = models.IntegerField()
+    status = models.CharField(max_length=50)
+    configured = models.NullBooleanField()
+    type = models.CharField(max_length=50)
+    typeid = models.CharField(max_length=50)
+    author = models.CharField(max_length=255, null=True, blank=True)
+    author_email = models.CharField(max_length=255, null=True, blank=True)
+    category = models.CharField(max_length=50, null=True, blank=True)
+    changelog = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    documentation = models.CharField(max_length=255, null=True, blank=True)
+    version = models.CharField(max_length=50, null=True, blank=True)
+    
+    list_id = 'clients.list.get'
+    detail_id = 'clients.detail.get'
+    
+    @classmethod
+    def init(cls):
+        cls.refresh()
+        MQEvent('client', cls.refresh_event, ['clients.list'])
+    
+    @classmethod
+    def refresh(cls):
+        _data = Client.get_req(cls.detail_id);
+        Client.objects.all().delete()
+        for id, attributes in _data['clients'].iteritems():
+            c = Client(id=id, host=attributes['host'], pid=attributes['pid'], status=attributes['status'], configured=attributes['configured'], type=attributes['type'], typeid=attributes['id'])
+            if (attributes['type'] != 'core'):
+                identity = attributes['data']['identity']
+                c.version = identity['version']
+                c.author = identity['author']
+                c.author_email = identity['author_email']
+                c.category = identity['category']
+                c.changelog = identity['changelog']
+                c.description = identity['description']
+                c.documentation = identity['documentation']
+            c.save()
+
+    @classmethod
+    def refresh_event(cls, data):
+        for id, attributes in data.iteritems():
+            try:
+                c = Client.objects.get(id=id)
+            except Client.DoesNotExist:
+                c = Client(id=id, host=attributes['host'], pid=attributes['pid'], status=attributes['status'], configured=attributes['configured'], type=attributes['type'], typeid=attributes['id'])
+            else:
+                c.pid=attributes['pid']
+                c.status=attributes['status']
+                c.configured=attributes['configured']
+            c.save()

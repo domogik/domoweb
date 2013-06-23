@@ -14,9 +14,11 @@ from cherrypy.process import plugins
 from django.conf import settings
 
 import domoweb
+from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
 from eventsPlugin import EventsPlugin
 from corePlugin import CorePlugin
 from loaderPlugin import LoaderPlugin
+from wsPlugin import WSPlugin
 
 def main():
     """Main function that is called at the startup of Domoweb"""
@@ -102,15 +104,18 @@ def main():
     }
 
     plugins.PIDFile(engine, "/var/run/domoweb/domoweb.pid").subscribe()
-    #WSPlugin(engine).subscribe()
-
+        
     # Loading django config for database connection
     load_config(project)
     LoaderPlugin(engine, project).subscribe()
 
-#    MQPlugin(engine).subscribe()
-#    EventsPlugin(engine, project).subscribe()
+    EventsPlugin(engine, project).subscribe()
     CorePlugin(engine, project).subscribe()
+
+    # Loading WebSocket service
+    WebSocketPlugin(engine).subscribe()
+    cherrypy.tools.websocket = WebSocketTool()
+    WSPlugin(engine).subscribe()
     
     engine.signal_handler.subscribe()
     if hasattr(engine, "console_control_handler"):
@@ -130,6 +135,7 @@ def runinstall():
     os.environ['DOMOWEB_REV']=data['rev']
     Server().run(PROJECT_PATH, PROJECT_PACKS)
 '''
+
 def load_config(project):
     cherrypy.engine.log("Configuring the Django application")
     settings.configure(
