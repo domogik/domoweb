@@ -390,12 +390,12 @@ class Client(MQModel):
     
     list_id = 'clients.list.get'
     detail_id = 'clients.detail.get'
+    event = None
     
     @classmethod
-    def init(cls):
-        cls.refresh()
-        MQEvent('client', cls.refresh_event, ['clients.list'])
-    
+    def init_event(cls, zmqcontext):
+        cls.event = MQEvent(zmqcontext, 'client', cls.refresh_event, ['clients.list'])
+        
     @classmethod
     def refresh(cls):
         _data = Client.get_req(cls.detail_id);
@@ -425,3 +425,4 @@ class Client(MQModel):
                 c.status=attributes['status']
                 c.configured=attributes['configured']
             c.save()
+

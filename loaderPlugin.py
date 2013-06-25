@@ -8,6 +8,8 @@ import time
 from cherrypy.process import plugins
 from ws4py.messaging import TextMessage
 
+from domoweb.exceptions import RinorNotConfigured, RinorNotAvailable
+
 class LoaderTask(threading.Thread):
     def __init__(self, project):
         self.status = None
@@ -109,7 +111,6 @@ class LoaderTask(threading.Thread):
                         t.save()
     
     def loadRinorModels(self):
-	from domoweb.exceptions import RinorNotConfigured, RinorNotAvailable
         from domoweb.restModel import RestModel
         from domoweb.models import Parameter, DeviceType, DataType, Device, Client
         try:
@@ -132,7 +133,7 @@ class LoaderTask(threading.Thread):
                     i = i + 1
                     RestModel.setRestUri(uri)
                     Parameter.refresh()
-                    Client.init()
+                    Client.refresh()
                     DataType.refresh()
                     DeviceType.refresh()
                     Device.refresh()
@@ -258,6 +259,7 @@ class Loader(object):
         cherrypy.log("Handler created: %s" % repr(cherrypy.request.ws_handler))
         
 class LoaderPlugin(plugins.SimplePlugin):
+
     def __init__(self, bus, project):
         self.project = project
         plugins.SimplePlugin.__init__(self, bus)

@@ -60,7 +60,36 @@
             
         {% if not request.session.normal_mode %}
             $.notification("debug", "{% trans "Domogik in development mode. Plugins are running from the sources" %}");
-        {% endif %}  
+        {% endif %}
+        
+        
+              websocket = "ws://" + location.host + "/{{ websocket_url }}";
+      if (window.WebSocket) {
+        ws = new WebSocket(websocket);
+      }
+      else if (window.MozWebSocket) {
+        ws = MozWebSocket(websocket);
+      }
+      else {
+        console.log("WebSocket Not Supported");
+        return;
+      }
+
+      window.onbeforeunload = function(e) {
+        ws.close(1000, "Client left");
+             
+        if(!e) e = window.event;
+        e.stopPropagation();
+        e.preventDefault();
+      };
+      ws.onmessage = function (evt) {
+        console.log(evt)
+      };
+      ws.onopen = function() {    
+      };
+      ws.onclose = function(evt) {
+      };
+      
         });
         // ]]>
     </script>

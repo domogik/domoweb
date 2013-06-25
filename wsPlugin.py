@@ -14,9 +14,9 @@ class WSHandler(WebSocket):
 class WSPlugin(plugins.SimplePlugin):
     def __init__(self, bus):
         plugins.SimplePlugin.__init__(self, bus)
-        self.bus.log("Starting the MQ Plugin")
         
     def start(self):
+        cherrypy.engine.log("Starting the WebSocket Plugin")
         cherrypy.tree.mount(WS(), '/ws', {
             '/': {
                 'tools.websocket.on': True,
