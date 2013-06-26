@@ -157,51 +157,46 @@ def admin_organization_pages(request):
     )
 
 @admin_required
-def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
+def admin_client(request, client_id):
     """
-    Method called when the admin plugin command page is accessed
+    Method called when the admin client page is accessed
     @param request : HTTP request
     @return an HttpResponse object
     """
 
-    plugin = PluginPipe().get_detail(plugin_host, plugin_id)
-    devices = Device.objects.filter(type__plugin_id=plugin.id)
-    types = DeviceType.objects.filter(plugin_id=plugin.id)
+    client = Client.objects.get(id=client_id)
+    devices = Device.objects.filter(type__plugin_id=client.typeid)
+    types = DeviceType.objects.filter(plugin_id=client.typeid)
 
-    if plugin_id == "rfxcom-lan":
-        products = ProductsPipe().get_list("rfxcom")
-    else:
-        products = ProductsPipe().get_list(plugin_id)
+    products = None #ProductsPipe().get_list(client.typeid)
 
-    if plugin_type == "plugin":
+    if client.type == "plugin":
         page_title = _("Plugin")
-        dependencies = PluginDependencyPipe().get_list(plugin_host, plugin_id)
-        udevrules = PluginUdevrulePipe().get_list(plugin_host, plugin_id)
+        dependencies = None #PluginDependencyPipe().get_list(plugin_host, plugin_id)
+        udevrules = None #PluginUdevrulePipe().get_list(plugin_host, plugin_id)
         return go_to_page_admin(
             request, 'plugins/plugin.html',
             page_title,
             nav1_admin = "selected",
             nav2_plugins_plugin = "selected",
-            plugin=plugin,
-            plugin_type=plugin_type,
+            client=client,
             dependencies=dependencies,
             udevrules=udevrules,
             devices_list=devices,
             types_list=types,
-	    product_list=products,
+            product_list=products,
         )
-    if plugin_type == "external":
+    else: #client.type == "external":
         page_title = _("External Member")
         return go_to_page_admin(
             request, 'plugins/external.html',
             page_title,
             nav1_admin = "selected",
             nav2_plugins_plugin = "selected",
-            plugin=plugin,
-            plugin_type=plugin_type,
+            client=client,
             devices_list=devices,
             types_list=types,
-	    product_list=products,
+        product_list=products,
         )
 
 class SelectIcon(Select):

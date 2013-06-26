@@ -45,7 +45,7 @@
             </td></ul>
             <td>
                 <ul class="actions">
-                    <li><a href='{% url admin_del_device_view device.id plugin.host plugin.id plugin_type %}' id='del{{ device.id }}' class='icon16-action-del buttonicon' title="{% trans "Delete" %} '{{ device.name }}'"><span class='offscreen'>{% trans "Delete" %} {{ device.name }}</span></a></li>
+                    <li><a href=' url admin_del_device_view device.id plugin.host plugin.id plugin_type' id='del{{ device.id }}' class='icon16-action-del buttonicon' title="{% trans "Delete" %} '{{ device.name }}'"><span class='offscreen'>{% trans "Delete" %} {{ device.name }}</span></a></li>
                     <!--li><button id="update{{ device.id }}" class="icon16-action-update buttonicon" title="{% trans "Modify" %} '{{ device.name }}'"><span class='offscreen'>{% trans "Modify" %} {{ device.name }}</span></button></li-->
                 </ul>
             </td>
@@ -57,13 +57,13 @@
     <h2>{% trans "Create new by product" %}</h2>
     <ul class='inline'>
         {% for prod in product_list %}
-            <li><a href='{% url admin_add_device_view plugin.host plugin.id plugin_type prod.type %}' class='buttontext'>{{ prod.name }}</a></li>
+            <li><a href='url admin_add_device_view plugin.host plugin.id plugin_type prod.type ' class='buttontext'>{{ prod.name }}</a></li>
         {% endfor %} 
     </ul>
     <h2>{% trans "Create new by device type" %}</h2>
     <ul class='inline'>
         {% for type in types_list %}
-            <li><a href='{% url admin_add_device_view plugin.host plugin.id plugin_type type.id  %}' class='buttontext'>{{ type.name }}</a></li>
+            <li><a href='url admin_add_device_view plugin.host plugin.id plugin_type type.id ' class='buttontext'>{{ type.name }}</a></li>
         {% endfor %} 
     </ul>
 </section>

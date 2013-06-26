@@ -22,7 +22,7 @@ class MQModel(models.Model):
     
     @classmethod
     def _sync_req_rep(cls, msgid, data=None):
-        cli = MQSyncReq(zmq.context())
+        cli = MQSyncReq(zmq.Context())
         msg = MQMessage()
         msg.set_action(msgid)
         cherrypy.log("MQ sync REQ : [%s]" % msgid)
