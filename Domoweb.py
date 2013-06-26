@@ -130,9 +130,12 @@ def main():
     MQPlugin(engine).subscribe()
         
     engine.signal_handler.subscribe()
+    engine.signal_handler.set_handler('SIGTERM', handle_signal)
+    engine.signal_handler.set_handler('SIGINT', handle_signal)
     if hasattr(engine, "console_control_handler"):
         engine.console_control_handler.subscribe()
 
+    cherrypy.engine.subscribe('stop',  handle_stop)
     engine.start()
     ioloopi = IOLoop.instance()
     ioloopi.add_callback(cherrypyloop, engine)
@@ -142,6 +145,13 @@ def main():
 def cherrypyloop(engine):
     engine.publish('main')
 
+def handle_stop():
+    cherrypy.engine.log("Domoweb is shutting down")
+    IOLoop.instance().stop()
+    
+def handle_signal():
+    cherrypy.engine.exit()
+    
 '''
 def runinstall():
     PROJECT_PATH='/usr/share/domoweb'
