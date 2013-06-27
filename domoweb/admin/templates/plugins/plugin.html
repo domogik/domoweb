@@ -90,8 +90,8 @@
 {% block title %}{{ page_title }}{% endblock %}
 
 {% block banner %}
-    <h1 class="ident icon64-plugin-{{ plugin.id }} icon64-resize" style='background-image:url({{ admin_url }}/resource/icon/package/installed/plugin/{{ plugin.id }})'>
-        <span class="title">{% trans "Plugin" %} '{{ plugin.id }}'</span>
+    <h1 class="ident icon64-plugin-{{ client.typeid }} icon64-resize" style='background-image:url({{ admin_url }}/resource/icon/package/installed/plugin/{{ client.typeid }})'>
+        <span class="title">{% trans "Plugin" %} '{{ client.typeid }}'</span>
     </h1>
 {% endblock %}
 

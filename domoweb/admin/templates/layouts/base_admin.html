@@ -20,6 +20,7 @@
 # Author : Cédric Trévisan <cedric@domogik.org>
 {% endcomment %}
 {% load i18n %}
+{% load text %}
 
 {% block global_css %}
 <link href="{{ static_design_url }}/admin/css/layout.with_nav.css" rel="stylesheet" type="text/css" />
@@ -54,43 +55,46 @@
         // <![CDATA[
         $(document).ready(function(){
             {% if request.session.normal_mode %}
-            getHostsList();
+            //getHostsList();
             {% endif %}
             $('#plugins_list li a[title]').tooltip_right();
             
-        {% if not request.session.normal_mode %}
+            {% if not request.session.normal_mode %}
             $.notification("debug", "{% trans "Domogik in development mode. Plugins are running from the sources" %}");
-        {% endif %}
-        
-        
-              websocket = "ws://" + location.host + "/{{ websocket_url }}";
-      if (window.WebSocket) {
-        ws = new WebSocket(websocket);
-      }
-      else if (window.MozWebSocket) {
-        ws = MozWebSocket(websocket);
-      }
-      else {
-        console.log("WebSocket Not Supported");
-        return;
-      }
-
-      window.onbeforeunload = function(e) {
-        ws.close(1000, "Client left");
-             
-        if(!e) e = window.event;
-        e.stopPropagation();
-        e.preventDefault();
-      };
-      ws.onmessage = function (evt) {
-        console.log(evt)
-      };
-      ws.onopen = function() {    
-      };
-      ws.onclose = function(evt) {
-      };
+            {% endif %}
+ 
+            websocket = "ws://" + location.host + "/{{ websocket_url }}";
+            if (window.WebSocket) { ws = new WebSocket(websocket); }
+            else if (window.MozWebSocket) { ws = MozWebSocket(websocket); }
+            else { console.log("WebSocket Not Supported"); return; }
+      
+            window.onbeforeunload = function(e) {
+                ws.onclose = function () {}; // disable onclose handler first
+                ws.close()
+            };
+            ws.onmessage = function (msg) {
+                var json = JSON.parse(msg.data);
+                if ((/^clients.list/).test(json.id)) {
+                    updateClients(json.content);
+                }
+            };
       
         });
+        function updateClients(clients) {
+            $.each(clients, function(id, client) {
+                id = id.replace('.', '_');
+                var a = $('#' + id + ' a');
+                if (client.status == 'alive') {
+                    a.attr('class', 'icon16-status-' + client.type + '-up').attr('aria-label', '{% trans 'Running' %}');
+                } else if (client.status == 'not-configured') {
+                    a.attr('class', 'icon16-status-' + client.type + '-not-configured').attr('aria-label', '{% trans 'Not configured' %}');
+                } else if (client.status == 'stopped') {
+                    a.attr('class', 'icon16-status-' + client.type + '-down').attr('aria-label', '{% trans 'Stopped' %}');
+                } else {
+                    a.attr('class', 'icon16-status-' + client.type + '-unknown').attr('aria-label', '{% trans 'Unknown' %}');                    
+                }
+            });
+        }
         // ]]>
     </script>
 {% endblock %}
@@ -130,21 +134,17 @@
                     {% for category in categories %}
                     <li><ul id='menu_{{ category.grouper }}'>
                         {% for client in category.list %}
-                        <li class='{{ client.type }}'>
-                            {% if client.type == 'plugin' %}
+                        <li class='{{ client.type }}' id='{{ client.id|switchDot }}'>
                                 <a href='{% url admin_client_view client.id %}'
-                                {% if client.status == 'running' %}
-                                class='icon16-status-plugin-up' aria-label='{% trans 'Plugin Running' %}'>
+                                {% if client.status == 'alive' %}
+                                class='icon16-status-{{ client.type }}-up' aria-label='{% trans 'Running' %}'>
+                                {% elif client.status == 'not-configured' %}
+                                class='icon16-status-{{ client.type }}-not-configured' aria-label='{% trans 'Not configured' %}'>
+                                {% elif client.status == 'stopped' %}
+                                class='icon16-status-{{ client.type }}-down' aria-label='{% trans 'Stopped' %}'>
                                 {% else %}
-                                class='icon16-status-plugin-down' aria-label='{% trans 'Plugin Stopped' %}'>
+                                class='icon16-status-{{ client.type }}-unknown' aria-label='{% trans 'Unknown' %}'>
                                 {% endif %}
-                            {% else %}
-                                {% if client.status == 'running' %}
-                                class='icon16-status-external-up' aria-label='{% trans 'External Running' %}'>
-                                {% else %}
-                                class='icon16-status-external-down' aria-label='{% trans 'External Stopped' %}'>
-                                {% endif %}
-                            {% endif %}
                                 <div><div class='host'>{{ client.host }}</div>{{ client.typeid }}</div></a>
                         </li>
                         {% endfor %}

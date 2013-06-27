@@ -37,7 +37,7 @@ class MQEvent(MQAsyncSub):
 
     def on_message(self, msgid, content):
         cherrypy.log("QM New pub message : [%s]" % msgid)
-        msg = json.dumps([msgid, content])
+        msg = json.dumps({'id':msgid, 'content':content})
         cherrypy.engine.publish('websocket-broadcast', TextMessage(msg))
         self.callback(content)
 

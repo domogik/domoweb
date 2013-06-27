@@ -289,17 +289,19 @@ def test_user(user):
 def install_dependencies():
     from setuptools.command import easy_install
     easy_install.main( ['setuptools',
-                          'django == 1.4',
-                          'django-tastypie == 0.9.11',
-                          'django-tables2',
-                          'simplejson >= 1.9.2',
-                          'httplib2 >= 0.6.0',
-                          'Distutils2',
-                          'CherryPy >= 3.2.2',
-                          'south',
-                          'manifesto',
-                          'requests',
-                            'ws4py'])
+                            'django == 1.4',
+                            'django-tastypie == 0.9.11',
+                            'django-tables2',
+                            'simplejson >= 1.9.2',
+                            'httplib2 >= 0.6.0',
+                            'Distutils2',
+                            'CherryPy >= 3.2.2',
+                            'south',
+                            'manifesto',
+                            'requests',
+                            'ws4py',
+                            'pyzmq>=13.1.0',
+                            'tornado>=3.1'])
 
 def updateDb(user, db):
     from django.core import management
