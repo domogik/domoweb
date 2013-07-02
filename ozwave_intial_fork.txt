@@ -1,0 +1,1 @@
+Update to kinetic-v4.5.4 lib. + Initial fork for ozwave plugin : see doc for changelog
