@@ -166,22 +166,6 @@ class Page(models.Model):
     def _get_max_level(self):
         return self._max_level
     max_level = property(_get_max_level)
-    
-class DeviceType(RestModel):
-    id = models.CharField(max_length=50, primary_key=True)
-    name = models.CharField(max_length=50)
-    plugin_id = models.CharField(max_length=50)
-    
-    list_path = "/device_type/"
-    index = 'device_type'
-
-    @staticmethod
-    def refresh():
-        _data = DeviceType.get_list();
-        DeviceType.objects.all().delete()
-        for record in _data:
-            r = DeviceType(id=record.id, name=record.name, plugin_id=record.plugin_id)
-            r.save()
 
 class DataType(RestModel):
     id = models.CharField(max_length=50, primary_key=True)
@@ -198,12 +182,136 @@ class DataType(RestModel):
             r = DataType(id=type, parameters=json.dumps(params))
             r.save()
 
+class Package(MQModel):
+    id = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=50)
+    type = models.CharField(max_length=50)
+    version = models.CharField(max_length=50)
+    author = models.CharField(max_length=255, null=True, blank=True)
+    author_email = models.CharField(max_length=255, null=True, blank=True)
+    category = models.CharField(max_length=50, null=True, blank=True)
+    changelog = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    documentation = models.CharField(max_length=255, null=True, blank=True)
+
+    detail_id = 'packages.detail.get'
+    event = None
+
+    def __unicode__(self):
+        return self.id
+    
+    @classmethod
+    def init_event(cls, zmqcontext):
+        pass
+    
+    @classmethod
+    def refresh(cls):
+        _data = Package.get_req(cls.detail_id);
+        Package.objects.all().delete()
+        for id, attributes in _data.iteritems():
+            identity = attributes['identity']
+            p = Package(id=id, name=identity['name'], type=identity['type'], version=identity['version']
+                        , author = identity['author'], author_email = identity['author_email'], category = identity['category']
+                        , changelog = identity['changelog'], description = identity['description'], documentation = identity['documentation'])
+            p.save()
+            if 'device_types' in attributes:
+                for id, device_type in attributes['device_types'].iteritems():
+                    d = PackageDeviceType(package=p, id=id, name=device_type['name'], description=device_type['description'])
+                    d.save()
+            if 'dependencies' in identity:
+                for dependency in identity['dependencies']:
+                    d = PackageDependency(package=p, id=dependency['id'], type=dependency['type'])
+                    d.save()
+            if 'udev_rules' in attributes:
+                for udev_rule in attributes['udev_rules']:
+                    u = PackageUdevRule(package=p, filename=udev_rule['filename'], rule=udev_rule['rule'], description=udev_rule['description'], model=udev_rule['model'])
+                    u.save()
+            if 'products' in attributes:
+                for product in attributes['products']:
+                    p = PackageProduct(package=p, id=product['id'], name=product['name'], documentation=product['documentation'], device_type_id=product['type'])
+                    p.save()
+   
+class PackageUdevRule(models.Model):
+    filename = models.CharField(max_length=255, primary_key=True)
+    rule = models.TextField()
+    description = models.TextField(null=True, blank=True)
+    model = models.CharField(max_length=255, null=True, blank=True)
+    package = models.ForeignKey(Package)
+
+class PackageDependency(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
+    type = models.CharField(max_length=50)
+    package = models.ForeignKey(Package)
+
+class PackageDeviceType(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=50)
+    description = models.TextField(null=True, blank=True)
+    package = models.ForeignKey(Package)
+
+class PackageProduct(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=50)
+    documentation = models.CharField(max_length=255, null=True, blank=True)
+    package = models.ForeignKey(Package)
+    device_type = models.ForeignKey(PackageDeviceType)
+
+class Client(MQModel):
+    id = models.CharField(max_length=255, primary_key=True)
+    host = models.CharField(max_length=50)
+    pid = models.IntegerField()
+    status = models.CharField(max_length=50)
+    configured = models.NullBooleanField()
+    package = models.ForeignKey(Package, on_delete=models.DO_NOTHING, null=True, blank=True)
+    
+    list_id = 'clients.list.get'
+    detail_id = 'clients.detail.get'
+    event = None
+    
+    def __unicode__(self):
+        return self.id
+    
+    @classmethod
+    def init_event(cls, zmqcontext):
+        cls.event = MQEvent(zmqcontext, 'client', cls.refresh_event, ['clients.list'])
+        
+    @classmethod
+    def refresh(cls):
+        _data = Client.get_req(cls.detail_id);
+        Client.objects.all().delete()
+        for id, attributes in _data.iteritems():
+            c = Client(id=id, host=attributes['host'], pid=attributes['pid'], status=attributes['status'], configured=attributes['configured'], package_id=attributes['package_id'])
+            c.save()
+
+    @classmethod
+    def refresh_event(cls, data):
+        for id, attributes in data.iteritems():
+            try:
+                c = Client.objects.get(id=id)
+            except Client.DoesNotExist:
+                c = Client(id=id, host=attributes['host'], pid=attributes['pid'], status=attributes['status'], configured=attributes['configured'], package_id=attributes['package_id'])
+            else:
+                c.pid=attributes['pid']
+                c.status=attributes['status']
+                c.configured=attributes['configured']
+            c.save()
+
+class ClientConfiguration(models.Model):
+    id = models.CharField(max_length=255, primary_key=True)
+    key = models.CharField(max_length=50)
+    type = models.CharField(max_length=50)
+    default = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    required = models.BooleanField()
+    options = models.TextField(null=True, blank=True)
+    client = models.ForeignKey(Client)
+
 class Device(RestModel):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
     reference = models.CharField(max_length=255)
-    type = models.ForeignKey(DeviceType, blank=True, null=True, on_delete=models.DO_NOTHING)
+    type = models.ForeignKey(PackageDeviceType, blank=True, null=True, on_delete=models.DO_NOTHING)
 
     list_path = "/device/"
     delete_path = "/device/"
@@ -370,59 +478,4 @@ class WidgetInstanceCommand(models.Model):
     id = models.AutoField(primary_key=True)
     instance = models.ForeignKey(WidgetInstance)
     key = models.CharField(max_length=50)
-    command = models.ForeignKey(Command, on_delete=models.DO_NOTHING)
-
-class Client(MQModel):
-    id = models.CharField(max_length=50, primary_key=True)
-    host = models.CharField(max_length=50)
-    pid = models.IntegerField()
-    status = models.CharField(max_length=50)
-    configured = models.NullBooleanField()
-    type = models.CharField(max_length=50)
-    typeid = models.CharField(max_length=50)
-    author = models.CharField(max_length=255, null=True, blank=True)
-    author_email = models.CharField(max_length=255, null=True, blank=True)
-    category = models.CharField(max_length=50, null=True, blank=True)
-    changelog = models.TextField(null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    documentation = models.CharField(max_length=255, null=True, blank=True)
-    version = models.CharField(max_length=50, null=True, blank=True)
-    
-    list_id = 'clients.list.get'
-    detail_id = 'clients.detail.get'
-    event = None
-    
-    @classmethod
-    def init_event(cls, zmqcontext):
-        cls.event = MQEvent(zmqcontext, 'client', cls.refresh_event, ['clients.list'])
-        
-    @classmethod
-    def refresh(cls):
-        _data = Client.get_req(cls.detail_id);
-        Client.objects.all().delete()
-        for id, attributes in _data['clients'].iteritems():
-            c = Client(id=id, host=attributes['host'], pid=attributes['pid'], status=attributes['status'], configured=attributes['configured'], type=attributes['type'], typeid=attributes['id'])
-            if (attributes['type'] != 'core'):
-                identity = attributes['data']['identity']
-                c.version = identity['version']
-                c.author = identity['author']
-                c.author_email = identity['author_email']
-                c.category = identity['category']
-                c.changelog = identity['changelog']
-                c.description = identity['description']
-                c.documentation = identity['documentation']
-            c.save()
-
-    @classmethod
-    def refresh_event(cls, data):
-        for id, attributes in data.iteritems():
-            try:
-                c = Client.objects.get(id=id)
-            except Client.DoesNotExist:
-                c = Client(id=id, host=attributes['host'], pid=attributes['pid'], status=attributes['status'], configured=attributes['configured'], type=attributes['type'], typeid=attributes['id'])
-            else:
-                c.pid=attributes['pid']
-                c.status=attributes['status']
-                c.configured=attributes['configured']
-            c.save()
-
+    command = models.ForeignKey(Command, on_delete=models.DO_NOTHING)    

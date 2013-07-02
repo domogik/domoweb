@@ -34,7 +34,7 @@ def go_to_page(request, html_page, page_title, **attribute_list):
     return response
 
 def go_to_page_admin(request, html_page, page_title, **attribute_list):
-    clients = Client.objects.filter(type='plugin')
+    clients = Client.objects.filter(package__type='plugin')
     attribute_list['clients'] = clients
     return go_to_page(request, html_page, page_title, **attribute_list)
 

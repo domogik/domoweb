@@ -127,7 +127,7 @@ def admin_management_accounts(request):
     users = UserPipe().get_list()
     people = PersonPipe().get_list()
     return go_to_page_admin(
-        request, 'management/accounts.html',
+        request, 'organization/accounts.html',
         page_title,
         nav1_admin = "selected",
         nav2_management_accounts = "selected",
@@ -165,39 +165,24 @@ def admin_client(request, client_id):
     """
 
     client = Client.objects.get(id=client_id)
-    devices = Device.objects.filter(type__plugin_id=client.typeid)
-    types = DeviceType.objects.filter(plugin_id=client.typeid)
+    devices = Device.objects.filter(type__package_id=client.package.id)
 
-    products = None #ProductsPipe().get_list(client.typeid)
-
-    if client.type == "plugin":
+    if client.package.type == "plugin":
         page_title = _("Plugin")
-        dependencies = None #PluginDependencyPipe().get_list(plugin_host, plugin_id)
-        udevrules = None #PluginUdevrulePipe().get_list(plugin_host, plugin_id)
-        return go_to_page_admin(
-            request, 'plugins/plugin.html',
-            page_title,
-            nav1_admin = "selected",
-            nav2_plugins_plugin = "selected",
-            client=client,
-            dependencies=dependencies,
-            udevrules=udevrules,
-            devices_list=devices,
-            types_list=types,
-            product_list=products,
-        )
+        path = 'clients/plugin.html'
     else: #client.type == "external":
         page_title = _("External Member")
-        return go_to_page_admin(
-            request, 'plugins/external.html',
-            page_title,
-            nav1_admin = "selected",
-            nav2_plugins_plugin = "selected",
-            client=client,
-            devices_list=devices,
-            types_list=types,
-        product_list=products,
-        )
+        path = 'clients/external.html'
+
+    return go_to_page_admin(
+        request, path,
+        page_title,
+        nav1_admin = "selected",
+        nav2_plugins_plugin = "selected",
+        client=client,
+        package=client.package,
+        devices=devices,
+    )
 
 class SelectIcon(Select):
     def render_option(self, selected_choices, option_value, option_label):
@@ -260,8 +245,8 @@ class ParametersForm(forms.Form):
             data[key] = cd
         return data
     
-@admin_required
-def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
+#@admin_required
+def admin_add_device(request, client_id, type_id):
     page_title = _("Add device")
     parameters = DeviceParametersPipe().get_detail(type_id)
 
@@ -319,7 +304,7 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
         deviceform = DeviceForm(auto_id='main_%s', initial={'type_id': type_id})
 
     return go_to_page_admin(
-        request, 'plugins/device.html',
+        request, 'clients/device.html',
         page_title,
         plugin_host=plugin_host,
         plugin_id=plugin_id,
@@ -494,10 +479,6 @@ class DeviceTable(tables.Table):
     class Meta:
         model = Device
 
-class DeviceTypeTable(tables.Table):
-    class Meta:
-        model = DeviceType
-
 class DataTypeTable(tables.Table):
     class Meta:
         model = DataType
@@ -517,7 +498,27 @@ class SensorTable(tables.Table):
 class ClientTable(tables.Table):
     class Meta:
         model = Client
- 
+
+class PackageTable(tables.Table):
+    class Meta:
+        model = Package
+
+class PackageUdevRuleTable(tables.Table):
+    class Meta:
+        model = PackageUdevRule
+
+class PackageDependencyTable(tables.Table):
+    class Meta:
+        model = PackageDependency
+
+class PackageDeviceTypeTable(tables.Table):
+    class Meta:
+        model = PackageDeviceType
+
+class PackageProductTable(tables.Table):
+    class Meta:
+        model = PackageProduct
+
 @admin_required
 def admin_core_domowebdata(request):
     """
@@ -538,12 +539,16 @@ def admin_core_domowebdata(request):
     pagetheme_table = PageThemeTable(PageTheme.objects.all())
     page_table = PageTable(Page.objects.all())
     device_table = DeviceTable(Device.objects.all())
-    devicetype_table = DeviceTypeTable(DeviceType.objects.all())
     datatype_table = DataTypeTable(DataType.objects.all())
     command_table = CommandTable(Command.objects.all())
     commandparam_table = CommandParamTable(CommandParam.objects.all())
     sensor_table = SensorTable(Sensor.objects.all())
     client_table = ClientTable(Client.objects.all())
+    package_table = PackageTable(Package.objects.all())
+    packageudevrule_table = PackageUdevRuleTable(PackageUdevRule.objects.all())
+    packagedependency_table = PackageDependencyTable(PackageDependency.objects.all())
+    packagedevicetype_table = PackageDeviceTypeTable(PackageDeviceType.objects.all())
+    packageproduct_table = PackageProductTable(PackageProduct.objects.all())
     
     return go_to_page_admin(
         request, 'core/domowebdata.html',
@@ -560,12 +565,16 @@ def admin_core_domowebdata(request):
         pagetheme_table = pagetheme_table,
         page_table = page_table,
         device_table = device_table,
-        devicetype_table = devicetype_table,
         datatype_table = datatype_table,
         command_table = command_table,
         commandparam_table = commandparam_table,
         sensor_table = sensor_table,
-		client_table = client_table,
+        client_table = client_table,
+        package_table = package_table,
+        packageudevrule_table = packageudevrule_table,
+        packagedependency_table = packagedependency_table,
+        packagedevicetype_table = packagedevicetype_table,
+        packageproduct_table = packageproduct_table,
     )
     
 @admin_required

@@ -1,0 +1,16 @@
+{% load i18n %}
+
+<section class="subsection">
+    <h2>{% trans "Basic Control" %}</h2>
+    <button id='buttonstatus'></button>
+    <ul class='infos'>
+        <li><span class='label'>{% trans "Version" %}:</span> {{ package.version }}</li>
+        <li><span class='label'>{% trans "Documentation" %}:</span> <a href='{{ package.documentation }}'>Wiki</a></li>
+        <li><span class='label'>{% trans "Host" %}:</span> {{ client.host }}</li>
+        <li><div id='iconstatus'></div></li>
+    </ul>
+</section>
+<section class="subsection">
+    <h2>{% trans "Description" %}</h2>
+    <p>{{ package.description|linebreaksbr }}</p>
+</section>

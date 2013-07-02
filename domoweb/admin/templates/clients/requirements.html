@@ -2,7 +2,7 @@
 <section class="subsection">
     <h2>{% trans "Dependencies" %}</h2>
     <ul class='dependencies'>
-        {% for dependency in dependencies %}
+        {% for dependency in package.packagedependency_set.all %}
             <li>{{dependency.id}}
             {% if dependency.installed == 'False' %}
                 <div style='float:right' class='icon16-text icon16-status-false'>{% trans "Missing" %}</div>                                                                            
@@ -22,7 +22,7 @@
 <section class="subsection">
     <h2>{% trans "UDEV Rules" %}</h2>
     <ul class='udevrules'>
-        {% for udevrule in udevrules %}
+        {% for udevrule in package.packageudevrules_set.all %}
         <li><strong>{{ udevrule.model }}</strong>: {{ udevrule.description }}</p>
             <p>{{ udevrule.filename }}:
             <code>{{ udevrule.rule }}</code></p>

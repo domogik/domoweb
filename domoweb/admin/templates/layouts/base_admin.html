@@ -134,18 +134,18 @@
                     {% for category in categories %}
                     <li><ul id='menu_{{ category.grouper }}'>
                         {% for client in category.list %}
-                        <li class='{{ client.type }}' id='{{ client.id|switchDot }}'>
+                        <li class='{{ client.package.type }}' id='{{ client.id|switchDot }}'>
                                 <a href='{% url admin_client_view client.id %}'
                                 {% if client.status == 'alive' %}
-                                class='icon16-status-{{ client.type }}-up' aria-label='{% trans 'Running' %}'>
+                                class='icon16-status-{{ client.package.type }}-up' aria-label='{% trans 'Running' %}'>
                                 {% elif client.status == 'not-configured' %}
-                                class='icon16-status-{{ client.type }}-not-configured' aria-label='{% trans 'Not configured' %}'>
+                                class='icon16-status-{{ client.package.type }}-not-configured' aria-label='{% trans 'Not configured' %}'>
                                 {% elif client.status == 'stopped' %}
-                                class='icon16-status-{{ client.type }}-down' aria-label='{% trans 'Stopped' %}'>
+                                class='icon16-status-{{ client.package.type }}-down' aria-label='{% trans 'Stopped' %}'>
                                 {% else %}
-                                class='icon16-status-{{ client.type }}-unknown' aria-label='{% trans 'Unknown' %}'>
+                                class='icon16-status-{{ client.package.type }}-unknown' aria-label='{% trans 'Unknown' %}'>
                                 {% endif %}
-                                <div><div class='host'>{{ client.host }}</div>{{ client.typeid }}</div></a>
+                                <div><div class='host'>{{ client.host }}</div>{{ client.package.name }}</div></a>
                         </li>
                         {% endfor %}
                     </ul></li>

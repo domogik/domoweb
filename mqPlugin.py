@@ -14,7 +14,8 @@ class MQPlugin(plugins.SimplePlugin):
         self.zmqcontext = zmq.Context()
 
     def start(self):
-        from domoweb.models import Client
+        from domoweb.models import Client, Package
         cherrypy.engine.log("Listening for MQ Events")
+        Package.init_event(self.zmqcontext)
         Client.init_event(self.zmqcontext)
 
