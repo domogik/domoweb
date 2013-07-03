@@ -53,7 +53,7 @@
             this.node = ops.node;
             this.element.dialog('open');
             this.element.parent().width('auto');
-            CreateGroups(this.stageGrps, ops.node, this.st_design_url);
+            CreateGroups(this.stageGrps, ops.node, this.st_design_url, this.element[0].id);
         },
         
         setnewgroups:function(callback) {
