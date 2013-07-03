@@ -1,4 +1,4 @@
-var ozwDomowebVers = "0.2b4"
+var ozwDomowebVers = "0.2b5"
 var netWorkZW = {};
 var listNodes = new Array();
 var listTypesVal = {};
@@ -7,12 +7,7 @@ var hdCmdClss = new Array();
 var initialized = false;
 var ctrlDevice;
 var cb_RefreshTabHtml;
-//var wsDomogik;
-//var wsPort;
-//var tWSserverOut = (new Date()).getTime();
-//var cptTimeOutWS = 0;
-//
-//var wsAcktOutCtrl = setInterval(wsAckTimeOutCtrl, 500);
+var hWSmessage; // Ref pour handleWSmessage function
 
 // Constante d'entete de colonne de la table node_items 
 var hdLiNode = {"NodeId": 0, "Name": 1, "Location": 2, "Model": 3, "Awake":  4, "Type": 5, "Last update": 6, "Action": 7};
@@ -218,7 +213,7 @@ function createToolTip(domObj, position, text) {
                          $('#' + this.id + '[title]').tooltip_bottom();
                         break;
                 }
-            };
+            } else {this.title ='';}
         };
     });
 };
@@ -258,7 +253,7 @@ function GetZWNodeById (nodeiId) {
 };
 
 function setStatusWS(status) {
-    if (status=='up') { //active
+    if (status == 'up') { //active
         textstatus = "Connected to WS server";
         reload ='';
     } else { //inactive
@@ -270,6 +265,14 @@ function setStatusWS(status) {
         .attr('align', 'right')
         .html("<span id='wsstatus' class='label'>" + gettext('Server connection') + " :</span><span class='offscreen'>" + textstatus + "</span>"+reload);
     createToolTip('#wsstatus', 'bottom',textstatus);
+    if (status != 'up') {
+        $("#startWebsocket").click(function(){
+        var host = 'ws://' +  location.hostname + ':' + wsPort;
+        createWebSocket(host, hWSmessage);
+        return false;
+        });
+    };
+
 };
 
 function setStatusZW(status) {
@@ -382,6 +385,38 @@ function SetStatusMemberGrp(infonode,group,member,status) {
         return  ret;
         };
 
+
+function getValueTabCmdClass(vTable, vData, cName) {
+    col = getDataTableColIndex(vTable.fnSettings(), cName);
+    if (col != -1) {
+        switch (cName) {
+            case 'Num' :
+                return vData[col]
+                break;
+            case 'value' :
+                cId = getDataTableColIndex(vTable.fnSettings(), 'id');
+                var obj = $('#valCC' + vData[cId]);
+                return obj[0].innerHTML;
+                break;
+            case 'commandClass' :
+                cId = getDataTableColIndex(vTable.fnSettings(), 'id');
+                var obj = $('#hc' + vData[cId]);
+                return obj[0].innerHTML;
+                break;
+            case 'value' :
+                cId = getDataTableColIndex(vTable.fnSettings(), 'id');
+                var obj = $('#valCC' + vData[cId]);
+                return obj[0].innerHTML;
+                break;
+            
+            default :
+                return vData[col]
+        };
+    }
+};
+        
+        
+        
     function renderCmdClssNode(oObj) {
         var num = oObj.aData[0];
         if (num < 10) { num = "0" + num; };
@@ -391,6 +426,7 @@ function SetStatusMemberGrp(infonode,group,member,status) {
         var readOnly = oObj.aData[getDataTableColIndex(oObj.oSettings, 'readOnly')];
         var help = gettext(oObj.aData[indexH]);
         var vId = oObj.aData[getDataTableColIndex(oObj.oSettings, 'id')];
+        var polled = oObj.aData[getDataTableColIndex(oObj.oSettings, 'polled')];
         if (readOnly==true) {
             textRW = gettext("Read only");
             st ='active';
@@ -398,7 +434,7 @@ function SetStatusMemberGrp(infonode,group,member,status) {
             textRW = gettext("Read and Write");
             st ='inactive';
         };
-         var rw=  " <span id='st"+vId +"' class='icon16-text-right icon16-status-" + st +"' title='" + textRW + "'></span>";
+        var rw=  " <span id='st"+vId +"' class='icon16-text-right icon16-status-" + st +"' title='" + textRW + "'></span>";
         if (help!="") {
             extra = "  <span id='hn"+vId +"' class='icon16-text-right icon16-status-info' title='" + help + "'></span>";
         } else {
@@ -411,8 +447,18 @@ function SetStatusMemberGrp(infonode,group,member,status) {
             textstatus = gettext("Not available for domogik device");
             st = 'false';
         };
-        return  num + "<span  id='adr"+vId +"'class='icon16-text-right icon16-status-" + st + "' title='" + textstatus + "'></span>" +rw + extra;
-        };
+        if (polled) { 
+            poll = " checked='checked'";
+            tpoll = gettext("Value is polled with intensity : ") + oObj.aData[getDataTableColIndex(oObj.oSettings, 'pollintensity')];
+        }else { 
+            poll ="";
+            tpoll =  gettext("Check to poll this value");
+        }
+
+        return  num + "<span  id='adr"+vId +"'class='icon16-text-right icon16-status-" + st + "' title='" + textstatus +
+                "'></span>" + rw + "<input type='checkbox' class='medium' id='poll" + vId + "'" + poll + " name='isPolled'" +
+                "title='"+ tpoll + "' />" + extra;
+    };
 
     function renderCmdClssName(oObj) {
         var CmdClss = oObj.aData[getDataTableColIndex(oObj.oSettings, 'commandClass')];
@@ -495,8 +541,10 @@ function SetStatusMemberGrp(infonode,group,member,status) {
                             var oTable = $("#" + nTr.parentElement.parentElement.id).dataTable();
                             var aPos = oTable.fnGetPosition(this.parentElement );
                             var oSettings = oTable.fnSettings();
-                            var idC= getDataTableColIndex(oSettings, 'value');
+                            var idC = getDataTableColIndex(oSettings, 'value');
+                            var vId = getDataTableColIndex(oSettings, 'id');
                             var ok = oTable.fnUpdate(this.value,aPos[0],idC,false);
+                            createToolTip('#send' + vId, 'top');
                             handleChangeVCC ();
                     };
                 };
@@ -555,11 +603,103 @@ function UpNodeToolTips (nodeid) {
     createToolTip('#infosleepnode' + nodeid, 'bottom');
     };
 
+    
+function highlightCell(oCell, timeUpDate) {
+    if (timeUpDate) {
+        var t = 'Update at ' + Date(timeUpDate);
+        oCell.title = t;
+        createToolTip("#" + oCell.id, 'right', t);
+    };
+    if (oCell.tagName == 'TD') { var elem = oCell;
+    } else { var elem = $("#" + oCell.id).parents('td');};
+    elem.attr('class', 'highlighted');
+    setTimeout( function(){elem.removeClass('highlighted');},4000 );
+};
+    
+    
 function UpCmdClssValue(zwNode, objValue, timeUpDate) {
+    var vTable = $('#detNode' + zwNode.Node).dataTable();
+    if (vTable[0]) {
+        var hCells = [];
+        var objCell = $('#valCC' + objValue.id);
+        if (objCell[0])  {
+            var vPos = vTable.fnGetPosition(objCell[0].parentElement);
+            var vData = vTable.fnGetData(vPos[0]);
+            var cols = vTable.fnSettings().aoColumns;
+            var colTitle ="";
+            var cValue;
+            for (var col=0, colLen=cols.length ; col<colLen ; col++) {
+                colTitle = cols[col].sTitle;
+                cValue = getValueTabCmdClass(vTable, vData, colTitle);
+                if (colTitle == 'Num') {
+                    console.log('colonne :' + colTitle + " data : " + cValue);
+                } else if (colTitle == 'realValue') {
+                    console.log('colonne :' + colTitle + " data : " + cValue);
+                } else {
+                    if (colTitle in objValue) {
+                        vTable.fnUpdate(objValue[colTitle], vPos[0], col, false);
+                        if (colTitle == 'value') {
+                            var idC= getDataTableColIndex(vTable.fnSettings(), 'realValue');
+                            vTable.fnUpdate(objValue[colTitle], vPos[0], idC, false);    
+                            hCells.push(objCell[0]);
+                        } else if (cValue != objValue[colTitle]) {
+                             if (colTitle in ['domogikdevice', 'readOnly','polled', 'pollintensity']) {
+                                var idC= getDataTableColIndex(vTable.fnSettings(), 'Num');
+                                vTable.fnUpdate(objValue[getDataTableColIndex(vTable.fnSettings(), 'value')], vPos[0], idC, false);
+                                hCells.push($('#adr' + objValue.id)[0]);
+                            };
+                        } else {
+                            console.log(' colonne :' + colTitle + " data : " + cValue);};
+                    } else {console.log('no data :' + colTitle + ' Value : '+cValue);} ;
+                }; 
+            };
+
+            
+            
+   /*         var idC= getDataTableColIndex(vTable.fnSettings(), 'realValue');
+            var aPos = vTable.fnGetPosition(objCell[0].parentElement);
+            vTable.fnUpdate(objValue.value, aPos[0], idC, false);
+            var idC= getDataTableColIndex(vTable.fnSettings(), 'value');
+            vTable.fnUpdate(objValue.value, aPos[0], idC, false);
+            if (timeUpDate) {
+                var t = 'Update at ' + Date(timeUpDate);
+                objCell[0].title = t;
+                createToolTip('#valCC' + objValue.id, 'right', t);
+            }; */
+            vTable.fnStandingRedraw();
+            $.each(hCells, function(i, cell) {highlightCell(cell, timeUpDate);});
+      //      $('#valCC' + objValue.id).parents('td').attr('class', 'highlighted');
+      //      setTimeout( function(){$('#valCC' + objValue.id).parents('td').removeClass('highlighted');},4000 );
+        };
+    };
+};
+
+// Mise à jour de la commande class si affichée.
+function UpCmdClss(zwNode, objValue, timeUpDate) {
     var vTable = $('#detNode' + zwNode.Node).dataTable();
     if (vTable[0]) {
         var objCell = $('#valCC' + objValue.id);
         if (objCell[0])  {
+            var vPos = vTable.fnGetPosition(obj[0].parentElement);
+            var vData = vTable.fnGetData(vPos[0]);
+            var cols = vTable.fnSettings().aoColumns;
+            var colTitle ="";
+            for (var col=0, colLen=cols.length ; col<colLen ; col++) {
+                colTitle = cols[col].sTitle;
+                if (colTitle == 'num') {
+                    console.log('colonne Num');
+                } else if (colTitle == 'realvalue') {
+                    console.log('colonne realvalue');
+                } else {
+                    if (colTitle in objValue) {
+                        console.log(' colonne :' + colTitle);
+                    };
+                }; 
+            };
+                
+
+                
+            
             var idC= getDataTableColIndex(vTable.fnSettings(), 'realValue');
             var aPos = vTable.fnGetPosition(objCell[0].parentElement);
             vTable.fnUpdate(objValue.value, aPos[0], idC, false);
@@ -635,29 +775,68 @@ function setValueNode(nodeId, valueid, value, aTable, nTr, newvalue) {
     };
 };
 
-    function setGroupsNode(stage, node, newgrps, callback) {
-        if (node) {
-                var msg = {};
-                msg['header'] = {'type': 'req-ack'};
-                msg['request'] ='setGroups';
-                msg['node'] = node.Node;
-                var grps =[];
-                for (var i=0; i<newgrps.length; i++){
-                    grps.push({'idx': newgrps[i].index, 'mbs': newgrps[i].members});
-                };
-                msg['ngrps'] = grps;
-                sendMessage(msg, function(data ){
-                    if (data['error'] == "") {
-                        callback(stage, node.Node, data.groups);
-                     } else { // Erreur dans la lib python
-                        console.log("Dans setGroupsNode error : " + data['error']);                            
-                         $.notification('error', gettext('groups association setting error') +' : ' + data['error'] );
-                    };
-                    });
-        } else { messXpl['Error'] = "Node not define";
-                console.log("Dans setGroupsNode pas de node : " + node);   
-                return messXpl;
-                }
+function setPollingValue(vTable, nodeid, valueid, polled, intensity) {
+    console.log("set polling value : " + valueid + "(node : " + nodeid + ") state :" + polled + ", intensity :  " + intensity); 
+    var msg = {};
+    msg['header'] = {'type': 'req-ack'};
+    msg['node'] = nodeid;  
+    msg['valueid'] = valueid;  
+    msg['intensity'] = intensity;  
+    if (polled) {
+        msg['request'] ='EnablePoll';
+        $('#poll' + valueid).attr('checked', 'checked');
+        $('#intensity').val(intensity);
+        tpoll = gettext("Value is polled with intensity : ") + intensity
+    } else { 
+        msg['request'] ='DisablePoll';
+        $('#poll' + valueid).removeAttr('checked');
+        tpoll = gettext("Check to poll this value");
     };
+    createToolTip('#poll' + valueid, 'top', tpoll);
+    sendMessage(msg, vTable );
+};
+
+function setGroupsNode(stage, node, newgrps, callback) {
+    if (node) {
+            var msg = {};
+            msg['header'] = {'type': 'req-ack'};
+            msg['request'] ='setGroups';
+            msg['node'] = node.Node;
+            var grps =[];
+            for (var i=0; i<newgrps.length; i++){
+                grps.push({'idx': newgrps[i].index, 'mbs': newgrps[i].members});
+            };
+            msg['ngrps'] = grps;
+            sendMessage(msg, function(data ){
+                if (data['error'] == "") {
+                    callback(stage, node.Node, data.groups);
+                 } else { // Erreur dans la lib python
+                    console.log("Dans setGroupsNode error : " + data['error']);                            
+                     $.notification('error', gettext('groups association setting error') +' : ' + data['error'] );
+                };
+                });
+    } else { messXpl['Error'] = "Node not define";
+            console.log("Dans setGroupsNode pas de node : " + node);   
+            return messXpl;
+            }
+};
+
+  
+function refreshTreeProducts(data) {
+  if (data['error'] =='') {
+    var tab =[];
+    for (m in  data.data) {tab.push({'data' : data.data[m].manufacturer, 'children' : data.data[m].products})}
+    $('#productTree').jstree({
+        "themes" : {
+            "theme" : "default",
+            "dots" : false,
+            "icons" : true
+        },
+        "plugins" : ["themes", "json_data", "ui", "crrm", "hotkeys"],
+        "json_data" : {
+            "data" : tab}
+    })
+  }
+};
 
 

@@ -75,7 +75,17 @@ $(function(){
             }
         });
     }
-
+    
+    $('#set_polling_value').dialog_form({
+        tips: "{% trans 'Set if value must be polled and his instensity. Save configuration is necessary to keep change.' %} : ",
+        tipsid: 'tipsSetPollt',
+        fields: [
+            {name : 'polled', type:'checkbox', label:"{% trans "Polled" %}", required: true},
+            {name : 'intensity', type:'text', label:"{% trans "Polling intensity" %}", required: true, options: {min: 1, max: 3}},
+            {name : 'valueid', type:'text', label:"", required: false, options: {min: 1, max: 80}}
+        ]
+       });
+            
     $('#reset_confirmation').dialog_confirmation({
             title: "{% trans 'Confirmation' %} : ",
             content: "{% trans "Please confirm to " %}"
@@ -186,6 +196,9 @@ $(function(){
                     console.log("Node is refreshed, nodeID: " + infoNode.Node);
                     if (typeof callback == "function") {callback(msg.data);};
                     break;
+                case 'GetAllProducts' :
+                    refreshTreeProducts(msg);
+                    break;
                 case 'GetNodeValuesInfo' :
                     createValuesTab(msg.data.Values,callback);
                     break;
@@ -206,7 +219,6 @@ $(function(){
                     callback(msg.data);
                     break;
                 case 'setValue' :
-                    console.log('Handle setValue');
                     if (msg.error == "") {
                         var aTable = callback;
                         var obj = $('#valCC' + msg.valueid);
@@ -221,6 +233,29 @@ $(function(){
                         console.log("Dans setValueNode error : " + msg['error']);                                    
                     };
                     break;
+                case 'EnablePoll' :
+                    var vTable = callback
+                    var obj = $('#poll' + msg.valueid);
+                    var cInt = getDataTableColIndex(vTable.fnSettings(), 'intensity');
+                    var vPos = vTable.fnGetPosition(obj[0].parentNode);
+              //      if (vPos) { var ok = vTable.fnUpdate(msg.data.value,vPos[0],idC, false);};
+                    if (msg.data['error'] == "") {
+                        $.notification('success', "{% trans 'Enable poll service node'%}" +' : ' + msg['node'] );
+                    } else { // Erreur dans la lib python
+                        $.notification('error', "{% trans 'Enable poll service error'%}" +' : ' + msg.data['error'] );
+                    };
+                    break;
+                case 'DisablePoll' :
+                    var vTable = callback
+                    var obj = $('#poll' + msg.valueid);
+                    var vPos = vTable.fnGetPosition(obj[0].parentNode);
+              //      if (vPos) { var ok = vTable.fnUpdate(msg.data.value,vPos[0],idC, false);};
+                    if (msg.data['error'] == "") {
+                        $.notification('success', "{% trans 'Disable poll service node'%}" +' : ' + msg['node'] );
+                    } else { // Erreur dans la lib python
+                        $.notification('error', "{% trans 'Disable poll service error'%}" +' : ' + msg.data['error'] );
+                    };
+                    break;
                 case 'SaveConfig' :
                     if (! msg.error) { $.notification('success',"{% trans "Configuration saved." %}" );
                     } else {$.notification('error', "{% trans "Error saving config : " %}" + msg.error)};
@@ -228,7 +263,7 @@ $(function(){
                 case 'SetNodeNameLoc' :
                      if (! msg.error) {
                         console.log("Dans Update Node : " + msg.data['Model']);
-                        $.notification('succes',"Node : " + msg.data['Model'] + "{% trans " name and location updated" %}" );
+                        $.notification('success',"Node : " + msg.data['Model'] + "{% trans " name and location updated" %}" );
                         RefreshTabHtml(msg.data);
                      } else {$.notification('error', "{% trans "Can't update name/location node, error : " %} " + msg.error);};
                     break;
@@ -335,18 +370,23 @@ function handleCtrlEvent (event) {
             cb_RefreshTabHtml(zwNode);
             UpNodeToolTips(zwNode.Node);
             break;
-        case 'value-changed': 
+        case 'value-changed' :
             zwNode = GetZWNodeById(parseInt(event.node));
             UpCmdClssValue(zwNode, event.data, event.header.timestamp);
             break;
-        case 'plugin-state' : 
-            var s = event.data.replace(/'/g,'"')
-            console.log('event: ', event, s);
-            event.data = JSON.parse(s);
-            if (event.data.state = 'wsserver_started') {
-                wsPort = event.data.wsport;
-                var host = 'ws://' +  location.hostname + ':' + wsPort;
-                createWebSocket(host, handleWSmessage, initSequence);
+        case 'polling' :
+            $.notification('info', "node " + event.node + " : " + event.usermsg + " at " + Date(event.header.timestamp));
+            break;
+        case 'status' : // a plugin-state come from xPl event and give websocket port number automaticaly.
+            if (event.status == 'started plugin') {
+                var s = event.data.replace(/'/g,'"')
+                console.log('event: ', event, s);
+                event.data = JSON.parse(s);
+                if (event.data.state = 'wsserver_started') {
+                    wsPort = event.data.wsport;
+                    var host = 'ws://' +  location.hostname + ':' + wsPort;
+                    createWebSocket(host, handleWSmessage, initSequence);
+                };
             };
             break;
         case 'ctrlstate' :
@@ -385,7 +425,8 @@ function handleCtrlEvent (event) {
             $('#numnodes').html(netWorkZW['Node count']);
             $('#libctrl').html(netWorkZW['Library']);
             $('#libctrlver').html(netWorkZW['Version']);                    
-            console.log("Dans updateNetWorkZW " + netWorkZW['Model']);
+            $('#pollinterval').val(netWorkZW['Poll interval']/1000);                    
+           console.log("Dans updateNetWorkZW " + netWorkZW['Model']);
             setStatusZW('up')
             $.notification('success',"device : " + netWorkZW['Primary controller'] + " info refreshed" );
             var node_items = document.getElementById("node_items");
@@ -466,13 +507,13 @@ function handleCtrlEvent (event) {
                         R[ii] = 'no data';
                     };
                     R[3] = err;
-                    R[6] = 'Error';
-                    R[7] = 'Value lost during WebSocket transmission';
+                    R[6] = "{% trans 'Error' %}";
+                    R[7] = "{% trans 'Value lost during WebSocket transmission' %}";
                     R[16] = "";
                 };
                 RowN[i] = R;
             });
-            console.log("Dans createValuesTab : " + RowN);
+//            console.log("Dans createValuesTab : " + RowN);
             callback(thOut);
             var idDetNode = '#detNode' + values[0]['nodeId'];
             $(idDetNode).dataTable({
@@ -485,21 +526,61 @@ function handleCtrlEvent (event) {
                         { "fnRender": function (oObj) {return renderCmdClssValue(oObj);}, "aTargets": [hdCmdClss['value']] },                                                           
                         { "fnRender": function (oObj) {return renderCmdClssName(oObj);}, "aTargets": [hdCmdClss['commandClass']] },
                         ], 
-                    "fnDrawCallback": function( oSettings) {
+                    "fnDrawCallback": function(oSettings) {
                         handleChangeVCC();
                         var iId = getDataTableColIndex(oSettings, 'id');
-                        var vId = '';
+                        var nodeid = getDataTableColIndex(oSettings, 'nodeId');
                         var start = oSettings._iDisplayStart;
                         var stop =  oSettings._iDisplayEnd;
+                        var iIntensity = getDataTableColIndex(oSettings, 'pollintensity');
+                        vTable = this;
                         for (i=start; i<stop; i++) {
-                            vId = RowN[i][iId]
+                            var vData = this.fnGetData(i)
+                            var vId = vData[iId]
+                            var intensity = vData[iIntensity]
                             createToolTip('#st' + vId, 'bottom');
                             createToolTip('#hn' + vId, 'bottom');
                             createToolTip('#adr' + vId, 'bottom');
                             createToolTip('#hc' + vId, 'top');
+                            createToolTip('#poll' + vId, 'top');
+                            if ($('#poll' + vId).attr('isHandled') === undefined) {
+                                $('#set_polling_value').dialog_form('updbutton', {
+                                    title: "{% trans 'Set polling value index ' %}" + (i +1) +"{% trans ', node ' %}" + vData[nodeid],
+                                    button: "#poll" + vId,
+                                    values: {polled: $('#poll' + vId).is(':checked'), intensity : intensity, valueid: vId},
+                                    onok: function(values) {
+                                        // Submit form
+                                        console.log("set checkbox value : " + values.polled + ", intensity :  " + values.intensity);
+                                        setPollingValue(vTable, vData[nodeid], values.valueid, values.polled == 'True', values.intensity);
+                                        $('#set_polling_value').dialog('close');
+                                    }
+                                });
+                                $('#poll' + vId).click(function(e){
+                                    var vId =  this.id.slice(4)
+                                    var obj = $('#hc' + vId);
+                                    var cInt = getDataTableColIndex(oSettings, 'pollintensity');
+                                    var vPos = vTable.fnGetPosition(obj[0].parentNode);
+                                    var vData = vTable.fnGetData(vPos[0]);
+                                    var intensity = vData[cInt];
+                                    if (intensity == 0) {intensity =1;};
+                                    $('#valueid').hide();
+                                    $('#tipsSetPollt').html("<br>" + getValueTabCmdClass(vTable, vData, 'commandClass') + " -> " + getValueTabCmdClass(vTable, vData, 'label'));
+                                    $('#intensity').val(intensity);
+                                    if ($('#poll' + vId).is(':checked')) {
+                                        $('#poll' + vId).removeAttr('checked');
+                                        $('#polled').removeAttr('checked');
+                                    } else {
+                                        $('#poll' + vId).attr('checked', 'checked');
+                                        $('#polled').attr('checked', 'checked');
+                                    };
+                                    console.log("click checkbox value : " + this.id + "  " + vId);
+                                    }); 
+                                $('#poll' + vId).attr('isHandled',true)
+                                };
                             };
+                        var hideCols= ['realValue', 'nodeId', 'homeId','domogikdevice','help' ,'readOnly', 'listElems', 'id','polled','pollintensity']
                         for (i=0; i<thOut.length; i++) {
-                            if (thOut[i] == 'realValue' | thOut[i] == 'nodeId' | thOut[i] == 'homeId' | thOut[i] == 'domogikdevice' | thOut[i] == 'help' | thOut[i] == 'readOnly' | thOut[i] == 'listElems' | thOut[i] == 'id') {
+                            if (hideCols.indexOf(thOut[i]) != -1) {
                                 $(idDetNode).dataTable().fnSetColumnVis( i, false ); };
                             }
                     },
@@ -527,7 +608,7 @@ function handleCtrlEvent (event) {
             var msg = {};
             msg['header'] = {'type': 'req-ack'};
             msg['request'] ='SetNodeNameLoc';
-            msg['node'] =getNodeIdFromHtml(aData[hdLiNode['NodeId']]);
+            msg['node'] = getNodeIdFromHtml(aData[hdLiNode['NodeId']]);
             msg['newname'] = returnTextValue(aData[hdLiNode['Name']]);
             msg['newloc'] = returnTextValue(aData[hdLiNode['Location']]);
             sendMessage(msg);
@@ -605,28 +686,32 @@ function handleCtrlEvent (event) {
         return false;
     });
     
-    $("#startCtrl").click(function(){
+    $("#btsetpollinterval").click(function(){
         var msg = {};
         msg['header'] = {'type': 'req-ack'};
-        if ($('#startCtrl').hasClass('icon16-status-inactive')) {msg['request'] ='StopCtrl';
-        } else {msg['request'] ='StartCtrl';};
-    //    sendMessage(msg);
-        var st ='start'
-        setBtCtrlStatus(st);
-        return false;
-    });
-
-    $("#startWebsocket").click(function(){
-        var host = 'ws://' +  location.hostname + ':' + wsPort;
-        createWebSocket(host, handleWSmessage);
+        msg['request'] ='SetPollInterval';
+        msg['interval'] = parseInt($('#pollinterval').val()) * 1000; 
+        sendMessage(msg, function(msg) {
+            $('#pollinterval').val(msg['interval']/1000)
+            if (msg.error == "") {
+                $.notification('success', "{% trans "Set poll interval ok" %}");
+            } else {
+                $.notification('error', "{% trans "Set poll interval error : " %}" + msg['error']);
+            };
+        });
         return false;
     });
 
     function initSequence() {
         GetListCmdsCtrl(function(){$("#ozwrefreshnt").click();});
+        var msg = {};
+        msg['header'] = {'type': 'req-ack'};
+        msg['request'] ='GetAllProducts';
+        sendMessage(msg);
     }; 
 
    $(document).ready(function(){
+        hWSmessage = handleWSmessage;
         $('#ozwdomowebvers').html(ozwDomowebVers);
         createToolTip('#infoIconInitNodes', 'top');
         createToolTip('#startCtrl', 'top');
@@ -636,6 +721,8 @@ function handleCtrlEvent (event) {
         createToolTip('#hardReset', 'top');
         createToolTip('#ozwrefreshnt', 'top');
         createToolTip('#ozwsaveconf', 'top');
+        createToolTip('#pollinterval', 'top');
+        createToolTip('#btsetpollinterval', 'top');
         openDmg_eventListener(handleCtrlEvent);
         getPluginInfo(function(port){var host = 'ws://' +  location.hostname + ':' + port;
                                                             createWebSocket(host, handleWSmessage, initSequence);});
@@ -726,6 +813,9 @@ function handleCtrlEvent (event) {
             <ul class='infos'>
                 <button id='ozwrefreshnt' class='button icon16-action-reset' title="{% trans "Force refresh all devices info." %}">{% trans "Refresh" %}</button>
                 <button id='ozwsaveconf' class='button icon16-action-save' title="{% trans "Use 'Updade Node' button before saving openzwave config." %}">{% trans "Save config" %}</button> 
+                &nbsp;&nbsp;{% trans "Poll interval" %}&nbsp;
+                <input id='pollinterval' type='text'  size='5' title="{% trans "Value of time interval in seconds for all polled values." %}" value=''> sec.</input>
+                <button id='btsetpollinterval' class='button icon16-action-update buttonicon'  title="{% trans "Send value, save configuration after." %}"><span class='offscreen'>Send value</span></button>
             </ul>    
         </form>
 </section>
@@ -771,3 +861,4 @@ function handleCtrlEvent (event) {
 <div id="divNodeAssDialog"></div>
 <div id="divCtrlActionDialog"></div>
 <div id="reset_confirmation"></div>
+<div id="set_polling_value"></div>
