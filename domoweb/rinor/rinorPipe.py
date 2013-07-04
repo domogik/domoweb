@@ -39,9 +39,9 @@ class RinorPipe():
                     d=str(d)
                 _tmp.append(d)
             _data = '/'.join(_tmp)
-            _path = "%s/%s/" % (path, _data)
+            _path = "%s/%s" % (path, _data)
         else:
-            _path = "%s/" % path
+            _path = "%s" % path
         return _path
         
     def _get_data(self, path, data=None):

@@ -57,30 +57,7 @@ class RestModel(models.Model):
 
     @classmethod
     def post_list(cls, data):
-        data = cls._post_data(cls.create_path, data)
-        if data.status == "ERROR":
-            raise RinorError(data.code, data.description)
-        if cls.index:
-            result=data[cls.index]
-        else:
-            result=data
-        return result[0]
-    
-    @staticmethod
-    def _clean_url(path, data=None):
-        if (data):
-            _tmp = []
-            for d in data:
-                if type(d) == str or type(d) == unicode:
-                    d=urllib.quote(d.encode('utf8'), '')
-                else:
-                    d=str(d)
-                _tmp.append(d)
-            _data = '/'.join(_tmp)
-            _path = "%s/%s/" % (path, _data)
-        else:
-            _path = "%s" % path
-        return _path
+        return cls._post_data(cls.create_path, data)
 
     @classmethod
     def _get_data(cls, path, data=None):
@@ -109,9 +86,12 @@ class RestModel(models.Model):
         if not cls.rest_uri:
             raise RinorError
         url = "%s%s" % (RestModel.rest_uri, url)
-        print "{0} REST: {1}".format(method, url)
+        print "REST {0}: {1}".format(method, url)
         try:
-            resp= request(method=method, url=url, params=params)
+            if method == "get":
+                resp= request(method=method, url=url, params=params)
+            else:
+                resp= request(method=method, url=url, data=params)
         except ConnectionError as e:
             raise RinorError(reason="Connection failed for '{0}'".format(url))
         except HTTPError as e:

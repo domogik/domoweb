@@ -249,7 +249,8 @@ class ParametersForm(forms.Form):
 def admin_add_device(request, client_id, type_id):
     page_title = _("Add device")
     parameters = DeviceParametersPipe().get_detail(type_id)
-
+    client = Client.objects.get(id=client_id)
+    
     globalparametersform = None
     if parameters["global"] :
         globalparametersform = ParametersForm(auto_id='global_%s')
@@ -306,9 +307,8 @@ def admin_add_device(request, client_id, type_id):
     return go_to_page_admin(
         request, 'clients/device.html',
         page_title,
-        plugin_host=plugin_host,
-        plugin_id=plugin_id,
-        plugin_type=plugin_type,
+        client=client,
+        package=client.package,
         deviceform=deviceform,
         globalparametersform=globalparametersform,
         hasscommansparamters=hasscommandsparamters,

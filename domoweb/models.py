@@ -315,13 +315,12 @@ class Device(RestModel):
 
     list_path = "/device/"
     delete_path = "/device/"
-    create_path = "/base/device/add"
-    addglobal_path = "/base/device/addglobal"
-    addxplcmd_path = "/base/device/xplcmdparams"
-    addxplstat_path = "/base/device/xplstatparams"
+    create_path = "/device/"
+    addglobal_path = "/device/addglobal"
+    addxplcmd_path = "/device/xplcmdparams"
+    addxplstat_path = "/device/xplstatparams"
     listupgrade_path = "/base/device/list-upgrade"
     doupgrade_path = "/base/device/upgrade"
-    index = 'device'
 
     @staticmethod
     def refresh():
@@ -341,7 +340,7 @@ class Device(RestModel):
 
     @classmethod
     def create(cls, name, type_id, reference):
-        data = ['name', name, 'type_id', type_id, 'usage_id', 'none', 'description', '', 'reference', reference]
+        data = ['name', name, 'type_id', type_id, 'description', '', 'reference', reference]
         rinor_device = cls.post_list(data)
         device = cls.create_from_json(rinor_device)
         return device
