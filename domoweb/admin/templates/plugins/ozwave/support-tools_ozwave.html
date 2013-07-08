@@ -86,31 +86,22 @@ $(function(){
 <section class="subsection">
     <h2>{% trans "Memory usage" %}&nbsp;&nbsp;
         <button id='refreshMemory' class='button icon16-action-reset'>{% trans "Refresh" %}</button>
-    </h2>
+    </h2><br>
     <ul class='infos'>
         <span id='memoryUsage'>{% trans "Click refresh button" %}</span>
-    </ul>
+    </ul><br>
     <h2>{% trans "Logs" %}</h2>
     <div id='log_list'>
         <p><label for='nblines'>{% trans 'Number of lines to show' %}:</label>
         <input type='text' id='nblines' name='nblines' value="50" />
         <button id='loglisttop' class='button icon16-action-reset'>{% trans "View from beginning" %}</button>
         <button id='loglistend' class='button icon16-action-reset'>{% trans "View until end" %}</button></p>
-   <ul class='infos'>
-        <span id='logDisplay'>{% trans "Click refresh button" %}</span>
+    <ul class='infos'>
+        <div id='logDisplay' style="height:300px;overflow:auto;">{% trans "Click refresh button" %}</div>
     </ul>        
-        <table id='log_items' class='simple'>
-            <thead>
-                <tr>
-                    <th scope='col'>&nbsp;</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
+    </div><br>
     <h2>{% trans "Recognized manufacturers and products." %}</h2>
     <ul class='infos'>
-        <div id='productTree'>
+        <div id='productTree' style="height:800px;overflow:auto;">
     </div></ul>
 </section>
