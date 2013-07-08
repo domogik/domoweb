@@ -204,7 +204,7 @@ def config_loadrinordata(request):
     @return an HttpResponse object
     """
     from domoweb.restModel import RestModel
-    from domoweb.models import Parameter, DataType, DeviceType, Device
+    from domoweb.models import Parameter, DataType, Device
 
     ip = Parameter.objects.get(key='rinor_ip')
     port = Parameter.objects.get(key='rinor_port')
