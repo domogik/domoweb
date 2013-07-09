@@ -18,7 +18,7 @@ table.parameters td {
 
 table.parameters label {
     display: block;
-    float: right;
+    text-align: right;
     font-weight: bold;
 }
 

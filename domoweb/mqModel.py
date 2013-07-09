@@ -2,6 +2,7 @@ import cherrypy
 import json
 from django.db import models
 from ws4py.messaging import TextMessage
+from domoweb.exceptions import MQNoResponseError
 
 # MQ
 import zmq
@@ -23,10 +24,13 @@ class MQModel(models.Model):
     @classmethod
     def _sync_req_rep(cls, msgid, data=None):
         cli = MQSyncReq(zmq.Context())
-        msg = MQMessage()
-        msg.set_action(msgid)
+        msg = MQMessage(msgid, data)
+ 
         cherrypy.log("MQ sync REQ : [%s]" % msgid)
-        return cli.request('manager', msg.get(), timeout=10).get()
+        request = cli.request('manager', msg.get(), timeout=10)
+        if not request:
+            raise MQNoResponseError()
+        return request.get()
 
 class MQEvent(MQAsyncSub):
 
