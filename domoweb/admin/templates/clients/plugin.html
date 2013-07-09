@@ -73,6 +73,21 @@
             setStatus('down');
             $("#buttonstatus").ajaxSwitch('run', 'down');
         {% endifequal %}
+        
+        $('#clientForm').on('change', function(){
+            $('#saveconfiguration').removeAttr('disabled');
+        });
+        
+         $("#saveconfiguration").click(function() {
+            $.ajax({
+                type:"POST",
+                data: $("#clientForm :input").serialize(),
+                url:ADMIN_URL + "/client/configure/{{ client.id }}/",
+                success: function(data, textStatus, jqXHR){
+                    $('#tabs-4').html(data);
+                }
+            });
+        });
     });
 {% endblock %}
 {% block css %}

@@ -55,6 +55,7 @@ from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.exceptions import RinorError, RinorNotConfigured
 from domoweb.models import *
+from domoweb.forms import ClientConfigurationForm, ParametersForm
 
 def login(request):
     """
@@ -174,6 +175,8 @@ def admin_client(request, client_id):
         page_title = _("External Member")
         path = 'clients/external.html'
 
+    configurationform = ClientConfigurationForm(client=client)
+
     return go_to_page_admin(
         request, path,
         page_title,
@@ -182,6 +185,29 @@ def admin_client(request, client_id):
         client=client,
         package=client.package,
         devices=devices,
+        configurationform=configurationform
+    )
+
+@admin_required
+def admin_client_configure(request, client_id):
+    """
+    Method called when the admin client page is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+
+    client = Client.objects.get(id=client_id)
+    form = ClientConfigurationForm(client=client)
+    form.setData(request.POST)
+    form.validate()
+    if form.is_valid():
+        form.save()
+    
+    return go_to_page(
+        request, "clients/configuration.html",
+        None,
+        client=client,
+        configurationform=form
     )
 
 class SelectIcon(Select):
@@ -211,41 +237,8 @@ class DeviceForm(forms.Form):
     def __init__(self, *args, **kwargs):
         # This should be done before any references to self.fields
         super(DeviceForm, self).__init__(*args, **kwargs)
-
-   
-class ParametersForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        self.name = kwargs.pop('name', None)
-        self.id = kwargs.pop('id', None)
-        self.params = kwargs.pop('params', None)
-        self.prefix = kwargs.pop('prefix', None)
-        kwargs['auto_id'] = '%s'
-        # This should be done before any references to self.fields
-        super(ParametersForm, self).__init__(*args, **kwargs)
-        if self.params:
-            for parameter in self.params:
-                self.addCharField(('%s-%s-%s')%(self.prefix, self.id, parameter.key), parameter.description, required=True)
-
-    def addCharField(self, key, label, required=False, max_length=50):
-        self.fields[key] = forms.CharField(label=label, required=required, max_length=max_length)
-
-    def setData(self, kwds):
-        """Set the data to include in the form"""
-        for name,field in self.fields.items():
-            self.data[name] = field.widget.value_from_datadict(
-                                kwds, self.files, self.add_prefix(name))
-        self.is_bound = True
-
-    def validate(self): self.full_clean()
-
-    def getData(self):
-        data = {}
-        for key, cd in self.cleaned_data.items():
-            key = key.replace(('%s-%s-')%(self.prefix, self.id), "")
-            data[key] = cd
-        return data
     
-#@admin_required
+@admin_required
 def admin_add_device(request, client_id, type_id):
     page_title = _("Add device")
     parameters = DeviceParametersPipe().get_detail(type_id)
@@ -291,7 +284,7 @@ def admin_add_device(request, client_id, type_id):
             valid = valid and stat.is_valid()
         if valid:
             cd = deviceform.cleaned_data
-            device = Device.create(cd["name"], cd["type_id"], cd["reference"])
+            device = Device.create(client.package.id, cd["name"], cd["type_id"], cd["reference"])
             if globalparametersform:
                 device.add_global_params(parameters=globalparametersform.cleaned_data)
             for command in commands:
@@ -499,6 +492,10 @@ class ClientTable(tables.Table):
     class Meta:
         model = Client
 
+class ClientConfigurationTable(tables.Table):
+    class Meta:
+        model = ClientConfiguration
+
 class PackageTable(tables.Table):
     class Meta:
         model = Package
@@ -544,6 +541,7 @@ def admin_core_domowebdata(request):
     commandparam_table = CommandParamTable(CommandParam.objects.all())
     sensor_table = SensorTable(Sensor.objects.all())
     client_table = ClientTable(Client.objects.all())
+    clientconfiguration_table = ClientConfigurationTable(ClientConfiguration.objects.all())
     package_table = PackageTable(Package.objects.all())
     packageudevrule_table = PackageUdevRuleTable(PackageUdevRule.objects.all())
     packagedependency_table = PackageDependencyTable(PackageDependency.objects.all())
@@ -570,6 +568,7 @@ def admin_core_domowebdata(request):
         commandparam_table = commandparam_table,
         sensor_table = sensor_table,
         client_table = client_table,
+        clientconfiguration_table = clientconfiguration_table,
         package_table = package_table,
         packageudevrule_table = packageudevrule_table,
         packagedependency_table = packagedependency_table,

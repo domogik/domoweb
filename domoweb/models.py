@@ -189,7 +189,7 @@ class Package(MQModel):
     version = models.CharField(max_length=50)
     author = models.CharField(max_length=255, null=True, blank=True)
     author_email = models.CharField(max_length=255, null=True, blank=True)
-    category = models.CharField(max_length=50, null=True, blank=True)
+    tags = models.CharField(max_length=255, null=True, blank=True)
     changelog = models.TextField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     documentation = models.CharField(max_length=255, null=True, blank=True)
@@ -211,8 +211,10 @@ class Package(MQModel):
         for id, attributes in _data.iteritems():
             identity = attributes['identity']
             p = Package(id=id, name=identity['name'], type=identity['type'], version=identity['version']
-                        , author = identity['author'], author_email = identity['author_email'], category = identity['category']
+                        , author = identity['author'], author_email = identity['author_email']
                         , changelog = identity['changelog'], description = identity['description'], documentation = identity['documentation'])
+            if 'tags' in attributes:
+                p.tags = ', '.join(identity['tags'])
             p.save()
             if 'device_types' in attributes:
                 for id, device_type in attributes['device_types'].iteritems():
@@ -264,8 +266,6 @@ class Client(MQModel):
     configured = models.NullBooleanField()
     package = models.ForeignKey(Package, on_delete=models.DO_NOTHING, null=True, blank=True)
     
-    list_id = 'clients.list.get'
-    detail_id = 'clients.detail.get'
     event = None
     
     def __unicode__(self):
@@ -277,11 +277,41 @@ class Client(MQModel):
         
     @classmethod
     def refresh(cls):
-        _data = Client.get_req(cls.detail_id);
+        _data = Client.get_req('clients.detail.get');
         Client.objects.all().delete()
         for id, attributes in _data.iteritems():
             c = Client(id=id, host=attributes['host'], pid=attributes['pid'], status=attributes['status'], configured=attributes['configured'], package_id=attributes['package_id'])
             c.save()
+            data = attributes['data']
+            if 'configuration' in data:
+                for parameter in data['configuration']:
+                    pid = "%s-%s" % (id.replace('.', '_'), parameter['key'])
+                    p = ClientConfiguration(id=pid, name=parameter['name'], key=parameter['key'], type=parameter['type'], sort=parameter['sort'], client=c)
+                    if 'default' in parameter:
+                        p.default=parameter['default']
+                    if 'description' in parameter:
+                        p.description=parameter['description']
+                    if 'required' in parameter:
+                        p.required=parameter['required']
+                    else:
+                        p.required=True
+                    options={}
+                    if 'min_length' in parameter:
+                        options['min_length'] = parameter['min_length']
+                    if 'max_length' in parameter:
+                        options['max_length'] = parameter['max_length']
+                    if 'min_value' in parameter:
+                        options['min_value'] = parameter['min_value']
+                    if 'multilignes' in parameter:
+                        options['multilignes'] = parameter['multilignes']
+                    if 'max_value' in parameter:
+                        options['max_value'] = parameter['max_value']
+                    if 'mask' in parameter:
+                        options['mask'] = parameter['mask']
+                    if 'choices' in parameter:
+                        options['choices'] = parameter['choices']
+                    p.options=json.dumps(options)
+                    p.save()
 
     @classmethod
     def refresh_event(cls, data):
@@ -295,15 +325,29 @@ class Client(MQModel):
                 c.status=attributes['status']
                 c.configured=attributes['configured']
             c.save()
+    
+    def save_configuration(self, data):
+        msg = {
+            'type': self.package.type,
+            'id': self.package.id,
+            'host': self.host,
+            'data': data 
+        }
+        print msg
+        _result = Client.get_req('config.set', msg)
+        print _result
 
 class ClientConfiguration(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=50)
     key = models.CharField(max_length=50)
     type = models.CharField(max_length=50)
-    default = models.CharField(max_length=50, null=True, blank=True)
+    default = models.TextField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     required = models.BooleanField()
     options = models.TextField(null=True, blank=True)
+    sort = models.IntegerField()
+    value = models.TextField(null=True, blank=True)
     client = models.ForeignKey(Client)
 
 class Device(RestModel):
@@ -339,8 +383,8 @@ class Device(RestModel):
         super(Device, self).delete(*args, **kwargs)
 
     @classmethod
-    def create(cls, name, type_id, reference):
-        data = ['name', name, 'type_id', type_id, 'description', '', 'reference', reference]
+    def create(cls, plugin_id, name, type_id, reference):
+        data = ['plugin_id', plugin_id, 'name', name, 'type_id', type_id, 'description', '', 'reference', reference]
         rinor_device = cls.post_list(data)
         device = cls.create_from_json(rinor_device)
         return device

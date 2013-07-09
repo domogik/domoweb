@@ -15,8 +15,8 @@ class MQModel(models.Model):
         abstract = True # Prevent the table to be created with syncdb
 
     @classmethod
-    def get_req(cls, id):
-        _data = cls._sync_req_rep(id)
+    def get_req(cls, id, data=None):
+        _data = cls._sync_req_rep(id, data)
         result = json.loads(_data[1])
         return result
     

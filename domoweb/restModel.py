@@ -87,6 +87,7 @@ class RestModel(models.Model):
             raise RinorError
         url = "%s%s" % (RestModel.rest_uri, url)
         print "REST {0}: {1}".format(method, url)
+        print params
         try:
             if method == "get":
                 resp= request(method=method, url=url, params=params)
