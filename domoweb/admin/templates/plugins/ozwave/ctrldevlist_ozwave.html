@@ -84,7 +84,24 @@ $(function(){
             {name : 'intensity', type:'text', label:"{% trans "Polling intensity" %}", required: true, options: {min: 1, max: 3}},
             {name : 'valueid', type:'text', label:"", required: false, options: {min: 1, max: 80}}
         ]
-       });
+    });
+
+    $('#refresh_node').dialog_form({
+        tips: "{% trans 'Select type of refresh request.' %} : ",
+        tipsid: 'tipsRefreshNode',
+        fields: [
+            {name : 'typeRefresh', type:'select', label:"{% trans "Type" %}", required: true,
+                    options: {
+                        placeholder: "{% trans "Choose refresh type" %}",
+                    },
+                    items: [
+                         {value:'RefreshNodeInfo', label: 'Node informations', icon: 'icon16-action-up'},
+                         {value:'RefreshNodeState', label: 'State node', icon: 'icon16-action-up'},
+                         {value:'RefreshNodeDynamic', label: 'Dynamics data', icon: 'icon16-action-up'},
+                        ]
+                },
+            ]
+    });
             
     $('#reset_confirmation').dialog_confirmation({
             title: "{% trans 'Confirmation' %} : ",
@@ -289,7 +306,7 @@ $(function(){
                     callback(msg);
                     break;
                 default :
-                    callback(msg);
+                    if (callback) {callback(msg);};
             };
         } else {
             if (msg.header.type == 'pub') {
@@ -458,15 +475,15 @@ function handleCtrlEvent (event) {
     function RefreshTabHtml(zwNode) {
       if (zwNode) {  
         var node_items = document.getElementById("node_items");
-        var nodeid=zwNode.Node;
-        var iid= "node_" + nodeid;
+        var nodeId = zwNode.Node;
+        var iid= "node_" + nodeId;
         var nTable = $('#node_items').dataTable()
         var dataT = nTable.dataTable().fnGetData();
         var dataLi = [zwNode.Node, zwNode.Name, zwNode.Location, zwNode.Model, zwNode['State sleeping'], zwNode.Type, zwNode['Last update'],""];
         var li= -1;
         if (dataT) {
             for (i=0; i<dataT.length; i++) {
-                if (getNodeIdFromHtml(dataT[i][hdLiNode['NodeId']])==nodeid) {
+                if (getNodeIdFromHtml(dataT[i][hdLiNode['NodeId']])==nodeId) {
                     li= i;
                //     $('#node_items').dataTable().fnUpdate(dataLi,li);   fnUpdate bugg si mise à jour de toute la ligne !!!!
                     for (var ic = 0; ic<dataLi.length; ic++){ 
@@ -480,7 +497,26 @@ function handleCtrlEvent (event) {
         if (li == -1) {
             nTable.dataTable().fnAddData(dataLi);
             };
-   //     console.log("Dans RefreshTabHtml, DataTable : " + dataT[li] + "---" + zwNode.Model); 
+        $('#refresh_node').dialog_form('updbutton', {
+            title: "{% trans 'Send refresh request to node ' %}" + nodeId,
+            button: "#refreshnode" + nodeId,
+            values: {typeRefresh: 'RefreshNodeInfo'},
+            onok: function(values) {
+                // Submit form
+                var msg = {};
+                msg['header'] = {'type': 'req-ack'};
+                msg['request'] = values.typeRefresh;
+                msg['node'] = nodeId;
+                sendMessage(msg, function(msg) {
+                    if (msg.error == "") {
+                        $.notification('success', "{% trans "Refresh is requested, Waiting node ack ..." %}");
+                    } else {
+                        $.notification('error', "{% trans "Refresh not requested error : " %}" + msg['error']);
+                    };
+                });
+            $('#refresh_node').dialog('close');
+            }
+        });
         }; 
     };   
 
@@ -862,3 +898,4 @@ function handleCtrlEvent (event) {
 <div id="divCtrlActionDialog"></div>
 <div id="reset_confirmation"></div>
 <div id="set_polling_value"></div>
+<div id="refresh_node"></div>

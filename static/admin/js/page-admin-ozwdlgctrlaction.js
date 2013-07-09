@@ -291,21 +291,27 @@ function handle_RequestCtrlAction(cmd) {
             if (n) {msg.action.highpower =  'True';};
         };
         msg.action.arg = {};
+        if ($('#actArgs').is(':visible')) {
+            var n = parseInt($('#actArgs').val());
+            msg.action.arg = n;
+        };
         msg.action.id = Math.floor((Math.random()*1000)+1);
         Action = msg.action;
         sendMessage(msg, function(data){
-                $('#tipsStatusActions').text('Action "' + data['action'] + '" ,status "' +data['cmdstate'] +
-                                                            '", information : ' + data['message']);
                 if (data['error'] == "") {
+                    $('#tipsStatusActions').text('Action "' + data['action'] + '" ,status "' +data['cmdstate'] +
+                                                                '", information : ' + data['message']);
                     console.log("Dans handle_RequestCtrlAction : " + JSON.stringify(data));
                     $.notification('success','Controleur received action : ' + data['action'] + ', commande : ' + data['cmdstate']  );
                     updateStateAction(data['cmdstate']);
                     checkStatesCtrl('Starting', data);
                 } else { // Erreur dans la lib python
+                    $('#tipsStatusActions').text('Action "' + data['action'] + '" ,status "' +data['cmdstate'] +
+                                                                '", information : ' + data['error_msg']);
                     console.log("no controleur action, error : " + data['error']);                          
                     $.notification('error', 'Action  (' + action+ ') command (' +cmd + ') Controller report : ' + data['error'] + ', ' +
                                         data['error_msg'] + ', please check input');
-                    updateStateAction('stop');
+                    updateStateAction(data['cmdstate']);
                     checkStatesCtrl(data['state'], data);
                 };
             })
@@ -409,7 +415,7 @@ function handleCtrlState(ctrlState) {
                     updateStateAction('stop');
                     checkStatesCtrl(ctrlState['state'], ctrlState);
                     console.log("no controleur action, error : " + ctrlState['error']);                          
-                    $.notification('error', 'Action  (' + Action['action']+ ') command (' + Action['cmd'] + ') report : ' + ctrlState['err_msg'] + ', please check input');          
+                    $.notification('error', 'Action  (' + Action['action']+ ') command (' + Action['cmd'] + ') report : ' + ctrlState['error_msg'] + ', please check input');          
                 };                        
 
             } else {

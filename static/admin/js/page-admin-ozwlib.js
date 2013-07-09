@@ -372,13 +372,15 @@ function SetStatusMemberGrp(infonode,group,member,status) {
         if (tabDet) { // DetailNode opened 
             stAct = 'zoomout'; 
         };
-        var ret =  "<button id='detailnode" + num + 
+        var ret = "<button id='detailnode" + num + 
                         "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' name='Detail node'><span class='offscreen'>Detail Node : " + num + "</span></button>";
-         ret =  ret + "<button id='updnode" + num + 
+        ret += "<button id='updnode" + num + 
                         "' class='icon16-action-save buttonicon' title='Update Node' name='Update node'><span class='offscreen'>Send update to Node : " + num + "</span></button>";
+        ret += "<button id='refreshnode" + num + 
+                        "' class='icon16-action-reset buttonicon' title='Force Refresh Node' name='Refresh node'><span class='offscreen'>Send refresh info to Node : " + num + "</span></button>";
         for (var i=0; i< listNodes.length; i++) {
             if (listNodes[i].Node == num && listNodes[i].Groups.length > 0) {
-                ret =  ret + "<button id='updassoc" + num + 
+                ret += "<button id='updassoc" + num + 
                         "' class='icon16-action-groups buttonicon' title='Edit association' name='Node groups' ><span class='offscreen'>Edit association Node : " + num + "</span></button>";
                 };
             };
@@ -414,9 +416,7 @@ function getValueTabCmdClass(vTable, vData, cName) {
         };
     }
 };
-        
-        
-        
+
     function renderCmdClssNode(oObj) {
         var num = oObj.aData[0];
         if (num < 10) { num = "0" + num; };
@@ -598,6 +598,8 @@ function UpNodeToolTips (nodeid) {
     createToolTip('#nodestate' + nodeid, 'left');
     createToolTip('#detailnode' + nodeid, 'right');
     createToolTip('#updnode' + nodeid, 'right');
+    createToolTip('#refreshnode' + nodeid, 'right');
+    createToolTip('#statenode' + nodeid, 'right');
     createToolTip('#updassoc' + nodeid, 'right');
     createToolTip('#infotypenode' + nodeid, 'bottom');
     createToolTip('#infosleepnode' + nodeid, 'bottom');
@@ -616,7 +618,7 @@ function highlightCell(oCell, timeUpDate) {
     setTimeout( function(){elem.removeClass('highlighted');},4000 );
 };
     
-    
+// Mise à jour de la commande class si affichée.
 function UpCmdClssValue(zwNode, objValue, timeUpDate) {
     var vTable = $('#detNode' + zwNode.Node).dataTable();
     if (vTable[0]) {
@@ -653,66 +655,8 @@ function UpCmdClssValue(zwNode, objValue, timeUpDate) {
                     } else {console.log('no data :' + colTitle + ' Value : '+cValue);} ;
                 }; 
             };
-
-            
-            
-   /*         var idC= getDataTableColIndex(vTable.fnSettings(), 'realValue');
-            var aPos = vTable.fnGetPosition(objCell[0].parentElement);
-            vTable.fnUpdate(objValue.value, aPos[0], idC, false);
-            var idC= getDataTableColIndex(vTable.fnSettings(), 'value');
-            vTable.fnUpdate(objValue.value, aPos[0], idC, false);
-            if (timeUpDate) {
-                var t = 'Update at ' + Date(timeUpDate);
-                objCell[0].title = t;
-                createToolTip('#valCC' + objValue.id, 'right', t);
-            }; */
             vTable.fnStandingRedraw();
             $.each(hCells, function(i, cell) {highlightCell(cell, timeUpDate);});
-      //      $('#valCC' + objValue.id).parents('td').attr('class', 'highlighted');
-      //      setTimeout( function(){$('#valCC' + objValue.id).parents('td').removeClass('highlighted');},4000 );
-        };
-    };
-};
-
-// Mise à jour de la commande class si affichée.
-function UpCmdClss(zwNode, objValue, timeUpDate) {
-    var vTable = $('#detNode' + zwNode.Node).dataTable();
-    if (vTable[0]) {
-        var objCell = $('#valCC' + objValue.id);
-        if (objCell[0])  {
-            var vPos = vTable.fnGetPosition(obj[0].parentElement);
-            var vData = vTable.fnGetData(vPos[0]);
-            var cols = vTable.fnSettings().aoColumns;
-            var colTitle ="";
-            for (var col=0, colLen=cols.length ; col<colLen ; col++) {
-                colTitle = cols[col].sTitle;
-                if (colTitle == 'num') {
-                    console.log('colonne Num');
-                } else if (colTitle == 'realvalue') {
-                    console.log('colonne realvalue');
-                } else {
-                    if (colTitle in objValue) {
-                        console.log(' colonne :' + colTitle);
-                    };
-                }; 
-            };
-                
-
-                
-            
-            var idC= getDataTableColIndex(vTable.fnSettings(), 'realValue');
-            var aPos = vTable.fnGetPosition(objCell[0].parentElement);
-            vTable.fnUpdate(objValue.value, aPos[0], idC, false);
-            var idC= getDataTableColIndex(vTable.fnSettings(), 'value');
-            vTable.fnUpdate(objValue.value, aPos[0], idC, false);
-            if (timeUpDate) {
-                var t = 'Update at ' + Date(timeUpDate);
-                objCell[0].title = t;
-                createToolTip('#valCC' + objValue.id, 'right', t);
-            };
-            vTable.fnStandingRedraw();
-            $('#valCC' + objValue.id).parents('td').attr('class', 'highlighted');
-            setTimeout( function(){$('#valCC' + objValue.id).parents('td').removeClass('highlighted');},4000 );
         };
     };
 };
@@ -744,7 +688,6 @@ function GetListCmdsCtrl (callback) {
     msg['listetypes'] ='cmdsctrl';
     sendMessage(msg, callback);
 };
-
 
 // Gestion d'edition des associations 
 function editNodeAss (zwNode, callback) {
@@ -825,7 +768,19 @@ function setGroupsNode(stage, node, newgrps, callback) {
 function refreshTreeProducts(data) {
   if (data['error'] =='') {
     var tab =[];
-    for (m in  data.data) {tab.push({'data' : data.data[m].manufacturer, 'children' : data.data[m].products})}
+    var tProds = [];
+    for (m in  data.data) {
+        tProds = [];
+        for (p in data.data[m].products) {
+            if (data.data[m].products[p]['config']) {
+                tProds.push({data:{title: data.data[m].products[p]['name'], icon: '/design/common/images/status/check_32.png',
+                                        attr: {'id': 'prod' + m +'p' + p, 'file': data.data[m].products[p]['config']}}});
+            } else {
+                tProds.push({data: data.data[m].products[p]['name']});
+            };
+        };
+        tab.push({data : data.data[m].manufacturer, 'children' : tProds});
+    };
     $('#productTree').jstree({
         "themes" : {
             "theme" : "default",
@@ -835,7 +790,22 @@ function refreshTreeProducts(data) {
         "plugins" : ["themes", "json_data", "ui", "crrm", "hotkeys"],
         "json_data" : {
             "data" : tab}
-    })
+        })
+        .bind("after_open.jstree", function (event, data) {
+           // `data.rslt.obj` is the jquery extended node that was clicked
+            var childs = data.inst._get_children(data.args[0]);
+            var id;
+            for (var c in childs) {
+                try {
+                    var id = childs[c].childNodes[1].getAttribute("id");
+                }
+                catch (err) {id =''}
+                if (id) {
+                    createToolTip('#' + id, 'right', childs[c].childNodes[1].getAttribute("file"));
+                //alert(file);
+                };
+            };
+        })
   }
 };
 
