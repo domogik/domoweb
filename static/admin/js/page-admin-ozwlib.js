@@ -304,7 +304,7 @@ function SetStatusMemberGrp(infonode,group,member,status) {
 // fnRender, callback des élements du tableau autre que texte ou enrichis
     function getNodeIdFromHtml(texte) {
         if (typeof texte=="string") {
-            return parseInt (texte.substring(0, texte.indexOf('<span'))); 
+            return parseInt(texte.substring(0, texte.indexOf('<span')), 10); 
         } else { return texte}
     }
 
@@ -325,7 +325,11 @@ function SetStatusMemberGrp(infonode,group,member,status) {
         if (initState =='completed') {status ='status-active';};
         if (initState.indexOf('in progress') !=-1) {status ='action-processing_f6f6f6';};
         if (initState =='out of operation') {status ='status-warning';};
-        return  nodeId + "<span id='nodestate" + nodeId + "'class='icon16-text-right  icon16-" + status + "' title='" + node.InitState + "' /span>";
+        var str = '' + nodeId;
+            while (str.length < 3) {
+            str = '0' + str;
+        };
+        return  str + "<span id='nodestate" + nodeId + "'class='icon16-text-right  icon16-" + status + "' title='" + node.InitState + "' /span>";
         }
 
     function setNameNode(oObj) {
@@ -774,12 +778,21 @@ function refreshTreeProducts(data) {
         for (p in data.data[m].products) {
             if (data.data[m].products[p]['config']) {
                 tProds.push({data:{title: data.data[m].products[p]['name'], icon: '/design/common/images/status/check_32.png',
-                                        attr: {'id': 'prod' + m +'p' + p, 'file': data.data[m].products[p]['config']}}});
+                                        attr: {'id': 'prod' + m +'p' + p, 
+                                                  'file': data.data[m].products[p]['config'],
+                                                  'type': data.data[m].products[p]['type'],
+                                                  'idp': data.data[m].products[p]['ids'],
+                                    }}});
             } else {
-                tProds.push({data: data.data[m].products[p]['name']});
+                tProds.push({data:{title: data.data[m].products[p]['name'], icon: '/design/common/images/status/unknown_green_32.png',
+                                        attr: {'id': 'prod' + m +'p' + p, 
+                                                  'file': 'No config file',
+                                                  'type': data.data[m].products[p]['type'],
+                                                  'idp': data.data[m].products[p]['ids'],
+                                    }}});
             };
         };
-        tab.push({data : data.data[m].manufacturer, 'children' : tProds});
+        tab.push({data : data.data[m].manufacturer + ' (' + data.data[m].id + ')' , 'children' : tProds});
     };
     $('#productTree').jstree({
         "themes" : {
@@ -792,7 +805,6 @@ function refreshTreeProducts(data) {
             "data" : tab}
         })
         .bind("after_open.jstree", function (event, data) {
-           // `data.rslt.obj` is the jquery extended node that was clicked
             var childs = data.inst._get_children(data.args[0]);
             var id;
             for (var c in childs) {
@@ -801,8 +813,11 @@ function refreshTreeProducts(data) {
                 }
                 catch (err) {id =''}
                 if (id) {
-                    createToolTip('#' + id, 'right', childs[c].childNodes[1].getAttribute("file"));
-                //alert(file);
+                    var text = 'File: ' + childs[c].childNodes[1].getAttribute("file") + "<br>" +
+                                     'Type: ' + childs[c].childNodes[1].getAttribute("type") + "<br>" +
+                                     ' Id: '+ childs[c].childNodes[1].getAttribute("idp");
+                                     
+                    createToolTip('#' + id, 'right', text);
                 };
             };
         })

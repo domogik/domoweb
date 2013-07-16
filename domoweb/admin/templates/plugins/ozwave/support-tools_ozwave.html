@@ -33,7 +33,8 @@ $(function(){
          }
         var msg = {};
         msg['header'] = {'type': 'req-ack'};
-        msg['request'] ='GetLog';
+//        msg['request'] ='GetLog';
+        msg['request'] =$('#logtype').val();
         try {
             msg['lines'] = parseInt($("#nblines").val());
         } catch (err){
@@ -95,12 +96,19 @@ $(function(){
         <p><label for='nblines'>{% trans 'Number of lines to show' %}:</label>
         <input type='text' id='nblines' name='nblines' value="50" />
         <button id='loglisttop' class='button icon16-action-reset'>{% trans "View from beginning" %}</button>
-        <button id='loglistend' class='button icon16-action-reset'>{% trans "View until end" %}</button></p>
+        <button id='loglistend' class='button icon16-action-reset'>{% trans "View until end" %}</button>
+        <select id='logtype' class='listes'>
+            <option value="GetLog">plugin log</option>
+            <option value="GetLogOZW">Openzwave log</option>
+        </select></p>
     <ul class='infos'>
         <div id='logDisplay' style="height:300px;overflow:auto;">{% trans "Click refresh button" %}</div>
     </ul>        
     </div><br>
     <h2>{% trans "Recognized manufacturers and products." %}</h2>
+        <li>
+        <span class='label'>{% trans "Openzwave path configuration" %}:</span>&nbsp;<span class='subtitle' id='confpath2'><u>{% trans "Undefined" %}</u></span>
+        </li>
     <ul class='infos'>
         <div id='productTree' style="height:800px;overflow:auto;">
     </div></ul>
