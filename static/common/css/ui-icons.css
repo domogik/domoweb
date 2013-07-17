@@ -611,6 +611,13 @@
 .icon64-status-primary {background-image:url(../images/status/star_64.png);}
 .icon64-status-unknown-green {background-image:url(../images/status/unknown_green_64.png);}
 .icon64-status-unknown-red {background-image:url(../images/status/unknown_red_64.png);}
+.icon64-status-battery-100 {background-image:url(../images/status/battery_100_64.png);}
+.icon64-status-battery-80 {background-image:url(../images/status/battery_80_64.png);}
+.icon64-status-battery-50 {background-image:url(../images/status/battery_50_64.png);}
+.icon64-status-battery-30 {background-image:url(../images/status/battery_30_64.png);}
+.icon64-status-battery-20 {background-image:url(../images/status/battery_20_64.png);}
+.icon64-status-battery-10 {background-image:url(../images/status/battery_10_64.png);}
+.icon64-status-battery-0 {background-image:url(../images/status/battery_0_64.png);}
 
 .icon32-status-true {background-image:url(../images/status/check_32.png);}
 .icon32-status-false {background-image:url(../images/status/wrong_32.png);}
@@ -625,6 +632,13 @@
 .icon32-status-primary {background-image:url(../images/status/star_32.png);}
 .icon32-status-unknown-green {background-image:url(../images/status/unknown_green_32.png);}
 .icon32-status-unknown-red {background-image:url(../images/status/unknown_red_32.png);}
+.icon32-status-battery-100 {background-image:url(../images/status/battery_100_32.png);}
+.icon32-status-battery-80 {background-image:url(../images/status/battery_80_32.png);}
+.icon32-status-battery-50 {background-image:url(../images/status/battery_50_32.png);}
+.icon32-status-battery-30 {background-image:url(../images/status/battery_30_32.png);}
+.icon32-status-battery-20 {background-image:url(../images/status/battery_20_32.png);}
+.icon32-status-battery-10 {background-image:url(../images/status/battery_10_32.png);}
+.icon32-status-battery-0 {background-image:url(../images/status/battery_0_32.png);}
 
 .icon16-status-true {background-image:url(../images/status/check_16.png);}
 .icon16-status-false {background-image:url(../images/status/wrong_16.png);}
@@ -639,6 +653,13 @@
 .icon16-status-primary {background-image:url(../images/status/star_16.png);}
 .icon16-status-unknown-green {background-image:url(../images/status/unknown_green_16.png);}
 .icon16-status-unknown-red {background-image:url(../images/status/unknown_red_16.png);}
+.icon16-status-battery-100 {background-image:url(../images/status/battery_100_16.png);}
+.icon16-status-battery-80 {background-image:url(../images/status/battery_80_16.png);}
+.icon16-status-battery-50 {background-image:url(../images/status/battery_50_16.png);}
+.icon16-status-battery-30 {background-image:url(../images/status/battery_30_16.png);}
+.icon16-status-battery-20 {background-image:url(../images/status/battery_20_16.png);}
+.icon16-status-battery-10 {background-image:url(../images/status/battery_10_16.png);}
+.icon16-status-battery-0 {background-image:url(../images/status/battery_0_16.png);}
 
 
 .icon16-status-plugin-up {background-image:url(../images/status/plugin_up_16.png);}

@@ -326,10 +326,19 @@ function SetStatusMemberGrp(infonode,group,member,status) {
         if (initState.indexOf('in progress') !=-1) {status ='action-processing_f6f6f6';};
         if (initState =='out of operation') {status ='status-warning';};
         var str = '' + nodeId;
-            while (str.length < 3) {
-            str = '0' + str;
-        };
-        return  str + "<span id='nodestate" + nodeId + "'class='icon16-text-right  icon16-" + status + "' title='" + node.InitState + "' /span>";
+        while (str.length < 3) {str = '0' + str;};
+        var bat = '';
+        if (node.BatteryLevel != -1) {
+            var st = '0'
+                if (node.BatteryLevel >= 85) {st = '100';
+                } else if (node.BatteryLevel >= 60) {st = '80';
+                } else if (node.BatteryLevel >= 40) {st = '50';
+                } else if (node.BatteryLevel >= 25) {st = '30';
+                } else if (node.BatteryLevel >= 15) {st = '20';
+                } else if (node.BatteryLevel >= 5) {st = '10';};
+            bat = "<span id='battery" + nodeId + "'class='icon16-text-right  icon16-status-battery-" + st +"' title='Battery level " + node.BatteryLevel + " %'></span>";
+            }
+        return  str + "<span id='nodestate" + nodeId + "'class='icon16-text-right  icon16-" + status + "' title='" + node.InitState + "'></span>" + bat;
         }
 
     function setNameNode(oObj) {
@@ -600,6 +609,7 @@ function getValueTabCmdClass(vTable, vData, cName) {
 
 function UpNodeToolTips (nodeid) {
     createToolTip('#nodestate' + nodeid, 'left');
+    createToolTip('#battery' + nodeid, 'bottom');
     createToolTip('#detailnode' + nodeid, 'right');
     createToolTip('#updnode' + nodeid, 'right');
     createToolTip('#refreshnode' + nodeid, 'right');
