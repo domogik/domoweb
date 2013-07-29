@@ -632,6 +632,15 @@ function highlightCell(oCell, timeUpDate) {
     setTimeout( function(){elem.removeClass('highlighted');},4000 );
 };
     
+// Mise à jour de la tabNodes depuis une Value Changed
+function UpNodeInTab(zwNode, objValue, timeUpDate) {
+    if (objValue.commandClass == 'COMMAND_CLASS_BATTERY' && objValue.label == 'Battery Level') {
+        zwNode.BatteryLevel = objValue.value;
+        RefreshDataNode(zwNode);
+        cb_RefreshTabHtml(zwNode);
+    };
+};
+
 // Mise à jour de la commande class si affichée.
 function UpCmdClssValue(zwNode, objValue, timeUpDate) {
     var vTable = $('#detNode' + zwNode.Node).dataTable();
@@ -673,6 +682,7 @@ function UpCmdClssValue(zwNode, objValue, timeUpDate) {
             $.each(hCells, function(i, cell) {highlightCell(cell, timeUpDate);});
         };
     };
+    UpNodeInTab(zwNode, objValue, timeUpDate);
 };
 
 function GetinfoNode (nodeid, callback) {
