@@ -281,6 +281,7 @@ $(function(){
                      if (! msg.error) {
                         console.log("Dans Update Node : " + msg.data['Model']);
                         $.notification('success',"Node : " + msg.data['Model'] + "{% trans " name and location updated" %}" );
+                        RefreshDataNode(msg.data);
                         RefreshTabHtml(msg.data);
                      } else {$.notification('error', "{% trans "Can't update name/location node, error : " %} " + msg.error);};
                     break;
@@ -430,8 +431,9 @@ function handleCtrlEvent (event) {
 
     function RefreshNetWorkZW (data) {
         netWorkZW = data
-        $('#confpath').html(netWorkZW['ConfigPath']);                    
-        $('#userpath').html(netWorkZW['UserPath']);                    
+        $('#confpath').html(netWorkZW['ConfigPath']);
+        $('#confpath2').html(netWorkZW['ConfigPath']); 
+        $('#userpath').html(netWorkZW['UserPath']);
         $('#libozwvers').html(netWorkZW['PYOZWLibVers']);
         $('#ozwplugvers').html(netWorkZW['OZWPluginVers']);
         $('#ozwdomowebvers').html(ozwDomowebVers);
