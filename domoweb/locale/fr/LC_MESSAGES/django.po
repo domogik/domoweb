@@ -1314,7 +1314,7 @@ msgstr "(obligatoire)"
 
 #: config/templates/testserver.html:71
 msgid "Testing Domogik Server connection"
-msgstr "Connection au serveur Domogik en cours"
+msgstr "Connexion au serveur Domogik en cours"
 
 #: config/templates/testserver.html:72
 msgid "Loading"
