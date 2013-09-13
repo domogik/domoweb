@@ -194,7 +194,7 @@ class Package(MQModel):
     description = models.TextField(null=True, blank=True)
     documentation = models.CharField(max_length=255, null=True, blank=True)
 
-    detail_id = 'packages.detail.get'
+    detail_id = 'package.detail.get'
     event = None
 
     def __unicode__(self):
@@ -230,8 +230,8 @@ class Package(MQModel):
                     u.save()
             if 'products' in attributes:
                 for product in attributes['products']:
-                    p = PackageProduct(package=p, id=product['id'], name=product['name'], documentation=product['documentation'], device_type_id=product['type'])
-                    p.save()
+                    pp = PackageProduct(package=p, id=product['id'], name=product['name'], documentation=product['documentation'], device_type_id=product['type'])
+                    pp.save()
    
 class PackageUdevRule(models.Model):
     filename = models.CharField(max_length=255, primary_key=True)
@@ -273,11 +273,11 @@ class Client(MQModel):
     
     @classmethod
     def init_event(cls, zmqcontext):
-        cls.event = MQEvent(zmqcontext, 'client', cls.refresh_event, ['clients.list'])
+        cls.event = MQEvent(zmqcontext, 'client', cls.refresh_event, ['client.list'])
         
     @classmethod
     def refresh(cls):
-        _data = Client.get_req('clients.detail.get');
+        _data = Client.get_req('client.detail.get');
         Client.objects.all().delete()
         for id, attributes in _data.iteritems():
             c = Client(id=id, host=attributes['host'], pid=attributes['pid'], status=attributes['status'], configured=attributes['configured'], package_id=attributes['package_id'])
@@ -286,7 +286,7 @@ class Client(MQModel):
             if 'configuration' in data:
                 for parameter in data['configuration']:
                     pid = "%s-%s" % (id.replace('.', '_'), parameter['key'])
-                    p = ClientConfiguration(id=pid, name=parameter['name'], key=parameter['key'], type=parameter['type'], sort=parameter['sort'], client=c)
+                    p = ClientConfiguration(id=pid, name=parameter['key'], key=parameter['key'], type=parameter['type'], sort=0, client=c)
                     if 'default' in parameter:
                         p.default=parameter['default']
                     if 'description' in parameter:
