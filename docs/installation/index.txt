@@ -20,19 +20,7 @@ Repository versions
 
 .. code-block:: bash
 
-    $ hg clone http://hg.domogik.org/domoweb/
-    destination directory: domoweb
-    requesting all changes
-    adding changesets
-    adding manifests
-    adding file changes
-    added 585 changesets with 6180 changes to 4526 files (+5 heads)
-    updating to branch default
-    resolving manifests
-    getting Domoweb.py
-    getting README.txt
-    ...
-    1640 files updated, 0 files merged, 0 files removed, 0 files unresolved
+    $ git clone --recursive https://github.com/domogik/domogik.git
 
 Launch the installation script
 ==============================
