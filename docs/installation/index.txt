@@ -20,7 +20,7 @@ Repository versions
 
 .. code-block:: bash
 
-    $ git clone --recursive https://github.com/domogik/domogik.git
+    $ git clone --recursive https://github.com/domogik/domoweb.git
 
 Launch the installation script
 ==============================
