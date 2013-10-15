@@ -190,9 +190,7 @@ class Package(MQModel):
     author = models.CharField(max_length=255, null=True, blank=True)
     author_email = models.CharField(max_length=255, null=True, blank=True)
     tags = models.CharField(max_length=255, null=True, blank=True)
-    changelog = models.TextField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    documentation = models.CharField(max_length=255, null=True, blank=True)
 
     detail_id = 'package.detail.get'
     event = None
@@ -212,7 +210,7 @@ class Package(MQModel):
             identity = attributes['identity']
             p = Package(id=id, name=identity['name'], type=identity['type'], version=identity['version']
                         , author = identity['author'], author_email = identity['author_email']
-                        , changelog = identity['changelog'], description = identity['description'], documentation = identity['documentation'])
+                        , description = identity['description'])
             if 'tags' in attributes:
                 p.tags = ', '.join(identity['tags'])
             p.save()
