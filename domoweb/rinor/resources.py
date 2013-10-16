@@ -413,6 +413,7 @@ class CommandResource(RinorResource):
         ]
 
     def obj_update(self, bundle, request=None, **kwargs):
+        print "============"
         print bundle
         _data = self._meta.rinor_pipe.put_detail(kwargs['id'], bundle)
         return _data

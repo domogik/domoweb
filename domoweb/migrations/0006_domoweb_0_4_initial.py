@@ -48,8 +48,8 @@ class Migration(SchemaMigration):
             ('device', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.Device'])),
             ('reference', self.gf('django.db.models.fields.CharField')(max_length=50)),
             ('datatype', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['domoweb.DataType'], on_delete=models.DO_NOTHING)),
-            ('last_value', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('last_received', self.gf('django.db.models.fields.CharField')(max_length=50)),
+            ('last_value', self.gf('django.db.models.fields.CharField')(max_length=50, null=True)),
+            ('last_received', self.gf('django.db.models.fields.CharField')(max_length=50, null=True)),
         ))
         db.send_create_signal('domoweb', ['Sensor'])
 

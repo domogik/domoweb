@@ -391,24 +391,28 @@ class Device(RestModel):
     def create_from_json(cls, data):
         device = cls(id=data.id, name=data.name, type_id=data.device_type_id, reference=data.reference)
         device.save()
-        if "command" in data:
-            for command in data.command:
+        if "commands" in data:
+            for cmd in data.commands:
+                command = data.commands[cmd]
                 c = Command(id=command.id, name=command.name, device=device, reference=command.reference, return_confirmation=command.return_confirmation)
                 c.save()
-                for param in command.command_param:
+                for param in command.parameters:
                     p = CommandParam(command=c, key=param.key, datatype_id=param.data_type)
                     p.save()
-        if "sensor" in data:
-            for sensor in data.sensor:
+        if "sensors" in data:
+            for sen in data.sensors:
+                sensor = data.sensors[sen]
                 s = Sensor(id=sensor.id, name=sensor.name, device=device, reference=sensor.reference, datatype_id=sensor.data_type, last_value=sensor.last_value, last_received=sensor.last_received)
                 s.save()
-        if "xpl_command" in data:
-            for xpl_command in data.xpl_command:
-                c = XPLCmd(id=xpl_command.id, device_id= device.id, json_id=xpl_command.json_id)
+        if "xpl_commands" in data:
+            for command in data.xpl_commands:
+                xpl_command = data.xpl_commands[command]
+                c = XPLCmd(id=xpl_command.id, device_id=device.id, json_id=xpl_command.json_id)
                 c.save()
-        if "xpl_stat" in data:
-            for xpl_stat in data.xpl_stat:
-                c = XPLStat(id=xpl_stat.id, device_id= device.id, json_id=xpl_stat.json_id)
+        if "xpl_stats" in data:
+            for stat in data.xpl_stats:
+                xpl_stat = data.xpl_stats[stat]
+                c = XPLStat(id=xpl_stat.id, device_id=device.id, json_id=xpl_stat.json_id)
                 c.save()
         return device
 
@@ -490,8 +494,8 @@ class Sensor(RestModel):
     device = models.ForeignKey(Device)
     reference = models.CharField(max_length=50)
     datatype = models.ForeignKey(DataType, on_delete=models.DO_NOTHING)
-    last_value = models.CharField(max_length=50)
-    last_received = models.CharField(max_length=50)
+    last_value = models.CharField(max_length=50, null=True)
+    last_received = models.CharField(max_length=50, null=True)
 
 class WidgetInstance(models.Model):
     id = models.AutoField(primary_key=True)
