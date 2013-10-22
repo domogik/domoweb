@@ -300,6 +300,10 @@ def install_dependencies():
                           'manifesto',
                           'ws4py'])
 
+    __import__('pkg_resources').get_distribution('django').activate()
+    __import__('pkg_resources').get_distribution('south').activate()
+    __import__('pkg_resources').get_distribution('simplejson').activate()
+
 def updateDb(user, db):
     from django.core import management
     from django.conf import settings
