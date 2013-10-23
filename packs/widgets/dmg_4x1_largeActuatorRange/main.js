@@ -6,7 +6,7 @@ const auto_send = 3000; // 3 seconds
         options: {
             version: 0.1,
             creator: 'Domogik',
-            id: 'dmg_4X1_largeActuatorRange',
+            id: 'dmg_4x1_largeActuatorRange',
             name: 'Large actuator range',
             description: 'Large actuator range with nice design',
             type: 'actuator.range',
