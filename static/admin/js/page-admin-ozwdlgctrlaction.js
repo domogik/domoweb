@@ -1,8 +1,10 @@
  /* Librairie pour boite de dialogue action du controlleur   */ 
 var RunningCtrlAction ={};
 var ListeningStateCtrl = false;
+var DialogInit = false;
 var Action = {action: 'undefine', cmd: 'undefine', cmdsource: 'undefine', cptmsg: 0, nodeid: 0, highpower:'False' , arg :{}, id: 0};
 var InterListening = setInterval(listeningCtrlState, 17000);
+var lastActionSelect =''
 
 BtOnOff = function (parentid , id, backgrds,  texts, callbackClick){
     this.backgrds = backgrds;
@@ -53,147 +55,154 @@ BtOnOff.prototype.getStatus = function() {
 };
 
 function dlgCtrlAction (vData) {
-     var  AVAILABLECMDS = ['None','AddDevice', 'CreateNewPrimary', 'ReceiveConfiguration', 'RemoveDevice', 'RemoveFailedNode', 'HasNodeFailed', 
-                'ReplaceFailedNode', 'TransferPrimaryRole', 'RequestNetworkUpdate', 'RequestNodeNeighborUpdate', 'AssignReturnRoute', 
-                 'DeleteAllReturnRoutes', 'SendNodeInformation', 'ReplicationSend', 'CreateButton', 'DeleteButton'];
-     
-    $('#divCtrlActionDialog').dialog_formctrlaction({
-        tips: gettext("Some actions block controller activity, you must unlock it after session action fisnished.") ,
-        tipsid: 'tipsCtrlActions',
-        sstips: gettext("Status and user informations last action :"),
-        sstipsid : 'tipsStatusActions',
-        fields: [
-            {name : 'selectActCtrl', type:'select', label: gettext("Chose controller action :"), required: false,
-                options: {
-                    placeholder: gettext("Choose a action"),
+    if ( ! DialogInit) {   // in case of multi-call , don't create double instances .
+        DialogInit = true;
+         var  AVAILABLECMDS = ['None','AddDevice', 'CreateNewPrimary', 'ReceiveConfiguration', 'RemoveDevice', 'RemoveFailedNode', 'HasNodeFailed', 
+                    'ReplaceFailedNode', 'TransferPrimaryRole', 'RequestNetworkUpdate', 'RequestNodeNeighborUpdate', 'AssignReturnRoute', 
+                     'DeleteAllReturnRoutes', 'SendNodeInformation', 'ReplicationSend', 'CreateButton', 'DeleteButton'];
+         
+        $('#divCtrlActionDialog').dialog_formctrlaction({
+            tips: gettext("Some actions block controller activity, you must unlock it after session action fisnished.") ,
+            tipsid: 'tipsCtrlActions',
+            sstips: gettext("Status and user informations last action :"),
+            sstipsid : 'tipsStatusActions',
+            fields: [
+                {name : 'selectActCtrl', type:'select', label: gettext("Chose controller action :"), required: false,
+                    options: {
+                        placeholder: gettext("Choose a action"),
+                    },
+                    items: vData, 
                 },
-                items: vData, 
-            },
-            {name : 'actNodeID', type:'text', label:"Node number", required: false, options: {min: 1, max: 3}},
-            {name : 'actHighPower', type:'checkbox', label:"High power", required: false},
-            {name : 'actArgs', type:'text', label:"Argument", required: false, options: {min: 1, max: 3}}
-            ]
-        }); 
-        
-    $('#divCtrlActionDialog').append("<li class='label' id='tipsInfoCmd'>"+gettext("No action")+"</li>" );     
-    $('#actHighPower').attr('title', gettext('Used only with the AddDevice, AddController, RemoveDevice and RemoveController commands.' +
-                                        'Usually when adding or removing devices, the controller operates at low power so that the controller ' +
-                                        'must be physically close to the device for security reasons. '+
-                                        'If high Power is true, the controller will operate at normal power levels instead. Defaults to false.'));
-    $('#selectActCtrl').after($('#tipsInfoCmd'));
-    RunningCtrlAction = new BtOnOff('divCtrlActionDialog', 'runCtrlAction', ['button icon16-action-play', 'button icon16-action-processing_ffffff'],
-                        ['Start action', 'Stop action'], handle_RequestCtrlAction);
-    $('#selectActCtrl').before($('#runCtrlAction'));
-    $('#selectActCtrl').attr('lockSelect','');
-    $('#tipsStatusActions').removeClass('tip').addClass('icon16-text-right icon16-status-true');
-    $('#tipsStatusActions').css('font-size', 12);
-    $('#tipsInfoCmd').css('font-size', 12);
-    $('label[for=actArgs],#actArgs').hide(); // Not Used at this time
-    createToolTip('#actHighPower', 'left');
-    $('#divCtrlActionDialog').dialog_formctrlaction('addbutton', {
-        title: gettext("Controller actions"),
-        button: "#ctrlactions",
-        onok: function(values) {
-            var self = this;
-            // Submit form
-            console.log('Sortie action controlleur');
-        }
-    });
-
-    $('#selectActCtrl').on('change', function(e, sel) {
-        var lockSelect = $('#selectActCtrl').attr('lockSelect');
-        if (lockSelect == '') {
-            var elem = $(e.target);
-            console.log('select change :', listCmdCtrl[sel.selected]);
-            $('#tipsInfoCmd').text(listCmdCtrl[sel.selected]);
-            $('label[for=actArgs],#actArgs').hide(); // Not Used at this time
-            switch (sel.selected) {
-                case AVAILABLECMDS[0] :  // 'None'
-                    $('label[for=actNodeID],#actNodeID').hide();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    break;
-                case AVAILABLECMDS[1] :  // 'AddDevice'
-                    $('label[for=actNodeID],#actNodeID').hide();
-                    $('label[for=actHighPower],#actHighPower').show();
-                    break;
-                case AVAILABLECMDS[2] :  // 'CreateNewPrimary'
-                    $('label[for=actNodeID],#actNodeID').hide();
-                    $('label[for=actHighPower],#actHighPower').show();
-                    break;
-                case AVAILABLECMDS[3] :  // 'ReceiveConfiguration'
-                    $('label[for=actNodeID],#actNodeID').hide();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    break;
-                case AVAILABLECMDS[4] :  // 'RemoveDevice'
-                    $('label[for=actNodeID],#actNodeID').hide();
-                    $('label[for=actHighPower],#actHighPower').show();
-                    break;
-                case AVAILABLECMDS[5] :  // 'RemoveFailedNode'
-                    $('label[for=actNodeID],#actNodeID').show();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    break;
-                case AVAILABLECMDS[6] :  // 'HasNodeFailed'
-                    $('label[for=actNodeID],#actNodeID').show();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    break;
-                case AVAILABLECMDS[7] :  // 'ReplaceFailedNode'
-                    $('label[for=actNodeID],#actNodeID').show();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    break;
-                case AVAILABLECMDS[8] :  // 'TransferPrimaryRole'
-                    $('label[for=actNodeID],#actNodeID').hide();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    break;
-                case AVAILABLECMDS[9] :  // 'RequestNetworkUpdate'
-                    $('label[for=actNodeID],#actNodeID').hide();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    break;
-                case AVAILABLECMDS[10] :  // 'RequestNodeNeighborUpdate'
-                    $('label[for=actNodeID],#actNodeID').show();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    break;
-                case AVAILABLECMDS[11] :  // 'AssignReturnRoute'
-                    $('label[for=actNodeID],#actNodeID').show();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    $('label[for=actArgs],#actArgs').show(); //  Used for node to 
-                    var t= $('#tipsInfoCmd').text();
-                    $('#tipsInfoCmd').text(t + ' "Node number" = The node that we will use the route., "Argument" = The node that we will change the route.');
-                    break;
-                case AVAILABLECMDS[12] :  // 'DeleteAllReturnRoutes'
-                    $('label[for=actNodeID],#actNodeID').show();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    break;
-                case AVAILABLECMDS[13] :  // 'SendNodeInformation'
-                    $('label[for=actNodeID],#actNodeID').show();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    break;
-                case AVAILABLECMDS[14] :  // 'ReplicationSend'
-                    $('label[for=actNodeID],#actNodeID').hide();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    break;
-                case AVAILABLECMDS[15] :   // 'CreateButton'
-                    $('label[for=actNodeID],#actNodeID').show();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    $('label[for=actArgs],#actArgs').show(); // Probably  Used for id 
-                    break;
-
-             /*    case AVAILABLECMDS[16] :  // 'DeleteButton' */
-                case AVAILABLECMDS[16] : // 'DeleteButton'
-                    $('label[for=actNodeID],#actNodeID').show();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    $('label[for=actArgs],#actArgs').show(); // Probably  Used for id 
-                    break;
-                default :
-                    $('label[for=actNodeID],#actNodeID').hide();
-                    $('label[for=actHighPower],#actHighPower').hide();
-                    console.log('ctrl unknoww action : ', sel.selected);
+                {name : 'actNodeID', type:'text', label:"Node number", required: false, options: {min: 1, max: 3}},
+                {name : 'actHighPower', type:'checkbox', label:"High power", required: false},
+                {name : 'actArgs', type:'text', label:"Argument", required: false, options: {min: 1, max: 3}}
+                ]
+            }); 
+            
+        $('#divCtrlActionDialog').append("<li class='label' id='tipsInfoCmd'>"+gettext("No action")+"</li>" );     
+        $('#actHighPower').attr('title', gettext('Used only with the AddDevice, AddController, RemoveDevice and RemoveController commands.' +
+                                            'Usually when adding or removing devices, the controller operates at low power so that the controller ' +
+                                            'must be physically close to the device for security reasons. '+
+                                            'If high Power is true, the controller will operate at normal power levels instead. Defaults to false.'));
+        $('#selectActCtrl').after($('#tipsInfoCmd'));
+        RunningCtrlAction = new BtOnOff('divCtrlActionDialog', 'runCtrlAction', ['button icon16-action-play', 'button icon16-action-processing_ffffff'],
+                            ['Start action', 'Stop action'], handle_RequestCtrlAction);
+        $('#selectActCtrl').before($('#runCtrlAction'));
+        $('#selectActCtrl').attr('lockSelect','');
+        $('#tipsStatusActions').removeClass('tip').addClass('icon16-text-right icon16-status-true');
+        $('#tipsStatusActions').css('font-size', 12);
+        $('#tipsInfoCmd').css('font-size', 12);
+        $('label[for=actArgs],#actArgs').hide(); // Not Used at this time
+        createToolTip('#actHighPower', 'left');
+        $('#divCtrlActionDialog').dialog_formctrlaction('addbutton', {
+            title: gettext("Controller actions"),
+            button: "#ctrlactions",
+            onok: function(values) {
+                var self = this;
+                // Submit form
+                console.log('Sortie action controlleur');
+            }
+        });
+        $('#divCtrlActionDialog').bind("dialogclose", function(event, ui) {
+            lastActionSelect = $('#selectActCtrl')[0].value;
+        });
+        $('#divCtrlActionDialog').bind("dialogopen", function(event, ui) {
+            $('#selectActCtrl')[0].value = lastActionSelect;
+        });
+        $('#selectActCtrl').on('change', function(e, sel) {
+            var lockSelect = $('#selectActCtrl').attr('lockSelect');
+            if (lockSelect == '') {
+                var elem = $(e.target);
+                console.log('select change :', listCmdCtrl[sel.selected]);
+                $('#tipsInfoCmd').text(listCmdCtrl[sel.selected]);
+                $('label[for=actArgs],#actArgs').hide(); // Not Used at this time
+                switch (sel.selected) {
+                    case AVAILABLECMDS[0] :  // 'None'
+                        $('label[for=actNodeID],#actNodeID').hide();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        break;
+                    case AVAILABLECMDS[1] :  // 'AddDevice'
+                        $('label[for=actNodeID],#actNodeID').hide();
+                        $('label[for=actHighPower],#actHighPower').show();
+                        break;
+                    case AVAILABLECMDS[2] :  // 'CreateNewPrimary'
+                        $('label[for=actNodeID],#actNodeID').hide();
+                        $('label[for=actHighPower],#actHighPower').show();
+                        break;
+                    case AVAILABLECMDS[3] :  // 'ReceiveConfiguration'
+                        $('label[for=actNodeID],#actNodeID').hide();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        break;
+                    case AVAILABLECMDS[4] :  // 'RemoveDevice'
+                        $('label[for=actNodeID],#actNodeID').hide();
+                        $('label[for=actHighPower],#actHighPower').show();
+                        break;
+                    case AVAILABLECMDS[5] :  // 'RemoveFailedNode'
+                        $('label[for=actNodeID],#actNodeID').show();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        break;
+                    case AVAILABLECMDS[6] :  // 'HasNodeFailed'
+                        $('label[for=actNodeID],#actNodeID').show();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        break;
+                    case AVAILABLECMDS[7] :  // 'ReplaceFailedNode'
+                        $('label[for=actNodeID],#actNodeID').show();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        break;
+                    case AVAILABLECMDS[8] :  // 'TransferPrimaryRole'
+                        $('label[for=actNodeID],#actNodeID').hide();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        break;
+                    case AVAILABLECMDS[9] :  // 'RequestNetworkUpdate'
+                        $('label[for=actNodeID],#actNodeID').hide();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        break;
+                    case AVAILABLECMDS[10] :  // 'RequestNodeNeighborUpdate'
+                        $('label[for=actNodeID],#actNodeID').show();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        break;
+                    case AVAILABLECMDS[11] :  // 'AssignReturnRoute'
+                        $('label[for=actNodeID],#actNodeID').show();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        $('label[for=actArgs],#actArgs').show(); //  Used for node to 
+                        var t= $('#tipsInfoCmd').text();
+                        $('#tipsInfoCmd').text(t + ' "Node number" = The node that we will use the route., "Argument" = The node that we will change the route.');
+                        break;
+                    case AVAILABLECMDS[12] :  // 'DeleteAllReturnRoutes'
+                        $('label[for=actNodeID],#actNodeID').show();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        break;
+                    case AVAILABLECMDS[13] :  // 'SendNodeInformation'
+                        $('label[for=actNodeID],#actNodeID').show();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        break;
+                    case AVAILABLECMDS[14] :  // 'ReplicationSend'
+                        $('label[for=actNodeID],#actNodeID').hide();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        break;
+                    case AVAILABLECMDS[15] :   // 'CreateButton'
+                        $('label[for=actNodeID],#actNodeID').show();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        $('label[for=actArgs],#actArgs').show(); // Probably  Used for id 
+                        break;
+    
+                 /*    case AVAILABLECMDS[16] :  // 'DeleteButton' */
+                    case AVAILABLECMDS[16] : // 'DeleteButton'
+                        $('label[for=actNodeID],#actNodeID').show();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        $('label[for=actArgs],#actArgs').show(); // Probably  Used for id 
+                        break;
+                    default :
+                        $('label[for=actNodeID],#actNodeID').hide();
+                        $('label[for=actHighPower],#actHighPower').hide();
+                        console.log('ctrl unknoww action : ', sel.selected);
+                };
+            } else {
+                $('#selectActCtrl options[value='+lockSelect+']').attr("selected", "selected");
             };
-        } else {
-            $('#selectActCtrl options[value='+lockSelect+']').attr("selected", "selected");
-        };
-        console.log('rerer');
-    });
-}
+        });
+    };
+};
 
 function updateStateAction(state, locked){
     if (locked === undefined) { locked = false; }
@@ -298,34 +307,27 @@ function handle_RequestCtrlAction(cmd) {
         msg.action.id = Math.floor((Math.random()*1000)+1);
         Action = msg.action;
         sendMessage(msg, function(data){
-                if (data['error'] == "") {
-                    $('#tipsStatusActions').text('Action "' + data['action'] + '" ,status "' +data['cmdstate'] +
-                                                                '", information : ' + data['message']);
-                    console.log("Dans handle_RequestCtrlAction : " + JSON.stringify(data));
-                    $.notification('success','Controleur received action : ' + data['action'] + ', commande : ' + data['cmdstate']  );
-                    updateStateAction(data['cmdstate']);
-                    checkStatesCtrl('Starting', data);
-                } else { // Erreur dans la lib python
-                    $('#tipsStatusActions').text('Action "' + data['action'] + '" ,status "' +data['cmdstate'] +
-                                                                '", information : ' + data['error_msg']);
-                    console.log("no controleur action, error : " + data['error']);                          
-                    $.notification('error', 'Action  (' + action+ ') command (' +cmd + ') Controller report : ' + data['error'] + ', ' +
-                                        data['error_msg'] + ', please check input');
-                    updateStateAction(data['cmdstate']);
-                    checkStatesCtrl(data['state'], data);
-                };
-            })
-   /*         .fail(function(jqXHR, status, error){
-               if (jqXHR.status == 400)
-                    $.notification('error', 'No confirmation for controller action : (' + action + ') please check your configuration');
-                    var messXpl ={};
-                    messXpl['Error'] =  "New action send";
-                    messXpl['action'] =  Action;
-                    updateStateAction('stop');
-                    return messXpl;
-            }); */
-        };
+            if (data['error'] == "") {
+                $('#tipsStatusActions').text('Action "' + data['action'] + '" ,status "' +data['cmdstate'] +
+                                                            '", information : ' + data['message']);
+                console.log("Dans handle_RequestCtrlAction : " + JSON.stringify(data));
+                $.notification('success','Controleur received action : ' + data['action'] + ', commande : ' + data['cmdstate']  );
+                updateStateAction(data['cmdstate']);
+                checkStatesCtrl('Starting', data);
+            } else { // Erreur dans la lib python
+                $('#tipsStatusActions').text('Action "' + data['action'] + '" ,status "' +data['cmdstate'] +
+                                                            '", information : ' + data['error_msg']);
+                console.log("no controleur action, error : " + data['error']);                          
+                $.notification('error', 'Action  (' + action+ ') command (' +cmd + ') Controller report : ' + data['error'] + ', ' +
+                                    data['error_msg'] + ', please check input');
+                updateStateAction(data['cmdstate']);
+                checkStatesCtrl(data['state'], data);
+            };
+        })
+    } else {
+        updateStateAction('stop');
     };
+};
     
  /*  ControllerState 
                         ControllerState_Normal = 0,                             /**< No command in progress.  

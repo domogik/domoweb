@@ -92,13 +92,13 @@ function createWebSocket(host, cbHandleMsg, cbAtOpen) {
                 wsDomogik.idws = false;
                 setStatusWS('up');
                 var d = new Date();
-                console.log('Client WebSocket State::' + 'OPEN');
+                console.log('Client WebSocket State:' + 'OPEN');
                 };
 
             wsDomogik.onclose = function(event) {
                 setStatusWS('down');
                 var d = new Date();
-                console.log('Client WebSocket State::' + 'CLOSED ' + event.code + ' ' + event.reason + ' ' + event.wasClean);
+                console.log('Client WebSocket State:' + 'CLOSED ' + event.code + ' ' + event.reason + ' ' + event.wasClean);
                 wsDomogik.idws = false;
                 };
             wsDomogik.onerror = function(event) {
@@ -135,9 +135,14 @@ function createWebSocket(host, cbHandleMsg, cbAtOpen) {
                 console.log ('Recu par websocket : ', data);
                 if (data.header) {
                     if ((data.header.type  == 'confirm-connect') &&  (data.header.id == 'ws_serverUI')) {
-                        this.idws = data.header.idws;
-                        $.notification('success',gettext('Connection to plugin server running'))
-                        if (cbAtOpen) {cbAtOpen();};
+                        if (this.idws == data.header.idws) {
+                            console.log('Client WebSocket already confirmed, not call init function.');
+                        } else {
+                            this.idws = data.header.idws;
+                            console.log('Client WebSocket confirmed, call init function...');
+                            $.notification('success',gettext('Connection to plugin server running'))
+                            if (cbAtOpen) {cbAtOpen();};
+                        };
                     } else if (this.idws) {
                             if (this.idws == data.header.idws) {
                             //    console.log('handle message');
