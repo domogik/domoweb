@@ -90,10 +90,10 @@ $(function(){
     });
     
     $("#refreshneighbors").click(function(){
-        buildKineticNeighbors();
+        neighborsGraph.buildKineticNeighbors();
         return false;
     });
-
+    
     $("#testNetwork").click(function(){
         var msg = {};
         msg['header'] = {'type': 'req-ack'};
@@ -175,8 +175,6 @@ $(function(){
                     <th scope='col'>{% trans "Value" %}</th>
                 </tr>
             </thead>
-            <tbody>
-            </tbody>
     </table>
     </div>
 </section>
@@ -190,7 +188,7 @@ $(function(){
     <div id='nodestat'>
         <ul class='infos'>
         <span id='resultTestNode'>{% trans "No test launched" %}</span>
-        </ul><tr>
+        </ul>
         <table id='tabNodeStat' class='simple'>
             <thead>
                 <tr>
@@ -198,8 +196,6 @@ $(function(){
                     <th scope='col'>{% trans "Value" %}</th>
                 </tr>
             </thead>
-            <tbody>
-            </tbody>
-    </table>
+        </table>
     </div>
 </section>

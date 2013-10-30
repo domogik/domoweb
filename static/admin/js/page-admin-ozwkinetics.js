@@ -1,28 +1,26 @@
 // libairie pour représentation du voisinage et association groupe de device zwave
-var nborsStage, grpsStage;
-var areas, scrollbars;
-var nodeLayer, linkLayer, scrollLayer, tooltipLayer;
-var tooltip;
+var grpsStage;
 
-function getLabelDevice(node) {
-    if (node.Name != "Undefined" && node.Name !="") {
-        return node.Name + '\n(' + node.Node +')';
+function getLabelDevice(nodeZW) {
+    if (nodeZW.Name != "Undefined" && nodeZW.Name !="") {
+        return nodeZW.Name + '\n(' + nodeZW.Node +')';
     } else {
-        return "Node " + node.Node;
+        return "Node " + nodeZW.Node;
     };
 };
 
-KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
-    this.nodeobj = node;
-    this.pictNodeNeig = new Kinetic.Group({
+KtcNode = function  (x,y,r,nodeZW,layer, graph) {
+    this.nodeZW = nodeZW;
+    this.ktcGraph = graph;
+    this.pictureNode = new Kinetic.Group({
           x: x,
           y: y,
           draggable: true,
-          name: 'nodeneighbor',
-          nodeP : this
+          name: 'picturenode',
+          ktcNode : this
         });
     var op =1;
-    if (this.nodeobj['State sleeping']) {op = 0.3; };
+    if (this.nodeZW['State sleeping']) {op = 0.3; };
     this.pictureImg = new Kinetic.Circle({
         x: 0,
         y: 0,
@@ -40,9 +38,9 @@ KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
         shadowOpacity: 0.5,
         name:"pictureImg",
         opacity: op,
-        nodeP : this
+        ktcNode : this
         });
-    var t = getLabelDevice(node);
+    var t = getLabelDevice(this.nodeZW);
     if (t.length > ((2*r)/5)) { yt = 8-r;
     } else {yt = -5;};
     this.text = new Kinetic.Text({
@@ -55,11 +53,11 @@ KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
         fill: "black",
         align : "center"
     });
-    this.pictNodeNeig.add(this.pictureImg);
-    this.pictNodeNeig.add(this.text);
+    this.pictureNode.add(this.pictureImg);
+    this.pictureNode.add(this.text);
     this.links = new Array ();
     this.layer = layer;
-    this.pictNodeNeig.on("mouseover touchstart", function() {
+    this.pictureNode.on("mouseover touchstart", function() {
         var img = this.get(".pictureImg");
         img[0].setFillRadialGradientColorStops([0, 'turquoise', 1, 'blue']);
         img[0].setOpacity(0.5);
@@ -67,48 +65,48 @@ KtcNodeNeighbor = function  (x,y,r,node,layer,stage) {
         document.body.style.cursor = "pointer";
         });
 
-    this.pictNodeNeig.on("mouseout touchend", function() {
+    this.pictureNode.on("mouseout touchend", function() {
         var img = this.get(".pictureImg");
-        img[0].setFillRadialGradientColorStops(this.attrs.nodeP.getColorState());
-        tooltip.hide();
+        img[0].setFillRadialGradientColorStops(this.attrs.ktcNode.getColorState());
+        this.attrs.ktcNode.ktcGraph.tooltip.hide();
         var op =1;
-        if (this.attrs.nodeP.nodeobj['State sleeping']) {op = 0.3; };
+        if (this.attrs.ktcNode.nodeZW['State sleeping']) {op = 0.3; };
         img[0].setOpacity(op);
         this.parent.draw();
-        tooltipLayer.draw();
+        this.attrs.ktcNode.ktcGraph.tooltipLayer.draw();
         document.body.style.cursor = "default";
     });
 
-    this.pictNodeNeig.on("dragmove", function() {
-      for (var i=0; i<this.attrs.nodeP.links.length;i++) {
-          this.attrs.nodeP.links[i].follownode(this.attrs.nodeP);
+    this.pictureNode.on("dragmove", function() {
+      for (var i=0; i<this.attrs.ktcNode.links.length;i++) {
+          this.attrs.ktcNode.links[i].follownode(this.attrs.ktcNode);
       };
       this.moveToTop();         
     });
-    this.pictNodeNeig.on("mousemove", function(){
-        var mousePos = stage.getMousePosition();
-        tooltip.setPosition(mousePos.x + 5, mousePos.y + 5);
-        var t = this.attrs.nodeP.nodeobj.Type + ', Quality : ' + this.attrs.nodeP.nodeobj.ComQuality + '%';
-        for (var i=0; i<this.attrs.nodeP.nodeobj.Groups.length; i++) {
-            if (this.attrs.nodeP.nodeobj.Groups[i].members.length !==0) {
+    this.pictureNode.on("mousemove", function(){
+        var mousePos = this.attrs.ktcNode.ktcGraph.ktcStage.getMousePosition();
+        this.attrs.ktcNode.ktcGraph.tooltip.setPosition(mousePos.x + 5, mousePos.y + 5);
+        var t = this.attrs.ktcNode.nodeZW.Type + ', Quality : ' + this.attrs.ktcNode.nodeZW.ComQuality + '%';
+        for (var i=0; i<this.attrs.ktcNode.nodeZW.Groups.length; i++) {
+            if (this.attrs.ktcNode.nodeZW.Groups[i].members.length !==0) {
                 t = t+ '\n associate with node : ';
-                for (var ii=0; ii<this.attrs.nodeP.nodeobj.Groups[i].members.length; ii++) {
-                    t= t  + this.attrs.nodeP.nodeobj.Groups[i].members[ii].id+ ',';
+                for (var ii=0; ii<this.attrs.ktcNode.nodeZW.Groups[i].members.length; ii++) {
+                    t= t  + this.attrs.ktcNode.nodeZW.Groups[i].members[ii].id+ ',';
                 };
             } else {
              t = t+ '\n no association ';
             };
-            t = t + ' in index ' + this.attrs.nodeP.nodeobj.Groups[i].index + ' named :' + this.attrs.nodeP.nodeobj.Groups[i].label;
+            t = t + ' in index ' + this.attrs.ktcNode.nodeZW.Groups[i].index + ' named :' + this.attrs.ktcNode.nodeZW.Groups[i].label;
         };
-        tooltip.setText(t);
-        tooltip.show();
-        tooltipLayer.draw();
+        this.attrs.ktcNode.ktcGraph.tooltip.setText(t);
+        this.attrs.ktcNode.ktcGraph.tooltip.show();
+        this.attrs.ktcNode.ktcGraph.tooltipLayer.draw();
         mousePos=0;
     });
-    this.layer.add(this.pictNodeNeig); 
+    this.layer.add(this.pictureNode); 
 };
 
-KtcNodeNeighbor.prototype.addlink = function(linker) {
+KtcNode.prototype.addlink = function(linker) {
     var idx = this.links.indexOf(linker);
     if (idx == -1) {
         this.links.push(linker);
@@ -116,7 +114,7 @@ KtcNodeNeighbor.prototype.addlink = function(linker) {
     };
 };               
 
-KtcNodeNeighbor.prototype.removelink= function(linker) {
+KtcNode.prototype.removelink= function(linker) {
     var idx = this.links.indexOf(linker);
     if (idx == -1) {
         this.links[idx].destroy();
@@ -125,11 +123,11 @@ KtcNodeNeighbor.prototype.removelink= function(linker) {
     };
 };
 
-KtcNodeNeighbor.prototype.checklinks= function() {
+KtcNode.prototype.checklinks= function() {
     var idn = -1;
     for (var idx in this.links) {
-        if (this.links[idx].nodes[1].nodeobj.Node != this.nodeobj.Node) {
-            idn = this.nodeobj.Neighbors.indexOf(this.links[idx].nodes[1].nodeobj.Node);
+        if (this.links[idx].ktcNodes[1].nodeZW.Node != this.nodeZW.Node) {
+            idn = this.nodeZW.Neighbors.indexOf(this.links[idx].ktcNodes[1].nodeZW.Node);
             if (idn == -1) { // Link must me removed
                 this.links[idx].destroy();
                 this.links.splice(idx, 1);
@@ -137,25 +135,25 @@ KtcNodeNeighbor.prototype.checklinks= function() {
         };
     };
     var create = true;
-    for (idn in this.nodeobj.Neighbors) {
+    for (idn in this.nodeZW.Neighbors) {
         create = true;
         for (idx in this.links) {
-            if (this.links[idx].nodes[1].nodeobj.Node == this.nodeobj.Neighbors[idn]) {
+            if (this.links[idx].ktcNodes[1].nodeZW.Node == this.nodeZW.Neighbors[idn]) {
                 create = false;
                 break;
             };
         };
         if (create) {
-            N2 = GetZWNodeById(this.nodeobj.Neighbors[idn]);
-            if (N2) {new Clink(this, N2.ktcNode, linkLayer);};
+            N2 = GetZWNodeById(this.nodeZW.Neighbors[idn]);
+            if (N2) {new KtcLink(this, N2.ktcNode, this.ktcGraph.linkLayer);};
         };
     };
-    linkLayer.draw();
+    this.ktcGraph.linkLayer.draw();
 };
 
-KtcNodeNeighbor.prototype.getColorState = function() {
+KtcNode.prototype.getColorState = function() {
     var colors = [0, 'yellow', 0.5, 'orange', 1, 'blue'];
-    switch (this.nodeobj['InitState']) {
+    switch (this.nodeZW['InitState']) {
         case 'Uninitialized' : 
             colors = [0, 'red', 0.5, 'orange', 1, 'red'];
             break;
@@ -184,37 +182,38 @@ KtcNodeNeighbor.prototype.getColorState = function() {
     return colors;
     };
 
-KtcNodeNeighbor.prototype.getTypeLink = function(Node2) {
+KtcNode.prototype.getTypeLink = function(Node2) {
     var indice = 1, color = 'green';
-    if (this.nodeobj.Capabilities.indexOf("Primary Controller" ) != -1 ) { indice =8;  color ='blue'}
-    if (this.nodeobj.Capabilities.indexOf("Routing") != -1) {indice = indice + 2;}
-    if (this.nodeobj.Capabilities.indexOf("Beaming" ) != -1) {indice = indice + 1;}
-    if (this.nodeobj.Capabilities.indexOf("Listening" ) != -1) { indice = indice + 3;}
-    if (this.nodeobj.Capabilities.indexOf("Security") != -1) { color ='yellow';}
-    if (this.nodeobj.Capabilities.indexOf("FLiRS") != -1) { indice = indice + 2;}
-    if (this.nodeobj['State sleeping']) {indice = indice -2; color = 'orange';}
-    if (this.nodeobj['InitState'] == 'Out of operation') {indice = 1,  color = 'red';}
+    if (this.nodeZW.Capabilities.indexOf("Primary Controller" ) != -1 ) { indice =8;  color ='blue'}
+    if (this.nodeZW.Capabilities.indexOf("Routing") != -1) {indice = indice + 2;}
+    if (this.nodeZW.Capabilities.indexOf("Beaming" ) != -1) {indice = indice + 1;}
+    if (this.nodeZW.Capabilities.indexOf("Listening" ) != -1) { indice = indice + 3;}
+    if (this.nodeZW.Capabilities.indexOf("Security") != -1) { color ='yellow';}
+    if (this.nodeZW.Capabilities.indexOf("FLiRS") != -1) { indice = indice + 2;}
+    if (this.nodeZW['State sleeping']) {indice = indice -2; color = 'orange';}
+    if (this.nodeZW['InitState'] == 'Out of operation') {indice = 1,  color = 'red';}
     return {'indice' : indice, 'color' : color}
 };
 
-KtcNodeNeighbor.prototype.update = function() {
+KtcNode.prototype.update = function() {
     this.checklinks();
     this.pictureImg.setFillRadialGradientColorStops(this.getColorState());
-    tooltip.hide();
+    this.ktcGraph.tooltip.hide();
     var op =1;
-    if (this.nodeobj['State sleeping']) {op = 0.3; };
+    if (this.nodeZW['State sleeping']) {op = 0.3; };
     this.pictureImg.setOpacity(op);
     for (var l in this.links)  {this.links[l].update();};
-    this.pictNodeNeig.draw();
-    tooltipLayer.draw();
-    console.log('redraw kinetic node :' + this.nodeobj.Node);
+    this.pictureNode.draw();
+    this.ktcGraph.tooltipLayer.draw();
+    this.ktcGraph.linkLayer.draw();
+    console.log('redraw kinetic node :' + this.nodeZW.Node);
 };
 
-CLink = function (N1,N2,layer) {
+KtcLink = function (N1,N2,layer) {
             // build linelink
     var t = N1 .getTypeLink(N2);
-    var x1 = N1.pictNodeNeig.getX(), y1 = N1.pictNodeNeig.getY();
-    var x2 = N2.pictNodeNeig.getX(), y2 = N2.pictNodeNeig.getY();   
+    var x1 = N1.pictureNode.getX(), y1 = N1.pictureNode.getY();
+    var x2 = N2.pictureNode.getX(), y2 = N2.pictureNode.getY();   
     var xm = (x1+x2)/2 , ym = (y1 + y2) / 2;
     this.link = new Kinetic.Line({
       strokeWidth: t['indice'], //10,
@@ -230,42 +229,42 @@ CLink = function (N1,N2,layer) {
         }]
     });
     this.layer = layer;
-    this.nodes = new Array (N1, N2);
+    this.ktcNodes = new Array (N1, N2);
     this.layer.add(this.link);
     N1.addlink(this);
     N2.addlink(this);
 };
 
-CLink.prototype.addnode = function(node) {
-    var idx = this.nodes.indexOf(node);
+KtcLink.prototype.addnode = function(ktcNode) {
+    var idx = this.ktcNodes.indexOf(ktcNode);
     if (idx == -1) {
-        this.nodes.push(nodes);                
-        node.addnode(this);           
+        this.ktcNodes.push(ktcNode);                
+        ktcNode.addnode(this);           
         this.layer.draw();
     };
 };               
-CLink.prototype.removelink= function(node) {
-    var idx = this.nodes.indexOf(node);
+KtcLink.prototype.removelink= function(ktcNode) {
+    var idx = this.ktcNodes.indexOf(ktcNode);
     if (idx != -1) {
-        this.nodes.splice(idx, 1);
-        node.removenode(this);           
+        this.ktcNodes.splice(idx, 1);
+        ktcNode.removenode(this);           
         this.layer.draw();
     };
 };
 
-CLink.prototype.asnode= function(node) {
-    var id = this.nodes.indexOf(node);
+KtcLink.prototype.asnode= function(ktcNode) {
+    var id = this.ktcNodes.indexOf(ktcNode);
     if (id1 != -1) {return true;
     }else {return false};
 };
     
-CLink.prototype.follownode = function(node) { 
-    var id1 = this.nodes.indexOf(node);
+KtcLink.prototype.follownode = function(ktcNode) { 
+    var id1 = this.ktcNodes.indexOf(ktcNode);
     var id2 =0;
     if (id1 != -1) {
         if (id1 ==0) {id2 =1;};
-        var p2 = this.nodes[id2].pictNodeNeig.getPosition();
-        var p1 = node.pictNodeNeig.getPosition();
+        var p2 = this.ktcNodes[id2].pictureNode.getPosition();
+        var p1 = ktcNode.pictureNode.getPosition();
         var pm = { 'x' : (p2.x+ p1.x) /2, 'y' : (p2.y + p1.y) /2};
         this.link.attrs.points[id1] = p1;
         this.link.attrs.points[id2] = pm;
@@ -276,11 +275,265 @@ CLink.prototype.follownode = function(node) {
         }
 };
 
-CLink.prototype.update= function() {
-    var t = this.nodes[0].getTypeLink(this.nodes[2]);
+KtcLink.prototype.update= function() {
+    var t = this.ktcNodes[0].getTypeLink(this.ktcNodes[2]);
     this.link.setStrokeWidth (t['indice']);
     this.link.setStroke(t['color']);
     this.layer.draw();
+};
+
+
+ktcScrollbar = function (contenaire, direction, layer) {
+    this.ktcParent = contenaire;
+    this.direction = direction;
+    var thick = 20;
+    var lenght = 130;
+    if (this.ktcParent.ktcStage.nodeType = "Stage") {
+        thick = 20;
+        lenght = 130;
+    };
+    if (direction == 'horizontal') {
+        lenght = (this.ktcParent.ktcStage.getWidth() - thick)  / 3; //130;
+        var xOrg = 0, yOrg = this.ktcParent.ktcStage.getHeight() - thick;
+        var areaWidth = this.ktcParent.ktcStage.getWidth() - thick;
+        var areaHeight = thick;
+        var barWidth = lenght;
+        var barHeight = thick;
+        var xBar = (areaWidth - barWidth)/2; 
+        var yBar = yOrg;
+    } else { 
+        lenght = (this.ktcParent.ktcStage.getHeight() - thick)  / 3; //130;
+        var xOrg = this.ktcParent.ktcStage.getWidth() - thick, yOrg = 0;
+        var areaWidth = thick;
+        var areaHeight = this.ktcParent.ktcStage.getHeight() - thick;
+        var barWidth = thick;
+        var barHeight = lenght;
+        var xBar = xOrg ;
+        var yBar = (areaHeight - barHeight)/2;
+    };
+    this.scrollArea = new Kinetic.Rect({
+        x: xOrg,
+        y: yOrg,
+        width: areaWidth,
+        height:areaHeight,
+        fill: "black",
+        opacity: 0.3,
+        name: 'scrollbar'
+    });
+    this.scrollBar = new Kinetic.Rect({
+        x: xBar,
+        y: yBar,
+        width: barWidth,
+        height: barHeight,
+        fill: "#90C633",
+        draggable: true,
+        clearBeforeDraw: true,
+        area : this,
+        dragBoundFunc: function(pos) {
+           if (this.attrs.area.direction == 'horizontal') { // horizontale
+                var newX = 0;
+                var maxX = this.attrs.area.scrollArea.getWidth() - this.getWidth();
+                if ((pos.x > 0) && ( pos.x < maxX)) { 
+                    newX = pos.x;
+                } else if (pos.x > maxX) {
+                    newX = maxX;
+                };
+                return {
+                    x: newX,
+                    y: this.getY() 
+                };
+            } else { // verticale
+                var newY = 0;
+                var maxY = this.attrs.area.scrollArea.getHeight() -  this.getHeight();
+                if ((pos.y > 0) && ( pos.y < maxY)) { 
+                    newY = pos.y;
+                } else if (pos.y > maxY) {
+                    newY = maxY;
+                };
+                return {
+                    x: this.getX(),
+                    y: newY
+                };
+            };
+        },
+        opacity: 0.9,
+        stroke: "black",
+        strokeWidth: 1,
+        name: 'scrollbar'
+    });
+    // scrollbars events assignation
+    this.scrollBar.on("mouseover touchstart", function() {
+        document.body.style.cursor = "pointer";
+    });
+    this.scrollBar.on("mouseout touchend", function() {
+        document.body.style.cursor = "default";
+    });
+    this.scrollBar.on("dragmove", function() {
+        var p = this.attrs.area.ktcParent.getNodesCenter();
+        if (this.attrs.area.direction == 'horizontal') { // horizontale
+            p.x = this.attrs.area.getScrollPosition();
+        } else {
+            p.y = this.attrs.area.getScrollPosition();
+        };
+        this.attrs.area.ktcParent.setNodesCenter(p.x, p.y);
+    });
+    
+    this.scrollBar.on("dragend", function() {
+        this.attrs.area.ktcParent.nodeLayer.draw();
+        this.attrs.area.ktcParent.linkLayer.draw();
+    });
+    
+    layer.add(this.scrollArea);
+    layer.add(this.scrollBar);
+}; 
+
+ktcScrollbar.prototype.reziseWidth = function (dw) {
+    if (this.direction == 'horizontal') {
+        var w = this.scrollArea.getWidth();
+        var ratio = (w+dw) / w;
+        var areaW = w + dw;
+        this.scrollArea.setWidth(areaW);
+        var lenght = areaW / 3;
+        this.scrollBar.setX(this.scrollBar.getX() * ratio);
+        this.scrollBar.setWidth(lenght);
+        var offset = this.ktcParent.getNodesCenter();
+        this.ktcParent.setNodesCenter(this.getScrollPosition(), offset.y);
+    } else {
+        this.scrollBar.setX(this.scrollBar.getX() + dw);
+        this.scrollArea.setX(this.scrollArea.getX() + dw);
+    };
+};
+
+
+ktcScrollbar.prototype.getScrollPosition = function () {
+    if (this.direction == 'horizontal') {
+        var areaW = this.scrollArea.getWidth();
+        var lenght = areaW / 3;
+        var scrollPos = (this.scrollBar.getX() + (lenght/2)) - (areaW/2);
+        var ratio = this.ktcParent.space.width/ (areaW - lenght);
+        var scrollPos = scrollPos * ratio ;
+    } else {
+        var areaW = this.scrollArea.getHeight();
+        var lenght = areaW / 3;
+        var scrollPos = (this.scrollBar.getY() + (lenght/2)) - (areaW/2);
+        var ratio = this.ktcParent.space.height/ (areaW - lenght);
+        var scrollPos = scrollPos * ratio ;
+    };
+    return scrollPos;
+};
+
+KtcNeighborsGraph = function (divId, secId){
+    var cont = document.getElementsByClassName("subsection");
+    var width = 810;
+    for (var i=0; i < cont.length; i++) {
+        if (cont[i].offsetWidth !== 0) {
+            width = cont[i].offsetWidth - 30;
+            break;
+            };
+        };
+    this.ktcStage = new Kinetic.Stage({
+        container: divId,
+        width: width,
+        height: 500,
+        neighborsGraph : this
+    });
+    this.section = secId;
+    this.space = {width : 2000, height : 1000};
+    this.nodeLayer = new Kinetic.Layer();
+    this.linkLayer = new Kinetic.Layer();
+    this.scrollLayer = new Kinetic.Layer();
+
+    this.tooltip = new Kinetic.Text({
+        text: "essais",
+        fontFamily: "Calibri",
+        fontSize: 12,
+        padding: 15,
+        fill: "black",
+        opacity: 1,
+        visible: false
+    });
+    this.tooltipLayer = new Kinetic.Layer();
+    this.buildKineticNeighbors();
+    var graph = this
+    window.onresize = function resizeStage(){
+        var cont =  document.getElementById(graph.section);
+        var w = cont.getBoundingClientRect();
+        var dw = (w.width - 25) - graph.ktcStage.getWidth() ;
+        graph.ktcStage.setWidth(w.width - 25);
+        graph.hScrollBar.reziseWidth(dw);
+        graph.vScrollBar.reziseWidth(dw);
+     };
+};
+
+KtcNeighborsGraph.prototype.buildKineticNeighbors = function () {
+    var L = this.linkLayer.get('.linknodes');   
+    L.each(function(node) {
+        node.destroy();
+        });
+    L = this.nodeLayer.get('.picturenode');
+    L.each(function(node) {
+         node.destroy();
+       });
+    L = this.scrollLayer.get('.scrollbar');
+    L.each(function(node) {
+         node.destroy();
+       });
+    this.scrollLayer.removeChildren();
+    this.tooltipLayer.removeChildren();
+    this.linkLayer.setOffset(0,0);
+    this.nodeLayer.setOffset(0, 0);
+    this.ktcStage.removeChildren();
+    this.hScrollBar = new ktcScrollbar(this, "horizontal", this.scrollLayer);
+    this.vScrollBar = new ktcScrollbar(this, "vertical", this.scrollLayer);
+    this.tooltipLayer.add(this.tooltip);
+    var xc= this.ktcStage.getWidth() / 2;
+    var yc= this.ktcStage.getHeight() / 2;
+    var stepR = 80;
+    var Ray = 100;
+    var a = 0,x=0,y=0; sta=20;
+    var r=100, RayF = Ray;
+    for (var i=0; i<listNodes.length;i++) {
+        if (listNodes[i].Type == 'Static PC Controller') {r = 40;
+            x= xc;
+            y= yc;
+        } else {r=25;
+            RayF = Ray + ((100 - (listNodes[i].ComQuality)) * 1.5);
+            x= xc + RayF * Math.cos(a*Math.PI/180);
+            y= yc + RayF * Math.sin(a*Math.PI/180);
+            if (a > 330) { a = sta;
+                sta = sta +20;
+                Ray = Ray + stepR;
+            } else { a= a + 40;
+            };
+        };
+        listNodes[i].ktcNode = new KtcNode(x,y,r,listNodes[i],this.nodeLayer,this);
+      };
+    for (var id1=0; id1<listNodes.length;id1++)  {         
+        for (var in1=0; in1<listNodes[id1].Neighbors.length;in1++) {
+            for (var id2=0; id2<listNodes.length;id2++) {
+                if (listNodes[id2].Node == listNodes[id1].Neighbors[in1]) { 
+                    Link = new KtcLink(listNodes[id1].ktcNode, listNodes[id2].ktcNode, this.linkLayer);
+                    break;
+                };
+            };
+        };
+    };
+    
+    this.ktcStage.add(this.linkLayer);        
+    this.ktcStage.add(this.nodeLayer);
+    this.ktcStage.add(this.tooltipLayer);
+    this.ktcStage.add(this.scrollLayer);
+};
+
+KtcNeighborsGraph.prototype.getNodesCenter = function () {
+    return this.nodeLayer.getOffset();
+};
+
+KtcNeighborsGraph.prototype.setNodesCenter = function (x, y) {
+    this.linkLayer.setOffset(x,y);
+    this.nodeLayer.setOffset(x, y);
+    this.nodeLayer.batchDraw();
+    this.linkLayer.batchDraw();
 };
 
 KtcNodeGrp = function  (x,y,r,node,layer,stage,grpAssociation) {
@@ -584,202 +837,6 @@ KtcNodeGrp.prototype.setState = function(state, inGrpAss) {
          console.log("setState sur node persistant") ;
     };
 };
-function initScrollbars(stage) {
-  //  horizontal scrollbars
-
-    var hscrollArea = new Kinetic.Rect({
-        x: 0,
-        y: stage.getHeight() - 20,
-        width: stage.getWidth() - 30,
-        height: 20,
-        fill: "black",
-        opacity: 0.3,
-        name: 'scrollbar'
-    });
-
-    var hscroll = new Kinetic.Rect({
-        x: ((stage.getWidth()-30)/2) - 65,
-        y: stage.getHeight() - 20,
-        width: 130,
-        height: 20,
-        fill: "#90C633",
-        draggable: true,
-        dragBoundFunc: function(pos) { // horizontale
-            var newX = 0;
-            if ((pos.x > 0) && ( pos.x < stage.getWidth() - 160)) { 
-                newX = pos.x;
-            } else if (pos.x > (stage.getWidth() - 160)) {
-                newX = stage.getWidth() - 160;
-            };
-            return {
-                x: newX,
-                y: this.getY() 
-            };
-        },
-        opacity: 0.9,
-        stroke: "black",
-        strokeWidth: 1,
-        name: 'scrollbar'
-    });
- // vertical scrollbars
-    var vscrollArea = new Kinetic.Rect({
-        x: stage.getWidth() - 20,
-        y: 0,
-        width: 20,
-        height: stage.getHeight() - 30,
-        fill: "black",
-        opacity: 0.3,
-        name: 'scrollbar'
-    });
-
-    var vscroll = new Kinetic.Rect({
-        x: stage.getWidth() - 20,
-        y: ((stage.getHeight()-30)/2) - 35,
-        width: 20,
-        height: 70,
-        fill: "#90C633",
-        draggable: true,
-        dragBoundFunc: function(pos) { // verticale
-            var newY = 0;
-            if ((pos.y > 0) && ( pos.y < stage.getHeight() - 100)) { 
-                newY = pos.y;
-            } else if (pos.y > (stage.getHeight() - 100)) {
-                newY = stage.getHeight() - 100;
-            };
-            return {
-                x: this.getX(),
-                y: newY
-            };
-        },
-        opacity: 0.9,
-        stroke: "black",
-        strokeWidth: 1,
-        name: 'scrollbar'
-    });
- // scrollbars events assignation
-    scrollbars.on("mouseover touchstart", function() {
-        document.body.style.cursor = "pointer";
-    });
-    scrollbars.on("mouseout touchend", function() {
-        document.body.style.cursor = "default";
-    });
-    scrollLayer.on("beforeDraw", function() {
-        var x = -1 * ((hscroll.getPosition().x + (hscroll.getWidth() /2)) - (hscrollArea.getWidth()/2));
-        var y = -1 * ((vscroll.getPosition().y + (vscroll.getHeight() /2)) - (vscrollArea.getHeight()/2));
-        nodeLayer.setPosition(x,y);
-        linkLayer.setPosition(x,y);
-        nodeLayer.draw();
-        linkLayer.draw();
-    });
-
-    areas.add(hscrollArea);
-    areas.add(vscrollArea);
-    scrollbars.add(hscroll);
-    scrollbars.add(vscroll);
-    scrollLayer.add(areas);
-    scrollLayer.add(scrollbars);
-    window.onresize = function resizeStage(){
-       var cont =  document.getElementById("graphneighbors");
-       var w = cont.getBoundingClientRect();
-       var dw = (w.width - 25) - stage.getWidth() ;
-       vscroll.setX(vscroll.getX() + dw);
-       vscrollArea.setX(vscrollArea.getX() + dw);
-       hscrollArea.setWidth(hscrollArea.getWidth() + dw);
-       stage.setWidth(w.width - 25);
-    //  hscroll.setDragBounds({left:0, right:(stage.getWidth() - 160)});
-     };
-};
-
-function buildKineticNeighbors() {
-        var L = linkLayer.get('.linknodes');   
-        L.each(function(node) {
-            node.destroy();
-            });
-        L = nodeLayer.get('.nodeneighbor');
-        L.each(function(node) {
-             node.destroy();
-           });
-        L = scrollLayer.get('.scrollbar');
-        L.each(function(node) {
-             node.destroy();
-           });
-        scrollLayer.removeChildren();
-        tooltipLayer.removeChildren();
-        nborsStage.removeChildren();
-        initScrollbars(nborsStage);
-        tooltipLayer.add(tooltip);
-        nborsStage.removeChildren();  
-        var xc= nborsStage.getWidth() / 2;
-        var yc= nborsStage.getHeight() / 2;
-        var stepR = 80;
-        var Ray = 100;
-        var a = 0,x=0,y=0; sta=20;
-        var r=100, RayF = Ray;
-        for (var i=0; i<listNodes.length;i++) {
-            if (listNodes[i].Type == 'Static PC Controller') {r = 40;
-                x= xc;
-                y= yc;
-            } else {r=25;
-                RayF = Ray + ((100 - (listNodes[i].ComQuality)) * 1.5);
-                x= xc + RayF * Math.cos(a*Math.PI/180);
-                y= yc + RayF * Math.sin(a*Math.PI/180);
-                if (a > 330) { a = sta;
-                    sta = sta +20;
-                    Ray = Ray + stepR;
-                } else { a= a + 40;
-                };
-            };
-            listNodes[i].ktcNode = new KtcNodeNeighbor(x,y,r,listNodes[i],nodeLayer,nborsStage);
-          };
-        for (var id1=0; id1<listNodes.length;id1++)  {         
-            for (var in1=0; in1<listNodes[id1].Neighbors.length;in1++) {
-                for (var id2=0; id2<listNodes.length;id2++) {
-                    if (listNodes[id2].Node == listNodes[id1].Neighbors[in1]) { 
-                        Link = new CLink(listNodes[id1].ktcNode, listNodes[id2].ktcNode, linkLayer);
-                        break;
-                    };
-                };
-            };
-        };
-        nborsStage.add(linkLayer);        
-        nborsStage.add(nodeLayer);
-        nborsStage.add(tooltipLayer);
-        nborsStage.add(scrollLayer);
-    };
-
-function initNeighborsStage(){
-    var cont = document.getElementsByClassName("subsection");
-    var width = 810;
-    for (var i=0; i < cont.length; i++) {
-        if (cont[i].offsetWidth !== 0) {
-            width = cont[i].offsetWidth - 30;
-            break;
-            };
-        };
-    nborsStage = new Kinetic.Stage({
-        container: 'containerneighbors',
-        width: width,
-        height: 500
-    });
-    nodeLayer = new Kinetic.Layer();
-    linkLayer = new Kinetic.Layer();
-    scrollLayer = new Kinetic.Layer();
-    areas = new Kinetic.Group();
-    scrollbars = new Kinetic.Group();
-
-    tooltip = new Kinetic.Text({
-        text: "essais",
-        fontFamily: "Calibri",
-        fontSize: 12,
-        padding: 15,
-        fill: "black",
-        opacity: 1,
-        visible: false
-    });
-    tooltipLayer = new Kinetic.Layer();
-    buildKineticNeighbors();
-};
-
 // Groups associations
 
 function stageGrps(contName) {
@@ -1074,23 +1131,39 @@ KtcGrpAss.prototype.addNode = function (kNode) {
 
 KtcGrpAss.prototype.delNode = function (kNode) {
     var idx =-1;
-    for (var i =0; i< this.members.length; i++) {
-        if (this.members[i].id == kNode.nodeObj.Node) {
-            idx = i;
-            break;
+    if (kNode.nodeObj) {
+        for (var i =0; i< this.members.length; i++) {
+            if (this.members[i].id == kNode.nodeObj.Node) {
+                idx = i;
+                break;
+            };
         };
-    };
-    if (idx != -1) {
-        this.members.splice(idx, 1);
+        if (idx != -1) {
+            this.members.splice(idx, 1);
+            for (var i=0; i<this.tabN.length;i++) {
+                if (this.tabN[i].kN == kNode) {
+                    this.tabN[i].kN = null;
+                    break;
+                };
+            };
+            this.refreshText();
+            return true;
+        } else { return false;};
+    } else { //node ghost force delete it.
         for (var i=0; i<this.tabN.length;i++) {
             if (this.tabN[i].kN == kNode) {
                 this.tabN[i].kN = null;
                 break;
             };
         };
+        for (var i =0; i< this.members.length; i++) { // check if node() exist and delete it from member list.
+            if (GetZWNodeById(this.members[i].id) == false) {
+                this.members.splice(i, 1);
+            };
+        };
         this.refreshText();
         return true;
-    } else { return false;};
+    };
 };
 
 function ResetGroups(stage, nodeP) {
@@ -1344,6 +1417,3 @@ function SetNewGroups (stage, node) {
     return node.Groups;
 };
 
-window.onload = function() {
-    var s= 0;
-      }; 

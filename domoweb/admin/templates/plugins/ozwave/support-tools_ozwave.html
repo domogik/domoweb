@@ -33,7 +33,6 @@ $(function(){
          }
         var msg = {};
         msg['header'] = {'type': 'req-ack'};
-//        msg['request'] ='GetLog';
         msg['request'] =$('#logtype').val();
         try {
             msg['lines'] = parseInt($("#nblines").val());
@@ -80,7 +79,7 @@ $(function(){
                     };
                 }, 30000);
     });
-    
+
 });
 
 </script>
@@ -110,6 +109,6 @@ $(function(){
         <span class='label'>{% trans "Openzwave path configuration" %}:</span>&nbsp;<span class='subtitle' id='confpath2'><u>{% trans "Undefined" %}</u></span>
         </li>
     <ul class='infos'>
-        <div id='productTree' style="height:800px;overflow:auto;">
-    </div></ul>
+        <div id='productTree' style="height:800px;overflow:auto;"></div>
+    </ul>
 </section>

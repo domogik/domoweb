@@ -1,4 +1,4 @@
-var ozwDomowebVers = "0.2b5"
+var ozwDomowebVers = "0.2c1"
 var netWorkZW = {};
 var listNodes = new Array();
 var listTypesVal = {};
@@ -8,6 +8,7 @@ var initialized = false;
 var ctrlDevice;
 var cb_RefreshTabHtml;
 var hWSmessage; // Ref pour handleWSmessage function
+var neighborsGraph;
 
 // Constante d'entete de colonne de la table node_items 
 var hdLiNode = {"NodeId": 0, "Name": 1, "Location": 2, "Model": 3, "Awake":  4, "Type": 5, "Last update": 6, "Action": 7};
@@ -236,8 +237,12 @@ function RefreshDataNode(infonode, Kbuild) {
         listNodes.push(infonode);
     };
     if (Kbuild) {
-        if  (initialized) {setTimeout(function () {buildKineticNeighbors();},1000);   
-            } else {setTimeout(function () {initNeighborsStage();},1000); };
+        if  (initialized) {setTimeout(function () {
+             neighborsGraph.buildKineticNeighbors();
+            },1000);   
+        } else {setTimeout(function () {
+            neighborsGraph = new KtcNeighborsGraph('containerneighbors','graphneighbors');
+            },1000); };
         initialized = true;
         };
 };
@@ -379,25 +384,34 @@ function SetStatusMemberGrp(infonode,group,member,status) {
         };
 
     function setActionNode(oObj) {
-        var num = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
+        var nodeId = getNodeIdFromHtml(oObj.aData[hdLiNode['NodeId']]);
+        var zwnode = GetZWNodeById(nodeId);
         var stAct = 'zoomin';
-        var tabDet = document.getElementById("detNode" + num);
+        var tabDet = document.getElementById("detNode" + nodeId);
         if (tabDet) { // DetailNode opened 
             stAct = 'zoomout'; 
         };
-        var ret = "<button id='detailnode" + num + 
-                        "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' name='Detail node'><span class='offscreen'>Detail Node : " + num + "</span></button>";
-        ret += "<button id='updnode" + num + 
-                        "' class='icon16-action-save buttonicon' title='Update Node' name='Update node'><span class='offscreen'>Send update to Node : " + num + "</span></button>";
-        ret += "<button id='refreshnode" + num + 
-                        "' class='icon16-action-reset buttonicon' title='Force Refresh Node' name='Refresh node'><span class='offscreen'>Send refresh info to Node : " + num + "</span></button>";
+        var ret = "<button id='detailnode" + nodeId + 
+                        "' class='icon16-action-" + stAct +" buttonicon' title='Detail Node' name='Detail node'><span class='offscreen'>Detail Node : " + nodeId + "</span></button>";
+        ret += "<button id='updnode" + nodeId + 
+                        "' class='icon16-action-save buttonicon' title='Update Node' name='Update node'><span class='offscreen'>Send update to Node : " + nodeId + "</span></button>";
+        ret += "<button id='refreshnode" + nodeId + 
+                        "' class='icon16-action-reset buttonicon' title='Force Refresh Node' name='Refresh node'><span class='offscreen'>Send refresh info to Node : " + nodeId + "</span></button>";
         for (var i=0; i< listNodes.length; i++) {
-            if (listNodes[i].Node == num && listNodes[i].Groups.length > 0) {
-                ret += "<button id='updassoc" + num + 
-                        "' class='icon16-action-groups buttonicon' title='Edit association' name='Node groups' ><span class='offscreen'>Edit association Node : " + num + "</span></button>";
+            if (listNodes[i].Node == nodeId && listNodes[i].Groups.length > 0) {
+                ret += "<button id='updassoc" + nodeId + 
+                        "' class='icon16-action-groups buttonicon' title='Edit association' name='Node groups' ><span class='offscreen'>Edit association Node : " + nodeId + "</span></button>";
                 };
             };
-        return  ret;
+        var stMonitored = "play";
+        var tMonitored = "Start Monitor Node and log it.";
+        if (zwnode.Monitored != '') { 
+            stMonitored = "processing_f6f6f6";
+            tMonitored = "Node monitoring file : " + zwnode.Monitored + "<BR><BR>Click to stop monitoring.";
+            };
+        ret += "<button id='monitornode" + nodeId + 
+                        "' class='icon16-action-" + stMonitored + " buttonicon' title='" +tMonitored + "' name='Monitor node'><span class='offscreen'>Monitor Node " + nodeId + " and log it</span></button>";
+            return  ret;
         };
 
 
@@ -613,6 +627,7 @@ function UpNodeToolTips (nodeid) {
     createToolTip('#detailnode' + nodeid, 'right');
     createToolTip('#updnode' + nodeid, 'right');
     createToolTip('#refreshnode' + nodeid, 'right');
+    createToolTip('#monitornode' + nodeid, 'left');
     createToolTip('#statenode' + nodeid, 'right');
     createToolTip('#updassoc' + nodeid, 'right');
     createToolTip('#infotypenode' + nodeid, 'bottom');
@@ -662,7 +677,6 @@ function UpCmdClssValue(zwNode, objValue, timeUpDate) {
                     console.log('colonne :' + colTitle + " data : " + cValue);
                 } else {
                     if (colTitle in objValue) {
-                        vTable.fnUpdate(objValue[colTitle], vPos[0], col, false);
                         if (colTitle == 'value') {
                             var idC= getDataTableColIndex(vTable.fnSettings(), 'realValue');
                             vTable.fnUpdate(objValue[colTitle], vPos[0], idC, false);    
@@ -675,6 +689,7 @@ function UpCmdClssValue(zwNode, objValue, timeUpDate) {
                             };
                         } else {
                             console.log(' colonne :' + colTitle + " data : " + cValue);};
+                        vTable.fnUpdate(objValue[colTitle], vPos[0], col, false);
                     } else {console.log('no data :' + colTitle + ' Value : '+cValue);} ;
                 }; 
             };
@@ -788,7 +803,36 @@ function setGroupsNode(stage, node, newgrps, callback) {
             }
 };
 
-  
+function setMonitorNode(nodeid, monitored) {
+    console.log("set monitor node : " + nodeid + "state :" + monitored); 
+    var msg = {};
+    msg['header'] = {'type': 'req-ack'};
+    msg['node'] = nodeid;  
+    if (monitored) {
+        msg['request'] ='StartMonitorNode';
+    } else { 
+        msg['request'] ='StopMonitorNode';
+    };
+    sendMessage(msg, function(msg ){
+        if (msg['error'] == "") {
+            data = msg['data'];
+            var zwNode = GetZWNodeById(msg['node']);
+            if (data['state'] == 'started') {
+                zwNode.Monitored = data['file'];
+            } else {
+                zwNode.Monitored = '';
+            }
+            RefreshDataNode(zwNode);
+            cb_RefreshTabHtml(zwNode);
+            UpNodeToolTips(zwNode.Node);
+            $.notification('info', gettext(data['usermsg']) + " : " + data['file']);
+        } else { // Erreur dans la lib python
+            console.log("Dans setMonitorNode node "+ msg['node'] + " error : " + msg['error']);                            
+            $.notification('error', gettext(msg['error']));
+        };
+    });
+};
+
 function refreshTreeProducts(data) {
   if (data['error'] =='') {
     var tab =[];

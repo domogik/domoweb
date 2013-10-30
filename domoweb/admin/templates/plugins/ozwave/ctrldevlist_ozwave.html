@@ -288,7 +288,13 @@ $(function(){
                 case 'setGroups' :
                     callback(msg.data);
                     break;
-                case 'StartCtrl' :
+                case 'StartMonitorNode' :
+                    callback(msg);
+                    break;
+                case 'StopMonitorNode' :
+                    callback(msg);
+                    break;
+                case 'StopMonitorNode' :
                     callback(msg);
                     break;
                 case 'StopCtrl' :
@@ -682,6 +688,19 @@ function handleCtrlEvent (event) {
             console.log ("sending update cmd class");
             msg = setValueNode(nodeId, valueId, aData[getDataTableColIndex(aTable.fnSettings(), 'value')], aTable,nTr);
         };
+        if (this.name =='Monitor node') {
+            notfind = false;
+            var nodeId = getNodeIdFromHtml(aData[hdLiNode['NodeId']]);
+            var t =  this.attributes["class"].value;
+            var monitor = false
+            if (t.search('action-play') != -1 ) {
+                this.attributes["class"].value = "icon16-action-processing_f6f6f6 buttonicon";
+                monitor = true;
+            }else {
+                this.attributes["class"].value = "icon16-action-play buttonicon";
+           };
+           setMonitorNode(nodeId, monitor);
+        };
         if (notfind) {
             console.log("Dans click button, no action find : " + this.name); 
         };
@@ -779,6 +798,8 @@ function handleCtrlEvent (event) {
         oTabNodes = $("#node_items").dataTable({
             "bFilter": false,
             "bAutoWidth": false,
+            "bJQueryUI": true,
+            "sPaginationType": "full_numbers",
             "aoColumnDefs": [  
                 { "fnRender": function (oObj) {
                     return setStatusDeviceZW(oObj);}, "aTargets": [ hdLiNode['NodeId'] ] },
@@ -891,8 +912,6 @@ function handleCtrlEvent (event) {
                         <th scope='col'>{% trans "Action" %}</th>
                     </tr>
                 </thead>
-                <tbody>
-                </tbody>
         </table>
         </div>
 </section>
