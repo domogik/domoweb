@@ -19,11 +19,12 @@ Launch the installation script
 The folder where you run install.py will become the final domoweb folder.
 So if you want to make a clean install of domoweb you should copy Domoweb to his final place before running the install script. ::
 
-    sudo mv domoweb /usr/share
+    $ sudo mv domoweb-<release> /usr/share/domoweb/
 
 Then run the install script.
 If needed the install script provide options: ::
 
+    $ cd /usr/share/domoweb
     $ sudo python install.py -h
     Usage: install.py [options]
     
