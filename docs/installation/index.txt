@@ -14,26 +14,6 @@ You will get a file named **domoweb-<release>.tgz**. Download it and extract it:
     $ tar xvzf domoweb-<release>.tgz
     $ cd domoweb-<release>
 
-Repository versions
--------------------
-.. note:: The repository installation require mercurial to be installed.
-
-.. code-block:: bash
-
-    $ hg clone http://hg.domogik.org/domoweb/
-    destination directory: domoweb
-    requesting all changes
-    adding changesets
-    adding manifests
-    adding file changes
-    added 585 changesets with 6180 changes to 4526 files (+5 heads)
-    updating to branch default
-    resolving manifests
-    getting Domoweb.py
-    getting README.txt
-    ...
-    1640 files updated, 0 files merged, 0 files removed, 0 files unresolved
-
 Launch the installation script
 ==============================
 The folder where you run install.py will become the final domoweb folder.
