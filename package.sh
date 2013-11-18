@@ -13,7 +13,11 @@ ARCHIVE=/tmp/domoweb-$SHORT_VERSION.tgz
 
 function generate_pkg() {
     echo "Generate package..."
-    git archive --format tar  HEAD | gzip -9 > $ARCHIVE
+    git archive $BRANCH \
+    --prefix domoweb-$SHORT_VERSION/ \
+    --worktree-attributes \
+    --format tgz \
+    --output $ARCHIVE \
 
     if [ $? -ne 0 ] ; then
         echo "Error... exiting"
