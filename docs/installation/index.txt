@@ -7,7 +7,7 @@ Get the sources
 
 ZIP Package
 -----------
-Go on `Download <http://wiki.domogik.org/Download>`_ to get Domoweb.
+Go on `Download <http://www.domogik.org/Download>`_ to get Domoweb.
 You will get a file named **domoweb-<release>.tgz**. Download it and extract it: ::
 
     $ wget http://repo.domogik.org/...
