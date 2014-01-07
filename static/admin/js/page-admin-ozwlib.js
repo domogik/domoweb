@@ -1,4 +1,4 @@
-var ozwDomowebVers = "0.2c1"
+var ozwDomowebVers = "0.2c2"
 var netWorkZW = {};
 var listNodes = new Array();
 var listTypesVal = {};

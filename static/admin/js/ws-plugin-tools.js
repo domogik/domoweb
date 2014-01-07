@@ -212,16 +212,18 @@ function wsAckTimeOutCtrl() {
         if (wsDomogik.readyState == 1) {
             if (wsDomogik.queueAck.length !=0) {$.each(wsDomogik.queueAck, function(i) {
                 var ack = wsDomogik.queueAck[i];
-                if ((d.getTime() - ack.header.timestamp) >= (ack.timeOut )) {
-                    var t = ack.request;
-                    if (ack.node) { t =t + ' node : ' + ack.node;};
-                    if (ack.valueid) { t =t + ' Value : ' + ack.valueid;};
-                    $.notification('error', gettext('WebSocket ACK TimeOut for request : ') +  t);
-                    if (ack.header.request == 'ws-hbeat') {
-                        $.notification('error', gettext('Plugin server not response to hbeat, client deconnected.'));
-                        wsDomogik.close();
+                if (ack != undefined) {
+                    if ((d.getTime() - ack.header.timestamp) >= (ack.timeOut )) {
+                        var t = ack.request;
+                        if (ack.node) { t =t + ' node : ' + ack.node;};
+                        if (ack.valueid) { t =t + ' Value : ' + ack.valueid;};
+                        $.notification('error', gettext('WebSocket ACK TimeOut for request : ') +  t);
+                        if (ack.header.request == 'ws-hbeat') {
+                            $.notification('error', gettext('Plugin server not response to hbeat, client deconnected.'));
+                            wsDomogik.close();
+                        };
+                        wsDomogik.queueAck.splice(i,1);
                     };
-                    wsDomogik.queueAck.splice(i,1);
                 };
                 });
             };
