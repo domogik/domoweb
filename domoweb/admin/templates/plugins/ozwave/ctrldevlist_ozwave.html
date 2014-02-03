@@ -46,16 +46,16 @@ $(function(){
     var devices = new Array();
 
     $.fn.dataTableExt.oApi.fnStandingRedraw = function(oSettings) {
-    if(oSettings.oFeatures.bServerSide === false){
-        var before = oSettings._iDisplayStart;
-        oSettings.oApi._fnReDraw(oSettings);
-        // iDisplayStart has been reset to zero - so lets change it back
-        oSettings._iDisplayStart = before;
-        oSettings.oApi._fnCalculateEnd(oSettings);
-    };
-    // draw the 'current' page
-    oSettings.oApi._fnDraw(oSettings);
-    };
+        if(oSettings.oFeatures.bServerSide === false){
+            var before = oSettings._iDisplayStart;
+            oSettings.oApi._fnReDraw(oSettings);
+            // iDisplayStart has been reset to zero - so lets change it back
+            oSettings._iDisplayStart = before;
+            oSettings.oApi._fnCalculateEnd(oSettings);
+        };
+        // draw the 'current' page
+        oSettings.oApi._fnDraw(oSettings);
+        };
 
     function dlgNodeAss (vData) {
         var d = "{{ static_design_url }}";
@@ -98,6 +98,7 @@ $(function(){
                          {value:'RefreshNodeInfo', label: 'Node informations', icon: 'icon16-action-up'},
                          {value:'RefreshNodeState', label: 'State node', icon: 'icon16-action-up'},
                          {value:'RefreshNodeDynamic', label: 'Dynamics data', icon: 'icon16-action-up'},
+                         {value:'HealNode', label: 'Heal node with reroute', icon: 'icon16-action-reset'},
                         ]
                 },
             ]
@@ -168,6 +169,32 @@ $(function(){
             $(this).dialog('close');
         }
     });
+   
+    function buildDlgRefreshNode(nodeId) {
+          $('#refresh_node').dialog_form('updbutton', {
+            title: "{% trans 'Send refresh request to node ' %}" + nodeId,
+            button: "#refreshnode" + nodeId,
+            values: {typeRefresh: 'RefreshNodeInfo'},
+            onok: function(values) {
+                // Submit form
+                var msg = {};
+                msg['header'] = {'type': 'req-ack'};
+                msg['request'] = values.typeRefresh;
+                msg['node'] = nodeId;
+                if (values.typeRefresh == 'HealNode') {
+                    msg['forceroute'] = true;
+                    }
+                sendMessage(msg, function(msg) {
+                    if (msg.error == "") {
+                        $.notification('success', "{% trans "Refresh is requested, Waiting node ack ..." %}");
+                    } else {
+                        $.notification('error', "{% trans "Refresh not requested error : " %}" + msg['error']);
+                    };
+                });
+            $('#refresh_node').dialog('close');
+            }
+        });
+    }; 
     
     $("#startCtrl").click(function(){
         var msg = {};
@@ -448,6 +475,7 @@ function handleCtrlEvent (event) {
             $('#namectrl').html(netWorkZW['Model']);
             $('#deviceadr').html(netWorkZW['Device']);
             $('#numnodes').html(netWorkZW['Node count']);
+            $('#protctrl').html(netWorkZW['Protocol']);
             $('#libctrl').html(netWorkZW['Library']);
             $('#libctrlver').html(netWorkZW['Version']);                    
             $('#pollinterval').val(netWorkZW['Poll interval']/1000);                    
@@ -505,26 +533,7 @@ function handleCtrlEvent (event) {
         if (li == -1) {
             nTable.dataTable().fnAddData(dataLi);
             };
-        $('#refresh_node').dialog_form('updbutton', {
-            title: "{% trans 'Send refresh request to node ' %}" + nodeId,
-            button: "#refreshnode" + nodeId,
-            values: {typeRefresh: 'RefreshNodeInfo'},
-            onok: function(values) {
-                // Submit form
-                var msg = {};
-                msg['header'] = {'type': 'req-ack'};
-                msg['request'] = values.typeRefresh;
-                msg['node'] = nodeId;
-                sendMessage(msg, function(msg) {
-                    if (msg.error == "") {
-                        $.notification('success', "{% trans "Refresh is requested, Waiting node ack ..." %}");
-                    } else {
-                        $.notification('error', "{% trans "Refresh not requested error : " %}" + msg['error']);
-                    };
-                });
-            $('#refresh_node').dialog('close');
-            }
-        });
+        buildDlgRefreshNode(nodeId);
         }; 
     };   
 
@@ -701,6 +710,9 @@ function handleCtrlEvent (event) {
            };
            setMonitorNode(nodeId, monitor);
         };
+        if (this.name =='Refresh node') {
+            notfind = false;
+        };
         if (notfind) {
             console.log("Dans click button, no action find : " + this.name); 
         };
@@ -816,8 +828,19 @@ function handleCtrlEvent (event) {
                     return setActionNode(oObj);}, "aTargets": [hdLiNode['Action'] ] },      
                 { "bSortable": false, "aTargets": [ hdLiNode['Action'] ] }, 
                 ],
-            "aaSorting": [[0, 'asc']]
-            } );
+            "aaSorting": [[0, 'asc']],
+            "fnDrawCallback": function(oSettings) {
+                var colNodeId = getDataTableColIndex(oSettings, 'NodeId');
+                var start = oSettings._iDisplayStart;
+                var stop =  oSettings._iDisplayEnd;
+                for (i=start; i<stop; i++) {
+                    var vData = this.fnGetData(i);
+                    var nodeId = getNodeIdFromHtml(vData[colNodeId]);
+                    buildDlgRefreshNode(nodeId);
+                    UpNodeToolTips(nodeId);
+                    };
+                }
+            });
     });
 });
 
@@ -840,6 +863,7 @@ function handleCtrlEvent (event) {
                 </font> <br>
                     <span class='label'>{% trans "Contoller" %}:</span>&nbsp;<span class='subtitle' id='namectrl'><u>{% trans "Undefined" %}</u></span>
                     &nbsp;&nbsp;&nbsp;<span class='label'>{% trans "Device" %}:</span>&nbsp;<span class='subtitle' id='deviceadr'><u>{% trans "Undefined" %}</u></span>
+                    &nbsp;&nbsp;&nbsp;<span class='label'>{% trans "Protocol" %}:</span>&nbsp;<span class='subtitle'  id='protctrl'><u>{% trans "Undefined" %}</u></span>
                     &nbsp;&nbsp;&nbsp;<span class='label'>{% trans "Number of nodes" %}:</span>&nbsp;<span class='subtitle'  id='numnodes'><u>{% trans "Undefined" %}</u></span>
                 </li>
                 <li>

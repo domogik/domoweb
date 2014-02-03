@@ -50,7 +50,21 @@ $(function(){
                     };
                 });
     });
-
+    
+    $("#healNetwork").click(function(){
+        var msg = {};
+        msg['header'] = {'type': 'req-ack'};
+        msg['request'] ='HealNetwork';
+        msg['forceroute'] = true;
+        sendMessage(msg, function(data){
+                if (data['error'] =='') {
+                     $.notification('success', '{% trans "Healing node by node, Waiting for result ..." %}');
+                } else { 
+                    $.notification('error', '{% trans "Healing all nodes error" %} : ' + data.error);
+                    };
+                });
+    });
+    
     $("#refreshNodeStats").click(function(){
         var msg = {};
         msg['header'] = {'type': 'req-ack'};
@@ -152,8 +166,9 @@ $(function(){
     <div id="containerneighbors" ></div> 
 </section>
 <section id="zwstatistic" class="subsection">
-    <h2>{% trans "Network statistic" %}  &nbsp;&nbsp;&nbsp;&nbsp;
+    <h2>{% trans "Network" %}  &nbsp;&nbsp;&nbsp;&nbsp;
         <button id='refreshGenStats' class='button icon16-action-reset'>{% trans "Refresh statistic" %}</button>&nbsp;&nbsp;
+        <button id='healNetwork' class='button icon16-action-reset'>{% trans "Heal all nodes" %}</button>&nbsp;&nbsp;
         <button id='testNetwork' class='button icon16-action-test'>{% trans "Send test messages" %}</button>&nbsp;&nbsp;
         {% trans "Number of messages" %}&nbsp;<input id='nbTestMsg' type='text' name='nbTestMsg' size='3' value='3'>&nbsp;&nbsp;&nbsp;&nbsp;
         <form id='controllerform'>
@@ -179,7 +194,7 @@ $(function(){
     </div>
 </section>
 <section id="nodestatistic" class="subsection">
-    <h2>{% trans "Node statistic" %}  :&nbsp;
+    <h2>{% trans "Node" %}  :&nbsp;
         <input id='nodeIdStats' type='text' name='nodeIdStats' size='3' value=''>&nbsp;&nbsp;&nbsp;&nbsp;
         <button id='refreshNodeStats' class='button icon16-action-reset'>{% trans "Refresh statistic" %}</button>&nbsp;&nbsp;
         <button id='testNetworkNode' class='button icon16-action-test'>{% trans "Send test messages" %}</button>&nbsp;&nbsp;
