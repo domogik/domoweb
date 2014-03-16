@@ -1,8 +1,10 @@
+import json
 from django.db import models
 from django.db.models import F
 from django.core.exceptions import PermissionDenied
 from exceptions import RinorNotConfigured, RinorError
 from restModel import RestModel
+from mqModel import MQModel, MQEvent
 
 class Parameter(RestModel):
     key = models.CharField(max_length=30, primary_key=True)
@@ -12,7 +14,7 @@ class Parameter(RestModel):
 
     @staticmethod
     def refresh():
-        _data = Parameter.get_list()[0];
+        _data = Parameter.get_list();
         sections={
             "info": [
                 "REST_API_version",
@@ -164,55 +166,203 @@ class Page(models.Model):
     def _get_max_level(self):
         return self._max_level
     max_level = property(_get_max_level)
-    
-class DeviceType(RestModel):
-    id = models.CharField(max_length=50, primary_key=True)
-    name = models.CharField(max_length=50)
-    plugin_id = models.CharField(max_length=50)
-    
-    list_path = "/base/device_type/list"
-    index = 'device_type'
-
-    @staticmethod
-    def refresh():
-        _data = DeviceType.get_list();
-        DeviceType.objects.all().delete()
-        for record in _data:
-            r = DeviceType(id=record.id, name=record.name, plugin_id=record.plugin_id)
-            r.save()
 
 class DataType(RestModel):
     id = models.CharField(max_length=50, primary_key=True)
     parameters = models.TextField()
     
-    list_path = "/base/datatype"
-    index = "datatypes"
+    list_path = "/datatype"
 
     @staticmethod
     def refresh():
         import json
-        _data = DataType.get_list()[0];
+        _data = DataType.get_list();
         DataType.objects.all().delete()
         for type, params in _data.iteritems():
             r = DataType(id=type, parameters=json.dumps(params))
             r.save()
+
+class Package(MQModel):
+    id = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=50)
+    type = models.CharField(max_length=50)
+    version = models.CharField(max_length=50)
+    author = models.CharField(max_length=255, null=True, blank=True)
+    author_email = models.CharField(max_length=255, null=True, blank=True)
+    tags = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+
+    detail_id = 'package.detail.get'
+    event = None
+
+    def __unicode__(self):
+        return self.id
+    
+    @classmethod
+    def init_event(cls, zmqcontext):
+        pass
+    
+    @classmethod
+    def refresh(cls):
+        _data = Package.get_req(cls.detail_id);
+        Package.objects.all().delete()
+        for id, attributes in _data.iteritems():
+            identity = attributes['identity']
+            p = Package(id=id, name=identity['name'], type=identity['type'], version=identity['version']
+                        , author = identity['author'], author_email = identity['author_email']
+                        , description = identity['description'])
+            if 'tags' in attributes:
+                p.tags = ', '.join(identity['tags'])
+            p.save()
+            if 'device_types' in attributes:
+                for id, device_type in attributes['device_types'].iteritems():
+                    d = PackageDeviceType(package=p, id=id, name=device_type['name'], description=device_type['description'])
+                    d.save()
+            if 'dependencies' in identity:
+                for dependency in identity['dependencies']:
+                    d = PackageDependency(package=p, id=dependency['id'], type=dependency['type'])
+                    d.save()
+            if 'udev_rules' in attributes:
+                for udev_rule in attributes['udev_rules']:
+                    u = PackageUdevRule(package=p, filename=udev_rule['filename'], rule=udev_rule['rule'], description=udev_rule['description'], model=udev_rule['model'])
+                    u.save()
+            if 'products' in attributes:
+                for product in attributes['products']:
+                    pp = PackageProduct(package=p, id=product['id'], name=product['name'], documentation=product['documentation'], device_type_id=product['type'])
+                    pp.save()
+   
+class PackageUdevRule(models.Model):
+    filename = models.CharField(max_length=255, primary_key=True)
+    rule = models.TextField()
+    description = models.TextField(null=True, blank=True)
+    model = models.CharField(max_length=255, null=True, blank=True)
+    package = models.ForeignKey(Package)
+
+class PackageDependency(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
+    type = models.CharField(max_length=50)
+    package = models.ForeignKey(Package)
+
+class PackageDeviceType(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=50)
+    description = models.TextField(null=True, blank=True)
+    package = models.ForeignKey(Package)
+
+class PackageProduct(models.Model):
+    id = models.CharField(max_length=50, primary_key=True)
+    name = models.CharField(max_length=50)
+    documentation = models.CharField(max_length=255, null=True, blank=True)
+    package = models.ForeignKey(Package)
+    device_type = models.ForeignKey(PackageDeviceType)
+
+class Client(MQModel):
+    id = models.CharField(max_length=255, primary_key=True)
+    host = models.CharField(max_length=50)
+    pid = models.IntegerField()
+    status = models.CharField(max_length=50)
+    configured = models.NullBooleanField()
+    package = models.ForeignKey(Package, on_delete=models.DO_NOTHING, null=True, blank=True)
+    
+    event = None
+    
+    def __unicode__(self):
+        return self.id
+    
+    @classmethod
+    def init_event(cls, zmqcontext):
+        cls.event = MQEvent(zmqcontext, 'client', cls.refresh_event, ['client.list'])
+        
+    @classmethod
+    def refresh(cls):
+        _data = Client.get_req('client.detail.get');
+        Client.objects.all().delete()
+        for id, attributes in _data.iteritems():
+            c = Client(id=id, host=attributes['host'], pid=attributes['pid'], status=attributes['status'], configured=attributes['configured'], package_id=attributes['package_id'])
+            c.save()
+            data = attributes['data']
+            if 'configuration' in data:
+                for parameter in data['configuration']:
+                    pid = "%s-%s" % (id.replace('.', '_'), parameter['key'])
+                    p = ClientConfiguration(id=pid, name=parameter['key'], key=parameter['key'], type=parameter['type'], sort=0, client=c)
+                    if 'default' in parameter:
+                        p.default=parameter['default']
+                    if 'description' in parameter:
+                        p.description=parameter['description']
+                    if 'required' in parameter:
+                        p.required=parameter['required']
+                    else:
+                        p.required=True
+                    options={}
+                    if 'min_length' in parameter:
+                        options['min_length'] = parameter['min_length']
+                    if 'max_length' in parameter:
+                        options['max_length'] = parameter['max_length']
+                    if 'min_value' in parameter:
+                        options['min_value'] = parameter['min_value']
+                    if 'multilignes' in parameter:
+                        options['multilignes'] = parameter['multilignes']
+                    if 'max_value' in parameter:
+                        options['max_value'] = parameter['max_value']
+                    if 'mask' in parameter:
+                        options['mask'] = parameter['mask']
+                    if 'choices' in parameter:
+                        options['choices'] = parameter['choices']
+                    p.options=json.dumps(options)
+                    p.save()
+
+    @classmethod
+    def refresh_event(cls, data):
+        for id, attributes in data.iteritems():
+            try:
+                c = Client.objects.get(id=id)
+            except Client.DoesNotExist:
+                c = Client(id=id, host=attributes['host'], pid=attributes['pid'], status=attributes['status'], configured=attributes['configured'], package_id=attributes['package_id'])
+            else:
+                c.pid=attributes['pid']
+                c.status=attributes['status']
+                c.configured=attributes['configured']
+            c.save()
+    
+    def save_configuration(self, data):
+        msg = {
+            'type': self.package.type,
+            'id': self.package.id,
+            'host': self.host,
+            'data': data 
+        }
+        print msg
+        _result = Client.get_req('config.set', msg)
+        print _result
+
+class ClientConfiguration(models.Model):
+    id = models.CharField(max_length=255, primary_key=True)
+    name = models.CharField(max_length=50)
+    key = models.CharField(max_length=50)
+    type = models.CharField(max_length=50)
+    default = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    required = models.BooleanField()
+    options = models.TextField(null=True, blank=True)
+    sort = models.IntegerField()
+    value = models.TextField(null=True, blank=True)
+    client = models.ForeignKey(Client)
 
 class Device(RestModel):
     id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=255)
     reference = models.CharField(max_length=255)
-    type = models.ForeignKey(DeviceType, blank=True, null=True, on_delete=models.DO_NOTHING)
+    type = models.ForeignKey(PackageDeviceType, blank=True, null=True, on_delete=models.DO_NOTHING)
 
-    list_path = "/base/device/list"
-    delete_path = "/base/device/del"
-    create_path = "/base/device/add"
-    addglobal_path = "/base/device/addglobal"
-    addxplcmd_path = "/base/device/xplcmdparams"
-    addxplstat_path = "/base/device/xplstatparams"
+    list_path = "/device/"
+    delete_path = "/device/"
+    create_path = "/device/"
+    addglobal_path = "/device/addglobal"
+    addxplcmd_path = "/device/xplcmdparams"
+    addxplstat_path = "/device/xplstatparams"
     listupgrade_path = "/base/device/list-upgrade"
     doupgrade_path = "/base/device/upgrade"
-    index = 'device'
 
     @staticmethod
     def refresh():
@@ -231,8 +381,8 @@ class Device(RestModel):
         super(Device, self).delete(*args, **kwargs)
 
     @classmethod
-    def create(cls, name, type_id, reference):
-        data = ['name', name, 'type_id', type_id, 'usage_id', 'none', 'description', '', 'reference', reference]
+    def create(cls, plugin_id, name, type_id, reference):
+        data = ['plugin_id', plugin_id, 'name', name, 'type_id', type_id, 'description', '', 'reference', reference]
         rinor_device = cls.post_list(data)
         device = cls.create_from_json(rinor_device)
         return device
@@ -241,24 +391,28 @@ class Device(RestModel):
     def create_from_json(cls, data):
         device = cls(id=data.id, name=data.name, type_id=data.device_type_id, reference=data.reference)
         device.save()
-        if "command" in data:
-            for command in data.command:
+        if "commands" in data:
+            for cmd in data.commands:
+                command = data.commands[cmd]
                 c = Command(id=command.id, name=command.name, device=device, reference=command.reference, return_confirmation=command.return_confirmation)
                 c.save()
-                for param in command.command_param:
+                for param in command.parameters:
                     p = CommandParam(command=c, key=param.key, datatype_id=param.data_type)
                     p.save()
-        if "sensor" in data:
-            for sensor in data.sensor:
+        if "sensors" in data:
+            for sen in data.sensors:
+                sensor = data.sensors[sen]
                 s = Sensor(id=sensor.id, name=sensor.name, device=device, reference=sensor.reference, datatype_id=sensor.data_type, last_value=sensor.last_value, last_received=sensor.last_received)
                 s.save()
-        if "xpl_command" in data:
-            for xpl_command in data.xpl_command:
-                c = XPLCmd(id=xpl_command.id, device_id= device.id, json_id=xpl_command.json_id)
+        if "xpl_commands" in data:
+            for command in data.xpl_commands:
+                xpl_command = data.xpl_commands[command]
+                c = XPLCmd(id=xpl_command.id, device_id=device.id, json_id=xpl_command.json_id)
                 c.save()
-        if "xpl_stat" in data:
-            for xpl_stat in data.xpl_stat:
-                c = XPLStat(id=xpl_stat.id, device_id= device.id, json_id=xpl_stat.json_id)
+        if "xpl_stats" in data:
+            for stat in data.xpl_stats:
+                xpl_stat = data.xpl_stats[stat]
+                c = XPLStat(id=xpl_stat.id, device_id=device.id, json_id=xpl_stat.json_id)
                 c.save()
         return device
 
@@ -340,8 +494,8 @@ class Sensor(RestModel):
     device = models.ForeignKey(Device)
     reference = models.CharField(max_length=50)
     datatype = models.ForeignKey(DataType, on_delete=models.DO_NOTHING)
-    last_value = models.CharField(max_length=50)
-    last_received = models.CharField(max_length=50)
+    last_value = models.CharField(max_length=50, null=True)
+    last_received = models.CharField(max_length=50, null=True)
 
 class WidgetInstance(models.Model):
     id = models.AutoField(primary_key=True)
@@ -369,4 +523,4 @@ class WidgetInstanceCommand(models.Model):
     id = models.AutoField(primary_key=True)
     instance = models.ForeignKey(WidgetInstance)
     key = models.CharField(max_length=50)
-    command = models.ForeignKey(Command, on_delete=models.DO_NOTHING)
+    command = models.ForeignKey(Command, on_delete=models.DO_NOTHING)    

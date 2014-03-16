@@ -8,15 +8,25 @@ if sys.version_info < (2, 6):
 import os, os.path
 import pwd
 import commands
-
+import time
 import cherrypy
 from cherrypy.process import plugins
 from django.conf import settings
 
+# MQ
+import zmq
+from zmq.eventloop import ioloop
+from zmq.eventloop.ioloop import IOLoop
+ioloop.install()
+
 import domoweb
+from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
 from eventsPlugin import EventsPlugin
 from corePlugin import CorePlugin
 from loaderPlugin import LoaderPlugin
+from wsPlugin import WSPlugin
+from mqPlugin import MQPlugin
+
 
 def main():
     """Main function that is called at the startup of Domoweb"""
@@ -102,22 +112,46 @@ def main():
     }
 
     plugins.PIDFile(engine, "/var/run/domoweb/domoweb.pid").subscribe()
-    #WSPlugin(engine).subscribe()
-
+    
     # Loading django config for database connection
     load_config(project)
+        
     LoaderPlugin(engine, project).subscribe()
 
-#    MQPlugin(engine).subscribe()
     EventsPlugin(engine, project).subscribe()
     CorePlugin(engine, project).subscribe()
+
+    # Loading WebSocket service
+    WebSocketPlugin(engine).subscribe()
+    cherrypy.tools.websocket = WebSocketTool()
+    WSPlugin(engine).subscribe()
     
+    # MQ Loop
+    MQPlugin(engine).subscribe()
+        
     engine.signal_handler.subscribe()
+    engine.signal_handler.set_handler('SIGTERM', handle_signal)
+    engine.signal_handler.set_handler('SIGINT', handle_signal)
     if hasattr(engine, "console_control_handler"):
         engine.console_control_handler.subscribe()
-    engine.start()
-    engine.block()
 
+    cherrypy.engine.subscribe('stop',  handle_stop)
+    engine.start()
+    ioloopi = IOLoop.instance()
+    ioloopi.add_callback(cherrypyloop, engine)
+    ioloopi.start()
+#    engine.block()
+
+def cherrypyloop(engine):
+    engine.publish('main')
+
+def handle_stop():
+    cherrypy.engine.log("Domoweb is shutting down")
+    IOLoop.instance().stop()
+    
+def handle_signal():
+    cherrypy.engine.exit()
+    
 '''
 def runinstall():
     PROJECT_PATH='/usr/share/domoweb'
@@ -130,6 +164,7 @@ def runinstall():
     os.environ['DOMOWEB_REV']=data['rev']
     Server().run(PROJECT_PATH, PROJECT_PACKS)
 '''
+
 def load_config(project):
     cherrypy.engine.log("Configuring the Django application")
     settings.configure(
@@ -150,6 +185,7 @@ def load_config(project):
         LOGOUT_URL = '%sadmin/logout' % project['prefix'],
         LOGIN_REDIRECT_URL = '%sadmin' % project['prefix'],
 
+        WEBSOCKET_URL = project['websocket']['url'],
         STATIC_DESIGN_URL = project['statics']['url'],
         STATIC_WIDGETS_URL = project['packs']['widgets']['url'],
         STATIC_THEMES_URL = project['packs']['themes']['url'],

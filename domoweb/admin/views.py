@@ -54,7 +54,8 @@ from django.forms.widgets import Select
 from domoweb.utils import *
 from domoweb.rinor.pipes import *
 from domoweb.exceptions import RinorError, RinorNotConfigured
-from domoweb.models import Parameter, Widget, PageIcon, WidgetInstance, WidgetInstanceParam, WidgetInstanceSensor, WidgetInstanceCommand, PageTheme, Page, DataType, DeviceType, Device, Command, CommandParam, Sensor
+from domoweb.models import *
+from domoweb.forms import ClientConfigurationForm, ParametersForm
 
 def login(request):
     """
@@ -99,10 +100,10 @@ def _auth(request, next):
         account = UserPipe().get_auth(user_login, user_password)
         request.session['user'] = {
             'login': account.login,
-            'is_admin': (account.is_admin == "True"),
-            'first_name': account.person.first_name,
-            'last_name': account.person.last_name,
-            'skin_used': account.skin_used
+            'is_admin': account.is_admin,
+            'first_name': account.core_person.first_name,
+            'last_name': account.core_person.last_name,
+            'skin_used': None
         }
         if next != '':
             return HttpResponseRedirect(next)
@@ -126,8 +127,8 @@ def admin_management_accounts(request):
     page_title = _("Accounts management")
     users = UserPipe().get_list()
     people = PersonPipe().get_list()
-    return go_to_page(
-        request, 'management/accounts.html',
+    return go_to_page_admin(
+        request, 'organization/accounts.html',
         page_title,
         nav1_admin = "selected",
         nav2_management_accounts = "selected",
@@ -147,8 +148,7 @@ def admin_organization_pages(request):
 
     id = request.GET.get('id', 0)
     pages = Page.objects.get_tree()
-
-    return go_to_page(
+    return go_to_page_admin(
         request, 'organization/pages.html',
         page_title,
         nav1_admin = "selected",
@@ -158,52 +158,57 @@ def admin_organization_pages(request):
     )
 
 @admin_required
-def admin_plugins_plugin(request, plugin_host, plugin_id, plugin_type):
+def admin_client(request, client_id):
     """
-    Method called when the admin plugin command page is accessed
+    Method called when the admin client page is accessed
     @param request : HTTP request
     @return an HttpResponse object
     """
 
-    plugin = PluginPipe().get_detail(plugin_host, plugin_id)
-    devices = Device.objects.filter(type__plugin_id=plugin.id)
-    types = DeviceType.objects.filter(plugin_id=plugin.id)
+    client = Client.objects.get(id=client_id)
+    devices = Device.objects.filter(type__package_id=client.package.id)
 
-    if plugin_id == "rfxcom-lan":
-        products = ProductsPipe().get_list("rfxcom")
-    else:
-        products = ProductsPipe().get_list(plugin_id)
-
-    if plugin_type == "plugin":
+    if client.package.type == "plugin":
         page_title = _("Plugin")
-        dependencies = PluginDependencyPipe().get_list(plugin_host, plugin_id)
-        udevrules = PluginUdevrulePipe().get_list(plugin_host, plugin_id)
-        return go_to_page(
-            request, 'plugins/plugin.html',
-            page_title,
-            nav1_admin = "selected",
-            nav2_plugins_plugin = "selected",
-            plugin=plugin,
-            plugin_type=plugin_type,
-            dependencies=dependencies,
-            udevrules=udevrules,
-            devices_list=devices,
-            types_list=types,
-	    product_list=products,
-        )
-    if plugin_type == "external":
+        path = 'clients/plugin.html'
+    else: #client.type == "external":
         page_title = _("External Member")
-        return go_to_page(
-            request, 'plugins/external.html',
-            page_title,
-            nav1_admin = "selected",
-            nav2_plugins_plugin = "selected",
-            plugin=plugin,
-            plugin_type=plugin_type,
-            devices_list=devices,
-            types_list=types,
-	    product_list=products,
-        )
+        path = 'clients/external.html'
+
+    configurationform = ClientConfigurationForm(client=client)
+
+    return go_to_page_admin(
+        request, path,
+        page_title,
+        nav1_admin = "selected",
+        nav2_plugins_plugin = "selected",
+        client=client,
+        package=client.package,
+        devices=devices,
+        configurationform=configurationform
+    )
+
+@admin_required
+def admin_client_configure(request, client_id):
+    """
+    Method called when the admin client page is accessed
+    @param request : HTTP request
+    @return an HttpResponse object
+    """
+
+    client = Client.objects.get(id=client_id)
+    form = ClientConfigurationForm(client=client)
+    form.setData(request.POST)
+    form.validate()
+    if form.is_valid():
+        form.save()
+    
+    return go_to_page(
+        request, "clients/configuration.html",
+        None,
+        client=client,
+        configurationform=form
+    )
 
 class SelectIcon(Select):
     def render_option(self, selected_choices, option_value, option_label):
@@ -232,45 +237,13 @@ class DeviceForm(forms.Form):
     def __init__(self, *args, **kwargs):
         # This should be done before any references to self.fields
         super(DeviceForm, self).__init__(*args, **kwargs)
-
-   
-class ParametersForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        self.name = kwargs.pop('name', None)
-        self.id = kwargs.pop('id', None)
-        self.params = kwargs.pop('params', None)
-        self.prefix = kwargs.pop('prefix', None)
-        kwargs['auto_id'] = '%s'
-        # This should be done before any references to self.fields
-        super(ParametersForm, self).__init__(*args, **kwargs)
-        if self.params:
-            for parameter in self.params:
-                self.addCharField(('%s-%s-%s')%(self.prefix, self.id, parameter.key), parameter.description, required=True)
-
-    def addCharField(self, key, label, required=False, max_length=50):
-        self.fields[key] = forms.CharField(label=label, required=required, max_length=max_length)
-
-    def setData(self, kwds):
-        """Set the data to include in the form"""
-        for name,field in self.fields.items():
-            self.data[name] = field.widget.value_from_datadict(
-                                kwds, self.files, self.add_prefix(name))
-        self.is_bound = True
-
-    def validate(self): self.full_clean()
-
-    def getData(self):
-        data = {}
-        for key, cd in self.cleaned_data.items():
-            key = key.replace(('%s-%s-')%(self.prefix, self.id), "")
-            data[key] = cd
-        return data
     
 @admin_required
-def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
+def admin_add_device(request, client_id, type_id):
     page_title = _("Add device")
     parameters = DeviceParametersPipe().get_detail(type_id)
-
+    client = Client.objects.get(id=client_id)
+    
     globalparametersform = None
     if parameters["global"] :
         globalparametersform = ParametersForm(auto_id='global_%s')
@@ -311,7 +284,7 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
             valid = valid and stat.is_valid()
         if valid:
             cd = deviceform.cleaned_data
-            device = Device.create(cd["name"], cd["type_id"], cd["reference"])
+            device = Device.create(client.package.id, cd["name"], cd["type_id"], cd["reference"])
             if globalparametersform:
                 device.add_global_params(parameters=globalparametersform.cleaned_data)
             for command in commands:
@@ -324,12 +297,11 @@ def admin_add_device(request, plugin_host, plugin_id, plugin_type, type_id):
     else:
         deviceform = DeviceForm(auto_id='main_%s', initial={'type_id': type_id})
 
-    return go_to_page(
-        request, 'plugins/device.html',
+    return go_to_page_admin(
+        request, 'clients/device.html',
         page_title,
-        plugin_host=plugin_host,
-        plugin_id=plugin_id,
-        plugin_type=plugin_type,
+        client=client,
+        package=client.package,
         deviceform=deviceform,
         globalparametersform=globalparametersform,
         hasscommansparamters=hasscommandsparamters,
@@ -353,7 +325,7 @@ def admin_core_helpers(request):
 
     page_title = _("Helpers tools")
 
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/helpers.html',
         page_title,
         nav1_admin = "selected",
@@ -377,7 +349,7 @@ def admin_core_rinor(request):
     for h in hosts:
         if h.primary == 'True':
             host = h.id
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/rinor.html',
         page_title,
         nav1_admin = "selected",
@@ -397,7 +369,7 @@ def admin_core_pyinfo(request):
 
     page_title = _("Python informations")
     
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/pyinfo.html',
         page_title,
         nav1_admin = "selected",
@@ -448,7 +420,7 @@ def admin_core_djangoinfo(request):
     
     page_title = _("Django informations")
     
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/djangoinfo.html',
         page_title,
         nav1_admin = "selected",
@@ -500,10 +472,6 @@ class DeviceTable(tables.Table):
     class Meta:
         model = Device
 
-class DeviceTypeTable(tables.Table):
-    class Meta:
-        model = DeviceType
-
 class DataTypeTable(tables.Table):
     class Meta:
         model = DataType
@@ -519,7 +487,35 @@ class CommandParamTable(tables.Table):
 class SensorTable(tables.Table):
     class Meta:
         model = Sensor
- 
+
+class ClientTable(tables.Table):
+    class Meta:
+        model = Client
+
+class ClientConfigurationTable(tables.Table):
+    class Meta:
+        model = ClientConfiguration
+
+class PackageTable(tables.Table):
+    class Meta:
+        model = Package
+
+class PackageUdevRuleTable(tables.Table):
+    class Meta:
+        model = PackageUdevRule
+
+class PackageDependencyTable(tables.Table):
+    class Meta:
+        model = PackageDependency
+
+class PackageDeviceTypeTable(tables.Table):
+    class Meta:
+        model = PackageDeviceType
+
+class PackageProductTable(tables.Table):
+    class Meta:
+        model = PackageProduct
+
 @admin_required
 def admin_core_domowebdata(request):
     """
@@ -540,13 +536,19 @@ def admin_core_domowebdata(request):
     pagetheme_table = PageThemeTable(PageTheme.objects.all())
     page_table = PageTable(Page.objects.all())
     device_table = DeviceTable(Device.objects.all())
-    devicetype_table = DeviceTypeTable(DeviceType.objects.all())
     datatype_table = DataTypeTable(DataType.objects.all())
     command_table = CommandTable(Command.objects.all())
     commandparam_table = CommandParamTable(CommandParam.objects.all())
     sensor_table = SensorTable(Sensor.objects.all())
+    client_table = ClientTable(Client.objects.all())
+    clientconfiguration_table = ClientConfigurationTable(ClientConfiguration.objects.all())
+    package_table = PackageTable(Package.objects.all())
+    packageudevrule_table = PackageUdevRuleTable(PackageUdevRule.objects.all())
+    packagedependency_table = PackageDependencyTable(PackageDependency.objects.all())
+    packagedevicetype_table = PackageDeviceTypeTable(PackageDeviceType.objects.all())
+    packageproduct_table = PackageProductTable(PackageProduct.objects.all())
     
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/domowebdata.html',
         page_title,
         nav1_admin = "selected",
@@ -561,11 +563,17 @@ def admin_core_domowebdata(request):
         pagetheme_table = pagetheme_table,
         page_table = page_table,
         device_table = device_table,
-        devicetype_table = devicetype_table,
         datatype_table = datatype_table,
         command_table = command_table,
         commandparam_table = commandparam_table,
         sensor_table = sensor_table,
+        client_table = client_table,
+        clientconfiguration_table = clientconfiguration_table,
+        package_table = package_table,
+        packageudevrule_table = packageudevrule_table,
+        packagedependency_table = packagedependency_table,
+        packagedevicetype_table = packagedevicetype_table,
+        packageproduct_table = packageproduct_table,
     )
     
 @admin_required
@@ -581,7 +589,7 @@ def admin_host(request, id):
         
     page_title = _("Host %s" % id)
     
-    return go_to_page(
+    return go_to_page_admin(
         request, 'hosts/host.html',
         page_title,
         nav1_admin = "selected",
@@ -644,7 +652,7 @@ def admin_core_devicesstats(request):
     devicesevents = StatePipe().get_last(100, '*', '*')
     devicesevents.reverse()
     
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/devicesstats.html',
         page_title,
         devicesevents_list = devicesevents,
@@ -697,7 +705,7 @@ def admin_core_deviceupgrade(request):
     frm.fields['old'].choices = dev[0]['old']
     frm.fields['new'].choices = dev[0]['new']
  
-    return go_to_page(
+    return go_to_page_admin(
         request, 'core/deviceupgrade.html',
         page_title,
         frm = frm,

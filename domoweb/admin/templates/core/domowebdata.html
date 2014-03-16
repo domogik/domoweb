@@ -85,10 +85,6 @@
         {% render_table device_table "core/table.html" %}
     </section>
     <section class="subsection">
-        <h2>DeviceType table</h2>
-        {% render_table devicetype_table "core/table.html" %}
-    </section>
-    <section class="subsection">
         <h2>DataType table</h2>
         {% render_table datatype_table "core/table.html" %}
     </section>
@@ -103,5 +99,33 @@
     <section class="subsection">
         <h2>Sensor table</h2>
         {% render_table sensor_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>Client table</h2>
+        {% render_table client_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>ClientConfiguration table</h2>
+        {% render_table clientconfiguration_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>Package table</h2>
+        {% render_table package_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>PackageUdevRule table</h2>
+        {% render_table packageudevrule_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>PackageDeviceType table</h2>
+        {% render_table packagedevicetype_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>PackageDependency table</h2>
+        {% render_table packagedependency_table "core/table.html" %}
+    </section>
+    <section class="subsection">
+        <h2>PackageProduct table</h2>
+        {% render_table packageproduct_table "core/table.html" %}
     </section>
 {% endblock %}

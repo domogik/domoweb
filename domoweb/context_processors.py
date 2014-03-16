@@ -11,6 +11,7 @@ def domoweb(request):
         'config_url': settings.CONFIG_URL,
         'admin_url': settings.ADMIN_URL,
         'view_url': settings.VIEW_URL,
+        'websocket_url': settings.WEBSOCKET_URL,
         'static_design_url': settings.STATIC_DESIGN_URL,
         'static_widgets_url': settings.STATIC_WIDGETS_URL,
         'static_themes_url': settings.STATIC_THEMES_URL,

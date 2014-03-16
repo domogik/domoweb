@@ -20,6 +20,7 @@
 # Author : Cédric Trévisan <cedric@domogik.org>
 {% endcomment %}
 {% load i18n %}
+{% load text %}
 
 {% block global_css %}
 <link href="{{ static_design_url }}/admin/css/layout.with_nav.css" rel="stylesheet" type="text/css" />
@@ -53,16 +54,47 @@
     <script type="text/javascript">
         // <![CDATA[
         $(document).ready(function(){
-            getPluginsList();
             {% if request.session.normal_mode %}
-            getHostsList();
+            //getHostsList();
             {% endif %}
             $('#plugins_list li a[title]').tooltip_right();
             
-        {% if not request.session.normal_mode %}
+            {% if not request.session.normal_mode %}
             $.notification("debug", "{% trans "Domogik in development mode. Plugins are running from the sources" %}");
-        {% endif %}  
+            {% endif %}
+ 
+            websocket = "ws://" + location.host + "/{{ websocket_url }}";
+            if (window.WebSocket) { ws = new WebSocket(websocket); }
+            else if (window.MozWebSocket) { ws = MozWebSocket(websocket); }
+            else { console.log("WebSocket Not Supported"); return; }
+      
+            window.onbeforeunload = function(e) {
+                ws.onclose = function () {}; // disable onclose handler first
+                ws.close()
+            };
+            ws.onmessage = function (msg) {
+                var json = JSON.parse(msg.data);
+                if ((/^clients.list/).test(json.id)) {
+                    updateClients(json.content);
+                }
+            };
+      
         });
+        function updateClients(clients) {
+            $.each(clients, function(id, client) {
+                id = id.replace('.', '_');
+                var a = $('#' + id + ' a');
+                if (client.status == 'alive') {
+                    a.attr('class', 'icon16-status-' + client.type + '-up').attr('aria-label', '{% trans 'Running' %}');
+                } else if (client.status == 'not-configured') {
+                    a.attr('class', 'icon16-status-' + client.type + '-not-configured').attr('aria-label', '{% trans 'Not configured' %}');
+                } else if (client.status == 'stopped') {
+                    a.attr('class', 'icon16-status-' + client.type + '-down').attr('aria-label', '{% trans 'Stopped' %}');
+                } else {
+                    a.attr('class', 'icon16-status-' + client.type + '-unknown').attr('aria-label', '{% trans 'Unknown' %}');                    
+                }
+            });
+        }
         // ]]>
     </script>
 {% endblock %}
@@ -93,13 +125,33 @@
                 <div class="subnav2"><a href="#">{% trans "Organization" %}</a></div>
                 <ul>
                     <li><a href="{% url admin_organization_pages_view %}" class='{{ nav2_organization_pages }}'>{% trans "Pages" %}</a></li>
-                </ul>
-                <div class="subnav2"><a href="#">{% trans "Management" %}</a></div>
-                <ul>
                     <li><a href="{% url admin_management_accounts_view %}" class='{{ nav2_management_accounts }}'>{% trans "Accounts" %}</a></li>
                 </ul>
-                <div class="subnav2"><a href="#">{% trans "Plugins" %}</a></div>
-                <ul id="plugins_list">
+                <div class="subnav2"><a href="#">{% trans "Clients" %}</a></div>
+
+                {% regroup clients by category as categories %}
+                <ul id="clients_list">
+                    {% for category in categories %}
+                    <li><ul id='menu_{{ category.grouper }}'>
+                        {% for client in category.list %}
+                        <li class='{{ client.package.type }}' id='{{ client.id|switchDot }}'>
+                                <a href='{% url admin_client_view client.id %}'
+                                {% if client.status == 'alive' %}
+                                class='icon16-status-{{ client.package.type }}-up' aria-label='{% trans 'Running' %}'>
+                                {% elif client.status == 'not-configured' %}
+                                class='icon16-status-{{ client.package.type }}-not-configured' aria-label='{% trans 'Not configured' %}'>
+                                {% elif client.status == 'stopped' %}
+                                class='icon16-status-{{ client.package.type }}-down' aria-label='{% trans 'Stopped' %}'>
+                                {% else %}
+                                class='icon16-status-{{ client.package.type }}-unknown' aria-label='{% trans 'Unknown' %}'>
+                                {% endif %}
+                                <div><div class='host'>{{ client.host }}</div>{{ client.package.name }}</div></a>
+                        </li>
+                        {% endfor %}
+                    </ul></li>
+                    {% empty %}
+                    <li>{% trans 'No client enabled or installed' %}</li>
+                    {% endfor %}
                 </ul>
                 {% if request.session.normal_mode %}
                 <div class="subnav2"><a href="#">{% trans "Hosts" %}</a></div>

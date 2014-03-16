@@ -49,6 +49,10 @@ def switchUnderscore(value):
     return value.replace('_', ' ')
 
 @register.filter
+def switchDot(value):
+    return value.replace('.', '_')
+
+@register.filter
 @stringfilter
 def stripnl(value):
     value = normalize_newlines(value)

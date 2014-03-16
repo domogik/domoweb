@@ -23,8 +23,8 @@
 
 {% load i18n %}
 {% block js_script %}
-    var plugin_host = '{{ plugin.host }}';
-    var plugin_id = '{{ plugin.id }}';
+    var plugin_host = '{{ client.host }}';
+    var plugin_id = '{{ package.id }}';
     $(function(){
         // Accordion
         $("#nav2").accordion({ autoHeight: false, header: ".subnav2", active:2});
@@ -44,7 +44,7 @@
         }
 
         $("#buttonstatus").ajaxSwitch({
-            'url':['api','plugin', '{{ plugin.host }}', '{{ plugin.id }}'],
+            'url':['api','plugin', '{{ client.host }}', '{{ package.id }}'],
             'successFct':function(state, status, xhr){
                     $.doTimeout( 'list', 5000, function(){
                         getPluginsList();
@@ -66,13 +66,28 @@
                 }]
             });
 
-        {% ifequal plugin.status "ON" %}
+        {% ifequal client.status "alive" %}
             setStatus('up');
             $("#buttonstatus").ajaxSwitch('run', 'up');
         {% else %}
             setStatus('down');
             $("#buttonstatus").ajaxSwitch('run', 'down');
         {% endifequal %}
+        
+        $('#clientForm').on('change', function(){
+            $('#saveconfiguration').removeAttr('disabled');
+        });
+        
+         $("#saveconfiguration").click(function() {
+            $.ajax({
+                type:"POST",
+                data: $("#clientForm :input").serialize(),
+                url:ADMIN_URL + "/client/configure/{{ client.id }}/",
+                success: function(data, textStatus, jqXHR){
+                    $('#tabs-4').html(data);
+                }
+            });
+        });
     });
 {% endblock %}
 {% block css %}
@@ -90,8 +105,8 @@
 {% block title %}{{ page_title }}{% endblock %}
 
 {% block banner %}
-    <h1 class="ident icon64-plugin-{{ plugin.id }} icon64-resize" style='background-image:url({{ admin_url }}/resource/icon/package/installed/plugin/{{ plugin.id }})'>
-        <span class="title">{% trans "Plugin" %} '{{ plugin.id }}'</span>
+    <h1 class="ident icon64-plugin-{{ package.id }} icon64-resize" style='background-image:url({{ admin_url }}/resource/icon/package/installed/plugin/{{ package.id }})'>
+        <span class="title">{% trans "Plugin" %} '{{ package.name }}'</span>
     </h1>
 {% endblock %}
 
@@ -102,15 +117,15 @@
             <li><a href="#tabs-2">{% trans "Informations" %}</a></li>
             <li><a href="#tabs-3">{% trans "Requirements" %}</a></li>
             <li><a href="#tabs-4">{% trans "Configuration" %}</a></li>
-        {% if plugin.id == "knx" %}
+        {% if package.id == "knx" %}
             <li><a href="#tabs-5">{% trans "Special" %}</a></li>
         {% endif %}
-        {% if plugin.id == "ozwave" %}
+        {% if package.id == "ozwave" %}
             <li><a href="#tabs-5">{% trans "Controller and devices" %}</a></li>
             <li><a href="#tabs-6">{% trans "Neighborhood network" %}</a></li>
-			<li><a href="#tabs-6">{% trans "Support tools" %}</a></li>
+            <li><a href="#tabs-6">{% trans "Support tools" %}</a></li>
         {% endif %}
-        {% if plugin.id == "cron" %}
+        {% if package.id == "cron" %}
             <li><a href="#tabs-5">{% trans "Jobs" %}</a></li>
             <li><a href="#tabs-6">{% trans "Alarm" %}</a></li>
             <li><a href="#tabs-7">{% trans "Dawn Alarm" %}</a></li>
@@ -119,80 +134,80 @@
             <li><a href="#tabs-10"{% trans "Helper" %}</a></li>
             <li><a href="#tabs-11">{% trans "Log" %}</a></li>
         {% endif %}
-        {% if plugin.id == "scene" %}
+        {% if package.id == "scene" %}
             <li><a href="#tabs-4">{% trans "Creator" %}</a></li>
             <li><a href="#tabs-5">{% trans "Manage" %}</a></li>
         {% endif %}
-        {% if plugin.id == "telldus" %}
+        {% if package.id == "telldus" %}
             <li><a href="#tabs-5">{% trans "Helper" %}</a></li>
             <li><a href="#tabs-6">{% trans "Log" %}</a></li>
         {% endif %}
         </ul>
         <div id="tabs-1">
-            {% include "plugins/devices.html" %}
+            {% include "clients/devices.html" %}
         </div>
         <div id="tabs-2">
-            {% include "plugins/informations.html" %}
+            {% include "clients/informations.html" %}
         </div>
         <div id="tabs-3">
-            {% include "plugins/requirements.html" %}
+            {% include "clients/requirements.html" %}
         </div>
         <div id="tabs-4">
-            {% include "plugins/configuration.html" %}
+            {% include "clients/configuration.html" %}
         </div>
-    {% if plugin.id == "knx" %}
+    {% if package.id == "knx" %}
         <div id="tabs-5">
-            {% include "plugins/knx/special_knx.html" %}
+            {% include "clients/knx/special_knx.html" %}
         </div>
     {% endif %}
-    {% if plugin.id == "ozwave" %}
+    {% if package.id == "ozwave" %}
         <div id="tabs-5">
-            {% include "plugins/ozwave/ctrldevlist_ozwave.html" %}
+            {% include "clients/ozwave/ctrldevlist_ozwave.html" %}
         </div>
         <div id="tabs-6">
-            {% include "plugins/ozwave/neighborsnodes_ozwave.html" %}
+            {% include "clients/ozwave/neighborsnodes_ozwave.html" %}
         </div>
-	<div id="tabs-7">
-            {% include "plugins/ozwave/support-tools_ozwave.html" %}
+    <div id="tabs-7">
+            {% include "clients/ozwave/support-tools_ozwave.html" %}
         </div>
     {% endif %}
-    {% if plugin.id == "cron" %}
+    {% if package.id == "cron" %}
         <div id="tabs-5">
-            {% include "plugins/cron/jobs.html" %}
+            {% include "clients/cron/jobs.html" %}
         </div>
         <div id="tabs-6">
-            {% include "plugins/cron/alarm.html" %}
+            {% include "clients/cron/alarm.html" %}
         </div>
         <div id="tabs-7">
-            {% include "plugins/cron/dawnalarm.html" %}
+            {% include "clients/cron/dawnalarm.html" %}
         </div>
         <div id="tabs-8">
-            {% include "plugins/cron/date.html" %}
+            {% include "clients/cron/date.html" %}
         </div>
         <div id="tabs-9">
-            {% include "plugins/cron/interval.html" %}
+            {% include "clients/cron/interval.html" %}
         </div>
         <div id="tabs-10">
-            {% include "plugins/cron/helper.html" %}
+            {% include "clients/cron/helper.html" %}
         </div>
         <div id="tabs-11">
-            {% include "plugins/cron/log.html" %}
+            {% include "clients/cron/log.html" %}
         </div>
     {% endif %}
-    {% if plugin.id == "scene" %}
+    {% if package.id == "scene" %}
         <div id="tabs-4">
-            {% include "plugins/scene/creator_scenev2.html" %}
+            {% include "clients/scene/creator_scenev2.html" %}
         </div>
         <div id="tabs-5">
-            {% include "plugins/scene/manage_scenev2.html" %}
+            {% include "clients/scene/manage_scenev2.html" %}
         </div>
     {% endif %}
-    {% if plugin.id == "telldus" %}
+    {% if package.id == "telldus" %}
         <div id="tabs-5">
-            {% include "plugins/telldus/helper.html" %}
+            {% include "clients/telldus/helper.html" %}
         </div>
         <div id="tabs-6">
-            {% include "plugins/telldus/log.html" %}
+            {% include "clients/telldus/log.html" %}
         </div>
     {% endif %}
     </div>

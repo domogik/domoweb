@@ -39,9 +39,9 @@ class RinorPipe():
                     d=str(d)
                 _tmp.append(d)
             _data = '/'.join(_tmp)
-            _path = "%s/%s/" % (path, _data)
+            _path = "%s/%s" % (path, _data)
         else:
-            _path = "%s/" % path
+            _path = "%s" % path
         return _path
         
     def _get_data(self, path, data=None):
@@ -84,9 +84,7 @@ class RinorPipe():
         
     def get_list(self):
         data = self._get_data(self.list_path)
-        if data.status == "ERROR":
-            raise RinorError(data.code, data.description)
-        return data[self.index]
+        return data
 
     def get_dict(self):
         _list = self.get_list()

@@ -37,28 +37,6 @@ $(function(){
         setStatus(false);
     {% endifequal %}
     
-    /* Get the list of configuration items */
-    rinor.get(['api', 'plugindetail', '{{ plugin.host }}', '{{ plugin.id }}'])
-        .done(function(data, status, xhr){
-            // Check configuration items
-            var num_items = data.configuration.length;
-            var options = data.configuration.sort(sortOptions);
-            $.each(options, function(index, item) {
-                var iid = item.id;
-                var ikey = item.key;
-                var ivalue = item.value;
-                $("#configuration_items tbody").append("<tr id='" + item.id + "'></tr>");
-                var tr = $("tr#"+iid);
-                tr.append("<td>" +  ikey + "</td>");
-                tr.append("<td>" + ivalue + "</td>");
-            });
-        })
-        .fail(function(jqXHR, status, error){
-            self.cancel();
-            if (jqXHR.status == 400)
-                $.notification('error', jqXHR.responseText);
-        });
-
     function setStatus(status) {
         if (status) { //active
             strstatus = 'up';
