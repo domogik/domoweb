@@ -5,61 +5,95 @@ if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
     sys.exit(1)    
 
-import os, os.path
-import pwd
-import commands
-import time
-import cherrypy
-from cherrypy.process import plugins
-from django.conf import settings
-
 # MQ
+import os
 import zmq
 from zmq.eventloop import ioloop
 from zmq.eventloop.ioloop import IOLoop
 ioloop.install()
+from domogik.mq.reqrep.client import MQSyncReq
+from domogik.mq.message import MQMessage
 
+#import tornado.ioloop
+import tornado.web
+from tornado.options import options
 import domoweb
-from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
-from eventsPlugin import EventsPlugin
-from corePlugin import CorePlugin
-from loaderPlugin import LoaderPlugin
-from wsPlugin import WSPlugin
-from mqPlugin import MQPlugin
+from domoweb.db.models import engine, Widget, PageIcon, PageTheme
+from sqlalchemy.orm import sessionmaker
+
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.write("Hello, world")
+
+application = tornado.web.Application([
+    (r"/", MainHandler),
+])
 
 
-def main():
-    """Main function that is called at the startup of Domoweb"""
-    from optparse import OptionParser
+def packLoader(pack_path):
+    import simplejson
 
-    p = OptionParser()
+    # create a configured "Session" class
+    Session = sessionmaker(bind=engine)
 
-    # define command line options
-    """
-    p.add_option('-d', '--daemon',
-                 dest='daemon',
-                 action='store_true',
-                 help='Run as a daemon')
-    """
-    p.add_option('--db',
-             dest='db',
-             default='/var/lib/domoweb/domoweb.db',
-             help="Force domoweb DB file (default: /var/lib/domoweb/domoweb.db)")
-    
-    # parse command line for defined options
-    options, args = p.parse_args()
+    # create a Session
+    session = Session()
 
-#    if options.daemon:
-#        daemonize()
+    # Load all Widgets
+    widgets_path = os.path.join(pack_path, 'widgets')
+    session.query(Widget).delete()
+    if os.path.isdir(widgets_path):
+        for file in os.listdir(widgets_path):
+            if not file.startswith('.'): # not hidden file
+                main = os.path.join(widgets_path, file, "main.js")
+                if os.path.isfile(main):
+                    w = Widget(id=file)
+                    session.add(w)
+    session.commit()
 
-    engine = cherrypy.engine
+    # Load all Iconsets
+    iconsets_path = os.path.join(pack_path, 'iconsets', 'page')
+    session.query(PageIcon).delete()
+    if os.path.isdir(iconsets_path):
+        for file in os.listdir(iconsets_path):
+            if not file.startswith('.'): # not hidden file
+                info = os.path.join(iconsets_path, file, "info.json")
+                if os.path.isfile(info):
+                    iconset_file = open(info, "r")
+                    iconset_json = simplejson.load(iconset_file)
+                    iconset_id = iconset_json["identity"]["id"]
+                    iconset_name = unicode(iconset_json["identity"]["name"])
+                    for icon in iconset_json["icons"]:
+                        id = iconset_id + '-' + icon["id"]
+                        i = PageIcon(id=id, iconset_id=iconset_id, iconset_name=iconset_name, icon_id=icon["id"], label=unicode(icon["label"]))
+                        session.add(i)
+    session.commit()
+
+    # Load all Themes
+    themes_path = os.path.join(pack_path, 'themes')
+    session.query(PageTheme).delete()
+    if os.path.isdir(themes_path):
+        for file in os.listdir(themes_path):
+            if not file.startswith('.'): # not hidden file
+                info = os.path.join(themes_path, file, "info.json")
+                if os.path.isfile(info):
+                    theme_file = open(info, "r")
+                    theme_json = simplejson.load(theme_file)
+                    theme_id = theme_json["identity"]["id"]
+                    theme_name = unicode(theme_json["identity"]["name"])
+                    t = PageTheme(id=theme_id, label=theme_name)
+                    session.add(t)
+    session.commit()
+
+
+if __name__ == '__main__':
 
     domoweb.FULLPATH = os.path.normpath(os.path.abspath(__file__))
     domoweb.PROJECTPATH = os.path.dirname(domoweb.FULLPATH)
-    engine.log("Running from : %s" % domoweb.PROJECTPATH)
+#    engine.log("Running from : %s" % domoweb.PROJECTPATH)
     domoweb.PACKSPATH = os.path.join(domoweb.PROJECTPATH, 'packs')
-    domoweb.VERSION = "dev.%s" % commands.getoutput("cd %s ; hg id -n 2>/dev/null" % domoweb.PROJECTPATH)
-    engine.log("Version : %s" % domoweb.VERSION)
+#    domoweb.VERSION = "dev.%s" % commands.getoutput("cd %s ; hg id -n 2>/dev/null" % domoweb.PROJECTPATH)
+#    engine.log("Version : %s" % domoweb.VERSION)
 
     # Check log folder
     if not os.path.isdir("/var/log/domoweb"):
@@ -67,9 +101,9 @@ def main():
         sys.exit(1)
 
     # Check run folder
-    if not os.path.isdir("/var/run/domoweb"):
-        sys.stderr.write("Error: /var/run/domoweb do not exist")
-        sys.exit(1)
+#    if not os.path.isdir("/var/run/domoweb"):
+#        sys.stderr.write("Error: /var/run/domoweb do not exist")
+#        sys.exit(1)
     
     # Check config file
     SERVER_CONFIG = '/etc/domoweb.cfg'
@@ -77,193 +111,27 @@ def main():
         sys.stderr.write("Error: Can't find the file '%s'\n" % SERVER_CONFIG)
         sys.exit(1)
 
-    cherrypy.config.update(SERVER_CONFIG)
+    options.define("sqlite_db", default="/var/lib/domoweb/db.sqlite", help="Database file path", type=str)
+    options.define("port", default=40404, help="run on the given port", type=int)
+    options.parse_config_file("/etc/domoweb.cfg")
 
-    url_prefix = cherrypy.config.get("domoweb.url_prefix", "")
-    if url_prefix != "":
-        url_prefix += "/"
+    packLoader(domoweb.PACKSPATH)
 
-    project = {
-        'path' : domoweb.PROJECTPATH,
-        'version' : domoweb.VERSION,
-        'prefix' : url_prefix,
-        'dbfile' : options.db,
-        'websocket' : {
-            'url' : "/%sws/" % (url_prefix),
-        },
-        'statics' : {
-            'url' : "/%sdesign" % url_prefix,
-            'root' : os.path.join(domoweb.PROJECTPATH, "static")
-        },
-        'packs' : {
-            'widgets' : {
-                'url' : "/%swidgets" % url_prefix,
-                'root' : os.path.join(domoweb.PACKSPATH, "widgets")
-            },
-            'themes' : {
-                'url' : "/%sthemes" % url_prefix,
-                'root' : os.path.join(domoweb.PACKSPATH, "themes")
-            },
-            'iconsets' : {
-                'url' : "/%siconsets" % url_prefix,
-                'root' : os.path.join(domoweb.PACKSPATH, "iconsets")
-            }
-        }
-    }
+    # get all datatypes
+#    cli = MQSyncReq(zmq.Context())
+#    msg = MQMessage()
+#    msg.set_action('datatype.get')
+#    res = cli.request('manager', msg.get(), timeout=10)
+#    if res is not None:
+#        datatypes = res.get_data()['datatypes']
+#    else:
+#        datatypes = {}
 
-    plugins.PIDFile(engine, "/var/run/domoweb/domoweb.pid").subscribe()
-    
-    # Loading django config for database connection
-    load_config(project)
-        
-    LoaderPlugin(engine, project).subscribe()
+#    print datatypes
+#        DataType.objects.all().delete()
+#        for type, params in _data.iteritems():
+#            r = DataType(id=type, parameters=json.dumps(params))
+#            r.save()
 
-    EventsPlugin(engine, project).subscribe()
-    CorePlugin(engine, project).subscribe()
-
-    # Loading WebSocket service
-    WebSocketPlugin(engine).subscribe()
-    cherrypy.tools.websocket = WebSocketTool()
-    WSPlugin(engine).subscribe()
-    
-    # MQ Loop
-    MQPlugin(engine).subscribe()
-        
-    engine.signal_handler.subscribe()
-    engine.signal_handler.set_handler('SIGTERM', handle_signal)
-    engine.signal_handler.set_handler('SIGINT', handle_signal)
-    if hasattr(engine, "console_control_handler"):
-        engine.console_control_handler.subscribe()
-
-    cherrypy.engine.subscribe('stop',  handle_stop)
-    engine.start()
-    ioloopi = IOLoop.instance()
-    ioloopi.add_callback(cherrypyloop, engine)
-    ioloopi.start()
-#    engine.block()
-
-def cherrypyloop(engine):
-    engine.publish('main')
-
-def handle_stop():
-    cherrypy.engine.log("Domoweb is shutting down")
-    IOLoop.instance().stop()
-    
-def handle_signal():
-    cherrypy.engine.exit()
-    
-'''
-def runinstall():
-    PROJECT_PATH='/usr/share/domoweb'
-    os.environ['DOMOWEB_PATH']=PROJECT_PATH
-    PROJECT_PACKS='/var/lib/domoweb/packs'
-    os.environ['DOMOWEB_PACKS']=PROJECT_PACKS
-    fh_in = open("/var/lib/domoweb/domoweb.dat", "rb")
-    data = pickle.load(fh_in)
-    fh_in.close()
-    os.environ['DOMOWEB_REV']=data['rev']
-    Server().run(PROJECT_PATH, PROJECT_PACKS)
-'''
-
-def load_config(project):
-    cherrypy.engine.log("Configuring the Django application")
-    settings.configure(
-        DEBUG = True,
-        TEMPLATE_DEBUG = True,            
-        RINOR_MIN_API = '0.7',
-        RINOR_MAX_API = '0.7', #included
-        DMG_MIN_VERSION = '0.3',
-        
-        PROJECT_PATH = project['path'],
-        URL_PREFIX = project['prefix'],
-        REST_URL = "/%srinor" % project['prefix'],
-        EVENTS_URL = "/%sevents" % project['prefix'],
-        CONFIG_URL = "/%sconfig" % project['prefix'],
-        ADMIN_URL = "/%sadmin" % project['prefix'],
-        VIEW_URL = "/%sview" % project['prefix'],
-        LOGIN_URL = '%sadmin/login' % project['prefix'],
-        LOGOUT_URL = '%sadmin/logout' % project['prefix'],
-        LOGIN_REDIRECT_URL = '%sadmin' % project['prefix'],
-
-        WEBSOCKET_URL = project['websocket']['url'],
-        STATIC_DESIGN_URL = project['statics']['url'],
-        STATIC_WIDGETS_URL = project['packs']['widgets']['url'],
-        STATIC_THEMES_URL = project['packs']['themes']['url'],
-        STATIC_ICONSETS_URL = project['packs']['iconsets']['url'],
-        DOMOWEB_VERSION = project['version'],
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': project['dbfile'],
-            }
-        },
-        TIME_ZONE = 'Europe/Paris',
-        LANGUAGE_CODE = 'en',
-        LANGUAGES = (
-          ('en', 'English'),
-          ('fr', 'Fran?ais'),
-          ('nl_BE', 'Flemish'),
-        ),
-        LOCALE_PATHS = (
-            '%s/domoweb/locale' % project['path'],
-        ),
-        DEFAULT_CHARSET = 'utf-8',
-        SITE_ID = 1,
-        USE_I18N = True,
-        SECRET_KEY = 'i#=g$uo$$qn&0qtz!sbimt%#d+lb!stt#12hr@%vp-u)yw3s+b',
-        TEMPLATE_LOADERS = (
-            'django.template.loaders.filesystem.Loader',
-            'django.template.loaders.app_directories.Loader',
-#            'django.template.loaders.eggs.Loader',
-        ),
-        MIDDLEWARE_CLASSES = (
-            'django.contrib.sessions.middleware.SessionMiddleware',
-            'django.middleware.locale.LocaleMiddleware',
-            'django.middleware.common.CommonMiddleware',
-            'django.contrib.auth.middleware.AuthenticationMiddleware',
-            'django.contrib.messages.middleware.MessageMiddleware',
-            'domoweb.middleware.RinorMiddleware',
-        ),
-        ROOT_URLCONF = 'domoweb.urls',
-        TEMPLATE_CONTEXT_PROCESSORS = (
-            'django.contrib.auth.context_processors.auth',
-            'django.core.context_processors.debug',
-            'django.core.context_processors.i18n',
-            'django.core.context_processors.request',
-            'django.contrib.messages.context_processors.messages',
-            'domoweb.context_processors.domoweb',
-        ),
-        INSTALLED_APPS = (
-            'django.contrib.auth',
-            'django.contrib.contenttypes',
-            'django.contrib.sessions',
-            'django.contrib.messages',
-            'django.contrib.sites',
-            'django.contrib.admin',
-            'manifesto',
-            'south',
-            'tastypie',
-            'django_tables2',
-            'domoweb',
-            'domoweb.config',
-            'domoweb.view',
-            'domoweb.admin',
-            'domoweb.rinor',
-        ),
-        MANIFESTO_EXCLUDED_MANIFESTS = (
-                'randomapp.manifest.WrongManifest',
-        ),
-        SESSION_ENGINE = 'django.contrib.sessions.backends.cache',
-        MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage',
-        API_LIMIT_PER_PAGE = 0, #Tastypie
-        TEMPLATE_DIRS = (
-            '%s/domoweb/templates/' % project['path'],
-            '%s/domoweb/config/templates/' % project['path'],
-            '%s/domoweb/view/templates/' % project['path'],
-            '%s/domoweb/admin/templates/' % project['path'],
-            '%s/domoweb/rinor/templates/' % project['path'],
-        ),
-    )
-
-if __name__ == '__main__':
-    main()    
+    application.listen(options.port)
+    ioloop.IOLoop.instance().start() 

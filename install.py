@@ -1,10 +1,13 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys
 if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
     sys.exit(1)
 
 import os
+import os.path
 euid = os.geteuid()
 if euid != 0:
     print "Please restart this script as root!"
@@ -13,6 +16,8 @@ if euid != 0:
 import pwd
 import shutil
 import re
+import site
+sitepackages = site.getsitepackages()[0]
 
 BLUE = '\033[94m'
 OK = '\033[92m'
@@ -87,8 +92,8 @@ def main():
 
     p.add_option('--db',
              dest='db',
-             default='/var/lib/domoweb/domoweb.db',
-             help="Force domoweb DB file (default: /var/lib/domoweb/domoweb.db)")
+             default='/var/lib/domoweb/db.sqlite',
+             help="Force domoweb DB file (default: /var/lib/domoweb/db.sqlite)")
 
     p.add_option('--noclean',
              dest='noclean',
@@ -161,14 +166,25 @@ def main():
         installInit()
         installLogrotate()
 
-    # Update django DB
+    # Update DB
     if options.nodbupdate:
         warning('Not updating Domoweb DB')
     else:
         info("Updating Domoweb DB...")
         updateDb(user, options.db)
 
-   # Test installation
+    # Adding module path to PYTHONPATH
+    if sitepackages:
+        mypth = os.path.join(sitepackages, "domoweb.pth")
+        path_to_add = os.path.abspath(os.path.dirname(__file__))
+        ok("Adding %s to site-packages" % path_to_add)
+        with open(mypth, "a") as f:
+            f.write(path_to_add)
+            f.write("\n")
+    else:
+        fail('site-packages not found')
+
+    # Test installation
     if options.notest:
         warning('Not testing Domoweb Installation')
     else:
@@ -176,18 +192,18 @@ def main():
         ok("Testing installation")
         raw_input('Please press Enter when ready.')
         try:
-            testImports()
+    #            testImports()
             testConfigFiles()
             testInit()
-            testDB(options.db)
-            django_url = getDjangoUrl()
+    #            testDB(options.db)
+    #            django_url = getDjangoUrl()
             print "\n\n"
             ok("================================================== <==")
             ok(" Everything seems ok, you should be able to start  <==")
             ok("      DomoWeb with /etc/init.d/domoweb start       <==")
             ok("            or /etc/rc.d/domoweb start             <==")
             ok(" DomoWeb UI is available on                        <==")
-            ok(" %49s <==" % django_url)
+    #            ok(" %49s <==" % django_url)
             ok(" Default login is 'admin', password is '123'       <==")
             ok("================================================== <==")
         except:
@@ -249,8 +265,7 @@ def installInit():
         shutil.copy(installpath, '/etc/rc.d/')
         os.chmod('/etc/rc.d/domoweb', 0755)
     else:
-        fail("Init directory does not exist (/etc/init.d or /etc/rc.d)")
-        sys.exit(1)
+        warning("Init directory does not exist (/etc/init.d or /etc/rc.d): require manual install")
 
 def installLogrotate():
     installpath = "%s/examples/logrotate/domoweb" % os.path.dirname(os.path.abspath(__file__))
@@ -288,52 +303,37 @@ def test_user(user):
 
 def install_dependencies():
     from setuptools.command import easy_install
+    import pkg_resources
     easy_install.main( ['setuptools',
-                            'django == 1.4',
-                            'django-tastypie == 0.9.11',
-                            'django-tables2',
-                            'simplejson >= 1.9.2',
-                            'httplib2 >= 0.6.0',
-                            'Distutils2',
-                            'CherryPy >= 3.2.2',
-                            'south',
-                            'manifesto',
-                            'requests',
-                            'ws4py',
-                            'pyzmq>=13.1.0',
-                            'tornado>=3.1'])
+        'sqlalchemy',
+        'alembic',
+        'tornado >= 3.1',
+        'simplejson >= 1.9.2',
+    ])
 
+#    pkg_resources.get_distribution('django').activate()
+    
 def updateDb(user, db):
-    from django.core import management
-    from django.conf import settings
-    from StringIO import StringIO
-    settings.configure(
-        DEBUG = False,
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': db,
-            }
-        },
-        INSTALLED_APPS = (
-            'django.contrib.auth',
-            'django.contrib.contenttypes',
-            'django.contrib.sessions',
-            'django.contrib.messages',
-            'django.contrib.sites',
-            'django.contrib.admin',
-            'domoweb',
-            'south',
-        ),
-    )
+    from domoweb.db.models import metadata, engine
+    from sqlalchemy import create_engine
+    from alembic.config import Config
+    from alembic import command
+
+    info("Installing/upgrading the db")
+    alembic_cfg = Config("alembic.ini")
+    if not os.path.isfile(db):
+        ok("Creating new database: %s" % db)
+        metadata.create_all(engine)
+        ok("Adding migration data")
+        command.stamp(alembic_cfg, "head")
+        uid = pwd.getpwnam(user).pw_uid
+        os.chown(db, uid, -1)
+    else:
+        ok("Upgrading existing database")
+        command.upgrade(alembic_cfg, "head")
 
     info("Initialisation DB migration")
-    management.call_command("syncdb", interactive=False)
     info("Apply DB migration scripts")
-    management.call_command("migrate", "domoweb", delete_ghosts=True)
-
-    uid = pwd.getpwnam(user).pw_uid
-    os.chown(db, uid, -1)
 
 def testImports():
     good = True
@@ -341,7 +341,7 @@ def testImports():
     try:
         import django
     except ImportError:
-        warning("Can't import django, please install it by hand (>= 1.1)")
+        warning("Can't import django, please install it by hand (== 1.4)")
         good = False
         import httplib
     except ImportError:
@@ -350,7 +350,7 @@ def testImports():
     try:
         import simplejson
     except ImportError:
-        warning("Can't import simplejson, please install it by hand (>= 1.1)")
+        warning("Can't import simplejson, please install it by hand (>= 1.9.2)")
         good = False
     assert good, "One or more import have failed, please install required packages and restart this script."
     ok("Imports are good")
