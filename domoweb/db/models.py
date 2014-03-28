@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Integer, Unicode, UnicodeText, Boolean, ForeignKey, String
+from sqlalchemy import Column, Integer, Unicode, UnicodeText, Boolean, ForeignKey, String, Text
 from sqlalchemy.orm import backref, relationship
 
 # alembic revision --autogenerate -m "xxxx"
@@ -46,22 +46,22 @@ class Page(Base):
 class DataType(Base):
 	__tablename__ = 'dataType'
 	id = Column(String(50), primary_key=True)
-	parameters = Column(UnicodeText())
+	parameters = Column(Text())
 
 class Package(Base):
 	__tablename__ = 'package'
 	id = Column(String(50), primary_key=True)
 	name = Column(Unicode(50))
-	type = Column(Unicode(50))
-	version = Column(Unicode(50))
+	type = Column(String(50))
+	version = Column(String(50))
 	author = Column(Unicode(255), nullable=True)
-	author_email = Column(Unicode(255), nullable=True)
+	author_email = Column(String(255), nullable=True)
 	tags = Column(Unicode(255), nullable=True)
 	description = Column(UnicodeText(), nullable=True)
-	udevRules = relationship("PackageUdevRule", backref=__tablename__, cascade="all")
-	dependencies = relationship("PackageDependency", backref=__tablename__, cascade="all")
-	deviceTypes = relationship("PackageDeviceType", backref=__tablename__, cascade="all")
-	products = relationship("PackageProduct", backref=__tablename__, cascade="all")
+	udevRules = relationship("PackageUdevRule", backref=__tablename__, cascade="all, delete, delete-orphan")
+	dependencies = relationship("PackageDependency", backref=__tablename__, cascade="all, delete, delete-orphan")
+	deviceTypes = relationship("PackageDeviceType", backref=__tablename__, cascade="all, delete, delete-orphan")
+	products = relationship("PackageProduct", backref=__tablename__, cascade="all, delete, delete-orphan")
 
 class PackageUdevRule(Base):
 	__tablename__ = 'packageUdevRule'
@@ -74,7 +74,7 @@ class PackageUdevRule(Base):
 class PackageDependency(Base):
 	__tablename__ = 'packageDependency'
 	id = Column(String(50), primary_key=True)
-	type = Column(Unicode(50))
+	type = Column(String(50))
 	package_id = Column(String(50), ForeignKey('package.id', ondelete="cascade"), nullable=False)
 
 class PackageDeviceType(Base):
@@ -90,28 +90,28 @@ class PackageProduct(Base):
 	name = Column(Unicode(50))
 	documentation = Column(Unicode(255), nullable=True)
 	package_id = Column(String(50), ForeignKey('package.id', ondelete="cascade"), nullable=False)
-	device_type = Column(Unicode(50), ForeignKey('packageDeviceType.id', ondelete="cascade"), nullable=False)
+	device_type = Column(String(50), ForeignKey('packageDeviceType.id', ondelete="cascade"), nullable=False)
 
 class Client(Base):
 	__tablename__ = 'client'
 	id = Column(String(50), primary_key=True)
-	host = Column(Unicode(50))
+	host = Column(String(50))
 	pid = Column(Integer())
-	status = Column(Unicode(50))
+	status = Column(String(50))
 	configured = Column(Boolean())
 	package_id = Column(String(50), ForeignKey('package.id'), nullable=True)
 	package = relationship("Package")
 
 class ClientConfiguration(Base):
 	__tablename__ = 'clientConfiguration'
-	id = Column(Unicode(255), primary_key=True)
+	id = Column(String(255), primary_key=True)
 	name = Column(Unicode(50))
-	key = Column(Unicode(50))
-	type = Column(Unicode(50))
+	key = Column(String(50))
+	type = Column(String(50))
 	default = Column(UnicodeText(), nullable=True)
 	description = Column(UnicodeText(), nullable=True)
 	required = Column(Boolean())
-	options = Column(UnicodeText(), nullable=True)
+	options = Column(Text(), nullable=True)
 	sort = Column(Integer())
 	value = Column(UnicodeText(), nullable=True)
 	client_id = Column(String(50), ForeignKey('client.id', ondelete="cascade"), nullable=False)
@@ -123,7 +123,7 @@ class Device(Base):
 	name = Column(Unicode(50))
 	description = Column(Unicode(255), nullable=True)
 	reference = Column(Unicode(255), nullable=True)
-	type = Column(Unicode(50), ForeignKey('packageDeviceType.id'), nullable=True)
+	type = Column(String(50), ForeignKey('packageDeviceType.id'), nullable=True)
 
 class XPLCmd(Base):
 	__tablename__ = 'xplCmd'
@@ -145,7 +145,7 @@ class Command(Base):
 	name = Column(Unicode(50))
 	device_id = Column(Integer(), ForeignKey('device.id', ondelete="cascade"), nullable=False)
 	device = relationship("Device", cascade="all")
-	reference = Column(Unicode(50))
+	reference = Column(String(50))
 	return_confirmation = Column(Boolean(), default=True)
 	
 class CommandParam(Base):
@@ -153,8 +153,8 @@ class CommandParam(Base):
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	command_id = Column(Integer(), ForeignKey('command.id', ondelete="cascade"), nullable=False)
 	command = relationship("Command", cascade="all")
-	key = Column(Unicode(50))
-	datatype = Column(Unicode(50), ForeignKey('dataType.id'))
+	key = Column(String(50))
+	datatype = Column(String(50), ForeignKey('dataType.id'))
 	
 class Sensor(Base):
 	__tablename__ = 'sensor'
@@ -162,10 +162,10 @@ class Sensor(Base):
 	name = Column(Unicode(50))
 	device_id = Column(Integer(), ForeignKey('device.id', ondelete="cascade"), nullable=False)
 	device = relationship("Device", cascade="all")
-	reference = Column(Unicode(50))
-	datatype = Column(Unicode(50), ForeignKey('dataType.id'))
+	reference = Column(String(50))
+	datatype = Column(String(50), ForeignKey('dataType.id'))
 	last_value = Column(Unicode(50), nullable=True)
-	last_received = Column(Unicode(50), nullable=True)
+	last_received = Column(String(50), nullable=True)
 
 class Widget(Base):
 	__tablename__ = 'widget'
@@ -188,7 +188,7 @@ class WidgetInstanceParam(Base):
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), nullable=False)
 	instance = relationship("WidgetInstance")
-	key = Column(Unicode(50))
+	key = Column(String(50))
 	value = Column(Unicode(50))
 
 class WidgetInstanceSensor(Base):
@@ -196,7 +196,7 @@ class WidgetInstanceSensor(Base):
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), nullable=False)
 	instance = relationship("WidgetInstance")
-	key = Column(Unicode(50))
+	key = Column(String(50))
 	sensor_id = Column(Integer(), ForeignKey('sensor.id'))
 	sensor = relationship("Sensor")
 
@@ -205,6 +205,6 @@ class WidgetInstanceCommand(Base):
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), nullable=False)
 	instance = relationship("WidgetInstance")
-	key = Column(Unicode(50))
+	key = Column(String(50))
 	command_id = Column(Integer(), ForeignKey('command.id'))
 	command = relationship("Command")

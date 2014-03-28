@@ -7,6 +7,7 @@ if sys.version_info < (2, 6):
 
 # MQ
 import os
+import simplejson
 import zmq
 from zmq.eventloop import ioloop
 from zmq.eventloop.ioloop import IOLoop
@@ -18,8 +19,13 @@ from domogik.mq.message import MQMessage
 import tornado.web
 from tornado.options import options
 import domoweb
-from domoweb.db.models import engine, Widget, PageIcon, PageTheme
+from domoweb.db.models import engine, Widget, PageIcon, PageTheme, DataType, Package, PackageDeviceType, PackageDependency, PackageUdevRule, PackageProduct
 from sqlalchemy.orm import sessionmaker
+
+import logging
+logging.basicConfig(format='%(asctime)s %(name)s:%(levelname)s %(message)s',level=logging.INFO)
+
+logger = logging.getLogger('domoweb')
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -30,16 +36,10 @@ application = tornado.web.Application([
 ])
 
 
-def packLoader(pack_path):
-    import simplejson
-
-    # create a configured "Session" class
-    Session = sessionmaker(bind=engine)
-
-    # create a Session
-    session = Session()
+def packLoader(session, pack_path):
 
     # Load all Widgets
+    logger.info("PACKS: Loading widgets")
     widgets_path = os.path.join(pack_path, 'widgets')
     session.query(Widget).delete()
     if os.path.isdir(widgets_path):
@@ -52,6 +52,7 @@ def packLoader(pack_path):
     session.commit()
 
     # Load all Iconsets
+    logger.info("PACKS: Loading iconsets")
     iconsets_path = os.path.join(pack_path, 'iconsets', 'page')
     session.query(PageIcon).delete()
     if os.path.isdir(iconsets_path):
@@ -70,6 +71,7 @@ def packLoader(pack_path):
     session.commit()
 
     # Load all Themes
+    logger.info("PACKS: Loading themes")
     themes_path = os.path.join(pack_path, 'themes')
     session.query(PageTheme).delete()
     if os.path.isdir(themes_path):
@@ -85,6 +87,63 @@ def packLoader(pack_path):
                     session.add(t)
     session.commit()
 
+def mqDataLoader(session, cli):
+    # get all datatypes
+    logger.info("MQ: Loading Datatypes")
+    msg = MQMessage()
+    msg.set_action('datatype.get')
+    res = cli.request('manager', msg.get(), timeout=10)
+    if res is not None:
+        _data = res.get_data()['datatypes']
+    else:
+        _data = {}
+
+    session.query(DataType).delete()
+    for type, params in _data.iteritems():
+        r = DataType(id=type, parameters=simplejson.dumps(params))
+        session.add(r)
+    session.commit()
+
+    # get packages
+    logger.info("MQ: Loading Packages info")
+    msg = MQMessage()
+    msg.set_action('package.detail.get')
+    res = cli.request('manager', msg.get(), timeout=10)
+    if res is not None:
+        _data = res.get_data()
+    else:
+        _data = {}
+
+    session.query(Package).delete()
+    session.query(PackageDeviceType).delete()
+    session.query(PackageDependency).delete()
+    session.query(PackageUdevRule).delete()
+    session.query(PackageProduct).delete()
+    for id, attributes in _data.iteritems():
+        identity = attributes['identity']
+        p = Package(id=id, name=unicode(identity['name']), type=identity['type'], version=identity['version']
+                    , author = identity['author'], author_email = identity['author_email']
+                    , description = identity['description'])
+        if 'tags' in attributes:
+            p.tags = ', '.join(identity['tags'])
+        session.add(p)
+        if 'device_types' in attributes:
+            for id, device_type in attributes['device_types'].iteritems():
+                d = PackageDeviceType(package_id=p.id, id=id, name=unicode(device_type['name']), description=unicode(device_type['description']))
+                session.add(d)
+        if 'dependencies' in identity:
+            for dependency in identity['dependencies']:
+                d = PackageDependency(package_id=p.id, id=dependency['id'], type=dependency['type'])
+                session.add(d)
+        if 'udev_rules' in attributes:
+            for udev_rule in attributes['udev_rules']:
+                u = PackageUdevRule(package_id=p.id, filename=unicode(udev_rule['filename']), rule=unicode(udev_rule['rule']), description=unicode(udev_rule['description']), model=unicode(udev_rule['model']))
+                session.add(u)
+        if 'products' in attributes:
+            for product in attributes['products']:
+                pp = PackageProduct(package_id=p.id, id=product['id'], name=unicode(product['name']), documentation=unicode(product['documentation']), device_type=product['type'])
+                session.add(pp)
+    session.commit()
 
 if __name__ == '__main__':
 
@@ -115,23 +174,14 @@ if __name__ == '__main__':
     options.define("port", default=40404, help="run on the given port", type=int)
     options.parse_config_file("/etc/domoweb.cfg")
 
-    packLoader(domoweb.PACKSPATH)
+    # create a configured "Session" class
+    Session = sessionmaker(bind=engine)
+    # create a Session
+    session = Session()
+    packLoader(session, domoweb.PACKSPATH)
+    cli = MQSyncReq(zmq.Context())
+    mqDataLoader(session, cli)
 
-    # get all datatypes
-#    cli = MQSyncReq(zmq.Context())
-#    msg = MQMessage()
-#    msg.set_action('datatype.get')
-#    res = cli.request('manager', msg.get(), timeout=10)
-#    if res is not None:
-#        datatypes = res.get_data()['datatypes']
-#    else:
-#        datatypes = {}
-
-#    print datatypes
-#        DataType.objects.all().delete()
-#        for type, params in _data.iteritems():
-#            r = DataType(id=type, parameters=json.dumps(params))
-#            r.save()
-
+    logger.info("Starting tornado web server")
     application.listen(options.port)
     ioloop.IOLoop.instance().start() 

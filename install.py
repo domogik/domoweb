@@ -389,14 +389,14 @@ def testConfigFiles():
     assert os.path.isfile("/etc/domoweb.cfg"), "The domogik config file /etc/domoweb.cfg does not exist. Please report this as a bug."
     ok("Domogik's user exists and has a config file")
 
-    info("Check user config file contents")
-    import ConfigParser
-    config = ConfigParser.ConfigParser()
-    config.read("/etc/domoweb.cfg")
+#    info("Check user config file contents")
+#    import ConfigParser
+#    config = ConfigParser.ConfigParser()
+#    config.read("/etc/domoweb.cfg")
 
     #check [global] section
-    django = dict(config.items('global'))
-    ok("Config file correctly loaded")
+#    django = dict(config.items('global'))
+#    ok("Config file correctly loaded")
 
 def testInit():
     info("Checking init.d / rc.d")
