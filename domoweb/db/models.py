@@ -48,96 +48,13 @@ class DataType(Base):
 	id = Column(String(50), primary_key=True)
 	parameters = Column(Text())
 
-class Package(Base):
-	__tablename__ = 'package'
-	id = Column(String(50), primary_key=True)
-	name = Column(Unicode(50))
-	type = Column(String(50))
-	version = Column(String(50))
-	author = Column(Unicode(255), nullable=True)
-	author_email = Column(String(255), nullable=True)
-	tags = Column(Unicode(255), nullable=True)
-	description = Column(UnicodeText(), nullable=True)
-	udevRules = relationship("PackageUdevRule", backref=__tablename__, cascade="all, delete, delete-orphan")
-	dependencies = relationship("PackageDependency", backref=__tablename__, cascade="all, delete, delete-orphan")
-	deviceTypes = relationship("PackageDeviceType", backref=__tablename__, cascade="all, delete, delete-orphan")
-	products = relationship("PackageProduct", backref=__tablename__, cascade="all, delete, delete-orphan")
-
-class PackageUdevRule(Base):
-	__tablename__ = 'packageUdevRule'
-	filename = Column(Unicode(50), primary_key=True)
-	rule = Column(UnicodeText())
-	description = Column(UnicodeText(), nullable=True)
-	model = Column(Unicode(255), nullable=True)
-	package_id = Column(String(50), ForeignKey('package.id', ondelete="cascade"), nullable=False)
-
-class PackageDependency(Base):
-	__tablename__ = 'packageDependency'
-	id = Column(String(50), primary_key=True)
-	type = Column(String(50))
-	package_id = Column(String(50), ForeignKey('package.id', ondelete="cascade"), nullable=False)
-
-class PackageDeviceType(Base):
-	__tablename__ = 'packageDeviceType'
-	id = Column(String(50), primary_key=True)
-	name = Column(Unicode(50))
-	description = Column(UnicodeText(), nullable=True)
-	package_id = Column(String(50), ForeignKey('package.id', ondelete="cascade"), nullable=False)
-
-class PackageProduct(Base):
-	__tablename__ = 'packageProduct'
-	id = Column(String(50), primary_key=True)
-	name = Column(Unicode(50))
-	documentation = Column(Unicode(255), nullable=True)
-	package_id = Column(String(50), ForeignKey('package.id', ondelete="cascade"), nullable=False)
-	device_type = Column(String(50), ForeignKey('packageDeviceType.id', ondelete="cascade"), nullable=False)
-
-class Client(Base):
-	__tablename__ = 'client'
-	id = Column(String(50), primary_key=True)
-	host = Column(String(50))
-	pid = Column(Integer())
-	status = Column(String(50))
-	configured = Column(Boolean())
-	package_id = Column(String(50), ForeignKey('package.id'), nullable=True)
-	package = relationship("Package")
-
-class ClientConfiguration(Base):
-	__tablename__ = 'clientConfiguration'
-	id = Column(String(255), primary_key=True)
-	name = Column(Unicode(50))
-	key = Column(String(50))
-	type = Column(String(50))
-	default = Column(UnicodeText(), nullable=True)
-	description = Column(UnicodeText(), nullable=True)
-	required = Column(Boolean())
-	options = Column(Text(), nullable=True)
-	sort = Column(Integer())
-	value = Column(UnicodeText(), nullable=True)
-	client_id = Column(String(50), ForeignKey('client.id', ondelete="cascade"), nullable=False)
-	client = relationship("Client", cascade="all")
-
 class Device(Base):
 	__tablename__ = 'device'
 	id = Column(Integer(), primary_key=True)
 	name = Column(Unicode(50))
 	description = Column(Unicode(255), nullable=True)
 	reference = Column(Unicode(255), nullable=True)
-	type = Column(String(50), ForeignKey('packageDeviceType.id'), nullable=True)
-
-class XPLCmd(Base):
-	__tablename__ = 'xplCmd'
-	id = Column(Integer(), primary_key=True)
-	device_id = Column(Integer(), ForeignKey('device.id', ondelete="cascade"), nullable=False)
-	device = relationship("Device", cascade="all")
-	json_id = Column(String(50))
-
-class XPLStat(Base):
-	__tablename__ = 'xplStat'
-	id = Column(Integer(), primary_key=True)
-	device_id = Column(Integer(), ForeignKey('device.id', ondelete="cascade"), nullable=False)
-	device = relationship("Device", cascade="all")
-	json_id = Column(String(50))
+	type = Column(String(50), nullable=True)
 	
 class Command(Base):
 	__tablename__ = 'command'

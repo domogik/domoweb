@@ -19,7 +19,7 @@ from domogik.mq.message import MQMessage
 import tornado.web
 from tornado.options import options
 import domoweb
-from domoweb.db.models import engine, Widget, PageIcon, PageTheme, DataType, Package, PackageDeviceType, PackageDependency, PackageUdevRule, PackageProduct
+from domoweb.db.models import engine, Widget, PageIcon, PageTheme, DataType, Device
 from sqlalchemy.orm import sessionmaker
 
 import logging
@@ -105,45 +105,34 @@ def mqDataLoader(session, cli):
     session.commit()
 
     # get packages
-    logger.info("MQ: Loading Packages info")
-    msg = MQMessage()
-    msg.set_action('package.detail.get')
-    res = cli.request('manager', msg.get(), timeout=10)
-    if res is not None:
-        _data = res.get_data()
-    else:
-        _data = {}
+#    logger.info("MQ: Loading Devices info")
+#    msg = MQMessage()
+#    msg.set_action('device.get')
+#    res = cli.request('manager', msg.get(), timeout=10)
+#    if res is not None:
+#        _data = res.get_data()
+#    else:
+#        _data = {}
 
-    session.query(Package).delete()
-    session.query(PackageDeviceType).delete()
-    session.query(PackageDependency).delete()
-    session.query(PackageUdevRule).delete()
-    session.query(PackageProduct).delete()
-    for id, attributes in _data.iteritems():
-        identity = attributes['identity']
-        p = Package(id=id, name=unicode(identity['name']), type=identity['type'], version=identity['version']
-                    , author = identity['author'], author_email = identity['author_email']
-                    , description = identity['description'])
-        if 'tags' in attributes:
-            p.tags = ', '.join(identity['tags'])
-        session.add(p)
-        if 'device_types' in attributes:
-            for id, device_type in attributes['device_types'].iteritems():
-                d = PackageDeviceType(package_id=p.id, id=id, name=unicode(device_type['name']), description=unicode(device_type['description']))
-                session.add(d)
-        if 'dependencies' in identity:
-            for dependency in identity['dependencies']:
-                d = PackageDependency(package_id=p.id, id=dependency['id'], type=dependency['type'])
-                session.add(d)
-        if 'udev_rules' in attributes:
-            for udev_rule in attributes['udev_rules']:
-                u = PackageUdevRule(package_id=p.id, filename=unicode(udev_rule['filename']), rule=unicode(udev_rule['rule']), description=unicode(udev_rule['description']), model=unicode(udev_rule['model']))
-                session.add(u)
-        if 'products' in attributes:
-            for product in attributes['products']:
-                pp = PackageProduct(package_id=p.id, id=product['id'], name=unicode(product['name']), documentation=unicode(product['documentation']), device_type=product['type'])
-                session.add(pp)
-    session.commit()
+#    session.query(Device).delete()
+#    for device in _data.iteritems():
+#        d = Device(id=d.id, name=data.name, type_id=data.device_type_id, reference=data.reference)
+#        device.save()
+#        if "commands" in data:
+#            for cmd in data.commands:
+#                command = data.commands[cmd]
+#                c = Command(id=command.id, name=command.name, device=device, reference=command.reference, return_confirmation=command.return_confirmation)
+#                c.save()
+#                for param in command.parameters:
+#                    p = CommandParam(command=c, key=param.key, datatype_id=param.data_type)
+#                    p.save()
+#        if "sensors" in data:
+#            for sen in data.sensors:
+#                sensor = data.sensors[sen]
+#                s = Sensor(id=sensor.id, name=sensor.name, device=device, reference=sensor.reference, datatype_id=sensor.data_type, last_value=sensor.last_value, last_received=sensor.last_received)
+#                s.save()
+
+#    session.commit()
 
 if __name__ == '__main__':
 
