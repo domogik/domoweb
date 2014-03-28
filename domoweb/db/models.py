@@ -18,6 +18,73 @@ class Parameter(Base):
 	key = Column(String(30), primary_key=True)
 	value = Column(Unicode(255))
 
+class Widget(Base):
+	__tablename__ = 'widget'
+	id = Column(String(50), primary_key=True)
+	version = Column(String(50))
+	set_id = Column(String(50))
+	set_name = Column(Unicode(50))
+	name = Column(Unicode(50))
+	height = Column(Integer(), default=1)
+	width = Column(Integer(), default=1)
+	template = Column(String(255))
+	
+class WidgetOption(Base):
+	__tablename__ = 'widgetOption'
+	id = Column(String(50), primary_key=True)
+	key = Column(String(50))
+	name = Column(Unicode(50))
+	required = Column(Boolean())
+	type = Column(String(50))
+	default = Column(Unicode(50), nullable=True)
+	description = Column(UnicodeText(), nullable=True)
+	options = Column(UnicodeText(), nullable=True)
+	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+
+class WidgetSensor(Base):
+	__tablename__ = 'widgetSensor'
+	id = Column(String(50), primary_key=True)
+	key = Column(String(50))
+	name = Column(Unicode(50))
+	required = Column(Boolean())
+	types = Column(String(255))
+	filters = Column(String(255), nullable=True)
+	description = Column(Unicode(255), nullable=True)
+	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+
+class WidgetCommand(Base):
+	__tablename__ = 'widgetCommand'
+	id = Column(String(50), primary_key=True)
+	key = Column(String(50))
+	name = Column(Unicode(50))
+	required = Column(Boolean())
+	types = Column(String(255))
+	filters = Column(String(255), nullable=True)
+	description = Column(Unicode(255), nullable=True)
+	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+
+class WidgetDevice(Base):
+	__tablename__ = 'widgetDevice'
+	id = Column(String(50), primary_key=True)
+	key = Column(String(50))
+	name = Column(Unicode(50))
+	required = Column(Boolean())
+	types = Column(String(255))
+	description = Column(Unicode(255), nullable=True)
+	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+
+class WidgetJS(Base):
+	__tablename__ = 'widgetJS'
+	id = Column(Integer(), primary_key=True, autoincrement=True)
+	name = Column(String(255))
+	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+
+class WidgetCSS(Base):
+	__tablename__ = 'widgetCSS'
+	id = Column(Integer(), primary_key=True, autoincrement=True)
+	name = Column(String(255))
+	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+
 class PageTheme(Base):
 	__tablename__ = 'pageTheme'
 	id = Column(String(50), primary_key=True)
@@ -83,10 +150,6 @@ class Sensor(Base):
 	datatype = Column(String(50), ForeignKey('dataType.id'))
 	last_value = Column(Unicode(50), nullable=True)
 	last_received = Column(String(50), nullable=True)
-
-class Widget(Base):
-	__tablename__ = 'widget'
-	id = Column(String(50), primary_key=True)
 
 class WidgetInstance(Base):
 	__tablename__ = 'widgetInstance'

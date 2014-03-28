@@ -1,0 +1,185 @@
+{
+    "json_version" : 1,
+    "identity" : {
+        "type" : "dmg_widgetset",
+        "id" : "basic",
+        "version" : 1,
+        "name" : "Basic",
+        "description" : "Basic widgets for single sensor",
+        "creator" : "Ferllings",
+        "creator_email" : "cedric@domogik.org"
+    },
+    "widgets": {
+        "sensorNumber": {
+            "name" : "Sensor Number",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+                "bool" : {
+                    "name": "Boolean",
+                    "description": "Boolean test",
+                    "type": "boolean",
+                    "default": "True"
+                },
+                "string_1" : {
+                    "name": "String 1",
+                    "description": "String test with minlength=5, maxlength=10",
+                    "type": "string",
+                    "default": "Default value",
+                    "min_length": 5,
+                    "max_length": 10,
+                    "required": false
+                },
+                "string_2" : {
+                    "name": "String 2",
+                    "description": "String test with mask",
+                    "type": "string",
+                    "default": "Default value",
+                    "mask": "(999) AAA-***",
+                    "required": false
+                },
+                "string_3" : {
+                    "name": "String 3",
+                    "description": "Multilignes String test",
+                    "type": "string",
+                    "default": "Default value",
+                    "multilignes": true,
+                    "required": false
+                },
+                "choice" : {
+                    "name": "Choice",
+                    "description": "Choice test",
+                    "type": "choice",
+                    "choices" : {"a":"A", "b":"B", "c":"C"},
+                    "required": false
+                },
+                "multiplechoice" : {
+                    "name": "Multiple Choice",
+                    "description": "Multiple Choice test",
+                    "type": "multiplechoice",
+                    "choices" : {"a":"A", "b":"B", "c":"C"},
+                    "required": false
+                },
+                "date" : {
+                    "name": "Date",
+                    "description": "Date test",
+                    "type": "date",
+                    "required": false
+                },
+                "time" : {
+                    "name": "Time",
+                    "description": "Time test",
+                    "type": "time",
+                    "required": false
+                },
+                "datetime" : {
+                    "name": "DateTime",
+                    "description": "DateTime test",
+                    "type": "datetime",
+                    "required": false
+                },
+                "float" : {
+                    "name": "Float",
+                    "description": "Float test with min=5, max=10",
+                    "type": "float",
+                    "min_value": 5,
+                    "max_value": 10,
+                    "required": false
+                },
+                "integer" : {
+                    "name": "Integer",
+                    "description": "Integer test with min=5, max=10",
+                    "type": "integer",
+                    "min_value": 5,
+                    "max_value": 10,
+                    "required": false
+                },
+                "email" : {
+                    "name": "Email",
+                    "description": "Email test",
+                    "type": "email",
+                    "required": false
+                },
+                "ipv4" : {
+                    "name": "IPv4",
+                    "description": "IPv4 test",
+                    "type": "ipv4",
+                    "required": false
+                },
+                "url" : {
+                    "name": "Url",
+                    "description": "Url test",
+                    "type": "url",
+                    "required": false
+                }
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "Number",
+                    "description": "Number sensor",
+                    "types" : ["DT_Number",
+                        "DT_Scaling",
+                        "DT_Angle",
+                        "DT_Brightness",
+                        "DT_Temp",
+                        "DT_TempK",
+                        "DT_TempF",
+                        "DT_Pression",
+                        "DT_Humidity",
+                        "DT_AirQuality",
+                        "DT_Volt",
+                        "DT_mVolt",
+                        "DT_kVolt",
+                        "DT_Current",
+                        "DT_mCurrent",
+                        "DT_kCurrent",
+                        "DT_Power",
+                        "DT_mPower",
+                        "DT_kPower",
+                        "DT_ActiveEnergy",
+                        "DT_kActiveEnergy",
+                        "DT_ApparantEnergy",
+                        "DT_Speed",
+                        "DT_kmhSpeed",
+                        "DT_Year",
+                        "DT_Month",
+                        "DT_Day",
+                        "DT_Hour",
+                        "DT_minute",
+                        "DT_Second",
+                        "DT_mSecond",
+                        "DT_Timestamp"
+                    ]
+                }
+            },
+            "commands" : {
+                "switch" : {
+                    "name": "Switch",
+                    "description": "Select the switch command",
+                    "types" : [
+                        ["DT_Switch"]
+                    ]
+                },
+                "dimmer" : {
+                    "name": "Main",
+                    "description": "Select the dimmer command",
+                    "types" : [
+                        ["DT_Scaling"]
+                    ]
+                }
+            },
+            "devices" : {
+                "devicetest" : {
+                    "name": "Device test",
+                    "description": "Select the device",
+                    "types" : [
+                        "onewire.thermometer",
+                        "plcbus.switch"
+                    ]
+                }
+            },
+            "css" : ["sensorNumber.css"],
+            "js" : ["sensorNumber.js"]
+        }
+    }
+}
