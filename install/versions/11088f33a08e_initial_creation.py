@@ -101,13 +101,27 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('left', sa.Integer(), nullable=True),
     sa.Column('right', sa.Integer(), nullable=True),
-    sa.Column('name', sa.Unicode(length=50), nullable=True),
+    sa.Column('name', sa.Unicode(length=50), nullable=False),
     sa.Column('description', sa.UnicodeText(), nullable=True),
     sa.Column('icon_id', sa.String(length=50), nullable=True),
     sa.Column('theme_id', sa.String(length=50), nullable=True),
     sa.ForeignKeyConstraint(['icon_id'], ['pageIcon.id'], ),
     sa.ForeignKeyConstraint(['theme_id'], ['pageTheme.id'], ),
     sa.PrimaryKeyConstraint('id')
+    )
+    page_table = sa.sql.table('page',
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('left', sa.Integer(), nullable=True),
+        sa.Column('right', sa.Integer(), nullable=True),
+        sa.Column('name', sa.Unicode(length=50), nullable=False),
+        sa.Column('description', sa.UnicodeText(), nullable=True),
+        sa.Column('icon_id', sa.String(length=50), nullable=True),
+        sa.Column('theme_id', sa.String(length=50), nullable=True)
+    )
+    op.bulk_insert(page_table,
+        [
+            {'id':1, 'name':unicode('ROOT'), 'left':1, 'right':2},
+        ]
     )
     op.create_table('widgetOption',
     sa.Column('id', sa.String(length=50), nullable=False),

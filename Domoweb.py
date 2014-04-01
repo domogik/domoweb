@@ -27,6 +27,11 @@ logging.basicConfig(format='%(asctime)s %(name)s:%(levelname)s %(message)s',leve
 
 logger = logging.getLogger('domoweb')
 
+# create a configured "Session" class
+Session = sessionmaker(bind=engine)
+# create a Session
+session = Session()
+
 def packLoader(session, pack_path):
     from domoweb.db.models import Widget, PageIcon, PageTheme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, WidgetJS, WidgetCSS
     from collections import OrderedDict
@@ -213,24 +218,27 @@ def mqDataLoader(session, cli):
 #    session.commit()
 
 class MainHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render('index.html')
+    def get(self, id=1):
+        from domoweb.db.models import Page
+        page = session.query(Page).get(id)
+        self.render('index.html',
+            page = page)
+
+domoweb.FULLPATH = os.path.normpath(os.path.abspath(__file__))
+domoweb.PROJECTPATH = os.path.dirname(domoweb.FULLPATH)
+domoweb.PACKSPATH = os.path.join(domoweb.PROJECTPATH, 'packs')
 
 application = tornado.web.Application(
-    handlers=[(r"/", MainHandler)],
+    handlers=[(r"/(\d*)", MainHandler)],
     template_path=os.path.join(os.path.dirname(__file__), "templates"),
     static_path=os.path.join(os.path.dirname(__file__), "static"),
-    debug=True
+    debug=True,
+    autoreload=True,
 )
 
 if __name__ == '__main__':
 
-    domoweb.FULLPATH = os.path.normpath(os.path.abspath(__file__))
-    domoweb.PROJECTPATH = os.path.dirname(domoweb.FULLPATH)
-#    engine.log("Running from : %s" % domoweb.PROJECTPATH)
-    domoweb.PACKSPATH = os.path.join(domoweb.PROJECTPATH, 'packs')
 #    domoweb.VERSION = "dev.%s" % commands.getoutput("cd %s ; hg id -n 2>/dev/null" % domoweb.PROJECTPATH)
-#    engine.log("Version : %s" % domoweb.VERSION)
 
     # Check log folder
     if not os.path.isdir("/var/log/domoweb"):
@@ -248,10 +256,8 @@ if __name__ == '__main__':
     options.define("debut", default=False, help="Debug mode", type=bool)
     options.parse_config_file("/etc/domoweb.cfg")
 
-    # create a configured "Session" class
-    Session = sessionmaker(bind=engine)
-    # create a Session
-    session = Session()
+    logger.info("Running from : %s" % domoweb.PROJECTPATH)
+
     packLoader(session, domoweb.PACKSPATH)
     cli = MQSyncReq(zmq.Context())
     mqDataLoader(session, cli)
