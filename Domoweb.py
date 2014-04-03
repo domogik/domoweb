@@ -14,27 +14,26 @@ from zmq.eventloop.ioloop import IOLoop
 ioloop.install()
 from domogik.mq.reqrep.client import MQSyncReq
 from domogik.mq.message import MQMessage
-from domoweb.db.models import engine
+import domoweb
+from domoweb.db.models import Session
+from domoweb.handlers import MainHandler, PageHandler
 
 #import tornado.ioloop
 import tornado.web
 from tornado.options import options
-import domoweb
-from sqlalchemy.orm import sessionmaker
-
 import logging
+
 logging.basicConfig(format='%(asctime)s %(name)s:%(levelname)s %(message)s',level=logging.INFO)
 
 logger = logging.getLogger('domoweb')
 
-# create a configured "Session" class
-Session = sessionmaker(bind=engine)
-# create a Session
-session = Session()
 
-def packLoader(session, pack_path):
-    from domoweb.db.models import Widget, PageIcon, PageTheme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, WidgetJS, WidgetCSS
+def packLoader(pack_path):
+    from domoweb.db.models import Widget, SectionIcon, SectionTheme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, WidgetJS, WidgetCSS
     from collections import OrderedDict
+
+    # create a Session
+    session = Session()
 
     # Load all Widgets
     logger.info("PACKS: Loading widgets")
@@ -134,8 +133,8 @@ def packLoader(session, pack_path):
 
     # Load all Iconsets
     logger.info("PACKS: Loading iconsets")
-    iconsets_path = os.path.join(pack_path, 'iconsets', 'page')
-    session.query(PageIcon).delete()
+    iconsets_path = os.path.join(pack_path, 'iconsets', 'section')
+    session.query(SectionIcon).delete()
     if os.path.isdir(iconsets_path):
         for file in os.listdir(iconsets_path):
             if not file.startswith('.'): # not hidden file
@@ -147,14 +146,14 @@ def packLoader(session, pack_path):
                     iconset_name = unicode(iconset_json["identity"]["name"])
                     for icon in iconset_json["icons"]:
                         id = iconset_id + '-' + icon["id"]
-                        i = PageIcon(id=id, iconset_id=iconset_id, iconset_name=iconset_name, icon_id=icon["id"], label=unicode(icon["label"]))
+                        i = SectionIcon(id=id, iconset_id=iconset_id, iconset_name=iconset_name, icon_id=icon["id"], label=unicode(icon["label"]))
                         session.add(i)
     session.commit()
 
     # Load all Themes
     logger.info("PACKS: Loading themes")
     themes_path = os.path.join(pack_path, 'themes')
-    session.query(PageTheme).delete()
+    session.query(SectionTheme).delete()
     if os.path.isdir(themes_path):
         for file in os.listdir(themes_path):
             if not file.startswith('.'): # not hidden file
@@ -164,13 +163,16 @@ def packLoader(session, pack_path):
                     theme_json = json.load(theme_file)
                     theme_id = theme_json["identity"]["id"]
                     theme_name = unicode(theme_json["identity"]["name"])
-                    t = PageTheme(id=theme_id, label=theme_name)
+                    t = SectionTheme(id=theme_id, label=theme_name)
                     session.add(t)
     session.commit()
+    session.close()
 
-def mqDataLoader(session, cli):
+def mqDataLoader(cli):
     from domoweb.db.models import DataType, Device
-    
+    # create a Session
+    session = Session()
+
     # get all datatypes
     logger.info("MQ: Loading Datatypes")
     msg = MQMessage()
@@ -216,20 +218,17 @@ def mqDataLoader(session, cli):
 #                s.save()
 
 #    session.commit()
-
-class MainHandler(tornado.web.RequestHandler):
-    def get(self, id=1):
-        from domoweb.db.models import Page
-        page = session.query(Page).get(id)
-        self.render('index.html',
-            page = page)
+    session.close()
 
 domoweb.FULLPATH = os.path.normpath(os.path.abspath(__file__))
 domoweb.PROJECTPATH = os.path.dirname(domoweb.FULLPATH)
 domoweb.PACKSPATH = os.path.join(domoweb.PROJECTPATH, 'packs')
 
 application = tornado.web.Application(
-    handlers=[(r"/(\d*)", MainHandler)],
+    handlers=[
+        (r"/(\d*)", MainHandler),
+        (r"/page", PageHandler),
+    ],
     template_path=os.path.join(os.path.dirname(__file__), "templates"),
     static_path=os.path.join(os.path.dirname(__file__), "static"),
     debug=True,
@@ -258,9 +257,9 @@ if __name__ == '__main__':
 
     logger.info("Running from : %s" % domoweb.PROJECTPATH)
 
-    packLoader(session, domoweb.PACKSPATH)
+    packLoader(domoweb.PACKSPATH)
     cli = MQSyncReq(zmq.Context())
-    mqDataLoader(session, cli)
+    mqDataLoader(cli)
 
     logger.info("Starting tornado web server")
     application.listen(options.port)

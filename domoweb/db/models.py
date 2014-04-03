@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, Unicode, UnicodeText, Boolean, ForeignKey, String, Text
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import backref, relationship, sessionmaker
 
 # alembic revision --autogenerate -m "xxxx"
 
@@ -10,8 +10,9 @@ engine = create_engine(url)
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
-
 metadata = Base.metadata
+# create a configured "Session" class
+Session = sessionmaker(bind=engine)
 
 class Parameter(Base):
 	__tablename__ = 'parameter'
@@ -85,30 +86,47 @@ class WidgetCSS(Base):
 	name = Column(String(255))
 	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
 
-class PageTheme(Base):
-	__tablename__ = 'pageTheme'
+class SectionTheme(Base):
+	__tablename__ = 'sectionTheme'
 	id = Column(String(50), primary_key=True)
 	label = Column(Unicode(50))
 
-class PageIcon(Base):
-	__tablename__ = 'pageIcon'
+class SectionIcon(Base):
+	__tablename__ = 'sectionIcon'
 	id = Column(String(50), primary_key=True)
 	iconset_id = Column(String(50))
 	iconset_name = Column(Unicode(50))
 	icon_id = Column(String(50))
 	label = Column(Unicode(50))
 
-class Page(Base):
-	__tablename__ = 'page'
+class Section(Base):
+	__tablename__ = 'section'
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	left = Column(Integer(), default=0)
 	right = Column(Integer(), default=0)
 	name = Column(Unicode(50))
 	description = Column(UnicodeText(), nullable=True)
-	icon_id = Column(String(50), ForeignKey('pageIcon.id'), nullable=True)
-	icon = relationship("PageIcon")
-	theme_id = Column(String(50), ForeignKey('pageTheme.id'), nullable=True)
-	theme = relationship("PageTheme")
+	icon_id = Column(String(50), ForeignKey('sectionIcon.id'), nullable=True)
+	icon = relationship("SectionIcon")
+	theme_id = Column(String(50), ForeignKey('sectionTheme.id'), nullable=True)
+	theme = relationship("SectionTheme")
+
+	@classmethod
+	def add(cls, name, parent_id, description=None, icon=None, theme=None):
+		# create a Session
+		session = Session()
+
+		s = cls(name=name, description=description, icon=icon)
+		parent = session.query(cls).get(parent_id)
+		s.left = int(parent.left) + 1
+		s.right = int(parent.left) + 2
+		session.query(cls).filter('right >:sleft').\
+			params(sleft=parent.left).update({'right':cls.right + 2}, synchronize_session='fetch')
+		session.query(cls).filter('left >:sleft').\
+			params(sleft=parent.left).update({'left':cls.left + 2}, synchronize_session='fetch')
+		session.add(s)
+		session.commit()
+		return s
 
 class DataType(Base):
 	__tablename__ = 'dataType'
@@ -154,8 +172,8 @@ class Sensor(Base):
 class WidgetInstance(Base):
 	__tablename__ = 'widgetInstance'
 	id = Column(Integer(), primary_key=True, autoincrement=True)
-	page_id = Column(String(50), ForeignKey('page.id'))
-	page = relationship("Page")
+	section_id = Column(String(50), ForeignKey('section.id'))
+	section = relationship("Section")
 	order = Column(Integer())
 	widget_id = Column(String(50), ForeignKey('widget.id'))
 	widget = relationship("Widget")
