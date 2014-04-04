@@ -2,11 +2,14 @@
 	var button = document.getElementById('cn-button'),
     wrapper = document.getElementById('cn-wrapper'),
     overlay = document.getElementById('cn-overlay');
+    menuConfigure = document.getElementById('menuConfigure');
+    panelConfigure = document.getElementById('panelConfigure');
 
 	//open and close menu when the button is clicked
 	var open = false;
 	button.addEventListener('click', handler, false);
 	wrapper.addEventListener('click', cnhandle, false);
+	menuConfigure.addEventListener('click', configureHandler, false);
 
 	function cnhandle(e){
 		e.stopPropagation();
@@ -36,6 +39,11 @@
 	    wrapper.classList.remove('opened-nav');
 	}
 	document.addEventListener('click', closeNav);
+
+	function configureHandler(){
+		panelConfigure.classList.remove('hidden');
+		closeNav();
+	}
 
 })();
 

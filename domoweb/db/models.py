@@ -128,6 +128,26 @@ class Section(Base):
 		session.commit()
 		return s
 
+	@classmethod
+	def get(cls, id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).get(id)
+		session.close()
+		return s
+
+	@classmethod
+	def update(cls, id, name, description=None):
+		# create a Session
+		session = Session()
+		s = session.query(cls).get(id)
+		s.name = name
+		s.description = description
+		session.add(s)
+		session.commit()
+		session.flush()
+		return s
+
 class DataType(Base):
 	__tablename__ = 'dataType'
 	id = Column(String(50), primary_key=True)
