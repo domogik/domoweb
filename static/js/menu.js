@@ -1,15 +1,18 @@
 (function(){
-	var button = document.getElementById('cn-button'),
-    wrapper = document.getElementById('cn-wrapper'),
-    overlay = document.getElementById('cn-overlay');
-    menuConfigure = document.getElementById('menuConfigure');
-    panelConfigure = document.getElementById('panelConfigure');
+	var button = document.querySelector('#cn-button'),
+    wrapper = document.querySelector('#cn-wrapper'),
+    overlay = document.querySelector('#cn-overlay'),
+    menuConfigure = document.querySelector('#menuConfigure'),
+    menuWidgets = document.querySelector('#menuWidgets'),
+    panelConfigure = document.querySelector('#panelConfigure'),
+    main = document.querySelector('main');
 
 	//open and close menu when the button is clicked
 	var open = false;
 	button.addEventListener('click', handler, false);
 	wrapper.addEventListener('click', cnhandle, false);
 	menuConfigure.addEventListener('click', configureHandler, false);
+	menuWidgets.addEventListener('click', widgetsHandler, false);
 
 	function cnhandle(e){
 		e.stopPropagation();
@@ -45,5 +48,16 @@
 		closeNav();
 	}
 
+	function widgetsHandler(){
+		  // now let's put a button on the page to do something to the node
+		  var b = document.createElement('div');
+		  b.innerHTML = '<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#addWidgetDialog">Add Widget</button>';
+		  main.appendChild(b);
+			closeNav();
+	}
+
+	function addWidget(){
+
+	}
 })();
 

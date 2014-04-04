@@ -1,17 +1,44 @@
 {% extends "base.html" %}
 
+{% block script %}
+	var wall;
+    $(function() {
+      	wall = new freewall("#container");
+      	wall.reset({
+	  		fixSize: false,
+		});
+      	wall.fitWidth();
+    });
+{% end %}
+
+{% block style %}
+    #container {
+      width: 80%;
+      margin: auto;
+    }
+    .item {
+      background: rgb(135, 199, 135);
+    }
+{% end %}
+
 {% block main %}
+	<div id="container">
+	</div>
+
 	<button class="cn-button" id="cn-button"><span class='sr-only'>Open Menu</span></button>
 	<div class="cn-wrapper" id="cn-wrapper">
 	   <ul>
 	       <li><a id="menuConfigure" href="#" role='button'><span class="glyphicon glyphicon-cog"></span></a></li>
-	       <li><a href="#" role='button'><span class="glyphicon glyphicon-th"></span></a></li>
+	       <li><a id="menuWidgets" href="#" role='button'><span class="glyphicon glyphicon-th"></span></a></li>
 	       <li><a href="#" role='button'><span class="glyphicon glyphicon-home"></span></a></li>
 	       <li><a href="#" role='button'></a></li>
 	       <li><a href="#" role='button'><span class="glyphicon glyphicon-lock"></span></a></li>
 	   </ul>
 	</div>
 	<div id="cn-overlay" class="cn-overlay"></div>
+{% end %}
+{% block out %}
+	<!-- Configure -->
 	<div id="panelConfigure" class="hidden panel-overlay">
 		<div class="container-fluid">
 			<div class="row">
@@ -28,6 +55,13 @@
 						<button type="submit" class="btn btn-default">Save</button>
 					</form>
 				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Add Widget -->
+	<div class="modal fade" id="addWidgetDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-remote="/widget?action=select">
+		<div class="modal-dialog">
+			<div class="modal-content">
 			</div>
 		</div>
 	</div>

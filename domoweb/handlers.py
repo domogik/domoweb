@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import tornado.web
 from tornado.web import RequestHandler
-from domoweb.db.models import Section
+from domoweb.db.models import Section, Widget
 
 import logging
 logger = logging.getLogger('domoweb')
@@ -27,3 +27,12 @@ class PageHandler(RequestHandler):
         name = self.get_argument('name')
         description = self.get_argument('description', None)
         Section.add(name=name, parent_id=1, description=description)
+
+class WidgetHandler(RequestHandler):
+    def get(self):
+        action = self.get_argument('action', None)
+        if action=='select':
+            widgets = Widget.getAll()
+            self.render('widgetSelect.html',
+                widgets=widgets)
+

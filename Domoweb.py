@@ -16,7 +16,7 @@ from domogik.mq.reqrep.client import MQSyncReq
 from domogik.mq.message import MQMessage
 import domoweb
 from domoweb.db.models import Session
-from domoweb.handlers import MainHandler, PageHandler
+from domoweb.handlers import MainHandler, PageHandler, WidgetHandler
 
 #import tornado.ioloop
 import tornado.web
@@ -228,6 +228,7 @@ application = tornado.web.Application(
     handlers=[
         (r"/(\d*)", MainHandler),
         (r"/page", PageHandler),
+        (r"/widget", WidgetHandler),
     ],
     template_path=os.path.join(os.path.dirname(__file__), "templates"),
     static_path=os.path.join(os.path.dirname(__file__), "static"),

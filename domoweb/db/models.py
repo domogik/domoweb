@@ -30,6 +30,14 @@ class Widget(Base):
 	width = Column(Integer(), default=1)
 	template = Column(String(255))
 	
+	@classmethod
+	def getAll(cls):
+		# create a Session
+		session = Session()
+		s = session.query(cls).all()
+		session.close()
+		return s
+
 class WidgetOption(Base):
 	__tablename__ = 'widgetOption'
 	id = Column(String(50), primary_key=True)
