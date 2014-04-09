@@ -28,16 +28,11 @@ class PageHandler(RequestHandler):
         description = self.get_argument('description', None)
         Section.add(name=name, parent_id=1, description=description)
 
-class WidgetHandler(RequestHandler):
-    def get(self, id):
+class ConfigurationHandler(RequestHandler):
+    def get(self):
         action = self.get_argument('action', None)
         # Widget section box
-        if action=='select':
+        if action=='widgets':
             widgets = Widget.getAll()
-            self.render('widgetSelect.html',
+            self.render('configurationWidgets.html',
                 widgets=widgets)
-        else:
-            # Widget
-            widget = Widget.get(id)
-            self.render('widget.html',
-                widget=widget)

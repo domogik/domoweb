@@ -16,7 +16,7 @@ from domogik.mq.reqrep.client import MQSyncReq
 from domogik.mq.message import MQMessage
 import domoweb
 from domoweb.db.models import Session
-from domoweb.handlers import MainHandler, PageHandler, WidgetHandler
+from domoweb.handlers import MainHandler, PageHandler, ConfigurationHandler
 
 #import tornado.ioloop
 import tornado.web
@@ -59,8 +59,7 @@ def packLoader(pack_path):
                     for wid, widget in widgetset_widgets.items():
                         widget_id = "%s-%s" %(widgetset_id, wid)
                         widget_name = "%s [%s]" % (widget['name'], widgetset_name)
-                        widget_file = os.path.join(widgets_path, file, "templates", ("%s.html" % wid))
-                        widget_content = open(widget_file).read()
+                        widget_content = None
                         w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), version=widgetset_version, name=unicode(widget_name), height=widget['height'], width=widget['width'], content=unicode(widget_content))
                         session.add(w)
 
@@ -225,15 +224,18 @@ domoweb.FULLPATH = os.path.normpath(os.path.abspath(__file__))
 domoweb.PROJECTPATH = os.path.dirname(domoweb.FULLPATH)
 domoweb.PACKSPATH = os.path.join(domoweb.PROJECTPATH, 'packs')
 
+
 application = tornado.web.Application(
     handlers=[
         (r"/(\d*)", MainHandler),
         (r"/page", PageHandler),
-        (r"/widget(?:/(?P<id>[-\w]*))?", WidgetHandler),
+        (r"/configuration", ConfigurationHandler),
+        (r"/widget/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "packs", 'widgets')}),
         (r"/images/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'images')}),
         (r"/libraries/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'libraries')}),
         (r"/css/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'css')}),
         (r"/js/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'js')}),
+        (r"/polymer/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", "libraries", 'polymer-0.2.2', 'polymer')}),
     ],
     template_path=os.path.join(os.path.dirname(__file__), "templates"),
     debug=True,

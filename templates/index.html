@@ -22,7 +22,8 @@
 {% end %}
 
 {% block import %}
-	<link rel="import" href="/widget/basic-sensorNumber">
+	<link rel="import" id="widgetSelector" href="/configuration?action=widgets">
+	<link rel="import" href="/widget/basic/sensorNumber.html">
 {% end %}
 
 {% block main %}
@@ -63,6 +64,4 @@
 			</div>
 		</div>
 	</div>
-		<link rel="import" id="widgetSelector" href="/widget?action=select">
-
 {% end %}

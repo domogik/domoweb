@@ -100,7 +100,7 @@
 	height: 14.5em;
 	width: 14.5em;
 	position: absolute;
-	position: fixed; /* fix the "displacement" bug in webkit browsers when using tab key */
+/*	position: fixed; /* fix the "displacement" bug in webkit browsers when using tab key */
 	bottom: -7.25em;
 	right: -7.25em;
 	border-radius: 50%;
