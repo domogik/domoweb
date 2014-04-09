@@ -55,7 +55,7 @@ def upgrade():
     sa.Column('name', sa.Unicode(length=50), nullable=True),
     sa.Column('height', sa.Integer(), nullable=True),
     sa.Column('width', sa.Integer(), nullable=True),
-    sa.Column('template', sa.String(length=255), nullable=True),
+    sa.Column('content', sa.UnicodeText(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('widgetJS',

@@ -28,7 +28,7 @@ class Widget(Base):
 	name = Column(Unicode(50))
 	height = Column(Integer(), default=1)
 	width = Column(Integer(), default=1)
-	template = Column(String(255))
+	content = Column(UnicodeText())
 	
 	@classmethod
 	def getAll(cls):
@@ -38,6 +38,14 @@ class Widget(Base):
 		session.close()
 		return s
 
+	@classmethod
+	def get(cls, id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).get(id)
+		session.close()
+		return s
+		
 class WidgetOption(Base):
 	__tablename__ = 'widgetOption'
 	id = Column(String(50), primary_key=True)

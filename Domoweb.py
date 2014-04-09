@@ -59,8 +59,9 @@ def packLoader(pack_path):
                     for wid, widget in widgetset_widgets.items():
                         widget_id = "%s-%s" %(widgetset_id, wid)
                         widget_name = "%s [%s]" % (widget['name'], widgetset_name)
-                        widget_template = os.path.join(widgets_path, file, "templates", ("%s.html" % wid))
-                        w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), version=widgetset_version, name=unicode(widget_name), height=widget['height'], width=widget['width'], template=widget_template)
+                        widget_file = os.path.join(widgets_path, file, "templates", ("%s.html" % wid))
+                        widget_content = open(widget_file).read()
+                        w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), version=widgetset_version, name=unicode(widget_name), height=widget['height'], width=widget['width'], content=unicode(widget_content))
                         session.add(w)
 
                         # Options
@@ -228,10 +229,13 @@ application = tornado.web.Application(
     handlers=[
         (r"/(\d*)", MainHandler),
         (r"/page", PageHandler),
-        (r"/widget", WidgetHandler),
+        (r"/widget(?:/(?P<id>[-\w]*))?", WidgetHandler),
+        (r"/images/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'images')}),
+        (r"/libraries/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'libraries')}),
+        (r"/css/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'css')}),
+        (r"/js/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'js')}),
     ],
     template_path=os.path.join(os.path.dirname(__file__), "templates"),
-    static_path=os.path.join(os.path.dirname(__file__), "static"),
     debug=True,
     autoreload=True,
 )

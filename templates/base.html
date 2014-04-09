@@ -8,21 +8,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <title>Domoweb</title>
-  <link rel="stylesheet" href="{{ static_url("libraries/bootstrap-3.1.1/css/bootstrap.min.css") }}">
-  <link rel="stylesheet" href="{{ static_url("css/style.css") }}">
-  <link rel="stylesheet" href="{{ static_url("css/menu.css") }}">
+  <link rel="stylesheet" href="/libraries/bootstrap-3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/menu.css">
   <style type="text/css">{% block style %}{% end %}</style>
+  <script src="/libraries/polymer-0.2.2/platform/platform.js"></script>
+  {% block import %}{% end %}
 </head>
 <body>
 	<main role="main">
 	{% block main %}{% end %}
 	</main>
   {% block out %}{% end %}  
-  <script src="{{ static_url("libraries/Modernizr-2.7.1/modernizr.custom.47879.js") }}"></script>
-	<script src="{{ static_url("libraries/jquery-1.11.0/jquery.min.js") }}"></script>
-	<script src="{{ static_url("libraries/bootstrap-3.1.1/js/bootstrap.min.js") }}"></script>
-  <script src="{{ static_url("libraries/freewall-1.04/freewall.js") }}"></script>
-  <script src="{{ static_url("js/menu.js") }}"></script>
+  <script src="/libraries/jquery-2.1.0/jquery.js"></script>
+  <script src="/libraries/freewall-1.04/freewall.js"></script>
+  <script src="/libraries/Modernizr-2.7.1/modernizr.custom.47879.js"></script>
+  <script src="/js/menu.js"></script>
   <script type="text/javascript">{% block script %}{% end %}</script>
 </body>
 </html>
+

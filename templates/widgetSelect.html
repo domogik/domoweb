@@ -1,25 +1,47 @@
-<div class="modal-header">
-	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-	<h1 class="modal-title" id="myModalLabel">Select Widget</h1>
-</div>
-<div class="modal-body">
-	{% for widget in widgets %}
-        {% block widget %}
-          <button class="addWidget" data-widget-id="{{ widget.id }}" data-widget-width="{{ widget.width }}" data-widget-height="{{ widget.height }}">{{ escape(widget.set_name) }} - {{ escape(widget.name) }}</button>
-        {% end %}
-     {% end %}
-</div>
-<div class="modal-footer">
-	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-</div>
-<script>
-	$('.addWidget').on('click', function(event) {
-		appendWidget(this.dataset.widgetId, this.dataset.widgetWidth, this.dataset.widgetHeight);
+<template id="widgets-list-template">
+	<div id="widgets-list">
+		<style scoped>
+			#widgets-list {
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0,0,0,0.6);
+				position: fixed;
+				top: 0;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				-webkit-transition: all .3s ease;
+				-moz-transition: all .3s ease;
+				transition: all .3s ease;
+				z-index: 2;
+			}
+		</style>
 
-		event.preventDefault(); // To prevent following the link (optional)
-	});
-	function appendWidget(id, width, height) {
+		<h1>Select Widget</h1>
+		{% for widget in widgets %}
+	        {% block widget %}
+	          <button class="addWidget" data-widget-id="{{ widget.id }}" data-widget-width="{{ widget.width }}" data-widget-height="{{ widget.height }}">{{ escape(widget.set_name) }} - {{ escape(widget.name) }}</button>
+	        {% end %}
+	     {% end %}
+		<button id="remove-widgets-list" type="button" class="btn btn-default">Close</button>
+	</div>
+<script>
+	alert('a');
+	</script>
+</template>
+<script>
+	function widgetSelectionClose(){
+		document.querySelector('#widgets-list').remove();
+	}
+
+	function appendWidget(e) {
+		var element = e.target,
+    	id = element.dataset.widgetId,
+    	width = element.dataset.widgetWidth,
+    	height = element.dataset.widgetHeight;
+
 		var item = '<div class="item" data-width="' + (width*100) + '" data-height="' + (height*100) + '">Test ' + id + '</div>';
 		wall.appendBlock(item);
+		e.preventDefault();
 	}
 </script>
