@@ -1,0 +1,48 @@
+<polymer-element name="web-socket" attributes="message">
+	<script>
+		Polymer("web-socket", {
+			message:null,
+			ready:function(){
+				//window.addEventListener('beforeunload', this.beforeUnload.bind(this));//buggy in chrome
+				// Cleanly close websocket when unload window
+				window.onbeforeunload = this.beforeUnload.bind(this);
+				if (window.WebSocket) {
+					this.ws = new WebSocket("ws://" + document.domain + ":40404/ws/");
+					this.ws.onmessage = this.onMessage.bind(this);
+					this.ws.onerror = this.onError.bind(this);
+					this.ws.onopen = this.onOpen.bind(this);
+				}
+			},
+			messageChanged: function() {
+			},
+			onMessage: function(msg) {
+				console.log("WS: message received");
+				console.log(msg.data);
+				this.message = JSON.parse(msg.data);
+			},
+			send: function(data) {
+				try
+				{
+					console.log("WS: sending message " + data);
+					this.ws.send(data);
+				}catch(error)
+				{
+					console.log("cannot send message: error:"+error);
+				}
+			},
+			onOpen:function (e) {
+			    console.log('WS: Connection open');
+			    this.fire('websocket-ready');
+			},
+			onError:function (error) {
+				console.error('There was an un-identified Web Socket error',error);
+			},
+
+			beforeUnload: function() {
+	        	this.ws.onclose = function () {}; // disable onclose handler first
+    		    this.ws.close();
+		     }
+		});
+	</script>
+</polymer-element>
+

@@ -1,0 +1,26 @@
+<link rel="import" href="/polymer/polymer.html">
+<link rel="import" href="/components/websockets.html">
+
+<polymer-element name="dmww-section-title">
+	<template>
+	    <web-socket id="socket" message="{{message}}"></web-socket>
+		<span id='sectiontitle'>{{title}}</span>
+	</template>
+	<script>  
+		Polymer('dmww-section-title', {
+			title: "",
+			message: "",
+			ready: function() {
+				this.title = "Loading";
+				var socket = this.$.socket;
+				document.addEventListener('websocket-ready', function() {
+					var msg = {action:'section-get', data: {id:1}};
+		        	socket.send(JSON.stringify(msg));
+    			});	
+			},
+			messageChanged: function() {
+		        this.title = this.message[0].name;
+		    },
+		});
+	</script>
+</polymer-element>

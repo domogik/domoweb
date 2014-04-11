@@ -1,0 +1,29 @@
+{
+    "json_version" : 1,
+    "identity" : {
+        "type" : "dmg_widgetset",
+        "id" : "navigation",
+        "version" : 1,
+        "name" : "Navigation",
+        "description" : "Widgets for navigation",
+        "creator" : "Ferllings",
+        "creator_email" : "cedric@domogik.org"
+    },
+    "widgets": {
+        "sectionTitle": {
+            "name" : "Section title",
+            "height" : 1,
+            "width" : 2,
+            "options" : {
+            },
+            "commands" : {
+            },
+            "sensors" : {
+            },
+            "devices" : {
+            },
+            "css" : [],
+            "js" : []
+        }
+    }
+}
