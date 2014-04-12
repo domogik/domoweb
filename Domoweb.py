@@ -10,7 +10,7 @@ import os
 from zmq.eventloop import ioloop
 ioloop.install()
 import domoweb
-from domoweb.handlers import MainHandler, PageHandler, ConfigurationHandler, WSHandler, NoCacheStaticFileHandler
+from domoweb.handlers import MainHandler, PageHandler, ConfigurationHandler, WSHandler, NoCacheStaticFileHandler, MQHandler
 from domoweb.loaders import packLoader, mqDataLoader
 
 #import tornado.ioloop
@@ -75,4 +75,6 @@ if __name__ == '__main__':
 
     logger.info("Starting tornado web server")
     application.listen(options.port)
+    logger.info("Starting MQ Handler")
+    MQHandler()
     ioloop.IOLoop.instance().start() 

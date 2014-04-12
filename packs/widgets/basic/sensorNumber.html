@@ -1,7 +1,26 @@
 <link rel="import" href="/polymer/polymer.html">
+<link rel="import" href="/components/websockets.html">
 
-<polymer-element name="my-element" noscript>
-  <template>
-    <span>Hello from <b>my-element</b>. This is my Shadow DOM.</span>
-  </template>
+<polymer-element name="dmww-basic-sensorNumber">
+	<template>
+	    <web-socket id="socket" message="{{wsmessage}}"></web-socket>
+		<span>{{number}}</span>
+	</template>
+	<script>  
+		Polymer('dmww-basic-sensorNumber', {
+			number: "",
+			wsmessage: "",
+			ready: function() {
+				this.number = "---";
+			},
+			wsmessageChanged: function() {
+					console.log(this.wsmessage[1].stored_value);
+					console.log(this.wsmessage[1].device_id==1 && this.wsmessage[1].sensor_id==1);
+		        if (this.wsmessage[1].device_id==1 && this.wsmessage[1].sensor_id==1) {
+		        	this.number=this.wsmessage[1].stored_value;
+					console.log(this.number);
+		        }
+		    },
+		});
+	</script>
 </polymer-element>

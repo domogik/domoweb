@@ -1,13 +1,13 @@
 <link rel="import" href="/polymer/polymer.html">
 <link rel="import" href="/components/websockets.html">
 
-<polymer-element name="dmww-section-title">
+<polymer-element name="dmww-navigation-sectionTitle">
 	<template>
 	    <web-socket id="socket" message="{{message}}"></web-socket>
 		<span id='sectiontitle'>{{title}}</span>
 	</template>
 	<script>  
-		Polymer('dmww-section-title', {
+		Polymer('dmww-navigation-sectionTitle', {
 			title: "",
 			message: "",
 			ready: function() {

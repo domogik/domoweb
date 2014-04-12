@@ -7,6 +7,12 @@ import json
 import logging
 logger = logging.getLogger('domoweb')
 
+import zmq
+from domogik.mq.pubsub.subscriber import MQAsyncSub
+from domogik.mq.message import MQMessage
+
+socket_connections = []
+
 class MainHandler(RequestHandler):
     def get(self, id):
         if not id:
@@ -38,23 +44,41 @@ class ConfigurationHandler(RequestHandler):
             self.render('configurationWidgets.html',
                 widgets=widgets)
 
-
 class WSHandler(websocket.WebSocketHandler):
+    def open(self):
+        socket_connections.append(self)
+    def on_close(self):
+        socket_connections.remove(self)
+
     def on_message(self, message):
         logger.info("WS: Received message %s" % message)
         jsonmessage = json.loads(message)
         data = {'section-get' : self.WSgetSection}[jsonmessage['action']](jsonmessage['data'])
-        self.write_message(data)
+        self.sendMessage('', data)
 
     def WSgetSection(self, data):
         section = Section.get(data['id'])
         return to_json(section)
+
+    def sendMessage(self, id, content):
+        data=json.dumps([id, content])
+        self.write_message(data)
 
 class NoCacheStaticFileHandler(web.StaticFileHandler):
     def set_extra_headers(self, path):
         # Disable cache
         self.set_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
 
+class MQHandler(MQAsyncSub):
+    def __init__(self):
+        MQAsyncSub.__init__(self, zmq.Context(), 'test', ['device-stats'])
+
+    def on_message(self, msgid, content):
+        logger.info(u"MQ: New pub message {0}".format(msgid))
+        logger.info(u"MQ: {0}".format(content))
+
+        for socket in socket_connections:
+            socket.sendMessage(msgid, content)
 
 def to_json(model):
     """ Returns a JSON representation of an SQLAlchemy-backed object.
