@@ -28,7 +28,6 @@ class Widget(Base):
 	name = Column(Unicode(50))
 	height = Column(Integer(), default=1)
 	width = Column(Integer(), default=1)
-	content = Column(UnicodeText())
 	
 	@classmethod
 	def getAll(cls):
@@ -177,6 +176,16 @@ class Device(Base):
 	reference = Column(Unicode(255), nullable=True)
 	type = Column(String(50), nullable=True)
 	
+	@classmethod
+	def clean(cls):
+		session = Session()
+		session.query(cls).delete()
+		session.query(Command).delete()
+		session.query(CommandParam).delete()
+		session.query(Sensor).delete()
+		session.commit()
+		session.flush()
+
 class Command(Base):
 	__tablename__ = 'command'
 	id = Column(Integer(), primary_key=True)
@@ -192,7 +201,8 @@ class CommandParam(Base):
 	command_id = Column(Integer(), ForeignKey('command.id', ondelete="cascade"), nullable=False)
 	command = relationship("Command", cascade="all")
 	key = Column(String(50))
-	datatype = Column(String(50), ForeignKey('dataType.id'))
+	datatype_id = Column(String(50), ForeignKey('dataType.id'))
+	datatype = relationship("DataType")
 	
 class Sensor(Base):
 	__tablename__ = 'sensor'
@@ -201,7 +211,8 @@ class Sensor(Base):
 	device_id = Column(Integer(), ForeignKey('device.id', ondelete="cascade"), nullable=False)
 	device = relationship("Device", cascade="all")
 	reference = Column(String(50))
-	datatype = Column(String(50), ForeignKey('dataType.id'))
+	datatype_id = Column(String(50), ForeignKey('dataType.id'))
+	datatype = relationship("DataType")
 	last_value = Column(Unicode(50), nullable=True)
 	last_received = Column(String(50), nullable=True)
 

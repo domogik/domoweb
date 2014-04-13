@@ -1,13 +1,13 @@
 """Initial creation
 
-Revision ID: 1f6adad4baf1
+Revision ID: 5257f6a4bbaa
 Revises: None
-Create Date: 2014-04-03 19:08:35.198710
+Create Date: 2014-04-13 13:48:25.150889
 
 """
 
 # revision identifiers, used by Alembic.
-revision = '1f6adad4baf1'
+revision = '5257f6a4bbaa'
 down_revision = None
 
 from alembic import op
@@ -31,20 +31,20 @@ def upgrade():
     sa.Column('value', sa.Unicode(length=255), nullable=True),
     sa.PrimaryKeyConstraint('key')
     )
-    op.create_table('device',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.Unicode(length=50), nullable=True),
-    sa.Column('description', sa.Unicode(length=255), nullable=True),
-    sa.Column('reference', sa.Unicode(length=255), nullable=True),
-    sa.Column('type', sa.String(length=50), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('sectionIcon',
     sa.Column('id', sa.String(length=50), nullable=False),
     sa.Column('iconset_id', sa.String(length=50), nullable=True),
     sa.Column('iconset_name', sa.Unicode(length=50), nullable=True),
     sa.Column('icon_id', sa.String(length=50), nullable=True),
     sa.Column('label', sa.Unicode(length=50), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('device',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.Unicode(length=50), nullable=True),
+    sa.Column('description', sa.Unicode(length=255), nullable=True),
+    sa.Column('reference', sa.Unicode(length=255), nullable=True),
+    sa.Column('type', sa.String(length=50), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('widget',
@@ -55,10 +55,52 @@ def upgrade():
     sa.Column('name', sa.Unicode(length=50), nullable=True),
     sa.Column('height', sa.Integer(), nullable=True),
     sa.Column('width', sa.Integer(), nullable=True),
-    sa.Column('content', sa.UnicodeText(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('widgetOption',
+    sa.Column('id', sa.String(length=50), nullable=False),
+    sa.Column('key', sa.String(length=50), nullable=True),
+    sa.Column('name', sa.Unicode(length=50), nullable=True),
+    sa.Column('required', sa.Boolean(), nullable=True),
+    sa.Column('type', sa.String(length=50), nullable=True),
+    sa.Column('default', sa.Unicode(length=50), nullable=True),
+    sa.Column('description', sa.UnicodeText(), nullable=True),
+    sa.Column('options', sa.UnicodeText(), nullable=True),
+    sa.Column('widget_id', sa.String(length=50), nullable=False),
+    sa.ForeignKeyConstraint(['widget_id'], ['widget.id'], ondelete='cascade'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('sensor',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.Unicode(length=50), nullable=True),
+    sa.Column('device_id', sa.Integer(), nullable=False),
+    sa.Column('reference', sa.String(length=50), nullable=True),
+    sa.Column('datatype_id', sa.String(length=50), nullable=True),
+    sa.Column('last_value', sa.Unicode(length=50), nullable=True),
+    sa.Column('last_received', sa.String(length=50), nullable=True),
+    sa.ForeignKeyConstraint(['datatype_id'], ['dataType.id'], ),
+    sa.ForeignKeyConstraint(['device_id'], ['device.id'], ondelete='cascade'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('widgetJS',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=255), nullable=True),
+    sa.Column('widget_id', sa.String(length=50), nullable=False),
+    sa.ForeignKeyConstraint(['widget_id'], ['widget.id'], ondelete='cascade'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('widgetDevice',
+    sa.Column('id', sa.String(length=50), nullable=False),
+    sa.Column('key', sa.String(length=50), nullable=True),
+    sa.Column('name', sa.Unicode(length=50), nullable=True),
+    sa.Column('required', sa.Boolean(), nullable=True),
+    sa.Column('types', sa.String(length=255), nullable=True),
+    sa.Column('description', sa.Unicode(length=255), nullable=True),
+    sa.Column('widget_id', sa.String(length=50), nullable=False),
+    sa.ForeignKeyConstraint(['widget_id'], ['widget.id'], ondelete='cascade'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('widgetCSS',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('widget_id', sa.String(length=50), nullable=False),
@@ -124,50 +166,6 @@ def upgrade():
             {'id':1, 'name':unicode('ROOT'), 'left':1, 'right':2},
         ]
     )
-
-    op.create_table('sensor',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.Unicode(length=50), nullable=True),
-    sa.Column('device_id', sa.Integer(), nullable=False),
-    sa.Column('reference', sa.String(length=50), nullable=True),
-    sa.Column('datatype', sa.String(length=50), nullable=True),
-    sa.Column('last_value', sa.Unicode(length=50), nullable=True),
-    sa.Column('last_received', sa.String(length=50), nullable=True),
-    sa.ForeignKeyConstraint(['datatype'], ['dataType.id'], ),
-    sa.ForeignKeyConstraint(['device_id'], ['device.id'], ondelete='cascade'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('widgetDevice',
-    sa.Column('id', sa.String(length=50), nullable=False),
-    sa.Column('key', sa.String(length=50), nullable=True),
-    sa.Column('name', sa.Unicode(length=50), nullable=True),
-    sa.Column('required', sa.Boolean(), nullable=True),
-    sa.Column('types', sa.String(length=255), nullable=True),
-    sa.Column('description', sa.Unicode(length=255), nullable=True),
-    sa.Column('widget_id', sa.String(length=50), nullable=False),
-    sa.ForeignKeyConstraint(['widget_id'], ['widget.id'], ondelete='cascade'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('widgetOption',
-    sa.Column('id', sa.String(length=50), nullable=False),
-    sa.Column('key', sa.String(length=50), nullable=True),
-    sa.Column('name', sa.Unicode(length=50), nullable=True),
-    sa.Column('required', sa.Boolean(), nullable=True),
-    sa.Column('type', sa.String(length=50), nullable=True),
-    sa.Column('default', sa.Unicode(length=50), nullable=True),
-    sa.Column('description', sa.UnicodeText(), nullable=True),
-    sa.Column('options', sa.UnicodeText(), nullable=True),
-    sa.Column('widget_id', sa.String(length=50), nullable=False),
-    sa.ForeignKeyConstraint(['widget_id'], ['widget.id'], ondelete='cascade'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('widgetCSS',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=255), nullable=True),
-    sa.Column('widget_id', sa.String(length=50), nullable=False),
-    sa.ForeignKeyConstraint(['widget_id'], ['widget.id'], ondelete='cascade'),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('widgetInstance',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('section_id', sa.String(length=50), nullable=True),
@@ -181,9 +179,17 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('command_id', sa.Integer(), nullable=False),
     sa.Column('key', sa.String(length=50), nullable=True),
-    sa.Column('datatype', sa.String(length=50), nullable=True),
+    sa.Column('datatype_id', sa.String(length=50), nullable=True),
     sa.ForeignKeyConstraint(['command_id'], ['command.id'], ondelete='cascade'),
-    sa.ForeignKeyConstraint(['datatype'], ['dataType.id'], ),
+    sa.ForeignKeyConstraint(['datatype_id'], ['dataType.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('widgetInstanceParam',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('instance_id', sa.Integer(), nullable=False),
+    sa.Column('key', sa.String(length=50), nullable=True),
+    sa.Column('value', sa.Unicode(length=50), nullable=True),
+    sa.ForeignKeyConstraint(['instance_id'], ['widgetInstance.id'], ondelete='cascade'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('widgetInstanceSensor',
@@ -193,14 +199,6 @@ def upgrade():
     sa.Column('sensor_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['instance_id'], ['widgetInstance.id'], ondelete='cascade'),
     sa.ForeignKeyConstraint(['sensor_id'], ['sensor.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('widgetInstanceParam',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('instance_id', sa.Integer(), nullable=False),
-    sa.Column('key', sa.String(length=50), nullable=True),
-    sa.Column('value', sa.Unicode(length=50), nullable=True),
-    sa.ForeignKeyConstraint(['instance_id'], ['widgetInstance.id'], ondelete='cascade'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('widgetInstanceCommand',
@@ -218,22 +216,22 @@ def upgrade():
 def downgrade():
     ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('widgetInstanceCommand')
-    op.drop_table('widgetInstanceParam')
     op.drop_table('widgetInstanceSensor')
+    op.drop_table('widgetInstanceParam')
     op.drop_table('commandParam')
     op.drop_table('widgetInstance')
-    op.drop_table('widgetCSS')
-    op.drop_table('widgetOption')
-    op.drop_table('widgetDevice')
-    op.drop_table('sensor')
     op.drop_table('section')
     op.drop_table('command')
     op.drop_table('widgetCommand')
     op.drop_table('widgetSensor')
+    op.drop_table('widgetCSS')
+    op.drop_table('widgetDevice')
     op.drop_table('widgetJS')
+    op.drop_table('sensor')
+    op.drop_table('widgetOption')
     op.drop_table('widget')
-    op.drop_table('sectionIcon')
     op.drop_table('device')
+    op.drop_table('sectionIcon')
     op.drop_table('parameter')
     op.drop_table('sectionTheme')
     op.drop_table('dataType')

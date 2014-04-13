@@ -1,7 +1,6 @@
-<polymer-element name="web-socket" attributes="message">
+<polymer-element name="web-socket">
 	<script>
 		Polymer("web-socket", {
-			message:null,
 			ready:function(){
 				//window.addEventListener('beforeunload', this.beforeUnload.bind(this));//buggy in chrome
 				// Cleanly close websocket when unload window
@@ -13,20 +12,17 @@
 					this.ws.onopen = this.onOpen.bind(this);
 				}
 			},
-			messageChanged: function() {
-			},
 			onMessage: function(msg) {
 				console.log("WS: message received");
 				console.log(msg.data);
-				this.message = JSON.parse(msg.data);
+				message = JSON.parse(msg.data);
+				this.asyncFire('websocket-message', message);
 			},
 			send: function(data) {
-				try
-				{
+				try {
 					console.log("WS: sending message " + data);
 					this.ws.send(data);
-				}catch(error)
-				{
+				} catch(error) {
 					console.log("cannot send message: error:"+error);
 				}
 			},

@@ -3,7 +3,7 @@ import os
 import json
 import zmq
 
-from domoweb.db.models import Session, Widget, SectionIcon, SectionTheme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, WidgetJS, WidgetCSS, DataType, Device
+from domoweb.db.models import Session, Widget, SectionIcon, SectionTheme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, WidgetJS, WidgetCSS, DataType, Device, Command, Sensor, CommandParam
 from collections import OrderedDict
 from domogik.mq.reqrep.client import MQSyncReq
 from domogik.mq.message import MQMessage
@@ -42,8 +42,7 @@ class packLoader:
                         for wid, widget in widgetset_widgets.items():
                             widget_id = "%s-%s" %(widgetset_id, wid)
                             widget_name = "%s [%s]" % (widget['name'], widgetset_name)
-                            widget_content = None
-                            w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), version=widgetset_version, name=unicode(widget_name), height=widget['height'], width=widget['width'], content=unicode(widget_content))
+                            w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), version=widgetset_version, name=unicode(widget_name), height=widget['height'], width=widget['width'])
                             session.add(w)
 
                             # Options
@@ -179,37 +178,51 @@ class mqDataLoader:
             r = DataType(id=type, parameters=json.dumps(params))
             session.add(r)
         session.commit()
-        session.close()
+        session.flush()
 
     @classmethod
     def loadDevices(cls):
-        session = Session()
         logger.info("MQ: Loading Devices info")
+        Device.clean()
         msg = MQMessage()
-        msg.set_action('device.gets')
+        msg.set_action('client.list.get')
         res = cli.request('manager', msg.get(), timeout=10)
         if res is not None:
-            _data = res.get_data()
+            _datac = res.get_data()
         else:
-            _data = {}
-        print _data
-    #    session.query(Device).delete()
-    #    for device in _data.iteritems():
-    #        d = Device(id=d.id, name=data.name, type_id=data.device_type_id, reference=data.reference)
-    #        device.save()
-    #        if "commands" in data:
-    #            for cmd in data.commands:
-    #                command = data.commands[cmd]
-    #                c = Command(id=command.id, name=command.name, device=device, reference=command.reference, return_confirmation=command.return_confirmation)
-    #                c.save()
-    #                for param in command.parameters:
-    #                    p = CommandParam(command=c, key=param.key, datatype_id=param.data_type)
-    #                    p.save()
-    #        if "sensors" in data:
-    #            for sen in data.sensors:
-    #                sensor = data.sensors[sen]
-    #                s = Sensor(id=sensor.id, name=sensor.name, device=device, reference=sensor.reference, datatype_id=sensor.data_type, last_value=sensor.last_value, last_received=sensor.last_received)
-    #                s.save()
+            _datac = {}
+        session = Session()
+        for client in _datac.itervalues(): 
+            # for each plugin client, we request the list of devices
+            if client["type"] == "plugin":
+                print client["host"], client["package_id"]
+                msg = MQMessage()
+                msg.set_action('device.get')
+                msg.add_data('type', 'plugin')
+                msg.add_data('name', client["name"])
+                msg.add_data('host', client["host"])
+                res = cli.request('dbmgr', msg.get(), timeout=10)
+                if res is not None:
+                    _datad = res.get_data()
+                else:
+                    _datad = {}
+                if 'devices' in _datad:
+                    for device in _datad["devices"]:
+                        d = Device(id=device["id"], name=device["name"], type=device["device_type_id"], reference=device["reference"])
+                        session.add(d)
+                        print device["name"]
+                        if "commands" in device:
+                            for ref, command  in device["commands"].iteritems():
+                                print id, command["name"]
+                                c = Command(id=command["id"], name=command["name"], device_id=device["id"], reference=ref, return_confirmation=command["return_confirmation"])
+                                session.add(c)
+                                for param in command["parameters"]:
+                                    p = CommandParam(command_id=id, key=param["key"], datatype_id=param["data_type"])
+                                    session.add(p)
+                        if "sensors" in device:
+                            for ref, sensor in device["sensors"].iteritems():
+                                s = Sensor(id=sensor["id"], name=sensor["name"], device_id=device["id"], reference=ref, datatype_id=sensor["data_type"], last_value=sensor["last_value"], last_received=sensor["last_received"])
+                                session.add(s)
 
-    #    session.commit()
-        session.close()
+        session.commit()
+        session.flush()
