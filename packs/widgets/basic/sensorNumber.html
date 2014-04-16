@@ -1,14 +1,14 @@
 <polymer-element name="dmww-basic-sensorNumber" extends="dmw-widget">
 	<template>
-	    <dmw-sensor sensorid=1 sensorvalue="{{number}}"></dmw-sensor>
+	    <dmw-sensor sensorkey="number" sensorvalue="{{number}}"></dmw-sensor>
 		<span>{{number}}</span>
 	</template>
 	<script>
 		Polymer('dmww-basic-sensorNumber', {
-			
 //			number: null,
 //			testvalue: null,
 			ready: function() {
+				this.super();
 				this.number = "---";
 			},/*
 			testvalueChanged: function(oldValue, newValue) {

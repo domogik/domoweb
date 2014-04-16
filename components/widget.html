@@ -9,11 +9,10 @@
 	<script>
 		Polymer("dmw-widget", {
 			ready:function(){
-//				var sensor = this.querySelector('dmw-sensor[sensorKey="number"]');
-//				console.log(sensor);
+				var sensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="number"]');
+				sensor.setAttribute('sensorid', 1);
 			},
 			messageReceived: function(e, detail, sender) {
-				console.log('A');
 		    },
 		});
 	</script>
