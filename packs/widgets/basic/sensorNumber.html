@@ -1,11 +1,9 @@
-<link rel="import" href="/polymer/polymer.html">
-
-<polymer-element name="dmww-basic-sensorNumber">
+<polymer-element name="dmww-basic-sensorNumber" extends="dmw-widget">
 	<template>
-	    <dmg-sensor sensorid=1 sensorvalue="{{number}}"></dmg-sensor>
+	    <dmw-sensor sensorid=1 sensorvalue="{{number}}"></dmw-sensor>
 		<span>{{number}}</span>
 	</template>
-	<script>  
+	<script>
 		Polymer('dmww-basic-sensorNumber', {
 			
 //			number: null,

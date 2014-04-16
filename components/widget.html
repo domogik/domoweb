@@ -1,0 +1,21 @@
+<link rel="import" href="/polymer/polymer.html">
+<link rel="import" href="/components/websockets.html">
+<link rel="import" href="/components/sensor.html">
+
+<polymer-element name="dmw-widget">
+	<template>
+	    <web-socket on-websocket-message="{{messageReceived}}"></web-socket>
+	</template>
+	<script>
+		Polymer("dmw-widget", {
+			ready:function(){
+//				var sensor = this.querySelector('dmw-sensor[sensorKey="number"]');
+//				console.log(sensor);
+			},
+			messageReceived: function(e, detail, sender) {
+				console.log('A');
+		    },
+		});
+	</script>
+</polymer-element>
+
