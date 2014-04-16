@@ -3,13 +3,12 @@
 
 <polymer-element name="dmww-navigation-sectionTitle">
 	<template>
-	    <web-socket id="socket" message="{{message}}"></web-socket>
+	    <web-socket id="socket" on-websocket-message="{{messageReceived}}"></web-socket>
 		<span id='sectiontitle'>{{title}}</span>
 	</template>
 	<script>  
 		Polymer('dmww-navigation-sectionTitle', {
 			title: "",
-			message: "",
 			ready: function() {
 				this.title = "Loading";
 				var socket = this.$.socket;
@@ -18,8 +17,8 @@
 		        	socket.send(JSON.stringify(msg));
     			});	
 			},
-			messageChanged: function() {
-		        this.title = this.message[0].name;
+			messageReceived: function(e, detail, sender) {
+		        this.title = detail[1].name;
 		    },
 		});
 	</script>

@@ -1,0 +1,22 @@
+<link rel="import" href="/polymer/polymer.html">
+<link rel="import" href="/components/websockets.html">
+
+<polymer-element name="dmg-sensor" attributes="sensorid sensorvalue">
+	<template>
+	    <web-socket id="socket" on-websocket-message="{{messageReceived}}"></web-socket>
+	</template>
+	<script>
+		Polymer("dmg-sensor", {
+			ready:function(){
+			},
+			messageReceived: function(e, detail, sender) {
+		        if (this.sensorid && this.sensorid == detail[1].sensor_id) {
+
+		        	this.sensorvalue=detail[1].stored_value;
+		        	console
+		        }
+		    },
+		});
+	</script>
+</polymer-element>
+

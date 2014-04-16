@@ -1,22 +1,22 @@
 <link rel="import" href="/polymer/polymer.html">
-<link rel="import" href="/components/websockets.html">
 
 <polymer-element name="dmww-basic-sensorNumber">
 	<template>
-	    <web-socket id="socket" on-websocket-message="{{messageReceived}}"></web-socket>
+	    <dmg-sensor sensorid=1 sensorvalue="{{number}}"></dmg-sensor>
 		<span>{{number}}</span>
 	</template>
 	<script>  
 		Polymer('dmww-basic-sensorNumber', {
-			number: "",
+			
+//			number: null,
+//			testvalue: null,
 			ready: function() {
 				this.number = "---";
-			},
-			messageReceived: function(e, detail, sender) {
-		        if (detail[1].sensor_id==1) {
-		        	this.number=detail[1].stored_value;
-		        }
-		    },
+			},/*
+			testvalueChanged: function(oldValue, newValue) {
+				console.log(newvalue);
+				this.number = newValue;
+			},*/
 		});
 	</script>
 </polymer-element>
