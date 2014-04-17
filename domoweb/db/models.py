@@ -89,18 +89,6 @@ class WidgetDevice(Base):
 	description = Column(Unicode(255), nullable=True)
 	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
 
-class WidgetJS(Base):
-	__tablename__ = 'widgetJS'
-	id = Column(Integer(), primary_key=True, autoincrement=True)
-	name = Column(String(255))
-	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
-
-class WidgetCSS(Base):
-	__tablename__ = 'widgetCSS'
-	id = Column(Integer(), primary_key=True, autoincrement=True)
-	name = Column(String(255))
-	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
-
 class SectionTheme(Base):
 	__tablename__ = 'sectionTheme'
 	id = Column(String(50), primary_key=True)

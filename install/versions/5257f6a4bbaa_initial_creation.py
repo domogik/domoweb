@@ -82,13 +82,6 @@ def upgrade():
     sa.ForeignKeyConstraint(['device_id'], ['device.id'], ondelete='cascade'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('widgetJS',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=255), nullable=True),
-    sa.Column('widget_id', sa.String(length=50), nullable=False),
-    sa.ForeignKeyConstraint(['widget_id'], ['widget.id'], ondelete='cascade'),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('widgetDevice',
     sa.Column('id', sa.String(length=50), nullable=False),
     sa.Column('key', sa.String(length=50), nullable=True),
@@ -96,13 +89,6 @@ def upgrade():
     sa.Column('required', sa.Boolean(), nullable=True),
     sa.Column('types', sa.String(length=255), nullable=True),
     sa.Column('description', sa.Unicode(length=255), nullable=True),
-    sa.Column('widget_id', sa.String(length=50), nullable=False),
-    sa.ForeignKeyConstraint(['widget_id'], ['widget.id'], ondelete='cascade'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('widgetCSS',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('widget_id', sa.String(length=50), nullable=False),
     sa.ForeignKeyConstraint(['widget_id'], ['widget.id'], ondelete='cascade'),
     sa.PrimaryKeyConstraint('id')
@@ -224,9 +210,7 @@ def downgrade():
     op.drop_table('command')
     op.drop_table('widgetCommand')
     op.drop_table('widgetSensor')
-    op.drop_table('widgetCSS')
     op.drop_table('widgetDevice')
-    op.drop_table('widgetJS')
     op.drop_table('sensor')
     op.drop_table('widgetOption')
     op.drop_table('widget')

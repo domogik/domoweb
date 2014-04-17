@@ -3,7 +3,7 @@ import os
 import json
 import zmq
 
-from domoweb.db.models import Session, Widget, SectionIcon, SectionTheme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, WidgetJS, WidgetCSS, DataType, Device, Command, Sensor, CommandParam
+from domoweb.db.models import Session, Widget, SectionIcon, SectionTheme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam
 from collections import OrderedDict
 from domogik.mq.reqrep.client import MQSyncReq
 from domogik.mq.message import MQMessage
@@ -26,8 +26,6 @@ class packLoader:
         session.query(WidgetCommand).delete()
         session.query(WidgetSensor).delete()
         session.query(WidgetDevice).delete()
-        session.query(WidgetJS).delete()
-        session.query(WidgetCSS).delete()
         if os.path.isdir(widgets_path):
             for file in os.listdir(widgets_path):
                 if not file.startswith('.'): # not hidden file
@@ -103,14 +101,6 @@ class packLoader:
                                 else:
                                     p.required = True
                                 session.add(p)
-                            # CSS Files
-                            for name in widget['css']:
-                                f = WidgetCSS(widget_id=widget_id, name=name)
-                                session.add(f)
-                            # JS Files
-                            for name in widget['js']:
-                                f = WidgetJS(widget_id=widget_id, name=name)
-                                session.add(f)
         session.commit()
         session.close()
 
@@ -195,7 +185,6 @@ class mqDataLoader:
         for client in _datac.itervalues(): 
             # for each plugin client, we request the list of devices
             if client["type"] == "plugin":
-                print client["host"], client["package_id"]
                 msg = MQMessage()
                 msg.set_action('device.get')
                 msg.add_data('type', 'plugin')
@@ -210,10 +199,8 @@ class mqDataLoader:
                     for device in _datad["devices"]:
                         d = Device(id=device["id"], name=device["name"], type=device["device_type_id"], reference=device["reference"])
                         session.add(d)
-                        print device["name"]
                         if "commands" in device:
                             for ref, command  in device["commands"].iteritems():
-                                print id, command["name"]
                                 c = Command(id=command["id"], name=command["name"], device_id=device["id"], reference=ref, return_confirmation=command["return_confirmation"])
                                 session.add(c)
                                 for param in command["parameters"]:
