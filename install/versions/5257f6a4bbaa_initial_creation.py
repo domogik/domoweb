@@ -52,6 +52,7 @@ def upgrade():
     sa.Column('version', sa.String(length=50), nullable=True),
     sa.Column('set_id', sa.String(length=50), nullable=True),
     sa.Column('set_name', sa.Unicode(length=50), nullable=True),
+    sa.Column('set_ref', sa.String(length=50), nullable=True),
     sa.Column('name', sa.Unicode(length=50), nullable=True),
     sa.Column('height', sa.Integer(), nullable=True),
     sa.Column('width', sa.Integer(), nullable=True),

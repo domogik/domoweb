@@ -1,0 +1,37 @@
+<link rel="import" href="/polymer/polymer.html">
+<link rel="import" href="/components/websockets.html">
+<link rel="import" href="/components/sensor.html">
+
+<polymer-element name="dmw-widgets-selector" attributes="section">
+	<template>
+	    <web-socket id="socket"></web-socket>
+		<h1>Select Widget</h1>
+		<ul id="widgets-list">
+		    <template repeat="{{w in widgets}}">
+        	<li><button class="add-widget" class="btn btn-default" on-click="{{addWidget}}" data-widget-id="{{ w.id }}">{{ w.set_name }} - {{ w.name }}</button></li>
+	      	</template>
+		</ul>
+		<button id="closeModal" type="button" class="btn btn-default">Close</button>
+	</template>
+	<script>
+		Polymer("dmw-widgets-selector", {
+			ready:function(){
+		    	this.$.socket.register('widget-list', null, this.messageReceived.bind(this));
+				this.$.socket.send("widget-getall", null);
+				self = this;
+				this.$.closeModal.addEventListener('click', function () {
+					var modalOverlay = document.querySelector('#modal-overlay');
+					modalOverlay.classList.remove('on');
+					self.remove();
+				});
+			},
+			messageReceived: function(topic, json) {
+		        this.widgets = json;
+		    },
+		    addWidget: function(e) {
+		    	var widget_id = e.target.dataset.widgetId;
+		    	this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':this.section});
+		    }
+		});
+	</script>
+</polymer-element>

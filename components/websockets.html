@@ -7,12 +7,6 @@
 		function WebsocketHandler() {
 			this.listeners = [];
 		}
-		WebsocketHandler.prototype.onOpen = function (e) {
-		    console.log('WS: Connection open');
-		};
-		WebsocketHandler.prototype.onError = function (error) {
-			console.error('There was an un-identified Web Socket error',error);
-		};
 
 		WebsocketHandler.prototype.onMessage = function(msg) {
 			console.log("WS: message received");
@@ -22,7 +16,22 @@
 				if (json[0] == 'device-stats' 
 					&& json[0] == listener[0] 
 					&& json[1].sensor_id == listener[1]) {
-					listener[2](json[1]);
+					listener[2](json[0], json[1]);
+				} else if (json[0] == 'widgetinstance-added' 
+					&& json[0] == listener[0] 
+					&& json[1].section_id == listener[1]) {
+					listener[2](json[0], json[1]);
+				} else if (json[0] == 'widgetinstance-removed' 
+					&& json[0] == listener[0] 
+					&& json[1].section_id == listener[1]) {
+					listener[2](json[0], json[1]);
+				} else if (json[0] == 'widgetinstance-sectionlist' 
+					&& json[0] == listener[0] 
+					&& json[1].section_id == listener[1]) {
+					listener[2](json[0], json[1]);
+				} else if (json[0] == 'widget-list' 
+					&& json[0] == listener[0]) {
+					listener[2](json[0], json[1]);
 				}
 			}
 		};
@@ -30,21 +39,24 @@
 		WebsocketHandler.prototype.beforeUnload = function() {
 	       	_socket.onclose = function () {}; // disable onclose handler first
     	    _socket.close();
-		}
+		};
 
 		WebsocketHandler.prototype.subscribe = function(func, name, id) {
 			this.listeners.push([name, id, func]);
-		}
-		WebsocketHandler.prototype.send = function(func) {
+		};
+
+		WebsocketHandler.prototype.send = function(json) {
+			var data = JSON.stringify(json);
 			try {
 				console.log("WS: sending message " + data);
 				_socket.send(data);
 			} catch(error) {
-				console.log("cannot send message: error:"+error);
+				console.log("cannot send message: error: " + error);
 			}
-		}
+		};
 
 		Polymer("web-socket", {
+			isConnected: false,
 			ready:function(){
 				//window.addEventListener('beforeunload', this.beforeUnload.bind(this));//buggy in chrome
 				// Cleanly close websocket when unload window
@@ -53,23 +65,27 @@
 						_handler = new WebsocketHandler;
 						_socket = new WebSocket("ws://" + document.domain + ":40404/ws/");
 						_socket.onmessage = _handler.onMessage.bind(_handler);
-						_socket.onerror = _handler.onError.bind(_handler);
-						_socket.onopen = _handler.onOpen.bind(_handler);
+						_socket.onerror = this.onError.bind(this);
+						_socket.onopen = this.onOpen.bind(this);
 						window.onbeforeunload = _handler.beforeUnload.bind(_handler);
-					    this.fire('websocket-ready');
 					}
 				}
 			},
-			messageReceived: function(json) {
-				this.asyncFire('websocket-message', json);
+			
+			onOpen: function (e) {
+		    	console.log('WS: Connection open');
+				this.isConnected = true;
+			    this.fire('websocket-ready');
 			},
-			send: function(data) {
-				_handler.send(data);
+			onError: function (error) {
+				console.error('There was an un-identified Web Socket error',error);
 			},
-			register: function(name, id) {
-				var func = this.messageReceived.bind(this);
+			send: function(id, json) {
+				_handler.send([id, json]);
+			},
+			register: function(name, id, func) {
 				_handler.subscribe(func, name, id);
-			}
+			},
 		});
 	</script>
 </polymer-element>

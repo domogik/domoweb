@@ -49,26 +49,9 @@
 	}
 
 	function widgetsHandler(){
-		var b = document.createElement('button');
-		b.addEventListener('click',widgetSelection,false);
-		b.classList.add('btn', 'btn-primary', 'btn-lg');
-		b.innerHTML = 'Add Widget';
-		main.appendChild(b);
+		document.querySelector('dmw-grid-layout').setAttribute('edit', true);
 		closeNav();
 	}
 
-	function widgetSelection(){
-        var link = document.querySelector('link[rel=import]#widgetSelector');
-        var template = link.import.querySelector('#widgets-list-template');
-        document.body.appendChild(document.importNode(template.content, true));
-		buttons = document.querySelectorAll('.addWidget');
-		for (var i = 0; i < buttons.length; i++) {
-		    var button = buttons[i];
-		    button.addEventListener('click', appendWidget, false);
-		}
-
-		var buttonClose = document.querySelector("#remove-widgets-list");
-		buttonClose.addEventListener('click',widgetSelectionClose,false);
-	}
 })();
 

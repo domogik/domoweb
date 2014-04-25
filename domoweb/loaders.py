@@ -39,8 +39,7 @@ class packLoader:
                         widgetset_widgets = widgetset_json["widgets"]
                         for wid, widget in widgetset_widgets.items():
                             widget_id = "%s-%s" %(widgetset_id, wid)
-                            widget_name = "%s [%s]" % (widget['name'], widgetset_name)
-                            w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), version=widgetset_version, name=unicode(widget_name), height=widget['height'], width=widget['width'])
+                            w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), set_ref=wid, version=widgetset_version, name=unicode(widget['name']), height=widget['height'], width=widget['width'])
                             session.add(w)
 
                             # Options

@@ -1,0 +1,96 @@
+<polymer-element name="dmw-grid-layout" attributes="sectionid edit">
+	<template>
+		<style type="text/css">
+		    #container {
+		      width: 80%;
+		      margin: auto;
+		    }
+		    .item {
+		      background: rgb(135, 199, 135);
+		    }
+
+		    .item {
+		    	width:  100px;
+  				height: 100px;
+		    }
+			.item.w2 { width: 50%; }
+		</style>
+	    <web-socket id="socket"></web-socket>
+	    <div id="container"></div>
+	    <template if="{{ edit }}">
+	    	<button class="btn btn-primary btn-lg" on-click="{{addWidget}}">Add Widget</button>
+	    </template>
+	</template>
+	<script src="/libraries/packery-1.2.2/packery.pkgd.min.js"></script>
+	<script>
+		Polymer("dmw-grid-layout", {
+			ready:function(){
+				this.edit = false;
+				this.wall = new Packery( this.$.container, {
+				  	// options
+				  	itemSelector: '.item',
+				  	gutter: 10,
+				});
+//				this.wall.on( 'layoutComplete', this.orderChanged.bind(this) );
+				this.wall.on( 'dragItemPositioned', this.orderChanged.bind(this) );
+			},
+			instanceAdded: function(topic, json) {
+				this.appendInstance(json);
+				this.wall.layout();
+		    },
+			instanceRemoved: function(topic, json) {
+				var instance = this.shadowRoot.querySelector('*[instanceid="' + json['id'] + '"]');
+				this.wall.remove(instance);
+				this.wall.layout();
+		    },
+			listReceived: function(topic, json) {
+				for (index = 0; index < json['instances'].length; ++index) {
+					this.appendInstance(json['instances'][index]);
+				}
+				this.wall.layout();
+			},
+			appendInstance: function(instance) {
+				var widget = document.createElement('dmww-' + instance.widget.set_id + '-' + instance.widget.set_ref);
+				widget.classList.add('item');
+				widget.setAttribute('instanceid', instance.id);
+				this.$.container.appendChild(widget);
+				this.wall.appended(widget);
+			},
+		    sectionidChanged: function(oldValue, newValue) {
+		    	this.$.socket.register('widgetinstance-added', newValue, this.instanceAdded.bind(this));
+		    	this.$.socket.register('widgetinstance-removed', newValue, this.instanceRemoved.bind(this));
+		    	this.$.socket.register('widgetinstance-sectionlist', newValue, this.listReceived.bind(this));
+		    	if (this.$.socket.isConnected) {
+					this.$.socket.send("widgetinstance-getsection", {'section_id':newValue});
+		    	} else {
+	    			var socket = this.$.socket;
+	    			socket.addEventListener('websocket-ready', function(e) {
+						socket.send("widgetinstance-getsection", {'section_id':newValue});
+  					});
+		    	}
+		    },
+		    orderChanged: function() {
+				var itemElems = this.wall.getItemElements();
+				console.log(itemElems);
+				for ( var i=0, len = itemElems.length; i < len; i++ ) {
+					var elem = itemElems[i];
+					console.log( i + 1 );
+				}
+			},
+			editChanged: function(oldValue, newValue) {
+				widgets = this.$.container.childNodes;
+				for (var i = 0; i < widgets.length; i++) {
+				    var widget = widgets[i];
+				    widget.setAttribute('edit', newValue);
+				}
+			},
+			addWidget: function(e) {
+				var modalOverlay = document.querySelector('#modal-overlay'),
+				selector = document.createElement('dmw-widgets-selector');
+				selector.setAttribute('section', 1);
+				modalOverlay.appendChild(selector);
+				modalOverlay.classList.add('on');
+			},
+		});
+	</script>
+</polymer-element>

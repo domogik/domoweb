@@ -25,6 +25,7 @@ class Widget(Base):
 	version = Column(String(50))
 	set_id = Column(String(50))
 	set_name = Column(Unicode(50))
+	set_ref = Column(String(50))
 	name = Column(Unicode(50))
 	height = Column(Integer(), default=1)
 	width = Column(Integer(), default=1)
@@ -211,10 +212,43 @@ class WidgetInstance(Base):
 	section = relationship("Section")
 	order = Column(Integer())
 	widget_id = Column(String(50), ForeignKey('widget.id'))
-	widget = relationship("Widget")
+	widget = relationship("Widget", foreign_keys='WidgetInstance.widget_id', lazy='joined')
 	params = relationship("WidgetInstanceParam", cascade="all")
 	sensors = relationship("WidgetInstanceSensor", cascade="all")
 	commands = relationship("WidgetInstanceCommand", cascade="all")
+
+	@classmethod
+	def get(cls, id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).get(id)
+		session.close()
+		return s
+
+	@classmethod
+	def add(cls, section_id, widget_id):
+		# create a Session
+		session = Session()
+		s = cls(section_id=section_id, widget_id=widget_id)
+		session.add(s)
+		session.commit()
+		return s
+
+	@classmethod
+	def getSection(cls, section_id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).filter_by(section_id = section_id).all()
+		session.close()
+		return s
+
+	@classmethod
+	def delete(cls, id):
+		session = Session()
+		s = session.query(cls).get(id)
+		session.delete(s)
+		session.commit()
+		return s
 
 class WidgetInstanceParam(Base):
 	__tablename__ = 'widgetInstanceParam'

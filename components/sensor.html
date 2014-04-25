@@ -1,16 +1,16 @@
 <polymer-element name="dmw-sensor" attributes="sensorid sensorkey sensorvalue">
 	<template>
-	    <web-socket id="socket" on-websocket-message="{{messageReceived}}"></web-socket>
+	    <web-socket id="socket"></web-socket>
 	</template>
 	<script>
 		Polymer("dmw-sensor", {
 			ready:function(){
 			},
-			messageReceived: function(e, json, sender) {
+			statsReceived: function(topic, json) {
 		        this.sensorvalue=json.stored_value;
 		    },
 		    sensoridChanged: function(oldValue, newValue) {
-		    	this.$.socket.register('device-stats', newValue);
+		    	this.$.socket.register('device-stats', newValue, this.statsReceived.bind(this));
 		    },
 		});
 	</script>

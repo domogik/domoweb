@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from tornado import web, websocket
 from tornado.web import RequestHandler
-from domoweb.db.models import Section, Widget
+from domoweb.db.models import Section, Widget, WidgetInstance
 
 import json
 import logging
@@ -38,12 +38,13 @@ class PageHandler(RequestHandler):
 class ConfigurationHandler(RequestHandler):
     def get(self):
         action = self.get_argument('action', None)
+        id = self.get_argument('id', None)
         # Widget section box
-        if action=='widgets':
-            widgets = Widget.getAll()
-            self.render('configurationWidgets.html',
-                widgets=widgets)
-
+        if action=='widget':
+            widget = Widget.get(id);
+            self.render('configurationWidget.html',
+                widget=widget)
+        
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
         socket_connections.append(self)
@@ -53,15 +54,47 @@ class WSHandler(websocket.WebSocketHandler):
     def on_message(self, message):
         logger.info("WS: Received message %s" % message)
         jsonmessage = json.loads(message)
-        data = {'section-get' : self.WSgetSection}[jsonmessage['action']](jsonmessage['data'])
-        self.sendMessage('', data)
+        data = {
+            'section-get' : self.WSSectionGet,
+            'widget-getall' : self.WSWidgetsGetall,
+            'widgetinstance-add' : self.WSWidgetInstanceAdd,
+            'widgetinstance-remove' : self.WSWidgetInstanceRemove,
+            'widgetinstance-getsection' : self.WSWidgetInstanceGetsection,
+        }[jsonmessage[0]](jsonmessage[1])
+        if (data):
+            self.sendMessage(data)
 
-    def WSgetSection(self, data):
+    def WSSectionGet(self, data):
         section = Section.get(data['id'])
-        return to_json(section)
+        return ['section-detail', to_json(section)]
 
-    def sendMessage(self, id, content):
-        data=json.dumps([id, content])
+    def WSWidgetsGetall(self, data):
+        widgets = Widget.getAll()
+        return ['widget-list', to_json(widgets)]
+
+    def WSWidgetInstanceAdd(self, data):
+        i = WidgetInstance.add(section_id=data['section_id'], widget_id=data['widget_id'])
+        json = to_json(i)
+        json["widget"] = to_json(i.widget)
+        return ['widgetinstance-added', json];
+
+    def WSWidgetInstanceRemove(self, data):
+        i = WidgetInstance.delete(data['instance_id'])
+        json = to_json(i)
+        json["widget"] = to_json(i.widget)
+        return ['widgetinstance-removed', json];
+
+    def WSWidgetInstanceGetsection(self, data):
+        r = WidgetInstance.getSection(section_id=data['section_id'])
+        json = {'section_id':data['section_id'], 'instances':to_json(r)}
+        for index, item in enumerate(r):
+            json['instances'][index]["widget"] = to_json(item.widget)
+        return ['widgetinstance-sectionlist', json];
+
+
+    def sendMessage(self, content):
+        data=json.dumps(content)
+        logger.info("WS: Sending message %s" % data)
         self.write_message(data)
 
 class NoCacheStaticFileHandler(web.StaticFileHandler):
@@ -83,9 +116,13 @@ class MQHandler(MQAsyncSub):
 def to_json(model):
     """ Returns a JSON representation of an SQLAlchemy-backed object.
     """
-    jsonm = {}
-     
-    for col in model._sa_class_manager.mapper.mapped_table.columns:
-        jsonm[col.name] = getattr(model, col.name)
+    if isinstance(model, list):
+        jsonm = []
+        for m in model:
+            jsonm.append(to_json(m))
+    else:
+        jsonm = {} 
+        for col in model._sa_class_manager.mapper.mapped_table.columns:
+            jsonm[col.name] = getattr(model, col.name)
 
-    return json.dumps([jsonm])
+    return jsonm
