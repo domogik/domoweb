@@ -12,7 +12,8 @@
 			console.log("WS: message received");
 			console.log(msg.data);
 			json = JSON.parse(msg.data);
-			for (listener of this.listeners) {
+			for ( var i=0; i < this.listeners.length; i++ ) {
+				listener = this.listeners[i];
 				if (json[0] == 'device-stats' 
 					&& json[0] == listener[0] 
 					&& json[1].sensor_id == listener[1]) {
