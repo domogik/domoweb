@@ -25,7 +25,6 @@
 	<script>
 		Polymer("dmw-grid-layout", {
 			ready:function(){
-				this.edit = false;
 				this.wall = new Packery( this.$.container, {
 				  	// options
 				  	itemSelector: '.item',
@@ -35,7 +34,7 @@
 				this.wall.on( 'dragItemPositioned', this.orderChanged.bind(this) );
 			},
 			instanceAdded: function(topic, json) {
-				this.appendInstance(json);
+				this.appendInstance(json, true);
 				this.wall.layout();
 		    },
 			instanceRemoved: function(topic, json) {
@@ -45,14 +44,17 @@
 		    },
 			listReceived: function(topic, json) {
 				for (index = 0; index < json['instances'].length; ++index) {
-					this.appendInstance(json['instances'][index]);
+					this.appendInstance(json['instances'][index], false);
 				}
 				this.wall.layout();
 			},
-			appendInstance: function(instance) {
+			appendInstance: function(instance, edit) {
 				var widget = document.createElement('dmww-' + instance.widget.set_id + '-' + instance.widget.set_ref);
 				widget.classList.add('item');
 				widget.setAttribute('instanceid', instance.id);
+				if (edit) {
+					widget.setAttribute('edit', true);
+				}
 				this.$.container.appendChild(widget);
 				this.wall.appended(widget);
 			},
@@ -81,7 +83,11 @@
 				widgets = this.$.container.childNodes;
 				for (var i = 0; i < widgets.length; i++) {
 				    var widget = widgets[i];
-				    widget.setAttribute('edit', newValue);
+				    if (newValue) {
+					    widget.setAttribute('edit', newValue);
+				    } else {
+				    	widget.removeAttribute('edit');
+				    }
 				}
 			},
 			addWidget: function(e) {

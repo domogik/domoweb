@@ -9,11 +9,11 @@
 {% block import %}
   	<link rel="import" href="/components/gridLayout.html">
   	<link rel="import" href="/components/widgetsSelector.html">
+	<link rel="import" href="/widget/navigation/sectionTitle.html">
 	<link rel="import" href="/widget/basic/sensorNumber.html">
 {% end %}
 
 {% block main %}
-
 	<dmw-grid-layout sectionid="{{section.id}}"></dmw-grid-layout>
 	<button class="cn-button" id="cn-button"><span class='sr-only'>Open Menu</span></button>
 	<div class="cn-wrapper" id="cn-wrapper">
@@ -28,6 +28,7 @@
 	<div id="cn-overlay" class="cn-overlay"></div>
 	<div id="modal-overlay"></div>
 {% end %}
+
 {% block out %}
 	<!-- Configure -->
 	<div id="panelConfigure" class="hidden panel-overlay">

@@ -48,8 +48,14 @@
 		closeNav();
 	}
 
+	var widgetEdit = false;
 	function widgetsHandler(){
-		document.querySelector('dmw-grid-layout').setAttribute('edit', true);
+		widgetEdit = !widgetEdit;
+		if (widgetEdit) {
+			document.querySelector('dmw-grid-layout').setAttribute('edit', true);
+		} else {
+			document.querySelector('dmw-grid-layout').removeAttribute('edit');
+		}
 		closeNav();
 	}
 
