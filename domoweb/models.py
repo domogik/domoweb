@@ -55,8 +55,16 @@ class WidgetOption(Base):
 	type = Column(String(50))
 	default = Column(Unicode(50), nullable=True)
 	description = Column(UnicodeText(), nullable=True)
-	options = Column(UnicodeText(), nullable=True)
+	parameters = Column(UnicodeText(), nullable=True)
 	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+
+	@classmethod
+	def getWidget(cls, widget_id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).filter_by(widget_id=widget_id).all()
+		session.close()
+		return s
 
 class WidgetSensor(Base):
 	__tablename__ = 'widgetSensor'
@@ -213,7 +221,7 @@ class WidgetInstance(Base):
 	order = Column(Integer())
 	widget_id = Column(String(50), ForeignKey('widget.id'))
 	widget = relationship("Widget", foreign_keys='WidgetInstance.widget_id', lazy='joined')
-	params = relationship("WidgetInstanceParam", cascade="all")
+	options = relationship("WidgetInstanceOption", cascade="all")
 	sensors = relationship("WidgetInstanceSensor", cascade="all")
 	commands = relationship("WidgetInstanceCommand", cascade="all")
 
@@ -250,13 +258,21 @@ class WidgetInstance(Base):
 		session.commit()
 		return s
 
-class WidgetInstanceParam(Base):
-	__tablename__ = 'widgetInstanceParam'
+class WidgetInstanceOption(Base):
+	__tablename__ = 'widgetInstanceOption'
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), nullable=False)
 	instance = relationship("WidgetInstance")
 	key = Column(String(50))
 	value = Column(Unicode(50))
+	
+	@classmethod
+	def getKey(cls, instance_id, key):
+		# create a Session
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
+		session.close()
+		return s
 
 class WidgetInstanceSensor(Base):
 	__tablename__ = 'widgetInstanceSensor'

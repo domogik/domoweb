@@ -1,0 +1,8 @@
+<h1>{{ instance.widget.name }} configuration</h1>
+<div class='widget_parameters'>
+    <h2>Options</h2>
+    {% for field in forms.optionsform %}
+  		{% raw field.label %}
+  		{% raw field %}
+    {% end %}
+</div>

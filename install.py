@@ -309,12 +309,13 @@ def install_dependencies():
         'alembic',
         'tornado >= 3.1',
         'simplejson >= 1.9.2',
+        'WTForms',
     ])
 
 #    pkg_resources.get_distribution('django').activate()
     
 def updateDb(user, db):
-    from domoweb.db.models import metadata, engine
+    from domoweb.models import metadata, engine
     from sqlalchemy import create_engine
     from alembic.config import Config
     from alembic import command

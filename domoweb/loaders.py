@@ -3,7 +3,7 @@ import os
 import json
 import zmq
 
-from domoweb.db.models import Session, Widget, SectionIcon, SectionTheme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam
+from domoweb.models import Session, Widget, SectionIcon, SectionTheme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam
 from collections import OrderedDict
 from domogik.mq.reqrep.client import MQSyncReq
 from domogik.mq.message import MQMessage
@@ -32,74 +32,79 @@ class packLoader:
                     info = os.path.join(widgets_path, file, "info.json")
                     if os.path.isfile(info):
                         widgetset_file = open(info, "r")
-                        widgetset_json = json.load(widgetset_file, object_pairs_hook=OrderedDict)
-                        widgetset_id = widgetset_json["identity"]["id"]
-                        widgetset_name = widgetset_json["identity"]["name"]
-                        widgetset_version = widgetset_json["identity"]["version"]
-                        widgetset_widgets = widgetset_json["widgets"]
-                        for wid, widget in widgetset_widgets.items():
-                            widget_id = "%s-%s" %(widgetset_id, wid)
-                            w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), set_ref=wid, version=widgetset_version, name=unicode(widget['name']), height=widget['height'], width=widget['width'])
-                            session.add(w)
+                        try:
+                            widgetset_json = json.load(widgetset_file, object_pairs_hook=OrderedDict)
+                        except Exception, e:
+                            logger.error("Parsing error : %s: %s" % (info, str(e)) );
+#                            raise e
+                        else: 
+                            widgetset_id = widgetset_json["identity"]["id"]
+                            widgetset_name = widgetset_json["identity"]["name"]
+                            widgetset_version = widgetset_json["identity"]["version"]
+                            widgetset_widgets = widgetset_json["widgets"]
+                            for wid, widget in widgetset_widgets.items():
+                                widget_id = "%s-%s" %(widgetset_id, wid)
+                                w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), set_ref=wid, version=widgetset_version, name=unicode(widget['name']), height=widget['height'], width=widget['width'])
+                                session.add(w)
 
-                            # Options
-                            for pid, param in widget['options'].items():
-                                id = "%s-%s" % (widget_id, pid)
-                                p = WidgetOption(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), type=param['type'])
-                                if 'default' in param:
-                                    p.default = param['default']
-                                if 'required' in param:
-                                    p.required = param['required']
-                                else:
-                                    p.required = True
-                                options={}
-                                if 'min_length' in param:
-                                    options['min_length'] = param['min_length']
-                                if 'max_length' in param:
-                                    options['max_length'] = param['max_length']
-                                if 'min_value' in param:
-                                    options['min_value'] = param['min_value']
-                                if 'multilignes' in param:
-                                    options['multilignes'] = param['multilignes']
-                                if 'max_value' in param:
-                                    options['max_value'] = param['max_value']
-                                if 'mask' in param:
-                                    options['mask'] = param['mask']
-                                if 'choices' in param:
-                                    options['choices'] = param['choices']
-                                p.options=unicode(json.dumps(options))
-                                session.add(p)
-                            # Sensors parameters
-                            for pid, param in widget['sensors'].items():
-                                id = "%s-%s" % (widget_id, pid)
-                                p = WidgetSensor(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(param['types']))
-                                if 'filters' in param:
-                                    p.filters = ', '.join(param['filters'])
-                                if 'required' in param:
-                                    p.required = param['required']
-                                else:
-                                    p.required = True
-                                session.add(p)
-                            # Commands parameters
-                            for pid, param in widget['commands'].items():
-                                id = "%s-%s" % (widget_id, pid)
-                                p = WidgetCommand(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(param['types']))
-                                if 'filters' in param:
-                                    p.filters = ', '.join(param['filters'])
-                                if 'required' in param:
-                                    p.required = param['required']
-                                else:
-                                    p.required = True
-                                session.add(p)
-                            # Devices parameters
-                            for pid, param in widget['devices'].items():
-                                id = "%s-%s" % (widget_id, pid)
-                                p = WidgetDevice(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(param['types']))
-                                if 'required' in param:
-                                    p.required = param['required']
-                                else:
-                                    p.required = True
-                                session.add(p)
+                                # Options
+                                for pid, param in widget['options'].items():
+                                    id = "%s-%s" % (widget_id, pid)
+                                    p = WidgetOption(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), type=param['type'])
+                                    if 'default' in param:
+                                        p.default = param['default']
+                                    if 'required' in param:
+                                        p.required = param['required']
+                                    else:
+                                        p.required = True
+                                    parameters={}
+                                    if 'min_length' in param:
+                                        parameters['min_length'] = param['min_length']
+                                    if 'max_length' in param:
+                                        parameters['max_length'] = param['max_length']
+                                    if 'min_value' in param:
+                                        parameters['min_value'] = param['min_value']
+                                    if 'multilignes' in param:
+                                        parameters['multilignes'] = param['multilignes']
+                                    if 'max_value' in param:
+                                        parameters['max_value'] = param['max_value']
+                                    if 'mask' in param:
+                                        parameters['mask'] = param['mask']
+                                    if 'choices' in param:
+                                        parameters['choices'] = param['choices']
+                                    p.parameters=unicode(json.dumps(parameters))
+                                    session.add(p)
+                                # Sensors parameters
+                                for pid, param in widget['sensors'].items():
+                                    id = "%s-%s" % (widget_id, pid)
+                                    p = WidgetSensor(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(param['types']))
+                                    if 'filters' in param:
+                                        p.filters = ', '.join(param['filters'])
+                                    if 'required' in param:
+                                        p.required = param['required']
+                                    else:
+                                        p.required = True
+                                    session.add(p)
+                                # Commands parameters
+                                for pid, param in widget['commands'].items():
+                                    id = "%s-%s" % (widget_id, pid)
+                                    p = WidgetCommand(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(param['types']))
+                                    if 'filters' in param:
+                                        p.filters = ', '.join(param['filters'])
+                                    if 'required' in param:
+                                        p.required = param['required']
+                                    else:
+                                        p.required = True
+                                    session.add(p)
+                                # Devices parameters
+                                for pid, param in widget['devices'].items():
+                                    id = "%s-%s" % (widget_id, pid)
+                                    p = WidgetDevice(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(param['types']))
+                                    if 'required' in param:
+                                        p.required = param['required']
+                                    else:
+                                        p.required = True
+                                    session.add(p)
         session.commit()
         session.close()
 

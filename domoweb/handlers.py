@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from tornado import web, websocket
 from tornado.web import RequestHandler
-from domoweb.db.models import Section, Widget, WidgetInstance
+from domoweb.models import Section, Widget, WidgetInstance
+from domoweb.forms import WidgetInstanceForms
 
 import json
 import logging
@@ -30,7 +31,6 @@ class MainHandler(RequestHandler):
 
 class PageHandler(RequestHandler):
     def post(self):
-        # create a Session
         name = self.get_argument('name')
         description = self.get_argument('description', None)
         Section.add(name=name, parent_id=1, description=description)
@@ -41,9 +41,11 @@ class ConfigurationHandler(RequestHandler):
         id = self.get_argument('id', None)
         # Widget section box
         if action=='widget':
-            widget = Widget.get(id);
-            self.render('configurationWidget.html',
-                widget=widget)
+            instance = WidgetInstance.get(id);
+            forms = WidgetInstanceForms(instance=instance)
+
+            self.render('widgetConfiguration.html',
+                instance=instance, forms=forms)
         
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
@@ -90,7 +92,6 @@ class WSHandler(websocket.WebSocketHandler):
         for index, item in enumerate(r):
             json['instances'][index]["widget"] = to_json(item.widget)
         return ['widgetinstance-sectionlist', json];
-
 
     def sendMessage(self, content):
         data=json.dumps(content)
