@@ -17,7 +17,7 @@
 		</style>
 	    <web-socket id="socket"></web-socket>
 	    <div id="container"></div>
-	    <template if="{{ edit }}">
+	    <template if="{{ edit!=null }}">
 	    	<button class="btn btn-primary btn-lg" on-click="{{addWidget}}">Add Widget</button>
 	    </template>
 	</template>
@@ -49,11 +49,11 @@
 				this.wall.layout();
 			},
 			appendInstance: function(instance, edit) {
-				var widget = document.createElement('dmww-' + instance.widget.set_id + '-' + instance.widget.set_ref);
+				var widget = document.createElement('dmw-' + instance.widget.set_id + '-' + instance.widget.set_ref);
 				widget.classList.add('item');
 				widget.setAttribute('instanceid', instance.id);
 				if (edit) {
-					widget.setAttribute('edit', true);
+					widget.setAttribute('edit', '');
 				}
 				this.$.container.appendChild(widget);
 				this.wall.appended(widget);
@@ -83,8 +83,8 @@
 				widgets = this.$.container.childNodes;
 				for (var i = 0; i < widgets.length; i++) {
 				    var widget = widgets[i];
-				    if (newValue) {
-					    widget.setAttribute('edit', newValue);
+				    if (newValue != null) {
+					    widget.setAttribute('edit', '');
 				    } else {
 				    	widget.removeAttribute('edit');
 				    }

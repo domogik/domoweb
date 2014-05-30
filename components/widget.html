@@ -1,11 +1,11 @@
-<link rel="import" href="/polymer/polymer.html">
+<link rel="import" href="/components/polymer/polymer.html">
 <link rel="import" href="/components/websockets.html">
 <link rel="import" href="/components/sensor.html">
 
 <polymer-element name="dmw-widget" attributes="instanceid edit">
 	<template>
 	    <web-socket id="socket"></web-socket>
-	    <template if="{{edit}}">
+	    <template if="{{ edit!=null }}">
 	    	<button on-click="{{editWidget}}">Edit</button>
 	    	<button on-click="{{removeWidget}}">Remove</button>
 	    </template>
@@ -18,6 +18,20 @@
 			},
 			removeWidget: function(e) {
 		    	this.$.socket.send("widgetinstance-remove", {'instance_id':this.instanceid});
+			},
+			editWidget: function(e) {
+				var link = document.createElement('link');
+				link.rel = 'import';
+				link.href = '/configuration?action=widget&id=' + this.instanceid;
+				link.id = 'configurationwidget';
+				link.onload = function(e) {
+					var modalOverlay = document.querySelector('#modal-overlay');
+					var content = link.import.querySelector("#widgetConfigurationForm");
+					modalOverlay.appendChild(content.cloneNode(true));
+					modalOverlay.classList.add('on');
+
+				};
+				document.head.appendChild(link);
 			},
 		});
 	</script>

@@ -1,3 +1,4 @@
+import json
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, Unicode, UnicodeText, Boolean, ForeignKey, String, Text
 from sqlalchemy.orm import backref, relationship, sessionmaker
@@ -77,6 +78,14 @@ class WidgetSensor(Base):
 	description = Column(Unicode(255), nullable=True)
 	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
 
+	@classmethod
+	def getWidget(cls, widget_id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).filter_by(widget_id=widget_id).all()
+		session.close()
+		return s
+
 class WidgetCommand(Base):
 	__tablename__ = 'widgetCommand'
 	id = Column(String(50), primary_key=True)
@@ -87,6 +96,14 @@ class WidgetCommand(Base):
 	filters = Column(String(255), nullable=True)
 	description = Column(Unicode(255), nullable=True)
 	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+
+	@classmethod
+	def getWidget(cls, widget_id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).filter_by(widget_id=widget_id).all()
+		session.close()
+		return s
 
 class WidgetDevice(Base):
 	__tablename__ = 'widgetDevice'
@@ -212,6 +229,13 @@ class Sensor(Base):
 	datatype = relationship("DataType")
 	last_value = Column(Unicode(50), nullable=True)
 	last_received = Column(String(50), nullable=True)
+
+	@classmethod
+	def getAllTypes(cls, types):
+		session = Session()
+		s = session.query(cls).filter(cls.id.in_(types)).all()
+		session.close()
+		return s
 
 class WidgetInstance(Base):
 	__tablename__ = 'widgetInstance'

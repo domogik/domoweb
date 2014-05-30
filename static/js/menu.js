@@ -52,7 +52,7 @@
 	function widgetsHandler(){
 		widgetEdit = !widgetEdit;
 		if (widgetEdit) {
-			document.querySelector('dmw-grid-layout').setAttribute('edit', true);
+			document.querySelector('dmw-grid-layout').setAttribute('edit', '');
 		} else {
 			document.querySelector('dmw-grid-layout').removeAttribute('edit');
 		}

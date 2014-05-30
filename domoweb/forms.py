@@ -1,48 +1,54 @@
 #!/usr/bin/env python
 import json
 from collections import OrderedDict
-from wtforms import Form, StringField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, Flags
-from domoweb.models import WidgetOption, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, Device, Sensor, Command
+from wtforms import Form, StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, widgets
+from wtforms.validators import InputRequired, Length, Email, URL, IPAddress
+from domoweb.models import WidgetOption, WidgetSensor, WidgetCommand, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, Device, Sensor, Command
 
 class ParametersForm(Form):
     def __init__(self, *args, **kwargs):
         super(ParametersForm, self).__init__(*args, **kwargs)
-
-#    def setData(self, kwds):
-#        """Set the data to include in the form"""
-#        for name,field in self.fields.items():
-#            self.data[name] = field.widget.value_from_datadict(
-#                kwds, self.files, self.add_prefix(name))
-#        self.is_bound = True
+    """
+    def setData(self, kwds):
+        for name,field in self.fields.items():
+            self.data[name] = field.widget.value_from_datadict(
+                kwds, self.files, self.add_prefix(name))
+        self.is_bound = True
     
-#    def validate(self):
-#        self.full_clean()
+    def validate(self):
+        self.full_clean()
 
-#        for name,field in self.fields.items():
-#            if 'errors' in field:
-#                print name, field.errors
-
-
+        for name,field in self.fields.items():
+            if 'errors' in field:
+                print name, field.errors
+    """
     @classmethod
     def addStringField(cls, key, label, default=None, required=False, max_length=60, help_text=None, parameters=None):
-        setattr(cls, key, StringField(label, default=default, description=help_text))
-#        validators=[]
-#        widget=forms.TextInput
-#        if parameters:
-#            if "min_length" in parameters:
-#                validators.append(MinLengthValidator(parameters["min_length"]))
-#            if "max_length" in parameters:
-#                validators.append(MaxLengthValidator(parameters["max_length"]))
-#            if "multilignes" in parameters:
-#                widget=forms.Textarea
+        validators=[]
+        if required:
+            validators.append(InputRequired())
+        min = -1
+        max = -1
+        if parameters:
+            if "min_value" in parameters:
+                min = parameters["min_value"]
+            if "max_value" in parameters:
+                max = parameters["max_value"]
+        if min!=-1 or max!=-1:
+            validators.append(Length(min=min, max=max))
 #            elif "mask" in parameters: #https://github.com/shaungrady/jquery-mask-input
 #                widget=MaskInput(parameters['mask'])
-#        self.fields[key] = forms.CharField(widget=widget, label=label, required=required, max_length=max_length, initial=default, help_text=help_text, validators=validators)
+        if parameters and "multilignes" in parameters:
+            setattr(cls, key, TextAreaField(label, default=default, validators=validators, description=help_text))
+        else:
+            setattr(cls, key, StringField(label, default=default, validators=validators, description=help_text))
 
     @classmethod
     def addBooleanField(cls, key, label, default=None, help_text=None):
-        setattr(cls, key, BooleanField(label, default=default, description=help_text))
-#        self.fields[key] = forms.BooleanField(label=label, required=False, initial=default, help_text=help_text)
+        validators=[]
+#        if required:
+#            validators.append(InputRequired())
+        setattr(cls, key, BooleanField(label, default=default, validators=validators, description=help_text))
 
     """
     @classmethod
@@ -53,90 +59,124 @@ class ParametersForm(Form):
 
     @classmethod
     def addChoiceField(cls, key, label, default=None, required=False, help_text=None, parameters=None, empty_label=None):
+        validators=[]
+        if required:
+            validators.append(InputRequired())
         choices = [('', '--Select Parameter--')]
         if parameters:
             if "choices" in parameters:
                 ordered = OrderedDict(sorted(parameters["choices"].items()))
                 for v, l in ordered.iteritems():
                     choices.append((v, l))
-        setattr(cls, key, SelectField(label, default=default, choices=choices, description=help_text))
-#        self.fields[key] = forms.ChoiceField(label=label, required=required, choices=choices, initial=default, help_text=help_text)
+        setattr(cls, key, SelectField(label, default=default, validators=validators, choices=choices, description=help_text))
 
     @classmethod
     def addMultipleChoiceField(cls, key, label, default=None, required=False, help_text=None, parameters=None, empty_label=None):
+        validators=[]
+        if required:
+            validators.append(InputRequired())
         choices = []
         if parameters:
             if "choices" in parameters:
                 ordered = OrderedDict(sorted(parameters["choices"].items()))
                 for v, l in ordered.iteritems():
                     choices.append((v, l))
-        setattr(cls, key, SelectMultipleField(label, default=default, choices=choices, description=help_text))
-#        self.fields[key] = forms.MultipleChoiceField(label=label, required=required, choices=choices, initial=default, help_text=help_text)
+        setattr(cls, key, SelectMultipleField(label, default=default, validators=validators, choices=choices, description=help_text))
 
     @classmethod
     def addDateField(cls, key, label, default=None, required=False, help_text=None):
-        setattr(cls, key, DateField(label, default=default, description=help_text))
-#        self.fields[key] = forms.DateField(label=label, required=required, initial=default, help_text=help_text, input_formats=['%d/%m/%Y'])
+        validators=[]
+        if required:
+            validators.append(InputRequired())
+        setattr(cls, key, DateField(label, default=default, validators=validators, description=help_text, format='%d/%m/%Y'))
 
     @classmethod
     def addTimeField(cls, key, label, default=None, required=False, help_text=None):
-        pass
+        validators=[]
+        if required:
+            validators.append(InputRequired())
 #        self.fields[key] = forms.TimeField(label=label, required=required, initial=default, help_text=help_text, input_formats=['%H:%M:%S'])
 
     @classmethod
     def addDateTimeField(cls, key, label, default=None, required=False, help_text=None):
-        setattr(cls, key, DateTimeField(label, default=default, description=help_text))
-#        self.fields[key] = forms.DateTimeField(label=label, required=required, initial=default, help_text=help_text, input_formats=['%Y-%m-%d %H:%M:%S'])
+        validators=[]
+        if required:
+            validators.append(InputRequired())
+        setattr(cls, key, DateTimeField(label, default=default, validators=validators, description=help_text, format='%Y-%m-%d %H:%M:%S'))
 
     @classmethod
     def addDecimalField(cls, key, label, default=None, required=False, help_text=None, parameters=None):
-        setattr(cls, key, DecimalField(label, default=default, description=help_text))
-#        validators=[]
-#        if options:
-#            if "min_value" in options:
-#                validators.append(MinValueValidator(options["min_value"]))
-#            if "max_value" in options:
-#                validators.append(MaxValueValidator(options["max_value"]))
-
-#        self.fields[key] = forms.FloatField(label=label, required=required, initial=default, help_text=help_text, validators=validators)
+        validators=[]
+        if required:
+            validators.append(InputRequired())
+        min = -1
+        max = -1
+        if parameters:
+            if "min_value" in parameters:
+                min = parameters["min_value"]
+            if "max_value" in parameters:
+                max = parameters["max_value"]
+        if min!=-1 or max!=-1:
+            validators.append(Length(min=min, max=max))
+        setattr(cls, key, DecimalField(label, default=default, validators=validators, description=help_text))
 
     @classmethod
     def addIntegerField(cls, key, label, default=None, required=False, help_text=None, parameters=None):
-        setattr(cls, key, IntegerField(label, default=default, description=help_text))
-#        validators=[]
-#        if options:
-#            if "min_value" in options:
-#                validators.append(MinValueValidator(options["min_value"]))
-#            if "max_value" in options:
-#                validators.append(MaxValueValidator(options["max_value"]))
-#        self.fields[key] = forms.IntegerField(label=label, required=required, initial=default, help_text=help_text, validators=validators)
+        validators=[]
+        if required:
+            validators.append(InputRequired())
+        min = -1
+        max = -1
+        if parameters:
+            if "min_value" in parameters:
+                min = parameters["min_value"]
+            if "max_value" in parameters:
+                max = parameters["max_value"]
+        if min!=-1 or max!=-1:
+            validators.append(Length(min=min, max=max))
+        setattr(cls, key, IntegerField(label, default=default, validators=validators, description=help_text))
 
     @classmethod
     def addEmailField(cls, key, label, default=None, required=False, help_text=None, parameters=None):
-        pass
- #       validators=[]
- #       if options:
- #           if "min_length" in options:
- #               validators.append(MinLengthValidator(options["min_length"]))
- #           if "max_length" in options:
- #               validators.append(MaxLengthValidator(options["max_length"]))
- #       self.fields[key] = forms.EmailField(label=label, required=required, initial=default, help_text=help_text, validators=validators)
+        validators=[]
+        if required:
+            validators.append(InputRequired())
+        validators.append(Email())
+        min = -1
+        max = -1
+        if parameters:
+            if "min_value" in parameters:
+                min = parameters["min_value"]
+            if "max_value" in parameters:
+                max = parameters["max_value"]
+        if min!=-1 or max!=-1:
+            validators.append(Length(min=min, max=max))
+        setattr(cls, key, StringField(label, default=default, validators=validators, description=help_text))
 
     @classmethod
     def addURLField(cls, key, label, default=None, required=False, help_text=None, parameters=None):
-        pass
- #       validators=[]
- #       if options:
- #           if "min_length" in options:
- #               validators.append(MinLengthValidator(options["min_length"]))
- #           if "max_length" in options:
- #               validators.append(MaxLengthValidator(options["max_length"]))
- #       self.fields[key] = forms.URLField(label=label, required=required, initial=default, help_text=help_text, validators=validators)
+        validators=[]
+        if required:
+            validators.append(InputRequired())
+        validators.append(URL(require_tld=False))
+        min = -1
+        max = -1
+        if parameters:
+            if "min_value" in parameters:
+                min = parameters["min_value"]
+            if "max_value" in parameters:
+                max = parameters["max_value"]
+        if min!=-1 or max!=-1:
+            validators.append(Length(min=min, max=max))
+        setattr(cls, key, StringField(label, default=default, validators=validators, description=help_text))
 
     @classmethod
     def addIPv4Field(cls, key, label, default=None, required=False, help_text=None):
-        pass
-#        self.fields[key] = forms.IPAddressField(label=label, required=required, initial=default, help_text=help_text)
+        validators=[]
+        if required:
+            validators.append(InputRequired())
+        validators.append(IPAddress())
+        setattr(cls, key, StringField(label, default=default, validators=validators, description=help_text))
 
 class WidgetOptionsForm(ParametersForm):
     def __init__(self, *args, **kwargs):
@@ -180,7 +220,7 @@ class WidgetOptionsForm(ParametersForm):
             cls.addURLField(key=key, label=option.name, default=default, required=option.required, help_text=option.description, parameters=parameters)
         else:
             cls.addStringField(key=key, label=option.name, default=default, required=option.required, help_text=option.description, parameters=parameters)
-        print key, option.type
+
     """
     def save(self, instance):
         try:
@@ -195,24 +235,15 @@ class WidgetOptionsForm(ParametersForm):
     """
 class WidgetSensorsForm(ParametersForm):
     def __init__(self, *args, **kwargs):
-        # This should be done before any references to self.fields
         super(WidgetSensorsForm, self).__init__(*args, **kwargs)
-        self.to_update = {}
-        self.to_create = {}
 
-    def addField(self, parameter, wis=None, tmpid=None):
-        if wis is None :
-            key = ('sensorparam_%s_%s' % (tmpid, parameter.id))
-            default = None
-            self.to_create[key] = parameter
-        else:
-            key = ('sensorparam_%s' % (wis.id))
-            default = wis.sensor
-            self.to_update[key] = wis
+    @classmethod
+    def addField(cls, option, instance_id):
+        key = ('sensorparam_%s' % (option.id))
+        sensors = Sensor.getAllTypes(types=option.types)
+#        self.addGroupedModelChoiceField(key=key, label=parameter.name, required=parameter.required, default=default, queryset=sensors, group_by_field='device', empty_label=_("--Select Sensor--"), help_text=parameter.description)
 
-        sensors = Sensor.objects.filter(datatype_id__in = parameter.types_as_list)
-        self.addGroupedModelChoiceField(key=key, label=parameter.name, required=parameter.required, default=default, queryset=sensors, group_by_field='device', empty_label=_("--Select Sensor--"), help_text=parameter.description)
-
+    """
     def save(self, instance):
         try:
             for field, parameter in self.to_create.iteritems():
@@ -223,32 +254,25 @@ class WidgetSensorsForm(ParametersForm):
                 wis.save()
         except KeyError: #Did not pass validation
             pass
+    """
 
 class WidgetCommandsForm(ParametersForm):
     def __init__(self, *args, **kwargs):
-        # This should be done before any references to self.fields
         super(WidgetCommandsForm, self).__init__(*args, **kwargs)
-        self.to_update = {}
-        self.to_create = {}
 
-    def addField(self, parameter, wic=None, tmpid=None):
-        if wic is None :
-            key = ('commandparam_%s_%s' % (tmpid, parameter.id))
-            default = None
-            self.to_create[key] = parameter
-        else:
-            key = ('commandparam_%s' % (wic.id))
-            default = wic.command
-            self.to_update[key] = wic
+    @classmethod
+    def addField(cls, option, instance_id):
+        key = ('commandparam_%s' % (option.id))
 
-        datatypes = []
-        types = json.loads(parameter.types)
-        for type in types:
-            for p in itertools.permutations(type):            
-                datatypes.append(''.join(p))
-        commands = Command.objects.filter(datatypes__in = datatypes)
-        self.addGroupedModelChoiceField(key=key, label=parameter.name, required=parameter.required, default=default, queryset=commands, group_by_field='device', empty_label=_("--Select Command--"), help_text=parameter.description)
+#        datatypes = []
+#        types = json.loads(parameter.types)
+#        for type in types:
+#            for p in itertools.permutations(type):            
+#                datatypes.append(''.join(p))
+#        commands = Command.objects.filter(datatypes__in = datatypes)
+#        self.addGroupedModelChoiceField(key=key, label=parameter.name, required=parameter.required, default=default, queryset=commands, group_by_field='device', empty_label=_("--Select Command--"), help_text=parameter.description)
 
+    """
     def save(self, instance):
         try:
             for field, parameter in self.to_create.iteritems():
@@ -259,13 +283,12 @@ class WidgetCommandsForm(ParametersForm):
                 wic.save()
         except KeyError: #Did not pass validation
             pass
+    """
 
+"""
 class WidgetDevicesForm(ParametersForm):
     def __init__(self, *args, **kwargs):
-        # This should be done before any references to self.fields
         super(WidgetDevicesForm, self).__init__(*args, **kwargs)
-        self.to_update = {}
-        self.to_create = {}
 
     def addField(self, parameter, wid=None, tmpid=None):
         if wid is None :
@@ -290,51 +313,35 @@ class WidgetDevicesForm(ParametersForm):
                 wid.save()
         except KeyError: #Did not pass validation
             pass
-        
+"""
+
 class WidgetInstanceForms(object):
     def __init__(self, instance):
         class OptionsForm(WidgetOptionsForm):
             pass
+        class SensorsForm(WidgetSensorsForm):
+            pass
+        class CommandsForm(WidgetCommandsForm):
+            pass
+
         widgetoptions = WidgetOption.getWidget(instance.widget_id)
-#        widgetsensors = WidgetSensor.objects.filter(widget=widget)    
-#        widgetcommands = WidgetCommand.objects.filter(widget=widget)    
-#        widgetdevices = WidgetDevice.objects.filter(widget=widget)
+        widgetsensors = WidgetSensor.getWidget(instance.widget_id) 
+        widgetcommands = WidgetCommand.getWidget(instance.widget_id)
         for option in widgetoptions:
             OptionsForm.addField(option=option, instance_id=instance.id)
-
 #            try:
 #                wio = WidgetInstanceOption.getKey(instance_id=instance.id, key=option.key)
 #            except ObjectDoesNotExist:
 #                pass
 
-        """
-            for parameter in widgetsensors:
-                try:
-                    wis = WidgetInstanceSensor.objects.get(instance=instance, parameter=parameter)
-                except ObjectDoesNotExist:
-                    self.sensorsform.addField(parameter=parameter, tmpid=instance.id)
-                else:
-                    self.sensorsform.addField(parameter=parameter, wis=wis)
-            for parameter in widgetcommands:
-                try:
-                    wic = WidgetInstanceCommand.objects.get(instance=instance, parameter=parameter)
-                except ObjectDoesNotExist:
-                    self.commandsform.addField(parameter=parameter, tmpid=instance.id)
-                else:
-                    self.commandsform.addField(parameter=parameter, wic=wic)
-            for parameter in widgetdevices:
-                try:
-                    wid = WidgetInstanceDevice.objects.get(instance=instance, parameter=parameter)
-                except ObjectDoesNotExist:
-                    self.devicesform.addField(parameter=parameter, tmpid=instance.id)
-                else:
-                    self.devicesform.addField(parameter=parameter, wid=wid)
-        """
+        for option in widgetsensors:
+            SensorsForm.addField(option=option, instance_id=instance.id)
+        for option in widgetcommands:
+            CommandsForm.addField(option=option, instance_id=instance.id)
+        
         self.optionsform = OptionsForm()
-#        self.optionsform = WidgetOptionsForm()
-#        self.sensorsform = WidgetSensorsForm()
-#        self.commandsform = WidgetCommandsForm()
-#        self.devicesform = WidgetDevicesForm()
+        self.sensorsform = SensorsForm()
+        self.commandsform = CommandsForm()
 
     """
     def setData(self, kwds):

@@ -1,7 +1,7 @@
 {
     "json_version" : 1,
     "identity" : {
-        "type" : "dmg_widgetset",
+        "type" : "dmw_widgetset",
         "id" : "basic",
         "version" : 1,
         "name" : "Basic",

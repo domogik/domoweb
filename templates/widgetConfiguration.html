@@ -1,8 +1,26 @@
-<h1>{{ instance.widget.name }} configuration</h1>
-<div class='widget_parameters'>
-    <h2>Options</h2>
-    {% for field in forms.optionsform %}
-  		{% raw field.label %}
-  		{% raw field %}
-    {% end %}
+<div id="widgetConfigurationForm">
+  <h1>{{ instance.widget.name }} configuration</h1>
+  <div class='widget_parameters'>
+      <h2>Options</h2>
+      {% for field in forms.optionsform %}
+      <div class="form-group">
+    		{% raw field.label() %}
+    		{% raw field(class_='form-control') %}
+    	</div>
+      {% end %}
+      <h2>Sensors</h2>
+      {% for field in forms.sensorsform %}
+      <div class="form-group">
+    		{% raw field.label() %}
+    		{% raw field(class_='form-control') %}
+    	</div>
+      {% end %}
+      <h2>Commands</h2>
+      {% for field in forms.commandsform %}
+      <div class="form-group">
+    		{% raw field.label() %}
+    		{% raw field(class_='form-control') %}
+    	</div>
+      {% end %}
+  </div>
 </div>
