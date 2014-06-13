@@ -1,10 +1,13 @@
 <link rel="import" href="/components/polymer/polymer.html">
+<link rel="import" href="/components/polymer-ajax/polymer-ajax.html">
 <link rel="import" href="/components/websockets.html">
 <link rel="import" href="/components/sensor.html">
+<script src="/js/serialize-0.2.min.js"></script>
 
 <polymer-element name="dmw-widget" attributes="instanceid edit">
 	<template>
 	    <web-socket id="socket"></web-socket>
+	    <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
 	    <template if="{{ edit!=null }}">
 	    	<button on-click="{{editWidget}}">Edit</button>
 	    	<button on-click="{{removeWidget}}">Remove</button>
@@ -20,18 +23,45 @@
 		    	this.$.socket.send("widgetinstance-remove", {'instance_id':this.instanceid});
 			},
 			editWidget: function(e) {
-				var link = document.createElement('link');
-				link.rel = 'import';
-				link.href = '/configuration?action=widget&id=' + this.instanceid;
-				link.id = 'configurationwidget';
-				link.onload = function(e) {
-					var modalOverlay = document.querySelector('#modal-overlay');
-					var content = link.import.querySelector("#widgetConfigurationForm");
-					modalOverlay.appendChild(content.cloneNode(true));
-					modalOverlay.classList.add('on');
+				var self = this;
+				var modalOverlay = document.querySelector('#modal-overlay');
+				this.$.ajax.setAttribute('handleAs', 'text');
+				this.$.ajax.addEventListener("polymer-response",
+        			function(e) {
+						var response = e.detail.response;
+						if (response == 'OK') {
+   							modalOverlay.classList.remove('on');
+							modalOverlay.innerHTML = '';
+						} else {
+							modalOverlay.innerHTML = response;
 
-				};
-				document.head.appendChild(link);
+							var saveConfig = modalOverlay.querySelector('#saveConfig');
+							var cancelConfig = modalOverlay.querySelector('#cancelConfig');
+							var formConfig = modalOverlay.querySelector('#formConfig');
+							saveConfig.addEventListener("click",
+								function(e) {
+									self.$.ajax.setAttribute('body', serialize(formConfig));
+									self.$.ajax.setAttribute('method', 'POST');
+									self.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + self.instanceid + '"}');
+									self.$.ajax.go();
+									e.preventDefault();
+									e.stopPropagation();
+									return false;
+								});
+							cancelConfig.addEventListener("click",
+								function(e) {
+   									modalOverlay.classList.remove('on');
+									modalOverlay.innerHTML = '';
+									e.preventDefault();
+									e.stopPropagation();
+									return false;
+								});
+							modalOverlay.classList.add('on');
+						}
+        			});
+				this.$.ajax.setAttribute('method', 'GET');
+				this.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + this.instanceid + '"}');
+				self.$.ajax.go();
 			},
 		});
 	</script>

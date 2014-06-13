@@ -4,3 +4,6 @@
 [submodule "components/polymer"]
 	path = components/polymer
 	url = https://github.com/Polymer/polymer.git
+[submodule "components/polymer-ajax"]
+	path = components/polymer-ajax
+	url = https://github.com/PolymerLabs/polymer-ajax.git

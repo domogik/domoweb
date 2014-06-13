@@ -1,26 +1,49 @@
-<div id="widgetConfigurationForm">
-  <h1>{{ instance.widget.name }} configuration</h1>
-  <div class='widget_parameters'>
-      <h2>Options</h2>
-      {% for field in forms.optionsform %}
-      <div class="form-group">
-    		{% raw field.label() %}
-    		{% raw field(class_='form-control') %}
-    	</div>
-      {% end %}
-      <h2>Sensors</h2>
-      {% for field in forms.sensorsform %}
-      <div class="form-group">
-    		{% raw field.label() %}
-    		{% raw field(class_='form-control') %}
-    	</div>
-      {% end %}
-      <h2>Commands</h2>
-      {% for field in forms.commandsform %}
-      <div class="form-group">
-    		{% raw field.label() %}
-    		{% raw field(class_='form-control') %}
-    	</div>
-      {% end %}
-  </div>
+<div id="widgetConfigurationForm" class="container-fluid">
+  <form id="formConfig" role="form">
+    <div class="row">
+      <div class="col-md-9 col-md-offset-1">
+        <h1>{{ instance.widget.name }} configuration</h1>
+        <button id="saveConfig" class="btn btn-primary">Save</button>
+        <button id="cancelConfig" class="btn">Cancel</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 col-md-offset-1">
+        <h2>Options</h2>
+        {% for field in forms.optionsform %}
+        <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
+          {% raw field.label() %}
+          {% if field.type == 'BooleanField' %}
+            {% raw field() %}
+          {% else %}
+            {% raw field(class_='form-control') %}
+          {% end %}
+          <span>{% raw field.description %}</span>
+          {% if field.errors %}
+            <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+          {% end %}
+        </div>
+        {% end %}
+      </div>
+      <div class="col-md-3">
+        <h2>Sensors</h2>
+        {% for field in forms.sensorsform %}
+        <div class="form-group">
+          {% raw field.label() %}
+          {% raw field(class_='form-control') %}
+        </div>
+        {% end %}
+      </div>
+      <div class="col-md-3">
+        <h2>Commands</h2>
+        {% for field in forms.commandsform %}
+        <div class="form-group">
+          {% raw field.label() %}
+          {% raw field(class_='form-control') %}
+        </div>
+        {% end %}
+      </div>
+    </div>
+  </form>
 </div>

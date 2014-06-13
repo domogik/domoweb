@@ -50,7 +50,11 @@ class packLoader:
                                 # Options
                                 for pid, param in widget['options'].items():
                                     id = "%s-%s" % (widget_id, pid)
-                                    p = WidgetOption(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), type=param['type'])
+                                    try:
+                                        description = unicode(param['description'])
+                                    except KeyError:
+                                        description = None
+                                    p = WidgetOption(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=description, type=param['type'])
                                     if 'default' in param:
                                         p.default = param['default']
                                     if 'required' in param:

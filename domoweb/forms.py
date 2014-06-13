@@ -2,8 +2,88 @@
 import json
 from collections import OrderedDict
 from wtforms import Form, StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, widgets
-from wtforms.validators import InputRequired, Length, Email, URL, IPAddress
+from wtforms.validators import InputRequired, Length, Email, URL, IPAddress, NumberRange
 from domoweb.models import WidgetOption, WidgetSensor, WidgetCommand, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, Device, Sensor, Command
+
+"""
+.. _WTForms: http://wtforms.simplecodes.com/
+
+A simple wrapper for WTForms_.
+
+Basically we only need to map the request handler's `arguments` to the 
+`wtforms.form.Form` input. Quick example::
+
+    from wtforms import TextField, validators
+    from tornadotools.forms import Form
+
+    class SampleForm(Form):
+        username = TextField('Username', [
+            validators.Length(min=4, message="Too short")
+            ])
+
+        email = TextField('Email', [
+            validators.Length(min=4, message="Not a valid mail address"),
+            validators.Email()
+            ])
+
+Then, in the `RequestHandler`::
+
+    def get(self):
+        form = SampleForm(self)
+        if form.validate():
+            # do something with form.username or form.email
+            pass
+        self.render('template.html', form=form)
+"""
+from wtforms import Form
+
+class Form(Form):
+    """
+    `WTForms` wrapper for Tornado.
+    """
+
+    def __init__(self, instance, handler=None, data=None, prefix='', **kwargs):
+        """
+        Wrap the `formdata` with the `TornadoInputWrapper` and call the base
+        constuctor.
+        """
+        self._handler = handler
+        if handler:
+            super(Form, self).__init__(TornadoInputWrapper(handler), prefix=prefix, **kwargs)
+        else:
+            super(Form, self).__init__(data=data, prefix=prefix, **kwargs)
+
+        self.instance = instance
+
+#    def _get_translations(self):
+#        return TornadoLocaleWrapper(self._handler.get_user_locale())
+
+
+class TornadoInputWrapper(object):
+
+    def __init__(self, handler):
+        self._handler = handler
+
+    def __iter__(self):
+        return iter(self._handler.request.arguments)
+
+    def __len__(self):
+        return len(self._handler.request.arguments)
+
+    def __contains__(self, name):
+        return (name in self._handler.request.arguments)
+
+    def getlist(self, name):
+        return self._handler.get_arguments(name)
+
+
+#class TornadoLocaleWrapper(object):
+#    def __init__(self, locale):
+#        self.locale = locale
+#    def gettext(self, message):
+#        return self.locale.translate(message)
+#    def ngettext(self, message, plural_message, count):
+#        return self.locale.translate(message, plural_message, count)
 
 class ParametersForm(Form):
     def __init__(self, *args, **kwargs):
@@ -117,7 +197,7 @@ class ParametersForm(Form):
             if "max_value" in parameters:
                 max = parameters["max_value"]
         if min!=-1 or max!=-1:
-            validators.append(Length(min=min, max=max))
+            validators.append(NumberRange(min=min, max=max))
         setattr(cls, key, DecimalField(label, default=default, validators=validators, description=help_text))
 
     @classmethod
@@ -133,7 +213,7 @@ class ParametersForm(Form):
             if "max_value" in parameters:
                 max = parameters["max_value"]
         if min!=-1 or max!=-1:
-            validators.append(Length(min=min, max=max))
+            validators.append(NumberRange(min=min, max=max))
         setattr(cls, key, IntegerField(label, default=default, validators=validators, description=help_text))
 
     @classmethod
@@ -184,61 +264,53 @@ class WidgetOptionsForm(ParametersForm):
         super(WidgetOptionsForm, self).__init__(*args, **kwargs)
 
     @classmethod
-    def addField(cls, option, instance_id):
+    def addField(cls, option, value=None):
         parameters = json.loads(option.parameters)
-        key = ('optionparam_%s' % (option.key))
+
+        if not value:
+            if option.type == 'boolean':
+                if not option.default == '':
+                    value = (option.default == 'true' or option.default == 'True')
+            else:
+                value = option.default
 
         if option.type == 'boolean':
-            if not option.default == '':
-                default = (option.default == 'true' or option.default == 'True')
-        else:
-            default = option.default
-
-        if option.type == 'boolean':
-            cls.addBooleanField(key=key, label=option.name, default=default, help_text=option.description)
+            cls.addBooleanField(key=option.key, label=option.name, default=value, help_text=option.description)
         elif option.type == 'string':
-            cls.addStringField(key=key, label=option.name, default=default, required=option.required, help_text=option.description, parameters=parameters)
+            cls.addStringField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description, parameters=parameters)
         elif option.type == 'choice':
-            cls.addChoiceField(key=key, label=option.name, default=default, required=option.required, help_text=option.description, parameters=parameters)
+            cls.addChoiceField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description, parameters=parameters)
         elif option.type == 'multiplechoice':
-            cls.addMultipleChoiceField(key=key, label=option.name, default=default, required=option.required, help_text=option.description, parameters=parameters)
+            cls.addMultipleChoiceField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description, parameters=parameters)
         elif option.type == 'date':
-            cls.addDateField(key=key, label=option.name, default=default, required=option.required, help_text=option.description)
+            cls.addDateField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description)
         elif option.type == 'time':
-            cls.addTimeField(key=key, label=option.name, default=default, required=option.required, help_text=option.description)
+            cls.addTimeField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description)
         elif option.type == 'datetime':
-            cls.addDateTimeField(key=key, label=option.name, default=default, required=option.required, help_text=option.description)
+            cls.addDateTimeField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description)
         elif option.type == 'float':
-            cls.addDecimalField(key=key, label=option.name, default=default, required=option.required, help_text=option.description, parameters=parameters)
+            cls.addDecimalField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description, parameters=parameters)
         elif option.type == 'integer':
-            cls.addIntegerField(key=key, label=option.name, default=default, required=option.required, help_text=option.description, parameters=parameters)
+            cls.addIntegerField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description, parameters=parameters)
         elif option.type == 'email':
-            cls.addEmailField(key=key, label=option.name, default=default, required=option.required, help_text=option.description, parameters=parameters)
+            cls.addEmailField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description, parameters=parameters)
         elif option.type == 'ipv4':
-            cls.addIPv4Field(key=key, label=option.name, default=default, required=option.required, help_text=option.description)
+            cls.addIPv4Field(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description)
         elif option.type == 'url':
-            cls.addURLField(key=key, label=option.name, default=default, required=option.required, help_text=option.description, parameters=parameters)
+            cls.addURLField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description, parameters=parameters)
         else:
-            cls.addStringField(key=key, label=option.name, default=default, required=option.required, help_text=option.description, parameters=parameters)
+            cls.addStringField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description, parameters=parameters)
 
-    """
-    def save(self, instance):
-        try:
-            for field, option in self.to_create.iteritems():
-                wio = WidgetInstanceOption(instance=instance, option=option, value=self.cleaned_data[field])
-                wio.save()
-            for field, wio in self.to_update.iteritems():
-                wio.value=self.cleaned_data[field]
-                wio.save()
-        except KeyError: #Did not pass validation
-            pass
-    """
+    def save(self):
+        for key, value in self.data.iteritems():
+            WidgetInstanceOption.saveKey(instance_id=self.instance.id, key=key, value=value)
+
 class WidgetSensorsForm(ParametersForm):
     def __init__(self, *args, **kwargs):
         super(WidgetSensorsForm, self).__init__(*args, **kwargs)
 
     @classmethod
-    def addField(cls, option, instance_id):
+    def addField(cls, option):
         key = ('sensorparam_%s' % (option.id))
         sensors = Sensor.getAllTypes(types=option.types)
 #        self.addGroupedModelChoiceField(key=key, label=parameter.name, required=parameter.required, default=default, queryset=sensors, group_by_field='device', empty_label=_("--Select Sensor--"), help_text=parameter.description)
@@ -261,7 +333,7 @@ class WidgetCommandsForm(ParametersForm):
         super(WidgetCommandsForm, self).__init__(*args, **kwargs)
 
     @classmethod
-    def addField(cls, option, instance_id):
+    def addField(cls, option):
         key = ('commandparam_%s' % (option.id))
 
 #        datatypes = []
@@ -285,38 +357,8 @@ class WidgetCommandsForm(ParametersForm):
             pass
     """
 
-"""
-class WidgetDevicesForm(ParametersForm):
-    def __init__(self, *args, **kwargs):
-        super(WidgetDevicesForm, self).__init__(*args, **kwargs)
-
-    def addField(self, parameter, wid=None, tmpid=None):
-        if wid is None :
-            key = ('deviceparam_%s_%s' % (tmpid, parameter.id))
-            default = None
-            self.to_create[key] = parameter
-        else:
-            key = ('deviceparam_%s' % (wid.id))
-            default = wid.device
-            self.to_update[key] = wid
-
-        devices = Device.objects.filter(type__in = parameter.types_as_list)
-        self.addGroupedModelChoiceField(key=key, label=parameter.name, required=parameter.required, default=default, queryset=devices, group_by_field='type', empty_label=_("--Select Device--"), help_text=parameter.description)
-
-    def save(self, instance):
-        try:
-            for field, parameter in self.to_create.iteritems():
-                wid = WidgetInstanceDevice(instance=instance, parameter=parameter, device=self.cleaned_data[field])
-                wid.save()
-            for field, wid in self.to_update.iteritems():
-                wid.device=self.cleaned_data[field]
-                wid.save()
-        except KeyError: #Did not pass validation
-            pass
-"""
-
 class WidgetInstanceForms(object):
-    def __init__(self, instance):
+    def __init__(self, instance, handler=None):
         class OptionsForm(WidgetOptionsForm):
             pass
         class SensorsForm(WidgetSensorsForm):
@@ -327,53 +369,29 @@ class WidgetInstanceForms(object):
         widgetoptions = WidgetOption.getWidget(instance.widget_id)
         widgetsensors = WidgetSensor.getWidget(instance.widget_id) 
         widgetcommands = WidgetCommand.getWidget(instance.widget_id)
+        if not handler:
+            options = WidgetInstanceOption.getInstance(instance.id)
+            dataOptions = dict([(r.key, r.value) for r in options])
+        else:
+            dataOptions = None
+
         for option in widgetoptions:
-            OptionsForm.addField(option=option, instance_id=instance.id)
-#            try:
-#                wio = WidgetInstanceOption.getKey(instance_id=instance.id, key=option.key)
-#            except ObjectDoesNotExist:
-#                pass
-
+            OptionsForm.addField(option=option)
         for option in widgetsensors:
-            SensorsForm.addField(option=option, instance_id=instance.id)
+            SensorsForm.addField(option=option)
         for option in widgetcommands:
-            CommandsForm.addField(option=option, instance_id=instance.id)
+            CommandsForm.addField(option=option)
         
-        self.optionsform = OptionsForm()
-        self.sensorsform = SensorsForm()
-        self.commandsform = CommandsForm()
-
-    """
-    def setData(self, kwds):
-        self.optionsform.setData(kwds)
-        self.sensorsform.setData(kwds)
-        self.commandsform.setData(kwds)
-        self.devicesform.setData(kwds)
+        self.optionsform = OptionsForm(instance=instance, handler=handler, data=dataOptions, prefix='optionparam_')
+        self.sensorsform = SensorsForm(instance=instance, handler=handler, data=dataOptions, prefix='sensorparam_')
+        self.commandsform = CommandsForm(instance=instance, handler=handler, data=dataOptions, prefix='commandparam_')
 
     def validate(self):
-        self.optionsform.validate()
-        self.sensorsform.validate()
-        self.commandsform.validate()
-        self.devicesform.validate()
-        print "options", self.optionsform.is_valid()
-        for field, errors in self.optionsform.errors.items():
-            print field
-            for error in errors:
-                print error
-        print "sensors", self.sensorsform.is_valid()
-        for field, errors in self.sensorsform.errors.items():
-            print field
-            for error in errors:
-                print error
-    def is_valid(self):
-        return self.optionsform.is_valid() and self.sensorsform.is_valid() and self.commandsform.is_valid() and self.devicesform.is_valid()
-    
-    def save(self, instance):    
-        self.validate()
-        self.optionsform.save(instance)
-        self.sensorsform.save(instance)
-        self.commandsform.save(instance)
-        self.devicesform.save(instance)
+        return (self.optionsform.validate() 
+            and self.sensorsform.validate()
+            and self.commandsform.validate())
 
-        return self.is_valid()
-    """
+    def save(self):    
+        self.optionsform.save()
+#        self.sensorsform.save()
+#        self.commandsform.save()

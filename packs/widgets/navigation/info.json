@@ -15,6 +15,12 @@
             "height" : 1,
             "width" : 2,
             "options" : {
+                "string_1" : {
+                    "name": "Force label",
+                    "type": "string",
+                    "default": "Default value",
+                    "required": false
+                }
             },
             "commands" : {
             },

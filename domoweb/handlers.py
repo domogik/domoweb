@@ -43,10 +43,21 @@ class ConfigurationHandler(RequestHandler):
         if action=='widget':
             instance = WidgetInstance.get(id);
             forms = WidgetInstanceForms(instance=instance)
+            self.render('widgetConfiguration.html', instance=instance, forms=forms)
 
-            self.render('widgetConfiguration.html',
-                instance=instance, forms=forms)
-        
+    def post(self):
+        action = self.get_argument('action', None)
+        id = self.get_argument('id', None)
+        if action=='widget':
+            instance = WidgetInstance.get(id);
+            forms = WidgetInstanceForms(instance=instance, handler=self)
+            if forms.validate():
+                # do something with form.username or form.email
+                forms.save();
+                self.write("OK")
+            else:
+                self.render('widgetConfiguration.html', instance=instance, forms=forms)
+
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
         socket_connections.append(self)

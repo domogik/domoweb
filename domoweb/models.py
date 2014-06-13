@@ -292,9 +292,28 @@ class WidgetInstanceOption(Base):
 	
 	@classmethod
 	def getKey(cls, instance_id, key):
-		# create a Session
 		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
+		session.close()
+		return s
+
+	@classmethod
+	def getInstance(cls, instance_id):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id).all()
+		session.close()
+		return s
+
+	@classmethod
+	def saveKey(cls, instance_id, key, value):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
+		if not s:
+			s = cls(instance_id=instance_id, key=key)
+		s.value = value
+		session.add(s)
+		session.commit()
+		session.flush()
 		session.close()
 		return s
 

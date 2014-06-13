@@ -28,7 +28,7 @@
                     "default": "Default value",
                     "min_length": 5,
                     "max_length": 10,
-                    "required": false
+                    "required": true
                 },
                 "string_2" : {
                     "name": "String 2",

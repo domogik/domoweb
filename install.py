@@ -309,7 +309,7 @@ def install_dependencies():
         'alembic',
         'tornado >= 3.1',
         'simplejson >= 1.9.2',
-        'WTForms',
+        'WTForms >= 2.0',
     ])
 
 #    pkg_resources.get_distribution('django').activate()
