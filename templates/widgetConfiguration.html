@@ -20,8 +20,8 @@
           {% end %}
           <span>{% raw field.description %}</span>
           {% if field.errors %}
-            <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-            <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+          <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+          <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
           {% end %}
         </div>
         {% end %}
@@ -29,18 +29,28 @@
       <div class="col-md-3">
         <h2>Sensors</h2>
         {% for field in forms.sensorsform %}
-        <div class="form-group">
+        <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
           {% raw field.label() %}
           {% raw field(class_='form-control') %}
+          <span>{% raw field.description %}</span>
+          {% if field.errors %}
+          <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+          <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+          {% end %}
         </div>
         {% end %}
       </div>
       <div class="col-md-3">
         <h2>Commands</h2>
         {% for field in forms.commandsform %}
-        <div class="form-group">
+        <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
           {% raw field.label() %}
           {% raw field(class_='form-control') %}
+          <span>{% raw field.description %}</span>
+          {% if field.errors %}
+          <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+          <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+          {% end %}
         </div>
         {% end %}
       </div>

@@ -1,11 +1,12 @@
 import json
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, Unicode, UnicodeText, Boolean, ForeignKey, String, Text
-from sqlalchemy.orm import backref, relationship, sessionmaker
+from sqlalchemy.orm import backref, relationship, sessionmaker, joinedload
 
 # alembic revision --autogenerate -m "xxxx"
 
 url = 'sqlite:////var/lib/domoweb/db.sqlite'
+# engine = create_engine(url, echo=True) # For debug sql
 engine = create_engine(url)
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -231,9 +232,12 @@ class Sensor(Base):
 	last_received = Column(String(50), nullable=True)
 
 	@classmethod
-	def getAllTypes(cls, types):
+	def getTypesFilter(cls, types):
 		session = Session()
-		s = session.query(cls).filter(cls.id.in_(types)).all()
+		s = session.query(cls.device_id, Device.name, cls.id, cls.name).\
+			join(Device).\
+			filter(cls.datatype_id.in_(json.loads(types))).\
+			order_by(cls.device_id).all()
 		session.close()
 		return s
 
@@ -325,6 +329,33 @@ class WidgetInstanceSensor(Base):
 	key = Column(String(50))
 	sensor_id = Column(Integer(), ForeignKey('sensor.id'))
 	sensor = relationship("Sensor")
+	
+	@classmethod
+	def getKey(cls, instance_id, key):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
+		session.close()
+		return s
+
+	@classmethod
+	def getInstance(cls, instance_id):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id).all()
+		session.close()
+		return s
+
+	@classmethod
+	def saveKey(cls, instance_id, key, sensor_id):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
+		if not s:
+			s = cls(instance_id=instance_id, key=key)
+		s.sensor_id = sensor_id
+		session.add(s)
+		session.commit()
+		session.flush()
+		session.close()
+		return s
 
 class WidgetInstanceCommand(Base):
 	__tablename__ = 'widgetInstanceCommand'
@@ -334,3 +365,30 @@ class WidgetInstanceCommand(Base):
 	key = Column(String(50))
 	command_id = Column(Integer(), ForeignKey('command.id'))
 	command = relationship("Command")
+	
+	@classmethod
+	def getKey(cls, instance_id, key):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
+		session.close()
+		return s
+
+	@classmethod
+	def getInstance(cls, instance_id):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id).all()
+		session.close()
+		return s
+
+	@classmethod
+	def saveKey(cls, instance_id, key, command_id):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
+		if not s:
+			s = cls(instance_id=instance_id, key=key)
+		s.command_id = command_id
+		session.add(s)
+		session.commit()
+		session.flush()
+		session.close()
+		return s

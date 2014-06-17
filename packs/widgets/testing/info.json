@@ -12,8 +12,8 @@
     "widgets": {
         "test": {
             "name" : "Test widget",
-            "height" : 1,
-            "width" : 1,
+            "height" : 3,
+            "width" : 3,
             "options" : {
                 "bool" : {
                     "name": "Boolean",
@@ -51,7 +51,7 @@
                     "description": "Choice test",
                     "type": "choice",
                     "choices" : {"a":"A", "b":"B", "c":"C"},
-                    "required": false
+                    "required": true
                 },
                 "multiplechoice" : {
                     "name": "Multiple Choice",
@@ -148,8 +148,10 @@
                         "DT_minute",
                         "DT_Second",
                         "DT_mSecond",
-                        "DT_Timestamp"
-                    ]
+                        "DT_Timestamp",
+                        "DT_Byte"
+                    ],
+                    "required": true                   
                 }
             },
             "commands" : {

@@ -21,9 +21,7 @@
             "commands" : {
             },
             "devices" : {
-            },
-            "css" : ["sensorNumber.css"],
-            "js" : ["sensorNumber.js"]
+            }
         }
     }
 }

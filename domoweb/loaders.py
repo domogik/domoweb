@@ -81,7 +81,7 @@ class packLoader:
                                 # Sensors parameters
                                 for pid, param in widget['sensors'].items():
                                     id = "%s-%s" % (widget_id, pid)
-                                    p = WidgetSensor(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(param['types']))
+                                    p = WidgetSensor(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(list(param['types'])))
                                     if 'filters' in param:
                                         p.filters = ', '.join(param['filters'])
                                     if 'required' in param:

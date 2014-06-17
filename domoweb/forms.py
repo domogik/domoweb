@@ -2,8 +2,9 @@
 import json
 from collections import OrderedDict
 from wtforms import Form, StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, widgets
-from wtforms.validators import InputRequired, Length, Email, URL, IPAddress, NumberRange
+from wtforms.validators import InputRequired, Length, Email, URL, IPAddress, NumberRange, Optional
 from domoweb.models import WidgetOption, WidgetSensor, WidgetCommand, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, Device, Sensor, Command
+from wtforms_components import SelectField
 
 """
 .. _WTForms: http://wtforms.simplecodes.com/
@@ -63,6 +64,7 @@ class TornadoInputWrapper(object):
 
     def __init__(self, handler):
         self._handler = handler
+        print handler.request.arguments
 
     def __iter__(self):
         return iter(self._handler.request.arguments)
@@ -84,6 +86,7 @@ class TornadoInputWrapper(object):
 #        return self.locale.translate(message)
 #    def ngettext(self, message, plural_message, count):
 #        return self.locale.translate(message, plural_message, count)
+
 
 class ParametersForm(Form):
     def __init__(self, *args, **kwargs):
@@ -107,6 +110,8 @@ class ParametersForm(Form):
         validators=[]
         if required:
             validators.append(InputRequired())
+        else:
+            validators.append(Optional())
         min = -1
         max = -1
         if parameters:
@@ -128,20 +133,31 @@ class ParametersForm(Form):
         validators=[]
 #        if required:
 #            validators.append(InputRequired())
+#        else
+#            validators.append(Optional())
         setattr(cls, key, BooleanField(label, default=default, validators=validators, description=help_text))
 
-    """
     @classmethod
-    def addGroupedModelChoiceField(cls, key, label, default=None, queryset, group_by_field, empty_label, required, help_text=None):
-        pass
-#        self.fields[key] = GroupedModelChoiceField(label=label, required=required, queryset=queryset, group_by_field=group_by_field, empty_label=empty_label, initial=default, help_text=help_text)
-    """
+    def addGroupedModelChoiceField(cls, key, label, queryset, group_by_field, empty_label, required, help_text=None):
+        from itertools import groupby
+        from operator import itemgetter
+        validators=[]
+        if required:
+            validators.append(InputRequired())
+        else:
+            validators.append(Optional())
+        choices = [('', empty_label)]
+        choices += [(k, map(lambda g: (unicode(g[2]), g[3]), group)) for k, group in groupby(queryset, key=itemgetter(1))]
+        setattr(cls, key, SelectField(label, validators=validators, choices=choices, description=help_text))
+    
 
     @classmethod
     def addChoiceField(cls, key, label, default=None, required=False, help_text=None, parameters=None, empty_label=None):
         validators=[]
         if required:
             validators.append(InputRequired())
+        else:
+            validators.append(Optional())
         choices = [('', '--Select Parameter--')]
         if parameters:
             if "choices" in parameters:
@@ -155,6 +171,8 @@ class ParametersForm(Form):
         validators=[]
         if required:
             validators.append(InputRequired())
+        else:
+            validators.append(Optional())
         choices = []
         if parameters:
             if "choices" in parameters:
@@ -168,6 +186,8 @@ class ParametersForm(Form):
         validators=[]
         if required:
             validators.append(InputRequired())
+        else:
+            validators.append(Optional())
         setattr(cls, key, DateField(label, default=default, validators=validators, description=help_text, format='%d/%m/%Y'))
 
     @classmethod
@@ -175,6 +195,8 @@ class ParametersForm(Form):
         validators=[]
         if required:
             validators.append(InputRequired())
+        else:
+            validators.append(Optional())
 #        self.fields[key] = forms.TimeField(label=label, required=required, initial=default, help_text=help_text, input_formats=['%H:%M:%S'])
 
     @classmethod
@@ -182,6 +204,8 @@ class ParametersForm(Form):
         validators=[]
         if required:
             validators.append(InputRequired())
+        else:
+            validators.append(Optional())
         setattr(cls, key, DateTimeField(label, default=default, validators=validators, description=help_text, format='%Y-%m-%d %H:%M:%S'))
 
     @classmethod
@@ -189,6 +213,8 @@ class ParametersForm(Form):
         validators=[]
         if required:
             validators.append(InputRequired())
+        else:
+            validators.append(Optional())
         min = -1
         max = -1
         if parameters:
@@ -205,6 +231,8 @@ class ParametersForm(Form):
         validators=[]
         if required:
             validators.append(InputRequired())
+        else:
+            validators.append(Optional())
         min = -1
         max = -1
         if parameters:
@@ -221,6 +249,8 @@ class ParametersForm(Form):
         validators=[]
         if required:
             validators.append(InputRequired())
+        else:
+            validators.append(Optional())
         validators.append(Email())
         min = -1
         max = -1
@@ -238,6 +268,8 @@ class ParametersForm(Form):
         validators=[]
         if required:
             validators.append(InputRequired())
+        else:
+            validators.append(Optional())
         validators.append(URL(require_tld=False))
         min = -1
         max = -1
@@ -255,6 +287,8 @@ class ParametersForm(Form):
         validators=[]
         if required:
             validators.append(InputRequired())
+        else:
+            validators.append(Optional())
         validators.append(IPAddress())
         setattr(cls, key, StringField(label, default=default, validators=validators, description=help_text))
 
@@ -303,6 +337,8 @@ class WidgetOptionsForm(ParametersForm):
 
     def save(self):
         for key, value in self.data.iteritems():
+            if isinstance(value, list):
+                value = ', '.join(value)
             WidgetInstanceOption.saveKey(instance_id=self.instance.id, key=key, value=value)
 
 class WidgetSensorsForm(ParametersForm):
@@ -311,22 +347,15 @@ class WidgetSensorsForm(ParametersForm):
 
     @classmethod
     def addField(cls, option):
-        key = ('sensorparam_%s' % (option.id))
-        sensors = Sensor.getAllTypes(types=option.types)
-#        self.addGroupedModelChoiceField(key=key, label=parameter.name, required=parameter.required, default=default, queryset=sensors, group_by_field='device', empty_label=_("--Select Sensor--"), help_text=parameter.description)
+        sensors = Sensor.getTypesFilter(types=option.types)
+        cls.addGroupedModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=sensors, group_by_field='device_id', empty_label="--Select Sensor--", help_text=option.description)
+    
 
-    """
-    def save(self, instance):
-        try:
-            for field, parameter in self.to_create.iteritems():
-                wis = WidgetInstanceSensor(instance=instance, parameter=parameter, sensor=self.cleaned_data[field])
-                wis.save()
-            for field, wis in self.to_update.iteritems():
-                wis.sensor=self.cleaned_data[field]
-                wis.save()
-        except KeyError: #Did not pass validation
-            pass
-    """
+    def save(self):
+        for key, value in self.data.iteritems():
+            if isinstance(value, list):
+                value = ', '.join(value)
+            WidgetInstanceSensor.saveKey(instance_id=self.instance.id, key=key, sensor_id=value)
 
 class WidgetCommandsForm(ParametersForm):
     def __init__(self, *args, **kwargs):
@@ -334,8 +363,8 @@ class WidgetCommandsForm(ParametersForm):
 
     @classmethod
     def addField(cls, option):
-        key = ('commandparam_%s' % (option.id))
-
+        pass
+#        key = ('commandparam_%s' % (option.id))
 #        datatypes = []
 #        types = json.loads(parameter.types)
 #        for type in types:
@@ -343,19 +372,6 @@ class WidgetCommandsForm(ParametersForm):
 #                datatypes.append(''.join(p))
 #        commands = Command.objects.filter(datatypes__in = datatypes)
 #        self.addGroupedModelChoiceField(key=key, label=parameter.name, required=parameter.required, default=default, queryset=commands, group_by_field='device', empty_label=_("--Select Command--"), help_text=parameter.description)
-
-    """
-    def save(self, instance):
-        try:
-            for field, parameter in self.to_create.iteritems():
-                wic = WidgetInstanceCommand(instance=instance, parameter=parameter, command=self.cleaned_data[field])
-                wic.save()
-            for field, wic in self.to_update.iteritems():
-                wic.command=self.cleaned_data[field]
-                wic.save()
-        except KeyError: #Did not pass validation
-            pass
-    """
 
 class WidgetInstanceForms(object):
     def __init__(self, instance, handler=None):
@@ -372,8 +388,14 @@ class WidgetInstanceForms(object):
         if not handler:
             options = WidgetInstanceOption.getInstance(instance.id)
             dataOptions = dict([(r.key, r.value) for r in options])
+            sensors = WidgetInstanceSensor.getInstance(instance.id)
+            dataSensors = dict([(r.key, r.sensor_id) for r in sensors])
+            commands = WidgetInstanceCommand.getInstance(instance.id)
+            dataCommands = dict([(r.key, r.command_id) for r in commands])
         else:
             dataOptions = None
+            dataSensors = None
+            dataCommands = None
 
         for option in widgetoptions:
             OptionsForm.addField(option=option)
@@ -381,17 +403,18 @@ class WidgetInstanceForms(object):
             SensorsForm.addField(option=option)
         for option in widgetcommands:
             CommandsForm.addField(option=option)
-        
+
         self.optionsform = OptionsForm(instance=instance, handler=handler, data=dataOptions, prefix='optionparam_')
-        self.sensorsform = SensorsForm(instance=instance, handler=handler, data=dataOptions, prefix='sensorparam_')
-        self.commandsform = CommandsForm(instance=instance, handler=handler, data=dataOptions, prefix='commandparam_')
+        self.sensorsform = SensorsForm(instance=instance, handler=handler, data=dataSensors, prefix='sensorparam_')
+        self.commandsform = CommandsForm(instance=instance, handler=handler, data=dataCommands, prefix='commandparam_')
 
     def validate(self):
-        return (self.optionsform.validate() 
-            and self.sensorsform.validate()
-            and self.commandsform.validate())
+        valid = self.optionsform.validate()
+        valid = self.sensorsform.validate() and valid
+        valid = self.commandsform.validate() and valid
+        return valid
 
     def save(self):    
         self.optionsform.save()
-#        self.sensorsform.save()
+        self.sensorsform.save()
 #        self.commandsform.save()
