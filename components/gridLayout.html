@@ -13,15 +13,17 @@
 		    	width:  100px;
   				height: 100px;
 		    }
-			.item.w2 { width: 50%; }
-		</style>
+			.item.itemw2 { width: 200px; }
+			.item.itemh2 { height: 200px; }
+			.item.itemw3 { width: 300px; }
+			.item.itemh3 { height: 300px; }		</style>
 	    <web-socket id="socket"></web-socket>
 	    <div id="container"></div>
 	    <template if="{{ edit!=null }}">
 	    	<button class="btn btn-primary btn-lg" on-click="{{addWidget}}">Add Widget</button>
 	    </template>
 	</template>
-	<script src="/libraries/packery-1.2.2/packery.pkgd.min.js"></script>
+	<script src="/libraries/packery/dist/packery.pkgd.min.js"></script>
 	<script>
 		Polymer("dmw-grid-layout", {
 			ready:function(){
@@ -52,6 +54,12 @@
 				var widget = document.createElement('dmw-' + instance.widget.set_id + '-' + instance.widget.set_ref);
 				widget.classList.add('item');
 				widget.setAttribute('instanceid', instance.id);
+				if (instance.widget.width > 1) {
+					widget.classList.add('itemw' + instance.widget.width);
+				}
+				if (instance.widget.height > 1) {
+					widget.classList.add('itemh' + instance.widget.height);
+				}
 				if (edit) {
 					widget.setAttribute('edit', '');
 				}
@@ -73,7 +81,6 @@
 		    },
 		    orderChanged: function() {
 				var itemElems = this.wall.getItemElements();
-				console.log(itemElems);
 				for ( var i=0, len = itemElems.length; i < len; i++ ) {
 					var elem = itemElems[i];
 					console.log( i + 1 );

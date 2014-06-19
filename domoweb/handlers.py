@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from tornado import web, websocket
 from tornado.web import RequestHandler
-from domoweb.models import Section, Widget, WidgetInstance
+from domoweb.models import Section, Widget, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand
 from domoweb.forms import WidgetInstanceForms
 
 import json
@@ -73,6 +73,9 @@ class WSHandler(websocket.WebSocketHandler):
             'widgetinstance-add' : self.WSWidgetInstanceAdd,
             'widgetinstance-remove' : self.WSWidgetInstanceRemove,
             'widgetinstance-getsection' : self.WSWidgetInstanceGetsection,
+            'widgetinstance-getoptions' : self.WSWidgetInstanceGetoptions,
+            'widgetinstance-getsensors' : self.WSWidgetInstanceGetsensors,
+            'widgetinstance-getcommands' : self.WSWidgetInstanceGetcommands,
         }[jsonmessage[0]](jsonmessage[1])
         if (data):
             self.sendMessage(data)
@@ -104,6 +107,30 @@ class WSHandler(websocket.WebSocketHandler):
             json['instances'][index]["widget"] = to_json(item.widget)
         return ['widgetinstance-sectionlist', json];
 
+    def WSWidgetInstanceGetoptions(self, data):
+        r = WidgetInstanceOption.getInstance(instance_id=data['instance_id'])
+        d = {}
+        for i, o in enumerate(r):
+            d[o.key] = o.value
+        json = {'instance_id':data['instance_id'], 'options':d}
+        return ['widgetinstance-options', json];
+
+    def WSWidgetInstanceGetsensors(self, data):
+        r = WidgetInstanceSensor.getInstance(instance_id=data['instance_id'])
+        d = {}
+        for i, o in enumerate(r):
+            d[o.key] = to_json(o.sensor)
+        json = {'instance_id':data['instance_id'], 'sensors':d}
+        return ['widgetinstance-sensors', json];
+
+    def WSWidgetInstanceGetcommands(self, data):
+        r = WidgetInstanceCommand.getInstance(instance_id=data['instance_id'])
+        d = {}
+        for i, o in enumerate(r):
+            d[o.key] = o.command_id
+        json = {'instance_id':data['instance_id'], 'commands':d}
+        return ['widgetinstance-commands', json];
+
     def sendMessage(self, content):
         data=json.dumps(content)
         logger.info("WS: Sending message %s" % data)
@@ -123,7 +150,7 @@ class MQHandler(MQAsyncSub):
         logger.info(u"MQ: {0}".format(content))
 
         for socket in socket_connections:
-            socket.sendMessage(msgid, content)
+            socket.sendMessage([msgid, content])
 
 def to_json(model):
     """ Returns a JSON representation of an SQLAlchemy-backed object.

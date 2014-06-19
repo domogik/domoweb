@@ -340,7 +340,8 @@ class WidgetInstanceSensor(Base):
 	@classmethod
 	def getInstance(cls, instance_id):
 		session = Session()
-		s = session.query(cls).filter_by(instance_id = instance_id).all()
+		s = session.query(cls).options(joinedload('sensor')).filter_by(instance_id = instance_id).all()
+		session.expunge_all()
 		session.close()
 		return s
 

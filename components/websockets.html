@@ -30,6 +30,18 @@
 					&& json[0] == listener[0] 
 					&& json[1].section_id == listener[1]) {
 					listener[2](json[0], json[1]);
+				} else if (json[0] == 'widgetinstance-options' 
+					&& json[0] == listener[0] 
+					&& json[1].instance_id == listener[1]) {
+					listener[2](json[0], json[1]);
+				} else if (json[0] == 'widgetinstance-sensors' 
+					&& json[0] == listener[0] 
+					&& json[1].instance_id == listener[1]) {
+					listener[2](json[0], json[1]);
+				} else if (json[0] == 'widgetinstance-commands' 
+					&& json[0] == listener[0] 
+					&& json[1].instance_id == listener[1]) {
+					listener[2](json[0], json[1]);
 				} else if (json[0] == 'widget-list' 
 					&& json[0] == listener[0]) {
 					listener[2](json[0], json[1]);

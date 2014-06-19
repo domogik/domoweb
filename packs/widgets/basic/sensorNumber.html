@@ -6,16 +6,15 @@
 	</template>
 	<script>
 		Polymer('dmw-basic-sensorNumber', {
-//			number: null,
-//			testvalue: null,
 			ready: function() {
 				this.super();
 				this.number = "---";
-			},/*
-			testvalueChanged: function(oldValue, newValue) {
-				console.log(newvalue);
-				this.number = newValue;
-			},*/
+			},
+			sensorsChanged: function(oldValue, newValue) {
+				var sensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="number"]');
+				sensor.setAttribute('sensorid', this.sensors['primary']['id']);
+				this.number = this.sensors['primary']['last_value'];
+			},
 		});
 	</script>
 </polymer-element>

@@ -16,8 +16,6 @@
 	<script>
 		Polymer("dmw-widget", {
 			ready: function() {
-				var sensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="number"]');
-				sensor.setAttribute('sensorid', 1);
 			},
 			removeWidget: function(e) {
 		    	this.$.socket.send("widgetinstance-remove", {'instance_id':this.instanceid});
@@ -45,6 +43,9 @@
 									self.$.ajax.go();
 									e.preventDefault();
 									e.stopPropagation();
+							    	this.$.socket.send("widgetinstance-getoptions", {'instance_id': this.instanceid});
+							    	this.$.socket.send("widgetinstance-getsensors", {'instance_id': this.instanceid});
+							    	this.$.socket.send("widgetinstance-getcommands", {'instance_id': this.instanceid});
 									return false;
 								});
 							cancelConfig.addEventListener("click",
@@ -61,6 +62,23 @@
 				this.$.ajax.setAttribute('method', 'GET');
 				this.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + this.instanceid + '"}');
 				self.$.ajax.go();
+			},
+			instanceidChanged: function(oldValue, newValue) {
+		    	this.$.socket.register('widgetinstance-options', newValue, this.optionsReceived.bind(this));
+		    	this.$.socket.send("widgetinstance-getoptions", {'instance_id': newValue});
+		    	this.$.socket.register('widgetinstance-sensors', newValue, this.sensorsReceived.bind(this));
+		    	this.$.socket.send("widgetinstance-getsensors", {'instance_id': newValue});
+		    	this.$.socket.register('widgetinstance-commands', newValue, this.commandsReceived.bind(this));
+		    	this.$.socket.send("widgetinstance-getcommands", {'instance_id': newValue});
+			},
+			optionsReceived: function(topic, json) {
+				this.options = json['options'];
+			},
+			sensorsReceived: function(topic, json) {
+				this.sensors = json['sensors'];
+			},
+			commandsReceived: function(topic, json) {
+				this.commands = json['commands'];
 			},
 		});
 	</script>
