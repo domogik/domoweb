@@ -6,7 +6,7 @@ from sqlalchemy.orm import backref, relationship, sessionmaker, joinedload
 # alembic revision --autogenerate -m "xxxx"
 
 url = 'sqlite:////var/lib/domoweb/db.sqlite'
-# engine = create_engine(url, echo=True) # For debug sql
+#engine = create_engine(url, echo=True) # For debug sql
 engine = create_engine(url)
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -183,6 +183,14 @@ class DataType(Base):
 	id = Column(String(50), primary_key=True)
 	parameters = Column(Text())
 
+	@classmethod
+	def getAll(cls):
+		# create a Session
+		session = Session()
+		s = session.query(cls).all()
+		session.close()
+		return s
+
 class Device(Base):
 	__tablename__ = 'device'
 	id = Column(Integer(), primary_key=True)
@@ -340,7 +348,7 @@ class WidgetInstanceSensor(Base):
 	@classmethod
 	def getInstance(cls, instance_id):
 		session = Session()
-		s = session.query(cls).options(joinedload('sensor')).filter_by(instance_id = instance_id).all()
+		s = session.query(cls).options(joinedload('sensor').joinedload('device')).filter_by(instance_id = instance_id).all()
 		session.expunge_all()
 		session.close()
 		return s

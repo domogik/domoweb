@@ -2,11 +2,13 @@
 <link rel="import" href="/components/polymer-ajax/polymer-ajax.html">
 <link rel="import" href="/components/websockets.html">
 <link rel="import" href="/components/sensor.html">
+<link rel="import" href="/components/datatypes.html">
 <script src="/js/serialize-0.2.min.js"></script>
 
 <polymer-element name="dmw-widget" attributes="instanceid edit">
 	<template>
 	    <web-socket id="socket"></web-socket>
+	    <dmw-datatypes id="datatypes"></dmw-datatypes>
 	    <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
 	    <template if="{{ edit!=null }}">
 	    	<button on-click="{{editWidget}}">Edit</button>
@@ -80,6 +82,9 @@
 			commandsReceived: function(topic, json) {
 				this.commands = json['commands'];
 			},
+			get datatypes() {
+				return this.$.datatypes.list
+			}
 		});
 	</script>
 </polymer-element>

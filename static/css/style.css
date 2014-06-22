@@ -13,7 +13,8 @@ body {
 }
 
 body {
-	background: #cecece;
+	background: url('../images/background.jpg') 0 0 no-repeat;
+	background-size: 100% 100%;
 }
 
 #modal-overlay {
@@ -38,4 +39,19 @@ body {
 #modal-overlay.on {
 	visibility: visible;
 	opacity: 1;
+}
+
+/* Widget default style */
+.widget {
+	border: 1px solid #f0f0F0;
+	background-color: rgba(0,0,0,0.5);
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	color: #f0f0F0;
+	position: relative;
+
+	-webkit-transform-style: preserve-3d;
+	-moz-transform-style: preserve-3d;
+  	transform-style: preserve-3d;
 }

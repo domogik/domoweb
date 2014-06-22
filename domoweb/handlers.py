@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from tornado import web, websocket
 from tornado.web import RequestHandler
-from domoweb.models import Section, Widget, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand
+from domoweb.models import Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand
 from domoweb.forms import WidgetInstanceForms
 
 import json
@@ -76,6 +76,7 @@ class WSHandler(websocket.WebSocketHandler):
             'widgetinstance-getoptions' : self.WSWidgetInstanceGetoptions,
             'widgetinstance-getsensors' : self.WSWidgetInstanceGetsensors,
             'widgetinstance-getcommands' : self.WSWidgetInstanceGetcommands,
+            'datatype-getall' : self.WSDatatypesGetall,
         }[jsonmessage[0]](jsonmessage[1])
         if (data):
             self.sendMessage(data)
@@ -120,6 +121,7 @@ class WSHandler(websocket.WebSocketHandler):
         d = {}
         for i, o in enumerate(r):
             d[o.key] = to_json(o.sensor)
+            d[o.key]['device'] = to_json(o.sensor.device)
         json = {'instance_id':data['instance_id'], 'sensors':d}
         return ['widgetinstance-sensors', json];
 
@@ -130,6 +132,10 @@ class WSHandler(websocket.WebSocketHandler):
             d[o.key] = o.command_id
         json = {'instance_id':data['instance_id'], 'commands':d}
         return ['widgetinstance-commands', json];
+
+    def WSDatatypesGetall(self, data):
+        datatypes =dict ((o.id, json.loads(o.parameters)) for o in DataType.getAll())
+        return ['datatype-list', datatypes]
 
     def sendMessage(self, content):
         data=json.dumps(content)

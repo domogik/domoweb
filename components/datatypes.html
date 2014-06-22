@@ -1,0 +1,28 @@
+<link rel="import" href="/components/polymer/polymer.html">
+
+<polymer-element name="dmw-datatypes">
+	<template>
+	    <web-socket id="socket"></web-socket>
+	</template>
+	<script>
+		var isRegistered = false;
+		var _list = null;
+
+		Polymer("dmw-datatypes", {
+			ready:function(){
+				if (isRegistered == false) {
+					isRegistered = true;
+			    	this.$.socket.register('datatype-list', null, this.datatypesReceived.bind(this));
+			    	this.$.socket.send("datatype-getall");					
+				}
+			},
+			get list() {
+				return _list;
+			},
+			datatypesReceived: function(topic, json) {
+	        	_list=json;
+	        	this.fire('datatype-received');
+	    	},
+	    });
+	</script>
+</polymer-element>

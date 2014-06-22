@@ -4,19 +4,16 @@
 		    #container {
 		      width: 80%;
 		      margin: auto;
+		      padding: 20px;
 		    }
-		    .item {
-		      background: rgb(135, 199, 135);
-		    }
-
-		    .item {
+		    .widget {
 		    	width:  100px;
   				height: 100px;
 		    }
-			.item.itemw2 { width: 200px; }
-			.item.itemh2 { height: 200px; }
-			.item.itemw3 { width: 300px; }
-			.item.itemh3 { height: 300px; }		</style>
+			.widget.widgetw2 { width: 200px; }
+			.widget.widgeth2 { height: 200px; }
+			.widget.widgetw3 { width: 300px; }
+			.widget.widgeth3 { height: 300px; }		</style>
 	    <web-socket id="socket"></web-socket>
 	    <div id="container"></div>
 	    <template if="{{ edit!=null }}">
@@ -29,8 +26,8 @@
 			ready:function(){
 				this.wall = new Packery( this.$.container, {
 				  	// options
-				  	itemSelector: '.item',
-				  	gutter: 10,
+				  	itemSelector: '.widget',
+				  	gutter: 20,
 				});
 //				this.wall.on( 'layoutComplete', this.orderChanged.bind(this) );
 				this.wall.on( 'dragItemPositioned', this.orderChanged.bind(this) );
@@ -52,13 +49,13 @@
 			},
 			appendInstance: function(instance, edit) {
 				var widget = document.createElement('dmw-' + instance.widget.set_id + '-' + instance.widget.set_ref);
-				widget.classList.add('item');
+				widget.classList.add('widget');
 				widget.setAttribute('instanceid', instance.id);
 				if (instance.widget.width > 1) {
-					widget.classList.add('itemw' + instance.widget.width);
+					widget.classList.add('widgetw' + instance.widget.width);
 				}
 				if (instance.widget.height > 1) {
-					widget.classList.add('itemh' + instance.widget.height);
+					widget.classList.add('widgeth' + instance.widget.height);
 				}
 				if (edit) {
 					widget.setAttribute('edit', '');
