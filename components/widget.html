@@ -10,6 +10,8 @@
 	    <web-socket id="socket"></web-socket>
 	    <dmw-datatypes id="datatypes"></dmw-datatypes>
 	    <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
+		<span class='labelprimary'>{{labelprimary}}</span>
+		<span class='labelsecondary'>{{labelsecondary}}</span>
 	    <template if="{{ edit!=null }}">
 	    	<button on-click="{{editWidget}}">Edit</button>
 	    	<button on-click="{{removeWidget}}">Remove</button>

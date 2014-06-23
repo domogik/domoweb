@@ -18,7 +18,8 @@
 			right: 5px;
 			font-size: 1em;
 		}
-		#labeltop {
+		.labelprimary {
+			display: block;
 			color: #f0f0F0;
 			font-size: 0.8em;
 			position: absolute;
@@ -26,7 +27,8 @@
 			left: 0;
 			text-overflow: ellipsis;
 		}
-		#labelright {
+		.labelsecondary {
+			display: block;
 			transform: rotate(-90deg);
 			transform-origin: bottom left;
 			-ms-transform: rotate(-90deg);
@@ -42,10 +44,8 @@
 		}
 	</style>
 	<template>
-		<shadow></shadow>
 	    <dmw-sensor sensorkey="number" sensorvalue="{{number}}"></dmw-sensor>
-		<div id="labeltop">{{labeltop}}</div>
-		<div id="labelright">{{labelright}}</div>
+		<shadow></shadow>
 		<div id='number'>{{number}}</div>
 		<div id='unit'>{{unit}}</div>
 	</template>
@@ -61,8 +61,8 @@
 				sensor.setAttribute('sensorid', this.sensors['primary']['id']);
 				this.number = this.sensors['primary']['last_value'];
 				this.unit = this.datatypes[this.sensors['primary']['datatype_id']]['unit'];
-				this.labeltop = this.sensors['primary']['name'];
-				this.labelright = this.sensors['primary']['device']['name'];
+				this.labelprimary = this.sensors['primary']['name'];
+				this.labelsecondary = this.sensors['primary']['device']['name'];
 			},
 		});
 	</script>
