@@ -13,8 +13,10 @@
 		<span class='labelprimary'>{{labelprimary}}</span>
 		<span class='labelsecondary'>{{labelsecondary}}</span>
 	    <template if="{{ edit!=null }}">
-	    	<button on-click="{{editWidget}}">Edit</button>
-	    	<button on-click="{{removeWidget}}">Remove</button>
+	    	<div class="editOverlay">
+		    	<button class="editWidget" on-click="{{editWidget}}" aria-label="Edit"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></button>
+		    	<button class="removeWidget" on-click="{{removeWidget}}" aria-label="Remove"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+	    	</div>
 	    </template>
 	</template>
 	<script>
