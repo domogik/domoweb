@@ -23,9 +23,9 @@ body {
 	background-color: rgba(0,0,0,0.6);
 	color: #ffffff;
 	position: fixed;
-	top: 0;
+	top: 50px;
 	left: 0;
-	bottom: 0;
+	bottom: 50px;
 	right: 0;
 	opacity: 0;
 	visibility: hidden;
@@ -33,7 +33,7 @@ body {
 	-moz-transition: all .3s ease;
 	transition: all .3s ease;
 	z-index: 2;
-	overflow-y:scroll;
+	overflow-y:auto;
 }
 
 #modal-overlay.on {

@@ -3,15 +3,56 @@
 <link rel="import" href="/components/sensor.html">
 
 <polymer-element name="dmw-widgets-selector" attributes="section">
+	<style type="text/css">
+	article {
+		padding: 0;
+		margin: 1em;
+		text-align: center;
+		float: left;
+		width: 20em;
+	}
+	article h2 {
+		margin: 0;
+		background: #428bca;
+		color: #ffffff;
+		font-size: 1em;
+		padding: 1em;
+		-moz-border-radius:  6px 6px 0 0;
+		-webkit-border-radius:  6px 6px 0 0;
+		border-radius: 6px 6px 0 0;
+	}
+	article .body {
+		background: #F0F0F0;
+		color: #000000;
+		padding: 1em;
+		-moz-border-radius:  0 0 6px 6px;
+		-webkit-border-radius:  0 0 6px 6px;
+		border-radius: 0 0 6px 6px;
+	}
+	#widgets-list {
+   	}
+
+	</style>
 	<template>
 	    <web-socket id="socket"></web-socket>
-		<h1>Select Widget</h1>
-		<ul id="widgets-list">
-		    <template repeat="{{w in widgets}}">
-        	<li><button class="add-widget" class="btn btn-default" on-click="{{addWidget}}" data-widget-id="{{ w.id }}">{{ w.set_name }} - {{ w.name }}</button></li>
-	      	</template>
-		</ul>
-		<button id="closeModal" type="button" class="btn btn-default">Close</button>
+   	    <div id="container-fluid">
+  			<div class="row">
+				<div class="col-md-10 col-md-offset-1">
+					<h1>Select Widget</h1>
+					<button id="closeModal" type="button" class="btn btn-default">Close</button>
+					<div id="widgets-list">
+					    <template repeat="{{w in widgets}}">
+			        	<article>
+			        		<h2>{{ w.set_name }} - {{ w.name }} <button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}">Add</button></h2>
+			        		<div class="body">
+			        			<div><img src='/widget/{{ w.set_id }}/{{ w.set_ref }}.png'/></div>
+				        	</div>
+			        	</article>
+				      	</template>
+					</div>
+				</div>
+			</div>   	
+   	    </div>
 	</template>
 	<script>
 		Polymer("dmw-widgets-selector", {
