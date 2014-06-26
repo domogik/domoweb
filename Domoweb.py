@@ -68,7 +68,6 @@ if __name__ == '__main__':
 
     packLoader.loadWidgets(domoweb.PACKSPATH)
     packLoader.loadIconsets(domoweb.PACKSPATH)
-    packLoader.loadThemes(domoweb.PACKSPATH)
     mqDataLoader.loadDatatypes()
     mqDataLoader.loadDevices()
 

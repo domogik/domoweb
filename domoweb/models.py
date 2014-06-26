@@ -116,11 +116,6 @@ class WidgetDevice(Base):
 	description = Column(Unicode(255), nullable=True)
 	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
 
-class SectionTheme(Base):
-	__tablename__ = 'sectionTheme'
-	id = Column(String(50), primary_key=True)
-	label = Column(Unicode(50))
-
 class SectionIcon(Base):
 	__tablename__ = 'sectionIcon'
 	id = Column(String(50), primary_key=True)
@@ -138,8 +133,6 @@ class Section(Base):
 	description = Column(UnicodeText(), nullable=True)
 	icon_id = Column(String(50), ForeignKey('sectionIcon.id'), nullable=True)
 	icon = relationship("SectionIcon")
-	theme_id = Column(String(50), ForeignKey('sectionTheme.id'), nullable=True)
-	theme = relationship("SectionTheme")
 
 	@classmethod
 	def add(cls, name, parent_id, description=None, icon=None, theme=None):

@@ -21,11 +21,6 @@ def upgrade():
     sa.Column('parameters', sa.Text(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('sectionTheme',
-    sa.Column('id', sa.String(length=50), nullable=False),
-    sa.Column('label', sa.Unicode(length=50), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('parameter',
     sa.Column('key', sa.String(length=30), nullable=False),
     sa.Column('value', sa.Unicode(length=255), nullable=True),
@@ -134,9 +129,7 @@ def upgrade():
     sa.Column('name', sa.Unicode(length=50), nullable=True),
     sa.Column('description', sa.UnicodeText(), nullable=True),
     sa.Column('icon_id', sa.String(length=50), nullable=True),
-    sa.Column('theme_id', sa.String(length=50), nullable=True),
     sa.ForeignKeyConstraint(['icon_id'], ['sectionIcon.id'], ),
-    sa.ForeignKeyConstraint(['theme_id'], ['sectionTheme.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     section_table = sa.sql.table('section',
@@ -146,7 +139,6 @@ def upgrade():
         sa.Column('name', sa.Unicode(length=50), nullable=False),
         sa.Column('description', sa.UnicodeText(), nullable=True),
         sa.Column('icon_id', sa.String(length=50), nullable=True),
-        sa.Column('theme_id', sa.String(length=50), nullable=True)
     )
     op.bulk_insert(section_table,
         [

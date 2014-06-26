@@ -135,27 +135,6 @@ class packLoader:
         session.commit()
         session.close()
 
-    @classmethod
-    def loadThemes(cls, pack_path):
-        session = Session()
-        # Load all Themes
-        logger.info("PACKS: Loading themes")
-        themes_path = os.path.join(pack_path, 'themes')
-        session.query(SectionTheme).delete()
-        if os.path.isdir(themes_path):
-            for file in os.listdir(themes_path):
-                if not file.startswith('.'): # not hidden file
-                    info = os.path.join(themes_path, file, "info.json")
-                    if os.path.isfile(info):
-                        theme_file = open(info, "r")
-                        theme_json = json.load(theme_file)
-                        theme_id = theme_json["identity"]["id"]
-                        theme_name = unicode(theme_json["identity"]["name"])
-                        t = SectionTheme(id=theme_id, label=theme_name)
-                        session.add(t)
-        session.commit()
-        session.close()
-
 class mqDataLoader:
     @classmethod
     def loadDatatypes(cls):
