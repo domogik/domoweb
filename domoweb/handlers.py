@@ -71,6 +71,7 @@ class WSHandler(websocket.WebSocketHandler):
             'section-get' : self.WSSectionGet,
             'widget-getall' : self.WSWidgetsGetall,
             'widgetinstance-add' : self.WSWidgetInstanceAdd,
+            'widgetinstance-order' : self.WSWidgetInstanceOrder,
             'widgetinstance-remove' : self.WSWidgetInstanceRemove,
             'widgetinstance-getsection' : self.WSWidgetInstanceGetsection,
             'widgetinstance-getoptions' : self.WSWidgetInstanceGetoptions,
@@ -100,6 +101,12 @@ class WSHandler(websocket.WebSocketHandler):
         json = to_json(i)
         json["widget"] = to_json(i.widget)
         return ['widgetinstance-removed', json];
+
+    def WSWidgetInstanceOrder(self, data):
+        i = WidgetInstance.updateOrder(id=data['instance_id'], order=data['order'])
+        json = to_json(i)
+        json["widget"] = to_json(i.widget)
+        return True;
 
     def WSWidgetInstanceGetsection(self, data):
         r = WidgetInstance.getSection(section_id=data['section_id'])

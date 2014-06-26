@@ -21,6 +21,7 @@
 	    </template>
 	</template>
 	<script src="/libraries/packery/dist/packery.pkgd.min.js"></script>
+	<script src="/libraries/draggability/draggabilly.js"></script>
 	<script>
 		Polymer("dmw-grid-layout", {
 			ready:function(){
@@ -31,6 +32,7 @@
 				});
 //				this.wall.on( 'layoutComplete', this.orderChanged.bind(this) );
 				this.wall.on( 'dragItemPositioned', this.orderChanged.bind(this) );
+				this.draggables = [];
 			},
 			instanceAdded: function(topic, json) {
 				this.appendInstance(json, true);
@@ -63,6 +65,11 @@
 				}
 				this.$.container.appendChild(widget);
 				this.wall.appended(widget);
+				var draggie = new Draggabilly(widget);
+				draggie.disable();
+				this.draggables[instance.id] = draggie;
+			  	// bind Draggabilly events to Packery
+			  	this.wall.bindDraggabillyEvents( draggie );
 			},
 		    sectionidChanged: function(oldValue, newValue) {
 		    	this.$.socket.register('widgetinstance-added', newValue, this.instanceAdded.bind(this));
@@ -81,17 +88,20 @@
 				var itemElems = this.wall.getItemElements();
 				for ( var i=0, len = itemElems.length; i < len; i++ ) {
 					var elem = itemElems[i];
-					console.log( i + 1 );
+					this.$.socket.send("widgetinstance-order", {'instance_id':elem.getAttribute('instanceid'), 'order':i+1});
 				}
 			},
 			editChanged: function(oldValue, newValue) {
 				widgets = this.$.container.childNodes;
 				for (var i = 0; i < widgets.length; i++) {
 				    var widget = widgets[i];
+				    var instanceid = widget.getAttribute('instanceid');
 				    if (newValue != null) {
 					    widget.setAttribute('edit', '');
+	    			  	this.draggables[instanceid].enable();
 				    } else {
 				    	widget.removeAttribute('edit');
+	    			  	this.draggables[instanceid].disable();
 				    }
 				}
 			},

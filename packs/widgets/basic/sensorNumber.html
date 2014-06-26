@@ -58,11 +58,13 @@
 			},
 			sensorsChanged: function(oldValue, newValue) {
 				var sensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="number"]');
-				sensor.setAttribute('sensorid', this.sensors['primary']['id']);
-				this.number = this.sensors['primary']['last_value'];
-				this.unit = this.datatypes[this.sensors['primary']['datatype_id']]['unit'];
-				this.labelprimary = this.sensors['primary']['name'];
-				this.labelsecondary = this.sensors['primary']['device']['name'];
+				if (this.sensors['primary']) {
+					sensor.setAttribute('sensorid', this.sensors['primary']['id']);
+					this.number = this.sensors['primary']['last_value'];
+					this.unit = this.datatypes[this.sensors['primary']['datatype_id']]['unit'];
+					this.labelprimary = this.sensors['primary']['name'];
+					this.labelsecondary = this.sensors['primary']['device']['name'];					
+				}
 			},
 		});
 	</script>

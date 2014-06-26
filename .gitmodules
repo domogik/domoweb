@@ -7,3 +7,6 @@
 [submodule "static/libraries/packery"]
 	path = static/libraries/packery
 	url = https://github.com/metafizzy/packery.git
+[submodule "static/libraries/draggability"]
+	path = static/libraries/draggability
+	url = https://github.com/desandro/draggabilly.git

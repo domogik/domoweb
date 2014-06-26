@@ -282,7 +282,7 @@ class WidgetInstance(Base):
 	def getSection(cls, section_id):
 		# create a Session
 		session = Session()
-		s = session.query(cls).filter_by(section_id = section_id).all()
+		s = session.query(cls).filter_by(section_id = section_id).order_by(cls.order).all()
 		session.close()
 		return s
 
@@ -291,6 +291,15 @@ class WidgetInstance(Base):
 		session = Session()
 		s = session.query(cls).get(id)
 		session.delete(s)
+		session.commit()
+		return s
+
+	@classmethod
+	def updateOrder(cls, id, order):
+		session = Session()
+		s = session.query(cls).get(id)
+		s.order = order
+		session.add(s)
 		session.commit()
 		return s
 
