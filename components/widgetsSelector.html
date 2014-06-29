@@ -57,7 +57,7 @@
 	<script>
 		Polymer("dmw-widgets-selector", {
 			ready:function(){
-		    	this.$.socket.register('widget-list', null, this.messageReceived.bind(this));
+		    	this.$.socket.register('widget-list', this.messageReceived.bind(this), null, null);
 				this.$.socket.send("widget-getall", null);
 				self = this;
 				this.$.closeModal.addEventListener('click', function () {

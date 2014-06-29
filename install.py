@@ -316,26 +316,27 @@ def install_dependencies():
 #    pkg_resources.get_distribution('django').activate()
     
 def updateDb(user, db):
-    from domoweb.models import metadata, engine
+    from domoweb.models import metadata, engine, Session, Section
     from sqlalchemy import create_engine
     from alembic.config import Config
     from alembic import command
 
-    info("Installing/upgrading the db")
     alembic_cfg = Config("alembic.ini")
     if not os.path.isfile(db):
         ok("Creating new database: %s" % db)
         metadata.create_all(engine)
-        ok("Adding migration data")
         command.stamp(alembic_cfg, "head")
         uid = pwd.getpwnam(user).pw_uid
         os.chown(db, uid, -1)
+        
+        ok("Adding initial data")
+        session = Session()
+        s = Section(name=unicode('Root'), description=unicode('Root dashboard'), left=1, right=2)
+        session.add(s)
+        session.commit()
     else:
         ok("Upgrading existing database")
         command.upgrade(alembic_cfg, "head")
-
-    info("Initialisation DB migration")
-    info("Apply DB migration scripts")
 
 def testImports():
     good = True

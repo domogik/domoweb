@@ -14,41 +14,17 @@
 			json = JSON.parse(msg.data);
 			for ( var i=0; i < this.listeners.length; i++ ) {
 				listener = this.listeners[i];
-				if (json[0] == 'device-stats' 
-					&& json[0] == listener[0] 
-					&& json[1].sensor_id == listener[1]) {
-					listener[2](json[0], json[1]);
-				} else if (json[0] == 'widgetinstance-added' 
-					&& json[0] == listener[0] 
-					&& json[1].section_id == listener[1]) {
-					listener[2](json[0], json[1]);
-				} else if (json[0] == 'widgetinstance-removed' 
-					&& json[0] == listener[0] 
-					&& json[1].section_id == listener[1]) {
-					listener[2](json[0], json[1]);
-				} else if (json[0] == 'widgetinstance-sectionlist' 
-					&& json[0] == listener[0] 
-					&& json[1].section_id == listener[1]) {
-					listener[2](json[0], json[1]);
-				} else if (json[0] == 'widgetinstance-options' 
-					&& json[0] == listener[0] 
-					&& json[1].instance_id == listener[1]) {
-					listener[2](json[0], json[1]);
-				} else if (json[0] == 'widgetinstance-sensors' 
-					&& json[0] == listener[0] 
-					&& json[1].instance_id == listener[1]) {
-					listener[2](json[0], json[1]);
-				} else if (json[0] == 'widgetinstance-commands' 
-					&& json[0] == listener[0] 
-					&& json[1].instance_id == listener[1]) {
-					listener[2](json[0], json[1]);
-				} else if (json[0] == 'widget-list' 
-					&& json[0] == listener[0]) {
-					listener[2](json[0], json[1]);
-				} else if (json[0] == 'datatype-list' 
-					&& json[0] == listener[0]) {
-					listener[2](json[0], json[1]);
-				}			}
+				if (listener[2] != null) {
+					if (json[0] == listener[0] 
+						&& json[1][listener[2]] == listener[3]) {
+						listener[1](json[0], json[1]);
+					}
+				} else {
+					if (json[0] == listener[0]) {
+						listener[1](json[0], json[1]);
+					}
+				}
+			}
 		};
 
 		WebsocketHandler.prototype.beforeUnload = function() {
@@ -56,8 +32,8 @@
     	    _socket.close();
 		};
 
-		WebsocketHandler.prototype.subscribe = function(func, name, id) {
-			this.listeners.push([name, id, func]);
+		WebsocketHandler.prototype.subscribe = function(name, func, filter_key, filter_id) {
+			this.listeners.push([name, func, filter_key, filter_id]);
 		};
 
 		WebsocketHandler.prototype.send = function(json) {
@@ -98,8 +74,8 @@
 			send: function(id, json) {
 				_handler.send([id, json]);
 			},
-			register: function(name, id, func) {
-				_handler.subscribe(func, name, id);
+			register: function(name, func, filter_key, filter_id) {
+				_handler.subscribe(name, func, filter_key, filter_id);
 			},
 		});
 	</script>

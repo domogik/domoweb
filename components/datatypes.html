@@ -12,7 +12,7 @@
 			ready:function(){
 				if (isRegistered == false) {
 					isRegistered = true;
-			    	this.$.socket.register('datatype-list', null, this.datatypesReceived.bind(this));
+			    	this.$.socket.register('datatype-list', this.datatypesReceived.bind(this), null, null);
 			    	this.$.socket.send("datatype-getall");					
 				}
 			},

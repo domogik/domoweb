@@ -3,7 +3,7 @@ import os
 import json
 import zmq
 
-from domoweb.models import Session, Widget, SectionIcon, SectionTheme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam
+from domoweb.models import Session, Widget, SectionIcon, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam
 from collections import OrderedDict
 from domogik.mq.reqrep.client import MQSyncReq
 from domogik.mq.message import MQMessage

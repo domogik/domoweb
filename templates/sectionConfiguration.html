@@ -1,0 +1,116 @@
+<div id="panelConfigurationForm" class="container-fluid">
+  <form id="formConfig" role="form">
+    <div class="row">
+      <div class="col-sm-12">
+        <h1>Configuration</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Navigation Buttons -->
+      <div class="col-sm-3 col-nav">
+        <ul class="nav nav-pills nav-stacked" role="tablist">
+          <li class="active"><a href="#section" role="tab" data-toggle="tab">Section</a></li>
+          <li><a href="#widgetstyle" role="tab" data-toggle="tab">Widgets</a></li>
+        </ul>
+      </div>
+      <!-- Content -->
+      <div class="col-sm-6">
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div class="tab-pane active" id="section">
+            <div class="form-group">
+              <label for="sectionName">Section name</label>
+              <input type="text" class="form-control" id="sectionName" name="sectionName" placeholder="Enter Section name" value="{{section.name}}">
+            </div>
+            <div class="form-group">
+              <label for="sectionName">Description</label>
+              <input type="text" class="form-control" id="sectionDescription" name="sectionDescription" placeholder="Enter Section name" value="{{section.description}}">
+            </div>
+          </div>
+          <div class="tab-pane" id="widgetstyle">
+            <div class="form-group">
+              <label for="widgetTextColor">Text color</label>
+              <input type="text" class="form-control" id="WidgetTextColor" name="paramsWidgetTextColor" placeholder="Enter color" value="{% if 'WidgetTextColor' in params %}{{ params['WidgetTextColor'] }}{% else %}#f0f0f0{% end %}">
+            </div>
+            <div class="form-group">
+              <label for="widgetBorderColor">Border color</label>
+              <input type="text" class="form-control" id="WidgetBorderColor" name="paramsWidgetBorderColor" placeholder="Enter color" value="{% if 'WidgetBorderColor' in params %}{{ params['WidgetBorderColor'] }}{% else %}#f0f0f0{% end %}">
+            </div>
+            <div class="form-group">
+              <label for="widgetBackgroundColor">Background color</label>
+              <input type="text" class="form-control" id="WidgetBackgroundColor" name="paramsWidgetBackgroundColor" placeholder="Enter color" value="{% if 'WidgetBackgroundColor' in params %}{{ params['WidgetBackgroundColor'] }}{% else %}rgba(0,0,0,0.5){% end %}">
+            </div>
+            <div class="form-group">
+              <label for="widgetBorderRadius">Border radius</label>
+              <input type="text" class="form-control" id="WidgetBorderRadius" name="paramsWidgetBorderRadius" placeholder="Enter size in px" value="{% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %}">
+            </div>
+
+              <h2 class="panel-title">Preview</h2>
+                  <style type="text/css">
+                    #widgetpreview {
+                      width:  100px; height: 100px;
+                      margin: 1em auto 1em auto;
+                      border: 1px solid {% if 'WidgetBorderColor' in params %}{{ params['WidgetBorderColor'] }}{% else %}#f0f0f0{% end %};
+                      background-color: {% if 'WidgetBackgroundColor' in params %}{{ params['WidgetBackgroundColor'] }}{% else %}rgba(0,0,0,0.5){% end %};
+                      -moz-border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};
+                      -webkit-border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};;
+                      border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};;
+                      color: {% if 'WidgetTextColor' in params %}{{ params['WidgetTextColor'] }}{% else %}#f0f0f0{% end %};
+                    }
+                    #widgetpreview .number {
+                      position: relative;
+                      top: 50%;
+                      -webkit-transform: translateY(-50%);
+                      -ms-transform: translateY(-50%);
+                      transform: translateY(-50%);
+                        text-align: center;
+                      font-size: 4em;
+                    }
+                    #widgetpreview .unit {
+                      position: absolute;
+                      top:5px;
+                      right: 5px;
+                      font-size: 1em;
+                    }
+                    #widgetpreview .labelprimary {
+                      display: block;
+                      font-size: 0.8em;
+                      position: absolute;
+                      top: -1.4em;
+                      left: 0;
+                      text-overflow: ellipsis;
+                    }
+                    #widgetpreview .labelsecondary {
+                      display: block;
+                      transform: rotate(-90deg);
+                      transform-origin: bottom left;
+                      -ms-transform: rotate(-90deg);
+                      -ms-transform-origin: bottom left;
+                      -webkit-transform: rotate(-90deg);
+                      -webkit-transform-origin: bottom left;
+                      position: absolute;
+                      left: 0;
+                      bottom: 0;
+                      font-size: 0.8em;
+                      text-overflow: ellipsis;
+                    }
+                  </style>
+              <div id="widgetpreview">
+                <span class="labelprimary">Température</span>
+                <span class="labelsecondary">Piscine</span>
+                <div class="number">29</div>
+                <div class="unit">°C</div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="row">
+        <div class="col-sm-offset-3 col-sm-6">
+          <button id="saveConfig" class="btn btn-primary">Save</button>
+          <button id="cancelConfig" class="btn">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>

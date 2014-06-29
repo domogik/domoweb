@@ -44,7 +44,51 @@
 	document.addEventListener('click', closeNav);
 
 	function configureHandler(){
-		panelConfigure.classList.remove('hidden');
+		var modalOverlay = document.querySelector('#modal-overlay');
+		var ajax = document.querySelector('#ajax');
+		ajax.setAttribute('handleAs', 'text');
+		ajax.addEventListener("polymer-response",
+			function(e) {
+				var response = e.detail.response;
+				if (response == 'OK') {
+						modalOverlay.classList.remove('on');
+					modalOverlay.innerHTML = '';
+				} else {
+					modalOverlay.innerHTML = response;
+					var saveConfig = modalOverlay.querySelector('#saveConfig');
+					var cancelConfig = modalOverlay.querySelector('#cancelConfig');
+					var formConfig = modalOverlay.querySelector('#formConfig');
+					saveConfig.addEventListener("click",
+						function(e) {
+							ajax.setAttribute('body', serialize(formConfig));
+							ajax.setAttribute('method', 'POST');
+							ajax.setAttribute('params', '{"action":"section", "id":"' + sectionid + '"}');
+							ajax.go();
+							e.preventDefault();
+							e.stopPropagation();
+							return false;
+						});
+					cancelConfig.addEventListener("click",
+						function(e) {
+							modalOverlay.classList.remove('on');
+							modalOverlay.innerHTML = '';
+							e.preventDefault();
+							e.stopPropagation();
+							return false;
+						});
+
+					// Preview widget
+					var inputs = modalOverlay.querySelectorAll('#widgetstyle input');
+					inputs = Array.prototype.slice.call(inputs);
+					inputs.forEach(function(element) {
+						element.addEventListener('change', onWidgetStyleChange);
+					});
+					modalOverlay.classList.add('on');
+				}
+			});
+		ajax.setAttribute('method', 'GET');
+		ajax.setAttribute('params', '{"action":"section", "id":"' + sectionid + '"}');
+		ajax.go();
 		closeNav();
 	}
 
@@ -59,5 +103,22 @@
 		closeNav();
 	}
 
+	function onWidgetStyleChange(e) {
+		var widgetpreview = document.querySelector('#modal-overlay #widgetpreview');
+		switch(e.target.id) {
+		    case 'WidgetTextColor':
+		    	widgetpreview.style.color = e.target.value;
+		        break;
+		    case 'WidgetBorderColor':
+			    widgetpreview.style.borderColor = e.target.value;
+		        break;
+		    case 'WidgetBackgroundColor':
+		    	widgetpreview.style.backgroundColor = e.target.value;
+		        break;
+		    case 'WidgetBorderRadius':
+			    widgetpreview.style.borderRadius = e.target.value;
+		        break;
+		} 
+	}
 })();
 

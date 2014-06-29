@@ -1,49 +1,47 @@
 <polymer-element name="dmw-basic-sensorNumber" extends="dmw-widget">
-	<style type="text/css">
-		:host {
-			height: 100%;
-		}
-		#number {
-			position: relative;
-			top: 50%;
-			-webkit-transform: translateY(-50%);
-			-ms-transform: translateY(-50%);
-			transform: translateY(-50%);
-  			text-align: center;
-			font-size: 4em;
-		}
-		#unit {
-			position: absolute;
-			top:5px;
-			right: 5px;
-			font-size: 1em;
-		}
-		.labelprimary {
-			display: block;
-			color: #f0f0F0;
-			font-size: 0.8em;
-			position: absolute;
-			top: -1.4em;
-			left: 0;
-			text-overflow: ellipsis;
-		}
-		.labelsecondary {
-			display: block;
-			transform: rotate(-90deg);
-			transform-origin: bottom left;
-			-ms-transform: rotate(-90deg);
-			-ms-transform-origin: bottom left;
-			-webkit-transform: rotate(-90deg);
-			-webkit-transform-origin: bottom left;
-			position: absolute;
-			left: 0;
-			bottom: 0;
-			color: #f0f0F0;
-			font-size: 0.8em;
-			text-overflow: ellipsis;
-		}
-	</style>
 	<template>
+		<style type="text/css">
+			:host {
+				height: 100%;
+			}
+			#number {
+				position: relative;
+				top: 50%;
+				-webkit-transform: translateY(-50%);
+				-ms-transform: translateY(-50%);
+				transform: translateY(-50%);
+	  			text-align: center;
+				font-size: 4em;
+			}
+			#unit {
+				position: absolute;
+				top:5px;
+				right: 5px;
+				font-size: 1em;
+			}
+			.labelprimary {
+				display: block;
+				font-size: 0.8em;
+				position: absolute;
+				top: -1.4em;
+				left: 0;
+				text-overflow: ellipsis;
+			}
+			.labelsecondary {
+				display: block;
+				transform: rotate(-90deg);
+				transform-origin: bottom left;
+				-ms-transform: rotate(-90deg);
+				-ms-transform-origin: bottom left;
+				-webkit-transform: rotate(-90deg);
+				-webkit-transform-origin: bottom left;
+				position: absolute;
+				left: 0;
+				bottom: 0;
+				font-size: 0.8em;
+				text-overflow: ellipsis;
+			}
+		</style>
 	    <dmw-sensor sensorkey="number" sensorvalue="{{number}}"></dmw-sensor>
 		<shadow></shadow>
 		<div id='number'>{{number}}</div>

@@ -124,6 +124,33 @@ class SectionIcon(Base):
 	icon_id = Column(String(50))
 	label = Column(Unicode(50))
 
+class SectionParam(Base):
+	__tablename__ = 'sectionParam'
+	section_id = Column(Integer(), ForeignKey('section.id', ondelete="cascade"), primary_key=True)
+	key = Column(String(50), primary_key=True)
+	value = Column(String(255), nullable=True)
+
+	@classmethod
+	def getSection(cls, section_id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).filter_by(section_id = section_id).all()
+		session.close()
+		return s
+
+	@classmethod
+	def saveKey(cls, section_id, key, value):
+		session = Session()
+		s = session.query(cls).filter_by(section_id = section_id, key = key).first()
+		if not s:
+			s = cls(section_id=section_id, key=key)
+		s.value = value
+		session.add(s)
+		session.commit()
+		session.flush()
+		session.close()
+		return s
+
 class Section(Base):
 	__tablename__ = 'section'
 	id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -131,14 +158,11 @@ class Section(Base):
 	right = Column(Integer(), default=0)
 	name = Column(Unicode(50))
 	description = Column(UnicodeText(), nullable=True)
-	icon_id = Column(String(50), ForeignKey('sectionIcon.id'), nullable=True)
-	icon = relationship("SectionIcon")
 
 	@classmethod
-	def add(cls, name, parent_id, description=None, icon=None, theme=None):
+	def add(cls, name, parent_id, description=None, icon=None):
 		# create a Session
 		session = Session()
-
 		s = cls(name=name, description=description, icon=icon)
 		parent = session.query(cls).get(parent_id)
 		s.left = int(parent.left) + 1
@@ -160,12 +184,13 @@ class Section(Base):
 		return s
 
 	@classmethod
-	def update(cls, id, name, description=None):
+	def update(cls, id, name, description=None, widgetsStyle=None):
 		# create a Session
 		session = Session()
 		s = session.query(cls).get(id)
 		s.name = name
 		s.description = description
+		s.widgetsStyle = widgetsStyle
 		session.add(s)
 		session.commit()
 		session.flush()
@@ -298,10 +323,9 @@ class WidgetInstance(Base):
 
 class WidgetInstanceOption(Base):
 	__tablename__ = 'widgetInstanceOption'
-	id = Column(Integer(), primary_key=True, autoincrement=True)
-	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), nullable=False)
+	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), primary_key=True, nullable=False)
 	instance = relationship("WidgetInstance")
-	key = Column(String(50))
+	key = Column(String(50), primary_key=True)
 	value = Column(Unicode(50))
 	
 	@classmethod
@@ -333,10 +357,9 @@ class WidgetInstanceOption(Base):
 
 class WidgetInstanceSensor(Base):
 	__tablename__ = 'widgetInstanceSensor'
-	id = Column(Integer(), primary_key=True, autoincrement=True)
-	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), nullable=False)
+	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), primary_key=True, nullable=False)
 	instance = relationship("WidgetInstance")
-	key = Column(String(50))
+	key = Column(String(50), primary_key=True)
 	sensor_id = Column(Integer(), ForeignKey('sensor.id'))
 	sensor = relationship("Sensor")
 	
@@ -370,10 +393,9 @@ class WidgetInstanceSensor(Base):
 
 class WidgetInstanceCommand(Base):
 	__tablename__ = 'widgetInstanceCommand'
-	id = Column(Integer(), primary_key=True, autoincrement=True)
-	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), nullable=False)
+	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), primary_key=True, nullable=False)
 	instance = relationship("WidgetInstance")
-	key = Column(String(50))
+	key = Column(String(50), primary_key=True)
 	command_id = Column(Integer(), ForeignKey('command.id'))
 	command = relationship("Command")
 	

@@ -1,6 +1,4 @@
 <link rel="import" href="/components/polymer/polymer.html">
-<link rel="import" href="/components/polymer-ajax.html">
-<link rel="import" href="/components/websockets.html">
 <link rel="import" href="/components/sensor.html">
 <link rel="import" href="/components/datatypes.html">
 <script src="/js/serialize-0.2.min.js"></script>
@@ -70,11 +68,11 @@
 				self.$.ajax.go();
 			},
 			instanceidChanged: function(oldValue, newValue) {
-		    	this.$.socket.register('widgetinstance-options', newValue, this.optionsReceived.bind(this));
+		    	this.$.socket.register('widgetinstance-options', this.optionsReceived.bind(this), 'instance_id', newValue);
 		    	this.$.socket.send("widgetinstance-getoptions", {'instance_id': newValue});
-		    	this.$.socket.register('widgetinstance-sensors', newValue, this.sensorsReceived.bind(this));
+		    	this.$.socket.register('widgetinstance-sensors', this.sensorsReceived.bind(this), 'instance_id', newValue);
 		    	this.$.socket.send("widgetinstance-getsensors", {'instance_id': newValue});
-		    	this.$.socket.register('widgetinstance-commands', newValue, this.commandsReceived.bind(this));
+		    	this.$.socket.register('widgetinstance-commands', this.commandsReceived.bind(this), 'instance_id', newValue);
 		    	this.$.socket.send("widgetinstance-getcommands", {'instance_id': newValue});
 			},
 			optionsReceived: function(topic, json) {

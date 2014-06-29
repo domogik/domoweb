@@ -10,7 +10,7 @@ import os
 from zmq.eventloop import ioloop
 ioloop.install()
 import domoweb
-from domoweb.handlers import MainHandler, PageHandler, ConfigurationHandler, WSHandler, NoCacheStaticFileHandler, MQHandler
+from domoweb.handlers import MainHandler, ConfigurationHandler, WSHandler, NoCacheStaticFileHandler, MQHandler
 from domoweb.loaders import packLoader, mqDataLoader
 
 #import tornado.ioloop
@@ -29,7 +29,6 @@ domoweb.PACKSPATH = os.path.join(domoweb.PROJECTPATH, 'packs')
 application = tornado.web.Application(
     handlers=[
         (r"/(\d*)", MainHandler),
-        (r"/page", PageHandler),
         (r"/configuration", ConfigurationHandler),
         (r"/widget/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "packs", 'widgets')}),
         (r"/images/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'images')}),

@@ -10,7 +10,7 @@
 		        this.sensorvalue=json.stored_value;
 		    },
 		    sensoridChanged: function(oldValue, newValue) {
-		    	this.$.socket.register('device-stats', newValue, this.statsReceived.bind(this));
+		    	this.$.socket.register('device-stats', this.statsReceived.bind(this), 'sensor_id', newValue);
 		    },
 		});
 	</script>

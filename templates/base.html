@@ -11,19 +11,67 @@
   <link rel="stylesheet" href="/libraries/bootstrap-3.1.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/menu.css">
-  <style type="text/css">{% block style %}{% end %}</style>
+  <style type="text/css" id="sectionstyle">
+  .widget {
+    border: 1px solid {% if 'WidgetBorderColor' in params %}{{ params['WidgetBorderColor'] }}{% else %}#f0f0f0{% end %};
+    background-color: {% if 'WidgetBackgroundColor' in params %}{{ params['WidgetBackgroundColor'] }}{% else %}rgba(0,0,0,0.5){% end %};
+    -moz-border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};
+    -webkit-border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};;
+    border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};;
+    color: {% if 'WidgetTextColor' in params %}{{ params['WidgetTextColor'] }}{% else %}#f0f0f0{% end %};
+  }
+
+  </style>
   <script src="/components/platform/platform.js"></script>
+  <link rel="import" href="/components/polymer-ajax.html">
+  <link rel="import" href="/components/websockets.html">
   <link rel="import" href="/components/widget.html">
-  {% block import %}{% end %}
+  <!--link rel="import" href="/components/mainMenu.html"-->
+  <link rel="import" href="/components/gridLayout.html">
+  <link rel="import" href="/components/widgetsSelector.html">
+  <link rel="import" href="/widget/navigation/sectionTitle.html">
+  <link rel="import" href="/widget/basic/sensorNumber.html">
+  <link rel="import" href="/widget/testing/test.html">
 </head>
 <body unresolved>
+  <web-socket id="socket"></web-socket>
+  <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
 	<main role="main">
-	{% block main %}{% end %}
+    <dmw-grid-layout sectionid="{{section.id}}"></dmw-grid-layout>
+    <button class="cn-button" id="cn-button"><span class='sr-only'>Open Menu</span></button>
+    <div class="cn-wrapper" id="cn-wrapper">
+     <ul>
+       <li><a id="menuConfigure" href="#" role='button'><span class="glyphicon glyphicon-cog"></span></a></li>
+       <li><a id="menuWidgets" href="#" role='button'><span class="glyphicon glyphicon-th"></span></a></li>
+       <li><a href="#" role='button'><span class="glyphicon glyphicon-home"></span></a></li>
+       <li><a href="#" role='button'></a></li>
+       <li><a href="#" role='button'><span class="glyphicon glyphicon-lock"></span></a></li>
+     </ul>
+   </div>
+   <div id="cn-overlay" class="cn-overlay"></div>
+   <div id="modal-overlay"></div>
 	</main>
-  {% block out %}{% end %}  
+  <script src="/libraries/jquery-1.11.0/jquery.min.js"></script>
   <script src="/libraries/Modernizr-2.7.1/modernizr.custom.47879.js"></script>
+  <script src="/libraries/bootstrap-3.1.1/js/bootstrap.min.js"></script>
   <script src="/js/menu.js"></script>
-  <script type="text/javascript">{% block script %}{% end %}</script>
+  <script type="text/javascript">
+    var sectionid = {{ section.id }};
+    window.onload=function() {
+      var socket = document.querySelector('#socket');
+        socket.addEventListener('websocket-ready', function(e) {
+          socket.register('section-params', paramsReceived, 'id', {{ section.id }});
+        });      
+    };
+    function paramsReceived(topic, json) {
+      var ss = document.querySelector('#sectionstyle');
+      var widgetStyle = ss.sheet.cssRules[0];
+      widgetStyle.style.color=json['params']['WidgetTextColor'];
+      widgetStyle.style.backgroundColor=json['params']['WidgetBackgroundColor'];
+      widgetStyle.style.borderColor=json['params']['WidgetBorderColor'];
+      widgetStyle.style.borderRadius=json['params']['WidgetBorderRadius'];
+    }
+  </script>
 </body>
 </html>
 

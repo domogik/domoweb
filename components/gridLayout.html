@@ -13,8 +13,8 @@
 			.widget.widgetw2 { width: 200px; }
 			.widget.widgeth2 { height: 200px; }
 			.widget.widgetw3 { width: 300px; }
-			.widget.widgeth3 { height: 300px; }		</style>
-	    <web-socket id="socket"></web-socket>
+			.widget.widgeth3 { height: 300px; }
+		</style>
 	    <div id="container"></div>
 	    <template if="{{ edit!=null }}">
 	    	<button class="btn btn-primary btn-lg" on-click="{{addWidget}}">Add Widget</button>
@@ -72,13 +72,13 @@
 			  	this.wall.bindDraggabillyEvents( draggie );
 			},
 		    sectionidChanged: function(oldValue, newValue) {
-		    	this.$.socket.register('widgetinstance-added', newValue, this.instanceAdded.bind(this));
-		    	this.$.socket.register('widgetinstance-removed', newValue, this.instanceRemoved.bind(this));
-		    	this.$.socket.register('widgetinstance-sectionlist', newValue, this.listReceived.bind(this));
-		    	if (this.$.socket.isConnected) {
-					this.$.socket.send("widgetinstance-getsection", {'section_id':newValue});
+    	      	var socket = document.querySelector('#socket');
+		    	socket.register('widgetinstance-added', this.instanceAdded.bind(this), 'section_id', newValue);
+		    	socket.register('widgetinstance-removed', this.instanceRemoved.bind(this), 'section_id', newValue);
+		    	socket.register('widgetinstance-sectionlist', this.listReceived.bind(this), 'section_id', newValue);
+		    	if (socket.isConnected) {
+					socket.send("widgetinstance-getsection", {'section_id':newValue});
 		    	} else {
-	    			var socket = this.$.socket;
 	    			socket.addEventListener('websocket-ready', function(e) {
 						socket.send("widgetinstance-getsection", {'section_id':newValue});
   					});

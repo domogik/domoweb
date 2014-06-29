@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from tornado import web, websocket
 from tornado.web import RequestHandler
-from domoweb.models import Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand
+from domoweb.models import Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, SectionParam
 from domoweb.forms import WidgetInstanceForms
 
 import json
@@ -19,21 +19,11 @@ class MainHandler(RequestHandler):
         if not id:
             id = 1
         section = Section.get(id)
-        self.render('index.html',
-            section = section)
-
-    def post(self, id):
-        if not id:
-            id = 1
-        logger.info(self.get_argument('sectionName'))
-        Section.update(id, self.get_argument('sectionName'), self.get_argument('sectionDescription', None))
-        self.redirect ('/%d' % id)
-
-class PageHandler(RequestHandler):
-    def post(self):
-        name = self.get_argument('name')
-        description = self.get_argument('description', None)
-        Section.add(name=name, parent_id=1, description=description)
+        params = dict ((p.key, p.value) for p in SectionParam.getSection(id))
+        self.render('base.html',
+            section = section,
+            params = params,
+            )
 
 class ConfigurationHandler(RequestHandler):
     def get(self):
@@ -44,6 +34,10 @@ class ConfigurationHandler(RequestHandler):
             instance = WidgetInstance.get(id);
             forms = WidgetInstanceForms(instance=instance)
             self.render('widgetConfiguration.html', instance=instance, forms=forms)
+        elif action=='section':
+            section = Section.get(id)
+            params = dict ((p.key, p.value) for p in SectionParam.getSection(id))
+            self.render('sectionConfiguration.html', section=section, params=params)
 
     def post(self):
         action = self.get_argument('action', None)
@@ -57,6 +51,17 @@ class ConfigurationHandler(RequestHandler):
                 self.write("OK")
             else:
                 self.render('widgetConfiguration.html', instance=instance, forms=forms)
+        elif action=='section':
+            Section.update(id, self.get_argument('sectionName'), self.get_argument('sectionDescription', None))
+            for p, v in self.request.arguments.iteritems():
+                if p.startswith( 'params' ):
+                    SectionParam.saveKey(section_id=id, key=p[6:], value=v[0])
+
+            json = to_json(Section.get(id))
+            json['params'] = dict ((p.key, p.value) for p in SectionParam.getSection(id))
+            for socket in socket_connections:
+                socket.sendMessage(['section-params', json])
+            self.write("OK")
 
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
@@ -84,7 +89,10 @@ class WSHandler(websocket.WebSocketHandler):
 
     def WSSectionGet(self, data):
         section = Section.get(data['id'])
-        return ['section-detail', to_json(section)]
+        json = to_json(section)
+        # Convert the section widgets style string to json
+        json['widgetsStyle'] = json.loads(json['widgetsStyle'])
+        return ['section-detail', json]
 
     def WSWidgetsGetall(self, data):
         widgets = Widget.getAll()
