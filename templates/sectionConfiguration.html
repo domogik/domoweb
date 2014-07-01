@@ -27,6 +27,15 @@
               <label for="sectionName">Description</label>
               <input type="text" class="form-control" id="sectionDescription" name="sectionDescription" placeholder="Enter Section name" value="{{section.description}}">
             </div>
+            <div class="form-group">
+              <label for="SectionBackground">Background</label>
+              <select class="image-picker form-control" id="SectionBackground" name="paramsSectionBackground">
+              {% for background in backgrounds %}
+                <option data-img-src="/backgrounds/thumbnails/{{ background }}" value="{{ background }}"{% if 'SectionBackground' in params and params['SectionBackground'] == background %} selected='selected'{% end %}>{{ background }}</option>
+              {% end %}
+              </select>
+              </div>
+              <div id="file-uploader-background"></div>
           </div>
           <div class="tab-pane" id="widgetstyle">
             <div class="form-group">

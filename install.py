@@ -155,6 +155,8 @@ def main():
         createFolder(options.logdir, user)
         info("Checking %s folder" % options.piddir)
         createFolder(options.piddir, user)
+        info("Copying default files")
+        installFiles(options.libdir, user)
 
     # Config files
     if options.noconfig:
@@ -229,6 +231,21 @@ def installConfig(user):
     else:
         shutil.copy(installpath, '/etc/')
         os.chown('/etc/domoweb.cfg', uid, -1)
+
+def installFiles(libdir, user):
+    # Copy default backgrounds
+    info("Default background image")
+    backgroundspath = os.path.join(libdir, 'backgrounds')
+    createFolder(backgroundspath, user)
+    thumbnailspath = os.path.join(libdir, 'backgrounds', 'thumbnails')
+    createFolder(thumbnailspath, user)
+    uid = pwd.getpwnam(user).pw_uid
+    installpath = "%s/examples/backgrounds/default.jpg" % os.path.dirname(os.path.abspath(__file__))
+    shutil.copy(installpath, backgroundspath)
+    os.chown(os.path.join(backgroundspath, 'default.jpg'), uid, -1)
+    installpath = "%s/examples/backgrounds/thumbnails/default.jpg" % os.path.dirname(os.path.abspath(__file__))
+    shutil.copy(installpath, thumbnailspath)
+    os.chown(os.path.join(thumbnailspath, 'default.jpg'), uid, -1)
 
 def installDefault(user):
     info("Installing /etc/default/domoweb")
@@ -310,7 +327,8 @@ def install_dependencies():
         'tornado >= 3.1',
         'simplejson >= 1.9.2',
         'WTForms >= 2.0',
-        'WTForms-Components'
+        'WTForms-Components',
+        'pillow'
     ])
 
 #    pkg_resources.get_distribution('django').activate()

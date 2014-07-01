@@ -4,6 +4,7 @@ from tornado.web import RequestHandler
 from domoweb.models import Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, SectionParam
 from domoweb.forms import WidgetInstanceForms
 
+import os
 import json
 import logging
 logger = logging.getLogger('domoweb')
@@ -37,7 +38,8 @@ class ConfigurationHandler(RequestHandler):
         elif action=='section':
             section = Section.get(id)
             params = dict ((p.key, p.value) for p in SectionParam.getSection(id))
-            self.render('sectionConfiguration.html', section=section, params=params)
+            backgrounds = [f for f in os.listdir('/var/lib/domoweb/backgrounds') if any(f.lower().endswith(x) for x in ('.jpeg', '.jpg','.gif','.png'))]
+            self.render('sectionConfiguration.html', section=section, params=params, backgrounds=backgrounds)
 
     def post(self):
         action = self.get_argument('action', None)
@@ -48,7 +50,7 @@ class ConfigurationHandler(RequestHandler):
             if forms.validate():
                 # do something with form.username or form.email
                 forms.save();
-                self.write("OK")
+                self.write("{success:true}")
             else:
                 self.render('widgetConfiguration.html', instance=instance, forms=forms)
         elif action=='section':
@@ -61,7 +63,7 @@ class ConfigurationHandler(RequestHandler):
             json['params'] = dict ((p.key, p.value) for p in SectionParam.getSection(id))
             for socket in socket_connections:
                 socket.sendMessage(['section-params', json])
-            self.write("OK")
+            self.write("{success:true}")
 
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
@@ -172,6 +174,32 @@ class MQHandler(MQAsyncSub):
 
         for socket in socket_connections:
             socket.sendMessage([msgid, content])
+
+class UploadHandler(RequestHandler):
+    def post(self):
+        from PIL import Image
+        original_fname = self.get_argument('qqfile', None)
+        fileName, fileExtension = os.path.splitext(original_fname)
+        tmpFileName = fileName
+        i = 0
+        while os.path.isfile("/var/lib/domoweb/backgrounds/%s%s" % (tmpFileName , fileExtension)):
+            i += 1
+            tmpFileName = "%s_%d" % (fileName, i)
+
+        final_fname = "/var/lib/domoweb/backgrounds/%s%s" % (tmpFileName , fileExtension)
+        output_file = open(final_fname, 'wb')
+        output_file.write(self.request.body)
+        output_file = open(final_fname, 'r+b')
+
+        # Create Thumbnail
+        basewidth = 128
+        img = Image.open(output_file)
+        wpercent = (basewidth / float(img.size[0]))
+        hsize = int((float(img.size[1]) * float(wpercent)))
+        img.thumbnail((basewidth, hsize), Image.ANTIALIAS)
+        img.save("/var/lib/domoweb/backgrounds/thumbnails/%s%s" % (tmpFileName , fileExtension), "JPEG")
+
+        self.finish("{success:true}")
 
 def to_json(model):
     """ Returns a JSON representation of an SQLAlchemy-backed object.

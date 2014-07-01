@@ -50,7 +50,7 @@
 		ajax.addEventListener("polymer-response",
 			function(e) {
 				var response = e.detail.response;
-				if (response == 'OK') {
+				if (response == "{success:true}") {
 						modalOverlay.classList.remove('on');
 					modalOverlay.innerHTML = '';
 				} else {
@@ -83,6 +83,20 @@
 					inputs.forEach(function(element) {
 						element.addEventListener('change', onWidgetStyleChange);
 					});
+
+					// Background selector
+					$("#SectionBackground").imagepicker();
+
+					// Upload button
+					var uploader = new qq.FileUploader({
+                        element: document.getElementById('file-uploader-background'),
+                        action: '/upload',
+                        onComplete: function(id, fileName, responseJSON){
+                        	$("#SectionBackground").append("<option data-img-src='/backgrounds/thumbnails/" + fileName + "' value='" + fileName + "'>" + fileName + "</option>");
+                        	$("#SectionBackground").imagepicker();
+                        },
+                    });           
+
 					modalOverlay.classList.add('on');
 				}
 			});

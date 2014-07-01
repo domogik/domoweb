@@ -13,7 +13,8 @@ body {
 }
 
 body {
-	background: url('../images/background.jpg') 0 0 no-repeat;
+	background-position: 0, 0;
+	background-repeat: no-repeat;
 	background-size: 100% 100%;
 }
 

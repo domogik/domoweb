@@ -10,7 +10,7 @@ import os
 from zmq.eventloop import ioloop
 ioloop.install()
 import domoweb
-from domoweb.handlers import MainHandler, ConfigurationHandler, WSHandler, NoCacheStaticFileHandler, MQHandler
+from domoweb.handlers import MainHandler, ConfigurationHandler, WSHandler, NoCacheStaticFileHandler, MQHandler, UploadHandler
 from domoweb.loaders import packLoader, mqDataLoader
 
 #import tornado.ioloop
@@ -25,7 +25,7 @@ logger = logging.getLogger('domoweb')
 domoweb.FULLPATH = os.path.normpath(os.path.abspath(__file__))
 domoweb.PROJECTPATH = os.path.dirname(domoweb.FULLPATH)
 domoweb.PACKSPATH = os.path.join(domoweb.PROJECTPATH, 'packs')
-
+domoweb.VARPATH = "/var/lib/domoweb/"
 application = tornado.web.Application(
     handlers=[
         (r"/(\d*)", MainHandler),
@@ -37,6 +37,8 @@ application = tornado.web.Application(
         (r"/js/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'js')}),
         (r"/components/(.*)", NoCacheStaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "components")}),
         (r'/ws/', WSHandler),
+        (r'/upload', UploadHandler),
+        (r"/backgrounds/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(domoweb.VARPATH, "backgrounds")}),
     ],
     template_path=os.path.join(os.path.dirname(__file__), "templates"),
     debug=True,
@@ -67,6 +69,12 @@ if __name__ == '__main__':
 
     packLoader.loadWidgets(domoweb.PACKSPATH)
     packLoader.loadIconsets(domoweb.PACKSPATH)
+    if not os.path.isdir(os.path.join(domoweb.VARPATH, 'backgrounds')):
+        os.mkdir(os.path.join(domoweb.VARPATH, 'backgrounds'))
+        logger.info("Creating : %s" % os.path.join(domoweb.VARPATH, 'backgrounds'))
+    if not os.path.isdir(os.path.join(domoweb.VARPATH, 'backgrounds', 'thumbnails')):
+        os.mkdir(os.path.join(domoweb.VARPATH, 'backgrounds', 'thumbnails'))
+
     mqDataLoader.loadDatatypes()
     mqDataLoader.loadDevices()
 

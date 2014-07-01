@@ -10,3 +10,9 @@
 [submodule "static/libraries/draggability"]
 	path = static/libraries/draggability
 	url = https://github.com/desandro/draggabilly.git
+[submodule "static/libraries/file-uploader"]
+	path = static/libraries/file-uploader
+	url = https://github.com/Valums-File-Uploader/file-uploader.git
+[submodule "static/libraries/image-picker"]
+	path = static/libraries/image-picker
+	url = https://github.com/rvera/image-picker.git
