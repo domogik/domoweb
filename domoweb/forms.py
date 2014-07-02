@@ -374,6 +374,10 @@ class WidgetCommandsForm(ParametersForm):
 #        self.addGroupedModelChoiceField(key=key, label=parameter.name, required=parameter.required, default=default, queryset=commands, group_by_field='device', empty_label=_("--Select Command--"), help_text=parameter.description)
 
 class WidgetInstanceForms(object):
+    has_options = False
+    has_sensors = False
+    has_commands = False
+
     def __init__(self, instance, handler=None):
         class OptionsForm(WidgetOptionsForm):
             pass
@@ -383,8 +387,14 @@ class WidgetInstanceForms(object):
             pass
 
         widgetoptions = WidgetOption.getWidget(instance.widget_id)
+        if widgetoptions:
+            self.has_options = True
         widgetsensors = WidgetSensor.getWidget(instance.widget_id) 
+        if widgetsensors:
+            self.has_sensors = True
         widgetcommands = WidgetCommand.getWidget(instance.widget_id)
+        if widgetcommands:
+            self.has_commands = True
         if not handler:
             options = WidgetInstanceOption.getInstance(instance.id)
             dataOptions = dict([(r.key, r.value) for r in options])

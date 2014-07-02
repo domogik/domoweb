@@ -9,15 +9,22 @@
       <!-- Navigation Buttons -->
       <div class="col-sm-3 col-nav">
         <ul class="nav nav-pills nav-stacked" role="tablist">
+          {% if forms.has_options %}
           <li class="active"><a href="#options" role="tab" data-toggle="tab">Options</a></li>
-          <li><a href="#sensors" role="tab" data-toggle="tab">Sensors</a></li>
-          <li><a href="#commands" role="tab" data-toggle="tab">Commands</a></li>
+          {% end %}
+          {% if forms.has_sensors %}
+          <li{% if not(forms.has_options) %} class="active"{% end %}><a href="#sensors" role="tab" data-toggle="tab">Sensors</a></li>
+          {% end %}
+          {% if forms.has_commands %}
+          <li{% if not(forms.has_options) and not(forms.has_sensors) %} class="active"{% end %}><a href="#commands" role="tab" data-toggle="tab">Commands</a></li>
+          {% end %}
         </ul>
       </div>
       <!-- Content -->
       <div class="col-sm-6">
         <!-- Tab panes -->
         <div class="tab-content">
+          {% if forms.has_options %}
           <div class="tab-pane active" id="options">
             {% for field in forms.optionsform %}
             <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
@@ -35,7 +42,9 @@
             </div>
             {% end %}
           </div>
-          <div class="tab-pane" id="sensors">
+          {% end %}
+          {% if forms.has_sensors %}
+          <div class="tab-pane{% if not(forms.has_options) %} active{% end %}" id="sensors">
             {% for field in forms.sensorsform %}
             <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
               {% raw field.label() %}
@@ -48,7 +57,9 @@
             </div>
             {% end %}
           </div>
-          <div class="tab-pane" id="commands">
+          {% end %}
+          {% if forms.has_commands %}
+          <div class="tab-pane{% if not(forms.has_options) and not(forms.has_sensors) %} active{% end %}" id="commands">
           {% for field in forms.commandsform %}
           <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
             {% raw field.label() %}
@@ -60,8 +71,8 @@
             {% end %}
           </div>
           {% end %}
-
           </div>
+          {% end %}
         </div>
       </div>
     </div>
