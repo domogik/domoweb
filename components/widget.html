@@ -31,7 +31,7 @@
 				this.$.ajax.addEventListener("polymer-response",
         			function(e) {
 						var response = e.detail.response;
-						if (response == 'OK') {
+						if (response == '{success:true}') {
    							modalOverlay.classList.remove('on');
 							modalOverlay.innerHTML = '';
 						} else {
