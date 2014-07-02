@@ -47,9 +47,6 @@
 									self.$.ajax.go();
 									e.preventDefault();
 									e.stopPropagation();
-							    	this.$.socket.send("widgetinstance-getoptions", {'instance_id': this.instanceid});
-							    	this.$.socket.send("widgetinstance-getsensors", {'instance_id': this.instanceid});
-							    	this.$.socket.send("widgetinstance-getcommands", {'instance_id': this.instanceid});
 									return false;
 								});
 							cancelConfig.addEventListener("click",

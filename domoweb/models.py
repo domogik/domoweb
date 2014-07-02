@@ -343,6 +343,14 @@ class WidgetInstanceOption(Base):
 		return s
 
 	@classmethod
+	def getInstanceDict(cls, instance_id):
+		r = cls.getInstance(instance_id)
+		d = {}
+		for i, o in enumerate(r):
+			d[o.key] = o.value
+		return d
+
+	@classmethod
 	def saveKey(cls, instance_id, key, value):
 		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
@@ -377,6 +385,15 @@ class WidgetInstanceSensor(Base):
 		session.expunge_all()
 		session.close()
 		return s
+
+	@classmethod
+	def getInstanceDict(cls, instance_id):
+		r = cls.getInstance(instance_id)
+		d = {}
+		for i, o in enumerate(r):
+			d[o.key] = to_json(o.sensor)
+			d[o.key]['device'] = to_json(o.sensor.device)
+		return d
 
 	@classmethod
 	def saveKey(cls, instance_id, key, sensor_id):
@@ -414,6 +431,14 @@ class WidgetInstanceCommand(Base):
 		return s
 
 	@classmethod
+	def getInstanceDict(cls, instance_id):
+		r = cls.getInstance(instance_id)
+		d = {}
+		for i, o in enumerate(r):
+			d[o.key] = o.command_id
+		return d
+
+	@classmethod
 	def saveKey(cls, instance_id, key, command_id):
 		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
@@ -425,3 +450,17 @@ class WidgetInstanceCommand(Base):
 		session.flush()
 		session.close()
 		return s
+
+def to_json(model):
+    """ Returns a JSON representation of an SQLAlchemy-backed object.
+    """
+    if isinstance(model, list):
+        jsonm = []
+        for m in model:
+            jsonm.append(to_json(m))
+    else:
+        jsonm = {} 
+        for col in model._sa_class_manager.mapper.mapped_table.columns:
+            jsonm[col.name] = getattr(model, col.name)
+
+    return jsonm

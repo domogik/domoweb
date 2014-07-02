@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from tornado import web, websocket
 from tornado.web import RequestHandler
-from domoweb.models import Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, SectionParam
+from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, SectionParam
 from domoweb.forms import WidgetInstanceForms
 
 import os
@@ -48,8 +48,17 @@ class ConfigurationHandler(RequestHandler):
             instance = WidgetInstance.get(id);
             forms = WidgetInstanceForms(instance=instance, handler=self)
             if forms.validate():
-                # do something with form.username or form.email
                 forms.save();
+                d = WidgetInstanceOption.getInstanceDict(instance_id=id)
+                jsonoptions = {'instance_id':id, 'options':d}
+                d = WidgetInstanceSensor.getInstanceDict(instance_id=id)
+                jsonsensors = {'instance_id':id, 'sensors':d}
+                d = WidgetInstanceCommand.getInstanceDict(instance_id=id)
+                jsoncommands = {'instance_id':id, 'commands':d}
+                for socket in socket_connections:
+                    socket.sendMessage(['widgetinstance-options', jsonoptions]);
+                    socket.sendMessage(['widgetinstance-sensors', jsonsensors]);
+                    socket.sendMessage(['widgetinstance-commands', jsoncommands]);
                 self.write("{success:true}")
             else:
                 self.render('widgetConfiguration.html', instance=instance, forms=forms)
@@ -126,27 +135,17 @@ class WSHandler(websocket.WebSocketHandler):
         return ['widgetinstance-sectionlist', json];
 
     def WSWidgetInstanceGetoptions(self, data):
-        r = WidgetInstanceOption.getInstance(instance_id=data['instance_id'])
-        d = {}
-        for i, o in enumerate(r):
-            d[o.key] = o.value
+        d = WidgetInstanceOption.getInstanceDict(instance_id=data['instance_id'])
         json = {'instance_id':data['instance_id'], 'options':d}
         return ['widgetinstance-options', json];
 
     def WSWidgetInstanceGetsensors(self, data):
-        r = WidgetInstanceSensor.getInstance(instance_id=data['instance_id'])
-        d = {}
-        for i, o in enumerate(r):
-            d[o.key] = to_json(o.sensor)
-            d[o.key]['device'] = to_json(o.sensor.device)
+        d = WidgetInstanceSensor.getInstanceDict(instance_id=data['instance_id'])
         json = {'instance_id':data['instance_id'], 'sensors':d}
         return ['widgetinstance-sensors', json];
 
     def WSWidgetInstanceGetcommands(self, data):
-        r = WidgetInstanceCommand.getInstance(instance_id=data['instance_id'])
-        d = {}
-        for i, o in enumerate(r):
-            d[o.key] = o.command_id
+        d = WidgetInstanceCommand.getInstanceDict(instance_id=data['instance_id'])
         json = {'instance_id':data['instance_id'], 'commands':d}
         return ['widgetinstance-commands', json];
 
@@ -200,17 +199,3 @@ class UploadHandler(RequestHandler):
         img.save("/var/lib/domoweb/backgrounds/thumbnails/%s%s" % (tmpFileName , fileExtension), "JPEG")
 
         self.finish("{success:true}")
-
-def to_json(model):
-    """ Returns a JSON representation of an SQLAlchemy-backed object.
-    """
-    if isinstance(model, list):
-        jsonm = []
-        for m in model:
-            jsonm.append(to_json(m))
-    else:
-        jsonm = {} 
-        for col in model._sa_class_manager.mapper.mapped_table.columns:
-            jsonm[col.name] = getattr(model, col.name)
-
-    return jsonm
