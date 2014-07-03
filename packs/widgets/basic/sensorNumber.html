@@ -55,16 +55,29 @@
 				this.number = "--";
 				this.unit = "-"
 			},
-			sensorsChanged: function(oldValue, newValue) {
+			paramsReady: function() {
 				var sensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="number"]');
 				if (this.sensors['primary']) {
 					sensor.setAttribute('sensorid', this.sensors['primary']['id']);
-					this.number = this.sensors['primary']['last_value'];
-					this.unit = this.datatypes[this.sensors['primary']['datatype_id']]['unit'];
 					this.labelprimary = this.sensors['primary']['name'];
-					this.labelsecondary = this.sensors['primary']['device']['name'];					
+					this.labelsecondary = this.sensors['primary']['device']['name'];
+					this.displayValue(this.sensors['primary']['last_value'], this.datatypes[this.sensors['primary']['datatype_id']]['unit']);				
 				}
 			},
+			displayValue: function(number, unit) {
+				if (this.options['autoconvert']==1 && number > 0) {
+				   	var k = 1000;
+				   	var sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+				   	var i = Math.floor(Math.log(number) / Math.log(k));
+					this.number = (number / Math.pow(k, i)).toPrecision(3);
+					this.unit = sizes[i] + unit;
+				} else {
+					this.number = number;
+					this.unit = unit;
+				}
+			}
 		});
+		function bytesToSize(bytes) {
+		}
 	</script>
 </polymer-element>

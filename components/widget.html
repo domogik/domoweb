@@ -74,16 +74,20 @@
 			},
 			optionsReceived: function(topic, json) {
 				this.options = json['options'];
+				if (this.options && this.sensors && this.commands) this.paramsReady();
 			},
 			sensorsReceived: function(topic, json) {
 				this.sensors = json['sensors'];
+				if (this.options && this.sensors && this.commands) this.paramsReady();
 			},
 			commandsReceived: function(topic, json) {
 				this.commands = json['commands'];
+				if (this.options && this.sensors && this.commands) this.paramsReady();
 			},
 			get datatypes() {
 				return this.$.datatypes.list;
 			},
+			paramsReady: function() {}
 		});
 	</script>
 </polymer-element>

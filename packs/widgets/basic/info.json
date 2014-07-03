@@ -15,6 +15,12 @@
             "height" : 1,
             "width" : 1,
             "options" : {
+                "autoconvert" : {
+                    "name": "Automatic conversion",
+                    "description": "Automatically convert big value to K(x) / M(x) / G(x) / T(x)",
+                    "type": "boolean",
+                    "default": "False"
+                }
             },
             "sensors" : {
                 "primary" : {
