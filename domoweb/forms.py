@@ -3,7 +3,7 @@ import json
 from collections import OrderedDict
 from wtforms import Form, StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, widgets
 from wtforms.validators import InputRequired, Length, Email, URL, IPAddress, NumberRange, Optional
-from domoweb.models import WidgetOption, WidgetSensor, WidgetCommand, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, Device, Sensor, Command
+from domoweb.models import WidgetOption, WidgetSensor, WidgetCommand, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, Device, Sensor, Command, DataType
 from wtforms_components import SelectField
 
 """
@@ -347,10 +347,13 @@ class WidgetSensorsForm(ParametersForm):
 
     @classmethod
     def addField(cls, option):
-        sensors = Sensor.getTypesFilter(types=option.types)
+        types = json.loads(option.types)
+        for t in types:
+            types += DataType.getChilds(id=t)
+        print types
+        sensors = Sensor.getTypesFilter(types=types)
         cls.addGroupedModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=sensors, group_by_field='device_id', empty_label="--Select Sensor--", help_text=option.description)
     
-
     def save(self):
         for key, value in self.data.iteritems():
             if isinstance(value, list):

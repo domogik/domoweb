@@ -209,6 +209,14 @@ class DataType(Base):
 		session.close()
 		return s
 
+	@classmethod
+	def getChilds(cls, id):
+		session = Session()
+		s = session.query(cls).get(id)
+		c = json.loads(s.parameters)		
+		session.close()
+		return c['childs']
+
 class Device(Base):
 	__tablename__ = 'device'
 	id = Column(Integer(), primary_key=True)
@@ -262,7 +270,7 @@ class Sensor(Base):
 		session = Session()
 		s = session.query(cls.device_id, Device.name, cls.id, cls.name).\
 			join(Device).\
-			filter(cls.datatype_id.in_(json.loads(types))).\
+			filter(cls.datatype_id.in_(types)).\
 			order_by(cls.device_id).all()
 		session.close()
 		return s
