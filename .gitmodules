@@ -16,3 +16,6 @@
 [submodule "static/libraries/image-picker"]
 	path = static/libraries/image-picker
 	url = https://github.com/rvera/image-picker.git
+[submodule "static/libraries/i18next"]
+	path = static/libraries/i18next
+	url = https://github.com/jamuhl/i18next.git

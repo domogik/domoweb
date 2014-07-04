@@ -1,0 +1,9 @@
+{ 
+  	"menu": {
+  		"open": "Ouvrir Menu",
+    	"configuration": "Config",
+    	"widgets": "Widgets",
+    	"home": "Accueil",
+    	"lock": "Verrou."
+  	}
+}

@@ -70,10 +70,10 @@
 				   	var sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
 				   	var i = Math.floor(Math.log(number) / Math.log(k));
 					this.number = (number / Math.pow(k, i)).toPrecision(3);
-					this.unit = sizes[i] + unit;
+					this.unit = sizes[i] + i18n.t("basic:unit", { context: this.sensors['primary']['datatype_id'], value: unit });
 				} else {
 					this.number = number;
-					this.unit = unit;
+					this.unit = i18n.t("basic:unit", { context: this.sensors['primary']['datatype_id'], value: unit });
 				}
 			}
 		});

@@ -43,14 +43,14 @@
   <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
 	<main role="main">
     <dmw-grid-layout sectionid="{{section.id}}"></dmw-grid-layout>
-    <button class="cn-button" id="cn-button"><span class='sr-only'>Open Menu</span></button>
+    <button class="cn-button" id="cn-button"><span class='sr-only' data-i18n="menu.open"></span></button>
     <div class="cn-wrapper" id="cn-wrapper">
      <ul>
-       <li><a id="menuConfigure" href="#" role='button'><span class="label">Config</span><span class="icon glyphicon glyphicon-cog" aria-hidden="true"></span></a></li>
-       <li><a id="menuWidgets" href="#" role='button'><span class="label">Widgets</span><span class="icon glyphicon glyphicon-th" aria-hidden="true"></span></a></li>
-       <li><a href="#" role='button'><span class="label">Home</span><span class="icon glyphicon glyphicon-home" aria-hidden="true"></span></a></li>
+       <li><a id="menuConfigure" href="#" role='button'><span class="label" data-i18n="menu.configuration"></span><span class="icon glyphicon glyphicon-cog" aria-hidden="true"></span></a></li>
+       <li><a id="menuWidgets" href="#" role='button'><span class="label" data-i18n="menu.widgets"></span><span class="icon glyphicon glyphicon-th" aria-hidden="true"></span></a></li>
+       <li><a href="#" role='button'><span class="label" data-i18n="menu.home"></span><span class="icon glyphicon glyphicon-home" aria-hidden="true"></span></a></li>
        <li><a href="#" role='button'></a></li>
-       <li><a href="#" role='button'><span class="label">Lock</span><span class="icon glyphicon glyphicon-lock" aria-hidden="true"></span></a></li>
+       <li><a href="#" role='button'><span class="label" data-i18n="menu.lock"></span><span class="icon glyphicon glyphicon-lock" aria-hidden="true"></span></a></li>
      </ul>
    </div>
    <div id="cn-overlay" class="cn-overlay"></div>
@@ -60,16 +60,30 @@
   <script src="/libraries/bootstrap-3.1.1/js/bootstrap.min.js"></script>
   <script src="/libraries/file-uploader/client/fileuploader.js" type="text/javascript"></script>
   <script src="/libraries/image-picker/image-picker/image-picker.min.js" type="text/javascript"></script>
+  <script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
   <script src="/js/menu.js"></script>
   <script type="text/javascript">
     var sectionid = {{ section.id }};
     window.onload=function() {
       var socket = document.querySelector('#socket');
-        socket.addEventListener('websocket-ready', function(e) {
-          socket.register('section-params', paramsReceived, 'id', {{ section.id }});
-        });      
+      socket.addEventListener('websocket-ready', function(e) {
+        socket.register('section-params', paramsReceived, 'id', {{ section.id }});
+      });
     };
-    function paramsReceived(topic, json) {
+      i18n.init({
+        lng: "fr-FR",
+        fallbackLng: 'en-US',
+        resGetPath: 'locales/__ns__/__lng__/translation.json',
+        ns: {
+          namespaces: ['domoweb', 'basic'], 
+          defaultNs: 'domoweb'
+          },
+        },
+        function() {
+        // translate nav
+        jQuery("#cn-wrapper").i18n();
+      });
+      function paramsReceived(topic, json) {
       var ss = document.querySelector('#sectionstyle');
       var widgetStyle = ss.sheet.cssRules[0];
       widgetStyle.style.color=json['params']['WidgetTextColor'];

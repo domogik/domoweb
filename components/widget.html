@@ -20,6 +20,7 @@
 	<script>
 		Polymer("dmw-widget", {
 			ready: function() {
+				
 			},
 			removeWidget: function(e) {
 		    	this.$.socket.send("widgetinstance-remove", {'instance_id':this.instanceid});

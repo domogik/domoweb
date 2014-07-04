@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from tornado import web, websocket
-from tornado.web import RequestHandler
+from tornado.web import RequestHandler, StaticFileHandler
 from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, SectionParam
 from domoweb.forms import WidgetInstanceForms
 
@@ -199,3 +199,11 @@ class UploadHandler(RequestHandler):
         img.save("/var/lib/domoweb/backgrounds/thumbnails/%s%s" % (tmpFileName , fileExtension), "JPEG")
 
         self.finish("{success:true}")
+
+
+class MultiStaticFileHandler(StaticFileHandler):
+
+    def get(self, ns, lang, file):
+        path = "%s/locales/%s/%s" % (ns, lang, file)
+        print self.root, path
+        return super(MultiStaticFileHandler, self).get(path)
