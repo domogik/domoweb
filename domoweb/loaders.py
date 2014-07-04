@@ -190,9 +190,11 @@ class mqDataLoader:
                             for ref, command  in device["commands"].iteritems():
                                 c = Command(id=command["id"], name=command["name"], device_id=device["id"], reference=ref, return_confirmation=command["return_confirmation"])
                                 session.add(c)
+                                """
                                 for param in command["parameters"]:
                                     p = CommandParam(command_id=id, key=param["key"], datatype_id=param["data_type"])
                                     session.add(p)
+                                """
                         if "sensors" in device:
                             for ref, sensor in device["sensors"].iteritems():
                                 s = Sensor(id=sensor["id"], name=sensor["name"], device_id=device["id"], reference=ref, datatype_id=sensor["data_type"], last_value=sensor["last_value"], last_received=sensor["last_received"])
