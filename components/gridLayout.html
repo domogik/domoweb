@@ -85,13 +85,7 @@
 		    	socket.register('widgetinstance-added', this.instanceAdded.bind(this), 'section_id', newValue);
 		    	socket.register('widgetinstance-removed', this.instanceRemoved.bind(this), 'section_id', newValue);
 		    	socket.register('widgetinstance-sectionlist', this.listReceived.bind(this), 'section_id', newValue);
-		    	if (socket.isConnected) {
-					socket.send("widgetinstance-getsection", {'section_id':newValue});
-		    	} else {
-	    			socket.addEventListener('websocket-ready', function(e) {
-						socket.send("widgetinstance-getsection", {'section_id':newValue});
-  					});
-		    	}
+				socket.send("widgetinstance-getsection", {'section_id':newValue});
 		    },
 		    orderChanged: function() {
 				var itemElems = this.wall.getItemElements();

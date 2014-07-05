@@ -76,7 +76,7 @@ class ConfigurationHandler(RequestHandler):
             json = to_json(Section.get(id))
             json['params'] = dict ((p.key, p.value) for p in SectionParam.getSection(id))
             for socket in socket_connections:
-                socket.sendMessage(['section-params', json])
+                socket.sendMessage(['section-details', json])
             self.write("{success:true}")
 
 class WSHandler(websocket.WebSocketHandler):
@@ -106,10 +106,9 @@ class WSHandler(websocket.WebSocketHandler):
 
     def WSSectionGet(self, data):
         section = Section.get(data['id'])
-        json = to_json(section)
-        # Convert the section widgets style string to json
-        json['widgetsStyle'] = json.loads(json['widgetsStyle'])
-        return ['section-detail', json]
+        j = to_json(section)
+        j['params'] = dict ((p.key, p.value) for p in SectionParam.getSection(data['id']))
+        return ['section-details', j]
 
     def WSWidgetsGetall(self, data):
         widgets = Widget.getAll()

@@ -200,13 +200,12 @@ class Section(Base):
 		return s
 
 	@classmethod
-	def update(cls, id, name, description=None, widgetsStyle=None):
+	def update(cls, id, name, description=None):
 		# create a Session
 		session = Session()
 		s = session.query(cls).get(id)
 		s.name = name
 		s.description = description
-		s.widgetsStyle = widgetsStyle
 		session.add(s)
 		session.commit()
 		session.flush()

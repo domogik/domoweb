@@ -62,7 +62,7 @@
     window.onload=function() {
       var socket = document.querySelector('#socket');
       socket.addEventListener('websocket-ready', function(e) {
-        socket.register('section-params', paramsReceived, 'id', {{ section.id }});
+        socket.register('section-details', paramsReceived, 'id', {{ section.id }});
       });
     };
       i18n.init({

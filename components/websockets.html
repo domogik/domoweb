@@ -2,10 +2,17 @@
 
 <polymer-element name="web-socket">
 	<script>
-		var _socket = null;
 		var _handler = null;
+
 		function WebsocketHandler() {
 			this.listeners = [];
+			this._isConnected = false;
+			this._waiting = [];
+			this._socket = new WebSocket("ws://" + document.domain + ":40404/ws/");
+			this._socket.onmessage = this.onMessage.bind(this);
+			this._socket.onerror = this.onError.bind(this);
+			this._socket.onopen = this.onOpen.bind(this);
+			window.onbeforeunload = this.beforeUnload.bind(this);
 		}
 
 		WebsocketHandler.prototype.onMessage = function(msg) {
@@ -28,8 +35,8 @@
 		};
 
 		WebsocketHandler.prototype.beforeUnload = function() {
-	       	_socket.onclose = function () {}; // disable onclose handler first
-    	    _socket.close();
+	       	this._socket.onclose = function () {}; // disable onclose handler first
+    	    this._socket.close();
 		};
 
 		WebsocketHandler.prototype.subscribe = function(name, func, filter_key, filter_id) {
@@ -38,39 +45,45 @@
 
 		WebsocketHandler.prototype.send = function(json) {
 			var data = JSON.stringify(json);
-			try {
-				console.log("WS: sending message " + data);
-				_socket.send(data);
-			} catch(error) {
-				console.log("cannot send message: error: " + error);
+			if (this._isConnected) {
+				try {
+					console.log("WS: sending message " + data);
+					this._socket.send(data);
+				} catch(error) {
+					console.log("cannot send message: error: " + error);
+				}
+			} else {
+					console.log("WS: added on waiting queue: " + data);
+				// If not connect add on waiting queue
+				this._waiting.push(data);
 			}
 		};
 
+		WebsocketHandler.prototype.onOpen = function(e) {
+	    	console.log('WS: Connection open');
+			this._isConnected = true;
+		    // clear waiting queue
+		    for (var i = this._waiting.length - 1; i >= 0; i--) {
+				console.log("WS: sending waiting message " + this._waiting[i]);
+				this._socket.send(this._waiting[i]);
+		    }
+		}
+
+		WebsocketHandler.prototype.onError = function(error) {
+			console.error('There was an un-identified Web Socket error', error);
+		}
+
 		Polymer("web-socket", {
-			isConnected: false,
 			ready:function(){
 				//window.addEventListener('beforeunload', this.beforeUnload.bind(this));//buggy in chrome
 				// Cleanly close websocket when unload window
 				if (window.WebSocket) {
-					if (_socket == null) {
+					if (_handler == null) {
 						_handler = new WebsocketHandler;
-						_socket = new WebSocket("ws://" + document.domain + ":40404/ws/");
-						_socket.onmessage = _handler.onMessage.bind(_handler);
-						_socket.onerror = this.onError.bind(this);
-						_socket.onopen = this.onOpen.bind(this);
-						window.onbeforeunload = _handler.beforeUnload.bind(_handler);
 					}
 				}
 			},
 			
-			onOpen: function (e) {
-		    	console.log('WS: Connection open');
-				this.isConnected = true;
-			    this.fire('websocket-ready');
-			},
-			onError: function (error) {
-				console.error('There was an un-identified Web Socket error',error);
-			},
 			send: function(id, json) {
 				_handler.send([id, json]);
 			},

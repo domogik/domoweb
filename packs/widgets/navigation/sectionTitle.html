@@ -9,15 +9,12 @@
 			ready: function() {
 				this.super();
 				this.title = "Loading";
-/*				var socket = this.$.socket;
-				socket.addEventListener('websocket-ready', function() {
-					var msg = {action:'section-get', data: {id:1}};
-		        	socket.send(JSON.stringify(msg));
-    			});	*/
+		        this.$.socket.register('section-details', this.messageReceived.bind(this), 'id', sectionid);
+				this.$.socket.send('section-get', {'id':sectionid});
 			},
-/*			messageReceived: function(e, detail, sender) {
-		        this.title = detail[1].name;
-		    },*/
+			messageReceived: function(e, detail, sender) {
+		        this.title = detail.name;
+		    },
 		});
 	</script>
 </polymer-element>
