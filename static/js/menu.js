@@ -44,6 +44,32 @@
 	document.addEventListener('click', closeNav);
 
 	function configureHandler(){
+		var libs = document.head.querySelector('link#fileuploader');
+		if (!libs) { // Libraries not loaded yet
+			var link = document.createElement('link');
+			link.setAttribute('id', "fileuploader");
+			link.setAttribute('rel', "stylesheet");
+			link.setAttribute('type', "text/css");
+			link.setAttribute('href', "/libraries/file-uploader/client/fileuploader.css")
+			document.head.appendChild(link);
+
+			var link = document.createElement('link');
+			link.setAttribute('rel', "stylesheet");
+			link.setAttribute('type', "text/css");
+			link.setAttribute('href', "/libraries/image-picker/image-picker/image-picker.css")
+			document.head.appendChild(link);
+
+			var script = document.createElement('script');
+			script.setAttribute('type', "text/javascript");
+			script.setAttribute('src', "/libraries/file-uploader/client/fileuploader.js")
+			document.head.appendChild(script);
+
+			var script = document.createElement('script');
+			script.setAttribute('type', "text/javascript");
+			script.setAttribute('src', "/libraries/image-picker/image-picker/image-picker.min.js")
+			document.head.appendChild(script);
+		}
+
 		var modalOverlay = document.querySelector('#modal-overlay');
 		var ajax = document.querySelector('#ajax');
 		ajax.setAttribute('handleAs', 'text');
