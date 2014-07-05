@@ -52,6 +52,13 @@
 				this.wall.layout();
 			},
 			appendInstance: function(instance, edit) {
+				var link = document.head.querySelector("link#" + instance.widget_id);
+				if (!link) { // If widget pack not already loaded
+					link = document.createElement('link');
+					link.setAttribute('rel', "import");
+					link.setAttribute('href', "/widget/" + instance.widget.set_id + '/' + instance.widget.set_ref + ".html")
+					document.head.appendChild(link);
+				}
 				var widget = document.createElement('dmw-' + instance.widget.set_id + '-' + instance.widget.set_ref);
 				widget.classList.add('widget');
 				widget.setAttribute('instanceid', instance.id);

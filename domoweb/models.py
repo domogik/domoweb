@@ -48,6 +48,22 @@ class Widget(Base):
 		session.close()
 		return s
 		
+	@classmethod
+	def getSection(cls, section_id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).join(cls.instances).distinct().all()
+		session.close()
+		return s
+
+	@classmethod
+	def getSectionPacks(cls, section_id):
+		# create a Session
+		session = Session()
+		s = session.query(cls.set_id).join(cls.instances).distinct().all()
+		session.close()
+		return s
+
 class WidgetOption(Base):
 	__tablename__ = 'widgetOption'
 	id = Column(String(50), primary_key=True)
@@ -301,7 +317,7 @@ class WidgetInstance(Base):
 	section = relationship("Section")
 	order = Column(Integer())
 	widget_id = Column(String(50), ForeignKey('widget.id'))
-	widget = relationship("Widget", foreign_keys='WidgetInstance.widget_id', lazy='joined')
+	widget = relationship("Widget", foreign_keys='WidgetInstance.widget_id', lazy='joined', backref='instances')
 	options = relationship("WidgetInstanceOption", cascade="all")
 	sensors = relationship("WidgetInstanceSensor", cascade="all")
 	commands = relationship("WidgetInstanceCommand", cascade="all")

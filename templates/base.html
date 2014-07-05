@@ -34,10 +34,9 @@
   <!--link rel="import" href="/components/mainMenu.html"-->
   <link rel="import" href="/components/gridLayout.html">
   <link rel="import" href="/components/widgetsSelector.html">
-  <link rel="import" href="/widget/navigation/sectionTitle.html">
-  <link rel="import" href="/widget/basic/sensorNumber.html">
-  <link rel="import" href="/widget/basic/commandString.html">
-  <link rel="import" href="/widget/testing/test.html">
+  {% for widget in widgets %}
+  <link id="{{widget.id}}" rel="import" href="/widget/{{widget.set_id}}/{{widget.set_ref}}.html">
+  {% end %}
 </head>
 <body unresolved>
   <web-socket id="socket"></web-socket>
@@ -76,7 +75,7 @@
         fallbackLng: 'en-US',
         resGetPath: 'locales/__ns__/__lng__/translation.json',
         ns: {
-          namespaces: ['domoweb', 'basic'], 
+          namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}], 
           defaultNs: 'domoweb'
           },
         },

@@ -22,9 +22,13 @@ class MainHandler(RequestHandler):
             id = 1
         section = Section.get(id)
         params = dict ((p.key, p.value) for p in SectionParam.getSection(id))
+        widgets = Widget.getSection(section_id=id)
+        packs = Widget.getSectionPacks(section_id=id)
         self.render('base.html',
             section = section,
             params = params,
+            widgets = widgets,
+            packs = packs,
             )
 
 class ConfigurationHandler(RequestHandler):
