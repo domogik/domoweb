@@ -6,8 +6,8 @@
         "version" : 1,
         "name" : "Testing",
         "description" : "Testing widgets",
-        "creator" : "Ferllings",
-        "creator_email" : "cedric@domogik.org"
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
     },
     "widgets": {
         "test": {

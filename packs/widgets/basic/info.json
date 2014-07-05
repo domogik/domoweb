@@ -1,13 +1,13 @@
 {
-    "json_version" : 1,
+    "json_version" : 2,
     "identity" : {
         "type" : "dmw_widgetset",
         "id" : "basic",
         "version" : 1,
         "name" : "Basic",
         "description" : "Basic widgets for single sensors/commands",
-        "creator" : "Ferllings",
-        "creator_email" : "cedric@domogik.org"
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
     },
     "widgets": {
         "sensorNumber": {

@@ -162,9 +162,7 @@ class WSHandler(websocket.WebSocketHandler):
         msg.set_action('cmd.send')
         msg.add_data('cmdid', data['command_id'])
         msg.add_data('cmdparams', data['parameters'])
-        print data['parameters']
-        print cli.request('xplgw', msg.get(), timeout=10).get()
-        return {'success': True}
+        return cli.request('xplgw', msg.get(), timeout=10).get()
 
     def sendMessage(self, content):
         data=json.dumps(content)

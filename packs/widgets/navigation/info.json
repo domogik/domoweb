@@ -6,8 +6,8 @@
         "version" : 1,
         "name" : "Navigation",
         "description" : "Widgets for navigation",
-        "creator" : "Ferllings",
-        "creator_email" : "cedric@domogik.org"
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
     },
     "widgets": {
         "sectionTitle": {

@@ -12,6 +12,8 @@ Repository versions
 .. code-block:: bash
 
     $ git clone https://github.com/domogik/domoweb.git
+    $ cd domoweb
+    $ git submodule update --init --recursive
 
 Launch the installation script
 ==============================

@@ -13,5 +13,4 @@ Types of packs
 ==============
 
 * :doc:`Iconsets of pages icons </packs/iconset>`
-* :doc:`Page style themes </packs/theme>`
 
