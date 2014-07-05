@@ -1,4 +1,5 @@
 { 
   	"unit": "__value__",
-  	"unit_DT_Byte": "o"
+  	"unit_DT_Byte": "o",
+  	"send": "Envoyer"
 }

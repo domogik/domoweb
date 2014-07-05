@@ -1,5 +1,6 @@
 <link rel="import" href="/components/polymer/polymer.html">
 <link rel="import" href="/components/sensor.html">
+<link rel="import" href="/components/command.html">
 <link rel="import" href="/components/datatypes.html">
 <script src="/js/serialize-0.2.min.js"></script>
 
@@ -8,8 +9,8 @@
 	    <web-socket id="socket"></web-socket>
 	    <dmw-datatypes id="datatypes"></dmw-datatypes>
 	    <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
-		<span class='labelprimary'>{{labelprimary}}</span>
-		<span class='labelsecondary'>{{labelsecondary}}</span>
+		<span id='labelprimary'>{{labelprimary}}</span>
+		<span id='labelsecondary'>{{labelsecondary}}</span>
 	    <template if="{{ edit!=null }}">
 	    	<div class="editOverlay">
 		    	<button class="editWidget" on-click="{{editWidget}}" aria-label="Edit"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></button>

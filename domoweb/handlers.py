@@ -11,6 +11,7 @@ logger = logging.getLogger('domoweb')
 
 import zmq
 from domogik.mq.pubsub.subscriber import MQAsyncSub
+from domogik.mq.reqrep.client import MQSyncReq
 from domogik.mq.message import MQMessage
 
 socket_connections = []
@@ -94,6 +95,7 @@ class WSHandler(websocket.WebSocketHandler):
             'widgetinstance-getsensors' : self.WSWidgetInstanceGetsensors,
             'widgetinstance-getcommands' : self.WSWidgetInstanceGetcommands,
             'datatype-getall' : self.WSDatatypesGetall,
+            'command-send' : self.WSCommandSend,
         }[jsonmessage[0]](jsonmessage[1])
         if (data):
             self.sendMessage(data)
@@ -146,12 +148,23 @@ class WSHandler(websocket.WebSocketHandler):
 
     def WSWidgetInstanceGetcommands(self, data):
         d = WidgetInstanceCommand.getInstanceDict(instance_id=data['instance_id'])
+        print d
         json = {'instance_id':data['instance_id'], 'commands':d}
         return ['widgetinstance-commands', json];
 
     def WSDatatypesGetall(self, data):
         datatypes =dict ((o.id, json.loads(o.parameters)) for o in DataType.getAll())
         return ['datatype-list', datatypes]
+
+    def WSCommandSend(self, data):
+        cli = MQSyncReq(zmq.Context())
+        msg = MQMessage()
+        msg.set_action('cmd.send')
+        msg.add_data('cmdid', data['command_id'])
+        msg.add_data('cmdparams', data['parameters'])
+        print data['parameters']
+        print cli.request('xplgw', msg.get(), timeout=10).get()
+        return {'success': True}
 
     def sendMessage(self, content):
         data=json.dumps(content)
@@ -197,9 +210,7 @@ class UploadHandler(RequestHandler):
         hsize = int((float(img.size[1]) * float(wpercent)))
         img.thumbnail((basewidth, hsize), Image.ANTIALIAS)
         img.save("/var/lib/domoweb/backgrounds/thumbnails/%s%s" % (tmpFileName , fileExtension), "JPEG")
-
         self.finish("{success:true}")
-
 
 class MultiStaticFileHandler(StaticFileHandler):
 

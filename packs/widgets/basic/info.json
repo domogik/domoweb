@@ -5,7 +5,7 @@
         "id" : "basic",
         "version" : 1,
         "name" : "Basic",
-        "description" : "Basic widgets for single sensor",
+        "description" : "Basic widgets for single sensors/commands",
         "creator" : "Ferllings",
         "creator_email" : "cedric@domogik.org"
     },
@@ -31,6 +31,27 @@
                 }
             },
             "commands" : {
+            },
+            "devices" : {
+            }
+        },
+        "commandString": {
+            "name" : "Command String",
+            "height" : 1,
+            "width" : 2,
+            "options" : {
+            },
+            "sensors" : {
+            },
+            "commands" : {
+                "primary" : {
+                    "name": "Text",
+                    "description": "Text sensor",
+                    "types" : [
+                        ["DT_String"]
+                    ],
+                    "required": true                   
+                }
             },
             "devices" : {
             }

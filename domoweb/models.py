@@ -243,16 +243,35 @@ class Command(Base):
 	device = relationship("Device", cascade="all")
 	reference = Column(String(50))
 	return_confirmation = Column(Boolean(), default=True)
-	
+	datatypes = Column(String(255), nullable=False)
+
+	@classmethod
+	def getTypesFilter(cls, types):
+		session = Session()
+		s = session.query(cls.device_id, Device.name, cls.id, cls.name).\
+			join(Device).\
+			filter(cls.datatypes.in_(types)).\
+			order_by(cls.device_id).all()
+		session.close()
+		return s
+
 class CommandParam(Base):
 	__tablename__ = 'commandParam'
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	command_id = Column(Integer(), ForeignKey('command.id', ondelete="cascade"), nullable=False)
-	command = relationship("Command", cascade="all")
+	command = relationship("Command", cascade="all", backref="parameters")
 	key = Column(String(50))
 	datatype_id = Column(String(50), ForeignKey('dataType.id'))
 	datatype = relationship("DataType")
 	
+	@classmethod
+	def getCommand(cls, command_id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).filter_by(command_id = command_id).all()
+		session.close()
+		return s
+
 class Sensor(Base):
 	__tablename__ = 'sensor'
 	id = Column(Integer(), primary_key=True)
@@ -434,7 +453,8 @@ class WidgetInstanceCommand(Base):
 	@classmethod
 	def getInstance(cls, instance_id):
 		session = Session()
-		s = session.query(cls).filter_by(instance_id = instance_id).all()
+		s = session.query(cls).options(joinedload('command').joinedload('device')).filter_by(instance_id = instance_id).all()
+		session.expunge_all()
 		session.close()
 		return s
 
@@ -443,7 +463,10 @@ class WidgetInstanceCommand(Base):
 		r = cls.getInstance(instance_id)
 		d = {}
 		for i, o in enumerate(r):
-			d[o.key] = o.command_id
+			d[o.key] = to_json(o.command)
+			parameters = CommandParam.getCommand(command_id=o.command_id)
+			d[o.key]['parameters'] = to_json(parameters)
+			d[o.key]['device'] = to_json(o.command.device)
 		return d
 
 	@classmethod

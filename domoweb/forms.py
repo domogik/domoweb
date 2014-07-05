@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json
+import itertools
 from collections import OrderedDict
 from wtforms import Form, StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, widgets
 from wtforms.validators import InputRequired, Length, Email, URL, IPAddress, NumberRange, Optional
@@ -350,7 +351,6 @@ class WidgetSensorsForm(ParametersForm):
         types = json.loads(option.types)
         for t in types:
             types += DataType.getChilds(id=t)
-        print types
         sensors = Sensor.getTypesFilter(types=types)
         cls.addGroupedModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=sensors, group_by_field='device_id', empty_label="--Select Sensor--", help_text=option.description)
     
@@ -366,15 +366,19 @@ class WidgetCommandsForm(ParametersForm):
 
     @classmethod
     def addField(cls, option):
-        pass
-#        key = ('commandparam_%s' % (option.id))
-#        datatypes = []
-#        types = json.loads(parameter.types)
-#        for type in types:
-#            for p in itertools.permutations(type):            
-#                datatypes.append(''.join(p))
-#        commands = Command.objects.filter(datatypes__in = datatypes)
-#        self.addGroupedModelChoiceField(key=key, label=parameter.name, required=parameter.required, default=default, queryset=commands, group_by_field='device', empty_label=_("--Select Command--"), help_text=parameter.description)
+        types = json.loads(option.types)
+        datatypes = []
+        for t in types:
+            for p in itertools.permutations(t):
+                datatypes.append(''.join(p))
+        commands = Command.getTypesFilter(types=datatypes)
+        cls.addGroupedModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=commands, group_by_field='device_id', empty_label="--Select Command--", help_text=option.description)
+
+    def save(self):
+        for key, value in self.data.iteritems():
+            if isinstance(value, list):
+                value = ', '.join(value)
+            WidgetInstanceCommand.saveKey(instance_id=self.instance.id, key=key, command_id=value)
 
 class WidgetInstanceForms(object):
     has_options = False
@@ -430,4 +434,4 @@ class WidgetInstanceForms(object):
     def save(self):    
         self.optionsform.save()
         self.sensorsform.save()
-#        self.commandsform.save()
+        self.commandsform.save()
