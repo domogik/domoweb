@@ -43,7 +43,7 @@
 				text-overflow: ellipsis;
 			}
 		</style>
-	    <dmw-sensor sensorkey="number" sensorvalue="{{number}}"></dmw-sensor>
+	    <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{number}}"></dmw-sensor>
 		<shadow></shadow>
 		<div id='number'>{{number}}</div>
 		<div id='unit'>{{unit}}</div>
@@ -56,13 +56,9 @@
 				this.unit = "-"
 			},
 			paramsReady: function() {
-				var sensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="number"]');
-				if (this.sensors['primary']) {
-					sensor.setAttribute('sensorid', this.sensors['primary']['id']);
-					this.labelprimary = this.sensors['primary']['name'];
-					this.labelsecondary = this.sensors['primary']['device']['name'];
-					this.displayValue(this.sensors['primary']['last_value'], this.datatypes[this.sensors['primary']['datatype_id']]['unit']);				
-				}
+				this.labelprimary = this.$.primary.name;
+				this.labelsecondary = this.$.primary.device['name'];
+				this.displayValue(this.$.primary.last_value, this.datatypes[this.$.primary.datatype_id]['unit']);				
 			},
 			displayValue: function(number, unit) {
 				if (this.options['autoconvert']==1 && number > 0) {
@@ -70,10 +66,10 @@
 				   	var sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
 				   	var i = Math.floor(Math.log(number) / Math.log(k));
 					this.number = (number / Math.pow(k, i)).toPrecision(3);
-					this.unit = sizes[i] + i18n.t("basic:unit", { context: this.sensors['primary']['datatype_id'], value: unit });
+					this.unit = sizes[i] + i18n.t("basic:unit", { context: this.$.primary.datatype_id, value: unit });
 				} else {
 					this.number = number;
-					this.unit = i18n.t("basic:unit", { context: this.sensors['primary']['datatype_id'], value: unit });
+					this.unit = i18n.t("basic:unit", { context: this.$.primary.datatype_id, value: unit });
 				}
 			}
 		});

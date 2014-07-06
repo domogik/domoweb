@@ -36,7 +36,7 @@
 				float: right;
 			}
 		</style>
-	    <dmw-command commandkey="text"></dmw-command>
+	    <dmw-command id="primary" commandkey="primary"></dmw-command>
 		<shadow></shadow>
 		<textarea id="text" aria-labeledby="labelprimary"></textarea>
 		<button id="send" class="btn btn-primary btn-xs"></button>
@@ -49,17 +49,13 @@
 				this.$.send.addEventListener('click', this.send.bind(this));
 			},
 			paramsReady: function() {
-				var command = this.shadowRoot.querySelector('dmw-command[commandkey="text"]');
-				if (this.commands['primary']) {
-					command.setAttribute('commandid', this.commands['primary']['id']);
-					this.labelprimary = this.commands['primary']['name'];
-					this.labelsecondary = this.commands['primary']['device']['name'];
-				}
+				this.labelprimary = this.$.primary.name;
+				this.labelsecondary = this.$.primary.device['name'];
 			},
 			send: function(e) {
-				var json = {"command_id":this.commands['primary']['id'], "parameters": {}};
-				json['parameters'][this.commands['primary']['parameters'][0]['key']] = this.$.text.value;
-				this.$.socket.send("command-send", json);
+				var parameters = {};
+				parameters[this.$.primary.parameters[0]['key']] = this.$.text.value;
+				this.$.primary.send(parameters);
 				this.$.text.value = null;
 				e.preventDefault();
 				e.stopPropagation();

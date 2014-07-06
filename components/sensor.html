@@ -12,6 +12,14 @@
 		    sensoridChanged: function(oldValue, newValue) {
 		    	this.$.socket.register('device-stats', this.statsReceived.bind(this), 'sensor_id', newValue);
 		    },
+		    init: function(sensor) {
+		    	this.name = sensor['name'];
+		    	this.last_value = sensor['last_value'];
+		    	this.last_received = sensor['last_received'];
+		    	this.sensorid = sensor['id'];
+		    	this.device = sensor['device'];
+		    	this.datatype_id = sensor['datatype_id'];
+		    }
 		});
 	</script>
 </polymer-element>

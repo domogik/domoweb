@@ -21,6 +21,7 @@
 	<script>
 		Polymer("dmw-widget", {
 			ready: function() {
+				this.sensors = false;
 				
 			},
 			removeWidget: function(e) {
@@ -76,15 +77,29 @@
 			},
 			optionsReceived: function(topic, json) {
 				this.options = json['options'];
-				if (this.options && this.sensors && this.commands) this.paramsReady();
+				if (this.sensors && this.commands) this.paramsReady();
 			},
 			sensorsReceived: function(topic, json) {
-				this.sensors = json['sensors'];
-				if (this.options && this.sensors && this.commands) this.paramsReady();
+				for (var key in json['sensors']) {
+					var sensor = json['sensors'][key];
+					var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
+					if (dmwsensor) {
+						dmwsensor.init(sensor);
+					}
+				}
+				this.sensors = true;
+				if (this.options && this.commands) this.paramsReady();
 			},
 			commandsReceived: function(topic, json) {
-				this.commands = json['commands'];
-				if (this.options && this.sensors && this.commands) this.paramsReady();
+				for (var key in json['commands']) {
+					var command = json['commands'][key];
+					var dmwcommand = this.shadowRoot.querySelector('dmw-command[commandkey="' + key + '"]');
+					if (dmwcommand) {
+						dmwcommand.init(command);
+					}
+				}
+				this.commands = true;
+				if (this.options && this.commands) this.paramsReady();
 			},
 			get datatypes() {
 				return this.$.datatypes.list;
