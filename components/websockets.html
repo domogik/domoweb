@@ -2,6 +2,7 @@
 
 <polymer-element name="web-socket">
 	<script>
+	(function() {
 		var _handler = null;
 
 		function WebsocketHandler() {
@@ -16,8 +17,8 @@
 		}
 
 		WebsocketHandler.prototype.onMessage = function(msg) {
-			console.log("WS: message received");
-			console.log(msg.data);
+			console.info("WS: message received");
+			console.info(msg.data);
 			json = JSON.parse(msg.data);
 			for ( var i=0; i < this.listeners.length; i++ ) {
 				listener = this.listeners[i];
@@ -47,24 +48,24 @@
 			var data = JSON.stringify(json);
 			if (this._isConnected) {
 				try {
-					console.log("WS: sending message " + data);
+					console.info("WS: sending message " + data);
 					this._socket.send(data);
 				} catch(error) {
-					console.log("cannot send message: error: " + error);
+					console.error("cannot send message: error: " + error);
 				}
 			} else {
-					console.log("WS: added on waiting queue: " + data);
+					console.info("WS: added on waiting queue: " + data);
 				// If not connect add on waiting queue
 				this._waiting.push(data);
 			}
 		};
 
 		WebsocketHandler.prototype.onOpen = function(e) {
-	    	console.log('WS: Connection open');
+	    	console.info('WS: Connection open');
 			this._isConnected = true;
 		    // clear waiting queue
 		    for (var i = this._waiting.length - 1; i >= 0; i--) {
-				console.log("WS: sending waiting message " + this._waiting[i]);
+				console.info("WS: sending waiting message " + this._waiting[i]);
 				this._socket.send(this._waiting[i]);
 		    }
 		}
@@ -91,6 +92,7 @@
 				_handler.subscribe(name, func, filter_key, filter_id);
 			},
 		});
+	})();
 	</script>
 </polymer-element>
 

@@ -1,0 +1,37 @@
+<link rel="import" href="/components/polymer/polymer.html">
+
+<polymer-element name="dmw-section" attributes='sectionid'>
+	<template>
+	    <web-socket id="socket"></web-socket>
+	</template>
+	<script>
+	(function() {
+		Polymer("dmw-section", {
+			ready: function() {
+				this._name = [];
+				this._description = [];
+				this._params = [];
+		        this.$.socket.register('section-details', this.messageReceived.bind(this));
+			},
+			sectionidChanged: function(oldValue, newValue) {
+				this.$.socket.send('section-get', {'id':this.sectionid});
+			},
+			get name() {
+				return this._name[this.sectionid];
+			},
+			get description() {
+				return this._description[this.sectionid];
+			},
+			get params() {
+				return this._params[this.sectionid];
+			},
+			messageReceived: function(topic, json) {
+				this._name[this.sectionid] = json['name'];
+				this._description[this.sectionid] = json['description'];
+				this._params[this.sectionid] = json['params'];
+	        	this.fire('section-updated');
+	    	},
+	    });
+	})();
+	</script>
+</polymer-element>

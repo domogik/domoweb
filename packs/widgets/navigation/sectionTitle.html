@@ -5,16 +5,15 @@
 	</template>
 	<script>  
 		Polymer('dmw-navigation-sectionTitle', {
-			title: "",
 			ready: function() {
 				this.super();
-				this.title = "Loading";
-		        this.$.socket.register('section-details', this.messageReceived.bind(this), 'id', sectionid);
-				this.$.socket.send('section-get', {'id':sectionid});
+				this.section = document.querySelector('#section');
+				this.section.addEventListener('section-updated', this.sectionUpdated.bind(this));
+				this.title = this.section.name;
 			},
-			messageReceived: function(e, detail, sender) {
-		        this.title = detail.name;
-		    },
+			sectionUpdated: function() {
+				this.title = this.section.name;
+			}
 		});
 	</script>
 </polymer-element>

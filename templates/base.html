@@ -28,6 +28,7 @@
   <link rel="import" href="/components/polymer-ajax.html">
   <link rel="import" href="/components/websockets.html">
   <link rel="import" href="/components/widget.html">
+  <link rel="import" href="/components/section.html">
   <!--link rel="import" href="/components/mainMenu.html"-->
   <link rel="import" href="/components/gridLayout.html">
   <link rel="import" href="/components/widgetsSelector.html">
@@ -38,6 +39,7 @@
 <body unresolved>
   <web-socket id="socket"></web-socket>
   <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
+  <dmw-section id='section' sectionid="{{ section.id }}"></dmw-section>
 	<main role="main">
     <dmw-grid-layout sectionid="{{section.id}}"></dmw-grid-layout>
     <button class="cn-button" id="cn-button"><span class='sr-only' data-i18n="menu.open"></span></button>
@@ -58,12 +60,9 @@
   <script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
   <script src="/js/menu.js"></script>
   <script type="text/javascript">
-    var sectionid = {{ section.id }};
     window.onload=function() {
-      var socket = document.querySelector('#socket');
-      socket.addEventListener('websocket-ready', function(e) {
-        socket.register('section-details', paramsReceived, 'id', {{ section.id }});
-      });
+      var section = document.querySelector('#section');
+      section.addEventListener('section-updated', sectionUpdated);
     };
       i18n.init({
         lng: "fr-FR",
@@ -78,16 +77,27 @@
         // translate nav
         jQuery("#cn-wrapper").i18n();
       });
-      function paramsReceived(topic, json) {
-      var ss = document.querySelector('#sectionstyle');
-      var widgetStyle = ss.sheet.cssRules[0];
-      widgetStyle.style.color=json['params']['WidgetTextColor'];
-      widgetStyle.style.backgroundColor=json['params']['WidgetBackgroundColor'];
-      widgetStyle.style.borderColor=json['params']['WidgetBorderColor'];
-      widgetStyle.style.borderRadius=json['params']['WidgetBorderRadius'];
-      var bodyStyle = ss.sheet.cssRules[1];
-      bodyStyle.style.backgroundImage="url('/backgrounds/" + json['params']['SectionBackground'] + "')";
-    }
+      function sectionUpdated(topic, json) {
+        var ss = document.querySelector('#sectionstyle');
+        var section = document.querySelector('#section');
+        var widgetStyle = ss.sheet.cssRules[0];
+        if ('WidgetTextColor' in section.params) {
+          widgetStyle.style.color=section.params['WidgetTextColor'];
+        }
+        if ('WidgetBackgroundColor' in section.params) {
+          widgetStyle.style.backgroundColor=section.params['WidgetBackgroundColor'];
+        }
+        if ('WidgetBorderColor' in section.params) {
+          widgetStyle.style.borderColor=section.params['WidgetBorderColor'];
+        }
+        if ('WidgetBorderRadius' in section.params) {
+          widgetStyle.style.borderRadius=section.params['WidgetBorderRadius'];
+        }
+        var bodyStyle = ss.sheet.cssRules[1];
+        if ('SectionBackground' in section.params) {
+          bodyStyle.style.backgroundImage="url('/backgrounds/" + section.params['SectionBackground'] + "')";
+        }
+      }
   </script>
 </body>
 </html>

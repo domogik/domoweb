@@ -5,6 +5,7 @@
 	    <web-socket id="socket"></web-socket>
 	</template>
 	<script>
+	(function() {
 		var isRegistered = false;
 		var _list = null;
 
@@ -24,5 +25,6 @@
 	        	this.fire('datatype-received');
 	    	},
 	    });
+	})();
 	</script>
 </polymer-element>
