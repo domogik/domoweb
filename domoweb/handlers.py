@@ -151,7 +151,6 @@ class WSHandler(websocket.WebSocketHandler):
 
     def WSWidgetInstanceGetcommands(self, data):
         d = WidgetInstanceCommand.getInstanceDict(instance_id=data['instance_id'])
-        print d
         json = {'instance_id':data['instance_id'], 'commands':d}
         return ['widgetinstance-commands', json];
 
@@ -217,5 +216,4 @@ class MultiStaticFileHandler(StaticFileHandler):
 
     def get(self, ns, lang, file):
         path = "%s/locales/%s/%s" % (ns, lang, file)
-        print self.root, path
         return super(MultiStaticFileHandler, self).get(path)

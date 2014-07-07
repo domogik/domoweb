@@ -65,7 +65,6 @@ class TornadoInputWrapper(object):
 
     def __init__(self, handler):
         self._handler = handler
-        print handler.request.arguments
 
     def __iter__(self):
         return iter(self._handler.request.arguments)
@@ -92,20 +91,7 @@ class TornadoInputWrapper(object):
 class ParametersForm(Form):
     def __init__(self, *args, **kwargs):
         super(ParametersForm, self).__init__(*args, **kwargs)
-    """
-    def setData(self, kwds):
-        for name,field in self.fields.items():
-            self.data[name] = field.widget.value_from_datadict(
-                kwds, self.files, self.add_prefix(name))
-        self.is_bound = True
-    
-    def validate(self):
-        self.full_clean()
 
-        for name,field in self.fields.items():
-            if 'errors' in field:
-                print name, field.errors
-    """
     @classmethod
     def addStringField(cls, key, label, default=None, required=False, max_length=60, help_text=None, parameters=None):
         validators=[]
@@ -380,6 +366,20 @@ class WidgetCommandsForm(ParametersForm):
                 value = ', '.join(value)
             WidgetInstanceCommand.saveKey(instance_id=self.instance.id, key=key, command_id=value)
 
+class WidgetGeneralForm(Form):
+    general_debug = BooleanField(u'Debug', default=False, description=u'Enable widget debug mode')
+    general_backgroundColor = StringField(u'Background Color', description=u'Override default background color')
+    general_textColor = StringField(u'Text Color', description=u'Override default text color')
+    general_borderColor = StringField(u'Border Color', description=u'Override default border color')
+    general_borderRadius = StringField(u'Border Radius', description=u'Override default border radius')
+
+
+    def save(self):
+        for key, value in self.data.iteritems():
+            if isinstance(value, list):
+                value = ', '.join(value)
+            WidgetInstanceOption.saveKey(instance_id=self.instance.id, key=key, value=value)
+
 class WidgetInstanceForms(object):
     has_options = False
     has_sensors = False
@@ -424,14 +424,17 @@ class WidgetInstanceForms(object):
         self.optionsform = OptionsForm(instance=instance, handler=handler, data=dataOptions, prefix='optionparam_')
         self.sensorsform = SensorsForm(instance=instance, handler=handler, data=dataSensors, prefix='sensorparam_')
         self.commandsform = CommandsForm(instance=instance, handler=handler, data=dataCommands, prefix='commandparam_')
+        self.generalform = WidgetGeneralForm(instance=instance, handler=handler, data=dataOptions, prefix='generalparam_')
 
     def validate(self):
         valid = self.optionsform.validate()
         valid = self.sensorsform.validate() and valid
         valid = self.commandsform.validate() and valid
+        valid = self.generalform.validate() and valid
         return valid
 
     def save(self):    
         self.optionsform.save()
         self.sensorsform.save()
         self.commandsform.save()
+        self.generalform.save()

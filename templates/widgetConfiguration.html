@@ -18,6 +18,7 @@
           {% if forms.has_commands %}
           <li{% if not(forms.has_options) and not(forms.has_sensors) %} class="active"{% end %}><a href="#commands" role="tab" data-toggle="tab">Commands</a></li>
           {% end %}
+          <li{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) %} class="active"{% end %}><a href="#general" role="tab" data-toggle="tab">General</a></li>
         </ul>
       </div>
       <!-- Content -->
@@ -73,6 +74,23 @@
           {% end %}
           </div>
           {% end %}
+          <div class="tab-pane{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) %} active{% end %}" id="general">
+            {% for field in forms.generalform %}
+            <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
+              {% raw field.label() %}
+              {% if field.type == 'BooleanField' %}
+                {% raw field() %}
+              {% else %}
+                {% raw field(class_='form-control') %}
+              {% end %}
+              <span>{% raw field.description %}</span>
+              {% if field.errors %}
+              <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+              <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+              {% end %}
+            </div>
+            {% end %}
+          </div>
         </div>
       </div>
     </div>

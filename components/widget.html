@@ -4,7 +4,7 @@
 <link rel="import" href="/components/datatypes.html">
 <script src="/js/serialize-0.2.min.js"></script>
 
-<polymer-element name="dmw-widget" attributes="instanceid edit">
+<polymer-element name="dmw-widget" attributes="instanceid edit debug">
 	<template>
 	    <web-socket id="socket"></web-socket>
 	    <dmw-datatypes id="datatypes"></dmw-datatypes>
@@ -77,6 +77,32 @@
 			},
 			optionsReceived: function(topic, json) {
 				this.options = json['options'];
+				/* Apply override controls */
+				if ('general_debug' in this.options && this.options['general_debug'] == 1) {
+					this.debug = true;
+				} else {
+					this.debug = null;
+				}
+				if ('general_textColor' in this.options && this.options['general_textColor']) {
+					this.style.color = this.options['general_textColor'];
+				} else {					
+					this.style.color = null;
+				}
+				if ('general_backgroundColor' in this.options && this.options['general_backgroundColor']) {
+					this.style.backgroundColor = this.options['general_backgroundColor'];
+				} else {					
+					this.style.backgroundColor = null;
+				}
+				if ('general_borderColor' in this.options && this.options['general_borderColor']) {
+					this.style.borderColor = this.options['general_borderColor'];
+				} else {					
+					this.style.borderColor = null;
+				}
+				if ('general_borderRadius' in this.options && this.options['general_borderRadius']) {
+					this.style.borderRadius = this.options['general_borderRadius'];
+				} else {					
+					this.style.borderRadius = null;
+				}
 				if (this.sensors && this.commands) this.paramsReady();
 			},
 			sensorsReceived: function(topic, json) {
