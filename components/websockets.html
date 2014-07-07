@@ -9,7 +9,7 @@
 			this.listeners = [];
 			this._isConnected = false;
 			this._waiting = [];
-			this._socket = new WebSocket("ws://" + document.domain + ":40404/ws/");
+			this._socket = new WebSocket("ws://" + window.location.hostname + ":" + window.location.port + "/ws/");
 			this._socket.onmessage = this.onMessage.bind(this);
 			this._socket.onerror = this.onError.bind(this);
 			this._socket.onopen = this.onOpen.bind(this);
