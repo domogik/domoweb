@@ -1,18 +1,53 @@
+<script type="text/javascript" src='/libraries/FitText/jquery.fittext.js'></script>
+
 <polymer-element name="dmw-navigation-sectionTitle" extends="dmw-widget">
 	<template>
+		<style type="text/css">
+			:host {
+				height: 100%;
+				padding: 5px;
+			}
+			#sectiontitle {
+				position: relative;
+				top: 50%;
+				-webkit-transform: translateY(-50%);
+				-ms-transform: translateY(-50%);
+				transform: translateY(-50%);
+				overflow: hidden;
+			}
+			#sectiondescription {
+				position: absolute;
+				bottom: 5px;
+				right: 5px;
+				font-style: italic;;
+			}
+		</style>
 		<shadow></shadow>
-		<span id='sectiontitle'>{{title}}</span>
+		<div id='sectiontitle'>{{title}}</div>
+		<div id='sectiondescription'>{{description}}</div>
 	</template>
 	<script>  
 		Polymer('dmw-navigation-sectionTitle', {
 			ready: function() {
 				this.super();
-				this.section = document.querySelector('#section');
+				this.section = document.querySelector('.mainsection');
+			},
+			paramsReady: function() {
 				this.section.addEventListener('section-updated', this.sectionUpdated.bind(this));
-				this.title = this.section.name;
+				this.sectionUpdated();
 			},
 			sectionUpdated: function() {
-				this.title = this.section.name;
+				if (this.options['overrideLabel']) {
+					this.title = this.options['overrideLabel'];
+				} else {
+					this.title = this.section.name;
+				}
+				if (this.options['overrideDescription']) {
+					this.description = this.options['overrideDescription'];
+				} else {
+					this.description = this.section.description;
+				}
+				jQuery(this.$.sectiontitle).fitText(0.7);
 			}
 		});
 	</script>

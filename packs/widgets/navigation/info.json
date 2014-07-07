@@ -13,12 +13,18 @@
         "sectionTitle": {
             "name" : "Section title",
             "height" : 1,
-            "width" : 2,
+            "width" : 3,
             "options" : {
-                "string_1" : {
-                    "name": "Force label",
+                "overrideLabel" : {
+                    "name": "Override label",
                     "type": "string",
-                    "default": "Default value",
+                    "default": "",
+                    "required": false
+                },
+                "overrideDescription" : {
+                    "name": "Override description",
+                    "type": "string",
+                    "default": "",
                     "required": false
                 }
             },

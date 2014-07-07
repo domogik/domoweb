@@ -39,7 +39,7 @@
 <body unresolved>
   <web-socket id="socket"></web-socket>
   <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
-  <dmw-section id='section' sectionid="{{ section.id }}"></dmw-section>
+  <dmw-section class='mainsection' sectionid="{{ section.id }}"></dmw-section>
 	<main role="main">
     <dmw-grid-layout sectionid="{{section.id}}"></dmw-grid-layout>
     <button class="cn-button" id="cn-button"><span class='sr-only' data-i18n="menu.open"></span></button>
@@ -60,8 +60,8 @@
   <script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
   <script src="/js/menu.js"></script>
   <script type="text/javascript">
+    var section = document.querySelector('.mainsection');
     window.onload=function() {
-      var section = document.querySelector('#section');
       section.addEventListener('section-updated', sectionUpdated);
     };
       i18n.init({
@@ -79,7 +79,6 @@
       });
       function sectionUpdated(topic, json) {
         var ss = document.querySelector('#sectionstyle');
-        var section = document.querySelector('#section');
         var widgetStyle = ss.sheet.cssRules[0];
         if ('WidgetTextColor' in section.params) {
           widgetStyle.style.color=section.params['WidgetTextColor'];

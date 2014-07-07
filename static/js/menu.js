@@ -127,7 +127,7 @@
 				}
 			});
 		ajax.setAttribute('method', 'GET');
-		ajax.setAttribute('params', '{"action":"section", "id":"' + sectionid + '"}');
+		ajax.setAttribute('params', '{"action":"section", "id":"' + section.getAttribute('sectionid') + '"}');
 		ajax.go();
 		closeNav();
 	}
