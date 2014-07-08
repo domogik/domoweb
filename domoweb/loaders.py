@@ -54,7 +54,9 @@ class packLoader:
                                         description = unicode(param['description'])
                                     except KeyError:
                                         description = None
-                                    p = WidgetOption(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=description, type=param['type'])
+                                    p = WidgetOption(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), type=param['type'])
+                                    if 'description' in param:
+                                        p.description = unicode(param['description'])
                                     if 'default' in param:
                                         p.default = param['default']
                                     if 'required' in param:
@@ -81,7 +83,9 @@ class packLoader:
                                 # Sensors parameters
                                 for pid, param in widget['sensors'].items():
                                     id = "%s-%s" % (widget_id, pid)
-                                    p = WidgetSensor(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(list(param['types'])))
+                                    p = WidgetSensor(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), types=json.dumps(list(param['types'])))
+                                    if 'description' in param:
+                                        p.description = unicode(param['description'])
                                     if 'filters' in param:
                                         p.filters = ', '.join(param['filters'])
                                     if 'required' in param:
@@ -92,7 +96,9 @@ class packLoader:
                                 # Commands parameters
                                 for pid, param in widget['commands'].items():
                                     id = "%s-%s" % (widget_id, pid)
-                                    p = WidgetCommand(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(param['types']))
+                                    p = WidgetCommand(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), types=json.dumps(param['types']))
+                                    if 'description' in param:
+                                        p.description = unicode(param['description'])
                                     if 'filters' in param:
                                         p.filters = ', '.join(param['filters'])
                                     if 'required' in param:

@@ -355,8 +355,13 @@ class WidgetCommandsForm(ParametersForm):
         types = json.loads(option.types)
         datatypes = []
         for t in types:
-            for p in itertools.permutations(t):
-                datatypes.append(''.join(p))
+            args = ()
+            for d in t:
+                l = [d]
+                l += DataType.getChilds(id=d)
+                args += (l,)
+                for p in itertools.product(*args):
+                    datatypes.append(''.join(p))
         commands = Command.getTypesFilter(types=datatypes)
         cls.addGroupedModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=commands, group_by_field='device_id', empty_label="--Select Command--", help_text=option.description)
 
@@ -372,7 +377,6 @@ class WidgetGeneralForm(Form):
     general_textColor = StringField(u'Text Color', description=u'Override default text color')
     general_borderColor = StringField(u'Border Color', description=u'Override default border color')
     general_borderRadius = StringField(u'Border Radius', description=u'Override default border radius')
-
 
     def save(self):
         for key, value in self.data.iteritems():

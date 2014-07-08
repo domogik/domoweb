@@ -228,9 +228,12 @@ class DataType(Base):
 	def getChilds(cls, id):
 		session = Session()
 		s = session.query(cls).get(id)
-		c = json.loads(s.parameters)		
-		session.close()
-		return c['childs']
+		if s:
+			c = json.loads(s.parameters)		
+			session.close()
+			return c['childs']
+		else:
+			return None
 
 class Device(Base):
 	__tablename__ = 'device'

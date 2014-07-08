@@ -145,7 +145,7 @@
                         "DT_Month",
                         "DT_Day",
                         "DT_Hour",
-                        "DT_minute",
+                        "DT_Minute",
                         "DT_Second",
                         "DT_mSecond",
                         "DT_Timestamp",
@@ -159,7 +159,7 @@
                     "name": "Switch",
                     "description": "Select the switch command",
                     "types" : [
-                        ["DT_Switch"]
+                        ["DT_Switch", "DT_Number"]
                     ]
                 },
                 "dimmer" : {

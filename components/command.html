@@ -5,6 +5,7 @@
 	<script>
 		Polymer("dmw-command", {
 			ready:function(){
+				this.isSet = false;
 			},
 		    commandidChanged: function(oldValue, newValue) {
 		    },
@@ -13,6 +14,7 @@
 		    	this.commandid = command['id'];
 		    	this.device = command['device'];
 		    	this.parameters = command['parameters'];
+				this.isSet = true;
 		    },
 		    send: function(parameters) {
 		    	var json = {"command_id":this.commandid, "parameters": parameters};

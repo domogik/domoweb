@@ -46,9 +46,34 @@
             "commands" : {
                 "primary" : {
                     "name": "Text",
-                    "description": "Text sensor",
                     "types" : [
                         ["DT_String"]
+                    ],
+                    "required": true                   
+                }
+            },
+            "devices" : {
+            }
+        },
+        "commandBool": {
+            "name" : "Command Boolean",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+            },
+            "sensors" : {
+                "boolstate" : {
+                    "name": "Bool state",
+                    "description": "Bool feedback state",
+                    "types" : ["DT_Bool"],
+                    "required": false
+                }
+            },
+            "commands" : {
+                "primary" : {
+                    "name": "Boolean",
+                    "types" : [
+                        ["DT_Bool"]
                     ],
                     "required": true                   
                 }

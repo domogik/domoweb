@@ -1,0 +1,93 @@
+<polymer-element name="dmw-basic-commandBool" extends="dmw-widget">
+	<template>
+		<style type="text/css">
+			:host {
+				height: 100%;
+			}
+			#labelprimary {
+				display: block;
+				font-size: 0.8em;
+				position: absolute;
+				top: -1.4em;
+				left: 0;
+				text-overflow: ellipsis;
+			}
+			#labelsecondary {
+				display: block;
+				transform: rotate(-90deg);
+				transform-origin: bottom left;
+				-ms-transform: rotate(-90deg);
+				-ms-transform-origin: bottom left;
+				-webkit-transform: rotate(-90deg);
+				-webkit-transform-origin: bottom left;
+				position: absolute;
+				left: 0;
+				bottom: 0;
+				font-size: 0.8em;
+				text-overflow: ellipsis;
+			}
+			button#send {
+				display: block;
+				width: 80%;
+				height: 80%;
+				margin: 10%;
+				color: #000000;
+			}
+			button#send.true {
+				background: #5cb85c;
+				color: #ffffff;
+			}
+			button#send.false {
+				background: #d9534f;
+				color: #ffffff;
+			}
+		</style>
+	    <dmw-command id="primary" commandkey="primary"></dmw-command>
+	    <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}"></dmw-sensor>
+		<shadow></shadow>
+		<button id="send" class="btn"></button>
+	</template>
+	<script>
+		Polymer('dmw-basic-commandBool', {
+			ready: function() {
+				this.super();
+				this.boolstate = null;
+				this.nextValue = 1;
+			},
+			paramsReady: function() {
+				if (this.$.boolstate.isSet) {
+					this.hasFeedback = true;
+				}
+				if (this.$.primary.isSet) {
+					this.labelprimary = this.$.primary.name;
+					this.labelsecondary = this.$.primary.device['name'];
+					this.$.send.innerHTML = i18n.t("basic:bool." + this.nextValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+
+					this.$.send.addEventListener('click', this.send.bind(this));					
+				}
+			},
+			send: function(e) {
+				var parameters = {};
+				parameters[this.$.primary.parameters[0]['key']] = this.nextValue;
+				this.$.primary.send(parameters);
+				e.preventDefault();
+				e.stopPropagation();
+				if (!this.$.boolstate.isSet) { //If no feedback sensor, we assume ok
+					this.boolstate = this.nextValue;
+				}
+			},
+			boolstateChanged: function(oldValue, newValue) {
+				if (newValue == 1) {
+					this.nextValue = 0;
+					this.$.send.classList.add('false');
+					this.$.send.classList.remove('true');
+				} else {
+					this.nextValue = 1;
+					this.$.send.classList.add('true');
+					this.$.send.classList.remove('false');
+				}
+				this.$.send.innerHTML = i18n.t("basic:bool." + this.nextValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+			}
+		});
+	</script>
+</polymer-element>

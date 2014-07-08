@@ -5,6 +5,7 @@
 	<script>
 		Polymer("dmw-sensor", {
 			ready:function(){
+				this.isSet = false;
 			},
 			statsReceived: function(topic, json) {
 		        this.sensorvalue=json.stored_value;
@@ -19,6 +20,7 @@
 		    	this.sensorid = sensor['id'];
 		    	this.device = sensor['device'];
 		    	this.datatype_id = sensor['datatype_id'];
+				this.isSet = true;
 		    }
 		});
 	</script>
