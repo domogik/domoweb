@@ -1,30 +1,9 @@
 <polymer-element name="dmw-basic-commandBool" extends="dmw-widget">
 	<template>
+		<link rel="stylesheet" href="/widget/basic/css/common.css">
 		<style type="text/css">
 			:host {
 				height: 100%;
-			}
-			#labelprimary {
-				display: block;
-				font-size: 0.8em;
-				position: absolute;
-				top: -1.4em;
-				left: 0;
-				text-overflow: ellipsis;
-			}
-			#labelsecondary {
-				display: block;
-				transform: rotate(-90deg);
-				transform-origin: bottom left;
-				-ms-transform: rotate(-90deg);
-				-ms-transform-origin: bottom left;
-				-webkit-transform: rotate(-90deg);
-				-webkit-transform-origin: bottom left;
-				position: absolute;
-				left: 0;
-				bottom: 0;
-				font-size: 0.8em;
-				text-overflow: ellipsis;
 			}
 			button#send {
 				display: block;
@@ -45,7 +24,7 @@
 	    <dmw-command id="primary" commandkey="primary"></dmw-command>
 	    <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}"></dmw-sensor>
 		<shadow></shadow>
-		<button id="send" class="btn"></button>
+		<button id="send" class="btn">{{sendtext}}</button>
 	</template>
 	<script>
 		Polymer('dmw-basic-commandBool', {
@@ -61,8 +40,7 @@
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.name;
 					this.labelsecondary = this.$.primary.device['name'];
-					this.$.send.innerHTML = i18n.t("basic:bool." + this.nextValue, { context: this.$.primary.parameters[0]['datatype_id'] });
-
+					this.sendtext = i18n.t("basic:bool." + this.nextValue, { context: this.$.primary.parameters[0]['datatype_id'] });
 					this.$.send.addEventListener('click', this.send.bind(this));					
 				}
 			},
@@ -86,7 +64,7 @@
 					this.$.send.classList.add('true');
 					this.$.send.classList.remove('false');
 				}
-				this.$.send.innerHTML = i18n.t("basic:bool." + this.nextValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+				this.sendtext = i18n.t("basic:bool." + this.nextValue, { context: this.$.primary.parameters[0]['datatype_id'] });
 			}
 		});
 	</script>

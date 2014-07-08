@@ -35,6 +35,25 @@
             "devices" : {
             }
         },
+        "sensorBool": {
+            "name" : "Sensor Bool",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "Bool",
+                    "description": "Bool sensor",
+                    "types" : ["DT_Bool"],
+                    "required": true                   
+                }
+            },
+            "commands" : {
+            },
+            "devices" : {
+            }
+        },
         "commandString": {
             "name" : "Command String",
             "height" : 1,

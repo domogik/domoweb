@@ -1,31 +1,10 @@
 <polymer-element name="dmw-basic-commandString" extends="dmw-widget">
 	<template>
+		<link rel="stylesheet" href="/widget/basic/css/common.css">
 		<style type="text/css">
 			:host {
 				height: 100%;
 				padding: 0.5em;
-			}
-			#labelprimary {
-				display: block;
-				font-size: 0.8em;
-				position: absolute;
-				top: -1.4em;
-				left: 0;
-				text-overflow: ellipsis;
-			}
-			#labelsecondary {
-				display: block;
-				transform: rotate(-90deg);
-				transform-origin: bottom left;
-				-ms-transform: rotate(-90deg);
-				-ms-transform-origin: bottom left;
-				-webkit-transform: rotate(-90deg);
-				-webkit-transform-origin: bottom left;
-				position: absolute;
-				left: 0;
-				bottom: 0;
-				font-size: 0.8em;
-				text-overflow: ellipsis;
 			}
 			textarea#text {
 				width: 100%;
@@ -46,11 +25,13 @@
 			ready: function() {
 				this.super();
 				this.$.send.innerHTML = i18n.t("basic:send");
-				this.$.send.addEventListener('click', this.send.bind(this));
 			},
 			paramsReady: function() {
-				this.labelprimary = this.$.primary.name;
-				this.labelsecondary = this.$.primary.device['name'];
+				if (this.$.primary.isSet) {
+					this.labelprimary = this.$.primary.name;
+					this.labelsecondary = this.$.primary.device['name'];
+					this.$.send.addEventListener('click', this.send.bind(this));
+				}
 			},
 			send: function(e) {
 				var parameters = {};

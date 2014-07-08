@@ -1,5 +1,6 @@
 <polymer-element name="dmw-basic-sensorNumber" extends="dmw-widget">
 	<template>
+		<link rel="stylesheet" href="/widget/basic/css/common.css">
 		<style type="text/css">
 			:host {
 				height: 100%;
@@ -20,30 +21,8 @@
 				right: 5px;
 				font-size: 1em;
 			}
-			#labelprimary {
-				display: block;
-				font-size: 0.8em;
-				position: absolute;
-				top: -1.4em;
-				left: 0;
-				text-overflow: ellipsis;
-			}
-			#labelsecondary {
-				display: block;
-				transform: rotate(-90deg);
-				transform-origin: bottom left;
-				-ms-transform: rotate(-90deg);
-				-ms-transform-origin: bottom left;
-				-webkit-transform: rotate(-90deg);
-				-webkit-transform-origin: bottom left;
-				position: absolute;
-				left: 0;
-				bottom: 0;
-				font-size: 0.8em;
-				text-overflow: ellipsis;
-			}
 		</style>
-	    <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{number}}"></dmw-sensor>
+	    <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
 		<shadow></shadow>
 		<div id='number'>{{number}}</div>
 		<div id='unit'>{{unit}}</div>
@@ -56,9 +35,14 @@
 				this.unit = "-"
 			},
 			paramsReady: function() {
-				this.labelprimary = this.$.primary.name;
-				this.labelsecondary = this.$.primary.device['name'];
-				this.displayValue(this.$.primary.last_value, this.datatypes[this.$.primary.datatype_id]['unit']);				
+				if (this.$.primary.isSet) {
+					this.labelprimary = this.$.primary.name;
+					this.labelsecondary = this.$.primary.device['name'];
+					this.displayValue(this.$.primary.last_value, this.datatypes[this.$.primary.datatype_id]['unit']);
+				}		
+			},
+			sensorvalueChanged: function(oldValue, newValue) {
+				this.displayValue(newValue, this.datatypes[this.$.primary.datatype_id]['unit']);
 			},
 			displayValue: function(number, unit) {
 				if (this.options['autoconvert']==1 && number > 0) {
