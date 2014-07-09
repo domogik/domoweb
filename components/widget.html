@@ -9,8 +9,8 @@
 	    <web-socket id="socket"></web-socket>
 	    <dmw-datatypes id="datatypes"></dmw-datatypes>
 	    <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
-		<span id='labelprimary'>{{labelprimary}}</span>
-		<span id='labelsecondary'>{{labelsecondary}}</span>
+		<div id='labelprimary'>{{labelprimary}}</div>
+		<div id='labelsecondary'>{{labelsecondary}}</div>
 	    <template if="{{ edit!=null }}">
 	    	<div class="editOverlay">
 		    	<button class="editWidget" on-click="{{editWidget}}" aria-label="Edit"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></button>

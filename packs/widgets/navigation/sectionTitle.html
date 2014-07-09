@@ -7,7 +7,7 @@
 				height: 100%;
 				padding: 5px;
 			}
-			#sectiontitle {
+			#labelprimary {
 				position: relative;
 				top: 50%;
 				-webkit-transform: translateY(-50%);
@@ -15,16 +15,14 @@
 				transform: translateY(-50%);
 				overflow: hidden;
 			}
-			#sectiondescription {
+			#labelsecondary {
 				position: absolute;
 				bottom: 5px;
 				right: 5px;
-				font-style: italic;;
+				font-style: italic;
 			}
 		</style>
 		<shadow></shadow>
-		<div id='sectiontitle'>{{title}}</div>
-		<div id='sectiondescription'>{{description}}</div>
 	</template>
 	<script>  
 		Polymer('dmw-navigation-sectionTitle', {
@@ -38,16 +36,16 @@
 			},
 			sectionUpdated: function() {
 				if (this.options['overrideLabel']) {
-					this.title = this.options['overrideLabel'];
+					this.labelprimary = this.options['overrideLabel'];
 				} else {
-					this.title = this.section.name;
+					this.labelprimary = this.section.name;
 				}
 				if (this.options['overrideDescription']) {
-					this.description = this.options['overrideDescription'];
+					this.labelsecondary = this.options['overrideDescription'];
 				} else {
-					this.description = this.section.description;
+					this.labelsecondary = this.section.description;
 				}
-				jQuery(this.$.sectiontitle).fitText(0.7);
+				jQuery(this.$.labelprimary).fitText(0.7);
 			}
 		});
 	</script>
