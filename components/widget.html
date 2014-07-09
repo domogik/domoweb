@@ -22,7 +22,7 @@
 		Polymer("dmw-widget", {
 			ready: function() {
 				this.sensors = false;
-				
+				this.commands = false;
 			},
 			removeWidget: function(e) {
 		    	this.$.socket.send("widgetinstance-remove", {'instance_id':this.instanceid});

@@ -136,7 +136,12 @@ class WSHandler(websocket.WebSocketHandler):
         r = WidgetInstance.getSection(section_id=data['section_id'])
         json = {'section_id':data['section_id'], 'instances':to_json(r)}
         for index, item in enumerate(r):
-            json['instances'][index]["widget"] = to_json(item.widget)
+            if item.widget:
+                json['instances'][index]["widget"] = to_json(item.widget)
+            else: #remove instance
+                logger.info("Section: Widget '%s' not installed, removing instance" % item.widget_id)
+                WidgetInstance.delete(item.id)
+                del json['instances'][index]
         return ['widgetinstance-sectionlist', json];
 
     def WSWidgetInstanceGetoptions(self, data):

@@ -65,7 +65,7 @@ body {
 	left: -1px;
 	bottom: -1px;
 	right: -1px;
-	z-index: 2;
+	z-index: 999;
 }
 
 .widget .editOverlay button {

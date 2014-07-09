@@ -1,0 +1,28 @@
+<script type="text/javascript" src='/widget/time/js/flipclock.min.js'></script>
+<link rel="stylesheet" href="/widget/time/css/flipclock.css">
+<polymer-element name="dmw-time-flipClock" extends="dmw-widget">
+	<template>
+		<style type="text/css">
+			:host {
+				height: 100%;
+			}
+			.flip-clock-wrapper {
+				margin: 0;
+			}
+		</style>
+		<shadow></shadow>
+		<div id='clock'>{{title}}</div>
+	</template>
+	<script>  
+		Polymer('dmw-time-flipClock', {
+			ready: function() {
+				this.super();
+			},
+			paramsReady: function() {
+				new FlipClock(this.$.clock, {
+					clockFace: 'TwentyFourHourClock'
+				});
+			},
+		});
+	</script>
+</polymer-element>

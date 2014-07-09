@@ -1,0 +1,36 @@
+{
+    "json_version" : 1,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "time",
+        "version" : 1,
+        "name" : "Time",
+        "description" : "Widgets for clock and time in general",
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
+    },
+    "widgets": {
+        "flipClock": {
+            "name" : "FlipClock",
+            "description" : "Based on flipclockjs.com library",
+            "height" : 1,
+            "width" : 5,
+            "options" : {
+                "12hr" : {
+                    "name": "Display in 12hr mode",
+                    "type": "boolean",
+                    "default": "False",
+                    "required": false
+                }
+            },
+            "commands" : {
+            },
+            "sensors" : {
+            },
+            "devices" : {
+            },
+            "css" : [],
+            "js" : []
+        }
+    }
+}
