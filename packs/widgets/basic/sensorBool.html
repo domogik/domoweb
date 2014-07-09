@@ -14,6 +14,9 @@
 	  			text-align: center;
 				font-size: 4em;
 			}
+			.glyphicon {
+				line-height: inherit;
+			}
 			#bool.true {
 				color: #5cb85c;
 			}
@@ -46,7 +49,7 @@
 					this.$.boolicon.className = 'glyphicon glyphicon-ok';
 					this.$.bool.classList.add('true');
 					this.$.bool.classList.remove('false');
-				} else {
+				} else if (value == 0) {
 					this.$.boolicon.className = 'glyphicon glyphicon-remove';
 					this.$.bool.classList.add('false');
 					this.$.bool.classList.remove('true');
