@@ -14,7 +14,7 @@
             "name" : "FlipClock",
             "description" : "Based on flipclockjs.com library",
             "height" : 1,
-            "width" : 5,
+            "width" : 6,
             "options" : {
                 "12hr" : {
                     "name": "Display in 12hr mode",

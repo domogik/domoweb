@@ -9,6 +9,14 @@
 			.flip-clock-wrapper {
 				margin: 0;
 			}
+			.flip-clock-wrapper ul {
+				border-radius: 0;
+				-webkit-border-radius: 0;
+				-moz-border-radius: 0;
+			}
+			.flip-clock-meridium a {
+				color: inherit;
+			}
 		</style>
 		<shadow></shadow>
 		<div id='clock'>{{title}}</div>
@@ -19,8 +27,13 @@
 				this.super();
 			},
 			paramsReady: function() {
+				if ('12hr' in this.options && this.options['12hr'] == 1) {
+					clockFace = 'TwelveHourClock';
+				} else { //24h
+					clockFace = 'TwentyFourHourClock';
+				}
 				new FlipClock(this.$.clock, {
-					clockFace: 'TwentyFourHourClock'
+					clockFace: clockFace
 				});
 			},
 		});
