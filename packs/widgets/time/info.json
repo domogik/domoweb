@@ -28,9 +28,27 @@
             "sensors" : {
             },
             "devices" : {
+            }
+        },
+        "digitalClock": {
+            "name" : "Digital Clock",
+            "description" : "Based on http://tutorialzine.com/2013/06/digital-clock/",
+            "height" : 1,
+            "width" : 4,
+            "options" : {
+                "dark" : {
+                    "name": "Dark theme",
+                    "type": "boolean",
+                    "default": "False",
+                    "required": false
+                }
             },
-            "css" : [],
-            "js" : []
+            "commands" : {
+            },
+            "sensors" : {
+            },
+            "devices" : {
+            }
         }
     }
 }
