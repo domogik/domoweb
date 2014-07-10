@@ -54,7 +54,7 @@
 				var weekday_names = 'MON TUE WED THU FRI SAT SUN'.split(' '),
 					weekday_holder = clock.find('.weekdays');
 				jQuery.each(weekday_names, function(){
-					weekday_holder.append('<span>' + this + '</span>');
+					weekday_holder.append('<span>' + i18n.t("time:weekday_short." + this) + '</span>');
 				});
 				this.weekdays = clock.find('.weekdays span');
 				this.update_time();

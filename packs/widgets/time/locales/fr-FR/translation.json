@@ -1,2 +1,11 @@
-{ 
+{
+	"weekday_short": {
+		"MON": "LUN",
+		"TUE": "MAR",
+		"WED": "MER",
+		"THU": "JEU",
+		"FRI": "VEN",
+		"SAT": "SAM",
+		"SUN": "DIM"
+	},
 }
