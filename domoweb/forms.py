@@ -60,7 +60,6 @@ class Form(Form):
 #    def _get_translations(self):
 #        return TornadoLocaleWrapper(self._handler.get_user_locale())
 
-
 class TornadoInputWrapper(object):
 
     def __init__(self, handler):
@@ -87,6 +86,11 @@ class TornadoInputWrapper(object):
 #    def ngettext(self, message, plural_message, count):
 #        return self.locale.translate(message, plural_message, count)
 
+class BooleanField(BooleanField):
+    def process_data(self, value):
+        if isinstance(value, str) or isinstance(value, unicode):
+            value = int(value)
+        self.data = bool(value)
 
 class ParametersForm(Form):
     def __init__(self, *args, **kwargs):
@@ -122,7 +126,7 @@ class ParametersForm(Form):
 #            validators.append(InputRequired())
 #        else
 #            validators.append(Optional())
-        setattr(cls, key, BooleanField(label, default=default, validators=validators, description=help_text))
+        setattr(cls, key, BooleanField(label, default=default, validators=validators, description=help_text, ))
 
     @classmethod
     def addGroupedModelChoiceField(cls, key, label, queryset, group_by_field, empty_label, required, help_text=None):
