@@ -31,6 +31,7 @@ class Widget(Base):
 	name = Column(Unicode(50))
 	height = Column(Integer(), default=1)
 	width = Column(Integer(), default=1)
+	default_style = Column(Boolean(), default=1)
 	
 	@classmethod
 	def getAll(cls):
