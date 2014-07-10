@@ -67,6 +67,10 @@
 				}
 				var widget = document.createElement('dmw-' + instance.widget.set_id + '-' + instance.widget.set_ref);
 				widget.classList.add('widget');
+				if (instance.widget.default_style) {
+					widget.classList.add('widgetstyle');
+				}
+
 				widget.setAttribute('instanceid', instance.id);
 				widget.setAttribute('tabindex', 0);
 				if (instance.widget.width > 1) {

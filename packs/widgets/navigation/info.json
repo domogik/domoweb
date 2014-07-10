@@ -14,6 +14,7 @@
             "name" : "Section title",
             "height" : 1,
             "width" : 3,
+            "default_style" : false,
             "options" : {
                 "overrideLabel" : {
                     "name": "Override label",
