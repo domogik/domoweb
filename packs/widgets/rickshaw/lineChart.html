@@ -65,22 +65,15 @@
 			history1Changed: function(oldValue, newValue) {
 				var self = this;
 			    serie = []
-			    txt=""
-			    a=1;
 			    for (var i = 0; i < newValue.length; i++) {
 			    	var date = moment(newValue[i]['date']).unix();
-			    	if (date > a) {
-				    	serie.push( {x:date, y: newValue[i]['value_num']})
-				    	txt += JSON.stringify({x:date, y: newValue[i]['value_num']})+",";
-				    	a = date;
-			    	}
+			    	serie.push( {x:date, y: newValue[i]['value_num']})
 			    };
 				this.data.push({
 			        color: 'steelblue',
 			        data: serie,
 			        name: this.$.serie1.name + " (" + this.$.serie1.device["name"] + ")"
 			    });
-			    console.debug(txt);
 
 				self.$.legend.innerHTML = '';
 				var legend = new Rickshaw.Graph.Legend( {
