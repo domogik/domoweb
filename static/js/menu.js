@@ -84,11 +84,13 @@
 					var saveConfig = modalOverlay.querySelector('#saveConfig');
 					var cancelConfig = modalOverlay.querySelector('#cancelConfig');
 					var formConfig = modalOverlay.querySelector('#formConfig');
+				    var section = document.querySelector('.mainsection');
+
 					saveConfig.addEventListener("click",
 						function(e) {
 							ajax.setAttribute('body', serialize(formConfig));
 							ajax.setAttribute('method', 'POST');
-							ajax.setAttribute('params', '{"action":"section", "id":"' + sectionid + '"}');
+							ajax.setAttribute('params', '{"action":"section", "id":"' + section.sectionid + '"}');
 							ajax.go();
 							e.preventDefault();
 							e.stopPropagation();
