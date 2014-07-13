@@ -100,6 +100,7 @@ class WSHandler(websocket.WebSocketHandler):
             'widgetinstance-getcommands' : self.WSWidgetInstanceGetcommands,
             'datatype-getall' : self.WSDatatypesGetall,
             'command-send' : self.WSCommandSend,
+            'sensor-gethistory': self.WSSensorGetHistory,
         }[jsonmessage[0]](jsonmessage[1])
         if (data):
             self.sendMessage(data)
@@ -170,6 +171,12 @@ class WSHandler(websocket.WebSocketHandler):
         msg.add_data('cmdid', data['command_id'])
         msg.add_data('cmdparams', data['parameters'])
         return cli.request('xplgw', msg.get(), timeout=10).get()
+
+    def WSSensorGetHistory(self, data):
+        import requests
+        response = requests.get('http://127.0.0.1:40405/sensorhistory/id/%d/from/%d/to/%d' % (data['id'],data['from'],data['to']))
+        json = {'id':data['id'], 'history':response.json()}
+        return ['sensor-history', json];
 
     def sendMessage(self, content):
         data=json.dumps(content)

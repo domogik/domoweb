@@ -1,4 +1,4 @@
-<polymer-element name="dmw-sensor" attributes="sensorid sensorkey sensorvalue">
+<polymer-element name="dmw-sensor" attributes="sensorid sensorkey sensorvalue sensorhistory">
 	<template>
 	    <web-socket id="socket"></web-socket>
 	</template>
@@ -10,8 +10,12 @@
 			statsReceived: function(topic, json) {
 		        this.sensorvalue=json.stored_value;
 		    },
+			historyReceived: function(topic, json) {
+		        this.sensorhistory=json['history'];
+		    },
 		    sensoridChanged: function(oldValue, newValue) {
 		    	this.$.socket.register('device-stats', this.statsReceived.bind(this), 'sensor_id', newValue);
+		    	this.$.socket.register('sensor-history', this.historyReceived.bind(this), 'id', newValue);
 		    },
 		    init: function(sensor) {
 		    	this.name = sensor['name'];
@@ -21,6 +25,9 @@
 		    	this.device = sensor['device'];
 		    	this.datatype_id = sensor['datatype_id'];
 				this.isSet = true;
+		    },
+		    getHistory: function(from, to) {
+		    	this.$.socket.send("sensor-gethistory", {'id': this.sensorid, 'from': from, 'to': to});
 		    }
 		});
 	</script>

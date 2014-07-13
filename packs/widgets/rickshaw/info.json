@@ -1,0 +1,41 @@
+{
+    "json_version" : 1,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "rickshaw",
+        "version" : 1,
+        "name" : "Rickshaw Graphs",
+        "description" : "Widgets for graphs using the Rickshaw librarie (http://code.shutterstock.com/rickshaw/)",
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
+    },
+    "widgets": {
+        "lineChart": {
+            "name" : "Line Chart",
+            "description" : "Simple Line Chart",
+            "height" : 4,
+            "width" : 6,
+            "default_style" : false,
+            "options" : {
+            },
+            "commands" : {
+            },
+            "sensors" : {
+                "serie1" : {
+                    "name": "Data 1",
+                    "description": "First data serie",
+                    "types" : ["DT_Number"],
+                    "required": true                   
+                },
+                "serie2" : {
+                    "name": "Data 2",
+                    "description": "Second data serie",
+                    "types" : ["DT_Number"],
+                    "required": false                 
+                }
+            },
+            "devices" : {
+            }
+        }
+    }
+}
