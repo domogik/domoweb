@@ -35,8 +35,8 @@
 			},
 			paramsReady: function() {
 				if (this.$.primary.isSet) {
-					this.labelprimary = this.$.primary.name;
-					this.labelsecondary = this.$.primary.device['name'];
+					this.labelprimary = this.$.primary.device['name'];
+					this.labelsecondary = this.$.primary.name;
 					this.displayValue(this.$.primary.last_value);
 				}
 			},

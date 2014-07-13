@@ -28,8 +28,8 @@
 			},
 			paramsReady: function() {
 				if (this.$.primary.isSet) {
-					this.labelprimary = this.$.primary.name;
-					this.labelsecondary = this.$.primary.device['name'];
+					this.labelprimary = this.$.primary.device['name'];
+					this.labelsecondary = this.$.primary.name;
 					this.$.send.addEventListener('click', this.send.bind(this));
 				}
 			},

@@ -38,8 +38,8 @@
 					this.hasFeedback = true;
 				}
 				if (this.$.primary.isSet) {
-					this.labelprimary = this.$.primary.name;
-					this.labelsecondary = this.$.primary.device['name'];
+					this.labelprimary = this.$.primary.device['name'];
+					this.labelsecondary = this.$.primary.name;
 					this.sendtext = i18n.t("basic:bool." + this.nextValue, { context: this.$.primary.parameters[0]['datatype_id'] });
 					this.$.send.addEventListener('click', this.send.bind(this));					
 				}
