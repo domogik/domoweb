@@ -97,10 +97,11 @@
 				socket.send("widgetinstance-getsection", {'section_id':newValue});
 		    },
 		    orderChanged: function() {
+    	      	var socket = document.querySelector('#socket');
 				var itemElems = this.wall.getItemElements();
 				for ( var i=0, len = itemElems.length; i < len; i++ ) {
 					var elem = itemElems[i];
-					this.$.socket.send("widgetinstance-order", {'instance_id':elem.getAttribute('instanceid'), 'order':i+1});
+					socket.send("widgetinstance-order", {'instance_id':elem.getAttribute('instanceid'), 'order':i+1});
 				}
 			},
 			editChanged: function(oldValue, newValue) {
