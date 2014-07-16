@@ -12,8 +12,9 @@
 				-ms-transform: translateY(-50%);
 				transform: translateY(-50%);
 	  			text-align: center;
-				font-size: 4em;
 				overflow: hidden;
+				display: inline-block;
+				padding: 10px;
 			}
 			#unit {
 				position: absolute;
@@ -49,13 +50,23 @@
 				   	var k = 1000;
 				   	var sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
 				   	var i = Math.floor(Math.log(number) / Math.log(k));
-					this.number = (number / Math.pow(k, i)).toPrecision(3);
+					this.$.number.innerHTML = (number / Math.pow(k, i)).toPrecision(3);
 					this.unit = sizes[i] + i18n.t("basic:unit", { context: this.$.primary.datatype_id, value: unit });
 				} else {
-					this.number = number;
+					this.$.number.innerHTML = number;
+					adjustText(this, this.$.number);
 					this.unit = i18n.t("basic:unit", { context: this.$.primary.datatype_id, value: unit });
 				}
-			}
+				adjustText(this, this.$.number);
+			},
 		});
+		function adjustText(parent, element) {
+			var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
+			var i = fontsize.substr(0,2);
+			while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
+			    element.style.fontSize = i+"px";
+			    i++;
+			}			
+		}
 	</script>
 </polymer-element>

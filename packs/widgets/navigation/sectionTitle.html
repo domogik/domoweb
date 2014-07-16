@@ -1,11 +1,10 @@
-<script type="text/javascript" src='/libraries/FitText/jquery.fittext.js'></script>
-
 <polymer-element name="dmw-navigation-sectionTitle" extends="dmw-widget">
 	<template>
 		<style type="text/css">
 			:host {
 				height: 100%;
 				padding: 5px;
+				color: #ffffff;
 			}
 			#labelprimary {
 				position: relative;
@@ -36,17 +35,25 @@
 			},
 			sectionUpdated: function() {
 				if (this.options['overrideLabel']) {
-					this.labelprimary = this.options['overrideLabel'];
+					this.$.labelprimary.innerHTML = this.options['overrideLabel'];
 				} else {
-					this.labelprimary = this.section.name;
+					this.$.labelprimary.innerHTML = this.section.name;
 				}
 				if (this.options['overrideDescription']) {
 					this.labelsecondary = this.options['overrideDescription'];
 				} else {
 					this.labelsecondary = this.section.description;
 				}
-				jQuery(this.$.labelprimary).fitText(0.7);
+				adjustText(this, this.$.labelprimary);
 			}
 		});
+		function adjustText(parent, element) {
+			var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
+			var i = fontsize.substr(0,2);
+			while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
+			    element.style.fontSize = i+"px";
+			    i++;
+			}			
+		}
 	</script>
 </polymer-element>
