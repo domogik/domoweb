@@ -31,6 +31,13 @@ class MainHandler(RequestHandler):
             packs = packs,
             )
 
+class TestHandler(RequestHandler):
+    def get(self, id):
+        instance = WidgetInstance.get(id);
+        self.render('test.html',
+            instance = instance,
+            )
+
 class ConfigurationHandler(RequestHandler):
     def get(self):
         action = self.get_argument('action', None)
