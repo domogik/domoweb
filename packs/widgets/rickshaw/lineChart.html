@@ -73,7 +73,6 @@
 			    serie = []
 			    for (var i = 0; i < newValue.length; i++) {
 			    	var date = moment(newValue[i]['date']).unix();
-			    	console.debug(date);
 			    	serie.push( {x:date, y: newValue[i]['value_num']})
 			    };
 				this.data.push({
