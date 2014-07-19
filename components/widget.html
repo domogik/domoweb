@@ -25,10 +25,16 @@
 				this.commandsReady = false;
 				this.datatypesReady = false;
 
-				this.$.datatypes.addEventListener("datatype-received", function() {
+				if (this.datatypes) {
 					this.datatypesReady = true;
 					if (this.options && this.commandsReady && this.sensorsReady) this.paramsReady();
-				});
+				} else {
+					var self = this;
+					this.$.datatypes.addEventListener("datatype-received", function() {
+						self.datatypesReady = true;
+						if (self.options && self.commandsReady && self.sensorsReady) self.paramsReady();
+					});					
+				}
 			},
 			removeWidget: function(e) {
 		    	this.$.socket.send("widgetinstance-remove", {'instance_id':this.instanceid});
