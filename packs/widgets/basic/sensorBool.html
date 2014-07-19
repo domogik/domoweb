@@ -44,7 +44,7 @@
 				this.displayValue(newValue);
 			},
 			displayValue: function(value) {
-				this.booltext = i18n.t("basic:bool." + value, { context: this.$.primary.datatype_id });
+				this.booltext = i18n.t("domoweb:bool." + value, { context: this.$.primary.datatype_id });
 				if (value == 1) {
 					this.$.boolicon.className = 'glyphicon glyphicon-ok';
 					this.$.bool.classList.add('true');
