@@ -22,7 +22,7 @@
 			},
 			datatypesReceived: function(topic, json) {
 	        	_list=json;
-	        	this.fire('datatype-received');
+	        	this.asyncFire('datatype-received');
 	    	},
 	    });
 	})();

@@ -23,17 +23,9 @@
 			ready: function() {
 				this.sensorsReady = false;
 				this.commandsReady = false;
-				this.datatypesReady = false;
 
-				if (this.datatypes) {
-					this.datatypesReady = true;
-					if (this.options && this.commandsReady && this.sensorsReady) this.paramsReady();
-				} else {
-					var self = this;
-					this.$.datatypes.addEventListener("datatype-received", function() {
-						self.datatypesReady = true;
-						if (self.options && self.commandsReady && self.sensorsReady) self.paramsReady();
-					});					
+				if (this.datatypes === null) {
+					this.$.datatypes.addEventListener("datatype-received", this.datatypesReceived.bind(this));	
 				}
 			},
 			removeWidget: function(e) {
@@ -87,6 +79,9 @@
 		    	this.$.socket.register('widgetinstance-commands', this.commandsReceived.bind(this), 'instance_id', newValue);
 		    	this.$.socket.send("widgetinstance-getcommands", {'instance_id': newValue});
 			},
+			datatypesReceived: function() {
+				if (this.options && this.commandsReady && this.sensorsReady) this.paramsReady();
+			},
 			optionsReceived: function(topic, json) {
 				this.options = json['options'];
 				/* Apply override controls */
@@ -115,7 +110,7 @@
 				} else {					
 					this.style.borderRadius = null;
 				}
-				if (this.sensorsReady && this.commandsReady && this.datatypesReady) this.paramsReady();
+				if (this.sensorsReady && this.commandsReady && this.datatypes) this.paramsReady();
 			},
 			sensorsReceived: function(topic, json) {
 				for (var key in json['sensors']) {
@@ -126,7 +121,7 @@
 					}
 				}
 				this.sensorsReady = true;
-				if (this.options && this.commandsReady && this.datatypesReady) this.paramsReady();
+				if (this.options && this.commandsReady && this.datatypes) this.paramsReady();
 			},
 			commandsReceived: function(topic, json) {
 				for (var key in json['commands']) {
@@ -137,7 +132,7 @@
 					}
 				}
 				this.commandsReady = true;
-				if (this.options && this.commandsReady && this.datatypesReady) this.paramsReady();
+				if (this.options && this.commandsReady && this.datatypes) this.paramsReady();
 			},
 			get datatypes() {
 				return this.$.datatypes.list;
