@@ -21,8 +21,14 @@
 	<script>
 		Polymer("dmw-widget", {
 			ready: function() {
-				this.sensors = false;
-				this.commands = false;
+				this.sensorsReady = false;
+				this.commandsReady = false;
+				this.datatypesReady = false;
+
+				this.$.datatypes.addEventListener("datatype-received", function() {
+					this.datatypesReady = true;
+					if (this.options && this.commandsReady && this.sensorsReady) this.paramsReady();
+				});
 			},
 			removeWidget: function(e) {
 		    	this.$.socket.send("widgetinstance-remove", {'instance_id':this.instanceid});
@@ -103,7 +109,7 @@
 				} else {					
 					this.style.borderRadius = null;
 				}
-				if (this.sensors && this.commands) this.paramsReady();
+				if (this.sensorsReady && this.commandsReady && this.datatypesReady) this.paramsReady();
 			},
 			sensorsReceived: function(topic, json) {
 				for (var key in json['sensors']) {
@@ -113,8 +119,8 @@
 						dmwsensor.init(sensor);
 					}
 				}
-				this.sensors = true;
-				if (this.options && this.commands) this.paramsReady();
+				this.sensorsReady = true;
+				if (this.options && this.commandsReady && this.datatypesReady) this.paramsReady();
 			},
 			commandsReceived: function(topic, json) {
 				for (var key in json['commands']) {
@@ -124,8 +130,8 @@
 						dmwcommand.init(command);
 					}
 				}
-				this.commands = true;
-				if (this.options && this.commands) this.paramsReady();
+				this.commandsReady = true;
+				if (this.options && this.commandsReady && this.datatypesReady) this.paramsReady();
 			},
 			get datatypes() {
 				return this.$.datatypes.list;
