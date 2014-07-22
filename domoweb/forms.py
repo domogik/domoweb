@@ -4,7 +4,7 @@ import itertools
 from collections import OrderedDict
 from wtforms import Form, StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, widgets
 from wtforms.validators import InputRequired, Length, Email, URL, IPAddress, NumberRange, Optional
-from domoweb.models import WidgetOption, WidgetSensor, WidgetCommand, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, Device, Sensor, Command, DataType
+from domoweb.models import WidgetOption, WidgetSensor, WidgetCommand, WidgetDevice, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, Device, Sensor, Command, DataType
 from wtforms_components import SelectField
 
 """
@@ -138,7 +138,10 @@ class ParametersForm(Form):
         else:
             validators.append(Optional())
         choices = [('', empty_label)]
-        choices += [(k, map(lambda g: (unicode(g[2]), g[3]), group)) for k, group in groupby(queryset, key=itemgetter(1))]
+        if group_by_field:
+            choices += [(k, map(lambda g: (unicode(g[2]), g[3]), group)) for k, group in groupby(queryset, key=itemgetter(1))]
+        else:
+            choices += [(unicode(g[2]), g[3]) for g in queryset]
         setattr(cls, key, SelectField(label, validators=validators, choices=choices, description=help_text))
     
 
@@ -375,6 +378,22 @@ class WidgetCommandsForm(ParametersForm):
                 value = ', '.join(value)
             WidgetInstanceCommand.saveKey(instance_id=self.instance.id, key=key, command_id=value)
 
+class WidgetDevicesForm(ParametersForm):
+    def __init__(self, *args, **kwargs):
+        super(WidgetDevicesForm, self).__init__(*args, **kwargs)
+
+    @classmethod
+    def addField(cls, option):
+        types = json.loads(option.types)
+        devices = Device.getTypesFilter(types=types)
+        cls.addGroupedModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=devices, group_by_field='type', empty_label="--Select Device--", help_text=option.description)
+
+    def save(self):
+        for key, value in self.data.iteritems():
+            if isinstance(value, list):
+                value = ', '.join(value)
+            WidgetInstanceDevice.saveKey(instance_id=self.instance.id, key=key, device_id=value)
+
 class WidgetGeneralForm(Form):
     general_debug = BooleanField(u'Debug', default=False, description=u'Enable widget debug mode')
     general_backgroundColor = StringField(u'Background Color', description=u'Override default background color')
@@ -392,6 +411,7 @@ class WidgetInstanceForms(object):
     has_options = False
     has_sensors = False
     has_commands = False
+    has_devices = False
 
     def __init__(self, instance, handler=None):
         class OptionsForm(WidgetOptionsForm):
@@ -399,6 +419,8 @@ class WidgetInstanceForms(object):
         class SensorsForm(WidgetSensorsForm):
             pass
         class CommandsForm(WidgetCommandsForm):
+            pass
+        class DevicesForm(WidgetDevicesForm):
             pass
 
         widgetoptions = WidgetOption.getWidget(instance.widget_id)
@@ -410,6 +432,10 @@ class WidgetInstanceForms(object):
         widgetcommands = WidgetCommand.getWidget(instance.widget_id)
         if widgetcommands:
             self.has_commands = True
+        widgetdevices = WidgetDevice.getWidget(instance.widget_id)
+        if widgetdevices:
+            self.has_devices = True
+
         if not handler:
             options = WidgetInstanceOption.getInstance(instance.id)
             dataOptions = dict([(r.key, r.value) for r in options])
@@ -417,10 +443,13 @@ class WidgetInstanceForms(object):
             dataSensors = dict([(r.key, r.sensor_id) for r in sensors])
             commands = WidgetInstanceCommand.getInstance(instance.id)
             dataCommands = dict([(r.key, r.command_id) for r in commands])
+            devices = WidgetInstanceDevice.getInstance(instance.id)
+            dataDevices = dict([(r.key, r.device_id) for r in devices])
         else:
             dataOptions = None
             dataSensors = None
             dataCommands = None
+            dataDevices = None
 
         for option in widgetoptions:
             OptionsForm.addField(option=option)
@@ -428,16 +457,20 @@ class WidgetInstanceForms(object):
             SensorsForm.addField(option=option)
         for option in widgetcommands:
             CommandsForm.addField(option=option)
+        for option in widgetdevices:
+            DevicesForm.addField(option=option)
 
         self.optionsform = OptionsForm(instance=instance, handler=handler, data=dataOptions, prefix='optionparam_')
         self.sensorsform = SensorsForm(instance=instance, handler=handler, data=dataSensors, prefix='sensorparam_')
         self.commandsform = CommandsForm(instance=instance, handler=handler, data=dataCommands, prefix='commandparam_')
+        self.devicesform = DevicesForm(instance=instance, handler=handler, data=dataDevices, prefix='deviceparam_')
         self.generalform = WidgetGeneralForm(instance=instance, handler=handler, data=dataOptions, prefix='generalparam_')
 
     def validate(self):
         valid = self.optionsform.validate()
         valid = self.sensorsform.validate() and valid
         valid = self.commandsform.validate() and valid
+        valid = self.devicesform.validate() and valid
         valid = self.generalform.validate() and valid
         return valid
 
@@ -445,4 +478,5 @@ class WidgetInstanceForms(object):
         self.optionsform.save()
         self.sensorsform.save()
         self.commandsform.save()
+        self.devicesform.save()
         self.generalform.save()

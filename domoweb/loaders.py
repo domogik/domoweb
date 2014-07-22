@@ -52,73 +52,77 @@ class packLoader:
                                     w.default_style = True
 
                                 # Options
-                                for pid, param in widget['options'].items():
-                                    id = "%s-%s" % (widget_id, pid)
-                                    try:
-                                        description = unicode(param['description'])
-                                    except KeyError:
-                                        description = None
-                                    p = WidgetOption(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), type=param['type'])
-                                    if 'description' in param:
-                                        p.description = unicode(param['description'])
-                                    if 'default' in param:
-                                        p.default = param['default']
-                                    if 'required' in param:
-                                        p.required = param['required']
-                                    else:
-                                        p.required = True
-                                    parameters={}
-                                    if 'min_length' in param:
-                                        parameters['min_length'] = param['min_length']
-                                    if 'max_length' in param:
-                                        parameters['max_length'] = param['max_length']
-                                    if 'min_value' in param:
-                                        parameters['min_value'] = param['min_value']
-                                    if 'multilignes' in param:
-                                        parameters['multilignes'] = param['multilignes']
-                                    if 'max_value' in param:
-                                        parameters['max_value'] = param['max_value']
-                                    if 'mask' in param:
-                                        parameters['mask'] = param['mask']
-                                    if 'choices' in param:
-                                        parameters['choices'] = param['choices']
-                                    p.parameters=unicode(json.dumps(parameters))
-                                    session.add(p)
-                                # Sensors parameters
-                                for pid, param in widget['sensors'].items():
-                                    id = "%s-%s" % (widget_id, pid)
-                                    p = WidgetSensor(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), types=json.dumps(list(param['types'])))
-                                    if 'description' in param:
-                                        p.description = unicode(param['description'])
-                                    if 'filters' in param:
-                                        p.filters = ', '.join(param['filters'])
-                                    if 'required' in param:
-                                        p.required = param['required']
-                                    else:
-                                        p.required = True
-                                    session.add(p)
-                                # Commands parameters
-                                for pid, param in widget['commands'].items():
-                                    id = "%s-%s" % (widget_id, pid)
-                                    p = WidgetCommand(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), types=json.dumps(param['types']))
-                                    if 'description' in param:
-                                        p.description = unicode(param['description'])
-                                    if 'filters' in param:
-                                        p.filters = ', '.join(param['filters'])
-                                    if 'required' in param:
-                                        p.required = param['required']
-                                    else:
-                                        p.required = True
-                                    session.add(p)
-                                # Devices parameters
-                                for pid, param in widget['devices'].items():
-                                    id = "%s-%s" % (widget_id, pid)
-                                    p = WidgetDevice(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(param['types']))
-                                    if 'required' in param:
-                                        p.required = param['required']
-                                    else:
-                                        p.required = True
-                                    session.add(p)
+                                if 'options' in widget:
+                                    for pid, param in widget['options'].items():
+                                        id = "%s-%s" % (widget_id, pid)
+                                        try:
+                                            description = unicode(param['description'])
+                                        except KeyError:
+                                            description = None
+                                        p = WidgetOption(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), type=param['type'])
+                                        if 'description' in param:
+                                            p.description = unicode(param['description'])
+                                        if 'default' in param:
+                                            p.default = param['default']
+                                        if 'required' in param:
+                                            p.required = param['required']
+                                        else:
+                                            p.required = True
+                                        parameters={}
+                                        if 'min_length' in param:
+                                            parameters['min_length'] = param['min_length']
+                                        if 'max_length' in param:
+                                            parameters['max_length'] = param['max_length']
+                                        if 'min_value' in param:
+                                            parameters['min_value'] = param['min_value']
+                                        if 'multilignes' in param:
+                                            parameters['multilignes'] = param['multilignes']
+                                        if 'max_value' in param:
+                                            parameters['max_value'] = param['max_value']
+                                        if 'mask' in param:
+                                            parameters['mask'] = param['mask']
+                                        if 'choices' in param:
+                                            parameters['choices'] = param['choices']
+                                        p.parameters=unicode(json.dumps(parameters))
+                                        session.add(p)
+                                if 'sensors' in widget:
+                                    # Sensors parameters
+                                    for pid, param in widget['sensors'].items():
+                                        id = "%s-%s" % (widget_id, pid)
+                                        p = WidgetSensor(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), types=json.dumps(list(param['types'])))
+                                        if 'description' in param:
+                                            p.description = unicode(param['description'])
+                                        if 'filters' in param:
+                                            p.filters = ', '.join(param['filters'])
+                                        if 'required' in param:
+                                            p.required = param['required']
+                                        else:
+                                            p.required = True
+                                        session.add(p)
+                                if 'commands' in widget:
+                                    # Commands parameters
+                                    for pid, param in widget['commands'].items():
+                                        id = "%s-%s" % (widget_id, pid)
+                                        p = WidgetCommand(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), types=json.dumps(param['types']))
+                                        if 'description' in param:
+                                            p.description = unicode(param['description'])
+                                        if 'filters' in param:
+                                            p.filters = ', '.join(param['filters'])
+                                        if 'required' in param:
+                                            p.required = param['required']
+                                        else:
+                                            p.required = True
+                                        session.add(p)
+                                if 'devices' in widget:
+                                    # Devices parameters
+                                    for pid, param in widget['devices'].items():
+                                        id = "%s-%s" % (widget_id, pid)
+                                        p = WidgetDevice(id=id, widget_id=widget_id, key=pid, name=unicode(param['name']), description=unicode(param['description']), types=json.dumps(param['types']))
+                                        if 'required' in param:
+                                            p.required = param['required']
+                                        else:
+                                            p.required = True
+                                        session.add(p)
         session.commit()
         session.close()
 

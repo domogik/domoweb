@@ -80,7 +80,24 @@
           {% end %}
           </div>
           {% end %}
-          <div class="tab-pane{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) %} active{% end %}" id="general">
+          {% if forms.has_devices %}
+          <div class="tab-pane{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) %} active{% end %}" id="devices">
+          {% for field in forms.devicesform %}
+          <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
+            {% raw field.label() %}
+            {% raw field(class_='form-control') %}
+              {% if field.description %}
+              <em>{% raw field.description %}</em>
+              {% end %}
+            {% if field.errors %}
+            <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+            <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+            {% end %}
+          </div>
+          {% end %}
+          </div>
+          {% end %}
+          <div class="tab-pane{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) and not(forms.has_devices) %} active{% end %}" id="general">
             {% for field in forms.generalform %}
             <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
               {% raw field.label() %}

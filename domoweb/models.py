@@ -133,6 +133,14 @@ class WidgetDevice(Base):
 	description = Column(Unicode(255), nullable=True)
 	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
 
+	@classmethod
+	def getWidget(cls, widget_id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).filter_by(widget_id=widget_id).all()
+		session.close()
+		return s
+
 class SectionIcon(Base):
 	__tablename__ = 'sectionIcon'
 	id = Column(String(50), primary_key=True)
@@ -253,6 +261,15 @@ class Device(Base):
 		session.query(Sensor).delete()
 		session.commit()
 		session.flush()
+
+	@classmethod
+	def getTypesFilter(cls, types):
+		session = Session()
+		s = session.query(cls.type, cls.type, cls.id, cls.name).\
+			filter(cls.type.in_(types)).\
+			order_by(cls.id).all()
+		session.close()
+		return s
 
 class Command(Base):
 	__tablename__ = 'command'
@@ -497,6 +514,52 @@ class WidgetInstanceCommand(Base):
 		if not s:
 			s = cls(instance_id=instance_id, key=key)
 		s.command_id = command_id
+		session.add(s)
+		session.commit()
+		session.flush()
+		session.close()
+		return s
+
+class WidgetInstanceDevice(Base):
+	__tablename__ = 'widgetInstanceDevice'
+	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), primary_key=True, nullable=False)
+	instance = relationship("WidgetInstance")
+	key = Column(String(50), primary_key=True)
+	device_id = Column(Integer(), ForeignKey('device.id'))
+	device = relationship("Device")
+	
+	@classmethod
+	def getKey(cls, instance_id, key):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
+		session.close()
+		return s
+
+	@classmethod
+	def getInstance(cls, instance_id):
+		session = Session()
+		s = session.query(cls).options(joinedload('device')).filter_by(instance_id = instance_id).all()
+		session.expunge_all()
+		session.close()
+		return s
+
+	@classmethod
+	def getInstanceDict(cls, instance_id):
+		r = cls.getInstance(instance_id)
+		d = {}
+		for i, o in enumerate(r):
+			if (o.device):
+				d[o.key] = to_json(o.device)
+				#d[o.key]['device'] = to_json(o.sensor.device)
+		return d
+
+	@classmethod
+	def saveKey(cls, instance_id, key, device_id):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
+		if not s:
+			s = cls(instance_id=instance_id, key=key)
+		s.device_id = device_id
 		session.add(s)
 		session.commit()
 		session.flush()
