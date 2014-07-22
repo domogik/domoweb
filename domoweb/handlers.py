@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from tornado import web, websocket
+from tornado.options import options
 from tornado.web import RequestHandler, StaticFileHandler
 from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, SectionParam
 from domoweb.forms import WidgetInstanceForms
@@ -181,7 +182,7 @@ class WSHandler(websocket.WebSocketHandler):
 
     def WSSensorGetHistory(self, data):
         import requests
-        response = requests.get('http://127.0.0.1:40405/sensorhistory/id/%d/from/%d/to/%d' % (data['id'],data['from'],data['to']))
+        response = requests.get('%s/sensorhistory/id/%d/from/%d/to/%d' % (options.rest_url, data['id'],data['from'],data['to']))
         json = {'id':data['id'], 'history':response.json()}
         return ['sensor-history', json];
 
