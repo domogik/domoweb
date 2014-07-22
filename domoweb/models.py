@@ -437,10 +437,9 @@ class WidgetInstanceSensor(Base):
 		r = cls.getInstance(instance_id)
 		d = {}
 		for i, o in enumerate(r):
-			if (o.sensor) {
+			if (o.sensor):
 				d[o.key] = to_json(o.sensor)
 				d[o.key]['device'] = to_json(o.sensor.device)
-			}
 		return d
 
 	@classmethod
@@ -484,12 +483,11 @@ class WidgetInstanceCommand(Base):
 		r = cls.getInstance(instance_id)
 		d = {}
 		for i, o in enumerate(r):
-			if (o.command) {
+			if (o.command):
 				d[o.key] = to_json(o.command)
 				parameters = CommandParam.getCommand(command_id=o.command_id)
 				d[o.key]['parameters'] = to_json(parameters)
 				d[o.key]['device'] = to_json(o.command.device)			
-			}
 		return d
 
 	@classmethod
