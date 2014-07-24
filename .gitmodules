@@ -19,3 +19,6 @@
 [submodule "static/libraries/i18next"]
 	path = static/libraries/i18next
 	url = https://github.com/jamuhl/i18next.git
+[submodule "static/libraries/d3"]
+	path = static/libraries/d3
+	url = https://github.com/mbostock/d3.git
