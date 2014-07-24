@@ -23,6 +23,7 @@
 			ready: function() {
 				this.sensorsReady = false;
 				this.commandsReady = false;
+				this.devicesReady = false;
 
 				if (this.datatypes === null) {
 					this.$.datatypes.addEventListener("datatype-received", this.datatypesReceived.bind(this));	
@@ -78,9 +79,11 @@
 		    	this.$.socket.send("widgetinstance-getsensors", {'instance_id': newValue});
 		    	this.$.socket.register('widgetinstance-commands', this.commandsReceived.bind(this), 'instance_id', newValue);
 		    	this.$.socket.send("widgetinstance-getcommands", {'instance_id': newValue});
+		    	this.$.socket.register('widgetinstance-devices', this.devicesReceived.bind(this), 'instance_id', newValue);
+		    	this.$.socket.send("widgetinstance-getdevices", {'instance_id': newValue});
 			},
 			datatypesReceived: function() {
-				if (this.options && this.commandsReady && this.sensorsReady) this.paramsReady();
+				if (this.options && this.commandsReady && this.sensorsReady && this.devicesReady) this.paramsReady();
 			},
 			optionsReceived: function(topic, json) {
 				this.options = json['options'];
@@ -110,7 +113,7 @@
 				} else {					
 					this.style.borderRadius = null;
 				}
-				if (this.sensorsReady && this.commandsReady && this.datatypes) this.paramsReady();
+				if (this.sensorsReady && this.commandsReady && this.devicesReady && this.datatypes) this.paramsReady();
 			},
 			sensorsReceived: function(topic, json) {
 				for (var key in json['sensors']) {
@@ -121,7 +124,7 @@
 					}
 				}
 				this.sensorsReady = true;
-				if (this.options && this.commandsReady && this.datatypes) this.paramsReady();
+				if (this.options && this.commandsReady && this.devicesReady && this.datatypes) this.paramsReady();
 			},
 			commandsReceived: function(topic, json) {
 				for (var key in json['commands']) {
@@ -132,7 +135,30 @@
 					}
 				}
 				this.commandsReady = true;
-				if (this.options && this.commandsReady && this.datatypes) this.paramsReady();
+				if (this.options && this.commandsReady && this.devicesReady && this.datatypes) this.paramsReady();
+			},
+			devicesReceived: function(topic, json) {
+				for (var key in json['devices']) {
+					var device = json['devices'][key];
+					if ('sensors' in device) {
+						for (var key in device['sensors']) {
+							var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
+							if (dmwsensor) {
+								dmwsensor.init(device['sensors'][key]);
+							}
+						}
+					}
+					if ('commands' in device) {
+						for (var key in device['commands']) {
+							var dmwcommand = this.shadowRoot.querySelector('dmw-command[commandkey="' + key + '"]');
+							if (dmwcommand) {
+								dmwcommand.init(device['commands'][key]);
+							}
+						}
+					}
+				}
+				this.devicesReady = true;
+				if (this.options && this.commandsReady && this.sensorsReady && this.datatypes) this.paramsReady();
 			},
 			get datatypes() {
 				return this.$.datatypes.list;

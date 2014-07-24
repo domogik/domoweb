@@ -276,7 +276,7 @@ class Command(Base):
 	id = Column(Integer(), primary_key=True)
 	name = Column(Unicode(50))
 	device_id = Column(Integer(), ForeignKey('device.id', ondelete="cascade"), nullable=False)
-	device = relationship("Device", cascade="all")
+	device = relationship("Device", cascade="all", backref="commands")
 	reference = Column(String(50))
 	return_confirmation = Column(Boolean(), default=True)
 	datatypes = Column(String(255), nullable=False)
@@ -313,7 +313,7 @@ class Sensor(Base):
 	id = Column(Integer(), primary_key=True)
 	name = Column(Unicode(50))
 	device_id = Column(Integer(), ForeignKey('device.id', ondelete="cascade"), nullable=False)
-	device = relationship("Device", cascade="all")
+	device = relationship("Device", cascade="all", backref="sensors")
 	reference = Column(String(50))
 	datatype_id = Column(String(50), ForeignKey('dataType.id'))
 	datatype = relationship("DataType")
@@ -538,7 +538,7 @@ class WidgetInstanceDevice(Base):
 	@classmethod
 	def getInstance(cls, instance_id):
 		session = Session()
-		s = session.query(cls).options(joinedload('device')).filter_by(instance_id = instance_id).all()
+		s = session.query(cls).options(joinedload('device').joinedload('sensors')).options(joinedload('device').joinedload('commands')).filter_by(instance_id = instance_id).all()
 		session.expunge_all()
 		session.close()
 		return s
@@ -550,7 +550,12 @@ class WidgetInstanceDevice(Base):
 		for i, o in enumerate(r):
 			if (o.device):
 				d[o.key] = to_json(o.device)
-				#d[o.key]['device'] = to_json(o.sensor.device)
+				d[o.key]["sensors"] = {}
+				for j, s in enumerate(o.device.sensors):
+					d[o.key]["sensors"][s.reference] = to_json(s)
+				d[o.key]["commands"] = {}
+				for j, c in enumerate(o.device.commands):
+					d[o.key]["commands"][c.reference] = to_json(c)
 		return d
 
 	@classmethod
