@@ -110,6 +110,7 @@ class WSHandler(websocket.WebSocketHandler):
             'datatype-getall' : self.WSDatatypesGetall,
             'command-send' : self.WSCommandSend,
             'sensor-gethistory': self.WSSensorGetHistory,
+            'sensor-getlast': self.WSSensorGetLast,
         }[jsonmessage[0]](jsonmessage[1])
         if (data):
             self.sendMessage(data)
@@ -189,6 +190,12 @@ class WSHandler(websocket.WebSocketHandler):
     def WSSensorGetHistory(self, data):
         import requests
         response = requests.get('%s/sensorhistory/id/%d/from/%d/to/%d' % (options.rest_url, data['id'],data['from'],data['to']))
+        json = {'id':data['id'], 'history':response.json()}
+        return ['sensor-history', json];
+
+    def WSSensorGetLast(self, data):
+        import requests
+        response = requests.get('%s/sensorhistory/id/%d/last/%d' % (options.rest_url, data['id'],data['count']))
         json = {'id':data['id'], 'history':response.json()}
         return ['sensor-history', json];
 

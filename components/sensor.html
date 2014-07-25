@@ -7,14 +7,15 @@
 			ready:function(){
 				this.isSet = false;
 			},
-			statsReceived: function(topic, json) {
+			statReceived: function(topic, json) {
 		        this.sensorvalue=json.stored_value;
+		        this.fire('sensor-statreceived', {stat: json});
 		    },
 			historyReceived: function(topic, json) {
 		        this.sensorhistory=json['history'];
 		    },
 		    sensoridChanged: function(oldValue, newValue) {
-		    	this.$.socket.register('device-stats', this.statsReceived.bind(this), 'sensor_id', newValue);
+		    	this.$.socket.register('device-stats', this.statReceived.bind(this), 'sensor_id', newValue);
 		    	this.$.socket.register('sensor-history', this.historyReceived.bind(this), 'id', newValue);
 		    },
 		    init: function(sensor) {
@@ -28,6 +29,9 @@
 		    },
 		    getHistory: function(from, to) {
 		    	this.$.socket.send("sensor-gethistory", {'id': this.sensorid, 'from': from, 'to': to});
+		    },
+		    getLast: function(count) {
+		    	this.$.socket.send("sensor-getlast", {'id': this.sensorid, 'count': count});
 		    }
 		});
 	</script>
