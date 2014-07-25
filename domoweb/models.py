@@ -330,6 +330,17 @@ class Sensor(Base):
 		session.close()
 		return s
 
+	@classmethod
+	def update(cls, id, timestamp, value):
+		session = Session()
+		s = session.query(cls).get(id)
+		if s:
+			s.last_received = timestamp
+			s.last_value = value
+		session.add(s)
+		session.commit()
+		return s
+
 class WidgetInstance(Base):
 	__tablename__ = 'widgetInstance'
 	id = Column(Integer(), primary_key=True, autoincrement=True)

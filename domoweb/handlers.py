@@ -2,7 +2,7 @@
 from tornado import web, websocket
 from tornado.options import options
 from tornado.web import RequestHandler, StaticFileHandler
-from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, SectionParam
+from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, SectionParam, Sensor
 from domoweb.forms import WidgetInstanceForms
 
 import os
@@ -224,6 +224,10 @@ class MQHandler(MQAsyncSub):
     def on_message(self, msgid, content):
         logger.info(u"MQ: New pub message {0}".format(msgid))
         logger.info(u"MQ: {0}".format(content))
+
+        # If sensor stat, we update the sensor last value
+        if msgid == 'device-stats':
+            Sensor.update(content["sensor_id"], content["timestamp"], content["stored_value"])
 
         for socket in socket_connections:
             socket.sendMessage([msgid, content])
