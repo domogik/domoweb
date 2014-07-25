@@ -36,6 +36,7 @@
 			paramsReady: function() {
 				if (this.$.boolstate.isSet) {
 					this.hasFeedback = true;
+					this.displayValue(this.$.boolstate.last_value);
 				}
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
@@ -55,7 +56,11 @@
 				}
 			},
 			boolstateChanged: function(oldValue, newValue) {
-				if (newValue == 1) {
+				this.displayValue(newValue);
+			},
+			displayValue: function(value) {
+				var currentvalue = parseInt(value);
+				if (currentvalue == 1) {
 					this.nextValue = 0;
 					this.$.send.classList.add('false');
 					this.$.send.classList.remove('true');
@@ -64,7 +69,7 @@
 					this.$.send.classList.add('true');
 					this.$.send.classList.remove('false');
 				}
-				this.sendtext = i18n.t("domoweb:bool." + this.nextValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+				this.sendtext = i18n.t("domoweb:bool." + this.nextValue, { context: this.$.primary.parameters[0]['datatype_id'] });				
 			}
 		});
 	</script>
