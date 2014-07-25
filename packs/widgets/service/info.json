@@ -1,0 +1,42 @@
+{
+    "json_version" : 1,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "service",
+        "version" : 1,
+        "name" : "Services",
+        "description" : "Dedicated widgets for services electricity, water, gaz",
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
+    },
+    "widgets": {
+        "teleinfo": {
+            "name" : "Teleinfo",
+            "description" : "Electric meter information",
+            "height" : 1,
+            "width" : 3,
+            "options" : {
+                "mingraph" : {
+                    "name": "Min scale for graph",
+                    "type": "integer",
+                    "default": "0",
+                    "required": false
+                },
+                "maxgraph" : {
+                    "name": "Max scale for graph",
+                    "type": "integer",
+                    "default": "2000",
+                    "required": false
+                }
+            },
+            "devices" : {
+                "electric_meter" : {
+                    "name": "Teleinfo",
+                    "description": "Electric Meter device",
+                    "types" : ["teleinfo.electric_meter"],
+                    "required": true                   
+                }
+            }
+        }
+    }
+}
