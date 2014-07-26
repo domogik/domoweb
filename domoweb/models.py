@@ -180,7 +180,8 @@ class SectionParam(Base):
 	def delete(cls, section_id, key):
 		session = Session()
 		s = session.query(cls).filter_by(section_id = section_id, key = key).first()
-		session.delete(s)
+		if s:
+			session.delete(s)
 		session.commit()
 		return s
 
@@ -241,12 +242,15 @@ class Section(Base):
 		# Combine Params for section
 		style = json.loads(s.theme.style)
 		params = {}
-		for key in style['section']:
-			k = key[0].upper() + key[1:]
-			params['Section' + k] = style['section'][key]
+		for part in ["section", "grid", "widget"]:
+			p = part[0].upper() + part[1:]
+			for key in style[part]:
+				k = key[0].upper() + key[1:]
+				params[p + k] = style[part][key]
 		# Override with user params
 		for p in s.params:
 			params[p.key] = p.value
+		print params
 		session.flush()
 		return params
 

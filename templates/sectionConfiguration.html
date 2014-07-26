@@ -40,33 +40,37 @@
           </div>
           <div class="tab-pane" id="widgetstyle">
             <div class="form-group">
-              <label for="widgetTextColor">Text color</label>
-              <input type="text" class="form-control" id="WidgetTextColor" name="paramsWidgetTextColor" placeholder="Enter color" value="{% if 'WidgetTextColor' in params %}{{ params['WidgetTextColor'] }}{% else %}#f0f0f0{% end %}">
+              <label for="WidgetTextColor">Text color</label>
+              <input type="text" class="form-control" id="WidgetTextColor" name="paramsWidgetTextColor" placeholder="Enter color" value="{{ params['WidgetTextColor'] }}">
             </div>
             <div class="form-group">
-              <label for="widgetBorderColor">Border color</label>
-              <input type="text" class="form-control" id="WidgetBorderColor" name="paramsWidgetBorderColor" placeholder="Enter color" value="{% if 'WidgetBorderColor' in params %}{{ params['WidgetBorderColor'] }}{% else %}#f0f0f0{% end %}">
+              <label for="WidgetBackgroundColor">Background Color</label>
+              <input type="text" class="form-control" id="WidgetBackgroundColor" name="paramsWidgetBackgroundColor" placeholder="Enter color" value="{{ params['WidgetBackgroundColor'] }}">
             </div>
             <div class="form-group">
-              <label for="widgetBackgroundColor">Background color</label>
-              <input type="text" class="form-control" id="WidgetBackgroundColor" name="paramsWidgetBackgroundColor" placeholder="Enter color" value="{% if 'WidgetBackgroundColor' in params %}{{ params['WidgetBackgroundColor'] }}{% else %}rgba(0,0,0,0.5){% end %}">
+              <label for="WidgetBorderColor">Border color</label>
+              <input type="text" class="form-control" id="WidgetBorderColor" name="paramsWidgetBorderColor" placeholder="Enter color" value="{{ params['WidgetBorderColor'] }}">
             </div>
             <div class="form-group">
-              <label for="widgetBorderRadius">Border radius</label>
-              <input type="text" class="form-control" id="WidgetBorderRadius" name="paramsWidgetBorderRadius" placeholder="Enter size in px" value="{% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %}">
+              <label for="WidgetBorderRadius">Border radius</label>
+              <input type="text" class="form-control" id="WidgetBorderRadius" name="paramsWidgetBorderRadius" placeholder="Enter size in px" value="{{ params['WidgetBorderRadius'] }}">
             </div>
-
+            <div class="form-group">
+              <label for="WidgetBoxShadow">Box Shadow</label>
+              <input type="text" class="form-control" id="WidgetBoxShadow" name="paramsWidgetBoxShadow" placeholder="Enter shadow parameters" value="{{ params['WidgetBoxShadow'] }}">
+            </div>
               <h2 class="panel-title">Preview</h2>
                   <style type="text/css">
                     #widgetpreview {
                       width:  100px; height: 100px;
                       margin: 1em auto 1em auto;
-                      border: 1px solid {% if 'WidgetBorderColor' in params %}{{ params['WidgetBorderColor'] }}{% else %}#f0f0f0{% end %};
-                      background-color: {% if 'WidgetBackgroundColor' in params %}{{ params['WidgetBackgroundColor'] }}{% else %}rgba(0,0,0,0.5){% end %};
-                      -moz-border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};
-                      -webkit-border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};;
-                      border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};;
-                      color: {% if 'WidgetTextColor' in params %}{{ params['WidgetTextColor'] }}{% else %}#f0f0f0{% end %};
+                      border: 1px solid {{ params['WidgetBorderColor'] }};
+                      background: {{ params['WidgetBackgroundColor'] }};
+                      -moz-border-radius: {{ params['WidgetBorderRadius'] }};
+                      -webkit-border-radius: {{ params['WidgetBorderRadius'] }};
+                      border-radius: {{ params['WidgetBorderRadius'] }};
+                      color: {{ params['WidgetTextColor'] }};
+                      box-shadow: {{ params['WidgetBoxShadow'] }};
                     }
                     #widgetpreview .number {
                       position: relative;

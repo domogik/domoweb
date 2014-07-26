@@ -13,12 +13,13 @@
   <link rel="stylesheet" href="/css/menu.css">
   <style type="text/css" id="sectionstyle">
   .widgetstyle {
-    border: 1px solid {% if 'WidgetBorderColor' in params %}{{ params['WidgetBorderColor'] }}{% else %}#f0f0f0{% end %};
-    background-color: {% if 'WidgetBackgroundColor' in params %}{{ params['WidgetBackgroundColor'] }}{% else %}rgba(0,0,0,0.5){% end %};
-    -moz-border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};
-    -webkit-border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};;
-    border-radius: {% if 'WidgetBorderRadius' in params %}{{ params['WidgetBorderRadius'] }}{% else %}6px{% end %};;
-    color: {% if 'WidgetTextColor' in params %}{{ params['WidgetTextColor'] }}{% else %}#f0f0f0{% end %};
+    border: 1px solid {{ params['WidgetBorderColor'] }};
+    background-color: {{ params['WidgetBackgroundColor'] }};
+    -moz-border-radius: {{ params['WidgetBorderRadius'] }};
+    -webkit-border-radius: {{ params['WidgetBorderRadius'] }};
+    border-radius: {{ params['WidgetBorderRadius'] }};
+    color: {{ params['WidgetTextColor'] }};
+    box-shadow: {{ params['WidgetBoxShadow'] }};
   }
   body {
     background-position: {{ params['SectionBackgroundPosition'] }};
@@ -84,18 +85,11 @@
       function sectionUpdated(topic, json) {
         var ss = document.querySelector('#sectionstyle');
         var widgetStyle = ss.sheet.cssRules[0];
-        if ('WidgetTextColor' in section.params) {
-          widgetStyle.style.color=section.params['WidgetTextColor'];
-        }
-        if ('WidgetBackgroundColor' in section.params) {
-          widgetStyle.style.backgroundColor=section.params['WidgetBackgroundColor'];
-        }
-        if ('WidgetBorderColor' in section.params) {
-          widgetStyle.style.borderColor=section.params['WidgetBorderColor'];
-        }
-        if ('WidgetBorderRadius' in section.params) {
-          widgetStyle.style.borderRadius=section.params['WidgetBorderRadius'];
-        }
+        widgetStyle.style.color=section.params['WidgetTextColor'];
+        widgetStyle.style.backgroundColor=section.params['WidgetBackgroundColor'];
+        widgetStyle.style.borderColor=section.params['WidgetBorderColor'];
+        widgetStyle.style.borderRadius=section.params['WidgetBorderRadius'];
+        widgetStyle.style.boxShadow=section.params['WidgetBoxShadow'];
         var bodyStyle = ss.sheet.cssRules[1];
         if ('SectionBackground' in section.params) {
             bodyStyle.style.backgroundImage="url('/backgrounds/" + section.params['SectionBackground'] + "')";

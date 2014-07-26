@@ -160,6 +160,9 @@
 		    case 'WidgetBorderRadius':
 			    widgetpreview.style.borderRadius = e.target.value;
 		        break;
+		    case 'WidgetBoxShadow':
+			    widgetpreview.style.boxShadow = e.target.value;
+		        break;
 		} 
 	}
 })();

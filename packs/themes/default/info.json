@@ -23,8 +23,11 @@
         "widget" : {
             "borderColor" : "#f0f0f0",
             "borderRadius" : "6px",
-            "background" : "rgba(0,0,0,0.5)",
-            "foregroundColor1" : "#f0f0f0"
+            "backgroundColor" : "rgba(0,0,0,0.5)",
+            "TextColor" : "#f0f0f0",
+            "boxShadow" : "none",
+            "ForegroundColorAlt1" : "none",
+            "BackgroundColorAlt1" : "none"
         }   
     }
 }

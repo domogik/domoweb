@@ -50,7 +50,7 @@ class ConfigurationHandler(RequestHandler):
             self.render('widgetConfiguration.html', instance=instance, forms=forms)
         elif action=='section':
             section = Section.get(id)
-            params = dict ((p.key, p.value) for p in SectionParam.getSection(id))
+            params = Section.getParamsDict(id)
             backgrounds = [f for f in os.listdir('/var/lib/domoweb/backgrounds') if any(f.lower().endswith(x) for x in ('.jpeg', '.jpg','.gif','.png'))]
             self.render('sectionConfiguration.html', section=section, params=params, backgrounds=backgrounds)
 
