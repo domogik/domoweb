@@ -3,7 +3,7 @@ import os
 import json
 import zmq
 
-from domoweb.models import Session, Widget, SectionIcon, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam
+from domoweb.models import Session, Widget, Theme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam
 from collections import OrderedDict
 from domogik.mq.reqrep.client import MQSyncReq
 from domogik.mq.message import MQMessage
@@ -127,25 +127,26 @@ class packLoader:
         session.close()
 
     @classmethod
-    def loadIconsets(cls, pack_path):
+    def loadThemes(cls, pack_path):
         session = Session()
-        # Load all Iconsets
-        logger.info("PACKS: Loading iconsets")
-        iconsets_path = os.path.join(pack_path, 'iconsets', 'section')
-        session.query(SectionIcon).delete()
-        if os.path.isdir(iconsets_path):
-            for file in os.listdir(iconsets_path):
+        # Load all Themes
+        logger.info("PACKS: Loading themes")
+        themes_path = os.path.join(pack_path, 'themes')
+        session.query(Theme).delete()
+        if os.path.isdir(themes_path):
+            for file in os.listdir(themes_path):
                 if not file.startswith('.'): # not hidden file
-                    info = os.path.join(iconsets_path, file, "info.json")
+                    info = os.path.join(themes_path, file, "info.json")
                     if os.path.isfile(info):
-                        iconset_file = open(info, "r")
-                        iconset_json = json.load(iconset_file)
-                        iconset_id = iconset_json["identity"]["id"]
-                        iconset_name = unicode(iconset_json["identity"]["name"])
-                        for icon in iconset_json["icons"]:
-                            id = iconset_id + '-' + icon["id"]
-                            i = SectionIcon(id=id, iconset_id=iconset_id, iconset_name=iconset_name, icon_id=icon["id"], label=unicode(icon["label"]))
-                            session.add(i)
+                        theme_file = open(info, "r")
+                        theme_json = json.load(theme_file)
+                        theme_id = theme_json["identity"]["id"]
+                        theme_name = unicode(theme_json["identity"]["name"])
+                        theme_version = theme_json["identity"]["version"]
+                        t = Theme(id=theme_id, name=theme_name, version=theme_version, style=unicode(json.dumps(theme_json['style'])))
+                        if 'description' in theme_json["identity"]:
+                            t.description = theme_json["identity"]["description"]
+                        session.add(t)
         session.commit()
         session.close()
 

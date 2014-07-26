@@ -1,0 +1,30 @@
+{
+    "json_version" : 2,
+    "identity" : {
+        "type" : "dmw_theme",
+        "id" : "default",
+        "version" : 1,
+        "name" : "Default",
+        "description" : "Default domoweb theme",
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
+    },
+    "style" : {
+        "section" : {
+            "backgroundImage" : "url('theme/default/images/background.jpg')",
+            "backgroundPosition" : "50% 0",
+            "backgroundRepeat" : "no-repeat",
+            "backgroundSize" : "cover"
+        },
+        "grid" : {
+            "size" : "100",
+            "space" : "20"
+        },
+        "widget" : {
+            "borderColor" : "#f0f0f0",
+            "borderRadius" : "6px",
+            "background" : "rgba(0,0,0,0.5)",
+            "foregroundColor1" : "#f0f0f0"
+        }   
+    }
+}

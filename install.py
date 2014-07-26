@@ -234,18 +234,11 @@ def installConfig(user):
 
 def installFiles(libdir, user):
     # Copy default backgrounds
-    info("Default background image")
+    info("Create backgrounds folder")
     backgroundspath = os.path.join(libdir, 'backgrounds')
     createFolder(backgroundspath, user)
     thumbnailspath = os.path.join(libdir, 'backgrounds', 'thumbnails')
     createFolder(thumbnailspath, user)
-    uid = pwd.getpwnam(user).pw_uid
-    installpath = "%s/examples/backgrounds/default.jpg" % os.path.dirname(os.path.abspath(__file__))
-    shutil.copy(installpath, backgroundspath)
-    os.chown(os.path.join(backgroundspath, 'default.jpg'), uid, -1)
-    installpath = "%s/examples/backgrounds/thumbnails/default.jpg" % os.path.dirname(os.path.abspath(__file__))
-    shutil.copy(installpath, thumbnailspath)
-    os.chown(os.path.join(thumbnailspath, 'default.jpg'), uid, -1)
 
 def installDefault(user):
     info("Installing /etc/default/domoweb")

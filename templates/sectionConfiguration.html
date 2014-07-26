@@ -30,6 +30,7 @@
             <div class="form-group">
               <label for="SectionBackground">Background</label>
               <select class="image-picker form-control" id="SectionBackground" name="paramsSectionBackground">
+                <option data-img-src="images/background_default_thumbnail.png" value=""{% if 'SectionBackground' not in params %} selected='selected'{% end %}>Default background</option>
               {% for background in backgrounds %}
                 <option data-img-src="/backgrounds/thumbnails/{{ background }}" value="{{ background }}"{% if 'SectionBackground' in params and params['SectionBackground'] == background %} selected='selected'{% end %}>{{ background }}</option>
               {% end %}

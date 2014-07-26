@@ -31,6 +31,7 @@ application = tornado.web.Application(
         (r"/(\d*)", MainHandler),
         (r"/configuration", ConfigurationHandler),
         (r"/widget/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "packs", 'widgets')}),
+        (r"/theme/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "packs", 'themes')}),
         (r"/images/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'images')}),
         (r"/libraries/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'libraries')}),
         (r"/css/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'css')}),
@@ -72,7 +73,7 @@ if __name__ == '__main__':
     logger.info("Running from : %s" % domoweb.PROJECTPATH)
 
     packLoader.loadWidgets(domoweb.PACKSPATH)
-    packLoader.loadIconsets(domoweb.PACKSPATH)
+    packLoader.loadThemes(domoweb.PACKSPATH)
     if not os.path.isdir(os.path.join(domoweb.VARPATH, 'backgrounds')):
         os.mkdir(os.path.join(domoweb.VARPATH, 'backgrounds'))
         logger.info("Creating : %s" % os.path.join(domoweb.VARPATH, 'backgrounds'))

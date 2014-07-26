@@ -21,7 +21,10 @@
     color: {% if 'WidgetTextColor' in params %}{{ params['WidgetTextColor'] }}{% else %}#f0f0f0{% end %};
   }
   body {
-    background-image: url('/backgrounds/{% if 'SectionBackground' in params %}{{ params['SectionBackground'] }}{% else %}default.jpg{% end %}');
+    background-position: {{ params['SectionBackgroundPosition'] }};
+    background-repeat: {{ params['SectionBackgroundRepeat'] }};
+    background-size: {{ params['SectionBackgroundSize'] }};
+    background-image: {% if 'SectionBackground' in params %}url('/backgrounds/{{params['SectionBackground']}}'){% else %}{{ params['SectionBackgroundImage'] }}{% end %};
   }
   </style>
   <script src="/components/platform/platform.js"></script>
@@ -95,7 +98,9 @@
         }
         var bodyStyle = ss.sheet.cssRules[1];
         if ('SectionBackground' in section.params) {
-          bodyStyle.style.backgroundImage="url('/backgrounds/" + section.params['SectionBackground'] + "')";
+            bodyStyle.style.backgroundImage="url('/backgrounds/" + section.params['SectionBackground'] + "')";
+        } else {
+            bodyStyle.style.backgroundImage=section.params['SectionBackgroundImage'];
         }
       }
   </script>

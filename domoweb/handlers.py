@@ -22,9 +22,9 @@ class MainHandler(RequestHandler):
         if not id:
             id = 1
         section = Section.get(id)
-        params = dict ((p.key, p.value) for p in SectionParam.getSection(id))
         widgets = Widget.getSection(section_id=id)
         packs = Widget.getSectionPacks(section_id=id)
+        params = Section.getParamsDict(id)
         self.render('base.html',
             section = section,
             params = params,
@@ -79,10 +79,13 @@ class ConfigurationHandler(RequestHandler):
             Section.update(id, self.get_argument('sectionName'), self.get_argument('sectionDescription', None))
             for p, v in self.request.arguments.iteritems():
                 if p.startswith( 'params' ):
-                    SectionParam.saveKey(section_id=id, key=p[6:], value=v[0])
+                    if v[0]:
+                        SectionParam.saveKey(section_id=id, key=p[6:], value=v[0])
+                    else:
+                        SectionParam.delete(section_id=id, key=p[6:])
 
             json = to_json(Section.get(id))
-            json['params'] = dict ((p.key, p.value) for p in SectionParam.getSection(id))
+            json['params'] = Section.getParamsDict(id)
             for socket in socket_connections:
                 socket.sendMessage(['section-details', json])
             self.write("{success:true}")

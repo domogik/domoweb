@@ -12,12 +12,6 @@ body {
 	height: 100%;
 }
 
-body {
-	background-position: 0, 0;
-	background-repeat: no-repeat;
-	background-size: 100% 100%;
-}
-
 /* Configuration overlay */
 #modal-overlay {
 	width: 100%;

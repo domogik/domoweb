@@ -141,13 +141,13 @@ class WidgetDevice(Base):
 		session.close()
 		return s
 
-class SectionIcon(Base):
-	__tablename__ = 'sectionIcon'
+class Theme(Base):
+	__tablename__ = 'theme'
 	id = Column(String(50), primary_key=True)
-	iconset_id = Column(String(50))
-	iconset_name = Column(Unicode(50))
-	icon_id = Column(String(50))
-	label = Column(Unicode(50))
+	version = Column(String(50))
+	name = Column(Unicode(50))
+	description = Column(Unicode(255), nullable=True)
+	style = Column(UnicodeText())
 
 class SectionParam(Base):
 	__tablename__ = 'sectionParam'
@@ -176,6 +176,14 @@ class SectionParam(Base):
 		session.close()
 		return s
 
+	@classmethod
+	def delete(cls, section_id, key):
+		session = Session()
+		s = session.query(cls).filter_by(section_id = section_id, key = key).first()
+		session.delete(s)
+		session.commit()
+		return s
+
 class Section(Base):
 	__tablename__ = 'section'
 	id = Column(Integer(), primary_key=True, autoincrement=True)
@@ -183,6 +191,9 @@ class Section(Base):
 	right = Column(Integer(), default=0)
 	name = Column(Unicode(50))
 	description = Column(UnicodeText(), nullable=True)
+	theme_id = Column(String(50), ForeignKey('theme.id'), nullable=False, server_default='default')
+	theme = relationship("Theme")
+	params = relationship("SectionParam")
 
 	@classmethod
 	def add(cls, name, parent_id, description=None, icon=None):
@@ -204,7 +215,9 @@ class Section(Base):
 	def get(cls, id):
 		# create a Session
 		session = Session()
-		s = session.query(cls).get(id)
+		s = session.query(cls).\
+			options(joinedload('theme')).\
+			get(id)
 		session.close()
 		return s
 
@@ -219,6 +232,23 @@ class Section(Base):
 		session.commit()
 		session.flush()
 		return s
+
+	@classmethod
+	def getParamsDict(cls, id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).get(id)
+		# Combine Params for section
+		style = json.loads(s.theme.style)
+		params = {}
+		for key in style['section']:
+			k = key[0].upper() + key[1:]
+			params['Section' + k] = style['section'][key]
+		# Override with user params
+		for p in s.params:
+			params[p.key] = p.value
+		session.flush()
+		return params
 
 class DataType(Base):
 	__tablename__ = 'dataType'
