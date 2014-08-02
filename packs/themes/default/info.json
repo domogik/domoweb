@@ -24,10 +24,10 @@
             "borderColor" : "#f0f0f0",
             "borderRadius" : "6px",
             "backgroundColor" : "rgba(0,0,0,0.5)",
-            "TextColor" : "#f0f0f0",
+            "textColor" : "#f0f0f0",
             "boxShadow" : "none",
-            "ForegroundColorAlt1" : "none",
-            "BackgroundColorAlt1" : "none"
+            "foregroundColorAlt1" : "none",
+            "backgroundColorAlt1" : "none"
         }   
     }
 }

@@ -84,10 +84,19 @@ class ConfigurationHandler(RequestHandler):
                     else:
                         SectionParam.delete(section_id=id, key=p[6:])
 
+            # Send section updated params
             json = to_json(Section.get(id))
             json['params'] = Section.getParamsDict(id)
             for socket in socket_connections:
                 socket.sendMessage(['section-details', json])
+
+            # Send updated options to all widgets in the section
+            for instance in Section.getInstances(id):
+                d = WidgetInstance.getOptionsDict(id=instance.id)
+                json = {'instance_id':instance.id, 'options':d}
+                for socket in socket_connections:
+                    socket.sendMessage(['widgetinstance-options', json]);
+
             self.write("{success:true}")
 
 class WSHandler(websocket.WebSocketHandler):
@@ -159,7 +168,7 @@ class WSHandler(websocket.WebSocketHandler):
         return ['widgetinstance-sectionlist', json];
 
     def WSWidgetInstanceGetoptions(self, data):
-        d = WidgetInstanceOption.getInstanceDict(instance_id=data['instance_id'])
+        d = WidgetInstance.getOptionsDict(id=data['instance_id'])
         json = {'instance_id':data['instance_id'], 'options':d}
         return ['widgetinstance-options', json];
 

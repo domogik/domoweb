@@ -223,6 +223,16 @@ class Section(Base):
 		return s
 
 	@classmethod
+	def getInstances(cls, id):
+		# create a Session
+		session = Session()
+		s = session.query(cls).\
+			options(joinedload('instances')).\
+			get(id)
+		session.close()
+		return s.instances
+
+	@classmethod
 	def update(cls, id, name, description=None):
 		# create a Session
 		session = Session()
@@ -250,7 +260,6 @@ class Section(Base):
 		# Override with user params
 		for p in s.params:
 			params[p.key] = p.value
-		print params
 		session.flush()
 		return params
 
@@ -379,7 +388,7 @@ class WidgetInstance(Base):
 	__tablename__ = 'widgetInstance'
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	section_id = Column(String(50), ForeignKey('section.id'))
-	section = relationship("Section")
+	section = relationship("Section", backref='instances')
 	order = Column(Integer())
 	widget_id = Column(String(50), ForeignKey('widget.id'))
 	widget = relationship("Widget", foreign_keys='WidgetInstance.widget_id', lazy='joined', backref='instances')
@@ -428,6 +437,27 @@ class WidgetInstance(Base):
 		session.add(s)
 		session.commit()
 		return s
+
+	@classmethod
+	def getOptionsDict(cls, id):
+		session = Session()
+		s = session.query(cls).get(id)
+		style = json.loads(s.section.theme.style)
+		options = {}
+		for part in ["widget"]:
+			p = part[0].upper() + part[1:]
+			for key in style[part]:
+				k = key[0].upper() + key[1:]
+				options[p + k] = style[part][key]
+		# Override with section options
+		for p in s.section.params:
+			if p.key.startswith('Widget'):
+				options[p.key] = p.value
+		# Override with user options
+		for p in s.options:
+			options[p.key] = p.value
+		session.flush()
+		return options
 
 class WidgetInstanceOption(Base):
 	__tablename__ = 'widgetInstanceOption'

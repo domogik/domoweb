@@ -12,15 +12,6 @@
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/menu.css">
   <style type="text/css" id="sectionstyle">
-  .widgetstyle {
-    border: 1px solid {{ params['WidgetBorderColor'] }};
-    background-color: {{ params['WidgetBackgroundColor'] }};
-    -moz-border-radius: {{ params['WidgetBorderRadius'] }};
-    -webkit-border-radius: {{ params['WidgetBorderRadius'] }};
-    border-radius: {{ params['WidgetBorderRadius'] }};
-    color: {{ params['WidgetTextColor'] }};
-    box-shadow: {{ params['WidgetBoxShadow'] }};
-  }
   body {
     background-position: {{ params['SectionBackgroundPosition'] }};
     background-repeat: {{ params['SectionBackgroundRepeat'] }};
@@ -84,13 +75,7 @@
       });
       function sectionUpdated(topic, json) {
         var ss = document.querySelector('#sectionstyle');
-        var widgetStyle = ss.sheet.cssRules[0];
-        widgetStyle.style.color=section.params['WidgetTextColor'];
-        widgetStyle.style.backgroundColor=section.params['WidgetBackgroundColor'];
-        widgetStyle.style.borderColor=section.params['WidgetBorderColor'];
-        widgetStyle.style.borderRadius=section.params['WidgetBorderRadius'];
-        widgetStyle.style.boxShadow=section.params['WidgetBoxShadow'];
-        var bodyStyle = ss.sheet.cssRules[1];
+        var bodyStyle = ss.sheet.cssRules[0];
         if ('SectionBackground' in section.params) {
             bodyStyle.style.backgroundImage="url('/backgrounds/" + section.params['SectionBackground'] + "')";
         } else {

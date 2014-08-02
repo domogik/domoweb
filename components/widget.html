@@ -87,31 +87,12 @@
 			},
 			optionsReceived: function(topic, json) {
 				this.options = json['options'];
-				/* Apply override controls */
-				if ('general_debug' in this.options && this.options['general_debug'] == 1) {
-					this.debug = true;
-				} else {
-					this.debug = null;
-				}
-				if ('general_textColor' in this.options && this.options['general_textColor']) {
-					this.style.color = this.options['general_textColor'];
-				} else {					
-					this.style.color = null;
-				}
-				if ('general_backgroundColor' in this.options && this.options['general_backgroundColor']) {
-					this.style.backgroundColor = this.options['general_backgroundColor'];
-				} else {					
-					this.style.backgroundColor = null;
-				}
-				if ('general_borderColor' in this.options && this.options['general_borderColor']) {
-					this.style.borderColor = this.options['general_borderColor'];
-				} else {					
-					this.style.borderColor = null;
-				}
-				if ('general_borderRadius' in this.options && this.options['general_borderRadius']) {
-					this.style.borderRadius = this.options['general_borderRadius'];
-				} else {					
-					this.style.borderRadius = null;
+				if (this.loadStyle === undefined || this.loadStyle === null || this.loadStyle === true) {
+					this.style.border = '1px solid ' + this.options['WidgetBorderColor'];
+	    			this.style.backgroundColor = this.options['WidgetBackgroundColor'];
+	    			this.style.borderRadius = this.options['WidgetBorderRadius'];
+	    			this.style.color = this.options['WidgetTextColor'];
+	    			this.style.boxShadow = this.options['WidgetBoxShadow'];					
 				}
 				if (this.sensorsReady && this.commandsReady && this.devicesReady && this.datatypes) this.paramsReady();
 			},
