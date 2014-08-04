@@ -46,10 +46,10 @@ class packLoader:
                                 widget_id = "%s-%s" %(widgetset_id, wid)
                                 w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), set_ref=wid, version=widgetset_version, name=unicode(widget['name']), height=widget['height'], width=widget['width'])
                                 session.add(w)
-                                if 'default_style' in widget:
-                                    w.default_style = (widget['default_style'] == True)
-                                else:
-                                    w.default_style = True
+                                
+                                # Specific Style
+                                if 'style' in widget:
+                                    w.style = unicode(json.dumps(widget['style']))
 
                                 # Options
                                 if 'options' in widget:
