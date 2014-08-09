@@ -1,0 +1,281 @@
+<link href='' rel='stylesheet' type='text/css'>
+<polymer-element name="dmw-glow-numberLevel" extends="dmw-widget">
+	<template>
+		<style type="text/css">
+			:host {
+				height: 100%;
+				width: 100%;
+				background: #1D201F; /* Force background color for now */
+				position: absolute;
+				font-family: 'Source Sans Pro', sans-serif;
+				font-weight: 200;
+			}
+			@font-face {
+				font-family: 'Source Sans Pro';
+				font-style: normal;
+				font-weight: 200;
+				src: local('Source Sans Pro ExtraLight'), local('SourceSansPro-ExtraLight'), url(/widget/glow/fonts/Source_Sans_Pro/SourceSansPro-ExtraLight.ttf) format('truetype');
+			}
+			@font-face {
+			  font-family: 'Source Sans Pro';
+			  font-style: normal;
+			  font-weight: 600;
+			  src: local('Source Sans Pro SemiBold'), local('SourceSansPro-SemiBold'), url(/widget/glow/fonts/Source_Sans_Pro/SourceSansPro-SemiBold.ttf) format('truetype');
+			}
+			canvas {
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+			#middle {
+				position: relative;
+				top: 50%;
+				-webkit-transform: translateY(-50%);
+				-ms-transform: translateY(-50%);
+				transform: translateY(-50%);
+	  			text-align: center;
+				overflow: hidden;				
+			}
+			#number {
+				color: #03C7E0;
+				font-size: 3em;
+				line-height: 1em;
+				text-shadow: 0 0 5px #03C7E0;
+			}
+			#unit {
+				font-size: 0.6em;
+				text-shadow: 0 0 5px #03C7E0;
+			}
+			#labelprimary, #labelsecondary {
+				display: none;
+			}
+			.labelsecondary {
+				color: #eeeeee;
+				font-size: 0.6em;
+				letter-spacing:2px;
+				margin-left: -4em;
+			}
+		</style>
+	    <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+		<shadow></shadow>
+		<canvas id="backCanvas" width="340" height="340"></canvas>
+		<canvas id="indicatorsCanvas" width="340" height="340"></canvas>
+		<div id="middle">
+			<div class="labelsecondary">{{labelsecondary}}</div>
+			<div id="number">{{number}}<span id="unit">{{unit}}</span></div>
+		</div>
+	</template>
+	<script>
+		/* Inspired by https://dribbble.com/shots/1524801-Output-Dial-WIP
+			https://dribbble.com/shots/1523761-Output-Dial-WIP */
+		Polymer('dmw-glow-numberLevel', {
+			ready: function() {
+				this.super();
+			    this.sizew = 340;
+			    this.sizeh = 340;
+			    this.centerX = this.sizew/2;
+			    this.centerY = this.sizeh/2;
+			    this.degreemin = 0;
+			    this.degreemax = 315;
+			    this.step = 3.75;
+			    this.percentmax = 120;
+			    this.percentPerStep = this.step * this.percentmax / (this.degreemax - this.degreemin);
+			},
+			loadingDone: function() {
+				var canvas = this.$.backCanvas;
+			    var context = canvas.getContext('2d');
+			    for (var i = this.degreemin; i <= this.degreemax; i = i + this.step) {
+			    	d = i+90
+			    	percent = Math.round(i/this.step*this.percentPerStep);
+			    	if ( i % 45 === 0 ) {
+			    		displayMainMark(context, this.centerX, this.centerY, d, (this.sizew/2));
+			    	} else {
+			    		if (i < this.degreemax && (i%45 != this.step) && (i%45 != (45 - this.step))) {
+			    			if ( i % (this.step*2) === 0 ) {
+					    		displaySecondaryMark(context, this.centerX, this.centerY, d, (this.sizew/2), 0);
+			    			} else {
+					    		displaySecondaryMark(context, this.centerX, this.centerY, d, (this.sizew/2), 1);
+			    			}
+						    if ( this.options['maximum'] && (i % (this.step*2)) === 0) {
+						    	displayTextPercent(context, this.centerX, this.centerY, i, (this.sizew/2 - 10), percent);
+						    }
+			    		}
+			    	}
+			    }
+				if (this.$.primary.isSet) {
+					this.labelprimary = this.$.primary.device['name'];
+					this.labelsecondary = this.$.primary.name;
+					displayLabel(context, this.centerX, this.centerY, this.labelprimary);
+					this.displayValue(parseInt(this.$.primary.last_value), this.datatypes[this.$.primary.datatype_id]['unit']);
+				}
+				if (this.options['maximum']) {
+					percent = parseInt(this.$.primary.last_value) * 100 / parseInt(this.options['maximum']);
+			    	this.displayPercent(percent);
+				}
+			},
+			sensorvalueChanged: function(oldValue, newValue) {
+				number = parseInt(newValue);
+				this.displayValue(number, this.datatypes[this.$.primary.datatype_id]['unit']);
+				if (this.options['maximum']) {
+					percent = number * 100 / parseInt(this.options['maximum']);
+			    	this.displayPercent(percent);
+				}
+			},
+			displayValue: function(number, unit) {
+				this.number = number;
+				if (unit) {
+					this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+				}
+			},
+			displayPercent: function(percent) {
+				var canvas = this.$.indicatorsCanvas;
+			    var context = canvas.getContext('2d');
+			    context.clearRect(0, 0, canvas.width, canvas.height);
+			    var deg = percent * this.degreemax / this.percentmax;
+			    var level2 = 100*this.degreemax/this.percentmax;
+			    var level3 = 110*this.degreemax/this.percentmax;
+			    for (var i = this.degreemin; i < this.degreemax; i = i + this.step) {
+			    	d = i+90
+			    	if ( i % 7.5 === 0 ) {
+					    if (i < deg) {
+					    	if (i >= level3) {
+						    	t = 3;
+					    	} else if (i >= level2) {
+						    	t = 2;
+					    	} else {
+						    	t = 1;
+					    	}
+					    } else {
+					    	t = 0;
+					    }
+						displayIndicator(context, this.centerX, this.centerY, d, t);
+			    	}
+			    }
+			}
+		});
+		function displaySecondaryMark(context, centerX, centerY, deg, radius, level) {
+			context.beginPath();
+			if (level == 0 ) {
+				from = coordCircle(centerX, centerY, 90, deg);
+			} else {
+				from = coordCircle(centerX, centerY, 80, deg);						    	
+			}
+			to = coordCircle(centerX, centerY, (radius - 20), deg);
+			context.strokeStyle = "#565552";
+			context.moveTo(from['x'], from['y']);
+			context.lineTo(to['x'], to['y']);
+			context.stroke();
+
+		}
+		function displayMainMark(context, centerX, centerY, deg, radius) {
+			context.beginPath();
+			var from = coordCircle(centerX, centerY, 40, deg);
+			var to = coordCircle(centerX, centerY, radius, deg);
+			var grad= context.createLinearGradient(from['x'], from['y'], to['x'], to['y']);
+			grad.addColorStop(0, "rgba(155,155,155, 0)");
+			grad.addColorStop(0.3, "#9B9B9B");
+			grad.addColorStop(1, "#9B9B9B");
+			context.strokeStyle = grad;
+			context.moveTo(from['x'], from['y']);
+			context.lineTo(to['x'], to['y']);
+			context.stroke();
+		}
+		function displayTextPercent(context, centerX, centerY, deg, radius, text) {
+			context.save();
+			context.textAlign = 'center';
+			context.textBaseline = 'middle';
+			context.font = '6pt Verdana';
+			context.fillStyle = '#9B9B9B';
+			context.translate(centerX, centerY);
+			if (deg > 90 && deg < 270) {
+				var y = -radius;
+				r = Math.radians(deg-180);
+			} else {
+				var y = radius;
+				r = Math.radians(deg);						        	
+			}
+			context.rotate(r);
+			context.fillText(text,0,y);
+			context.restore();
+		}
+		function displayIndicator(context, centerX, centerY, deg, t) {
+			context.beginPath();
+			a = coordCircle(centerX, centerY, 120, deg+2);
+			b = coordCircle(centerX, centerY, 130, deg+2);
+			c = coordCircle(centerX, centerY, 130, deg+5.5);
+			d = coordCircle(centerX, centerY, 120, deg+5.5);
+			context.moveTo(a['x'], a['y']);
+			context.lineTo(b['x'], b['y']);
+			context.lineTo(c['x'], c['y']);
+			context.lineTo(d['x'], d['y']);
+			context.closePath();
+			if (t == 1) {
+				context.shadowBlur = 10;
+				context.shadowColor = "#03C7E0";
+				context.fillStyle = '#03C7E0';
+				context.fill();
+				context.strokeStyle = "#03C7E0";
+				context.stroke();					    	
+			} else if (t==2) {
+				context.shadowBlur = 10;
+				context.shadowColor = "#D68C1D";
+				context.fillStyle = '#D68C1D';
+				context.fill();
+				context.strokeStyle = "#D68C1D";
+				context.stroke();					    	
+			} else if (t==3) {
+				context.shadowBlur = 10;
+				context.shadowColor = "#990000";
+				context.fillStyle = '#990000';
+				context.fill();
+				context.strokeStyle = "#990000";
+				context.stroke();					    	
+			} else {
+				context.shadowBlur = null;
+				context.fillStyle = '#9B9B9B';
+				context.fill();
+				context.strokeStyle = "#565552";
+				context.stroke();					    						    	
+			}
+		}
+		function displayLabel(context, centerX, centerY, text) {
+			a = coordCircle(centerX, centerY, 130, 90);
+			context.font = '10pt Verdana';
+			context.fillStyle = '#03C7E0';
+			context.shadowBlur = 4;
+			context.shadowColor = "#03C7E0";
+
+			context.fillText(text.toUpperCase(),a['x']+5, a['y']);
+		}
+		function coordCircle(centerX, centerY, dist, deg) {
+			var rad = Math.radians(deg);
+			var x = (Math.cos(rad) * dist) + centerX;
+			var y = (Math.sin(rad) * dist) + centerY;
+			return {x:x, y:y};
+		}
+		// Converts from degrees to radians.
+		Math.radians = function(degrees) {
+	  		return degrees * Math.PI / 180;
+		};
+		// Converts from radians to degrees.
+		Math.degrees = function(radians) {
+		  return radians * 180 / Math.PI;
+		};
+		function drawTextAlongArc(context, str, centerX, centerY, radius, angle) {
+			var len = str.length, s;
+			context.save();
+			context.translate(centerX, centerY);
+			context.rotate(-1 * angle / 2);
+			context.rotate(-1 * (angle / len) / 2);
+			for(var n = 0; n < len; n++) {
+				context.rotate(angle / len);
+				context.save();
+				context.translate(0, -1 * radius);
+				s = str[n];
+				context.fillText(s, 0, 0);
+				context.restore();
+			}
+			context.restore();
+		}
+	</script>
+</polymer-element>

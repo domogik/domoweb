@@ -1,0 +1,39 @@
+{
+    "json_version" : 1,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "glow",
+        "version" : 1,
+        "name" : "Glow",
+        "description" : "Glowing set of various widgets",
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
+    },
+    "widgets": {
+        "numberLevel": {
+            "name" : "Number Level",
+            "description" : "Number display, with percentage level",
+            "height" : 3,
+            "width" : 3,
+            "default_style" : false,
+            "options" : {
+                "maximum" : {
+                    "name": "Maximum value",
+                    "description": "Maximum value for 100%",
+                    "type": "number"
+                }
+            },
+            "commands" : {
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "Primary",
+                    "types" : ["DT_Number"],
+                    "required": true                   
+                }
+            },
+            "devices" : {
+            }
+        }
+    }
+}
