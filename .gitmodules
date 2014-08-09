@@ -22,6 +22,3 @@
 [submodule "static/libraries/d3"]
 	path = static/libraries/d3
 	url = https://github.com/mbostock/d3.git
-[submodule "components/core-style"]
-	path = components/core-style
-	url = https://github.com/Polymer/core-style.git
