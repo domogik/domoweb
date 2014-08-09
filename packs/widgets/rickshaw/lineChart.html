@@ -30,7 +30,10 @@
 			ready: function() {
 				this.super();
 			},
-			paramsReady: function() {
+			loadingDone: function() {
+				this.setGraph();
+			},
+			setGraph: function() {
 				var self = this;
 				this.data = [];
 				this.graph = new Rickshaw.Graph( {

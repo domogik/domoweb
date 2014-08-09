@@ -29,7 +29,13 @@
 				this.super();
 				this.section = document.querySelector('.mainsection');
 			},
-			paramsReady: function() {
+			loadingDone: function() {
+				this.setSection();
+			},
+			optionsUpdated: function() {
+				this.setSection();
+			},
+			setSection: function () {
 				this.section.addEventListener('section-updated', this.sectionUpdated.bind(this));
 				this.sectionUpdated();
 			},

@@ -24,6 +24,7 @@
 				this.sensorsReady = false;
 				this.commandsReady = false;
 				this.devicesReady = false;
+				this.loaded = false;
 				if (this.datatypes === null) {
 					this.$.datatypes.addEventListener("datatype-received", this.datatypesReceived.bind(this));	
 				}
@@ -82,11 +83,25 @@
 		    	this.$.socket.send("widgetinstance-getdevices", {'instance_id': newValue});
 			},
 			datatypesReceived: function() {
-				if (this.options && this.commandsReady && this.sensorsReady && this.devicesReady) this.loaded();
+				if (!this.loaded && this.options && this.commandsReady && this.sensorsReady && this.devicesReady) this.loadingReady();
 			},
 			optionsReceived: function(topic, json) {
 				this.options = json['options'];
-				if (this.sensorsReady && this.commandsReady && this.devicesReady && this.datatypes) this.loaded();
+				if (this.loaded) {
+					if (this.default_style!=null) {
+				      var ss = document.querySelector('style#style-instance-'+this.instanceid);
+				      var widgetStyle = ss.sheet.cssRules[0];
+				      widgetStyle.style.color=this.options['WidgetTextColor'];
+				      widgetStyle.style.backgroundColor=this.options['WidgetBackgroundColor'];
+				      widgetStyle.style.borderColor=this.options['WidgetBorderColor'];
+				      widgetStyle.style.borderRadius=this.options['WidgetBorderRadius'];
+				      widgetStyle.style.boxShadow=this.options['WidgetBoxShadow'];						
+					}
+					this.optionsUpdated();
+				} else { // First loading
+					this.classList.remove('loading');
+					if (this.sensorsReady && this.commandsReady && this.devicesReady && this.datatypes) this.loadingReady();
+				}
 			},
 			sensorsReceived: function(topic, json) {
 				for (var key in json['sensors']) {
@@ -96,8 +111,12 @@
 						dmwsensor.init(sensor);
 					}
 				}
-				this.sensorsReady = true;
-				if (this.options && this.commandsReady && this.devicesReady && this.datatypes) this.loaded();
+				if (this.loaded) {
+					this.sensorsUpdated();
+				} else { // First loading
+					this.sensorsReady = true;
+					if (this.options && this.commandsReady && this.devicesReady && this.datatypes) this.loadingReady();
+				}
 			},
 			commandsReceived: function(topic, json) {
 				for (var key in json['commands']) {
@@ -107,8 +126,12 @@
 						dmwcommand.init(command);
 					}
 				}
-				this.commandsReady = true;
-				if (this.options && this.commandsReady && this.devicesReady && this.datatypes) this.loaded();
+				if (this.loaded) {
+					this.commandsUpdated();
+				} else { // First loading
+					this.commandsReady = true;
+					if (this.options && this.commandsReady && this.devicesReady && this.datatypes) this.loadingReady();
+				}
 			},
 			devicesReceived: function(topic, json) {
 				for (var key in json['devices']) {
@@ -130,30 +153,26 @@
 						}
 					}
 				}
-				this.devicesReady = true;
-				if (this.options && this.commandsReady && this.sensorsReady && this.datatypes) this.loaded();
+				if (this.loaded) {
+					this.devicesUpdated();
+				} else { // First loading
+					this.devicesReady = true;
+					if (this.options && this.commandsReady && this.sensorsReady && this.datatypes) this.loadingReady();
+				}
 			},
 			get datatypes() {
 				return this.$.datatypes.list;
 			},
-			loaded: function() {
-				if (this.classList.contains('loading')) { // First loading
-					this.classList.remove('loading');
-				} else {
-					console.debug(this.default_style);
-					if (this.default_style!=null) {
-				      var ss = document.querySelector('style#style-instance-'+this.instanceid);
-				      var widgetStyle = ss.sheet.cssRules[0];
-				      widgetStyle.style.color=this.options['WidgetTextColor'];
-				      widgetStyle.style.backgroundColor=this.options['WidgetBackgroundColor'];
-				      widgetStyle.style.borderColor=this.options['WidgetBorderColor'];
-				      widgetStyle.style.borderRadius=this.options['WidgetBorderRadius'];
-				      widgetStyle.style.boxShadow=this.options['WidgetBoxShadow'];						
-					}
-				}
-				this.paramsReady();
+			loadingReady: function() {
+				this.classList.remove('loading');
+				this.loaded = true;
+				this.loadingDone();
 			},
-			paramsReady: function() {}
+			loadingDone: function() {},
+			sensorsUpdated: function() {},
+			commandsUpdated: function() {},
+			devicesUpdated: function() {},
+			optionsUpdated: function() {}
 		});
 	function createStyle(id, css) {
 		var existingstyle = document.querySelector('style#style-instance-'+id);

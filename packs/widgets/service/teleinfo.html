@@ -82,7 +82,10 @@
 				// create an SVG element inside the #graph div that fills 100% of the div
 				this.graph = d3.select(this.$.graph).append("svg:svg").attr("width", "100%").attr("height", "100%");
 			},
-			paramsReady: function() {
+			loadingDone: function() {
+				this.setGraph();
+			},
+			setGraph: function() {
 				var self = this;
 				var width = 340;
 				var height = 50;

@@ -63,7 +63,13 @@
 				this.weekdays = clock.find('.weekdays span');
 				this.update_time();
 			},
-			paramsReady: function() {
+			loadingDone: function() {
+				this.setClock();
+			},
+			optionsUpdated: function() {
+				this.setClock();
+			},
+			setClock: function() {
 				if ('dark' in this.options && this.options['dark'] == 1) {
 					backgroundColor = this.options['WidgetBackgroundColorAlt1'];
 					textColor = this.options['WidgetForegroundColorAlt1'];
