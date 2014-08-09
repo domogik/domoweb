@@ -39,26 +39,21 @@
               <div id="file-uploader-background"></div>
           </div>
           <div class="tab-pane" id="widgetstyle">
-            <div class="form-group">
-              <label for="WidgetTextColor">Text color</label>
-              <input type="text" class="form-control" id="WidgetTextColor" name="paramsWidgetTextColor" placeholder="Enter color" value="{{ params['WidgetTextColor'] }}">
+            {% for field in widgetForm %}
+            <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
+              {% raw field.label() %}
+              {% if field.type == 'BooleanField' %}
+                {% raw field() %}<br/>
+              {% else %}
+                {% raw field(class_='form-control') %}
+              {% end %}
+              <span>{% raw field.description %}</span>
+              {% if field.errors %}
+              <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+              <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+              {% end %}
             </div>
-            <div class="form-group">
-              <label for="WidgetBackgroundColor">Background Color</label>
-              <input type="text" class="form-control" id="WidgetBackgroundColor" name="paramsWidgetBackgroundColor" placeholder="Enter color" value="{{ params['WidgetBackgroundColor'] }}">
-            </div>
-            <div class="form-group">
-              <label for="WidgetBorderColor">Border color</label>
-              <input type="text" class="form-control" id="WidgetBorderColor" name="paramsWidgetBorderColor" placeholder="Enter color" value="{{ params['WidgetBorderColor'] }}">
-            </div>
-            <div class="form-group">
-              <label for="WidgetBorderRadius">Border radius</label>
-              <input type="text" class="form-control" id="WidgetBorderRadius" name="paramsWidgetBorderRadius" placeholder="Enter size in px" value="{{ params['WidgetBorderRadius'] }}">
-            </div>
-            <div class="form-group">
-              <label for="WidgetBoxShadow">Box Shadow</label>
-              <input type="text" class="form-control" id="WidgetBoxShadow" name="paramsWidgetBoxShadow" placeholder="Enter shadow parameters" value="{{ params['WidgetBoxShadow'] }}">
-            </div>
+            {% end %}
               <h2 class="panel-title">Preview</h2>
                   <style type="text/css">
                     #widgetpreview {

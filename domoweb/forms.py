@@ -1,8 +1,11 @@
 #!/usr/bin/env python
+import pkg_resources
+pkg_resources.require("WTForms>=2.0")
 import json
 import itertools
+import wtforms
 from collections import OrderedDict
-from wtforms import Form, StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, widgets
+from wtforms import StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, widgets
 from wtforms.validators import InputRequired, Length, Email, URL, IPAddress, NumberRange, Optional
 from domoweb.models import WidgetOption, WidgetSensor, WidgetCommand, WidgetDevice, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, Device, Sensor, Command, DataType
 from wtforms_components import SelectField
@@ -37,14 +40,12 @@ Then, in the `RequestHandler`::
             pass
         self.render('template.html', form=form)
 """
-from wtforms import Form
-
-class Form(Form):
+class Form(wtforms.Form):
     """
     `WTForms` wrapper for Tornado.
     """
 
-    def __init__(self, instance, handler=None, data=None, prefix='', **kwargs):
+    def __init__(self, handler=None, data=None, prefix='', **kwargs):
         """
         Wrap the `formdata` with the `TornadoInputWrapper` and call the base
         constuctor.
@@ -55,13 +56,7 @@ class Form(Form):
         else:
             super(Form, self).__init__(data=data, prefix=prefix, **kwargs)
 
-        self.instance = instance
-
-#    def _get_translations(self):
-#        return TornadoLocaleWrapper(self._handler.get_user_locale())
-
 class TornadoInputWrapper(object):
-
     def __init__(self, handler):
         self._handler = handler
 
@@ -77,24 +72,25 @@ class TornadoInputWrapper(object):
     def getlist(self, name):
         return self._handler.get_arguments(name)
 
-
-#class TornadoLocaleWrapper(object):
-#    def __init__(self, locale):
-#        self.locale = locale
-#    def gettext(self, message):
-#        return self.locale.translate(message)
-#    def ngettext(self, message, plural_message, count):
-#        return self.locale.translate(message, plural_message, count)
-
 class BooleanField(BooleanField):
     def process_data(self, value):
         if isinstance(value, str) or isinstance(value, unicode):
             value = int(value)
         self.data = bool(value)
 
-class ParametersForm(Form):
-    def __init__(self, *args, **kwargs):
-        super(ParametersForm, self).__init__(*args, **kwargs)
+class ParametersForm(wtforms.Form):
+    def __init__(self, instance, handler=None, data=None, prefix='', **kwargs):
+        """
+        Wrap the `formdata` with the `TornadoInputWrapper` and call the base
+        constuctor.
+        """
+        self._handler = handler
+        if handler:
+            super(ParametersForm, self).__init__(TornadoInputWrapper(handler), prefix=prefix, **kwargs)
+        else:
+            super(ParametersForm, self).__init__(data=data, prefix=prefix, **kwargs)
+
+        self.instance = instance
 
     @classmethod
     def addStringField(cls, key, label, default=None, required=False, max_length=60, help_text=None, parameters=None):
@@ -395,17 +391,14 @@ class WidgetDevicesForm(ParametersForm):
             WidgetInstanceDevice.saveKey(instance_id=self.instance.id, key=key, device_id=value)
 
 class WidgetGeneralForm(Form):
-    general_debug = BooleanField(u'Debug', default=False, description=u'Enable widget debug mode')
-    general_backgroundColor = StringField(u'Background Color', description=u'Override default background color')
-    general_textColor = StringField(u'Text Color', description=u'Override default text color')
-    general_borderColor = StringField(u'Border Color', description=u'Override default border color')
-    general_borderRadius = StringField(u'Border Radius', description=u'Override default border radius')
+    debug = BooleanField(u'Debug', default=False, description=u'Enable widget debug mode')
 
-    def save(self):
-        for key, value in self.data.iteritems():
-            if isinstance(value, list):
-                value = ', '.join(value)
-            WidgetInstanceOption.saveKey(instance_id=self.instance.id, key=key, value=value)
+class WidgetStyleForm(Form):
+    WidgetBackgroundColor = StringField(u'Background Color', description=u'Override default background color')
+    WidgetTextColor = StringField(u'Text Color', description=u'Override default text color')
+    WidgetBorderColor = StringField(u'Border Color', description=u'Override default border color')
+    WidgetBorderRadius = StringField(u'Border Radius', description=u'Override default border radius')
+    WidgetBoxShadow = StringField(u'Box Shadow', description=u'Override default shadow parameters')
 
 class WidgetInstanceForms(object):
     has_options = False
@@ -414,6 +407,7 @@ class WidgetInstanceForms(object):
     has_devices = False
 
     def __init__(self, instance, handler=None):
+        self.instance = instance
         class OptionsForm(WidgetOptionsForm):
             pass
         class SensorsForm(WidgetSensorsForm):
@@ -464,7 +458,8 @@ class WidgetInstanceForms(object):
         self.sensorsform = SensorsForm(instance=instance, handler=handler, data=dataSensors, prefix='sensorparam_')
         self.commandsform = CommandsForm(instance=instance, handler=handler, data=dataCommands, prefix='commandparam_')
         self.devicesform = DevicesForm(instance=instance, handler=handler, data=dataDevices, prefix='deviceparam_')
-        self.generalform = WidgetGeneralForm(instance=instance, handler=handler, data=dataOptions, prefix='generalparam_')
+        self.generalform = WidgetGeneralForm(handler=handler, data=dataOptions, prefix='generalparam_')
+        self.styleform = WidgetStyleForm(handler=handler, data=dataOptions, prefix='styleparam_')
 
     def validate(self):
         valid = self.optionsform.validate()
@@ -472,6 +467,7 @@ class WidgetInstanceForms(object):
         valid = self.commandsform.validate() and valid
         valid = self.devicesform.validate() and valid
         valid = self.generalform.validate() and valid
+        valid = self.styleform.validate() and valid
         return valid
 
     def save(self):    
@@ -479,4 +475,20 @@ class WidgetInstanceForms(object):
         self.sensorsform.save()
         self.commandsform.save()
         self.devicesform.save()
-        self.generalform.save()
+        # General
+        for key, value in self.generalform.data.iteritems():
+            if isinstance(value, list):
+                value = ', '.join(value)
+            if value:
+                WidgetInstanceOption.saveKey(instance_id=self.instance.id, key=key, value=value)
+            else:
+                WidgetInstanceOption.delete(instance_id=self.instance.id, key=key)
+
+        # General
+        for key, value in self.styleform.data.iteritems():
+            if isinstance(value, list):
+                value = ', '.join(value)
+            if value:
+                WidgetInstanceOption.saveKey(instance_id=self.instance.id, key=key, value=value)
+            else:
+                WidgetInstanceOption.delete(instance_id=self.instance.id, key=key)

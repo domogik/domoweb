@@ -4,7 +4,7 @@
 <link rel="import" href="/components/datatypes.html">
 <script src="/js/serialize-0.2.min.js"></script>
 
-<polymer-element name="dmw-widget" attributes="instanceid edit debug">
+<polymer-element name="dmw-widget" attributes="instanceid edit debug default_style">
 	<template>
 	    <web-socket id="socket"></web-socket>
 	    <dmw-datatypes id="datatypes"></dmw-datatypes>
@@ -24,7 +24,6 @@
 				this.sensorsReady = false;
 				this.commandsReady = false;
 				this.devicesReady = false;
-
 				if (this.datatypes === null) {
 					this.$.datatypes.addEventListener("datatype-received", this.datatypesReceived.bind(this));	
 				}
@@ -83,18 +82,11 @@
 		    	this.$.socket.send("widgetinstance-getdevices", {'instance_id': newValue});
 			},
 			datatypesReceived: function() {
-				if (this.options && this.commandsReady && this.sensorsReady && this.devicesReady) this.paramsReady();
+				if (this.options && this.commandsReady && this.sensorsReady && this.devicesReady) this.loaded();
 			},
 			optionsReceived: function(topic, json) {
 				this.options = json['options'];
-				if (this.loadStyle === undefined || this.loadStyle === null || this.loadStyle === true) {
-					this.style.border = '1px solid ' + this.options['WidgetBorderColor'];
-	    			this.style.backgroundColor = this.options['WidgetBackgroundColor'];
-	    			this.style.borderRadius = this.options['WidgetBorderRadius'];
-	    			this.style.color = this.options['WidgetTextColor'];
-	    			this.style.boxShadow = this.options['WidgetBoxShadow'];					
-				}
-				if (this.sensorsReady && this.commandsReady && this.devicesReady && this.datatypes) this.paramsReady();
+				if (this.sensorsReady && this.commandsReady && this.devicesReady && this.datatypes) this.loaded();
 			},
 			sensorsReceived: function(topic, json) {
 				for (var key in json['sensors']) {
@@ -105,7 +97,7 @@
 					}
 				}
 				this.sensorsReady = true;
-				if (this.options && this.commandsReady && this.devicesReady && this.datatypes) this.paramsReady();
+				if (this.options && this.commandsReady && this.devicesReady && this.datatypes) this.loaded();
 			},
 			commandsReceived: function(topic, json) {
 				for (var key in json['commands']) {
@@ -116,7 +108,7 @@
 					}
 				}
 				this.commandsReady = true;
-				if (this.options && this.commandsReady && this.devicesReady && this.datatypes) this.paramsReady();
+				if (this.options && this.commandsReady && this.devicesReady && this.datatypes) this.loaded();
 			},
 			devicesReceived: function(topic, json) {
 				for (var key in json['devices']) {
@@ -139,13 +131,45 @@
 					}
 				}
 				this.devicesReady = true;
-				if (this.options && this.commandsReady && this.sensorsReady && this.datatypes) this.paramsReady();
+				if (this.options && this.commandsReady && this.sensorsReady && this.datatypes) this.loaded();
 			},
 			get datatypes() {
 				return this.$.datatypes.list;
 			},
+			loaded: function() {
+				if (this.classList.contains('loading')) { // First loading
+					this.classList.remove('loading');
+				} else {
+					console.debug(this.default_style);
+					if (this.default_style!=null) {
+				      var ss = document.querySelector('style#style-instance-'+this.instanceid);
+				      var widgetStyle = ss.sheet.cssRules[0];
+				      widgetStyle.style.color=this.options['WidgetTextColor'];
+				      widgetStyle.style.backgroundColor=this.options['WidgetBackgroundColor'];
+				      widgetStyle.style.borderColor=this.options['WidgetBorderColor'];
+				      widgetStyle.style.borderRadius=this.options['WidgetBorderRadius'];
+				      widgetStyle.style.boxShadow=this.options['WidgetBoxShadow'];						
+					}
+				}
+				this.paramsReady();
+			},
 			paramsReady: function() {}
 		});
+	function createStyle(id, css) {
+		var existingstyle = document.querySelector('style#style-instance-'+id);
+		if (existingstyle) existingstyle.remove();
+		var style = document.createElement('style');
+		style.id = "style-instance-"+id;
+		style.type = "text/css";
+		// WebKit hack
+		if (style.styleSheet){
+		  	style.styleSheet.cssText = css;
+		} else {
+		  	style.appendChild(document.createTextNode(css));
+		}
+		document.head.appendChild(style);
+		return style;
+	}
 	</script>
 </polymer-element>
 

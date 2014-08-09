@@ -64,12 +64,14 @@
 					link.setAttribute('href', "/widget/" + instance.widget.set_id + '/' + instance.widget.set_ref + ".html")
 					document.head.appendChild(link);
 				}
-				var widget = document.createElement('dmw-' + instance.widget.set_id + '-' + instance.widget.set_ref);
-				widget.classList.add('widget');
-				if (instance.widget.default_style) {
-					widget.classList.add('widgetstyle');
+				var tag = 'dmw-' + instance.widget.set_id + '-' + instance.widget.set_ref;
+				var widget = document.createElement(tag);
+				widget.id = "instance-" + instance.id
+				widget.classList.add("widget", "loading");
+				if (instance.widget.default_style) { // If we load the default style
+					widget.classList.add("style-general");
+					widget.setAttribute('default_style', true);
 				}
-
 				widget.setAttribute('instanceid', instance.id);
 				widget.setAttribute('tabindex', 0);
 				if (instance.widget.width > 1) {

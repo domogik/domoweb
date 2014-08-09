@@ -113,6 +113,22 @@
               {% end %}
             </div>
             {% end %}
+            <h2>Style</h2>
+            {% for field in forms.styleform %}
+            <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
+              {% raw field.label() %}
+              {% if field.type == 'BooleanField' %}
+                {% raw field() %}<br/>
+              {% else %}
+                {% raw field(class_='form-control') %}
+              {% end %}
+              <span>{% raw field.description %}</span>
+              {% if field.errors %}
+              <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+              <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+              {% end %}
+            </div>
+            {% end %}
           </div>
         </div>
       </div>

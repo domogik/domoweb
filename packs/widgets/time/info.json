@@ -15,7 +15,6 @@
             "description" : "Based on flipclockjs.com library",
             "height" : 1,
             "width" : 6,
-            "default_style" : false,
             "options" : {
                 "12hr" : {
                     "name": "Display in 12hr mode",
@@ -23,12 +22,6 @@
                     "default": "False",
                     "required": false
                 }
-            },
-            "commands" : {
-            },
-            "sensors" : {
-            },
-            "devices" : {
             }
         },
         "digitalClock": {
@@ -36,7 +29,6 @@
             "description" : "Based on http://tutorialzine.com/2013/06/digital-clock/",
             "height" : 1,
             "width" : 4,
-            "default_style" : false,
             "options" : {
                 "dark" : {
                     "name": "Dark theme",
@@ -45,11 +37,16 @@
                     "required": false
                 }
             },
-            "commands" : {
-            },
-            "sensors" : {
-            },
-            "devices" : {
+            "default_style" : false,
+            "style" : {
+                "backgroundColor" : "#f3f3f3",
+                "textColor" : "#272e38",
+                "foregroundColorAlt1" : "#cacaca",
+                "backgroundColorAlt1" : "#272e38",
+                "foregroundColorAlt2" : "#fafafa",
+                "backgroundColorAlt2" : "#dddddd",
+                "foregroundColorAlt3" : "#2d3642",
+                "backgroundColorAlt3" : "#0f1620"
             }
         }
     }

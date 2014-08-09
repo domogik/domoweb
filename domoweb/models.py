@@ -32,6 +32,7 @@ class Widget(Base):
 	height = Column(Integer(), default=1)
 	width = Column(Integer(), default=1)
 	default_style = Column(Boolean(), default=1)
+	style = Column(UnicodeText())
 	
 	@classmethod
 	def getAll(cls):
@@ -400,7 +401,8 @@ class WidgetInstance(Base):
 	def get(cls, id):
 		# create a Session
 		session = Session()
-		s = session.query(cls).get(id)
+		s = session.query(cls).options(joinedload('widget')).get(id)
+		session.expunge_all()
 		session.close()
 		return s
 
@@ -417,9 +419,55 @@ class WidgetInstance(Base):
 	def getSection(cls, section_id):
 		# create a Session
 		session = Session()
-		s = session.query(cls).filter_by(section_id = section_id).order_by(cls.order).all()
+		s = session.query(cls).options(joinedload('widget')).filter_by(section_id = section_id).order_by(cls.order).all()
+		session.expunge_all()
 		session.close()
 		return s
+
+	@classmethod
+	def getFullOptionsDict(cls, id):
+		session = Session()
+		s = session.query(cls).get(id)
+		sstyle = json.loads(s.section.theme.style)
+		if s.widget.style:
+			wstyle = json.loads(s.widget.style)
+		options = {}
+		for part in ["widget"]:
+			p = part[0].upper() + part[1:]
+			for key in sstyle[part]:
+				k = key[0].upper() + key[1:] # Uppercase first char
+				options[p + k] = sstyle[part][key]
+		# Override with section options
+		for p in s.section.params:
+			if p.key.startswith('Widget'):
+				options[p.key] = p.value
+		# Override with widget options
+		if s.widget.style:
+			for key in wstyle:
+				k = key[0].upper() + key[1:] # Uppercase first char
+				options['Widget' + k] = wstyle[key]
+		# Override with user options
+		for p in s.options:
+			options[p.key] = p.value
+		session.flush()
+		return options
+
+	@classmethod
+	def getOptionsDict(cls, id):
+		session = Session()
+		s = session.query(cls).get(id)
+		options = {}
+		# Override with widget options
+		if s.widget.style:
+			wstyle = json.loads(s.widget.style)
+			for key in wstyle:
+				k = key[0].upper() + key[1:] # Uppercase first char
+				options['Widget' + k] = wstyle[key]
+		# Override with user options
+		for p in s.options:
+			options[p.key] = p.value
+		session.flush()
+		return options
 
 	@classmethod
 	def delete(cls, id):
@@ -437,27 +485,6 @@ class WidgetInstance(Base):
 		session.add(s)
 		session.commit()
 		return s
-
-	@classmethod
-	def getOptionsDict(cls, id):
-		session = Session()
-		s = session.query(cls).get(id)
-		style = json.loads(s.section.theme.style)
-		options = {}
-		for part in ["widget"]:
-			p = part[0].upper() + part[1:]
-			for key in style[part]:
-				k = key[0].upper() + key[1:]
-				options[p + k] = style[part][key]
-		# Override with section options
-		for p in s.section.params:
-			if p.key.startswith('Widget'):
-				options[p.key] = p.value
-		# Override with user options
-		for p in s.options:
-			options[p.key] = p.value
-		session.flush()
-		return options
 
 class WidgetInstanceOption(Base):
 	__tablename__ = 'widgetInstanceOption'
@@ -499,6 +526,15 @@ class WidgetInstanceOption(Base):
 		session.commit()
 		session.flush()
 		session.close()
+		return s
+
+	@classmethod
+	def delete(cls, instance_id, key):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
+		if s:
+			session.delete(s)
+		session.commit()
 		return s
 
 class WidgetInstanceSensor(Base):

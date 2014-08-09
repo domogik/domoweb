@@ -17,8 +17,7 @@
 		}
 
 		WebsocketHandler.prototype.onMessage = function(msg) {
-			console.info("WS: message received");
-			console.info(msg.data);
+			console.info("WS: message received", msg.data);
 			json = JSON.parse(msg.data);
 			for ( var i=0; i < this.listeners.length; i++ ) {
 				listener = this.listeners[i];

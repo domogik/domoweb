@@ -18,6 +18,13 @@
     background-size: {{ params['SectionBackgroundSize'] }};
     background-image: {% if 'SectionBackground' in params %}url('/backgrounds/{{params['SectionBackground']}}'){% else %}{{ params['SectionBackgroundImage'] }}{% end %};
   }
+  .widget.style-general {
+    border: 1px solid {{ params['WidgetBorderColor'] }};
+    background-color: {{ params['WidgetBackgroundColor'] }};
+    border-radius: {{ params['WidgetBorderRadius'] }};
+    color: {{ params['WidgetTextColor'] }};
+    box-shadow: {{ params['WidgetBoxShadow'] }};
+  }
   </style>
   <script src="/components/platform/platform.js"></script>
   <link rel="import" href="/components/polymer-ajax.html">
@@ -29,6 +36,19 @@
   <link rel="import" href="/components/widgetsSelector.html">
   {% for widget in widgets %}
   <link id="{{widget.id}}" rel="import" href="/widget/{{widget.set_id}}/{{widget.set_ref}}.html">
+  {% end %}
+  {% for instance in instances %}
+    {% if instance.widget.default_style %}
+    <style id="style-instance-{{instance.id}}" type="text/css">
+      #instance-{{instance.id}} {
+      {% if 'WidgetBackgroundColor' in instance.optionsdict %}background-color: {{ instance.optionsdict['WidgetBackgroundColor'] }};{% end %}
+      {% if 'WidgetBorderColor' in instance.optionsdict %}border: 1px solid {{ instance.optionsdict['WidgetBorderColor'] }};{% end %}
+      {% if 'WidgetBorderRadius' in instance.optionsdict %}border-radius: {{ instance.optionsdict['WidgetBorderRadius'] }};{% end %}
+      {% if 'WidgetTextColor' in instance.optionsdict %}color: {{ instance.optionsdict['WidgetTextColor'] }};{% end %}
+      {% if 'WidgetBoxShadow' in instance.optionsdict %}box-shadow: {{ instance.optionsdict['WidgetBoxShadow'] }};{% end %}
+      }
+    </style>
+    {% end %}
   {% end %}
 </head>
 <body unresolved>
@@ -56,33 +76,41 @@
   <script src="/libraries/d3/d3.min.js"></script>
   <script src="/js/menu.js"></script>
   <script type="text/javascript">
+
     var section = document.querySelector('.mainsection');
     window.onload=function() {
       section.addEventListener('section-updated', sectionUpdated);
     };
-      i18n.init({
-        load: 'current',
+
+    i18n.init({
+      load: 'current',
 //        lng: "en-US",
-        fallbackLng: 'en-US',
-        resGetPath: 'locales/__ns__/__lng__/translation.json',
-        ns: {
-          namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}], 
-          defaultNs: 'domoweb'
-          },
+      fallbackLng: 'en-US',
+      resGetPath: 'locales/__ns__/__lng__/translation.json',
+      ns: {
+        namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}], 
+        defaultNs: 'domoweb'
         },
-        function() {
-        // translate nav
-        jQuery("#cn-wrapper").i18n();
-      });
-      function sectionUpdated(topic, json) {
-        var ss = document.querySelector('#sectionstyle');
-        var bodyStyle = ss.sheet.cssRules[0];
-        if ('SectionBackground' in section.params) {
-            bodyStyle.style.backgroundImage="url('/backgrounds/" + section.params['SectionBackground'] + "')";
-        } else {
-            bodyStyle.style.backgroundImage=section.params['SectionBackgroundImage'];
-        }
+      },
+      function() {
+      // translate nav
+      jQuery("#cn-wrapper").i18n();
+    });
+    function sectionUpdated(topic, json) {
+      var ss = document.querySelector('#sectionstyle');
+      var bodyStyle = ss.sheet.cssRules[0];
+      if ('SectionBackground' in section.params) {
+          bodyStyle.style.backgroundImage="url('/backgrounds/" + section.params['SectionBackground'] + "')";
+      } else {
+          bodyStyle.style.backgroundImage=section.params['SectionBackgroundImage'];
       }
+      var widgetStyle = ss.sheet.cssRules[1];
+      widgetStyle.style.color=section.params['WidgetTextColor'];
+      widgetStyle.style.backgroundColor=section.params['WidgetBackgroundColor'];
+      widgetStyle.style.borderColor=section.params['WidgetBorderColor'];
+      widgetStyle.style.borderRadius=section.params['WidgetBorderRadius'];
+      widgetStyle.style.boxShadow=section.params['WidgetBoxShadow'];
+    }
   </script>
 </body>
 </html>

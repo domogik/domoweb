@@ -3,7 +3,7 @@ from tornado import web, websocket
 from tornado.options import options
 from tornado.web import RequestHandler, StaticFileHandler
 from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, SectionParam, Sensor
-from domoweb.forms import WidgetInstanceForms
+from domoweb.forms import WidgetInstanceForms, WidgetStyleForm
 
 import os
 import json
@@ -24,12 +24,16 @@ class MainHandler(RequestHandler):
         section = Section.get(id)
         widgets = Widget.getSection(section_id=id)
         packs = Widget.getSectionPacks(section_id=id)
+        instances = WidgetInstance.getSection(section_id=id)
+        for j, i in enumerate(instances):
+            i.optionsdict = WidgetInstance.getOptionsDict(id=i.id)
         params = Section.getParamsDict(id)
         self.render('base.html',
             section = section,
             params = params,
             widgets = widgets,
             packs = packs,
+            instances = instances,
             )
 
 class TestHandler(RequestHandler):
@@ -51,8 +55,11 @@ class ConfigurationHandler(RequestHandler):
         elif action=='section':
             section = Section.get(id)
             params = Section.getParamsDict(id)
+            options = SectionParam.getSection(section_id=id)
+            dataOptions = dict([(r.key, r.value) for r in options])
+            widgetForm = WidgetStyleForm(data=dataOptions, prefix='params')
             backgrounds = [f for f in os.listdir('/var/lib/domoweb/backgrounds') if any(f.lower().endswith(x) for x in ('.jpeg', '.jpg','.gif','.png'))]
-            self.render('sectionConfiguration.html', section=section, params=params, backgrounds=backgrounds)
+            self.render('sectionConfiguration.html', section=section, params=params, backgrounds=backgrounds, widgetForm=widgetForm)
 
     def post(self):
         action = self.get_argument('action', None)
@@ -62,7 +69,10 @@ class ConfigurationHandler(RequestHandler):
             forms = WidgetInstanceForms(instance=instance, handler=self)
             if forms.validate():
                 forms.save();
-                d = WidgetInstanceOption.getInstanceDict(instance_id=id)
+                if (instance.widget.default_style):
+                    d = WidgetInstance.getFullOptionsDict(id=id)
+                else:
+                    d = WidgetInstance.getOptionsDict(id=id)
                 jsonoptions = {'instance_id':id, 'options':d}
                 d = WidgetInstanceSensor.getInstanceDict(instance_id=id)
                 jsonsensors = {'instance_id':id, 'sensors':d}
@@ -77,6 +87,8 @@ class ConfigurationHandler(RequestHandler):
                 self.render('widgetConfiguration.html', instance=instance, forms=forms)
         elif action=='section':
             Section.update(id, self.get_argument('sectionName'), self.get_argument('sectionDescription', None))
+
+            widgetForm = WidgetStyleForm(handler=self, data=dataOptions, prefix='params')
             for p, v in self.request.arguments.iteritems():
                 if p.startswith( 'params' ):
                     if v[0]:
@@ -89,13 +101,6 @@ class ConfigurationHandler(RequestHandler):
             json['params'] = Section.getParamsDict(id)
             for socket in socket_connections:
                 socket.sendMessage(['section-details', json])
-
-            # Send updated options to all widgets in the section
-            for instance in Section.getInstances(id):
-                d = WidgetInstance.getOptionsDict(id=instance.id)
-                json = {'instance_id':instance.id, 'options':d}
-                for socket in socket_connections:
-                    socket.sendMessage(['widgetinstance-options', json]);
 
             self.write("{success:true}")
 
@@ -168,7 +173,11 @@ class WSHandler(websocket.WebSocketHandler):
         return ['widgetinstance-sectionlist', json];
 
     def WSWidgetInstanceGetoptions(self, data):
-        d = WidgetInstance.getOptionsDict(id=data['instance_id'])
+        i = WidgetInstance.get(data['instance_id'])
+        if (i.widget.default_style):
+            d = WidgetInstance.getFullOptionsDict(id=data['instance_id'])
+        else:
+            d = WidgetInstance.getOptionsDict(id=data['instance_id'])
         json = {'instance_id':data['instance_id'], 'options':d}
         return ['widgetinstance-options', json];
 
