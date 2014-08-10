@@ -148,19 +148,19 @@
 	function onWidgetStyleChange(e) {
 		var widgetpreview = document.querySelector('#modal-overlay #widgetpreview');
 		switch(e.target.id) {
-		    case 'WidgetTextColor':
+		    case 'params-WidgetTextColor':
 		    	widgetpreview.style.color = e.target.value;
 		        break;
-		    case 'WidgetBorderColor':
+		    case 'params-WidgetBorderColor':
 			    widgetpreview.style.borderColor = e.target.value;
 		        break;
-		    case 'WidgetBackgroundColor':
+		    case 'params-WidgetBackgroundColor':
 		    	widgetpreview.style.backgroundColor = e.target.value;
 		        break;
-		    case 'WidgetBorderRadius':
+		    case 'params-WidgetBorderRadius':
 			    widgetpreview.style.borderRadius = e.target.value;
 		        break;
-		    case 'WidgetBoxShadow':
+		    case 'params-WidgetBoxShadow':
 			    widgetpreview.style.boxShadow = e.target.value;
 		        break;
 		} 

@@ -88,13 +88,13 @@ class ConfigurationHandler(RequestHandler):
         elif action=='section':
             Section.update(id, self.get_argument('sectionName'), self.get_argument('sectionDescription', None))
 
-            widgetForm = WidgetStyleForm(handler=self, data=dataOptions, prefix='params')
+            widgetForm = WidgetStyleForm(handler=self, prefix='params')
             for p, v in self.request.arguments.iteritems():
                 if p.startswith( 'params' ):
                     if v[0]:
-                        SectionParam.saveKey(section_id=id, key=p[6:], value=v[0])
+                        SectionParam.saveKey(section_id=id, key=p[7:], value=v[0])
                     else:
-                        SectionParam.delete(section_id=id, key=p[6:])
+                        SectionParam.delete(section_id=id, key=p[7:])
 
             # Send section updated params
             json = to_json(Section.get(id))
