@@ -68,7 +68,7 @@ if __name__ == '__main__':
     options.define("port", default=40404, help="Launch on the given port", type=int)
     options.define("debut", default=False, help="Debug mode", type=bool)
     options.define("rest_url", default="http://127.0.0.1:40405", help="RINOR REST Url", type=str)
-    options.parse_config_file("/etc/domoweb.cfg")
+    options.parse_config_file(SERVER_CONFIG)
 
     logger.info("Running from : %s" % domoweb.PROJECTPATH)
 

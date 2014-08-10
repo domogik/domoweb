@@ -194,19 +194,16 @@ def main():
         ok("Testing installation")
         raw_input('Please press Enter when ready.')
         try:
-    #            testImports()
             testConfigFiles()
             testInit()
-    #            testDB(options.db)
-    #            django_url = getDjangoUrl()
+            tornado_url = getTornadoUrl()
             print "\n\n"
             ok("================================================== <==")
             ok(" Everything seems ok, you should be able to start  <==")
             ok("      DomoWeb with /etc/init.d/domoweb start       <==")
             ok("            or /etc/rc.d/domoweb start             <==")
             ok(" DomoWeb UI is available on                        <==")
-    #            ok(" %49s <==" % django_url)
-            ok(" Default login is 'admin', password is '123'       <==")
+            ok(" %49s <==" % tornado_url)
             ok("================================================== <==")
         except:
             fail(sys.exc_info()[1])
@@ -425,12 +422,20 @@ def testDB(db):
             "%s not found" % db
     ok("%s found" % db)
 
-def getDjangoUrl():
-    import ConfigParser
-    config = ConfigParser.ConfigParser()
-    config.read("/etc/domoweb.cfg")
-    cherrypy = dict(config.items('global'))
-    return "http://127.0.0.1:%s/" % (cherrypy['server.socket_port'])
+def getTornadoUrl():
+    import socket
+    from tornado.options import options
+    ip = socket.gethostbyname(socket.gethostname())
+    # Check config file
+    SERVER_CONFIG = '/etc/domoweb.cfg'
+    if not os.path.isfile(SERVER_CONFIG):
+        sys.stderr.write("Error: Can't find the file '%s'\n" % SERVER_CONFIG)
+        sys.exit(1)
+
+    options.define("port", default=40404, help="Launch on the given port", type=int)
+    options.parse_config_file(SERVER_CONFIG)
+
+    return "http://%s:%s/" % (ip, options.port)
 
 def clean():
     import commands
