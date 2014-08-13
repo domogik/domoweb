@@ -6,6 +6,36 @@
 
 <polymer-element name="dmw-widget" attributes="instanceid edit debug default_style">
 	<template>
+		<style type="text/css">
+		.editOverlay {
+			position: absolute;
+			background-color: rgba(0,0,0,0.6);
+			top: -1px;
+			left: -1px;
+			bottom: -1px;
+			right: -1px;
+			z-index: 999;
+		}
+
+		.editOverlay button {
+			background: #000000;
+			display: block;
+			width: 2em;
+			height: 2em;
+			border: 1px solid #f0f0F0;
+			color: #f0f0F0;
+			margin: 1em auto 1em auto;
+			-moz-border-radius: 1em;
+			-webkit-border-radius: 1em;
+			border-radius: 1em;
+		}
+
+		.editOverlay button:hover,
+		.editOverlay button:focus {
+			background: #f0f0F0;
+			color: #000000;	
+		}
+		</style>
 	    <web-socket id="socket"></web-socket>
 	    <dmw-datatypes id="datatypes"></dmw-datatypes>
 	    <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
