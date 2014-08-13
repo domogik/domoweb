@@ -137,10 +137,17 @@
 	var widgetEdit = false;
 	function widgetsHandler(){
 		widgetEdit = !widgetEdit;
+		var layout = document.querySelector('dmw-grid-layout');
 		if (widgetEdit) {
-			document.querySelector('dmw-grid-layout').setAttribute('edit', '');
+			layout.setAttribute('edit', '');
+			for (var i = 0; i < layout.children.length; i++) {
+				layout.children[i].setAttribute('edit', '');
+			}
 		} else {
-			document.querySelector('dmw-grid-layout').removeAttribute('edit');
+			layout.removeAttribute('edit');
+			for (var i = 0; i < layout.children.length; i++) {
+				layout.children[i].removeAttribute('edit');
+			}
 		}
 		closeNav();
 	}

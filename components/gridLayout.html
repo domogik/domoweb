@@ -21,7 +21,7 @@
 			::content .widget.widgetw6 { width: 700px; }
 			::content .widget.widgeth6 { height: 700px; }
 		</style>
-	    <div id="container"></div>
+	    <content select=".widget"></content>
 	    <template if="{{ edit!=null }}">
 	    	<button class="btn btn-primary btn-lg" on-click="{{addWidget}}">Add Widget</button>
 	    </template>
@@ -31,7 +31,7 @@
 	<script>
 		Polymer("dmw-grid-layout", {
 			ready:function(){
-				this.wall = new Packery( this.$.container, {
+				this.wall = new Packery( this, {
 				  	// options
 				  	itemSelector: '.widget',
 				  	gutter: 20,
@@ -41,64 +41,33 @@
 //				this.wall.on( 'layoutComplete', this.orderChanged.bind(this) );
 				this.wall.on( 'dragItemPositioned', this.orderChanged.bind(this) );
 				this.draggables = [];
+				widgets = this.shadowRoot.querySelector('content').getDistributedNodes();
+				for (var i = 0; i < widgets.length; i++) {
+				    var widget = widgets[i];
+				    var instanceid = widget.getAttribute('instanceid');
+				    var draggie = new Draggabilly(widget);
+					draggie.disable();
+					this.draggables[instanceid] = draggie;
+				  	// bind Draggabilly events to Packery
+				  	this.wall.bindDraggabillyEvents( draggie );
+				}
+				// Monitor lightDOM changes
+			  	this.onMutation(this, this.childrenUpdated);
 			},
-			instanceAdded: function(topic, json) {
-				this.appendInstance(json, true);
-				this.wall.layout();
-		    },
-			instanceRemoved: function(topic, json) {
-				var instance = this.shadowRoot.querySelector('*[instanceid="' + json['id'] + '"]');
+			removeInstance: function(instance) {
+				delete this.draggables[instance.getAttribute('instanceid')]
 				this.wall.remove(instance);
 				this.wall.layout();
 		    },
-			listReceived: function(topic, json) {
-				for (index = 0; index < json['instances'].length; ++index) {
-					this.appendInstance(json['instances'][index], false);
-				}
-				this.wall.layout();
-			},
-			appendInstance: function(instance, edit) {
-				var link = document.head.querySelector("link#" + instance.widget_id);
-				if (!link) { // If widget pack not already loaded
-					link = document.createElement('link');
-					link.setAttribute('rel', "import");
-					link.setAttribute('href', "/widget/" + instance.widget.set_id + '/' + instance.widget.set_ref + ".html")
-					document.head.appendChild(link);
-				}
-				var tag = 'dmw-' + instance.widget.set_id + '-' + instance.widget.set_ref;
-				var widget = document.createElement(tag);
-				widget.id = "instance-" + instance.id
-				widget.classList.add("widget", "loading");
-				if (instance.widget.default_style) { // If we load the default style
-					widget.classList.add("style-general");
-					widget.setAttribute('default_style', true);
-				}
-				widget.setAttribute('instanceid', instance.id);
-				widget.setAttribute('tabindex', 0);
-				if (instance.widget.width > 1) {
-					widget.classList.add('widgetw' + instance.widget.width);
-				}
-				if (instance.widget.height > 1) {
-					widget.classList.add('widgeth' + instance.widget.height);
-				}
-				if (edit) {
-					widget.setAttribute('edit', '');
-				}
-				this.$.container.appendChild(widget);
-				this.wall.appended(widget);
-				var draggie = new Draggabilly(widget);
+			appendInstance: function(instance) {
+				this.wall.appended(instance);
+				var draggie = new Draggabilly(instance);
 				draggie.disable();
-				this.draggables[instance.id] = draggie;
+				this.draggables[instance.getAttribute('instanceid')] = draggie;
 			  	// bind Draggabilly events to Packery
 			  	this.wall.bindDraggabillyEvents( draggie );
+				this.wall.layout();
 			},
-		    sectionidChanged: function(oldValue, newValue) {
-    	      	var socket = document.querySelector('#socket');
-		    	socket.register('widgetinstance-added', this.instanceAdded.bind(this), 'section_id', newValue);
-		    	socket.register('widgetinstance-removed', this.instanceRemoved.bind(this), 'section_id', newValue);
-		    	socket.register('widgetinstance-sectionlist', this.listReceived.bind(this), 'section_id', newValue);
-				socket.send("widgetinstance-getsection", {'section_id':newValue});
-		    },
 		    orderChanged: function() {
     	      	var socket = document.querySelector('#socket');
 				var itemElems = this.wall.getItemElements();
@@ -108,16 +77,11 @@
 				}
 			},
 			editChanged: function(oldValue, newValue) {
-				widgets = this.$.container.childNodes;
-				for (var i = 0; i < widgets.length; i++) {
-				    var widget = widgets[i];
-				    var instanceid = widget.getAttribute('instanceid');
+				for (var id in this.draggables) {
 				    if (newValue != null) {
-					    widget.setAttribute('edit', '');
-	    			  	this.draggables[instanceid].enable();
+	    			  	this.draggables[id].enable();
 				    } else {
-				    	widget.removeAttribute('edit');
-	    			  	this.draggables[instanceid].disable();
+	    			  	this.draggables[id].disable();
 				    }
 				}
 			},
@@ -128,6 +92,16 @@
 				modalOverlay.appendChild(selector);
 				modalOverlay.classList.add('on');
 			},
+			childrenUpdated: function(observer, mutations) {
+			  	mutations.forEach(function(record) {
+			  		for (var i = 0; i < record.addedNodes.length; i++) {
+			  			this.appendInstance(record.addedNodes[i]);
+			  		}
+			  		for (var i = 0; i < record.removedNodes.length; i++) {
+			  			this.removeInstance(record.removedNodes[i]);
+			  		}
+			  	}.bind(this));
+			}
 		});
 	</script>
 </polymer-element>

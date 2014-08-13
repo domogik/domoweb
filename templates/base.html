@@ -56,7 +56,11 @@
   <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
   <dmw-section class='mainsection' sectionid="{{ section.id }}"></dmw-section>
 	<main role="main">
-    <dmw-grid-layout sectionid="{{section.id}}"></dmw-grid-layout>
+    <dmw-grid-layout sectionid="{{section.id}}">
+    {% for instance in instances %}
+        <dmw-{{instance.widget.set_id}}-{{instance.widget.set_ref}} id="instance-{{instance.id}}" class="widget loading widgetw{{instance.widget.width}} widgeth{{instance.widget.height}}{% if instance.widget.default_style %} style-general{% end %}" tabindex=0 instanceid={{instance.id}}{% if instance.widget.default_style %} default_style=true{% end %}></dmw-{{instance.widget.set_id}}-{{instance.widget.set_ref}}>
+    {% end %}
+    </dmw-grid-layout>
     <button class="cn-button" id="cn-button"><span class='sr-only' data-i18n="menu.open"></span></button>
     <div class="cn-wrapper" id="cn-wrapper">
      <ul>
@@ -76,8 +80,13 @@
   <script src="/libraries/d3/d3.min.js"></script>
   <script src="/js/menu.js"></script>
   <script type="text/javascript">
-
     var section = document.querySelector('.mainsection');
+    var socket = document.querySelector('#socket');
+    var layout = document.querySelector('dmw-grid-layout');
+    window.addEventListener('polymer-ready', function(){
+      socket.register('widgetinstance-added', instanceAdded, 'section_id', {{ section.id }});
+      socket.register('widgetinstance-removed', instanceRemoved, 'section_id', {{ section.id }});        
+    });
     window.onload=function() {
       section.addEventListener('section-updated', sectionUpdated);
     };
@@ -96,7 +105,7 @@
       // translate nav
       jQuery("#cn-wrapper").i18n();
     });
-    function sectionUpdated(topic, json) {
+    function sectionUpdated(e) {
       var ss = document.querySelector('#sectionstyle');
       var bodyStyle = ss.sheet.cssRules[0];
       if ('SectionBackground' in section.params) {
@@ -110,6 +119,34 @@
       widgetStyle.style.borderColor=section.params['WidgetBorderColor'];
       widgetStyle.style.borderRadius=section.params['WidgetBorderRadius'];
       widgetStyle.style.boxShadow=section.params['WidgetBoxShadow'];
+    }
+    function instanceAdded(topic, json) {
+      var link = document.head.querySelector("link#" + json.widget_id);
+      if (!link) { // If widget pack not already loaded
+        link = document.createElement('link');
+        link.setAttribute('rel', "import");
+        link.setAttribute('href', "/widget/" + json.widget.set_id + '/' + json.widget.set_ref + ".html")
+        document.head.appendChild(link);
+      }
+
+      var tag = 'dmw-' + json.widget.set_id + '-' + json.widget.set_ref;
+      var widget = document.createElement(tag);
+      widget.id = "instance-" + json.id
+      widget.classList.add("widget", "loading", "widgetw" + json.widget.width, "widgeth" + json.widget.height);
+      if (json.widget.default_style) { // If we load the default style
+        widget.classList.add("style-general");
+        widget.setAttribute('default_style', true);
+      }
+      widget.setAttribute('jsonid', json.id);
+      widget.setAttribute('tabindex', 0);
+      if (layout.getAttribute('edit') != null) {
+        widget.setAttribute('edit', '');
+      }
+      layout.appendChild(widget);
+    }
+    function instanceRemoved(topic, json) {
+      var widget = document.querySelector('#instance-' + json.id);
+      widget.remove();
     }
   </script>
 </body>
