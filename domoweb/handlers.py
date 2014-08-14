@@ -99,8 +99,7 @@ class ConfigurationHandler(RequestHandler):
             # Send section updated params
             json = to_json(Section.get(id))
             json['params'] = Section.getParamsDict(id)
-            for socket in socket_connections:
-                socket.sendMessage(['section-details', json])
+            WSHandler.sendAllMessage(['section-details', json])
 
             self.write("{success:true}")
 
@@ -113,12 +112,10 @@ class WSHandler(websocket.WebSocketHandler):
     def on_message(self, message):
         logger.info("WS: Received message %s" % message)
         jsonmessage = json.loads(message)
+
         data = {
             'section-get' : self.WSSectionGet,
             'widget-getall' : self.WSWidgetsGetall,
-            'widgetinstance-add' : self.WSWidgetInstanceAdd,
-            'widgetinstance-order' : self.WSWidgetInstanceOrder,
-            'widgetinstance-remove' : self.WSWidgetInstanceRemove,
             'widgetinstance-getsection' : self.WSWidgetInstanceGetsection,
             'widgetinstance-getoptions' : self.WSWidgetInstanceGetoptions,
             'widgetinstance-getsensors' : self.WSWidgetInstanceGetsensors,
@@ -128,9 +125,16 @@ class WSHandler(websocket.WebSocketHandler):
             'command-send' : self.WSCommandSend,
             'sensor-gethistory': self.WSSensorGetHistory,
             'sensor-getlast': self.WSSensorGetLast,
+            'widgetinstance-add' : self.WSWidgetInstanceAdd,
+            'widgetinstance-order' : self.WSWidgetInstanceOrder,
+            'widgetinstance-remove' : self.WSWidgetInstanceRemove,
         }[jsonmessage[0]](jsonmessage[1])
         if (data):
-            self.sendMessage(data)
+            # If the modif is global we send the result to all listeners
+            if (jsonmessage[0] in ['widgetinstance-add', 'widgetinstance-order', 'widgetinstance-remove']):
+                WSHandler.sendAllMessage(data)
+            else:
+                self.sendMessage(data)
 
     def WSSectionGet(self, data):
         section = Section.get(data['id'])
@@ -233,6 +237,13 @@ class WSHandler(websocket.WebSocketHandler):
         logger.info("WS: Sending message %s" % data)
         self.write_message(data)
 
+    @classmethod
+    def sendAllMessage(cls, content):
+        data=json.dumps(content)
+        logger.info("WS: Sending message %s" % data)
+        for socket in socket_connections:
+            socket.write_message(data)
+
 class NoCacheStaticFileHandler(web.StaticFileHandler):
     def set_extra_headers(self, path):
         # Disable cache
@@ -250,8 +261,7 @@ class MQHandler(MQAsyncSub):
         if msgid == 'device-stats':
             Sensor.update(content["sensor_id"], content["timestamp"], content["stored_value"])
 
-        for socket in socket_connections:
-            socket.sendMessage([msgid, content])
+        WSHandler.sendAllMessage([msgid, content])
 
 class UploadHandler(RequestHandler):
     def post(self):
