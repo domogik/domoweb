@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" class="csstransforms">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="Cache-Control" content="no-cache" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="-1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Domoweb</title>
   <link rel="stylesheet" href="/libraries/bootstrap-3.2.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/menu.css">
   <style type="text/css" id="sectionstyle" shim-shadowdom>
   body {
     background-position: {{ params['SectionBackgroundPosition'] }};
@@ -33,6 +33,7 @@
   <link rel="import" href="/components/section.html">
   <!--link rel="import" href="/components/mainMenu.html"-->
   <link rel="import" href="/components/gridLayout.html">
+  <link rel="import" href="/components/navigation.html">
   <link rel="import" href="/components/widgetsSelector.html">
   {% for widget in widgets %}
   <link id="{{widget.id}}" rel="import" href="/widget/{{widget.set_id}}/{{widget.set_ref}}.html">
@@ -61,94 +62,55 @@
         <dmw-{{instance.widget.set_id}}-{{instance.widget.set_ref}} id="instance-{{instance.id}}" class="widget loading widgetw{{instance.widget.width}} widgeth{{instance.widget.height}}{% if instance.widget.default_style %} style-general{% end %}" tabindex=0 instanceid={{instance.id}}{% if instance.widget.default_style %} default_style=true{% end %}></dmw-{{instance.widget.set_id}}-{{instance.widget.set_ref}}>
     {% end %}
     </dmw-grid-layout>
-    <button class="cn-button" id="cn-button"><span class='sr-only' data-i18n="menu.open"></span></button>
-    <div class="cn-wrapper" id="cn-wrapper">
+    <dmw-navigation>
      <ul>
-       <li><a id="menuConfigure" href="#" role='button'><span class="label" data-i18n="menu.configuration"></span><span class="icon glyphicon glyphicon-cog" aria-hidden="true"></span></a></li>
-       <li><a id="menuWidgets" href="#" role='button'><span class="label" data-i18n="menu.widgets"></span><span class="icon glyphicon glyphicon-th" aria-hidden="true"></span></a></li>
-       <li><a href="#" role='button'><span class="label" data-i18n="menu.home"></span><span class="icon glyphicon glyphicon-home" aria-hidden="true"></span></a></li>
-       <li><a href="#" role='button'></a></li>
-       <li><a href="#" role='button'><span class="label" data-i18n="menu.lock"></span><span class="icon glyphicon glyphicon-lock" aria-hidden="true"></span></a></li>
+       <li id="menuConfigure" data-i18n="menu.configuration"></li>
+       <li id="menuWidgets" data-i18n="menu.widgets"></li>
      </ul>
-   </div>
-   <div id="cn-overlay" class="cn-overlay"></div>
-   <div id="modal-overlay"></div>
+    </dmw-navigation>
+    <div id="modal-overlay"></div>
 	</main>
   <script src="/libraries/jquery-1.11.0/jquery.min.js"></script>
-  <script src="/libraries/bootstrap-3.2.0/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
-  <script src="/libraries/d3/d3.min.js"></script>
-  <script src="/js/menu.js"></script>
   <script type="text/javascript">
-    var section = document.querySelector('.mainsection');
-    var socket = document.querySelector('#socket');
-    var layout = document.querySelector('dmw-grid-layout');
+    var sectionid = {{ section.id }};
+    var menuConfigure = document.querySelector('#menuConfigure'),
+      menuWidgets = document.querySelector('#menuWidgets'),
+      panelConfigure = document.querySelector('#panelConfigure'),
+      main = document.querySelector('main'),
+      section = document.querySelector('.mainsection'),
+      socket = document.querySelector('#socket'),
+      layout = document.querySelector('dmw-grid-layout'),
+      modalOverlay = document.querySelector('#modal-overlay'),
+      ajax = document.querySelector('#ajax'),
+      navigation = document.querySelector('dmw-navigation');
+
     window.addEventListener('polymer-ready', function(){
-      socket.register('widgetinstance-added', instanceAdded, 'section_id', {{ section.id }});
-      socket.register('widgetinstance-removed', instanceRemoved, 'section_id', {{ section.id }});        
+      socket.register('widgetinstance-added', instanceAdded, 'section_id', sectionid);
+      socket.register('widgetinstance-removed', instanceRemoved, 'section_id', sectionid);        
+      navigation.addEventListener('menuitem-selected', menuitemSelected, false);
     });
     window.onload=function() {
       section.addEventListener('section-updated', sectionUpdated);
+      //open and close menu when the button is clicked
+      menuConfigure.addEventListener('click', configureHandler, false);
+      menuWidgets.addEventListener('click', widgetsHandler, false);
     };
 
     i18n.init({
       load: 'current',
-//        lng: "en-US",
+      //        lng: "en-US",
       fallbackLng: 'en-US',
       resGetPath: 'locales/__ns__/__lng__/translation.json',
       ns: {
         namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}], 
         defaultNs: 'domoweb'
-        },
       },
-      function() {
-      // translate nav
-      jQuery("#cn-wrapper").i18n();
     });
-    function sectionUpdated(e) {
-      var ss = document.querySelector('#sectionstyle');
-      var bodyStyle = ss.sheet.cssRules[0];
-      if ('SectionBackground' in section.params) {
-          bodyStyle.style.backgroundImage="url('/backgrounds/" + section.params['SectionBackground'] + "')";
-      } else {
-          bodyStyle.style.backgroundImage=section.params['SectionBackgroundImage'];
-      }
-      var widgetStyle = ss.sheet.cssRules[1];
-      widgetStyle.style.color=section.params['WidgetTextColor'];
-      widgetStyle.style.backgroundColor=section.params['WidgetBackgroundColor'];
-      widgetStyle.style.borderColor=section.params['WidgetBorderColor'];
-      widgetStyle.style.borderRadius=section.params['WidgetBorderRadius'];
-      widgetStyle.style.boxShadow=section.params['WidgetBoxShadow'];
-    }
-    function instanceAdded(topic, json) {
-      var link = document.head.querySelector("link#" + json.widget_id);
-      if (!link) { // If widget pack not already loaded
-        link = document.createElement('link');
-        link.setAttribute('rel', "import");
-        link.setAttribute('href', "/widget/" + json.widget.set_id + '/' + json.widget.set_ref + ".html")
-        document.head.appendChild(link);
-      }
-
-      var tag = 'dmw-' + json.widget.set_id + '-' + json.widget.set_ref;
-      var widget = document.createElement(tag);
-      widget.id = "instance-" + json.id
-      widget.classList.add("widget", "loading", "widgetw" + json.widget.width, "widgeth" + json.widget.height);
-      if (json.widget.default_style) { // If we load the default style
-        widget.classList.add("style-general");
-        widget.setAttribute('default_style', true);
-      }
-      widget.setAttribute('jsonid', json.id);
-      widget.setAttribute('tabindex', 0);
-      if (layout.getAttribute('edit') != null) {
-        widget.setAttribute('edit', '');
-      }
-      layout.appendChild(widget);
-    }
-    function instanceRemoved(topic, json) {
-      var widget = document.querySelector('#instance-' + json.id);
-      widget.remove();
-    }
   </script>
+  <script src="/libraries/bootstrap-3.2.0/js/bootstrap.min.js"></script>
+  <script src="/libraries/d3/d3.min.js"></script>
+  <script src="/js/main.js"></script>
 </body>
 </html>
 
