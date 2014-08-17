@@ -30,6 +30,7 @@
   <link rel="import" href="/components/polymer-ajax.html">
   <link rel="import" href="/components/websockets.html">
   <link rel="import" href="/components/widget.html">
+  <link rel="import" href="/components/datatypes.html">
   <link rel="import" href="/components/section.html">
   <!--link rel="import" href="/components/mainMenu.html"-->
   <link rel="import" href="/components/gridLayout.html">
@@ -53,6 +54,7 @@
   {% end %}
 </head>
 <body unresolved>
+  <dmw-datatypes id="datatypes"></dmw-datatypes>
   <web-socket id="socket"></web-socket>
   <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
   <dmw-section class='mainsection' sectionid="{{ section.id }}"></dmw-section>

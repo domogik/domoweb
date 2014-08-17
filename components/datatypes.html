@@ -5,26 +5,15 @@
 	    <web-socket id="socket"></web-socket>
 	</template>
 	<script>
-	(function() {
-		var isRegistered = false;
-		var _list = null;
-
 		Polymer("dmw-datatypes", {
 			ready:function(){
-				if (isRegistered == false) {
-					isRegistered = true;
-			    	this.$.socket.register('datatype-list', this.datatypesReceived.bind(this), null, null);
-			    	this.$.socket.send("datatype-getall");					
-				}
-			},
-			get list() {
-				return _list;
+		    	this.$.socket.register('datatype-list', this.datatypesReceived.bind(this), null, null);
+		    	this.$.socket.send("datatype-getall");					
 			},
 			datatypesReceived: function(topic, json) {
-	        	_list=json;
-	        	this.asyncFire('datatype-received');
-	    	},
+	        	this.list=json;
+	        	this.fire('datatype-received');
+	    	}
 	    });
-	})();
 	</script>
 </polymer-element>
