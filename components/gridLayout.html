@@ -22,9 +22,6 @@
 			::content .widget.widgeth6 { height: 700px; }
 		</style>
 	    <content select=".widget"></content>
-	    <template if="{{ edit!=null }}">
-	    	<button class="btn btn-primary btn-lg" on-click="{{addWidget}}">Add Widget</button>
-	    </template>
 	</template>
 	<script src="/libraries/packery/dist/packery.pkgd.min.js"></script>
 	<script src="/libraries/draggability/draggabilly.js"></script>
@@ -84,13 +81,6 @@
 	    			  	this.draggables[id].disable();
 				    }
 				}
-			},
-			addWidget: function(e) {
-				var modalOverlay = document.querySelector('#modal-overlay'),
-				selector = document.createElement('dmw-widgets-selector');
-				selector.setAttribute('section', 1);
-				modalOverlay.appendChild(selector);
-				modalOverlay.classList.add('on');
 			},
 			childrenUpdated: function(observer, mutations) {
 			  	mutations.forEach(function(record) {

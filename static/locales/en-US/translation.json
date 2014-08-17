@@ -3,8 +3,8 @@
 		"open": "Open Menu",
 		"configuration": "Config",
 		"widgets": "Widgets",
-		"home": "Home",
-		"lock": "Lock"
+		"finishWidgets": "Finish",
+		"addwidget": "Add Widget"
 	},
 	"unit": "__value__",
 	"unit_DT_Byte": "b",

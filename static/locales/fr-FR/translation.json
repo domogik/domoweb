@@ -3,8 +3,8 @@
   		"open": "Ouvrir Menu",
     	"configuration": "Config",
     	"widgets": "Widgets",
-    	"home": "Accueil",
-    	"lock": "Verrou."
+		"finishWidgets": "Terminé",
+		"addwidget": "Ajouter Widget"
   	},
   	"unit": "__value__",
   	"unit_DT_Byte": "o",

@@ -43,13 +43,17 @@ function instanceRemoved(topic, json) {
 }
 
 function menuitemSelected(e) {
-	console.debug(e.detail.id);
 	switch(e.detail.id) {
 	    case 'menuConfigure':
 	        configureHandler();
 	        break;
 	    case 'menuWidgets':
-	        widgetsHandler();
+	        widgetsEditHandler();
+	        break;
+	    case 'menuFinishWidgets':
+	        widgetsFinishHandler();
+	        break;
+	    case 'menuAddWidget':
 	        break;
 	} 
 }
@@ -140,25 +144,28 @@ function configureHandler() {
 	ajax.setAttribute('method', 'GET');
 	ajax.setAttribute('params', '{"action":"section", "id":"' + section.getAttribute('sectionid') + '"}');
 	ajax.go();
-	closeNav();
 }
 
-var widgetEdit = false;
-function widgetsHandler() {
-	widgetEdit = !widgetEdit;
-	var layout = document.querySelector('dmw-grid-layout');
-	if (widgetEdit) {
-		layout.setAttribute('edit', '');
-		for (var i = 0; i < layout.children.length; i++) {
-			layout.children[i].setAttribute('edit', '');
-		}
-	} else {
-		layout.removeAttribute('edit');
-		for (var i = 0; i < layout.children.length; i++) {
-			layout.children[i].removeAttribute('edit');
-		}
+function widgetsEditHandler() {
+	layout.setAttribute('edit', '');
+	for (var i = 0; i < layout.children.length; i++) {
+		layout.children[i].setAttribute('edit', '');
 	}
-	closeNav();
+}
+
+function widgetsFinishHandler() {
+	layout.removeAttribute('edit');
+	for (var i = 0; i < layout.children.length; i++) {
+		layout.children[i].removeAttribute('edit');
+	}
+}
+
+
+function addWidgetHandler() {
+	selector = document.createElement('dmw-widgets-selector');
+	selector.setAttribute('section', 1);
+	modalOverlay.appendChild(selector);
+	modalOverlay.classList.add('on');
 }
 
 function onWidgetStyleChange(e) {

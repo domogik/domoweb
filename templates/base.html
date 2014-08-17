@@ -67,7 +67,12 @@
     <dmw-navigation>
      <ul>
        <li id="menuConfigure" data-i18n="menu.configuration"></li>
-       <li id="menuWidgets" data-i18n="menu.widgets"></li>
+       <li id="menuWidgets" data-i18n="menu.widgets">
+         <ul>
+           <li id="menuFinishWidgets" data-i18n="menu.finishWidgets" data-close="true"></li>
+           <li id="menuAddWidget" data-i18n="menu.addwidget"></li>
+         </ul>
+       </li>
      </ul>
     </dmw-navigation>
     <div id="modal-overlay"></div>
@@ -91,13 +96,8 @@
       socket.register('widgetinstance-added', instanceAdded, 'section_id', sectionid);
       socket.register('widgetinstance-removed', instanceRemoved, 'section_id', sectionid);        
       navigation.addEventListener('menuitem-selected', menuitemSelected, false);
-    });
-    window.onload=function() {
       section.addEventListener('section-updated', sectionUpdated);
-      //open and close menu when the button is clicked
-      menuConfigure.addEventListener('click', configureHandler, false);
-      menuWidgets.addEventListener('click', widgetsHandler, false);
-    };
+    });
 
     i18n.init({
       load: 'current',

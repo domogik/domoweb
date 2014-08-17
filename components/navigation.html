@@ -180,6 +180,10 @@
 				background-color: #00506A;
 			}
 
+			nav li .menuitem.finish {
+				background-color: #B13822;
+			}
+
 			/* active style */
 			nav li.active .menuitem {
 				background-color: #2D2C2F;
@@ -209,8 +213,8 @@
 	    <button class="cnbutton" id="cnbutton"><span class='sr-only' data-i18n="menu.open"></span></button>
 		<nav id="cnwrapper">
 			<ul>
-	        <template repeat="{{i in items}}">
-	          	<li><div class="menuitem" role="button" tabindex=0 on-click={{selectItem}}><span class="label">{{i.label}}</span></div></li>
+	        <template repeat="{{i in displayed}}">
+	          	<li><div class="menuitem {{i.class}}" role="button" tabindex=0 on-click={{selectItem}}><span class="label">{{i.label}}</span></div></li>
 	        </template>
 	        </ul>
 		</nav>
@@ -218,11 +222,11 @@
 	</template>
   	<script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
 	<script>
-	(function() {
 		Polymer("dmw-navigation", {
 			ready: function() {
 				var self=this;
 				this.items = [];
+				this.displayed = [];
 				this.open = false;
 				this.$.cnbutton.addEventListener('click', this.handler.bind(this), false);
 				this.$.cnwrapper.addEventListener('click', this.cnhandle.bind(this), false);
@@ -237,14 +241,8 @@
 			        defaultNs: 'domoweb'
 			      },
 			    },function(t) {
-					var childrens = self.children[0].children;
-					for(var i = 0; i < childrens.length; i++){
-						children = childrens[i]
-			          	self.items.push({
-			          		id:children.id,
-			          		label:t(children.dataset.i18n)
-			          	});
-			        }
+		    		self.items = parseChilds(t, self.children[0]);
+		    		self.displayItems(null);
 				});
 			},
 			openNav: function(){
@@ -273,11 +271,62 @@
 				e.stopPropagation();
 			},
 			selectItem: function(e, detail, sender) {
-				this.closeNav();
 			  	var item = e.target.templateInstance.model.i;
-			  	this.fire('menuitem-selected', {id: item.id});
+			  	console.debug(item);
+			  	if (item.childs) {
+		    		this.displayItems(item);
+			  	} else {
+					this.closeNav();
+			  	}
+			  	if (item.id) {
+				  	this.fire('menuitem-selected', {id: item.id});
+			  	}
+			},
+			displayItems: function(parent) {
+				var root = null
+				if (parent === null) {
+					root = this.items;
+				} else {
+					root = parent.childs;
+				}
+				this.displayed = [];
+				for(var i = 0; i < root.length; i++){
+					var r = root[i];
+					var item = {
+		          		id:r.id,
+		          		label:r.label,
+		          	};
+		          	if (r.close) {
+		          		item.class = 'finish';
+		          	}
+		          	if (r.childs) {
+		          		item.childs = r.childs;
+		          	}
+		          	this.displayed.push(item);
+				}
+		        // Add blank items
+		        for (i ; i < 5; i++) {
+		          	this.displayed.push({});	        	
+		        }
 			}
 	    });
-	})();
+		function parseChilds(t, root) {
+			var items = []
+			var childrens = root.children;
+			for(var i = 0; i < childrens.length; i++){
+				children = childrens[i]
+	          	var item = {
+	          		id:children.id,
+	          		label:t(children.dataset.i18n),
+	          		close:t(children.dataset.close)
+	          	};
+	          	var childs = children.children[0];
+	          	if (childs) {
+	          		item.childs = parseChilds(t, childs);
+	          	}
+	          	items.push(item);
+	        }
+	        return items;
+		}
 	</script>
 </polymer-element>
