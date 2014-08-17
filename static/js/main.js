@@ -54,6 +54,7 @@ function menuitemSelected(e) {
 	        widgetsFinishHandler();
 	        break;
 	    case 'menuAddWidget':
+		    addWidgetHandler();
 	        break;
 	} 
 }
@@ -160,7 +161,6 @@ function widgetsFinishHandler() {
 	}
 }
 
-
 function addWidgetHandler() {
 	selector = document.createElement('dmw-widgets-selector');
 	selector.setAttribute('section', 1);
@@ -188,4 +188,3 @@ function onWidgetStyleChange(e) {
 	        break;
 	} 
 }
-
