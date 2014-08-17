@@ -257,6 +257,10 @@ class MQHandler(MQAsyncSub):
         logger.info(u"MQ: New pub message {0}".format(msgid))
         logger.info(u"MQ: {0}".format(content))
 
+        if isinstance(content["stored_value"], list):
+            content["stored_value"] = content["stored_value"][0]
+            logger.error(u"MQ: PATCH for issue #1976")
+
         # If sensor stat, we update the sensor last value
         if msgid == 'device-stats':
             Sensor.update(content["sensor_id"], content["timestamp"], content["stored_value"])
