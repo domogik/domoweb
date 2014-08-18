@@ -231,19 +231,8 @@
 				this.$.cnbutton.addEventListener('click', this.handler.bind(this), false);
 				this.$.cnwrapper.addEventListener('click', this.cnhandle.bind(this), false);
 				document.addEventListener('click', this.closeNav.bind(this));
-				i18n.init({
-			      load: 'current',
-			      //        lng: "en-US",
-			      fallbackLng: 'en-US',
-			      resGetPath: 'locales/__ns__/__lng__/translation.json',
-			      ns: {
-			        namespaces: ['domoweb'], 
-			        defaultNs: 'domoweb'
-			      },
-			    },function(t) {
-		    		self.items = parseChilds(t, self.children[0]);
-		    		self.displayItems(null);
-				});
+	    		self.items = parseChilds(self.children[0]);
+	    		self.displayItems(null);
 			},
 			openNav: function(){
 				this.open = true;
@@ -309,19 +298,19 @@
 		        }
 			}
 	    });
-		function parseChilds(t, root) {
+		function parseChilds(root) {
 			var items = []
 			var childrens = root.children;
 			for(var i = 0; i < childrens.length; i++){
 				children = childrens[i]
 	          	var item = {
 	          		id:children.id,
-	          		label:t(children.dataset.i18n),
-	          		close:t(children.dataset.close)
+	          		label:i18n.t(children.dataset.i18n),
+	          		close:i18n.t(children.dataset.close)
 	          	};
 	          	var childs = children.children[0];
 	          	if (childs) {
-	          		item.childs = parseChilds(t, childs);
+	          		item.childs = parseChilds(childs);
 	          	}
 	          	items.push(item);
 	        }
