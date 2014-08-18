@@ -33,7 +33,7 @@
 			ready: function() {
 				this.super();
 				this.number = "--";
-				this.unit = "-"
+				this.unit = "";
 			},
 			loadingDone: function() {
 				this.setSensor();
@@ -57,10 +57,14 @@
 				   	var sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
 				   	var i = Math.floor(Math.log(number) / Math.log(k));
 					this.$.number.innerHTML = (number / Math.pow(k, i)).toPrecision(3);
-					this.unit = sizes[i] + i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+					if (unit) {
+						this.unit = sizes[i] + i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+					}
 				} else {
 					this.$.number.innerHTML = number;
-					this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+					if (unit) {
+						this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+					}
 				}
 				adjustText(this, this.$.number);
 			},
