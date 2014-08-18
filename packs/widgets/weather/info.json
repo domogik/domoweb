@@ -1,0 +1,27 @@
+{
+    "json_version" : 2,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "weather",
+        "version" : 1,
+        "name" : "Weather",
+        "description" : "Widgets for Weather data",
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
+    },
+    "widgets": {
+        "uv": {
+            "name" : "U.V. Index",
+            "height" : 1,
+            "width" : 1,
+            "sensors" : {
+                "primary" : {
+                    "name": "UV meter",
+                    "description": "UV meter sensor",
+                    "types" : ["DT_Number"],
+                    "required": true                   
+                }
+            }
+        }
+    }
+}

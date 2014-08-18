@@ -1,0 +1,7 @@
+{ 
+	"low": "Low danger",
+	"moderate": "Moderate risk",
+	"high": "High risk",
+	"veryhigh": "Very high risk",
+	"extreme": "Extreme risk"
+}

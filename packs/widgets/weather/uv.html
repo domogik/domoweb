@@ -1,0 +1,87 @@
+<polymer-element name="dmw-weather-uv" extends="dmw-widget">
+	<template>
+		<link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+		<style type="text/css">
+			:host {
+				height: 100%;
+			}
+			.level {
+				height: 14%;
+				margin: 5% 5% 5% 5%;
+				width: 90%;
+				opacity: 0.2;
+			}
+			.level.current {
+				opacity: 1;
+			}
+			#level1 { background: #4EB400; }
+			#level2 { background: #F7E400; }
+			#level3 { background: #F85900; }
+			#level4 { background: #D8001D; }
+			#level5 { background: #6B49C8; }
+			.sr-only {
+			    border: 0 none;
+			    clip: rect(0px, 0px, 0px, 0px);
+			    height: 1px;
+			    margin: -1px;
+			    overflow: hidden;
+			    padding: 0;
+			    position: absolute;
+			    width: 1px;
+			}
+		</style>
+	    <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+		<shadow></shadow>
+		<div class="sr-only">Level: {{text}}</div>
+		<div class="level" id="level5"></div>
+		<div class="level" id="level4"></div>
+		<div class="level" id="level3"></div>
+		<div class="level" id="level2"></div>
+		<div class="level" id="level1"></div>
+	</template>
+	<script>
+		Polymer('dmw-weather-uv', {
+			ready: function() {
+				this.super();
+			},
+			loadingDone: function() {
+				this.setSensor();
+			},
+			sensorsUpdated: function() {
+				this.setSensor();
+			},
+			setSensor: function() {
+				if (this.$.primary.isSet) {
+					this.labelprimary = this.$.primary.device['name'];
+					this.labelsecondary = this.$.primary.name;
+					this.displayValue(this.$.primary.last_value);
+				}		
+			},
+			sensorvalueChanged: function(oldValue, newValue) {
+				this.displayValue(newValue);
+			},
+			displayValue: function(number) {
+				var levels = this.shadowRoot.querySelectorAll(".level");
+				for (var i = levels.length - 1; i >= 0; i--) {
+					levels[i].classList.remove('current');
+				};
+				if (number >= 11) {
+					this.$.level5.classList.add('current')
+					this.text = i18n.t("weather:extreme");
+				} else if (number >= 8) {
+					this.$.level4.classList.add('current')
+					this.text = i18n.t("weather:veryhigh");
+				} else if (number >= 6) {
+					this.$.level3.classList.add('current')
+					this.text = i18n.t("weather:high");
+				} else if (number >= 3) {
+					this.$.level2.classList.add('current')
+					this.text = i18n.t("weather:moderate");
+				} else if (number >= 0) {
+					this.$.level1.classList.add('current')
+					this.text = i18n.t("weather:low");
+				}
+			},
+		});
+	</script>
+</polymer-element>
