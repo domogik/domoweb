@@ -266,6 +266,9 @@
 			  	} else {
 					this.closeNav();
 			  	}
+			  	if (item.close) {
+		    		this.displayItems(null);
+			  	}
 			  	if (item.id) {
 				  	this.fire('menuitem-selected', {id: item.id});
 			  	}
@@ -286,6 +289,7 @@
 		          	};
 		          	if (r.close) {
 		          		item.class = 'finish';
+		          		item.close = true;
 		          	}
 		          	if (r.childs) {
 		          		item.childs = r.childs;
