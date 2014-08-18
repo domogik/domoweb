@@ -29,18 +29,12 @@
                     "types" : ["DT_Number"],
                     "required": true                   
                 }
-            },
-            "commands" : {
-            },
-            "devices" : {
             }
         },
         "sensorBool": {
             "name" : "Sensor Bool",
             "height" : 1,
             "width" : 1,
-            "options" : {
-            },
             "sensors" : {
                 "primary" : {
                     "name": "Bool",
@@ -48,20 +42,12 @@
                     "types" : ["DT_Bool"],
                     "required": true                   
                 }
-            },
-            "commands" : {
-            },
-            "devices" : {
             }
         },
         "commandString": {
             "name" : "Command String",
             "height" : 1,
             "width" : 2,
-            "options" : {
-            },
-            "sensors" : {
-            },
             "commands" : {
                 "primary" : {
                     "name": "Text",
@@ -70,16 +56,12 @@
                     ],
                     "required": true                   
                 }
-            },
-            "devices" : {
             }
         },
         "commandBool": {
             "name" : "Command Boolean",
             "height" : 1,
             "width" : 1,
-            "options" : {
-            },
             "sensors" : {
                 "boolstate" : {
                     "name": "Bool state",
@@ -96,8 +78,28 @@
                     ],
                     "required": true                   
                 }
+            }
+        },
+        "commandRange": {
+            "name" : "Command Range",
+            "height" : 1,
+            "width" : 2,
+            "sensors" : {
+                "scalingstate" : {
+                    "name": "Scaling state",
+                    "description": "Scaling feedback state",
+                    "types" : ["DT_Scaling"],
+                    "required": false
+                }
             },
-            "devices" : {
+            "commands" : {
+                "primary" : {
+                    "name": "Scaling",
+                    "types" : [
+                        ["DT_Scaling"]
+                    ],
+                    "required": true                   
+                }
             }
         }
     }
