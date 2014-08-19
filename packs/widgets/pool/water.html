@@ -1,0 +1,367 @@
+<polymer-element name="dmw-pool-water" extends="dmw-widget">
+	<template>
+		<style type="text/css">
+		    :host { * { display: block; } }
+			:host {
+				height: 100%;
+			}
+			.inactive {
+				display: none;
+			}
+			:host /deep/ #labelprimary {
+				position: absolute;
+				top: 10px;
+				left: 10px;
+				font-size: 1.2em;
+			}
+			#tempdisplay {
+				position: absolute;
+				bottom: 80px;
+				left: 10px;
+				font-size: 1.2em;
+			}
+			#propeller {
+				position: absolute;
+				bottom: 10px;
+				left: 10px;
+				text-align: center;
+			}
+			#propeller.running svg {
+			    -webkit-animation:spin 1s linear infinite;
+			    -moz-animation:spin 1s linear infinite;
+			    animation:spin 1s linear infinite;
+			}
+			#propeller.running svg path {
+				fill:#ffffff;
+			}
+			#propeller svg path {
+				fill:#146399;
+			}
+			@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+			@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+			@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+			#phdisplay {
+				position: absolute;
+				top:10px;
+				right: 10px;
+				text-align: center;
+			}
+			#cldisplay {
+				position: absolute;
+				top:10px;
+				right: 70px;
+				text-align: center;
+			}
+			.phlevel,
+			.cllevel {
+				height: 1.4em;
+				line-height: 1.4em;
+				margin: 5px;
+				width: 50px;
+				opacity: 0.2;
+			}
+			.phlevel.current,
+			.cllevel.current {
+				opacity: 1;
+			}
+			#phlevel1 { background: #DEC87F; } /* 6.8 */
+			#phlevel2 { background: #EBB08D; border: 1px solid #ffffff; } /* 7.2 */
+			#phlevel3 { background: #E47B6D; border: 1px solid #ffffff; } /* 7.4 */
+			#phlevel4 { background: #E57778; } /* 7.6 */
+			#phlevel5 { background: #E56CAF; } /* 7.8 */
+			#phlevel6 { background: #D843B7; } /* 8.2 */
+
+			#cllevel1 { background: #E8D3D0; } /* 0.5 */
+			#cllevel2 { background: #EABDC4; border: 1px solid #ffffff; } /* 1.0 */
+			#cllevel3 { background: #E6AAB6; border: 1px solid #ffffff; } /* 1.5 */
+			#cllevel4 { background: #E390A4; } /* 2.0 */
+			#cllevel5 { background: #DE768F; } /* 3.0 */
+			#cllevel6 { background: #DB5673; } /* 5.0 */
+
+		</style>
+	    <dmw-sensor id='pump' sensorkey="pump" sensorvalue="{{pumpvalue}}"></dmw-sensor>
+	    <dmw-sensor id='temperature' sensorkey="temperature" sensorvalue="{{temperaturevalue}}"></dmw-sensor>
+	    <dmw-sensor id='ph' sensorkey="ph" sensorvalue="{{phvalue}}"></dmw-sensor>
+	    <dmw-sensor id='chlorine' sensorkey="chlorine" sensorvalue="{{chlorinevalue}}"></dmw-sensor>
+		<shadow></shadow>
+		<canvas height="100%" width="100%" id="canvas"></canvas>
+		<div id="tempdisplay" class="inactive">{{temperature}}{{unit}}</div>
+		<div id="propeller" class="inactive">
+			<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+				 width="40px" height="40px" viewBox="3.4 3.8 40 40" style="enable-background:new 3.4 3.8 40 40;" xml:space="preserve">
+			<g>
+				<path d="M42.6,18.5c-0.9-3.6-4.7-5.8-8.3-4.9c-2.8,0.7-7.9,3.8-9.8,6.8c-0.1,0-0.2,0-0.2-0.1c0-3.5-2.6-8.8-4.6-10.8
+					c-2.6-2.7-7-2.8-9.7-0.2c-2.7,2.6-2.8,6.8-0.2,9.5c1.9,1.9,6.5,4.5,10,5c0,0.4,0.1,0.7,0.2,1c-2.8,2.2-5.5,6.8-6.1,9.4
+					c-0.8,3.6,1.5,7.3,5.2,8.1c3.7,0.8,7.4-1.4,8.2-5.1c0.6-2.6,0.2-7.9-1.3-11c0.2-0.2,0.3-0.3,0.4-0.5c3.2,1.5,8.7,1.7,11.3,1.1
+					C41.3,25.8,43.5,22.1,42.6,18.5z M23.4,27c-1.8,0-3.3-1.5-3.3-3.3c0-1.8,1.5-3.3,3.3-3.3c1.8,0,3.3,1.5,3.3,3.3
+					C26.7,25.6,25.2,27,23.4,27z"/>
+				<path d="M23.4,22.4c-0.7,0-1.3,0.6-1.3,1.3c0,0.7,0.6,1.3,1.3,1.3c0.7,0,1.4-0.6,1.4-1.3C24.7,23,24.1,22.4,23.4,22.4z"/>
+			</g>
+			</svg>{{pumpStatus}}
+		</div>
+		<div id="phdisplay" class="inactive">
+			<div>pH</div>
+			<div class="phlevel" id="phlevel6"></div>
+			<div class="phlevel" id="phlevel5"></div>
+			<div class="phlevel" id="phlevel4"></div>
+			<div class="phlevel" id="phlevel3"></div>
+			<div class="phlevel" id="phlevel2"></div>
+			<div class="phlevel" id="phlevel1"></div>
+		</div>
+		<div id="cldisplay" class="inactive">
+			<div>Cl</div>
+			<div class="cllevel" id="cllevel6"></div>
+			<div class="cllevel" id="cllevel5"></div>
+			<div class="cllevel" id="cllevel4"></div>
+			<div class="cllevel" id="cllevel3"></div>
+			<div class="cllevel" id="cllevel2"></div>
+			<div class="cllevel" id="cllevel1"></div>
+		</div>
+	</template>
+	<script>
+		Polymer('dmw-pool-water', {
+			ready: function() {
+				this.super();
+				/**
+				 *    Wave oscillators by Ken Fyrstenberg Nilsen
+				 *    http://abdiassoftware.com/
+				 *
+				 *    CC-Attribute 3.0 License
+				*/
+				var canvas = this.$.canvas;
+				var ctx = canvas.getContext('2d'),
+				    w, h;
+
+				canvas.width = w = 338;
+				canvas.height = h = 218;
+
+				var osc1 = new osc(),
+				    osc2 = new osc(),
+				    osc3 = new osc(),
+				    horizon = h * 0.5;
+				    count = 40,
+				    step = Math.ceil(w / count),
+				    //points = new Array(count);
+				    buffer = new ArrayBuffer(count * 4),
+				    points = new Float32Array(buffer);
+
+				osc1.max = 15;//h * 0.7;
+
+				osc2.max = 5;
+				osc2.speed = 0.003;
+
+				osc2.max = 5;
+				osc2.speed = 0.005;
+
+				function fill() {
+				    for(var i = 0; i < count; i++) {
+				        points[i] = mixer(osc1, osc2, osc3);
+				    }
+				}
+				fill();
+
+				ctx.lineWidth = 20;
+				ctx.strokeStyle = '#1d96d3';
+				ctx.fillStyle = '#1d96d3';
+
+				function loop() {
+
+				    var i;
+
+				    /// move points to the left
+				    for(i = 0; i < count - 1; i++) {
+				        points[i] = points[i + 1];
+				    }
+
+				    /// get a new point
+				    points[count - 1] = mixer(osc1, osc2, osc3);
+
+				    ctx.clearRect(0, 0, w, h);
+				    //ctx.fillRect(0, 0, w, h);
+
+				    /// render wave
+				    ctx.beginPath();
+				    ctx.moveTo(-5, points[0]);
+
+				    for(i = 1; i < count; i++) {
+				        ctx.lineTo(i * step, points[i]);
+				    }
+
+				    ctx.lineTo(w, h);
+				    ctx.lineTo(-5, h);
+				    ctx.lineTo(-5, points[1]);
+
+				    ctx.stroke();
+				    ctx.fill();
+				}
+
+				/// oscillator object
+				function osc() {
+
+				    this.variation = 1;
+				    this.max = 10;
+				    this.speed = 0.02;
+
+				    var me = this,
+				        a = 0,
+				        max = getMax();
+
+				    this.getAmp = function() {
+
+				        a += this.speed;
+
+				        if (a >= 2.0) {
+				            a = 0;
+				            max = getMax();
+				        }
+
+				        return max * Math.sin(a * Math.PI);
+				    }
+
+				    function getMax() {
+				        return Math.random() * me.max * me.variation +
+				            me.max * (1 - me.variation);
+				    }
+
+				    return this;
+				}
+
+				function mixer() {
+
+				    var d = arguments.length,
+				        i = d,
+				        sum = 0;
+
+				    if (d < 1) return 0;
+
+				    while(i--) sum += arguments[i].getAmp();
+
+				    return sum / d + horizon;
+				}
+
+				(function animloop(){
+				  requestAnimFrame(animloop);
+				  loop();
+				})();
+			},
+			loadingDone: function() {
+				this.$.canvas.style.borderRadius = this.options['WidgetBorderRadius'];
+				this.displayTitle();
+				this.setSensors();
+			},
+			sensorsUpdated: function() {
+				this.setSensors();
+			},
+			optionsUpdated: function() {
+				this.$.canvas.style.borderRadius = this.options['WidgetBorderRadius'];				
+				this.displayTitle();
+			},
+			displayTitle: function() {
+				this.labelprimary = this.options['title'];
+			},
+			setSensors: function() {
+				if (this.$.temperature.isSet) {
+					this.displayTemperature(this.$.temperature.last_value);
+					this.$.tempdisplay.classList.remove('inactive');
+				} else {
+					this.$.tempdisplay.classList.add('inactive');
+				}
+				if (this.$.pump.isSet) {
+					this.displayPump(this.$.pump.last_value);
+					this.$.propeller.classList.remove('inactive');
+				} else {
+					this.$.propeller.classList.add('inactive');
+				}
+				if (this.$.ph.isSet) {
+					this.displayPh(this.$.ph.last_value);
+					this.$.phdisplay.classList.remove('inactive');
+				} else {
+					this.$.phdisplay.classList.add('inactive');
+				}
+				if (this.$.chlorine.isSet) {
+					this.displayChlorine(this.$.chlorine.last_value);
+					this.$.cldisplay.classList.remove('inactive');
+				} else {
+					this.$.cldisplay.classList.add('inactive');
+				}
+			},
+			pumpvalueChanged: function(oldValue, newValue) {
+				this.displayPump(newValue);
+			},
+			displayPump: function(status) {
+				this.pumpStatus = i18n.t("domoweb:bool." + value, { context: 'DT_State' });
+				if (value == 1) {
+					this.$.propeller.classList.add('running');
+				} else {
+					this.$.propeller.classList.remove('running');
+				}
+			},
+			displayTemperature: function(value) {
+				this.unit = i18n.t("domoweb:unit", { context: this.$.temperature.datatype_id, value: this.datatypes[this.$.temperature.datatype_id]['unit'] });
+				this.temperature = value;
+			},
+			displayPh: function(value) {
+				var levels = this.shadowRoot.querySelectorAll(".phlevel");
+				for (var i = levels.length - 1; i >= 0; i--) {
+					levels[i].classList.remove('current');
+					levels[i].innerHTML = "";
+				};
+				if (value >= 8.2) {
+					this.$.phlevel6.classList.add('current')
+					this.$.phlevel6.innerHTML = value;
+				} else if (value >= 7.8) {
+					this.$.phlevel5.classList.add('current')
+					this.$.phlevel5.innerHTML = value;
+				} else if (value >= 7.6) {
+					this.$.phlevel4.classList.add('current')
+					this.$.phlevel4.innerHTML = value;
+				} else if (value >= 7.4) {
+					this.$.phlevel3.classList.add('current')
+					this.$.phlevel3.innerHTML = value;
+				} else if (value >= 7.2) {
+					this.$.phlevel2.classList.add('current')
+					this.$.phlevel2.innerHTML = value;
+				} else if (value >= 6.8) {
+					this.$.phlevel1.classList.add('current')
+					this.$.phlevel1.innerHTML = value;
+				}
+			},
+			displayChlorine: function(value) {
+				var levels = this.shadowRoot.querySelectorAll(".cllevel");
+				for (var i = levels.length - 1; i >= 0; i--) {
+					levels[i].classList.remove('current');
+					levels[i].innerHTML = "";
+				};
+				if (value >= 5.0) {
+					this.$.cllevel6.classList.add('current')
+					this.$.cllevel6.innerHTML = value;
+				} else if (value >= 3.0) {
+					this.$.cllevel5.classList.add('current')
+					this.$.cllevel5.innerHTML = value;
+				} else if (value >= 2.0) {
+					this.$.cllevel4.classList.add('current')
+					this.$.cllevel4.innerHTML = value;
+				} else if (value >= 1.0) {
+					this.$.cllevel3.classList.add('current')
+					this.$.cllevel3.innerHTML = value;
+				} else if (value >= 1.5) {
+					this.$.cllevel2.classList.add('current')
+					this.$.cllevel2.innerHTML = value;
+				} else if (value >= 0.5) {
+					this.$.cllevel1.classList.add('current')
+					this.$.cllevel1.innerHTML = value;
+				}
+			}
+		});
+		// shim layer with setTimeout fallback
+		window.requestAnimFrame = (function(){
+		  return  window.requestAnimationFrame       ||
+		          window.webkitRequestAnimationFrame ||
+		          window.mozRequestAnimationFrame    ||
+		          function( callback ){
+		            window.setTimeout(callback, 1000 / 60);
+		          };
+		})();
+	</script>
+</polymer-element>

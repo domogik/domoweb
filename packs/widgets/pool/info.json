@@ -1,0 +1,53 @@
+{
+    "json_version" : 2,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "pool",
+        "version" : 1,
+        "name" : "Pool",
+        "description" : "Various widgets for Swimming pool management",
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
+    },
+    "widgets": {
+        "water": {
+            "name" : "Water",
+            "height" : 2,
+            "width" : 3,
+            "options" : {
+                "title" : {
+                    "name": "Widget Title",
+                    "type": "string",
+                    "default": "Pool",
+                    "required": true
+                }
+            },
+            "sensors" : {
+                "temperature" : {
+                    "name": "Temperature",
+                    "description": "Temperature sensor",
+                    "types" : ["DT_Temp", "DT_TempF", "DT_TempK"],
+                    "required": false
+                },
+                "pump" : {
+                    "name": "Pump",
+                    "description": "Pump running status",
+                    "types" : ["DT_Bool"],
+                    "required": false
+                },
+                "pH" : {
+                    "name": "pH",
+                    "description": "pH sensor",
+                    "types" : ["DT_pH"],
+                    "required": false
+                },
+                "Chlorine" : {
+                    "name": "Chlorine",
+                    "description": "Chlorine sensor",
+                    "types" : ["DT_Chlorine"],
+                    "required": false
+                }
+            }
+        }
+    }
+}
