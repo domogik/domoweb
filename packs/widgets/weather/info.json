@@ -22,6 +22,31 @@
                     "required": true                   
                 }
             }
-        }
+        },
+        "wind": {
+            "name" : "Wind Speed and direction",
+            "height" : 2,
+            "width" : 2,
+            "sensors" : {
+                "direction" : {
+                    "name": "Direction",
+                    "description": "Direction in degree",
+                    "types" : ["DT_Angle"],
+                    "required": true                   
+                },
+                "speed" : {
+                    "name": "Speed",
+                    "description": "Speed m/s (or km/h)",
+                    "types" : ["DT_Speed", "DT_kmhSpeed"],
+                    "required": false                   
+                },
+                "gust" : {
+                    "name": "Gust",
+                    "description": "Gust m/s (or km/h)",
+                    "types" : ["DT_Speed", "DT_kmhSpeed"],
+                    "required": false                   
+                }
+            }
+        }        
     }
 }

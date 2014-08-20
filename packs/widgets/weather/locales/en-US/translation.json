@@ -3,5 +3,7 @@
 	"moderate": "Moderate risk",
 	"high": "High risk",
 	"veryhigh": "Very high risk",
-	"extreme": "Extreme risk"
+	"extreme": "Extreme risk",
+	"speed": "Speed",
+	"gust": "Gust"
 }
