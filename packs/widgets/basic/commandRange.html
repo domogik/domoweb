@@ -80,7 +80,7 @@
 			setSensor: function() {
 				if (this.$.scalingstate.isSet) {
 					this.hasFeedback = true;
-					this.current = this.$.scalingstate.last_value;
+					this.current = this.$.scalingstate.sensorvalue;
 				} else {
 					this.current = 0;
 				}
@@ -95,8 +95,10 @@
 				}
 			},
 			scalingstateChanged: function(oldValue, newValue) {
-				this.current = newValue;
-				this.$.range.value = this.current;
+				if (this.loaded) {
+					this.current = newValue;
+					this.$.range.value = this.current;
+				}
 			},
 			send: function(e) {
 				var parameters = {};

@@ -54,11 +54,13 @@
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
 					this.labelsecondary = this.$.primary.name;
-					this.displayValue(this.$.primary.last_value);
+					this.displayValue(this.$.primary.sensorvalue);
 				}		
 			},
 			sensorvalueChanged: function(oldValue, newValue) {
-				this.displayValue(newValue);
+				if (this.loaded) {
+					this.displayValue(newValue);
+				}
 			},
 			displayValue: function(number) {
 				var levels = this.shadowRoot.querySelectorAll(".level");

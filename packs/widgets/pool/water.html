@@ -262,32 +262,34 @@
 			},
 			setSensors: function() {
 				if (this.$.temperature.isSet) {
-					this.displayTemperature(this.$.temperature.last_value);
+					this.displayTemperature(this.$.temperature.sensorvalue);
 					this.$.tempdisplay.classList.remove('inactive');
 				} else {
 					this.$.tempdisplay.classList.add('inactive');
 				}
 				if (this.$.pump.isSet) {
-					this.displayPump(this.$.pump.last_value);
+					this.displayPump(this.$.pump.sensorvalue);
 					this.$.propeller.classList.remove('inactive');
 				} else {
 					this.$.propeller.classList.add('inactive');
 				}
 				if (this.$.ph.isSet) {
-					this.displayPh(this.$.ph.last_value);
+					this.displayPh(this.$.ph.sensorvalue);
 					this.$.phdisplay.classList.remove('inactive');
 				} else {
 					this.$.phdisplay.classList.add('inactive');
 				}
 				if (this.$.chlorine.isSet) {
-					this.displayChlorine(this.$.chlorine.last_value);
+					this.displayChlorine(this.$.chlorine.sensorvalue);
 					this.$.cldisplay.classList.remove('inactive');
 				} else {
 					this.$.cldisplay.classList.add('inactive');
 				}
 			},
 			pumpvalueChanged: function(oldValue, newValue) {
-				this.displayPump(newValue);
+				if (this.loaded) {
+					this.displayPump(newValue);
+				}
 			},
 			displayPump: function(status) {
 				this.pumpStatus = i18n.t("domoweb:bool." + value, { context: 'DT_State' });

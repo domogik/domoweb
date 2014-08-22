@@ -115,25 +115,25 @@
 					.interpolate("basis");
 
 				if (this.$.optarif.isSet) {
-					this.optarif = this.$.optarif.last_value;
+					this.optarif = this.$.optarif.sensorvalue;
 				}
 				if (this.$.ptec.isSet) {
-					this.ptec = this.$.ptec.last_value.substr(0, 2);
+					this.ptec = this.$.ptec.sensorvalue.substr(0, 2);
 				}
 				if (this.$.base.isSet) {
-					this.base = ~~(parseInt(this.$.base.last_value) / 1000); // We convert in kW
+					this.base = ~~(parseInt(this.$.base.sensorvalue) / 1000); // We convert in kW
 				}
 				if (this.$.hchc.isSet) {
-					this.hchc = ~~(parseInt(this.$.hchc.last_value) / 1000); // We convert in kW
+					this.hchc = ~~(parseInt(this.$.hchc.sensorvalue) / 1000); // We convert in kW
 				}
 				if (this.$.hchp.isSet) {
-					this.hchp = ~~(parseInt(this.$.hchp.last_value) / 1000); // We convert in kW
+					this.hchp = ~~(parseInt(this.$.hchp.sensorvalue) / 1000); // We convert in kW
 				}
 				if (this.$.iinst.isSet) {
-					this.iinst = parseInt(this.$.iinst.last_value);
+					this.iinst = parseInt(this.$.iinst.sensorvalue);
 				}
 				if (this.$.papp.isSet) {
-					this.papp = parseInt(this.$.papp.last_value);
+					this.papp = parseInt(this.$.papp.sensorvalue);
 					this.$.papp.addEventListener('sensor-statreceived', this.pappStatReceived.bind(this));
 					this.$.papp.getLast(60);
 				}
@@ -145,7 +145,7 @@
 				this.papp = parseInt(newValue);
 			},
 			ptecvalueChanged: function (oldValue, newValue) {
-				this.ptec = this.$.ptec.last_value.substr(0, 2);
+				this.ptec = newValue.substr(0, 2);
 			},
 			ptecChanged: function (oldValue, newValue) {
 				this.classList.add(newValue);

@@ -45,11 +45,13 @@
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
 					this.labelsecondary = this.$.primary.name;
-					this.displayValue(this.$.primary.last_value, this.datatypes[this.$.primary.datatype_id]['unit']);
+					this.displayValue(this.$.primary.sensorvalue, this.datatypes[this.$.primary.datatype_id]['unit']);
 				}		
 			},
 			sensorvalueChanged: function(oldValue, newValue) {
-				this.displayValue(newValue, this.datatypes[this.$.primary.datatype_id]['unit']);
+				if (this.loaded) {
+					this.displayValue(newValue, this.datatypes[this.$.primary.datatype_id]['unit']);
+				}
 			},
 			displayValue: function(number, unit) {
 				if (this.options['autoconvert']==1 && number > 0) {

@@ -105,20 +105,20 @@
 				if (this.$.direction.isSet) {
 					this.labelprimary = this.$.direction.device['name'];
 //					this.labelsecondary = this.$.direction.name;
-					this.displayDirection(this.$.direction.last_value);
+					this.displayDirection(this.$.direction.sensorvalue);
 					this.$.arrow.classList.remove('inactive');
 				} else {
 					this.$.arrow.classList.add('inactive');
 				}
 				if (this.$.speed.isSet) {
-					this.displaySpeed(this.$.speed.last_value);
+					this.displaySpeed(this.$.speed.sensorvalue);
 					this.$.speeddisplay.setAttribute('aria-label', i18n.t('weather:speed'));
 					this.$.speeddisplay.classList.remove('inactive');
 				} else {
 					this.$.speeddisplay.classList.add('inactive');
 				}
 				if (this.$.gust.isSet) {
-					this.displayGust(this.$.gust.last_value);
+					this.displayGust(this.$.gust.sensorvalue);
 					this.$.gustdisplay.setAttribute('aria-label', i18n.t('weather:gust'));
 					this.$.gustdisplay.classList.remove('inactive');
 				} else {
@@ -126,13 +126,19 @@
 				}
 			},
 			directionvalueChanged: function(oldValue, newValue) {
-				this.displayDirection(newValue);
+				if (this.loaded) {
+					this.displayDirection(newValue);
+				}
 			},
 			speedvalueChanged: function(oldValue, newValue) {
-				this.displaySpeed(newValue);
+				if (this.loaded) {
+					this.displaySpeed(newValue);
+				}
 			},
 			gustvalueChanged: function(oldValue, newValue) {
-				this.displayGust(newValue);
+				if (this.loaded) {
+					this.displayGust(newValue);
+				}
 			},
 			displayDirection: function(value) {
 				this.$.arrow.style.transform = 'rotate(' + value + 'deg)';

@@ -42,7 +42,7 @@
 			setSensor: function() {
 				if (this.$.boolstate.isSet) {
 					this.hasFeedback = true;
-					this.displayValue(this.$.boolstate.last_value);
+					this.displayValue(this.$.boolstate.sensorvalue);
 				}
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
@@ -62,7 +62,9 @@
 				}
 			},
 			boolstateChanged: function(oldValue, newValue) {
-				this.displayValue(newValue);
+				if (this.loaded) {
+					this.displayValue(newValue);
+				}
 			},
 			displayValue: function(value) {
 				var currentvalue = parseInt(value);

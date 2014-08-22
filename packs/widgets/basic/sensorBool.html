@@ -43,11 +43,13 @@
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
 					this.labelsecondary = this.$.primary.name;
-					this.displayValue(this.$.primary.last_value);
+					this.displayValue(this.$.primary.sensorvalue);
 				}
 			},
 			sensorvalueChanged: function(oldValue, newValue) {
-				this.displayValue(newValue);
+				if (this.loaded) {
+					this.displayValue(newValue);
+				}
 			},
 			displayValue: function(value) {
 				this.booltext = i18n.t("domoweb:bool." + value, { context: this.$.primary.datatype_id });
