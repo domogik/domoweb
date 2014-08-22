@@ -6,10 +6,21 @@
 		Polymer("dmw-sensor", {
 			ready:function(){
 				this.isSet = false;
+				this.checkdelay = 300000; // 5 mins
+				this.timedout = false;
 			},
 			statReceived: function(topic, json) {
 		        this.sensorvalue=json.stored_value;
+		        this.sensorreceived=json.timestamp;
 		        this.fire('sensor-statreceived', {stat: json});
+		        // Reset timeout
+		        if (this.intervalid) {
+			        this.fire('sensor-timeoutend');
+		        	window.clearInterval(this.intervalid);
+		        	delete this.intervalid;
+		        }
+		        window.clearTimeout(this.timeoutid);
+		    	this.timeoutid = window.setTimeout(this.timeoutHandler.bind(this), this.checkdelay);
 		    },
 			historyReceived: function(topic, json) {
 		        this.sensorhistory=json['history'];
@@ -17,6 +28,7 @@
 		    sensoridChanged: function(oldValue, newValue) {
 		    	this.$.socket.register('device-stats', this.statReceived.bind(this), 'sensor_id', newValue);
 		    	this.$.socket.register('sensor-history', this.historyReceived.bind(this), 'id', newValue);
+		    	this.timeoutid = window.setTimeout(this.timeoutHandler.bind(this), this.checkdelay*100);
 		    },
 		    init: function(sensor) {
 		    	this.name = sensor['name'];
@@ -32,6 +44,15 @@
 		    },
 		    getLast: function(count) {
 		    	this.$.socket.send("sensor-getlast", {'id': this.sensorid, 'count': count});
+		    },
+		    timeoutHandler: function() {
+				var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
+		        this.fire('sensor-timeout', {'minutes': diff.humanize()});
+		        this.intervalid = window.setInterval(this.intervalHandler.bind(this), 60000); // adjust time every 1 minute 	
+		    },
+		    intervalHandler: function() {
+				var diff = moment().subtract(moment(this.sensorreceived).local());
+		        this.fire('sensor-timeout', {'minutes': diff.format("m:ss")});
 		    }
 		});
 	</script>

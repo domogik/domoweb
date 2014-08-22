@@ -12,7 +12,7 @@
 			width: 100%;
 			display: block;
 		}
-		.editOverlay {
+		#editOverlay {
 			position: absolute;
 			background-color: rgba(0,0,0,0.6);
 			top: -1px;
@@ -22,7 +22,7 @@
 			z-index: 999;
 		}
 
-		.editOverlay button {
+		#editOverlay button {
 			background: #000000;
 			display: block;
 			width: 2em;
@@ -35,10 +35,22 @@
 			border-radius: 1em;
 		}
 
-		.editOverlay button:hover,
-		.editOverlay button:focus {
+		#editOverlay button:hover,
+		#editOverlay button:focus {
 			background: #f0f0F0;
 			color: #000000;	
+		}
+		#timeoutOverlay {
+			position: absolute;
+			top:50%;
+			display: none;
+			background: #99312C;
+			color: #ffffff;
+			z-index: 99;
+			width: 100%;
+			text-align: center;
+			line-height: 1.4em;
+			margin-top:-1.4em;
 		}
 		</style>
 	    <web-socket id="socket"></web-socket>
@@ -46,15 +58,17 @@
 		<div id='labelprimary'>{{labelprimary}}</div>
 		<div id='labelsecondary'>{{labelsecondary}}</div>
 	    <template if="{{ edit!=null }}">
-	    	<div class="editOverlay">
+	    	<div id="editOverlay">
 		    	<button class="editWidget" on-click="{{editWidget}}" aria-label="Edit"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></button>
 		    	<button class="removeWidget" on-click="{{removeWidget}}" aria-label="Remove"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
 	    	</div>
 	    </template>
+	    <div id="timeoutOverlay"></div>
 	</template>
 	<script>
 		Polymer("dmw-widget", {
 			ready: function() {
+				this.sensorlost = null;
 				this.sensorsReady = false;
 				this.commandsReady = false;
 				this.devicesReady = false;
@@ -143,6 +157,8 @@
 					var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
 					if (dmwsensor) {
 						dmwsensor.init(sensor);
+						dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
+						dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
 					}
 				}
 				if (this.loaded) {
@@ -175,6 +191,8 @@
 							var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
 							if (dmwsensor) {
 								dmwsensor.init(device['sensors'][key]);
+								dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
+								dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
 							}
 						}
 					}
@@ -207,7 +225,22 @@
 			sensorsUpdated: function() {},
 			commandsUpdated: function() {},
 			devicesUpdated: function() {},
-			optionsUpdated: function() {}
+			optionsUpdated: function() {},
+			timeoutDetected: function(e) {
+				this.sensorlost = e.target;
+				var text = "Sensor lost";
+				if (e.detail.minutes) {
+					text += "<br/>" + e.detail.minutes;
+				}
+				this.$.timeoutOverlay.innerHTML = text;
+				this.$.timeoutOverlay.style.display = 'block';
+			},
+			timeoutFinished: function(e) {
+				if (this.sensorlost && e.target.id == this.sensorlost.id) {
+					this.sensorlost = null;
+					this.$.timeoutOverlay.style.display = 'none';					
+				}
+			}
 		});
 	function createStyle(id, css) {
 		var existingstyle = document.querySelector('style#style-instance-'+id);
