@@ -154,9 +154,9 @@
 					var sensor = json['sensors'][key];
 					var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
 					if (dmwsensor) {
-						dmwsensor.init(sensor);
 						dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
 						dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
+						dmwsensor.init(sensor);
 					}
 				}
 				this.sensorsUpdated();

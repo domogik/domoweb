@@ -38,6 +38,11 @@
 		    	this.device = sensor['device'];
 		    	this.datatype_id = sensor['datatype_id'];
 				this.isSet = true;
+				var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
+				if (diff > this.checkdelay) { // If the sensor already timed out
+			        this.fire('sensor-timeout', {'minutes': diff.humanize()});
+			        this.intervalid = window.setInterval(this.intervalHandler.bind(this), 60000); // adjust time every 1 minute
+				}
 		    },
 		    getHistory: function(from, to) {
 		    	this.$.socket.send("sensor-gethistory", {'id': this.sensorid, 'from': from, 'to': to});
