@@ -26,13 +26,7 @@
 			ready: function() {
 				this.super();
 			},
-			loadingDone: function() {
-				this.setClock();
-			},
 			optionsUpdated: function() {
-				this.setClock();
-			},
-			setClock: function() {
 				if ('12hr' in this.options && this.options['12hr'] == 1) {
 					clockFace = 'TwelveHourClock';
 				} else { //24h

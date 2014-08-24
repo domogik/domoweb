@@ -114,13 +114,11 @@
 				}
 			},
 			sensorvalueChanged: function(oldValue, newValue) {
-				if (this.loaded) {
-					number = parseInt(newValue);
-					this.displayValue(number, this.datatypes[this.$.primary.datatype_id]['unit']);
-					if (this.options['maximum']) {
-						percent = number * 100 / parseInt(this.options['maximum']);
-				    	this.displayPercent(percent);
-					}
+				number = parseInt(newValue);
+				this.displayValue(number, this.datatypes[this.$.primary.datatype_id]['unit']);
+				if (this.options['maximum']) {
+					percent = number * 100 / parseInt(this.options['maximum']);
+			    	this.displayPercent(percent);
 				}
 			},
 			displayValue: function(number, unit) {

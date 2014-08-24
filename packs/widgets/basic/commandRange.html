@@ -71,21 +71,13 @@
 				this.super();
 				this.$.send.innerHTML = i18n.t("basic:send");
 			},
-			loadingDone: function() {
-				this.setSensor();
-			},
 			sensorsUpdated: function() {
-				this.setSensor();
-			},
-			setSensor: function() {
 				if (this.$.scalingstate.isSet) {
 					this.hasFeedback = true;
-					this.current = this.$.scalingstate.sensorvalue;
 				} else {
 					this.current = 0;
+					this.$.range.value = 0;
 				}
-				this.$.range.value = this.current;
-
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
 					this.labelsecondary = this.$.primary.name;
@@ -95,10 +87,8 @@
 				}
 			},
 			scalingstateChanged: function(oldValue, newValue) {
-				if (this.loaded) {
-					this.current = newValue;
-					this.$.range.value = this.current;
-				}
+				this.current = newValue;
+				this.$.range.value = this.current;
 			},
 			send: function(e) {
 				var parameters = {};

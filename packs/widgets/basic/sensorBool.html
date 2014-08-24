@@ -33,31 +33,19 @@
 			ready: function() {
 				this.super();
 			},
-			loadingDone: function() {
-				this.setSensor();
-			},
 			sensorsUpdated: function() {
-				this.setSensor();
-			},
-			setSensor: function() {
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
 					this.labelsecondary = this.$.primary.name;
-					this.displayValue(this.$.primary.sensorvalue);
 				}
 			},
 			sensorvalueChanged: function(oldValue, newValue) {
-				if (this.loaded) {
-					this.displayValue(newValue);
-				}
-			},
-			displayValue: function(value) {
-				this.booltext = i18n.t("domoweb:bool." + value, { context: this.$.primary.datatype_id });
-				if (value == 1) {
+				this.booltext = i18n.t("domoweb:bool." + newValue, { context: this.$.primary.datatype_id });
+				if (newValue == 1) {
 					this.$.boolicon.className = 'glyphicon glyphicon-ok';
 					this.$.bool.classList.add('true');
 					this.$.bool.classList.remove('false');
-				} else if (value == 0) {
+				} else if (newValue == 0) {
 					this.$.boolicon.className = 'glyphicon glyphicon-remove';
 					this.$.bool.classList.add('false');
 					this.$.bool.classList.remove('true');

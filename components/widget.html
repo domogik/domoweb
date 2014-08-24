@@ -123,33 +123,31 @@
 			instanceidChanged: function(oldValue, newValue) {
 		    	this.$.socket.register('widgetinstance-options', this.optionsReceived.bind(this), 'instance_id', newValue);
 		    	this.$.socket.send("widgetinstance-getoptions", {'instance_id': newValue});
-		    	this.$.socket.register('widgetinstance-sensors', this.sensorsReceived.bind(this), 'instance_id', newValue);
-		    	this.$.socket.send("widgetinstance-getsensors", {'instance_id': newValue});
-		    	this.$.socket.register('widgetinstance-commands', this.commandsReceived.bind(this), 'instance_id', newValue);
-		    	this.$.socket.send("widgetinstance-getcommands", {'instance_id': newValue});
-		    	this.$.socket.register('widgetinstance-devices', this.devicesReceived.bind(this), 'instance_id', newValue);
-		    	this.$.socket.send("widgetinstance-getdevices", {'instance_id': newValue});
 			},
 			datatypesReceived: function() {
-				if (!this.loaded && this.options && this.commandsReady && this.sensorsReady && this.devicesReady) this.loadingReady();
+				if (!this.loaded && this.options) this.initialStepReady();
 			},
 			optionsReceived: function(topic, json) {
 				this.options = json['options'];
-				if (this.loaded) {
-					if (this.default_style!=null) {
-				      var ss = document.querySelector('style#style-instance-'+this.instanceid);
-				      var widgetStyle = ss.sheet.cssRules[0];
-				      widgetStyle.style.color=this.options['WidgetTextColor'];
-				      widgetStyle.style.backgroundColor=this.options['WidgetBackgroundColor'];
-				      widgetStyle.style.borderColor=this.options['WidgetBorderColor'];
-				      widgetStyle.style.borderRadius=this.options['WidgetBorderRadius'];
-				      widgetStyle.style.boxShadow=this.options['WidgetBoxShadow'];						
-					}
-					this.optionsUpdated();
-				} else { // First loading
-					this.classList.remove('loading');
-					if (this.sensorsReady && this.commandsReady && this.devicesReady && this.datatypes) this.loadingReady();
+				if (this.default_style!=null) {
+			      var ss = document.querySelector('style#style-instance-'+this.instanceid);
+			      var widgetStyle = ss.sheet.cssRules[0];
+			      widgetStyle.style.color=this.options['WidgetTextColor'];
+			      widgetStyle.style.backgroundColor=this.options['WidgetBackgroundColor'];
+			      widgetStyle.style.borderColor=this.options['WidgetBorderColor'];
+			      widgetStyle.style.borderRadius=this.options['WidgetBorderRadius'];
+			      widgetStyle.style.boxShadow=this.options['WidgetBoxShadow'];						
 				}
+				this.optionsUpdated();
+				if (!this.loaded && this.datatypes) this.initialStepReady();
+			},
+			initialStepReady: function() {
+		    	this.$.socket.register('widgetinstance-sensors', this.sensorsReceived.bind(this), 'instance_id', this.instanceid);
+		    	this.$.socket.send("widgetinstance-getsensors", {'instance_id': this.instanceid});
+		    	this.$.socket.register('widgetinstance-commands', this.commandsReceived.bind(this), 'instance_id', this.instanceid);
+		    	this.$.socket.send("widgetinstance-getcommands", {'instance_id': this.instanceid});
+		    	this.$.socket.register('widgetinstance-devices', this.devicesReceived.bind(this), 'instance_id', this.instanceid);
+		    	this.$.socket.send("widgetinstance-getdevices", {'instance_id': this.instanceid});
 			},
 			sensorsReceived: function(topic, json) {
 				for (var key in json['sensors']) {
@@ -161,11 +159,10 @@
 						dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
 					}
 				}
-				if (this.loaded) {
-					this.sensorsUpdated();
-				} else { // First loading
+				this.sensorsUpdated();
+				if (!this.loaded) { // First loading
 					this.sensorsReady = true;
-					if (this.options && this.commandsReady && this.devicesReady && this.datatypes) this.loadingReady();
+					if (this.commandsReady && this.devicesReady) this.loadingReady();
 				}
 			},
 			commandsReceived: function(topic, json) {
@@ -176,11 +173,10 @@
 						dmwcommand.init(command);
 					}
 				}
-				if (this.loaded) {
-					this.commandsUpdated();
-				} else { // First loading
+				this.commandsUpdated();
+				if (!this.loaded) { // First loading
 					this.commandsReady = true;
-					if (this.options && this.sensorsReady && this.devicesReady && this.datatypes) this.loadingReady();
+					if (this.sensorsReady && this.devicesReady) this.loadingReady();
 				}
 			},
 			devicesReceived: function(topic, json) {
@@ -205,11 +201,10 @@
 						}
 					}
 				}
-				if (this.loaded) {
-					this.devicesUpdated();
-				} else { // First loading
+				this.devicesUpdated();
+				if (!this.loaded) { // First loading
 					this.devicesReady = true;
-					if (this.options && this.commandsReady && this.sensorsReady && this.datatypes) this.loadingReady();
+					if (this.commandsReady && this.sensorsReady) this.loadingReady();
 				}
 			},
 			get datatypes() {

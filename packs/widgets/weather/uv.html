@@ -44,42 +44,30 @@
 			ready: function() {
 				this.super();
 			},
-			loadingDone: function() {
-				this.setSensor();
-			},
 			sensorsUpdated: function() {
-				this.setSensor();
-			},
-			setSensor: function() {
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
 					this.labelsecondary = this.$.primary.name;
-					this.displayValue(this.$.primary.sensorvalue);
 				}		
 			},
 			sensorvalueChanged: function(oldValue, newValue) {
-				if (this.loaded) {
-					this.displayValue(newValue);
-				}
-			},
-			displayValue: function(number) {
 				var levels = this.shadowRoot.querySelectorAll(".level");
 				for (var i = levels.length - 1; i >= 0; i--) {
 					levels[i].classList.remove('current');
 				};
-				if (number >= 11) {
+				if (newValue >= 11) {
 					this.$.level5.classList.add('current')
 					this.text = i18n.t("weather:extreme");
-				} else if (number >= 8) {
+				} else if (newValue >= 8) {
 					this.$.level4.classList.add('current')
 					this.text = i18n.t("weather:veryhigh");
-				} else if (number >= 6) {
+				} else if (newValue >= 6) {
 					this.$.level3.classList.add('current')
 					this.text = i18n.t("weather:high");
-				} else if (number >= 3) {
+				} else if (newValue >= 3) {
 					this.$.level2.classList.add('current')
 					this.text = i18n.t("weather:moderate");
-				} else if (number >= 0) {
+				} else if (newValue >= 0) {
 					this.$.level1.classList.add('current')
 					this.text = i18n.t("weather:low");
 				}

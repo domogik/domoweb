@@ -26,13 +26,7 @@
 				this.super();
 				this.$.send.innerHTML = i18n.t("basic:send");
 			},
-			loadingDone: function() {
-				this.setSensor();
-			},
 			sensorsUpdated: function() {
-				this.setSensor();
-			},
-			setSensor: function() {
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
 					this.labelsecondary = this.$.primary.name;

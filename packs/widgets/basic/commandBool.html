@@ -33,16 +33,9 @@
 				this.boolstate = null;
 				this.nextValue = 1;
 			},
-			loadingDone: function() {
-				this.setSensor();
-			},
 			sensorsUpdated: function() {
-				this.setSensor();
-			},
-			setSensor: function() {
 				if (this.$.boolstate.isSet) {
 					this.hasFeedback = true;
-					this.displayValue(this.$.boolstate.sensorvalue);
 				}
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
@@ -62,12 +55,7 @@
 				}
 			},
 			boolstateChanged: function(oldValue, newValue) {
-				if (this.loaded) {
-					this.displayValue(newValue);
-				}
-			},
-			displayValue: function(value) {
-				var currentvalue = parseInt(value);
+				var currentvalue = parseInt(newValue);
 				if (currentvalue == 1) {
 					this.nextValue = 0;
 					this.$.send.classList.add('false');
