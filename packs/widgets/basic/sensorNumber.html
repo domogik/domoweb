@@ -44,7 +44,7 @@
 				}		
 			},
 			sensorvalueChanged: function(oldValue, newValue) {
-				var unit = this.datatypes[this.$.primary.datatype_id]['unit']
+				var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
 				if (this.options['autoconvert']==1 && newValue > 0) {
 				   	var k = 1000;
 				   	var sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];

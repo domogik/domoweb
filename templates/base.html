@@ -27,6 +27,39 @@
   }
   </style>
   <script src="/components/platform/platform.js"></script>
+  <script src="/libraries/jquery-1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
+  <script type="text/javascript">
+    var sectionid = {{ section.id }};
+    var menuConfigure = document.querySelector('#menuConfigure'),
+      menuWidgets = document.querySelector('#menuWidgets'),
+      panelConfigure = document.querySelector('#panelConfigure'),
+      main = document.querySelector('main'),
+      section = document.querySelector('.mainsection'),
+      socket = document.querySelector('#socket'),
+      layout = document.querySelector('dmw-grid-layout'),
+      modalOverlay = document.querySelector('#modal-overlay'),
+      ajax = document.querySelector('#ajax'),
+      navigation = document.querySelector('dmw-navigation');
+
+    window.addEventListener('polymer-ready', function(){
+      socket.register('widgetinstance-added', instanceAdded, 'section_id', sectionid);
+      socket.register('widgetinstance-removed', instanceRemoved, 'section_id', sectionid);        
+      navigation.addEventListener('menuitem-selected', menuitemSelected, false);
+      section.addEventListener('section-updated', sectionUpdated);
+    });
+    i18n.init({
+      getAsync: false,
+      load: 'current',
+      //        lng: "en-US",
+      fallbackLng: 'en-US',
+      resGetPath: 'locales/__ns__/__lng__/translation.json',
+      ns: {
+        namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}], 
+        defaultNs: 'domoweb'
+      }
+    });
+  </script>
   <link rel="import" href="/components/polymer-ajax.html">
   <link rel="import" href="/components/websockets.html">
   <link rel="import" href="/components/widget.html">
@@ -77,40 +110,6 @@
     </dmw-navigation>
     <div id="modal-overlay"></div>
 	</main>
-  <script src="/libraries/jquery-1.11.0/jquery.min.js"></script>
-  <script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
-  <script type="text/javascript">
-    var sectionid = {{ section.id }};
-    var menuConfigure = document.querySelector('#menuConfigure'),
-      menuWidgets = document.querySelector('#menuWidgets'),
-      panelConfigure = document.querySelector('#panelConfigure'),
-      main = document.querySelector('main'),
-      section = document.querySelector('.mainsection'),
-      socket = document.querySelector('#socket'),
-      layout = document.querySelector('dmw-grid-layout'),
-      modalOverlay = document.querySelector('#modal-overlay'),
-      ajax = document.querySelector('#ajax'),
-      navigation = document.querySelector('dmw-navigation');
-
-    window.addEventListener('polymer-ready', function(){
-      socket.register('widgetinstance-added', instanceAdded, 'section_id', sectionid);
-      socket.register('widgetinstance-removed', instanceRemoved, 'section_id', sectionid);        
-      navigation.addEventListener('menuitem-selected', menuitemSelected, false);
-      section.addEventListener('section-updated', sectionUpdated);
-    });
-
-    i18n.init({
-      getAsync: false,
-      load: 'current',
-      //        lng: "en-US",
-      fallbackLng: 'en-US',
-      resGetPath: 'locales/__ns__/__lng__/translation.json',
-      ns: {
-        namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}], 
-        defaultNs: 'domoweb'
-      },
-    });
-  </script>
   <script src="/libraries/bootstrap-3.2.0/js/bootstrap.min.js"></script>
   <script src="/libraries/d3/d3.min.js"></script>
   <script src="/libraries/moment/min/moment.min.js"></script>
