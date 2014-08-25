@@ -318,7 +318,8 @@ def install_dependencies():
         'simplejson >= 1.9.2',
         'WTForms >= 2.0',
         'WTForms-Components',
-        'pillow'
+        'pillow',
+        'pyzmq'
     ])
 
 #    pkg_resources.get_distribution('django').activate()
