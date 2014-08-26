@@ -217,7 +217,7 @@ class mqDataLoader:
                                 session.add(c)
                         if "sensors" in device:
                             for ref, sensor in device["sensors"].iteritems():
-                                s = Sensor(id=sensor["id"], name=sensor["name"], device_id=device["id"], reference=ref, datatype_id=sensor["data_type"], last_value=sensor["last_value"], last_received=sensor["last_received"])
+                                s = Sensor(id=sensor["id"], name=sensor["name"], device_id=device["id"], reference=ref, datatype_id=sensor["data_type"], last_value=sensor["last_value"], last_received=sensor["last_received"], timeout=sensor["timeout"])
                                 session.add(s)
 
         session.commit()

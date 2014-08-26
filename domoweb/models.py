@@ -363,6 +363,7 @@ class Sensor(Base):
 	datatype = relationship("DataType")
 	last_value = Column(Unicode(50), nullable=True)
 	last_received = Column(String(50), nullable=True)
+	timeout = Column(Integer(), nullable=False, default=0)
 
 	@classmethod
 	def getTypesFilter(cls, types):
