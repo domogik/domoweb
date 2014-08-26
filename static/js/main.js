@@ -30,7 +30,7 @@ function instanceAdded(topic, json) {
 		widget.classList.add("style-general");
 		widget.setAttribute('default_style', true);
 	}
-	widget.setAttribute('jsonid', json.id);
+	widget.setAttribute('instanceid', json.id);
 	widget.setAttribute('tabindex', 0);
 	if (layout.getAttribute('edit') != null) {
 		widget.setAttribute('edit', '');
