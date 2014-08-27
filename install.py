@@ -13,6 +13,12 @@ if euid != 0:
     print "Please restart this script as root!"
     sys.exit(1)
 
+try:
+    import domogikmq
+except ImportError:
+    print "Please install Domogik MQ first! (https://github.com/domogik/domogik-mq)"
+    sys.exit(1)
+
 import pwd
 import shutil
 import re

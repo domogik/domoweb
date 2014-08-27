@@ -11,9 +11,9 @@ import logging
 logger = logging.getLogger('domoweb')
 
 import zmq
-from domogik.mq.pubsub.subscriber import MQAsyncSub
-from domogik.mq.reqrep.client import MQSyncReq
-from domogik.mq.message import MQMessage
+from domogikmq.pubsub.subscriber import MQAsyncSub
+from domogikmq.reqrep.client import MQSyncReq
+from domogikmq.message import MQMessage
 
 socket_connections = []
 
