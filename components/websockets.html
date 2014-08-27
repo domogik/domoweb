@@ -9,10 +9,15 @@
 			this.listeners = [];
 			this._isConnected = false;
 			this._waiting = [];
+			this.connect();
+		}
+
+		WebsocketHandler.prototype.connect = function() {
 			this._socket = new WebSocket("ws://" + window.location.hostname + ":" + window.location.port + "/ws/");
 			this._socket.onmessage = this.onMessage.bind(this);
 			this._socket.onerror = this.onError.bind(this);
 			this._socket.onopen = this.onOpen.bind(this);
+			this._socket.onclose = this.onClose.bind(this);
 			window.onbeforeunload = this.beforeUnload.bind(this);
 		}
 
@@ -21,14 +26,14 @@
 			json = JSON.parse(msg.data);
 			for ( var i=0; i < this.listeners.length; i++ ) {
 				listener = this.listeners[i];
-				if (listener[2] != null) {
-					if (json[0] == listener[0] 
-						&& json[1][listener[2]] == listener[3]) {
-						listener[1](json[0], json[1]);
+				if (listener[3] != null) {
+					if (json[0] == listener[1] 
+						&& json[1][listener[3]] == listener[4]) {
+						listener[2](json[0], json[1]);
 					}
 				} else {
-					if (json[0] == listener[0]) {
-						listener[1](json[0], json[1]);
+					if (json[0] == listener[1]) {
+						listener[2](json[0], json[1]);
 					}
 				}
 			}
@@ -39,8 +44,8 @@
     	    this._socket.close();
 		};
 
-		WebsocketHandler.prototype.subscribe = function(name, func, filter_key, filter_id) {
-			this.listeners.push([name, func, filter_key, filter_id]);
+		WebsocketHandler.prototype.subscribe = function(comp, name, func, filter_key, filter_id) {
+			this.listeners.push([comp, name, func, filter_key, filter_id]);
 		};
 
 		WebsocketHandler.prototype.send = function(json) {
@@ -60,8 +65,11 @@
 		};
 
 		WebsocketHandler.prototype.onOpen = function(e) {
-	    	console.info('WS: Connection open');
 			this._isConnected = true;
+	    	console.info('WS: Connection open');
+			for ( var i=0; i < this.listeners.length; i++ ) {
+				this.listeners[i][0].onOpen();
+			}
 		    // clear waiting queue
 		    for (var i = this._waiting.length - 1; i >= 0; i--) {
 				console.info("WS: sending waiting message " + this._waiting[i]);
@@ -71,6 +79,16 @@
 
 		WebsocketHandler.prototype.onError = function(error) {
 			console.error('There was an un-identified Web Socket error', error);
+		}
+
+		WebsocketHandler.prototype.onClose = function(e) {
+
+			this._isConnected = false;
+			console.info('WS: Connection closed, reconnecting attempt...');
+			for ( var i=0; i < this.listeners.length; i++ ) {
+				this.listeners[i][0].onClose();
+			}
+			window.setTimeout(this.connect.bind(this), 5*1000);
 		}
 
 		Polymer("web-socket", {
@@ -88,8 +106,14 @@
 				_handler.send([id, json]);
 			},
 			register: function(name, func, filter_key, filter_id) {
-				_handler.subscribe(name, func, filter_key, filter_id);
+				_handler.subscribe(this, name, func, filter_key, filter_id);
 			},
+			onOpen: function() {
+				this.fire('websocket-connected');
+			},
+			onClose: function() {
+				this.fire('websocket-closed');
+			}
 		});
 	})();
 	</script>

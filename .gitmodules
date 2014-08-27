@@ -25,3 +25,6 @@
 [submodule "static/libraries/moment"]
 	path = static/libraries/moment
 	url = https://github.com/moment/moment.git
+[submodule "static/libraries/notifit"]
+	path = static/libraries/notifit
+	url = https://github.com/naoxink/notifIt.git

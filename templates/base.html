@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Domoweb</title>
   <link rel="stylesheet" href="/libraries/bootstrap-3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/libraries/notifit/notifIt%21-1.1/css/notifIt.css">
   <link rel="stylesheet" href="/css/style.css">
   <style type="text/css" id="sectionstyle" shim-shadowdom>
   body {
@@ -96,6 +97,7 @@
   <script src="/libraries/bootstrap-3.2.0/js/bootstrap.min.js"></script>
   <script src="/libraries/d3/d3.min.js"></script>
   <script src="/libraries/moment/min/moment.min.js"></script>
+  <script type="text/javascript" src="/libraries/notifit/notifIt%21-1.1/js/notifIt.js"></script>
   <script src="/js/main.js"></script>
   <script type="text/javascript">
     var menuConfigure = document.querySelector('#menuConfigure'),
@@ -110,6 +112,8 @@
       navigation = document.querySelector('dmw-navigation');
 
     window.addEventListener('polymer-ready', function(){
+      socket.addEventListener('websocket-connected', websocketConnected);
+      socket.addEventListener('websocket-closed', websocketClosed);
       socket.register('widgetinstance-added', instanceAdded, 'section_id', sectionid);
       socket.register('widgetinstance-removed', instanceRemoved, 'section_id', sectionid);        
       navigation.addEventListener('menuitem-selected', menuitemSelected, false);

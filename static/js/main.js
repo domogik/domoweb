@@ -188,3 +188,29 @@ function onWidgetStyleChange(e) {
 	        break;
 	} 
 }
+var websocketConnection = null;
+function websocketConnected(e) {
+	if (websocketConnection === false) {
+		notif({
+		  type: "success",
+		  msg: "Connection restored",
+		  position: "center",
+		  width: "all",
+		  height: 60,
+		});		
+	}
+	websocketConnection = true;
+}
+function websocketClosed(e) {
+	if (websocketConnection === true) {
+		notif({
+		  type: "error",
+		  msg: "Connection lost with Domoweb",
+		  position: "center",
+		  width: "all",
+		  height: 60,
+		  autohide: false
+		});
+	}
+	websocketConnection = false;
+}
