@@ -17,7 +17,7 @@
     background-position: {{ params['SectionBackgroundPosition'] }};
     background-repeat: {{ params['SectionBackgroundRepeat'] }};
     background-size: {{ params['SectionBackgroundSize'] }};
-    background-image: {% if 'SectionBackground' in params %}url('/backgrounds/{{params['SectionBackground']}}'){% else %}{{ params['SectionBackgroundImage'] }}{% end %};
+    background-image: {% if 'SectionBackground' in params %}url('/backgrounds/{{params['SectionBackground']}}'){% else %}{% raw params['SectionBackgroundImage'] %}{% end %};
   }
   body /deep/ .widget.style-general {
     border: 1px solid {{ params['WidgetBorderColor'] }};
