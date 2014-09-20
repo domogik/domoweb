@@ -92,9 +92,9 @@ class ConfigurationHandler(RequestHandler):
             for p, v in self.request.arguments.iteritems():
                 if p.startswith( 'params' ):
                     if v[0]:
-                        SectionParam.saveKey(section_id=id, key=p[7:], value=v[0])
+                        SectionParam.saveKey(section_id=id, key=p[6:], value=v[0])
                     else:
-                        SectionParam.delete(section_id=id, key=p[7:])
+                        SectionParam.delete(section_id=id, key=p[6:])
 
             # Send section updated params
             json = to_json(Section.get(id))
