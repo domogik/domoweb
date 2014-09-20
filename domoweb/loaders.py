@@ -102,6 +102,12 @@ class packLoader:
                                             p.required = param['required']
                                         else:
                                             p.required = True
+                                        if 'group' in param:
+                                            p.group = param['group']
+                                        if 'groupmin' in param:
+                                            p.groupmin = param['groupmin']
+                                        if 'groupmax' in param:
+                                            p.groupmax = param['groupmax']
                                         session.add(p)
                                 if 'commands' in widget:
                                     # Commands parameters

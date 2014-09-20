@@ -4,8 +4,9 @@ pkg_resources.require("WTForms>=2.0")
 import json
 import itertools
 import wtforms
+import re
 from collections import OrderedDict
-from wtforms import StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, widgets
+from wtforms import StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, widgets, FieldList
 from wtforms.validators import InputRequired, Length, Email, URL, IPAddress, NumberRange, Optional
 from domoweb.models import WidgetOption, WidgetSensor, WidgetCommand, WidgetDevice, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, Device, Sensor, Command, DataType
 from wtforms_components import SelectField
@@ -125,7 +126,7 @@ class ParametersForm(wtforms.Form):
         setattr(cls, key, BooleanField(label, default=default, validators=validators, description=help_text, ))
 
     @classmethod
-    def addGroupedModelChoiceField(cls, key, label, queryset, group_by_field, empty_label, required, help_text=None):
+    def addModelChoiceField(cls, key, label, queryset, group_by_field, empty_label, required, help_text=None):
         from itertools import groupby
         from operator import itemgetter
         validators=[]
@@ -140,6 +141,18 @@ class ParametersForm(wtforms.Form):
             choices += [(unicode(g[2]), g[3]) for g in queryset]
         setattr(cls, key, SelectField(label, validators=validators, choices=choices, description=help_text))
     
+    @classmethod
+    def addGroupModelChoiceField(cls, key, label, queryset, group_by_field, empty_label, min, max, help_text=None):
+        from itertools import groupby
+        from operator import itemgetter
+        validators=[]
+        validators.append(Optional())
+        choices = [('', empty_label)]
+        if group_by_field:
+            choices += [(k, map(lambda g: (unicode(g[2]), g[3]), group)) for k, group in groupby(queryset, key=itemgetter(1))]
+        else:
+            choices += [(unicode(g[2]), g[3]) for g in queryset]
+        setattr(cls, key, FieldList(SelectField(validators=validators, choices=choices), label, description=help_text, min_entries=min, max_entries=max ))
 
     @classmethod
     def addChoiceField(cls, key, label, default=None, required=False, help_text=None, parameters=None, empty_label=None):
@@ -341,13 +354,17 @@ class WidgetSensorsForm(ParametersForm):
         for t in types:
             types += DataType.getChilds(id=t)
         sensors = Sensor.getTypesFilter(types=types)
-        cls.addGroupedModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=sensors, group_by_field='device_id', empty_label="--Select Sensor--", help_text=option.description)
-    
+        if (option.group):
+            cls.addGroupModelChoiceField(key=option.key, label=option.name, min=option.groupmin, max=option.groupmax, queryset=sensors, group_by_field='device_id', empty_label="--Select Sensor--", help_text=option.description)
+        else:
+            cls.addModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=sensors, group_by_field='device_id', empty_label="--Select Sensor--", help_text=option.description)
+
     def save(self):
         for key, value in self.data.iteritems():
             if isinstance(value, list):
-                value = ', '.join(value)
-            WidgetInstanceSensor.saveKey(instance_id=self.instance.id, key=key, sensor_id=value)
+                WidgetInstanceSensor.saveArrayKey(instance_id=self.instance.id, key=key, sensors=value)
+            else:
+                WidgetInstanceSensor.saveKey(instance_id=self.instance.id, key=key, sensor_id=value)
 
 class WidgetCommandsForm(ParametersForm):
     def __init__(self, *args, **kwargs):
@@ -366,12 +383,10 @@ class WidgetCommandsForm(ParametersForm):
                 for p in itertools.product(*args):
                     datatypes.append(''.join(p))
         commands = Command.getTypesFilter(types=datatypes)
-        cls.addGroupedModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=commands, group_by_field='device_id', empty_label="--Select Command--", help_text=option.description)
+        cls.addModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=commands, group_by_field='device_id', empty_label="--Select Command--", help_text=option.description)
 
     def save(self):
         for key, value in self.data.iteritems():
-            if isinstance(value, list):
-                value = ', '.join(value)
             WidgetInstanceCommand.saveKey(instance_id=self.instance.id, key=key, command_id=value)
 
 class WidgetDevicesForm(ParametersForm):
@@ -382,7 +397,7 @@ class WidgetDevicesForm(ParametersForm):
     def addField(cls, option):
         types = json.loads(option.types)
         devices = Device.getTypesFilter(types=types)
-        cls.addGroupedModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=devices, group_by_field='type', empty_label="--Select Device--", help_text=option.description)
+        cls.addModelChoiceField(key=option.key, label=option.name, required=option.required, queryset=devices, group_by_field='type', empty_label="--Select Device--", help_text=option.description)
 
     def save(self):
         for key, value in self.data.iteritems():
@@ -435,6 +450,17 @@ class WidgetInstanceForms(object):
             dataOptions = dict([(r.key, r.value) for r in options])
             sensors = WidgetInstanceSensor.getInstance(instance.id)
             dataSensors = dict([(r.key, r.sensor_id) for r in sensors])
+            # Rebuild array values
+            reg = re.compile(r"(.*)-(\d+)")
+            tmpdict = {}
+            for k, v in dataSensors.iteritems():
+                res = reg.match(k)
+                if res:
+                    if (res.group(1) not in tmpdict):
+                        tmpdict[res.group(1)] = []
+                    tmpdict[res.group(1)].append(v)
+            dataSensors = dict(dataSensors.items() + tmpdict.items())
+
             commands = WidgetInstanceCommand.getInstance(instance.id)
             dataCommands = dict([(r.key, r.command_id) for r in commands])
             devices = WidgetInstanceDevice.getInstance(instance.id)

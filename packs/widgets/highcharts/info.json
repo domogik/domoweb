@@ -1,0 +1,45 @@
+{
+    "json_version" : 1,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "highcharts",
+        "version" : 1,
+        "name" : "HighCharts Graphs",
+        "description" : "Widgets for graphs using the HighCHarts library (http://www.highcharts.com)",
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
+    },
+    "widgets": {
+        "lineChart": {
+            "name" : "Line Chart",
+            "description" : "Simple Line Chart",
+            "height" : 4,
+            "width" : 6,
+            "default_style" : false,
+            "options" : {
+                "title" : {
+                    "name": "Graph Title",
+                    "type": "string",
+                    "default": "Graph",
+                    "required": true
+                },
+                "subtitle" : {
+                    "name": "Sub Title",
+                    "type": "string",
+                    "default": "",
+                    "required": false
+                }
+            },
+            "sensors" : {
+                "series" : {
+                    "name": "Data",
+                    "description": "Data series",
+                    "types" : ["DT_Number"],
+                    "group": true,
+                    "groupmin": 1,
+                    "groupmax": 5        
+                }
+            }
+        }
+    }
+}

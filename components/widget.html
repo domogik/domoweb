@@ -114,6 +114,53 @@
 									return false;
 								});
 							modalOverlay.classList.add('on');
+
+							$("fieldset[data-toggle=fieldset]").each(function() {
+							    var $this = $(this);
+							        
+						        //Add new entry
+							    $this.find("button[data-toggle=fieldset-add-row]").click(function() {
+							        var target = $($(this).data("target"))
+							        var oldrow = target.find("div[data-toggle=fieldset-entry]:last");
+							        var row = oldrow.clone(true, true);
+							        var elem_id = row.find(":input")[0].id;
+							        console.debug(elem_id);
+							        var reg = /.*-(\d{1,2})/m;
+							        var elem_num = parseInt(reg.exec(elem_id)[1]) + 1;
+							        row.attr('data-id', elem_num);
+							        row.find(":input").each(function() {
+							            var id = $(this).attr('id').replace('-' + (elem_num - 1), '-' + (elem_num));
+							            $(this).attr('name', id).attr('id', id).val('').removeAttr("checked");
+							        });
+							        row.find("label").each(function() {
+							            var idfor = $(this).attr('for').replace('-' + (elem_num - 1), '-' + (elem_num));
+							            $(this).attr('for', idfor);
+							        	$(this).text("#"+(elem_num+1));
+							        });
+							        oldrow.after(row);
+							        var length = target.find("div[data-toggle=fieldset-entry]").length;
+							        if (length == $this.data("maxgroup")) {
+										$this.find("button[data-toggle=fieldset-add-row]").attr('disabled', 'disabled');
+							        }
+							        if (length > $this.data("mingroup")) {
+										$this.find("button[data-toggle=fieldset-remove-row]").removeAttr('disabled');
+							        }
+							    }); //End add new entry
+
+					            //Remove row
+							    $this.find("button[data-toggle=fieldset-remove-row]").click(function() {
+							        var target = $($(this).data("target"))
+							        var row = target.find("div[data-toggle=fieldset-entry]:last");
+							        row.remove();
+							        var length = target.find("div[data-toggle=fieldset-entry]").length;
+							        if (length == $this.data("mingroup")) {
+										$this.find("button[data-toggle=fieldset-remove-row]").attr('disabled', 'disabled');
+							        }
+							        if (length < $this.data("maxgroup")) {
+										$this.find("button[data-toggle=fieldset-add-row]").removeAttr('disabled');
+							        }
+							    }); //End remove row
+							});
 						}
         			});
 				this.$.ajax.setAttribute('method', 'GET');

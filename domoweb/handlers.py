@@ -214,7 +214,7 @@ class WSHandler(websocket.WebSocketHandler):
 
     def WSSensorGetHistory(self, data):
         import requests
-        response = requests.get('%s/sensorhistory/id/%d/from/%d/to/%d' % (options.rest_url, data['id'],data['from'],data['to']))
+        response = requests.get('%s/sensorhistory/id/%d/from/%d/to/%d/interval/%s/selector/avg' % (options.rest_url, data['id'],data['from'],data['to'],data['interval']))
         try:
             history = response.json()
         except ValueError:
@@ -254,8 +254,8 @@ class MQHandler(MQAsyncSub):
         MQAsyncSub.__init__(self, zmq.Context(), 'test', ['device-stats'])
 
     def on_message(self, msgid, content):
-        logger.info(u"MQ: New pub message {0}".format(msgid))
-        logger.info(u"MQ: {0}".format(content))
+        #logger.info(u"MQ: New pub message {0}".format(msgid))
+        #logger.info(u"MQ: {0}".format(content))
 
         if isinstance(content["stored_value"], list):
             content["stored_value"] = content["stored_value"][0]

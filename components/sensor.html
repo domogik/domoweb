@@ -9,6 +9,7 @@
 				this.checkdelay = 0;
 				this.recheckdelay = 60000; // every minute
 				this.timedout = false;
+				this.historyMode = null;
 			},
 			statReceived: function(topic, json) {
 		        this.sensorvalue=json.stored_value;
@@ -30,7 +31,7 @@
 			    }
 		    },
 			historyReceived: function(topic, json) {
-		        this.sensorhistory=json['history'];
+		        this.sensorhistory=json['history']['values'];
 		    },
 		    sensoridChanged: function(oldValue, newValue) {
 		    	this.$.socket.register('device-stats', this.statReceived.bind(this), 'sensor_id', newValue);
@@ -50,18 +51,29 @@
 				this.isSet = true;
 				if (this.checkdelay > 0) {
 					var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
-					console.debug(diff);
 					if (diff > this.checkdelay) { // If the sensor already timed out
 				        this.fire('sensor-timeout', {'minutes': diff.humanize()});
 				        this.intervalid = window.setInterval(this.intervalHandler.bind(this), this.recheckdelay); // adjust time every 1 minute
 					}					
 				}
 		    },
-		    getHistory: function(from, to) {
-		    	this.$.socket.send("sensor-gethistory", {'id': this.sensorid, 'from': from, 'to': to});
+		    getCurrentDay: function() {
+		    	this.historyMode = 'day';
+		    	var from = moment().subtract(1, 'days').unix();
+		    	var to = moment().unix();
+		    	this.$.socket.send("sensor-gethistory", {'id': this.sensorid, 'from': from, 'to': to, interval: 'minute'});
 		    },
-		    getLast: function(count) {
-		    	this.$.socket.send("sensor-getlast", {'id': this.sensorid, 'count': count});
+		    getCurrentWeek: function() {
+		    	this.historyMode = 'week';
+		    	var from = moment().subtract(1, 'weeks').unix();
+		    	var to = moment().unix();
+		    	this.$.socket.send("sensor-gethistory", {'id': this.sensorid, 'from': from, 'to': to, interval: 'hour'});
+		    },
+		    getCurrentMonth: function() {
+		    	this.historyMode = 'month';
+		    	var from = moment().subtract(1, 'months').unix();
+		    	var to = moment().unix();
+		    	this.$.socket.send("sensor-gethistory", {'id': this.sensorid, 'from': from, 'to': to, interval: 'day'});
 		    },
 		    timeoutHandler: function() {
 				var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));

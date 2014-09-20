@@ -1,0 +1,196 @@
+<script src="/widget/highcharts/Highcharts-4.0.3/js/highcharts.js"></script>
+<polymer-element name="dmw-highcharts-lineChart" extends="dmw-widget">
+	<template>
+		<style type="text/css">
+			:host {
+				height: 100%;
+			}
+			#chart {
+				position: relative;
+			}
+		</style>
+	    <dmw-sensor id='series0' sensorkey="series-0" sensorvalue="{{sensorvalue0}}" sensorhistory="{{history0}}"></dmw-sensor>
+	    <dmw-sensor id='series1' sensorkey="series-1" sensorvalue="{{sensorvalue1}}" sensorhistory="{{history1}}"></dmw-sensor>
+	    <dmw-sensor id='series2' sensorkey="series-2" sensorvalue="{{sensorvalue2}}" sensorhistory="{{history2}}"></dmw-sensor>
+	    <dmw-sensor id='series3' sensorkey="series-3" sensorvalue="{{sensorvalue3}}" sensorhistory="{{history3}}"></dmw-sensor>
+	    <dmw-sensor id='series4' sensorkey="series-4" sensorvalue="{{sensorvalue4}}" sensorhistory="{{history4}}"></dmw-sensor>
+		<shadow></shadow>
+		<button class="btn" id="day" on-click="{{selectDay}}">Day</button>
+		<button class="btn" id="week" on-click="{{selectWeek}}">Week</button>
+		<button class="btn" id="month" on-click="{{selectMonth}}">Month</button>
+		<div id="chart" style=""></div>
+	</template>
+	<script>
+		Polymer('dmw-highcharts-lineChart', {
+			ready: function() {
+				this.super();
+				this.$.chart.style.width = this.clientWidth;
+				this.$.chart.style.height = this.clientHeight;
+			    Highcharts.setOptions({
+			        global: {
+			            useUTC : false
+			        }
+			    });
+			},
+			optionsUpdated: function() {
+				var options = {
+			        chart: {
+			            type: 'spline'
+			        },
+			        xAxis: {
+			            type: 'datetime',
+			        },
+			        yAxis: {
+			            title: {
+			                text: 'Temperature (°C)'
+			            },
+			            plotLines: [{
+			                value: 0,
+			                width: 1,
+			                color: '#808080'
+			            }]
+			        },
+			        tooltip: {
+			            valueSuffix: '°C'
+			        },
+			        plotOptions: {
+			        	series: {
+			        		turboThreshold: 2000,
+			        	}
+			        },
+			        series: []
+			    };
+			    if (this.options['title']) {
+			    	options['title'] = {
+			            text: this.options['title'],
+			            x: -20 //center
+			        }
+			    }
+			    if (this.options['subtitle']) {
+			    	options['subtitle'] = {
+			            text: this.options['subtitle'],
+			            x: -20 //center
+			        }
+			    }
+				$(this.$.chart).highcharts(options);
+			    this.chart = $(this.$.chart).highcharts();
+			},
+			sensorsUpdated: function() {
+				for (var i = this.chart.series.length - 1; i >= 0; i--) {
+					this.chart.series[i].remove();
+				};
+				if (this.$.series0.isSet) { this.$.series0.getCurrentDay();}
+				if (this.$.series1.isSet) { this.$.series1.getCurrentDay();}
+				if (this.$.series2.isSet) { this.$.series2.getCurrentDay();}
+				if (this.$.series3.isSet) { this.$.series3.getCurrentDay();}
+				if (this.$.series4.isSet) { this.$.series4.getCurrentDay();}
+			},
+			sensorvalue0Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 0)},
+			sensorvalue1Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 1)},
+			sensorvalue2Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 2)},
+			sensorvalue3Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 3)},
+			sensorvalue4Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 4)},
+			sensorvalueUpdate: function(oldValue, newValue, series_num) {
+				var date = moment().valueOf();
+				if (this.chart.series[series_num]) {
+			    	this.chart.series[series_num].addPoint({x:date, y: newValue}, true, true);
+			    }
+			},
+
+			history0Changed: function(oldValue, newValue) { this.historyUpdate(oldValue, newValue, this.$.series0); },
+			history1Changed: function(oldValue, newValue) { this.historyUpdate(oldValue, newValue, this.$.series1); },
+			history2Changed: function(oldValue, newValue) { this.historyUpdate(oldValue, newValue, this.$.series2); },
+			history3Changed: function(oldValue, newValue) { this.historyUpdate(oldValue, newValue, this.$.series3); },
+			history4Changed: function(oldValue, newValue) { this.historyUpdate(oldValue, newValue, this.$.series4); },
+			historyUpdate: function(oldValue, newValue, serie) {
+				var pointInterval = null;
+				switch(serie.historyMode) {
+					case 'day':
+						pointInterval = 60;
+						break;
+					case 'week':
+						pointInterval = 12;
+						break;
+					case 'month':
+					case 'year':
+						pointInterval = 1;
+						break;
+				}
+			    this.chart.addSeries({
+		            name: serie.device["name"],
+		            pointInterval: pointInterval,
+		            data: convert(newValue)
+		        });
+			},
+			selectDay: function() {
+				for (var i = this.chart.series.length - 1; i >= 0; i--) {
+					this.chart.series[i].remove();
+				};
+				if (this.$.series0.isSet) { this.$.series0.getCurrentDay();}
+				if (this.$.series1.isSet) { this.$.series1.getCurrentDay();}
+				if (this.$.series2.isSet) { this.$.series2.getCurrentDay();}
+				if (this.$.series3.isSet) { this.$.series3.getCurrentDay();}
+				if (this.$.series4.isSet) { this.$.series4.getCurrentDay();}
+			},
+			selectWeek: function() {
+				for (var i = this.chart.series.length - 1; i >= 0; i--) {
+					this.chart.series[i].remove();
+				};
+				if (this.$.series0.isSet) { this.$.series0.getCurrentWeek();}
+				if (this.$.series1.isSet) { this.$.series1.getCurrentWeek();}
+				if (this.$.series2.isSet) { this.$.series2.getCurrentWeek();}
+				if (this.$.series3.isSet) { this.$.series3.getCurrentWeek();}
+				if (this.$.series4.isSet) { this.$.series4.getCurrentWeek();}
+			},
+			selectMonth: function() {
+				for (var i = this.chart.series.length - 1; i >= 0; i--) {
+					this.chart.series[i].remove();
+				};
+				if (this.$.series0.isSet) { this.$.series0.getCurrentMonth();}
+				if (this.$.series1.isSet) { this.$.series1.getCurrentMonth();}
+				if (this.$.series2.isSet) { this.$.series2.getCurrentMonth();}
+				if (this.$.series3.isSet) { this.$.series3.getCurrentMonth();}
+				if (this.$.series4.isSet) { this.$.series4.getCurrentMonth();}
+			},
+			selectYear: function() {
+				for (var i = this.chart.series.length - 1; i >= 0; i--) {
+					this.chart.series[i].remove();
+				};
+				if (this.$.series0.isSet) { this.$.series0.getCurrentYear();}
+				if (this.$.series1.isSet) { this.$.series1.getCurrentYear();}
+				if (this.$.series2.isSet) { this.$.series2.getCurrentYear();}
+				if (this.$.series3.isSet) { this.$.series3.getCurrentYear();}
+				if (this.$.series4.isSet) { this.$.series4.getCurrentYear();}
+			}
+		});
+	function convert(history) {
+		var serie = [];
+		if (history[0].length == 7) { // minutes interval
+			for (var i = 0; i < history.length; i++) {
+				var h = history[i];
+				var date = moment([h[0],h[1],h[3],h[4],h[5]]).valueOf();
+				serie.push({x:date, y:h[6]});
+			};
+		} else if (history[0].length == 6) { // hours interval
+			for (var i = 0; i < history.length; i++) {
+				var h = history[i];
+				var date = moment([h[0],h[1],h[3],h[4]]).valueOf();
+				serie.push({x:date, y:h[5]});
+			};
+		} else if (history[0].length == 5) { // days interval
+			for (var i = 0; i < history.length; i++) {
+				var h = history[i];
+				var date = moment([h[0],h[1],h[3]]).valueOf();
+				serie.push({x:date, y:h[4]});
+			};
+		} else if (history[0].length == 3) { // weeks interval
+/*			for (var i = 0; i < history.length; i++) {
+				var h = history[i];
+				var date = moment([h[0],h[1],h[3]]).valueOf();
+				serie.push({x:date, y:h[4]});
+			};*/
+		}
+		return serie;
+	}
+	</script>
+</polymer-element>

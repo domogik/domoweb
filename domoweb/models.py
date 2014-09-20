@@ -91,10 +91,13 @@ class WidgetSensor(Base):
 	id = Column(String(50), primary_key=True)
 	key = Column(String(50))
 	name = Column(Unicode(50))
-	required = Column(Boolean())
+	required = Column(Boolean(), nullable=True)
 	types = Column(String(255))
 	filters = Column(String(255), nullable=True)
 	description = Column(Unicode(255), nullable=True)
+	group = Column(Boolean(), nullable=True)
+	groupmin = Column(Integer(), nullable=True)
+	groupmax = Column(Integer(), nullable=True)
 	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
 
 	@classmethod
@@ -565,6 +568,7 @@ class WidgetInstanceSensor(Base):
 	def getInstanceDict(cls, instance_id):
 		r = cls.getInstance(instance_id)
 		d = {}
+
 		for i, o in enumerate(r):
 			if (o.sensor):
 				d[o.key] = to_json(o.sensor)
@@ -583,6 +587,22 @@ class WidgetInstanceSensor(Base):
 		session.flush()
 		session.close()
 		return s
+
+	@classmethod
+	def saveArrayKey(cls, instance_id, key, sensors):
+		session = Session()
+		s = session.query(cls).filter_by(instance_id = instance_id).filter(cls.key.like(key+"-%")).all()
+		[session.delete(x) for x in s]
+		i = 0
+		for v in sensors:
+			if v:
+				k = "%s-%d" % (key, i)
+				s = cls(instance_id=instance_id, key=k, sensor_id = v)
+				session.add(s)
+				i = i + 1
+		session.commit()
+		session.flush()
+		session.close()
 
 class WidgetInstanceCommand(Base):
 	__tablename__ = 'widgetInstanceCommand'

@@ -8,12 +8,13 @@
     <meta http-equiv="Expires" content="-1" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Domoweb</title>
-  <link rel="stylesheet" href="/libraries/bootstrap-3.1.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/libraries/bootstrap-3.2.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/style.css">
   <script src="/components/platform/platform.js"></script>
   <link rel="import" href="/components/polymer-ajax.html">
   <link rel="import" href="/components/websockets.html">
   <link rel="import" href="/components/widget.html">
+  <link rel="import" href="/components/datatypes.html">
   <!--link rel="import" href="/components/mainMenu.html"-->
   <link rel="import" href="/widget/{{instance.widget.set_id}}/{{instance.widget.set_ref}}.html">
     <style type="text/css" id="sectionstyle">
@@ -44,13 +45,15 @@
   </style>
 </head>
 <body>
+  <dmw-datatypes id="datatypes"></dmw-datatypes>
   <web-socket id="socket"></web-socket>
 	<main role="main">
       <dmw-{{instance.widget.set_id}}-{{instance.widget.set_ref}} class="dmw-{{instance.widget.set_id}} widget widgetw{{instance.widget.width}} widgeth{{instance.widget.height}}" instanceid="{{instance.id}}" tabindex=0></dmw-{{instance.widget.set_id}}-{{instance.widget.set_ref}}>
    <div id="modal-overlay"></div>
 	</main>
   <script src="/libraries/jquery-1.11.0/jquery.min.js"></script>
-  <script src="/libraries/bootstrap-3.1.1/js/bootstrap.min.js"></script>
+  <script src="/libraries/moment/min/moment.min.js"></script>
+  <script src="/libraries/bootstrap-3.2.0/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
   <script type="text/javascript">
       i18n.init({

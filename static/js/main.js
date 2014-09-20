@@ -214,3 +214,4 @@ function websocketClosed(e) {
 	}
 	websocketConnection = false;
 }
+
