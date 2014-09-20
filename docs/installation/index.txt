@@ -7,7 +7,32 @@ Get the sources
 
 Repository versions
 -------------------
-.. note:: The repository installation require mercurial to be installed.
+.. note:: The repository installation require git to be installed.
+
+Two components are needed to install domogik : 
+
+* **domogik-mq** : the message queue component used by all components which want/need to use the message queue (Domogik, Domoweb, ...)
+* **domoweb**
+
+Git is used to get the sources (be sure that your user is able to create some directories where you will clone the sources).
+
+Download Domogik-mq :
+
+.. code-block:: bash
+
+    $ cd /opt/
+    $ git clone https://github.com/domogik/domogik-mq.git
+    $ cd domogik-mq
+    $ git checkout master
+
+Install Domogik-mq :
+
+.. code-block:: bash
+
+    $ cd domogik-mq
+    $ sudo ./install.py
+
+Download Domoweb :
 
 .. code-block:: bash
 
