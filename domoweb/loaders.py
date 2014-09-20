@@ -5,8 +5,8 @@ import zmq
 
 from domoweb.models import Session, Widget, Theme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam
 from collections import OrderedDict
-from domogik.mq.reqrep.client import MQSyncReq
-from domogik.mq.message import MQMessage
+from domogikmq.reqrep.client import MQSyncReq
+from domogikmq.message import MQMessage
 
 import logging
 
