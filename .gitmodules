@@ -28,3 +28,6 @@
 [submodule "static/libraries/notifit"]
 	path = static/libraries/notifit
 	url = https://github.com/naoxink/notifIt.git
+[submodule "components/core-shared-lib"]
+	path = components/core-shared-lib
+	url = git@github.com:Polymer/core-shared-lib.git
