@@ -1,0 +1,28 @@
+{
+    "json_version" : 2,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "google_maps",
+        "version" : 1,
+        "name" : "Google maps",
+        "description" : "Google maps widget",
+        "author" : "Fritz SMH",
+        "author_email" : "fritz.smh at gmail.com"
+    },
+    "widgets": {
+        "map_square": {
+            "name" : "Map (square)",
+            "height" : 2,
+            "width" : 2,
+            "options" : { },
+            "sensors" : {
+                "primary" : {
+                    "name": "Position",
+                    "description": "Position sensor",
+                    "types" : ["DT_CoordD"],
+                    "required": true                   
+                }
+            }
+        }
+    }
+}
