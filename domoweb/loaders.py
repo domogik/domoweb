@@ -202,6 +202,7 @@ class mqDataLoader:
                 msg.add_data('type', 'plugin')
                 msg.add_data('name', client["name"])
                 msg.add_data('host', client["host"])
+                logger.info("MQ: Get devices list for client {0}-{1}.{2}".format("plugin", client["name"], client["host"]))
                 res = cli.request('dbmgr', msg.get(), timeout=10)
                 if res is not None:
                     _datad = res.get_data()
@@ -209,6 +210,7 @@ class mqDataLoader:
                     _datad = {}
                 if 'devices' in _datad:
                     for device in _datad["devices"]:
+                        logger.info("- {0}".format(device["name"]))
                         d = Device(id=device["id"], name=device["name"], type=device["device_type_id"], reference=device["reference"])
                         session.add(d)
                         if "commands" in device:
