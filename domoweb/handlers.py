@@ -15,6 +15,8 @@ from domogikmq.pubsub.subscriber import MQAsyncSub
 from domogikmq.reqrep.client import MQSyncReq
 from domogikmq.message import MQMessage
 
+import traceback
+
 socket_connections = []
 
 class MainHandler(RequestHandler):
@@ -26,7 +28,10 @@ class MainHandler(RequestHandler):
         packs = Widget.getSectionPacks(section_id=id)
         instances = WidgetInstance.getSection(section_id=id)
         for j, i in enumerate(instances):
-            i.optionsdict = WidgetInstance.getOptionsDict(id=i.id)
+            try:
+                i.optionsdict = WidgetInstance.getOptionsDict(id=i.id)
+            except:
+                logger.error("Error while getting options for a widget instance. Maybe you delete a widget folder but it is still defined in database? Error: {0}".format(traceback.format_exc()))
         params = Section.getParamsDict(id)
         self.render('base.html',
             section = section,
