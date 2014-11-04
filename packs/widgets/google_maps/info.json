@@ -19,7 +19,8 @@
                     "name": "Google API key",
                     "description": "Your Google API key to use Google maps. You can get it at https://developers.google.com/maps/documentation/javascript/tutorial#api_key",
                     "type": "string",
-                    "default": ""
+                    "default": "",
+                    "required": true
                 }
             },
             "sensors" : {
