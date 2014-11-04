@@ -2,7 +2,7 @@
 
 <polymer-element name="dmw-google_maps-map_square" extends="dmw-widget">
     <template>
-        <google-maps-api id="mapsapi" apiKey="AIzaSyArPfDsI7f6bMEQ_VSqwtG4pSw5bTmAv6Y" version="3.exp"></google-maps-api>
+        <google-maps-api id="mapsapi" version="3.exp"></google-maps-api>
         <link rel="stylesheet" href="/widget/google_maps/css/common.css" shim-domshadow>
         <style type="text/css">
             :host {
@@ -18,7 +18,6 @@
         <shadow></shadow>
         <div id='map'></div>
     </template>
-    <script src="https://maps.googleapis.com/maps/api/js?key="></script>
     <script>
         Polymer('dmw-google_maps-map_square', {
             ready: function() {
@@ -90,8 +89,6 @@
                         map: this.map
                     });
                 }
-
-
             },
 
             // Add a marker to the map and push to the array.
@@ -130,10 +127,6 @@
                 this.clearMarkers();
                 this.markers = [];
             }
-
-            
         });
-
-
     </script>
 </polymer-element>
