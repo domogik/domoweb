@@ -221,7 +221,7 @@ class WSHandler(websocket.WebSocketHandler):
         import requests
         response = requests.get('%s/sensorhistory/id/%d/from/%d/to/%d/interval/%s/selector/avg' % (options.rest_url, data['id'],data['from'],data['to'],data['interval']))
         try:
-            history = response.json()
+            history = response.json()['values']
         except ValueError:
             history = []
         json = {'id':data['id'], 'history':history}

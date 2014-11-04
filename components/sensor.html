@@ -31,7 +31,7 @@
 			    }
 		    },
 			historyReceived: function(topic, json) {
-		        this.sensorhistory=json['history']['values'];
+		        this.sensorhistory=json['history'];
 		    },
 		    sensoridChanged: function(oldValue, newValue) {
 		    	this.$.socket.register('device-stats', this.statReceived.bind(this), 'sensor_id', newValue);
@@ -56,6 +56,10 @@
 				        this.intervalid = window.setInterval(this.intervalHandler.bind(this), this.recheckdelay); // adjust time every 1 minute
 					}					
 				}
+		    },
+		    getLast: function(num) {
+		    	this.historyMode = 'last';
+		    	this.$.socket.send("sensor-getlast", {'id': this.sensorid, 'count': num});
 		    },
 		    getCurrentDay: function() {
 		    	this.historyMode = 'day';
