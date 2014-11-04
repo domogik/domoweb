@@ -81,20 +81,15 @@ Fired when the Maps API library is loaded and ready.
     notifyEvent: 'api-load',
 
     ready: function() {
-    },
-
-    apiKeyChanged: function(oldValue, newValue) {
-      if (newValue) {
-        var url = this.defaultUrl + '&v=' + this.version;
-        url += "&libraries=" + this.libraries;
-        if (this.apiKey && !this.clientId) {
-          url += '&key=' + this.apiKey;
-        }
-        if (this.clientId) {
-          url += '&client=' + this.clientId;
-        }
-        this.url = url;        
+      var url = this.defaultUrl + '&v=' + this.version;
+      url += "&libraries=" + this.libraries;
+      if (this.apiKey && !this.clientId) {
+        url += '&key=' + this.apiKey;
       }
+      if (this.clientId) {
+        url += '&client=' + this.clientId;
+      }
+      this.url = url;
     },
 
     /**
