@@ -23,6 +23,20 @@
         Polymer('dmw-google_maps-map_square', {
             ready: function() {
                 console.warn("ready");
+                // define gradient colors for the polyline (path on the map)
+                this.Colors = [
+                    "#0C00BF", 
+                    "#2319C6", 
+                    "#3B32CD", 
+                    "#524BD4", 
+                    "#6A64DB", 
+                    "#817EE2", 
+                    "#9997E9", 
+                    "#B0B0F0",
+                    "#C8C9F7", 
+                    "#E0E3FF"
+                ];
+
                 var self = this;
                 this.super();
                 this.map;
@@ -40,12 +54,14 @@
                     console.warn("end api load");
 
                 });
+
                 console.warn("end ready");
             },
             sensorsUpdated: function() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
+                    this.$.primary.getLast(100);
                 }        
             },
             sensorvalueChanged: function(oldValue, newValue) {
@@ -55,6 +71,27 @@
             },
             historyChanged: function(oldValue, newValue) {
                 console.warn("historyChanged");
+                console.warn(newValue);
+                var pathCoordinates = [];
+                for (idx=0; idx<newValue.length; idx++) {
+                    console.warn(idx, newValue[idx]['value_str'], newValue[idx]['date']);
+                    coords = newValue[idx]['value_str'].split(",");
+                    pathCoordinates[idx] = new google.maps.LatLng(coords[1], coords[0]);
+                }
+                console.warn(pathCoordinates);
+
+                for (var i = 0; i < pathCoordinates.length-1; i++) {
+                    var path = new google.maps.Polyline({
+                        path: [pathCoordinates[i], pathCoordinates[i+1]],
+                        geodesic: true,
+                        strokeColor: this.Colors[Math.floor(i/10)],
+                        strokeOpacity: 1.0,
+                        strokeWeight: 3,
+                        map: this.map
+                    });
+                }
+
+
             },
 
             // Add a marker to the map and push to the array.
