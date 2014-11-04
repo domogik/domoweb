@@ -2,7 +2,7 @@
 
 <polymer-element name="dmw-google_maps-map_square" extends="dmw-widget">
     <template>
-        <google-maps-api id="mapsapi" version="3.exp"></google-maps-api>
+        <google-maps-api id="mapsapi" apiKey="AIzaSyArPfDsI7f6bMEQ_VSqwtG4pSw5bTmAv6Y" version="3.exp"></google-maps-api>
         <link rel="stylesheet" href="/widget/google_maps/css/common.css" shim-domshadow>
         <style type="text/css">
             :host {
@@ -36,6 +36,8 @@
                     "#C8C9F7", 
                     "#E0E3FF"
                 ];
+
+                var self = this;
                 this.super();
                 this.map;
                 this.markers = [];
@@ -50,8 +52,7 @@
                     self.map = new this.api.Map(self.$.map,
                         mapOptions);
                     console.warn("end api load");
-                    // If the history as been received already.
-                    if (this.history) this.displayTrack();
+
                 });
 
                 console.warn("end ready");
@@ -63,11 +64,6 @@
                     this.$.primary.getLast(100);
                 }        
             },
-            optionsUpdated: function() {
-                if (this.options['google_api_key']) {
-                    this.$.mapsapi.setAttribute('apiKey', this.options['google_api_key']);
-                }
-            },
             sensorvalueChanged: function(oldValue, newValue) {
                 console.warn("sensorvalueChanged");
                 this.deleteMarkers();
@@ -76,16 +72,10 @@
             historyChanged: function(oldValue, newValue) {
                 console.warn("historyChanged");
                 console.warn(newValue);
-                this.history = newValue;
-                // If the api is loaded and map object exists
-                if (this.map) this.displayTrack();
-            },
-
-            displayTrack: function() {
                 var pathCoordinates = [];
-                for (idx=0; idx<this.history.length; idx++) {
-                    console.warn(idx, this.history[idx]['value_str'], this.history[idx]['date']);
-                    coords = this.history[idx]['value_str'].split(",");
+                for (idx=0; idx<newValue.length; idx++) {
+                    console.warn(idx, newValue[idx]['value_str'], newValue[idx]['date']);
+                    coords = newValue[idx]['value_str'].split(",");
                     pathCoordinates[idx] = new google.maps.LatLng(coords[1], coords[0]);
                 }
                 console.warn(pathCoordinates);
@@ -100,8 +90,10 @@
                         map: this.map
                     });
                 }
+
+
             },
-                     
+
             // Add a marker to the map and push to the array.
             addMarker: function(location) {
                 console.warn("addMarker for ", location);
