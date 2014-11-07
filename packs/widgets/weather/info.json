@@ -47,6 +47,21 @@
                     "required": false                   
                 }
             }
-        }        
+        },        
+        "forecast": {
+            "name" : "Forecast",
+            "description" : "Weather forecast",
+            "height" : 1,
+            "width" : 3,
+            "options" : {},
+            "devices" : {
+                "forecast" : {
+                    "name": "Location",
+                    "description": "Forecast location",
+                    "types" : ["weather.weather"],
+                    "required": true                   
+                }
+            }
+        }
     }
 }
