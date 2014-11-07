@@ -21,7 +21,6 @@
     <script>
         Polymer('dmw-google_maps-map_square', {
             ready: function() {
-                console.warn("ready");
                 // define gradient colors for the polyline (path on the map)
                 this.Colors = [
                     "#0C00BF", 
@@ -42,7 +41,6 @@
                 this.markers = [];
                 var self = this;
                 this.$.mapsapi.addEventListener('api-load', function(e) {
-                    console.warn("api load");
                     // this.api === google.maps
                     var mapOptions = {
                         zoom: 8,
@@ -50,11 +48,9 @@
                     };
                     self.map = new this.api.Map(self.$.map,
                         mapOptions);
-                    console.warn("end api load");
 
                 });
 
-                console.warn("end ready");
             },
             sensorsUpdated: function() {
                 if (this.$.primary.isSet) {
@@ -64,20 +60,15 @@
                 }        
             },
             sensorvalueChanged: function(oldValue, newValue) {
-                console.warn("sensorvalueChanged");
                 this.deleteMarkers();
                 this.addMarker(newValue);
             },
             historyChanged: function(oldValue, newValue) {
-                console.warn("historyChanged");
-                console.warn(newValue);
                 var pathCoordinates = [];
                 for (idx=0; idx<newValue.length; idx++) {
-                    console.warn(idx, newValue[idx]['value_str'], newValue[idx]['date']);
                     coords = newValue[idx]['value_str'].split(",");
                     pathCoordinates[idx] = new google.maps.LatLng(coords[1], coords[0]);
                 }
-                console.warn(pathCoordinates);
 
                 for (var i = 0; i < pathCoordinates.length-1; i++) {
                     var path = new google.maps.Polyline({
@@ -93,7 +84,6 @@
 
             // Add a marker to the map and push to the array.
             addMarker: function(location) {
-                console.warn("addMarker for ", location);
                 coords = location.split(",");
                 gmap_location = new google.maps.LatLng(coords[1], coords[0]);
                 this.map.setCenter(gmap_location);
@@ -108,22 +98,18 @@
 
             // Sets the map on all markers in the array.
             setAllMap: function(map) {
-                console.warn("setAllMap");
                 for (var i = 0; i < this.markers.length; i++) {
-                    console.warn(this.markers[i]);
                     this.markers[i].setMap(map);
                 }
             },
 
             // Removes the markers from the map, but keeps them in the array.
             clearMarkers: function() {
-                console.warn("clearMarkers");
                 this.setAllMap(null);
             },
 
             // Delete all the markers on the map
             deleteMarkers: function() {
-                console.warn("deleteMarkers");
                 this.clearMarkers();
                 this.markers = [];
             }
