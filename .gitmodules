@@ -30,4 +30,4 @@
 	url = https://github.com/naoxink/notifIt.git
 [submodule "components/core-shared-lib"]
 	path = components/core-shared-lib
-	url = git@github.com:Polymer/core-shared-lib.git
+	url = https://github.com/Polymer/core-shared-lib.git
