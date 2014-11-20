@@ -19,7 +19,7 @@ class packLoader:
         session = Session()
 
         # Load all Widgets
-        logger.info("PACKS: Loading widgets")
+        logger.info(u"PACKS: Loading widgets")
         widgets_path = os.path.join(pack_path, 'widgets')
         session.query(Widget).delete()
         session.query(WidgetOption).delete()
@@ -35,7 +35,7 @@ class packLoader:
                         try:
                             widgetset_json = json.load(widgetset_file, object_pairs_hook=OrderedDict)
                         except Exception, e:
-                            logger.error("Parsing error : %s: %s" % (info, str(e)) );
+                            logger.error(u"Parsing error : %s: %s" % (info, str(e)) );
 #                            raise e
                         else: 
                             widgetset_id = widgetset_json["identity"]["id"]
@@ -140,7 +140,7 @@ class packLoader:
     def loadThemes(cls, pack_path):
         session = Session()
         # Load all Themes
-        logger.info("PACKS: Loading themes")
+        logger.info(u"PACKS: Loading themes")
         themes_path = os.path.join(pack_path, 'themes')
         session.query(Theme).delete()
         if os.path.isdir(themes_path):
@@ -166,7 +166,7 @@ class mqDataLoader:
         session = Session()
 
         # get all datatypes
-        logger.info("MQ: Loading Datatypes")
+        logger.info(u"MQ: Loading Datatypes")
         msg = MQMessage()
         msg.set_action('datatype.get')
         res = cli.request('manager', msg.get(), timeout=10)
@@ -184,7 +184,7 @@ class mqDataLoader:
 
     @classmethod
     def loadDevices(cls):
-        logger.info("MQ: Loading Devices info")
+        logger.info(u"MQ: Loading Devices info")
         Device.clean()
         msg = MQMessage()
         msg.set_action('client.list.get')
@@ -202,7 +202,7 @@ class mqDataLoader:
                 msg.add_data('type', 'plugin')
                 msg.add_data('name', client["name"])
                 msg.add_data('host', client["host"])
-                logger.info("MQ: Get devices list for client {0}-{1}.{2}".format("plugin", client["name"], client["host"]))
+                logger.info(u"MQ: Get devices list for client {0}-{1}.{2}".format("plugin", client["name"], client["host"]))
                 res = cli.request('dbmgr', msg.get(), timeout=10)
                 if res is not None:
                     _datad = res.get_data()
@@ -210,7 +210,7 @@ class mqDataLoader:
                     _datad = {}
                 if 'devices' in _datad:
                     for device in _datad["devices"]:
-                        logger.info("- {0}".format(device["name"]))
+                        logger.info(u"- {0}".format(device["name"]))
                         d = Device(id=device["id"], name=device["name"], type=device["device_type_id"], reference=device["reference"])
                         session.add(d)
                         if "commands" in device:
