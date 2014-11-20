@@ -1,0 +1,62 @@
+<polymer-element name="dmw-weather-current" extends="dmw-widget">
+    <template>
+        <style type="text/css">
+            :host {
+                height: 100%;
+                display: block;
+                background-repeat: no-repeat;
+                background-position: 50% 50%;
+            }
+            :host #labelprimary {
+                margin: 10px;
+                font-size: 1.2em;
+                position: relative;
+            }
+            #temperature {
+                position: absolute;
+                top: 50%;
+                -webkit-transform: translate(0, -50%);
+                -ms-transform: translate(0, -50%);
+                transform: translate(0, -50%);
+                right: 20px;
+                text-align: right;
+                font-size: 5em;
+            }
+            #unit {
+                position: absolute;
+                top:5px;
+                right: 5px;
+                font-size: 1em;
+            }
+            #text {
+                font-size: 1.4em;
+                text-align: center;
+            }
+            </style>
+        <shadow></shadow>
+        <dmw-sensor id='current_station' sensorkey="current_station" sensorvalue="{{current_station}}"></dmw-sensor>
+        <dmw-sensor id='current_code' sensorkey="current_code" sensorvalue="{{current_code}}"></dmw-sensor>
+        <dmw-sensor id='current_text' sensorkey="current_text" sensorvalue="{{current_text}}"></dmw-sensor>
+        <dmw-sensor id='current_temperature' sensorkey="current_temperature" sensorvalue="{{current_temperature}}"></dmw-sensor>
+        <div id='text'>{{ condition }}</div>
+        <div id='temperature'>{{current_temperature}}</div>
+        <div id='unit'>&deg;C</div>
+        <shadow></shadow>
+    </template>
+    <script>
+        Polymer('dmw-weather-current', {
+            ready: function() {
+                this.super();
+            },
+            current_codeChanged: function(oldValue, newValue) {
+                this.style.backgroundImage = "url('/widget/weather/images/weather/" + newValue + ".png')";
+            },
+            current_stationChanged: function(oldValue, newValue) {
+                this.labelprimary = newValue;
+            },
+            current_textChanged: function(oldValue, newValue) {
+                this.condition = newValue; // Add i18n ("Fair/Windy")
+            },
+        });
+    </script>
+</polymer-element>

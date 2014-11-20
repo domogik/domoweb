@@ -3,10 +3,11 @@ import os
 import json
 import zmq
 
-from domoweb.models import Session, Widget, Theme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam
+from domoweb.models import Session, Widget, Theme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam, WidgetInstance
 from collections import OrderedDict
 from domogikmq.reqrep.client import MQSyncReq
 from domogikmq.message import MQMessage
+from sqlalchemy.orm import joinedload
 
 import logging
 
@@ -135,6 +136,16 @@ class packLoader:
                                         session.add(p)
         session.commit()
         session.close()
+
+        # Remove instances of missing widgets
+        session = Session()
+        wis = session.query(WidgetInstance).options(joinedload('section')).outerjoin(Widget).filter(Widget.id==None).all()
+        for i, wi in enumerate(wis):
+            logger.warning("Widget %s not found. Deleting instance %d section '%s'" % (wi.widget_id, wi.id, wi.section.name))
+            session.delete(wi)
+        session.commit()
+        session.close()
+
 
     @classmethod
     def loadThemes(cls, pack_path):

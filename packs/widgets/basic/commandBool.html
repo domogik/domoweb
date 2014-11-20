@@ -37,6 +37,8 @@
 				if (this.$.boolstate.isSet) {
 					this.hasFeedback = true;
 				}
+			},
+			commandsUpdated: function() {
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
 					this.labelsecondary = this.$.primary.name;
