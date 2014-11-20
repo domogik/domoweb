@@ -42,7 +42,7 @@
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
 					this.labelsecondary = this.$.primary.name;
-					this.sendtext = i18n.t("domoweb:bool." + this.nextValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+					this.sendtext = i18n.t("domoweb:bool.0", { context: this.$.primary.parameters[0]['datatype_id'] });
 					this.$.send.addEventListener('click', this.send.bind(this));					
 				}
 			},
@@ -54,21 +54,20 @@
 				e.stopPropagation();
 				if (!this.hasFeedback) { //If no feedback sensor, we assume ok
 					this.boolstate = this.nextValue;
-					this.nextValue = !this.nextValue;
 				}
 			},
 			boolstateChanged: function(oldValue, newValue) {
 				var currentvalue = parseInt(newValue);
 				if (currentvalue == 1) {
 					this.nextValue = 0;
-					this.$.send.classList.add('false');
-					this.$.send.classList.remove('true');
-				} else {
-					this.nextValue = 1;
 					this.$.send.classList.add('true');
 					this.$.send.classList.remove('false');
+				} else {
+					this.nextValue = 1;
+					this.$.send.classList.add('false');
+					this.$.send.classList.remove('true');
 				}
-				this.sendtext = i18n.t("domoweb:bool." + this.nextValue, { context: this.$.primary.parameters[0]['datatype_id'] });				
+				this.sendtext = i18n.t("domoweb:bool." + currentvalue, { context: this.$.primary.parameters[0]['datatype_id'] });
 			}
 		});
 	</script>
