@@ -48,16 +48,16 @@
                 }
             }
         },        
-        "forecast": {
-            "name" : "Forecast",
-            "description" : "Weather forecast",
+        "current": {
+            "name" : "Current Condition",
+            "description" : "Weather current condition, with temperature",
             "height" : 1,
             "width" : 3,
             "options" : {},
             "devices" : {
-                "forecast" : {
+                "weather" : {
                     "name": "Location",
-                    "description": "Forecast location",
+                    "description": "Weather location",
                     "types" : ["weather.weather"],
                     "required": true                   
                 }
