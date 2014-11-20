@@ -52,8 +52,9 @@
 				this.$.primary.send(parameters);
 				e.preventDefault();
 				e.stopPropagation();
-				if (!this.$.boolstate.isSet) { //If no feedback sensor, we assume ok
+				if (!this.hasFeedback) { //If no feedback sensor, we assume ok
 					this.boolstate = this.nextValue;
+					this.nextValue = !this.nextValue;
 				}
 			},
 			boolstateChanged: function(oldValue, newValue) {
