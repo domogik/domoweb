@@ -3,10 +3,11 @@ import os
 import json
 import zmq
 
-from domoweb.models import Session, Widget, Theme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam
+from domoweb.models import Session, Widget, Theme, WidgetOption, WidgetCommand, WidgetSensor, WidgetDevice, DataType, Device, Command, Sensor, CommandParam, WidgetInstance
 from collections import OrderedDict
 from domogikmq.reqrep.client import MQSyncReq
 from domogikmq.message import MQMessage
+from sqlalchemy.orm import joinedload
 
 import logging
 
@@ -136,6 +137,16 @@ class packLoader:
         session.commit()
         session.close()
 
+        # Remove instances of missing widgets
+        session = Session()
+        wis = session.query(WidgetInstance).options(joinedload('section')).outerjoin(Widget).filter(Widget.id==None).all()
+        for i, wi in enumerate(wis):
+            logger.warning("Widget %s not found. Deleting instance %d section '%s'" % (wi.widget_id, wi.id, wi.section.name))
+            session.delete(wi)
+        session.commit()
+        session.close()
+
+
     @classmethod
     def loadThemes(cls, pack_path):
         session = Session()
@@ -202,7 +213,7 @@ class mqDataLoader:
                 msg.add_data('type', 'plugin')
                 msg.add_data('name', client["name"])
                 msg.add_data('host', client["host"])
-                logger.info("MQ: Get devices list for client {0}-{1}.{2}".format("plugin", client["name"], client["host"]))
+                #logger.info("MQ: Get devices list for client {0}-{1}.{2}".format("plugin", client["name"], client["host"]))
                 res = cli.request('dbmgr', msg.get(), timeout=10)
                 if res is not None:
                     _datad = res.get_data()
@@ -210,7 +221,7 @@ class mqDataLoader:
                     _datad = {}
                 if 'devices' in _datad:
                     for device in _datad["devices"]:
-                        logger.info("- {0}".format(device["name"]))
+                        #logger.info("- {0}".format(device["name"]))
                         d = Device(id=device["id"], name=device["name"], type=device["device_type_id"], reference=device["reference"])
                         session.add(d)
                         if "commands" in device:
