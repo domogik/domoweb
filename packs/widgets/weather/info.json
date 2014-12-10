@@ -6,8 +6,9 @@
         "version" : 1,
         "name" : "Weather",
         "description" : "Widgets for Weather data",
-        "author" : "Ferllings",
-        "author_email" : "cedric@domogik.org"
+        "author" : "Ferllings, Fritz",
+        "author_email" : "cedric@domogik.org, fritz.smh@gmail.com"
+
     },
     "widgets": {
         "uv": {
@@ -73,6 +74,21 @@
                 "forecast" : {
                     "name": "Location",
                     "description": "Forecast location",
+                    "types" : ["weather.weather"],
+                    "required": true                   
+                }
+            }
+        },
+        "sun": {
+            "name" : "Sunrise and sunset",
+            "description" : "Sunrise and sunset informations",
+            "height" : 1,
+            "width" : 2,
+            "options" : {},
+            "devices" : {
+                "weather" : {
+                    "name": "Location",
+                    "description": "Weather location",
                     "types" : ["weather.weather"],
                     "required": true                   
                 }

@@ -1,0 +1,57 @@
+<polymer-element name="dmw-weather-sun" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/weather/weather-icons-master-1.3/css/weather-icons.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+                display: block;
+            }
+            :host #labelprimary {
+                margin: 10px;
+                font-size: 1.2em;
+                position: relative;
+            }
+            #text {
+                font-size: 1.4em;
+                text-align: center;
+            }
+            .sun {
+                margin-top: 4%;
+                float: left;
+                width: 50%;
+                text-align: center;
+            } 
+            i {
+                font-size: 3em;
+            }
+            .sun .hour {
+                font-size: 1.6em;
+            }
+            </style>
+        <shadow></shadow>
+        <dmw-sensor id='current_sunrise' sensorkey="current_sunrise" sensorvalue="{{current_sunrise}}"></dmw-sensor>
+        <dmw-sensor id='current_sunset' sensorkey="current_sunset" sensorvalue="{{current_sunset}}"></dmw-sensor>
+        <div id='sunrise' class='sun'>
+          <i class="wi wi-sunrise"></i>
+          <div class='hour'>{{ sunrise }}</div>
+        </div>
+        <div id='sunset' class='sun'>
+          <i class="wi wi-sunset"></i>
+          <div class='hour'>{{ sunset }}</div>
+        </div>
+        <shadow></shadow>
+    </template>
+    <script>
+        Polymer('dmw-weather-sun', {
+            ready: function() {
+                this.super();
+            },
+            current_sunriseChanged: function(oldValue, newValue) {
+                this.sunrise = newValue;
+            },
+            current_sunsetChanged: function(oldValue, newValue) {
+                this.sunset = newValue;
+            },
+        });
+    </script>
+</polymer-element>
