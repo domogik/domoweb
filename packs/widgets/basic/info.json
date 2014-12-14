@@ -101,6 +101,27 @@
                     "required": true                   
                 }
             }
+        },
+        "sensorChart": {
+            "name" : "Chart for sensor Number",
+            "height" : 1,
+            "width" : 2,
+            "options" : {
+                "autoconvert" : {
+                    "name": "Automatic conversion",
+                    "description": "Automatically convert big value to K(x) / M(x) / G(x) / T(x)",
+                    "type": "boolean",
+                    "default": "False"
+                }
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "Number",
+                    "description": "Number sensor",
+                    "types" : ["DT_Number"],
+                    "required": true                   
+                }
+            }
         }
     }
 }
