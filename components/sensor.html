@@ -67,6 +67,12 @@
 		    	var to = moment().unix();
 		    	this.$.socket.send("sensor-gethistory", {'id': this.sensorid, 'from': from, 'to': to, interval: 'minute'});
 		    },
+		    getCurrentDayPerHour: function() {
+		    	this.historyMode = 'dayPerHour';
+		    	var from = moment().subtract(1, 'days').unix();
+		    	var to = moment().unix();
+		    	this.$.socket.send("sensor-gethistory", {'id': this.sensorid, 'from': from, 'to': to, interval: 'hour'});
+		    },
 		    getCurrentWeek: function() {
 		    	this.historyMode = 'week';
 		    	var from = moment().subtract(1, 'weeks').unix();
