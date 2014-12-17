@@ -120,7 +120,7 @@
             adjustText: function(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
                 var i = fontsize.substr(0,2);
-                while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
+                while ( parent.clientWidth/2 > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
                     element.style.fontSize = i+"px";
                     i++;
                 }            
