@@ -98,7 +98,7 @@
                         this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
                     }
                 }
-                adjustText(this, this.$.number);
+                this.adjustText(this, this.$.number);
 
             },
             historyChanged: function(oldValue, newValue) { 
@@ -117,15 +117,15 @@
                 $('#spark').sparkline(chartValues, { height: '100%', width: '100%' });
                 $.sparkline_display_visible();
             },
+            adjustText: function(parent, element) {
+                var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
+                var i = fontsize.substr(0,2);
+                while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
+                    element.style.fontSize = i+"px";
+                    i++;
+                }            
+            }
         });
-        function adjustText(parent, element) {
-            var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
-            var i = fontsize.substr(0,2);
-            while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
-                element.style.fontSize = i+"px";
-                i++;
-            }            
-        }
  
     </script>
 </polymer-element>

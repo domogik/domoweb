@@ -1,74 +1,74 @@
 <polymer-element name="dmw-basic-sensorNumber" extends="dmw-widget">
-	<template>
-		<link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
-		<style type="text/css">
-			:host {
-				height: 100%;
-				display: block;
-			}
-			#number {
-				position: relative;
-				top: 50%;
-				-webkit-transform: translate(-50%, -50%);
-				-ms-transform: translate(-50%, -50%);
-				transform: translate(-50%, -50%);
-				left: 50%;
-	  			text-align: center;
-				overflow: hidden;
-				display: inline-block;
-				padding: 10px;
-			}
-			#unit {
-				position: absolute;
-				top:5px;
-				right: 5px;
-				font-size: 1em;
-			}
-		</style>
-	    <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
-		<shadow></shadow>
-		<div id='number'>{{number}}</div>
-		<div id='unit'>{{unit}}</div>
-	</template>
-	<script>
-		Polymer('dmw-basic-sensorNumber', {
-			ready: function() {
-				this.super();
-				this.number = "--";
-				this.unit = "";
-			},
-			sensorsUpdated: function() {
-				if (this.$.primary.isSet) {
-					this.labelprimary = this.$.primary.device['name'];
-					this.labelsecondary = this.$.primary.name;
-				}		
-			},
-			sensorvalueChanged: function(oldValue, newValue) {
-				var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
-				if (this.options['autoconvert']==1 && newValue > 0) {
-				   	var k = 1000;
-				   	var sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
-				   	var i = Math.floor(Math.log(newValue) / Math.log(k));
-					this.$.number.innerHTML = (newValue / Math.pow(k, i)).toPrecision(3);
-					if (unit) {
-						this.unit = sizes[i] + i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
-					}
-				} else {
-					this.$.number.innerHTML = newValue;
-					if (unit) {
-						this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
-					}
-				}
-				adjustText(this, this.$.number);
-			}
-		});
-		function adjustText(parent, element) {
-			var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
-			var i = fontsize.substr(0,2);
-			while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
-			    element.style.fontSize = i+"px";
-			    i++;
-			}			
-		}
-	</script>
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+                display: block;
+            }
+            #number {
+                position: relative;
+                top: 50%;
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                left: 50%;
+                  text-align: center;
+                overflow: hidden;
+                display: inline-block;
+                padding: 10px;
+            }
+            #unit {
+                position: absolute;
+                top:5px;
+                right: 5px;
+                font-size: 1em;
+            }
+        </style>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <shadow></shadow>
+        <div id='number'>{{number}}</div>
+        <div id='unit'>{{unit}}</div>
+    </template>
+    <script>
+        Polymer('dmw-basic-sensorNumber', {
+            ready: function() {
+                this.super();
+                this.number = "--";
+                this.unit = "";
+            },
+            sensorsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                }        
+            },
+            sensorvalueChanged: function(oldValue, newValue) {
+                var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
+                if (this.options['autoconvert']==1 && newValue > 0) {
+                       var k = 1000;
+                       var sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+                       var i = Math.floor(Math.log(newValue) / Math.log(k));
+                    this.$.number.innerHTML = (newValue / Math.pow(k, i)).toPrecision(3);
+                    if (unit) {
+                        this.unit = sizes[i] + i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                    }
+                } else {
+                    this.$.number.innerHTML = newValue;
+                    if (unit) {
+                        this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                    }
+                }
+                this.adjustText(this, this.$.number);
+            },
+            adjustText: function(parent, element) {
+                var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
+                var i = fontsize.substr(0,2);
+                while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
+                    element.style.fontSize = i+"px";
+                    i++;
+                }            
+            }
+        });
+    </script>
 </polymer-element>
