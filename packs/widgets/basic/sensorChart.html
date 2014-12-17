@@ -7,41 +7,43 @@
                 height: 100%;
                 display: block;
             }
-            #minvalue {
-                position: absolute;
-                bottom: 0px;
-                left: 0px;
-            }
-            #maxvalue {
-                position: absolute;
-                top: 0px;
-                left: 0px;
-            }
             #spark {
-                left: 25%;
             }
             #chart {
                 float: left;
-                width: 50%;
+                width: 35%;
                 height: 100%;
 
             }
             #chart span {
                 height: 100%;
             }
-            #number {
+            #values {
                 float: left;
-                width: 50%;
+                width: 65%;
+                height: 100%;
+            }
+            #number {
                 position: relative;
-                top: 50%;
+                top: 43%;
                 -webkit-transform: translate(-50%, -50%);
                 -ms-transform: translate(-50%, -50%);
                 transform: translate(-50%, -50%);
-                left: 25%;
+                left: 50%;
                 text-align: center;
                 overflow: hidden;
                 display: inline-block;
                 padding: 10px;
+            }
+            #minmax {
+                position: absolute;
+                bottom: 5px;
+                text-align: center;
+                width: 100%;
+            }
+            #minvalue {
+            }
+            #maxvalue {
             }
             #unit {
                 position: absolute;
@@ -53,11 +55,17 @@
         <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
         <shadow></shadow>
         <div id='chart'>
-          <div id='minvalue'></div>
-          <div id='maxvalue'></div>
           <span id="spark" class="inlinesparkline">&nbsp;</span>
         </div>
-        <div id='number'>{{number}}</div>
+        <div id='values'>
+          <div id='number'>
+          {{number}}
+          </div>
+          <div id='minmax'>
+            <span id='minvalue'></span>(-)&nbsp;-&nbsp;
+            <span id='maxvalue'></span>(+)
+          </div>
+        </div>
         <div id='unit'>{{unit}}</div>
     </template>
     <script>
@@ -106,7 +114,7 @@
                 $('#minvalue').html(minvalue);
                 $('#maxvalue').html(maxvalue);
                 //$('#spark').sparkline(chartValues, { height: this.clientHeight, width: 8*this.clientWidth/20 });
-                $('#spark').sparkline(chartValues, { height: '100%', width: '75%' });
+                $('#spark').sparkline(chartValues, { height: '100%', width: '100%' });
                 $.sparkline_display_visible();
             },
         });
