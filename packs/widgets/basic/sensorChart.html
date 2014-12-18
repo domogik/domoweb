@@ -1,4 +1,3 @@
-    <script src="/widget/basic/js/jquery.sparkline.min.js"></script>
 <polymer-element name="dmw-basic-sensorChart" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
@@ -55,19 +54,20 @@
         <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
         <shadow></shadow>
         <div id='chart'>
-          <span id="spark" class="inlinesparkline">&nbsp;</span>
+          <span id="spark" class="inlinesparkline">{{spark}}</span>
         </div>
         <div id='values'>
           <div id='number'>
           {{number}}
           </div>
           <div id='minmax'>
-            <span id='minvalue'></span>(-)&nbsp;-&nbsp;
-            <span id='maxvalue'></span>(+)
+            <span id='minvalue'>{{min}}</span>(-)&nbsp;-&nbsp;
+            <span id='maxvalue'>{{max}}</span>(+)
           </div>
         </div>
         <div id='unit'>{{unit}}</div>
     </template>
+    <script src="/widget/basic/js/jquery.sparkline.min.js"></script>
     <script>
         Polymer('dmw-basic-sensorChart', {
             ready: function() {
@@ -111,11 +111,15 @@
                 // display the chart
                 minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
                 maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
-                $('#minvalue').html(minvalue);
-                $('#maxvalue').html(maxvalue);
-                //$('#spark').sparkline(chartValues, { height: this.clientHeight, width: 8*this.clientWidth/20 });
-                $('#spark').sparkline(chartValues, { height: '100%', width: '100%' });
-                $.sparkline_display_visible();
+                this.min = minvalue;
+                this.max = maxvalue;
+                //$('#spark').sparkline(chartValues, { height: '100%', width: '100%' });
+                //this.$.spark.sparkline(chartValues, { height: '100%', width: '100%' });
+                this.$.spark.innerHTML = "foo";
+                // works : // this.shadowRoot.querySelector('#spark').innerHTML = "foo";
+                //this.shadowRoot.querySelector('#spark').sparkline(chartValues, { height: '100%', width: '100%' });
+                //$.sparkline_display_visible();
+                //$.sparkline_display_visible();
             },
             adjustText: function(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
