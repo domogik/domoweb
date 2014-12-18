@@ -7,15 +7,13 @@
                 display: block;
             }
             #spark {
+                height: 100%;
             }
             #chart {
                 float: left;
                 width: 35%;
                 height: 100%;
 
-            }
-            #chart span {
-                height: 100%;
             }
             #values {
                 float: left;
@@ -54,15 +52,15 @@
         <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
         <shadow></shadow>
         <div id='chart'>
-          <span id="spark" class="inlinesparkline">{{spark}}</span>
+          <div id="spark" class="inlinesparkline">{{spark}}</div>
         </div>
         <div id='values'>
           <div id='number'>
           {{number}}
           </div>
           <div id='minmax'>
-            <span id='minvalue'>{{min}}</span>(-)&nbsp;-&nbsp;
-            <span id='maxvalue'>{{max}}</span>(+)
+            <span id='minvalue'>{{min}}</span>&nbsp;<sup><em>min</em></sup>&nbsp;/&nbsp;
+            <span id='maxvalue'>{{max}}</span>&nbsp;<sup><em>max</em></sup>
           </div>
         </div>
         <div id='unit'>{{unit}}</div>
@@ -113,13 +111,8 @@
                 maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
                 this.min = minvalue;
                 this.max = maxvalue;
-                //$('#spark').sparkline(chartValues, { height: '100%', width: '100%' });
-                //this.$.spark.sparkline(chartValues, { height: '100%', width: '100%' });
-                this.$.spark.innerHTML = "foo";
-                // works : // this.shadowRoot.querySelector('#spark').innerHTML = "foo";
-                //this.shadowRoot.querySelector('#spark').sparkline(chartValues, { height: '100%', width: '100%' });
-                //$.sparkline_display_visible();
-                //$.sparkline_display_visible();
+                $(this.$.spark).sparkline(chartValues, { height: '100%', width: '100%' });
+                $.sparkline_display_visible();
             },
             adjustText: function(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
