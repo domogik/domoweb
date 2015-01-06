@@ -20,20 +20,47 @@
 		-moz-border-radius:  6px 6px 0 0;
 		-webkit-border-radius:  6px 6px 0 0;
 		border-radius: 6px 6px 0 0;
-		height: 3em;
 	}
 	article .body {
 		background: #F0F0F0;
 		color: #000000;
 		padding: 0.5em;
-		-moz-border-radius:  0 0 6px 6px;
-		-webkit-border-radius:  0 0 6px 6px;
-		border-radius: 0 0 6px 6px;
 		height: 8em;
+		position: relative;
+	}
+	article .body .overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0,0,0,0.6);
+		padding: 1em;
+		display: none;
+	}
+	article .body .overlay button {
+		margin: 0.5em auto 0.5em auto;
+		display: block;
+	}
+	article .body:hover .overlay,
+	article .body:focus .overlay {
+		display: block;
 	}
 	article img {
 		max-width: 19em;
 		max-height: 7em;
+	}
+	article .footer {
+		margin: 0;
+		background: #428bca;
+		color: #ffffff;
+		font-size: 1em;
+		padding: 0.5em;
+		-moz-border-radius:  0 0 6px 6px;
+		-webkit-border-radius:  0 0 6px 6px;
+		border-radius: 0 0 6px 6px;
+		text-align: right;
+		font-style: italic;
 	}
 	</style>
 		<script src="/libraries/isotope/dist/isotope.pkgd.min.js"></script>
@@ -55,10 +82,12 @@
 					<div id="widgetslist">
 					    <template repeat="{{w in widgets}}">
 			        	<article class="{{ w.set_id }}">
-			        		<h2>{{ w.set_name }} - {{ w.name }} <button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}">Add</button></h2>
+			        		<h2>{{ w.name }}</h2>
 			        		<div class="body">
-			        			<div><img src='/widget/{{ w.set_id }}/{{ w.set_ref }}.png'/></div>
+			        			<img src='/widget/{{ w.set_id }}/{{ w.set_ref }}.png'/>
+				        		<div class="overlay"><button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}">Add</button><button class="add-widget btn btn-success" on-click="{{addWidgetClose}}" data-widget-id="{{ w.id }}">Add and Close</button></div>
 				        	</div>
+				        	<div class="footer">{{ w.set_name }}</div>
 			        	</article>
 				      	</template>
 					</div>
@@ -114,6 +143,13 @@
 		    addWidget: function(e) {
 		    	var widget_id = e.target.dataset.widgetId;
 		    	this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':this.section});
+		    },
+		    addWidgetClose: function(e) {
+		    	var widget_id = e.target.dataset.widgetId;
+		    	this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':this.section});
+				var modalOverlay = document.querySelector('#modal-overlay');
+				modalOverlay.classList.remove('on');
+				this.remove();
 		    }
 		});
 	</script>
