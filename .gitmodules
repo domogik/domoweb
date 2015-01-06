@@ -31,3 +31,6 @@
 [submodule "components/core-shared-lib"]
 	path = components/core-shared-lib
 	url = https://github.com/Polymer/core-shared-lib.git
+[submodule "static/libraries/isotope"]
+	path = static/libraries/isotope
+	url = https://github.com/metafizzy/isotope.git

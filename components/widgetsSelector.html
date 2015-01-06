@@ -6,7 +6,7 @@
 	<style type="text/css">
 	article {
 		padding: 0;
-		margin: 1em;
+		margin: 0.5em;
 		text-align: center;
 		float: left;
 		width: 20em;
@@ -16,23 +16,28 @@
 		background: #428bca;
 		color: #ffffff;
 		font-size: 1em;
-		padding: 1em;
+		padding: 0.5em;
 		-moz-border-radius:  6px 6px 0 0;
 		-webkit-border-radius:  6px 6px 0 0;
 		border-radius: 6px 6px 0 0;
+		height: 3em;
 	}
 	article .body {
 		background: #F0F0F0;
 		color: #000000;
-		padding: 1em;
+		padding: 0.5em;
 		-moz-border-radius:  0 0 6px 6px;
 		-webkit-border-radius:  0 0 6px 6px;
 		border-radius: 0 0 6px 6px;
+		height: 8em;
 	}
-	#widgets-list {
-   	}
-
+	article img {
+		max-width: 19em;
+		max-height: 7em;
+	}
 	</style>
+		<script src="/libraries/isotope/dist/isotope.pkgd.min.js"></script>
+
 	<template>
 	    <web-socket id="socket"></web-socket>
    	    <div id="container-fluid">
@@ -40,9 +45,16 @@
 				<div class="col-md-10 col-md-offset-1">
 					<h1>Select Widget</h1>
 					<button id="closeModal" type="button" class="btn btn-default">Close</button>
-					<div id="widgets-list">
+					<div id="filters" class="button-group">
+					  	<button class="btn btn-default" data-filter="*">show all</button>
+				    	<template repeat="{{s in sets}}">
+					  		<button class="btn btn-default" data-filter=".{{s.id}}">{{s.name}}</button>
+				  		</template>
+					</div>
+
+					<div id="widgetslist">
 					    <template repeat="{{w in widgets}}">
-			        	<article>
+			        	<article class="{{ w.set_id }}">
 			        		<h2>{{ w.set_name }} - {{ w.name }} <button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}">Add</button></h2>
 			        		<div class="body">
 			        			<div><img src='/widget/{{ w.set_id }}/{{ w.set_ref }}.png'/></div>
@@ -59,7 +71,11 @@
 			ready:function(){
 		    	this.$.socket.register('widget-list', this.messageReceived.bind(this), null, null);
 				this.$.socket.send("widget-getall", null);
-				self = this;
+				this.iso = new Isotope( this.$.widgetslist, {
+				  	itemSelector: 'article',
+				  	layoutMode: 'fitRows',
+				});
+				var self = this;
 				this.$.closeModal.addEventListener('click', function () {
 					var modalOverlay = document.querySelector('#modal-overlay');
 					modalOverlay.classList.remove('on');
@@ -67,7 +83,33 @@
 				});
 			},
 			messageReceived: function(topic, json) {
+				var sets = [];
+				this.sets = [];
+				for (w in json) {
+					if (sets.indexOf(json[w].set_id)==-1) {
+						sets.push(json[w].set_id);
+						this.sets.push({'id':json[w].set_id, 'name':json[w].set_name});
+					}
+				}
 		        this.widgets = json;
+		        var self = this;
+		        this.async(
+  					// `async` lets the main loop resume and perform tasks, like DOM updates,
+				  	// then it calls your callback 
+				  	function() {
+						var buttons = self.$.filters.querySelectorAll('button');
+						for (var i = buttons.length - 1; i >= 0; i--) {
+							buttons[i].addEventListener('click', function () {
+								var filterValue = this.dataset['filter'];
+								self.iso.arrange({
+								  filter: filterValue
+								});
+							});
+						};
+				        self.iso.reloadItems();
+				        self.iso.arrange();
+				  	}
+				);
 		    },
 		    addWidget: function(e) {
 		    	var widget_id = e.target.dataset.widgetId;
