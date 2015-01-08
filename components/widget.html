@@ -180,6 +180,12 @@
 				this.options = json['options'];
 				if (this.default_style!=null) {
 			      var ss = document.querySelector('style#style-instance-'+this.instanceid);
+			      if (!ss) { /* Style does not exist yet */
+					ss = document.createElement('style');
+					ss.id = "style-instance-"+this.instanceid;
+					ss.type = "text/css";
+					document.head.appendChild(ss);
+			      }
 			      var widgetStyle = ss.sheet.cssRules[0];
 			      widgetStyle.style.color=this.options['WidgetTextColor'];
 			      widgetStyle.style.backgroundColor=this.options['WidgetBackgroundColor'];
