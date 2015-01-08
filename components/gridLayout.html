@@ -52,18 +52,20 @@
 			  	this.onMutation(this, this.childrenUpdated);
 			},
 			removeInstance: function(instance) {
-				delete this.draggables[instance.getAttribute('instanceid')]
+				delete this.draggables[instance.getAttribute('instanceid')];
 				this.wall.remove(instance);
 				this.wall.layout();
 		    },
 			appendInstance: function(instance) {
 				this.wall.appended(instance);
+				this.wall.layout();
 				var draggie = new Draggabilly(instance);
-				draggie.disable();
 				this.draggables[instance.getAttribute('instanceid')] = draggie;
+				if (this.edit == null) {
+					draggie.disable();
+				}
 			  	// bind Draggabilly events to Packery
 			  	this.wall.bindDraggabillyEvents( draggie );
-				this.wall.layout();
 			},
 		    orderChanged: function() {
     	      	var socket = document.querySelector('#socket');
