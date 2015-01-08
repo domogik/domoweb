@@ -46,7 +46,7 @@
 			top:50%;
 			display: none;
 			/*background: #99312C;*/
-                        background-color: rgba(153, 49, 44, 0.85);
+            background-color: rgba(153, 49, 44, 0.85);
 			color: #ffffff;
 			z-index: 99;
 			width: 100%;
@@ -181,10 +181,7 @@
 				if (this.default_style!=null) {
 			      var ss = document.querySelector('style#style-instance-'+this.instanceid);
 			      if (!ss) { /* Style does not exist yet */
-					ss = document.createElement('style');
-					ss.id = "style-instance-"+this.instanceid;
-					ss.type = "text/css";
-					document.head.appendChild(ss);
+			      	ss = createStyle(this.instanceid, "#instance-"+this.instanceid+" {}");			      	      
 			      }
 			      var widgetStyle = ss.sheet.cssRules[0];
 			      widgetStyle.style.color=this.options['WidgetTextColor'];
