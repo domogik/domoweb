@@ -1,9 +1,3 @@
-[submodule "components/platform"]
-	path = components/platform
-	url = https://github.com/Polymer/platform.git
-[submodule "components/polymer"]
-	path = components/polymer
-	url = https://github.com/Polymer/polymer.git
 [submodule "static/libraries/packery"]
 	path = static/libraries/packery
 	url = https://github.com/metafizzy/packery.git
@@ -28,9 +22,33 @@
 [submodule "static/libraries/notifit"]
 	path = static/libraries/notifit
 	url = https://github.com/naoxink/notifIt.git
-[submodule "components/core-shared-lib"]
-	path = components/core-shared-lib
-	url = https://github.com/Polymer/core-shared-lib.git
 [submodule "static/libraries/isotope"]
 	path = static/libraries/isotope
 	url = https://github.com/metafizzy/isotope.git
+[submodule "static/libraries/polymer"]
+	path = static/libraries/polymer
+	url = https://github.com/Polymer/polymer.git
+[submodule "static/libraries/core-shared-lib"]
+	path = static/libraries/core-shared-lib
+	url = https://github.com/Polymer/core-shared-lib.git
+[submodule "static/libraries/webcomponentsjs"]
+	path = static/libraries/webcomponentsjs
+	url = https://github.com/webcomponents/webcomponentsjs.git
+[submodule "static/libraries/polymer-gestures"]
+	path = static/libraries/polymer-gestures
+	url = https://github.com/Polymer/polymer-gestures.git
+[submodule "static/libraries/polymer-expressions"]
+	path = static/libraries/polymer-expressions
+	url = https://github.com/Polymer/polymer-expressions.git
+[submodule "static/libraries/URL"]
+	path = static/libraries/URL
+	url = https://github.com/Polymer/URL.git
+[submodule "static/libraries/NodeBind"]
+	path = static/libraries/NodeBind
+	url = https://github.com/Polymer/NodeBind.git
+[submodule "static/libraries/TemplateBinding"]
+	path = static/libraries/TemplateBinding
+	url = https://github.com/Polymer/TemplateBinding.git
+[submodule "static/libraries/observe-js"]
+	path = static/libraries/observe-js
+	url = https://github.com/Polymer/observe-js.git
