@@ -83,14 +83,17 @@
 				}
 			},
 			childrenUpdated: function(observer, mutations) {
+				var self = this;
 			  	mutations.forEach(function(record) {
 			  		for (var i = 0; i < record.addedNodes.length; i++) {
-			  			this.appendInstance(record.addedNodes[i]);
+			  			self.appendInstance(record.addedNodes[i]);
 			  		}
 			  		for (var i = 0; i < record.removedNodes.length; i++) {
-			  			this.removeInstance(record.removedNodes[i]);
+			  			self.removeInstance(record.removedNodes[i]);
 			  		}
-			  	}.bind(this));
+			  	}.bind(self));
+		  	  	// Relauch monitoring.
+			  	this.onMutation(this, this.childrenUpdated);
 			}
 		});
 	</script>
