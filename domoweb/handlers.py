@@ -219,12 +219,14 @@ class WSHandler(websocket.WebSocketHandler):
 
     def WSSensorGetHistory(self, data):
         import requests
-        response = requests.get('%s/sensorhistory/id/%d/from/%d/to/%d/interval/%s/selector/avg' % (options.rest_url, data['id'],data['from'],data['to'],data['interval']))
+        url = '%s/sensorhistory/id/%d/from/%d/to/%d/interval/%s/selector/avg' % (options.rest_url, data['id'],data['from'],data['to'],data['interval'])
+        logger.info("REST Call : %s" % url)
+        response = requests.get(url)
         try:
             history = response.json()['values']
         except ValueError:
             history = []
-        json = {'id':data['id'], 'history':history}
+        json = {'caller':data['caller'], 'id':data['id'], 'history':history}
         return ['sensor-history', json];
 
     def WSSensorGetLast(self, data):
@@ -234,7 +236,7 @@ class WSHandler(websocket.WebSocketHandler):
             history = response.json()
         except ValueError:
             history = []
-        json = {'id':data['id'], 'history':history}
+        json = {'caller':data['caller'], 'id':data['id'], 'history':history}
         return ['sensor-history', json];
 
     def sendMessage(self, content):

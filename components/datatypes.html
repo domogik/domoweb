@@ -7,7 +7,7 @@
 	<script>
 		Polymer("dmw-datatypes", {
 			ready:function(){
-		    	this.$.socket.register('datatype-list', this.datatypesReceived.bind(this), null, null);
+		    	this.$.socket.register('datatype-list', this.datatypesReceived.bind(this), null);
 		    	this.$.socket.send("datatype-getall");					
 			},
 			datatypesReceived: function(topic, json) {

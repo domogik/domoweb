@@ -10,7 +10,7 @@
 				this._name = [];
 				this._description = [];
 				this._params = [];
-		        this.$.socket.register('section-details', this.messageReceived.bind(this));
+		        this.$.socket.register('section-details', this.messageReceived.bind(this), null);
 			},
 			sectionidChanged: function(oldValue, newValue) {
 				this.$.socket.send('section-get', {'id':this.sectionid});

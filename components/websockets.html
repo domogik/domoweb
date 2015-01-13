@@ -27,9 +27,18 @@
 			for ( var i=0; i < this.listeners.length; i++ ) {
 				listener = this.listeners[i];
 				if (listener[3] != null) {
-					if (json[0] == listener[1] 
-						&& json[1][listener[3]] == listener[4]) {
-						listener[2](json[0], json[1]);
+					if (json[0] == listener[1]) {
+						match = true;
+						for (var k in listener[3]){
+							if (listener[3].hasOwnProperty(k)) {
+								if (json[1][k] != listener[3][k]) {
+									match = false;
+								}
+							}
+						}
+						if (match) {
+							listener[2](json[0], json[1]);
+						}
 					}
 				} else {
 					if (json[0] == listener[1]) {
@@ -44,8 +53,8 @@
     	    this._socket.close();
 		};
 
-		WebsocketHandler.prototype.subscribe = function(comp, name, func, filter_key, filter_id) {
-			this.listeners.push([comp, name, func, filter_key, filter_id]);
+		WebsocketHandler.prototype.subscribe = function(comp, name, func, filters) {
+			this.listeners.push([comp, name, func, filters]);
 		};
 
 		WebsocketHandler.prototype.send = function(json) {
@@ -105,8 +114,8 @@
 			send: function(id, json) {
 				_handler.send([id, json]);
 			},
-			register: function(name, func, filter_key, filter_id) {
-				_handler.subscribe(this, name, func, filter_key, filter_id);
+			register: function(name, func, filters) {
+				_handler.subscribe(this, name, func, filters);
 			},
 			onOpen: function() {
 				this.fire('websocket-connected');

@@ -170,7 +170,7 @@
 				self.$.ajax.go();
 			},
 			instanceidChanged: function(oldValue, newValue) {
-		    	this.$.socket.register('widgetinstance-options', this.optionsReceived.bind(this), 'instance_id', newValue);
+		    	this.$.socket.register('widgetinstance-options', this.optionsReceived.bind(this), {'instance_id': newValue});
 		    	this.$.socket.send("widgetinstance-getoptions", {'instance_id': newValue});
 			},
 			datatypesReceived: function() {
@@ -194,11 +194,11 @@
 				if (!this.loaded && this.datatypes) this.initialStepReady();
 			},
 			initialStepReady: function() {
-		    	this.$.socket.register('widgetinstance-sensors', this.sensorsReceived.bind(this), 'instance_id', this.instanceid);
+		    	this.$.socket.register('widgetinstance-sensors', this.sensorsReceived.bind(this), {'instance_id': this.instanceid});
 		    	this.$.socket.send("widgetinstance-getsensors", {'instance_id': this.instanceid});
-		    	this.$.socket.register('widgetinstance-commands', this.commandsReceived.bind(this), 'instance_id', this.instanceid);
+		    	this.$.socket.register('widgetinstance-commands', this.commandsReceived.bind(this), {'instance_id': this.instanceid});
 		    	this.$.socket.send("widgetinstance-getcommands", {'instance_id': this.instanceid});
-		    	this.$.socket.register('widgetinstance-devices', this.devicesReceived.bind(this), 'instance_id', this.instanceid);
+		    	this.$.socket.register('widgetinstance-devices', this.devicesReceived.bind(this), {'instance_id': this.instanceid});
 		    	this.$.socket.send("widgetinstance-getdevices", {'instance_id': this.instanceid});
 			},
 			sensorsReceived: function(topic, json) {
