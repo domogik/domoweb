@@ -36,7 +36,6 @@ CUSTOM_PATH=""
 NAME=Domoweb.py
 DAEMON=/usr/bin/python
 LOGFILE=/var/log/domoweb/console.log
-PIDFILE=/var/run/domoweb/domoweb.pid
 
 if [ $UID != 0 ];then
     echo "Must be run with root privileges";
@@ -45,9 +44,6 @@ fi
 
 function start_domoweb {
     echo -n " * Starting DomoWeb..."
-    [ ! -d /var/run/domoweb ] && \
-        /bin/mkdir /var/run/domoweb
-    /bin/chown -Rf ${DOMOWEB_USER}:root /var/run/domoweb
     [ ! -d /var/log/domoweb ] && \
         /bin/mkdir /var/log/domoweb
     /bin/chown -Rf ${DOMOWEB_USER}:root /var/log/domoweb
@@ -62,43 +58,36 @@ function start_domoweb {
 
 function stop_domoweb {
     echo -n " * Stopping DomoWeb..."
-    kill $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
-    sleep 1
-    [ -f $PIDFILE ] && kill -9 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
-    [ -f $PIDFILE ] && rm $PIDFILE
-    echo " Done."
-}
-
-function killall_domoweb {
-    stop_domoweb
-    echo -n " * Killing all DomoWeb..."
-    for pid in `ps ax | grep "$NAME" | grep -v grep | awk '{print $1}'`; do
+    PIDS=`ps ax | grep "$NAME" | grep -v grep | awk '{print $1}'`
+    for pid in $PIDS; do
         kill -9 $pid 2>/dev/null 1>&2
     done
     echo " Done."
 }
 
 function status_domoweb {
-    [ ! -f $PIDFILE ] && \
-        echo " * DomoWeb is not running (can't find pid file)" &&
+    PIDS=`ps ax | grep "$NAME" | grep -v grep | awk '{print $1}'`
+    for pid in $PIDS; do
+        echo " * DomoWeb is running under pid $pid"
         exit 0
-    RUNNING=$(cat $PIDFILE)
-    echo " * DomoWeb is running under pid $RUNNING"
+    done
+    echo " * DomoWeb is not running"
 }
 
 case "$1" in
     start)
-        [ -f $PIDFILE ] && echo "Domoweb seems to be running. Please stop it." && exit 0
-        start_domoweb
+        PIDS=`ps ax | grep "$NAME" | grep -v grep | awk '{print $1}'`
+        if [ -z $PIDS ]; then
+            start_domoweb
+        else
+            echo "Domoweb seems to be running ($PIDS). Please stop it." && exit 0
+        fi
     ;;
     stop)
         stop_domoweb
     ;;
     status)
         status_domoweb
-    ;;
-    killall)
-        killall_domoweb
     ;;
     restart)
         stop_domoweb
