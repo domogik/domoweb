@@ -1,7 +1,11 @@
 #!/usr/bin/env python
-from tornado import web, websocket
+from tornado import web, websocket, gen
 from tornado.options import options
 from tornado.web import RequestHandler, StaticFileHandler
+from tornado.gen import Return
+from tornado.escape import json_decode
+from tornado.httpclient import AsyncHTTPClient
+
 from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, SectionParam, Sensor
 from domoweb.forms import WidgetInstanceForms, WidgetStyleForm
 
@@ -104,27 +108,31 @@ class WSHandler(websocket.WebSocketHandler):
     def on_close(self):
         socket_connections.remove(self)
 
+    @gen.coroutine
     def on_message(self, message):
         logger.info("WS: Received message %s" % message)
         jsonmessage = json.loads(message)
 
-        data = {
-            'section-get' : self.WSSectionGet,
-            'section-getall' : self.WSSectionGetall,
-            'widget-getall' : self.WSWidgetsGetall,
-            'widgetinstance-getsection' : self.WSWidgetInstanceGetsection,
-            'widgetinstance-getoptions' : self.WSWidgetInstanceGetoptions,
-            'widgetinstance-getsensors' : self.WSWidgetInstanceGetsensors,
-            'widgetinstance-getcommands' : self.WSWidgetInstanceGetcommands,
-            'widgetinstance-getdevices' : self.WSWidgetInstanceGetdevices,
-            'datatype-getall' : self.WSDatatypesGetall,
-            'command-send' : self.WSCommandSend,
-            'sensor-gethistory': self.WSSensorGetHistory,
-            'sensor-getlast': self.WSSensorGetLast,
-            'widgetinstance-add' : self.WSWidgetInstanceAdd,
-            'widgetinstance-order' : self.WSWidgetInstanceOrder,
-            'widgetinstance-remove' : self.WSWidgetInstanceRemove,
-        }[jsonmessage[0]](jsonmessage[1])
+        if (jsonmessage[0] == 'sensor-gethistory'): 
+            data = yield self.WSSensorGetHistory(jsonmessage[1])
+        elif(jsonmessage[0] == 'sensor-getlast'): 
+            data = yield self.WSSensorGetLast(jsonmessage[1])
+        else:
+            data = {
+                'section-get' : self.WSSectionGet,
+                'section-getall' : self.WSSectionGetall,
+                'widget-getall' : self.WSWidgetsGetall,
+                'widgetinstance-getsection' : self.WSWidgetInstanceGetsection,
+                'widgetinstance-getoptions' : self.WSWidgetInstanceGetoptions,
+                'widgetinstance-getsensors' : self.WSWidgetInstanceGetsensors,
+                'widgetinstance-getcommands' : self.WSWidgetInstanceGetcommands,
+                'widgetinstance-getdevices' : self.WSWidgetInstanceGetdevices,
+                'datatype-getall' : self.WSDatatypesGetall,
+                'command-send' : self.WSCommandSend,
+                'widgetinstance-add' : self.WSWidgetInstanceAdd,
+                'widgetinstance-order' : self.WSWidgetInstanceOrder,
+                'widgetinstance-remove' : self.WSWidgetInstanceRemove,
+            }[jsonmessage[0]](jsonmessage[1])
         if (data):
             # If the modif is global we send the result to all listeners
             if (jsonmessage[0] in ['widgetinstance-add', 'widgetinstance-order', 'widgetinstance-remove']):
@@ -227,27 +235,33 @@ class WSHandler(websocket.WebSocketHandler):
         msg.add_data('cmdparams', data['parameters'])
         return cli.request('xplgw', msg.get(), timeout=10).get()
 
+    @gen.coroutine
     def WSSensorGetHistory(self, data):
-        import requests
         url = '%s/sensorhistory/id/%d/from/%d/to/%d/interval/%s/selector/avg' % (options.rest_url, data['id'],data['from'],data['to'],data['interval'])
         logger.info("REST Call : %s" % url)
-        response = requests.get(url)
+        http = AsyncHTTPClient()
+        response = yield http.fetch(url)
+        j = json_decode(response.body)
         try:
-            history = response.json()['values']
+            history = j['values']
         except ValueError:
             history = []
         json = {'caller':data['caller'], 'id':data['id'], 'history':history}
-        return ['sensor-history', json];
+        raise Return(['sensor-history', json])
 
+    @gen.coroutine
     def WSSensorGetLast(self, data):
-        import requests
-        response = requests.get('%s/sensorhistory/id/%d/last/%d' % (options.rest_url, data['id'],data['count']))
+        url = '%s/sensorhistory/id/%d/last/%d' % (options.rest_url, data['id'],data['count'])
+        logger.info("REST Call : %s" % url)
+        http = AsyncHTTPClient()
+        response = yield http.fetch(url)
+        j = json_decode(response.body)
         try:
-            history = response.json()
+            history = j['values']
         except ValueError:
             history = []
         json = {'caller':data['caller'], 'id':data['id'], 'history':history}
-        return ['sensor-history', json];
+        raise Return(['sensor-history', json])
 
     def sendMessage(self, content):
         data=json.dumps(content)
