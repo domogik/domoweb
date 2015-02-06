@@ -54,34 +54,15 @@
   <link rel="import" href="/components/gridLayout.html">
   <link rel="import" href="/components/navigation.html">
   <link rel="import" href="/components/widgetsSelector.html">
-  {% for widget in widgets %}
-  <link id="{{widget.id}}" rel="import" href="/widget/{{widget.set_id}}/{{widget.set_ref}}.html">
-  {% end %}
-  {% for instance in instances %}
-    {% if instance.widget.default_style %}
-    <style id="style-instance-{{instance.id}}" type="text/css">
-      #instance-{{instance.id}} {
-      {% if 'WidgetBackgroundColor' in instance.optionsdict %}background-color: {{ instance.optionsdict['WidgetBackgroundColor'] }};{% end %}
-      {% if 'WidgetBorderColor' in instance.optionsdict %}border: 1px solid {{ instance.optionsdict['WidgetBorderColor'] }};{% end %}
-      {% if 'WidgetBorderRadius' in instance.optionsdict %}border-radius: {{ instance.optionsdict['WidgetBorderRadius'] }};{% end %}
-      {% if 'WidgetTextColor' in instance.optionsdict %}color: {{ instance.optionsdict['WidgetTextColor'] }};{% end %}
-      {% if 'WidgetBoxShadow' in instance.optionsdict %}box-shadow: {{ instance.optionsdict['WidgetBoxShadow'] }};{% end %}
-      }
-    </style>
-    {% end %}
-  {% end %}
+  <link rel="import" href="/components/sectionslist.html">
 </head>
 <body unresolved>
   <dmw-datatypes id="datatypes"></dmw-datatypes>
   <web-socket id="socket"></web-socket>
   <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
-  <dmw-section class='mainsection' sectionid="{{ section.id }}"></dmw-section>
+  <dmw-section id='currentsection' sectionid="{{ section.id }}"></dmw-section>
 	<main role="main">
-    <dmw-grid-layout sectionid="{{section.id}}">
-    {% for instance in instances %}
-        <dmw-{{instance.widget.set_id}}-{{instance.widget.set_ref}} id="instance-{{instance.id}}" class="widget loading widgetw{{instance.widget.width}} widgeth{{instance.widget.height}}{% if instance.widget.default_style %} style-general{% end %}" tabindex=0 instanceid={{instance.id}}{% if instance.widget.default_style %} default_style=true{% end %}></dmw-{{instance.widget.set_id}}-{{instance.widget.set_ref}}>
-    {% end %}
-    </dmw-grid-layout>
+    <dmw-grid-layout sectionid="{{section.id}}"></dmw-grid-layout>
     <dmw-navigation>
      <ul>
        <li id="menuConfigure" data-i18n="menu.configuration"></li>
@@ -91,9 +72,15 @@
            <li id="menuAddWidget" data-i18n="menu.addwidget"></li>
          </ul>
        </li>
+       <li id="menuSections" data-i18n="menu.sections">
+          <ul>
+           <li id="menuFinishSections" data-i18n="menu.finishSections" data-close="true"></li>
+           <li id="menuAddSection" data-i18n="menu.addsection"></li>
+          </ul>
+       </li>
      </ul>
     </dmw-navigation>
-    <div id="modal-overlay"></div>
+    <div id="modal-overlay" class="overlay"></div>
 	</main>
   <script src="/libraries/bootstrap-3.2.0/js/bootstrap.min.js"></script>
   <script src="/libraries/d3/d3.min.js"></script>
@@ -101,22 +88,22 @@
   <script type="text/javascript" src="/libraries/notifit/notifIt%21-1.1/js/notifIt.js"></script>
   <script src="/js/main.js"></script>
   <script type="text/javascript">
-    var menuConfigure = document.querySelector('#menuConfigure'),
-      menuWidgets = document.querySelector('#menuWidgets'),
-      panelConfigure = document.querySelector('#panelConfigure'),
+    var menuConfigure = document.getElementById('menuConfigure'),
+      menuWidgets = document.getElementById('menuWidgets'),
+      panelConfigure = document.getElementById('panelConfigure'),
       main = document.querySelector('main'),
-      section = document.querySelector('.mainsection'),
-      socket = document.querySelector('#socket'),
+      section = document.getElementById('currentsection');
+      socket = document.getElementById('socket'),
       layout = document.querySelector('dmw-grid-layout'),
-      modalOverlay = document.querySelector('#modal-overlay'),
-      ajax = document.querySelector('#ajax'),
+      modalOverlay = document.getElementById('modal-overlay'),
+      ajax = document.getElementById('ajax'),
       navigation = document.querySelector('dmw-navigation');
 
     window.addEventListener('polymer-ready', function(){
       socket.addEventListener('websocket-connected', websocketConnected);
       socket.addEventListener('websocket-closed', websocketClosed);
-      socket.register('widgetinstance-added', instanceAdded, 'section_id', sectionid);
-      socket.register('widgetinstance-removed', instanceRemoved, 'section_id', sectionid);        
+      socket.register('widgetinstance-added', instanceAdded);
+      socket.register('widgetinstance-removed', instanceRemoved);        
       navigation.addEventListener('menuitem-selected', menuitemSelected, false);
       section.addEventListener('section-updated', sectionUpdated);
     });

@@ -35,10 +35,11 @@
 				transform: scale(1);
 			}
 
-			.cnoverlay {
+			.overlay {
 				width: 100%;
 				height: 100%;
-				background-color: rgba(0,0,0,0.6);
+				background-color: rgba(0,0,0,0.9);
+				color: #FFFFFF;
 				position: fixed;
 				top: 0;
 				left: 0;
@@ -52,7 +53,7 @@
 				z-index: 2;
 			}
 
-			.cnoverlay.on-overlay {
+			.overlay.on-overlay {
 				visibility: visible;
 				opacity: 1;
 			}
@@ -218,7 +219,10 @@
 	        </template>
 	        </ul>
 		</nav>
-	    <div id="cnoverlay" class="cnoverlay"></div>
+	    <div id="emptyoverlay" class="overlay"></div>
+	    <div id="contentoverlay" class="overlay">
+		    <dmw-sectionslist></dmw-sectionslist>
+	    </div>
 	</template>
   	<script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
 	<script>
@@ -228,6 +232,7 @@
 				this.items = [];
 				this.displayed = [];
 				this.open = false;
+				this.main = true;
 				this.$.cnbutton.addEventListener('click', this.handler.bind(this), false);
 				this.$.cnwrapper.addEventListener('click', this.cnhandle.bind(this), false);
 				document.addEventListener('click', this.closeNav.bind(this));
@@ -237,13 +242,21 @@
 			openNav: function(){
 				this.open = true;
 			    this.$.cnbutton.innerHTML = "<span class='sr-only'>Close Menu</span>";
-			    this.$.cnoverlay.classList.add('on-overlay');
+			    if (this.main) {
+			    	this.$.contentoverlay.classList.add('on-overlay');
+				} else {
+			    	this.$.emptyoverlay.classList.add('on-overlay');
+				}
 			    this.$.cnwrapper.classList.add('opened-nav');
 			},
 			closeNav: function(){
 				this.open = false;
 				this.$.cnbutton.innerHTML = "<span class='sr-only'>Open Menu</span>";
-			    this.$.cnoverlay.classList.remove('on-overlay');
+			    if (this.main) {
+			    	this.$.contentoverlay.classList.remove('on-overlay');
+				} else {
+			    	this.$.emptyoverlay.classList.remove('on-overlay');
+				}
 			    this.$.cnwrapper.classList.remove('opened-nav');
 			},
 			handler: function(e){
@@ -263,11 +276,15 @@
 			  	var item = e.target.templateInstance.model.i;
 			  	if (item.childs) {
 		    		this.displayItems(item);
+					this.main = false;
+			    	this.$.contentoverlay.classList.remove('on-overlay');
+			    	this.$.emptyoverlay.classList.add('on-overlay');
 			  	} else {
 					this.closeNav();
 			  	}
 			  	if (item.close) {
 		    		this.displayItems(null);
+					this.main = true;
 			  	}
 			  	if (item.id) {
 				  	this.fire('menuitem-selected', {id: item.id});

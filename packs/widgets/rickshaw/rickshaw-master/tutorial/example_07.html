@@ -43,7 +43,7 @@
 var palette = new Rickshaw.Color.Palette();
 
 var graph = new Rickshaw.Graph( {
-	element: document.querySelector("#chart"),
+	element: document.getElementById("chart"),
 	width: 540,
 	height: 240,
 	renderer: 'line',
@@ -81,7 +81,7 @@ var y_axis = new Rickshaw.Graph.Axis.Y( {
 } );
 
 var legend = new Rickshaw.Graph.Legend( {
-	element: document.querySelector('#legend'),
+	element: document.getElementById('legend'),
 	graph: graph
 } );
 

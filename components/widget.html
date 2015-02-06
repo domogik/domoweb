@@ -84,7 +84,7 @@
 			},
 			editWidget: function(e) {
 				var self = this;
-				var modalOverlay = document.querySelector('#modal-overlay');
+				var modalOverlay = document.getElementById('modal-overlay');
 				this.$.ajax.setAttribute('handleAs', 'text');
 				this.$.ajax.addEventListener("polymer-response",
         			function(e) {

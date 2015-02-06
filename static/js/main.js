@@ -1,5 +1,11 @@
 function sectionUpdated(e) {
-	var ss = document.querySelector('#sectionstyle');
+	var details = e.detail;
+	/* Remove current widgets */
+	while (layout.firstChild) {
+  		layout.removeChild(layout.firstChild);
+	}
+	/* Update page style */
+	var ss = document.getElementById('sectionstyle');
 	var bodyStyle = ss.sheet.cssRules[0];
 	if ('SectionBackground' in section.params) {
 		bodyStyle.style.backgroundImage="url('/backgrounds/" + section.params['SectionBackground'] + "')";
@@ -12,35 +18,92 @@ function sectionUpdated(e) {
 	widgetStyle.style.borderColor=section.params['WidgetBorderColor'];
 	widgetStyle.style.borderRadius=section.params['WidgetBorderRadius'];
 	widgetStyle.style.boxShadow=section.params['WidgetBoxShadow'];
+
+	for (var i = 0; i < details.widgets.length; i++) {
+		widget = details.widgets[i];
+		insertWidgetLink(widget.id, widget.set_id, widget.set_ref);
+	}
+	for (var i = 0; i < details.instances.length; i++) {
+		instance = details.instances[i];
+		insertWidgetInstance(instance.id, instance.widget);
+		if (instance.widget.default_style == 'true') {
+			insertWidgetStyle(instance);
+		}
+	}
 }
+
 function instanceAdded(topic, json) {
-	var link = document.head.querySelector("link#" + json.widget_id);
+	if (section.sectionid == json.section_id) {
+		insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
+		insertWidgetInstance(json.id, json.widget);
+	}
+}
+
+function instanceRemoved(topic, json) {
+	if (section.sectionid == json.section_id) {
+		var widget = document.getElementById('instance-' + json.id);
+		widget.remove();
+	}
+}
+
+/*
+ * Insert Widget <link> import into <head>
+ */
+function insertWidgetLink(widget_id, set_id, set_ref) {
+	var link = document.head.querySelector("link#" + widget_id);
 	if (!link) { // If widget pack not already loaded
 		link = document.createElement('link');
+		link.setAttribute('id', widget_id);
 		link.setAttribute('rel', "import");
-		link.setAttribute('href', "/widget/" + json.widget.set_id + '/' + json.widget.set_ref + ".html")
+		link.setAttribute('href', "/widget/" + set_id + '/' + set_ref + ".html")
 		document.head.appendChild(link);
 	}
+}
 
-	var tag = 'dmw-' + json.widget.set_id + '-' + json.widget.set_ref;
-	var widget = document.createElement(tag);
-	widget.id = "instance-" + json.id
-	widget.classList.add("widget", "loading", "widgetw" + json.widget.width, "widgeth" + json.widget.height);
-	if (json.widget.default_style) { // If we load the default style
-		widget.classList.add("style-general");
-		widget.setAttribute('default_style', true);
+/*
+ * Insert Widget instance node into layout
+ */
+function insertWidgetInstance(id, widget) {
+	var tag = 'dmw-' + widget.set_id + '-' + widget.set_ref;
+	var instance = document.createElement(tag);
+	instance.id = "instance-" + id
+	instance.classList.add("widget", "loading", "widgetw" + widget.width, "widgeth" + widget.height);
+	if (widget.default_style) { // If we load the default style
+		instance.classList.add("style-general");
+		instance.setAttribute('default_style', true);
 	}
-	widget.setAttribute('instanceid', json.id);
-	widget.setAttribute('tabindex', 0);
+	instance.setAttribute('instanceid', id);
+	instance.setAttribute('tabindex', 0);
 	if (layout.getAttribute('edit') != null) {
-		widget.setAttribute('edit', '');
+		instance.setAttribute('edit', '');
 	}
-	layout.appendChild(widget);
+	layout.appendChild(instance);
 }
-function instanceRemoved(topic, json) {
-	var widget = document.querySelector('#instance-' + json.id);
-	widget.remove();
+
+function insertWidgetStyle(instance) {
+	var style = document.createElement('style');
+	style.setAttribute('id', 'style-instance-' + instance.id);
+	style.setAttribute('type', 'text/css');
+	var css = "#instance-" + instance.id + " {";
+	if ('WidgetBackgroundColor' in instance.options)
+		css += "background-color: " + instance.options['WidgetBackgroundColor'] + ";"
+	if ('WidgetBorderColor' in instance.options)
+		css += "border: 1px solid " + instance.options['WidgetBorderColor'] + ";"
+    if ('WidgetBorderRadius' in instance.options)
+    	css += "border-radius: " + instance.options['WidgetBorderRadius'] + ";"
+    if ('WidgetTextColor' in instance.options)
+    	css += "color: " + instance.options['WidgetTextColor'] + ";"
+    if ('WidgetBoxShadow' in instance.options)
+    	css += "box-shadow: " + instance.options['WidgetBoxShadow'] + ";"
+	css += "}";
+	if (style.styleSheet){
+	  style.styleSheet.cssText = css;
+	} else {
+	  style.appendChild(document.createTextNode(css));
+	}
+	document.head.appendChild(style);
 }
+
 
 function menuitemSelected(e) {
 	switch(e.detail.id) {
@@ -55,6 +118,9 @@ function menuitemSelected(e) {
 	        break;
 	    case 'menuAddWidget':
 		    addWidgetHandler();
+	        break;
+	    case 'menuAddSection':
+		    addSectionHandler();
 	        break;
 	} 
 }
@@ -91,14 +157,14 @@ function configureHandler() {
 		function(e) {
 			var response = e.detail.response;
 			if (response == "{success:true}") {
-					modalOverlay.classList.remove('on');
+				modalOverlay.classList.remove('on');
 				modalOverlay.innerHTML = '';
 			} else {
 				modalOverlay.innerHTML = response;
 				var saveConfig = modalOverlay.querySelector('#saveConfig');
 				var cancelConfig = modalOverlay.querySelector('#cancelConfig');
 				var formConfig = modalOverlay.querySelector('#formConfig');
-			    var section = document.querySelector('.mainsection');
+			    var section = document.getElementById('currentsection');
 
 				saveConfig.addEventListener("click",
 					function(e) {
@@ -163,13 +229,53 @@ function widgetsFinishHandler() {
 
 function addWidgetHandler() {
 	selector = document.createElement('dmw-widgets-selector');
-	selector.setAttribute('section', 1);
 	modalOverlay.appendChild(selector);
 	modalOverlay.classList.add('on');
 }
 
+function addSectionHandler() {
+	ajax.setAttribute('handleAs', 'text');
+	ajax.addEventListener("polymer-response",
+		function(e) {
+			var response = e.detail.response;
+			if (response == "{success:true}") {
+				modalOverlay.classList.remove('on');
+				modalOverlay.innerHTML = '';
+			} else {
+				modalOverlay.innerHTML = response;
+				var saveConfig = modalOverlay.querySelector('#saveConfig');
+				var cancelConfig = modalOverlay.querySelector('#cancelConfig');
+				var form = modalOverlay.querySelector('#formAddSection');
+			    var section = document.getElementById('currentsection');
+
+				saveConfig.addEventListener("click",
+					function(e) {
+						ajax.setAttribute('body', serialize(form));
+						ajax.setAttribute('method', 'POST');
+						ajax.setAttribute('params', '{"action":"addsection", "id":"' + section.sectionid + '"}');
+						ajax.go();
+						e.preventDefault();
+						e.stopPropagation();
+						return false;
+					});
+				cancelConfig.addEventListener("click",
+					function(e) {
+						modalOverlay.classList.remove('on');
+						modalOverlay.innerHTML = '';
+						e.preventDefault();
+						e.stopPropagation();
+						return false;
+					});
+				modalOverlay.classList.add('on');
+			}
+		});
+	ajax.setAttribute('method', 'GET');
+	ajax.setAttribute('params', '{"action":"addsection", "id":"' + section.getAttribute('sectionid') + '"}');
+	ajax.go();
+}
+
 function onWidgetStyleChange(e) {
-	var widgetpreview = document.querySelector('#modal-overlay #widgetpreview');
+	var widgetpreview = document.getElementById('modal-overlay #widgetpreview');
 	switch(e.target.id) {
 	    case 'params-WidgetTextColor':
 	    	widgetpreview.style.color = e.target.value;

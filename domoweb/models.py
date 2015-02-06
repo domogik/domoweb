@@ -201,21 +201,29 @@ class Section(Base):
 	params = relationship("SectionParam")
 
 	@classmethod
-	def add(cls, name, parent_id, description=None, icon=None):
+	def add(cls, parent_id, name, description=None):
 		# create a Session
 		session = Session()
-		s = cls(name=name, description=description, icon=icon)
+		s = cls(name=name, description=description)
 		parent = session.query(cls).get(parent_id)
 		s.left = int(parent.left) + 1
 		s.right = int(parent.left) + 2
 		session.query(cls).filter('right >:sleft').\
-			params(sleft=parent.left).update({'right':cls.right + 2}, synchronize_session='fetch')
+			params({'sleft':parent.left}).update({'right':s.right + 2}, synchronize_session='fetch')
 		session.query(cls).filter('left >:sleft').\
-			params(sleft=parent.left).update({'left':cls.left + 2}, synchronize_session='fetch')
+			params({'sleft':parent.left}).update({'left':s.left + 2}, synchronize_session='fetch')
 		session.add(s)
 		session.commit()
 		return s
 
+	@classmethod
+	def getAll(cls):
+		# create a Session
+		session = Session()
+		s = session.query(cls).all()
+		session.close()
+		return s
+		
 	@classmethod
 	def get(cls, id):
 		# create a Session

@@ -13,7 +13,9 @@
 		        this.$.socket.register('section-details', this.messageReceived.bind(this), null);
 			},
 			sectionidChanged: function(oldValue, newValue) {
-				this.$.socket.send('section-get', {'id':this.sectionid});
+				if (newValue) {
+					this.$.socket.send('section-get', {'id':newValue});
+				}
 			},
 			get name() {
 				return this._name[this.sectionid];
@@ -28,7 +30,7 @@
 				this._name[this.sectionid] = json['name'];
 				this._description[this.sectionid] = json['description'];
 				this._params[this.sectionid] = json['params'];
-	        	this.fire('section-updated');
+	        	this.fire('section-updated', json);
 	    	},
 	    });
 	</script>

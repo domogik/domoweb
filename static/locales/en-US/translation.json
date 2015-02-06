@@ -4,7 +4,10 @@
 		"configuration": "Config",
 		"widgets": "Widgets",
 		"finishWidgets": "Finish",
-		"addwidget": "Add Widget"
+		"addwidget": "Add",
+		"sections": "Sections",
+		"addsection": "Add",
+		"finishSections": "Finish"
 	},
 	"unit": "__value__",
 	"unit_DT_Byte": "b",

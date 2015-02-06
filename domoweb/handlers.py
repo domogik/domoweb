@@ -24,21 +24,12 @@ class MainHandler(RequestHandler):
         if not id:
             id = 1
         section = Section.get(id)
-        widgets = Widget.getSection(section_id=id)
         packs = Widget.getSectionPacks(section_id=id)
-        instances = WidgetInstance.getSection(section_id=id)
-        for j, i in enumerate(instances):
-            try:
-                i.optionsdict = WidgetInstance.getOptionsDict(id=i.id)
-            except:
-                logger.error("Error while getting options for a widget instance. Maybe you delete a widget folder but it is still defined in database? Error: {0}".format(traceback.format_exc()))
         params = Section.getParamsDict(id)
         self.render('base.html',
             section = section,
             params = params,
-            widgets = widgets,
             packs = packs,
-            instances = instances,
             )
 
 class TestHandler(RequestHandler):
@@ -52,7 +43,6 @@ class ConfigurationHandler(RequestHandler):
     def get(self):
         action = self.get_argument('action', None)
         id = self.get_argument('id', None)
-        # Widget section box
         if action=='widget':
             instance = WidgetInstance.get(id);
             forms = WidgetInstanceForms(instance=instance)
@@ -65,6 +55,8 @@ class ConfigurationHandler(RequestHandler):
             widgetForm = WidgetStyleForm(data=dataOptions, prefix='params')
             backgrounds = [f for f in os.listdir('/var/lib/domoweb/backgrounds') if any(f.lower().endswith(x) for x in ('.jpeg', '.jpg','.gif','.png'))]
             self.render('sectionConfiguration.html', section=section, params=params, backgrounds=backgrounds, widgetForm=widgetForm)
+        elif action=='addsection':
+            self.render('sectionAdd.html')
 
     def post(self):
         action = self.get_argument('action', None)
@@ -107,6 +99,11 @@ class ConfigurationHandler(RequestHandler):
             WSHandler.sendAllMessage(['section-details', json])
 
             self.write("{success:true}")
+        elif action=='addsection':
+            s = Section.add(id, self.get_argument('sectionName'), self.get_argument('sectionDescription'))
+            json = to_json(s)
+            WSHandler.sendAllMessage(['section-added', json])
+            self.write("{success:true}")
 
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
@@ -120,6 +117,7 @@ class WSHandler(websocket.WebSocketHandler):
 
         data = {
             'section-get' : self.WSSectionGet,
+            'section-getall' : self.WSSectionGetall,
             'widget-getall' : self.WSWidgetsGetall,
             'widgetinstance-getsection' : self.WSWidgetInstanceGetsection,
             'widgetinstance-getoptions' : self.WSWidgetInstanceGetoptions,
@@ -143,9 +141,28 @@ class WSHandler(websocket.WebSocketHandler):
 
     def WSSectionGet(self, data):
         section = Section.get(data['id'])
+        widgets = Widget.getSection(section_id=data['id'])
+        instances = WidgetInstance.getSection(section_id=data['id'])
         j = to_json(section)
         j['params'] = dict ((p.key, p.value) for p in SectionParam.getSection(data['id']))
+        j["widgets"] = to_json(widgets)
+        j["instances"] = to_json(instances)
+        for index, item in enumerate(instances):
+            if item.widget:
+                j['instances'][index]["widget"] = to_json(item.widget)
+            try:
+                optionsdict = WidgetInstance.getOptionsDict(id=item.id)
+                j['instances'][index]["options"] = optionsdict
+            except:
+                logger.error("Error while getting options for a widget instance. Maybe you delete a widget folder but it is still defined in database? Error: {0}".format(traceback.format_exc()))
+
         return ['section-details', j]
+
+    def WSSectionGetall(self, data):
+        sections = Section.getAll()
+        j = to_json(sections)
+        packs = Widget.getSectionPacks(section_id=id)
+        return ['section-list', j]
 
     def WSWidgetsGetall(self, data):
         widgets = Widget.getAll()
