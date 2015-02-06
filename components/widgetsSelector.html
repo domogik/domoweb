@@ -30,27 +30,25 @@
 			background: #F0F0F0;
 			color: #000000;
 			padding: 0.5em;
-			height: 8em;
+			min-height: 8em;
 			position: relative;
-			z-index: 1;
 		}
-		article .body .overlay {
-/*			position: absolute;*/
+		article .body .btnoverlay {
+			position: absolute;
 			top: 0;
 			left: 0;
 			width: 100%;
 			height: 100%;
 			background-color: rgba(0,0,0,0.6);
 			padding: 1em;
-/*			display: none;*/
-			z-index: 99;
+			display: none;
 		}
-		article .body .overlay button {
+		article .body .btnoverlay button {
 			margin: 0.5em auto 0.5em auto;
 			display: block;
 		}
-		article .body:hover .overlay,
-		article .body:focus .overlay {
+		article .body:hover .btnoverlay,
+		article .body:focus .btnoverlay {
 			display: block;
 		}
 		article img {
@@ -89,7 +87,7 @@
 			        		<h2>{{ w.name }}</h2>
 			        		<div class="body">
 			        			<img src='/widget/{{ w.set_id }}/{{ w.set_ref }}.png'/>
-				        		<div class="overlary"><button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}">Add</button><button class="add-widget btn btn-success" on-click="{{addWidgetClose}}" data-widget-id="{{ w.id }}">Add and Close</button></div>
+				        		<div class="btnoverlay"><button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}">Add</button><button class="add-widget btn btn-success" on-click="{{addWidgetClose}}" data-widget-id="{{ w.id }}">Add and Close</button></div>
 				        	</div>
 				        	<div class="footer">{{ w.set_name }}</div>
 			        	</article>
