@@ -32,13 +32,6 @@ class MainHandler(RequestHandler):
             packs = packs,
             )
 
-class TestHandler(RequestHandler):
-    def get(self, id):
-        instance = WidgetInstance.get(id);
-        self.render('test.html',
-            instance = instance,
-            )
-
 class ConfigurationHandler(RequestHandler):
     def get(self):
         action = self.get_argument('action', None)
@@ -317,7 +310,6 @@ class UploadHandler(RequestHandler):
         self.finish("{success:true}")
 
 class MultiStaticFileHandler(StaticFileHandler):
-
     def get(self, ns, lang, file):
         path = "%s/locales/%s/%s" % (ns, lang, file)
         return super(MultiStaticFileHandler, self).get(path)
