@@ -1,0 +1,19 @@
+#grid-layout {
+  width: 80%;
+  margin: 20px auto 0 auto !important;
+  display: block;
+}
+#grid-layout .widget {
+	width:  100px;
+	height: 100px;
+}
+#grid-layout .widget.widgetw2 { width: 220px; }
+#grid-layout .widget.widgeth2 { height: 220px; }
+#grid-layout .widget.widgetw3 { width: 340px; }
+#grid-layout .widget.widgeth3 { height: 340px; }
+#grid-layout .widget.widgetw4 { width: 460px; }
+#grid-layout .widget.widgeth4 { height: 460px; }
+#grid-layout .widget.widgetw5 { width: 580px; }
+#grid-layout .widget.widgeth5 { height: 580px; }
+#grid-layout .widget.widgetw6 { width: 700px; }
+#grid-layout .widget.widgeth6 { height: 700px; }

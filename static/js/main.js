@@ -1,23 +1,36 @@
+DMW.main.menuConfigure = document.getElementById('menuConfigure'),
+DMW.main.menuWidgets = document.getElementById('menuWidgets'),
+DMW.main.panelConfigure = document.getElementById('panelConfigure'),
+DMW.main.main = document.querySelector('main'),
+DMW.main.section = document.getElementById('currentsection');
+DMW.main.socket = document.getElementById('socket'),
+DMW.main.layout = document.getElementById('grid-layout'),
+DMW.main.modalOverlay = document.getElementById('modal-overlay'),
+DMW.main.ajax = document.getElementById('ajax'),
+DMW.main.navigation = document.querySelector('dmw-navigation');
+
 function sectionUpdated(e) {
 	var details = e.detail;
 	/* Remove current widgets */
-	while (layout.firstChild) {
-  		layout.removeChild(layout.firstChild);
+	while (DMW.main.layout.firstChild) {
+  		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
 	}
 	/* Update page style */
 	var ss = document.getElementById('sectionstyle');
 	var bodyStyle = ss.sheet.cssRules[0];
-	if ('SectionBackground' in section.params) {
-		bodyStyle.style.backgroundImage="url('/backgrounds/" + section.params['SectionBackground'] + "')";
+	if ('SectionBackground' in DMW.main.section.params) {
+		bodyStyle.style.backgroundImage="url('/backgrounds/" + DMW.main.section.params['SectionBackground'] + "')";
 	} else {
-		bodyStyle.style.backgroundImage=section.params['SectionBackgroundImage'];
+		bodyStyle.style.backgroundImage=DMW.main.section.params['SectionBackgroundImage'];
 	}
 	var widgetStyle = ss.sheet.cssRules[1];
-	widgetStyle.style.color=section.params['WidgetTextColor'];
-	widgetStyle.style.backgroundColor=section.params['WidgetBackgroundColor'];
-	widgetStyle.style.borderColor=section.params['WidgetBorderColor'];
-	widgetStyle.style.borderRadius=section.params['WidgetBorderRadius'];
-	widgetStyle.style.boxShadow=section.params['WidgetBoxShadow'];
+	widgetStyle.style.color=DMW.main.section.params['WidgetTextColor'];
+	widgetStyle.style.backgroundColor=DMW.main.section.params['WidgetBackgroundColor'];
+	widgetStyle.style.borderColor=DMW.main.section.params['WidgetBorderColor'];
+	widgetStyle.style.borderRadius=DMW.main.section.params['WidgetBorderRadius'];
+	widgetStyle.style.boxShadow=DMW.main.section.params['WidgetBoxShadow'];
+
+	DMW.grid.destroy();
 
 	for (var i = 0; i < details.widgets.length; i++) {
 		widget = details.widgets[i];
@@ -25,24 +38,30 @@ function sectionUpdated(e) {
 	}
 	for (var i = 0; i < details.instances.length; i++) {
 		instance = details.instances[i];
-		insertWidgetInstance(instance.id, instance.widget);
+		var node = insertWidgetInstance(instance.id, instance.widget);
+
 		if (instance.widget.default_style == 'true') {
 			insertWidgetStyle(instance);
 		}
 	}
+	setTimeout(function(){
+		DMW.grid.init();
+	}, 500);
 }
 
 function instanceAdded(topic, json) {
-	if (section.sectionid == json.section_id) {
+	if (DMW.main.section.sectionid == json.section_id) {
 		insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
-		insertWidgetInstance(json.id, json.widget);
+		var node = insertWidgetInstance(json.id, json.widget);
+		DMW.grid.appendedInstance(node);
 	}
 }
 
 function instanceRemoved(topic, json) {
-	if (section.sectionid == json.section_id) {
-		var widget = document.getElementById('instance-' + json.id);
-		widget.remove();
+	if (DMW.main.section.sectionid == json.section_id) {
+		var node = document.getElementById('instance-' + json.id);
+		DMW.grid.removedInstance(node);
+		node.remove();
 	}
 }
 
@@ -74,12 +93,16 @@ function insertWidgetInstance(id, widget) {
 	}
 	instance.setAttribute('instanceid', id);
 	instance.setAttribute('tabindex', 0);
-	if (layout.getAttribute('edit') != null) {
+	if (DMW.main.layout.getAttribute('edit') != null) {
 		instance.setAttribute('edit', '');
 	}
-	layout.appendChild(instance);
+	DMW.main.layout.appendChild(instance);
+	return instance;
 }
 
+/*
+ * Insert Widget <style> into <head>
+ */
 function insertWidgetStyle(instance) {
 	var style = document.createElement('style');
 	style.setAttribute('id', 'style-instance-' + instance.id);
@@ -152,41 +175,41 @@ function configureHandler() {
 		document.head.appendChild(script);
 	}
 
-	ajax.setAttribute('handleAs', 'text');
-	ajax.addEventListener("polymer-response",
+	DMW.main.ajax.setAttribute('handleAs', 'text');
+	DMW.main.ajax.addEventListener("polymer-response",
 		function(e) {
 			var response = e.detail.response;
 			if (response == "{success:true}") {
-				modalOverlay.classList.remove('on');
-				modalOverlay.innerHTML = '';
+				DMW.main.modalOverlay.classList.remove('on');
+				DMW.main.modalOverlay.innerHTML = '';
 			} else {
-				modalOverlay.innerHTML = response;
-				var saveConfig = modalOverlay.querySelector('#saveConfig');
-				var cancelConfig = modalOverlay.querySelector('#cancelConfig');
-				var formConfig = modalOverlay.querySelector('#formConfig');
+				DMW.main.modalOverlay.innerHTML = response;
+				var saveConfig = DMW.main.modalOverlay.querySelector('#saveConfig');
+				var cancelConfig = DMW.main.modalOverlay.querySelector('#cancelConfig');
+				var formConfig = DMW.main.modalOverlay.querySelector('#formConfig');
 			    var section = document.getElementById('currentsection');
 
 				saveConfig.addEventListener("click",
 					function(e) {
-						ajax.setAttribute('body', serialize(formConfig));
-						ajax.setAttribute('method', 'POST');
-						ajax.setAttribute('params', '{"action":"section", "id":"' + section.sectionid + '"}');
-						ajax.go();
+						DMW.main.ajax.setAttribute('body', serialize(formConfig));
+						DMW.main.ajax.setAttribute('method', 'POST');
+						DMW.main.ajax.setAttribute('params', '{"action":"section", "id":"' + DMW.main.section.sectionid + '"}');
+						DMW.main.ajax.go();
 						e.preventDefault();
 						e.stopPropagation();
 						return false;
 					});
 				cancelConfig.addEventListener("click",
 					function(e) {
-						modalOverlay.classList.remove('on');
-						modalOverlay.innerHTML = '';
+						DMW.main.modalOverlay.classList.remove('on');
+						DMW.main.modalOverlay.innerHTML = '';
 						e.preventDefault();
 						e.stopPropagation();
 						return false;
 					});
 
 				// Preview widget
-				var inputs = modalOverlay.querySelectorAll('#widgetstyle input');
+				var inputs = DMW.main.modalOverlay.querySelectorAll('#widgetstyle input');
 				inputs = Array.prototype.slice.call(inputs);
 				inputs.forEach(function(element) {
 					element.addEventListener('change', onWidgetStyleChange);
@@ -205,73 +228,73 @@ function configureHandler() {
                     },
                 });           
 
-				modalOverlay.classList.add('on');
+				DMW.main.modalOverlay.classList.add('on');
 			}
 		});
-	ajax.setAttribute('method', 'GET');
-	ajax.setAttribute('params', '{"action":"section", "id":"' + section.getAttribute('sectionid') + '"}');
-	ajax.go();
+	DMW.main.ajax.setAttribute('method', 'GET');
+	DMW.main.ajax.setAttribute('params', '{"action":"section", "id":"' + DMW.main.section.getAttribute('sectionid') + '"}');
+	DMW.main.ajax.go();
 }
 
 function widgetsEditHandler() {
-	layout.setAttribute('edit', '');
-	for (var i = 0; i < layout.children.length; i++) {
-		layout.children[i].setAttribute('edit', '');
+	DMW.main.edit = true;
+	for (var i = 0; i < DMW.main.layout.children.length; i++) {
+		DMW.main.layout.children[i].setAttribute('edit', '');
 	}
+	DMW.grid.editChanged(DMW.main.edit);
 }
 
 function widgetsFinishHandler() {
-	layout.removeAttribute('edit');
-	for (var i = 0; i < layout.children.length; i++) {
-		layout.children[i].removeAttribute('edit');
+	DMW.main.edit = false;
+	for (var i = 0; i < DMW.main.layout.children.length; i++) {
+		DMW.main.layout.children[i].removeAttribute('edit');
 	}
+	DMW.grid.editChanged(DMW.main.edit);
 }
 
 function addWidgetHandler() {
 	selector = document.createElement('dmw-widgets-selector');
-	modalOverlay.appendChild(selector);
-	modalOverlay.classList.add('on');
+	DMW.main.modalOverlay.appendChild(selector);
+	DMW.main.modalOverlay.classList.add('on');
 }
 
 function addSectionHandler() {
-	ajax.setAttribute('handleAs', 'text');
-	ajax.addEventListener("polymer-response",
+	DMW.main.ajax.setAttribute('handleAs', 'text');
+	DMW.main.ajax.addEventListener("polymer-response",
 		function(e) {
 			var response = e.detail.response;
 			if (response == "{success:true}") {
-				modalOverlay.classList.remove('on');
-				modalOverlay.innerHTML = '';
+				DMW.main.modalOverlay.classList.remove('on');
+				DMW.main.modalOverlay.innerHTML = '';
 			} else {
-				modalOverlay.innerHTML = response;
-				var saveConfig = modalOverlay.querySelector('#saveConfig');
-				var cancelConfig = modalOverlay.querySelector('#cancelConfig');
-				var form = modalOverlay.querySelector('#formAddSection');
-			    var section = document.getElementById('currentsection');
-
+				DMW.main.modalOverlay.innerHTML = response;
+				var saveConfig = DMW.main.modalOverlay.querySelector('#saveConfig');
+				var cancelConfig = DMW.main.modalOverlay.querySelector('#cancelConfig');
+				var form = DMW.main.modalOverlay.querySelector('#formAddSection');
 				saveConfig.addEventListener("click",
 					function(e) {
-						ajax.setAttribute('body', serialize(form));
-						ajax.setAttribute('method', 'POST');
-						ajax.setAttribute('params', '{"action":"addsection", "id":"' + section.sectionid + '"}');
-						ajax.go();
+						DMW.main.ajax.setAttribute('body', serialize(form));
+						DMW.main.ajax.setAttribute('method', 'POST');
+						DMW.main.ajax.setAttribute('params', '{"action":"addsection", "id":"' + DMW.main.section.sectionid + '"}');
+						DMW.main.ajax.go();
 						e.preventDefault();
 						e.stopPropagation();
 						return false;
 					});
 				cancelConfig.addEventListener("click",
 					function(e) {
-						modalOverlay.classList.remove('on');
-						modalOverlay.innerHTML = '';
+						DMW.main.modalOverlay.classList.remove('on');
+						DMW.main.modalOverlay.innerHTML = '';
 						e.preventDefault();
 						e.stopPropagation();
 						return false;
 					});
-				modalOverlay.classList.add('on');
+				DMW.main.modalOverlay.classList.add('on');
 			}
 		});
-	ajax.setAttribute('method', 'GET');
-	ajax.setAttribute('params', '{"action":"addsection", "id":"' + section.getAttribute('sectionid') + '"}');
-	ajax.go();
+	DMW.main.ajax.setAttribute('method', 'GET');
+	DMW.main.ajax.setAttribute('params', '{"action":"addsection", "id":"' + DMW.main.section.getAttribute('sectionid') + '"}');
+	DMW.main.ajax.go();
 }
 
 function onWidgetStyleChange(e) {

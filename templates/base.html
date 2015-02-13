@@ -28,11 +28,17 @@
     box-shadow: {{ params['WidgetBoxShadow'] }};
   }
   </style>
+  <script type="text/javascript">
+    var DMW = DMW || {};
+    DMW.main = DMW.main || {};
+    DMW.main.edit = false;
+
+//    DMW.main.sectionid = {{ section.id }};
+  </script>
   <script src="/libraries/webcomponentsjs/webcomponents.js"></script>
   <script src="/libraries/jquery-1.11.0/jquery.min.js"></script>
   <script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
   <script type="text/javascript">
-    var sectionid = {{ section.id }};
     i18n.init({
       getAsync: false,
       load: 'current',
@@ -51,7 +57,6 @@
   <link rel="import" href="/components/datatypes.html">
   <link rel="import" href="/components/section.html">
   <!--link rel="import" href="/components/mainMenu.html"-->
-  <link rel="import" href="/components/gridLayout.html">
   <link rel="import" href="/components/navigation.html">
   <link rel="import" href="/components/widgetsSelector.html">
   <link rel="import" href="/components/sectionslist.html">
@@ -62,7 +67,7 @@
   <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
   <dmw-section id='currentsection' sectionid="{{ section.id }}"></dmw-section>
 	<main role="main">
-    <dmw-grid-layout sectionid="{{section.id}}"></dmw-grid-layout>
+    <div id='grid-layout'></div>
     <dmw-navigation>
      <ul>
        <li id="menuConfigure" data-i18n="menu.configuration"></li>
@@ -87,26 +92,21 @@
   <script src="/libraries/moment/min/moment.min.js"></script>
   <script type="text/javascript" src="/libraries/notifit/notifIt%21-1.1/js/notifIt.js"></script>
   <script src="/js/main.js"></script>
-  <script type="text/javascript">
-    var menuConfigure = document.getElementById('menuConfigure'),
-      menuWidgets = document.getElementById('menuWidgets'),
-      panelConfigure = document.getElementById('panelConfigure'),
-      main = document.querySelector('main'),
-      section = document.getElementById('currentsection');
-      socket = document.getElementById('socket'),
-      layout = document.querySelector('dmw-grid-layout'),
-      modalOverlay = document.getElementById('modal-overlay'),
-      ajax = document.getElementById('ajax'),
-      navigation = document.querySelector('dmw-navigation');
+    <link rel="stylesheet" href="/css/grid-layout.css">
+  <script src="/libraries/packery/dist/packery.pkgd.min.js"></script>
+  <script src="/libraries/draggability/draggabilly.js"></script>
+    <script src="/js/grid-layout.js"></script>
 
+      <script type="text/javascript">
     window.addEventListener('polymer-ready', function(){
-      socket.addEventListener('websocket-connected', websocketConnected);
-      socket.addEventListener('websocket-closed', websocketClosed);
-      socket.register('widgetinstance-added', instanceAdded);
-      socket.register('widgetinstance-removed', instanceRemoved);        
-      navigation.addEventListener('menuitem-selected', menuitemSelected, false);
-      section.addEventListener('section-updated', sectionUpdated);
+      DMW.main.socket.addEventListener('websocket-connected', websocketConnected);
+      DMW.main.socket.addEventListener('websocket-closed', websocketClosed);
+      DMW.main.socket.register('widgetinstance-added', instanceAdded);
+      DMW.main.socket.register('widgetinstance-removed', instanceRemoved);        
+      DMW.main.navigation.addEventListener('menuitem-selected', menuitemSelected, false);
+      DMW.main.section.addEventListener('section-updated', sectionUpdated);
     });
-  </script></body>
+  </script>
+  </body>
 </html>
 
