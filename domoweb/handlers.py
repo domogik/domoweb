@@ -30,10 +30,14 @@ class MainHandler(RequestHandler):
         section = Section.get(id)
         packs = Widget.getSectionPacks(section_id=id)
         params = Section.getParamsDict(id)
+        sections = Section.getTree()
+        print sections
         self.render('base.html',
+            function = displayTree,
             section = section,
             params = params,
             packs = packs,
+            sections = sections,
             )
 
 class ConfigurationHandler(RequestHandler):

@@ -1,9 +1,5 @@
 DMW.menu = DMW.menu || {};
 
-window.onload = function(){
-	DMW.menu.init();
-};
-
 DMW.menu.init = function() {
 	DMW.menu.items = [
 		{'id':'menuConfigure',
@@ -29,11 +25,8 @@ DMW.menu.init = function() {
 	];
 	DMW.menu.displayed = [];
 	DMW.menu.open = false;
-	DMW.menu.main = true;
 	DMW.menu.root = document.getElementById('main-menu-root');
 	DMW.menu.cnbutton = document.getElementById('cnbutton');
-	DMW.menu.contentoverlay = document.getElementById('contentoverlay');
-	DMW.menu.emptyoverlay = document.getElementById('emptyoverlay');
 	DMW.menu.cnwrapper = document.getElementById('cnwrapper');
 	DMW.menu.cnbutton.addEventListener('click', DMW.menu.handler, false);
 	DMW.menu.cnwrapper.addEventListener('click', DMW.menu.cnhandle, false);
@@ -44,21 +37,13 @@ DMW.menu.init = function() {
 DMW.menu.openNav = function(){
 	DMW.menu.open = true;
     DMW.menu.cnbutton.innerHTML = "<span class='sr-only'>Close Menu</span>";
-    if (DMW.menu.main) {
-    	DMW.menu.contentoverlay.classList.add('on-overlay');
-	} else {
-    	DMW.menu.emptyoverlay.classList.add('on-overlay');
-	}
+    DMW.main.modalOverlay.classList.add('on');
     DMW.menu.cnwrapper.classList.add('opened-nav');
 };
 DMW.menu.closeNav = function(){
 	DMW.menu.open = false;
 	DMW.menu.cnbutton.innerHTML = "<span class='sr-only'>Open Menu</span>";
-    if (DMW.menu.main) {
-    	DMW.menu.contentoverlay.classList.remove('on-overlay');
-	} else {
-    	DMW.menu.emptyoverlay.classList.remove('on-overlay');
-	}
+   	DMW.main.modalOverlay.classList.remove('on');
     DMW.menu.cnwrapper.classList.remove('opened-nav');
 };
 DMW.menu.handler = function(e){
@@ -66,8 +51,7 @@ DMW.menu.handler = function(e){
  	e.stopPropagation();//so that it doesn't trigger click event on document
   	if(!DMW.menu.open){
     	DMW.menu.openNav();
-  	}
- 	else{
+  	} else{
     	DMW.menu.closeNav();
   	}
 };
@@ -78,15 +62,11 @@ DMW.menu.selectItem = function(e) {
   	var item = DMW.menu.findItem(DMW.menu.items, e.target.id);
   	if (item.childs) {
 		DMW.menu.displayItems(item);
-		DMW.menu.main = false;
-    	DMW.menu.contentoverlay.classList.remove('on-overlay');
-    	DMW.menu.emptyoverlay.classList.add('on-overlay');
   	} else {
 		DMW.menu.closeNav();
   	}
   	if (item.close) {
 		DMW.menu.displayItems(null);
-		DMW.menu.main = true;
   	}
   	if (item.id) {
 		switch(item.id) {
@@ -144,7 +124,7 @@ DMW.menu.displayItems = function(parent) {
       	DMW.menu.appendMenu(root[i]);
 	}
     // Add blank items
-    for (i ; i < 5; i++) {
+    for (i ; i < 3; i++) {
       	DMW.menu.appendMenu(null);
     }
 };

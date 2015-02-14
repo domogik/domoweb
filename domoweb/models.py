@@ -200,6 +200,11 @@ class Section(Base):
 	theme = relationship("Theme")
 	params = relationship("SectionParam")
 
+	_leafs = None
+	_childrens = None
+	_level = None
+	_max_level = None
+
 	@classmethod
 	def add(cls, parent_id, name, description=None):
 		# create a Session
@@ -220,7 +225,7 @@ class Section(Base):
 	def getAll(cls):
 		# create a Session
 		session = Session()
-		s = session.query(cls).all()
+		s = session.query(cls).order_by('left').all()
 		session.close()
 		return s
 		
@@ -275,6 +280,59 @@ class Section(Base):
 		session.flush()
 		return params
 
+	@classmethod
+	def getTree(cls):
+		data = cls.getAll()
+		_current_path = []
+		top_node = None
+		if data:
+			for obj in data:
+				obj._childrens = []
+				obj._leafs = 0
+				if top_node == None:
+					top_node = obj
+					obj._level = 0
+					obj._max_level = 0
+					_current_path.append(obj)
+				else:
+					while (obj.left > _current_path[-1].right): # Level down
+						top = _current_path.pop()
+						_current_path[-1]._leafs = _current_path[-1]._leafs + top._leafs
+					obj._level = len(_current_path)
+					if obj._level > top_node._max_level:
+						# Save the number of levels in the root node
+						top_node._max_level = obj._level
+					_current_path[-1]._childrens.append(obj)
+					if not obj._is_leaf():
+						_current_path.append(obj) # Level up
+					else:
+						_current_path[-1]._leafs = _current_path[-1]._leafs + 1
+			while (len(_current_path) > 1): # Level down
+				top = _current_path.pop()
+				_current_path[-1]._leafs = _current_path[-1]._leafs + top._leafs
+		return top_node
+
+	def _is_leaf(self):
+		# If right = left + 1 then it is a leaf
+		return ((self.left + 1) == self.right)
+	is_leaf = property(_is_leaf)
+
+	def _get_leafs(self):
+		return self._leafs
+	leafs = property(_get_leafs)
+
+	def _get_childrens(self):
+		return self._childrens
+	childrens = property(_get_childrens)
+
+	def _get_level(self):
+		return self._level
+	level = property(_get_level)
+
+	def _get_max_level(self):
+		return self._max_level
+	max_level = property(_get_max_level)
+    
 class DataType(Base):
 	__tablename__ = 'dataType'
 	id = Column(String(50), primary_key=True)
