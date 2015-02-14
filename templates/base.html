@@ -38,26 +38,11 @@
   <script src="/libraries/webcomponentsjs/webcomponents.js"></script>
   <script src="/libraries/jquery-1.11.0/jquery.min.js"></script>
   <script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
-  <script type="text/javascript">
-    i18n.init({
-      getAsync: false,
-      load: 'current',
-      //        lng: "en-US",
-      fallbackLng: 'en-US',
-      resGetPath: 'locales/__ns__/__lng__/translation.json',
-      ns: {
-        namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}], 
-        defaultNs: 'domoweb'
-      }
-    });
-  </script>
   <link rel="import" href="/components/polymer-ajax.html">
   <link rel="import" href="/components/websockets.html">
   <link rel="import" href="/components/widget.html">
   <link rel="import" href="/components/datatypes.html">
   <link rel="import" href="/components/section.html">
-  <!--link rel="import" href="/components/mainMenu.html"-->
-  <link rel="import" href="/components/navigation.html">
   <link rel="import" href="/components/widgetsSelector.html">
   <link rel="import" href="/components/sectionslist.html">
 </head>
@@ -68,23 +53,16 @@
   <dmw-section id='currentsection' sectionid="{{ section.id }}"></dmw-section>
 	<main role="main">
     <div id='grid-layout'></div>
-    <dmw-navigation>
-     <ul>
-       <li id="menuConfigure" data-i18n="menu.configuration"></li>
-       <li id="menuWidgets" data-i18n="menu.widgets">
-         <ul>
-           <li id="menuFinishWidgets" data-i18n="menu.finishWidgets" data-close="true"></li>
-           <li id="menuAddWidget" data-i18n="menu.addwidget"></li>
-         </ul>
-       </li>
-       <li id="menuSections" data-i18n="menu.sections">
-          <ul>
-           <li id="menuFinishSections" data-i18n="menu.finishSections" data-close="true"></li>
-           <li id="menuAddSection" data-i18n="menu.addsection"></li>
-          </ul>
-       </li>
-     </ul>
-    </dmw-navigation>
+    <div id='main-menu'>
+      <button class="cnbutton" id="cnbutton"><span class='sr-only' data-i18n="menu.open"></span></button>
+      <nav id="cnwrapper" role="navigation">
+        <ul id='main-menu-root'></ul>
+      </nav>
+      <div id="emptyoverlay" class="overlay"></div>
+      <div id="contentoverlay" class="overlay">
+        <dmw-sectionslist></dmw-sectionslist>
+      </div>
+    </div>
     <div id="modal-overlay" class="overlay"></div>
 	</main>
   <script src="/libraries/bootstrap-3.2.0/js/bootstrap.min.js"></script>
@@ -92,18 +70,31 @@
   <script src="/libraries/moment/min/moment.min.js"></script>
   <script type="text/javascript" src="/libraries/notifit/notifIt%21-1.1/js/notifIt.js"></script>
   <script src="/js/main.js"></script>
-    <link rel="stylesheet" href="/css/grid-layout.css">
   <script src="/libraries/packery/dist/packery.pkgd.min.js"></script>
   <script src="/libraries/draggability/draggabilly.js"></script>
+    <script src="/js/menu.js"></script>
+    <link rel="stylesheet" href="/css/menu.css">
     <script src="/js/grid-layout.js"></script>
+    <link rel="stylesheet" href="/css/grid-layout.css">
 
       <script type="text/javascript">
+          i18n.init({
+      getAsync: false,
+      load: 'current',
+      //        lng: "en-US",
+      fallbackLng: 'en-US',
+      resGetPath: 'locales/__ns__/__lng__/translation.json',
+      ns: {
+        namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}], 
+        defaultNs: 'domoweb'
+      }
+    });
+
     window.addEventListener('polymer-ready', function(){
       DMW.main.socket.addEventListener('websocket-connected', websocketConnected);
       DMW.main.socket.addEventListener('websocket-closed', websocketClosed);
       DMW.main.socket.register('widgetinstance-added', instanceAdded);
       DMW.main.socket.register('widgetinstance-removed', instanceRemoved);        
-      DMW.main.navigation.addEventListener('menuitem-selected', menuitemSelected, false);
       DMW.main.section.addEventListener('section-updated', sectionUpdated);
     });
   </script>

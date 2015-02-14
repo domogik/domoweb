@@ -62,5 +62,4 @@ DMW.grid.editChanged = function(value) {
 		  	DMW.grid.draggables[id].disable();
 	    }
 	}
-	console.debug(DMW.grid.draggables);
 };

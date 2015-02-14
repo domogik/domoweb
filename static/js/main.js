@@ -7,7 +7,7 @@ DMW.main.socket = document.getElementById('socket'),
 DMW.main.layout = document.getElementById('grid-layout'),
 DMW.main.modalOverlay = document.getElementById('modal-overlay'),
 DMW.main.ajax = document.getElementById('ajax'),
-DMW.main.navigation = document.querySelector('dmw-navigation');
+DMW.main.navigation = document.getElementById('main-menu');
 
 function sectionUpdated(e) {
 	var details = e.detail;
@@ -125,27 +125,6 @@ function insertWidgetStyle(instance) {
 	  style.appendChild(document.createTextNode(css));
 	}
 	document.head.appendChild(style);
-}
-
-
-function menuitemSelected(e) {
-	switch(e.detail.id) {
-	    case 'menuConfigure':
-	        configureHandler();
-	        break;
-	    case 'menuWidgets':
-	        widgetsEditHandler();
-	        break;
-	    case 'menuFinishWidgets':
-	        widgetsFinishHandler();
-	        break;
-	    case 'menuAddWidget':
-		    addWidgetHandler();
-	        break;
-	    case 'menuAddSection':
-		    addSectionHandler();
-	        break;
-	} 
 }
 
 function configureHandler() {

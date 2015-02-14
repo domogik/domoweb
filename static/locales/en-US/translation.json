@@ -4,9 +4,9 @@
 		"configuration": "Config",
 		"widgets": "Widgets",
 		"finishWidgets": "Finish",
-		"addwidget": "Add",
+		"addWidget": "Add",
 		"sections": "Sections",
-		"addsection": "Add",
+		"addSection": "Add",
 		"finishSections": "Finish"
 	},
 	"unit": "__value__",
