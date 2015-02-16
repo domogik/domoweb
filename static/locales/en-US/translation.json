@@ -7,6 +7,7 @@
 		"addWidget": "Add",
 		"sections": "Sections",
 		"addSection": "Add",
+		"removeSection": "Remove",
 		"finishSections": "Finish"
 	},
 	"unit": "__value__",

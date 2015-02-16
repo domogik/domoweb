@@ -20,7 +20,9 @@ DMW.menu.init = function() {
 			'label':i18n.t('menu.finishSections'),
 			'close': true},
 			{'id':'menuAddSection',
-			'label':i18n.t('menu.addSection')}
+			'label':i18n.t('menu.addSection')},
+			{'id':'menuRemoveSection',
+			'label':i18n.t('menu.removeSection')}
 		]}
 	];
 	DMW.menu.displayed = [];
@@ -37,13 +39,11 @@ DMW.menu.init = function() {
 DMW.menu.openNav = function(){
 	DMW.menu.open = true;
     DMW.menu.cnbutton.innerHTML = "<span class='sr-only'>Close Menu</span>";
-    DMW.main.modalOverlay.classList.add('on');
     DMW.menu.cnwrapper.classList.add('opened-nav');
 };
 DMW.menu.closeNav = function(){
 	DMW.menu.open = false;
 	DMW.menu.cnbutton.innerHTML = "<span class='sr-only'>Open Menu</span>";
-   	DMW.main.modalOverlay.classList.remove('on');
     DMW.menu.cnwrapper.classList.remove('opened-nav');
 };
 DMW.menu.handler = function(e){
@@ -84,6 +84,9 @@ DMW.menu.selectItem = function(e) {
 		        break;
 		    case 'menuAddSection':
 			    addSectionHandler();
+		        break;
+		    case 'menuRemoveSection':
+			    removeSectionHandler();
 		        break;
 		}
   	}

@@ -1,226 +1,262 @@
 DMW.navigation = DMW.navigation || {};
 
+DMW.navigation.circleRadius = 80;
+DMW.navigation.lv1_outerRing = true;
+DMW.navigation.lv2_outerRing = true;
+DMW.navigation.lv3_outerRing = true;
+DMW.navigation.innerRing_items = 3;
+DMW.navigation.outerRing_items = 5;
+DMW.navigation.innerRing_radius = 110;
+DMW.navigation.outerRing_radius = 220;
+
+DMW.navigation.radLevelOneShown = false;
+DMW.navigation.radLevelTwoShown = false;
+DMW.navigation.radLevelThreeShown = false;
+DMW.navigation.$radFirstLevel = null;
+DMW.navigation.$radSecondLevel = null;
+DMW.navigation.$radLevelOneItems = null;
+DMW.navigation.$radLevelTwoItems = null;
+DMW.navigation.positionOne = null;
+DMW.navigation.positionTwo = null;
+
+var toRadians = Math.PI / 180;
+
 DMW.navigation.init = function() {
-	$("#sections-list").radialResponsiveMenu();
-	var sections = document.querySelectorAll('#sections-list ul li > a');
+	$('<style type="text/css">' +
+		'.radial-menu-items { height:'+ DMW.navigation.circleRadius +'px; width:'+ DMW.navigation.circleRadius +'px; border-radius: '+ DMW.navigation.circleRadius +'px }'+
+		'.radial-first-items { top: -'+ ($('#toggle-radial').outerHeight() + 2) +'px; left: -2px }'+
+		'.radial-upper-items { top: -2px; left: -1px; }'+ 
+		'.radial-menu-links { height:'+ DMW.navigation.circleRadius +'px; width:'+ DMW.navigation.circleRadius +'px; border-radius: '+ DMW.navigation.circleRadius +'px; }' +
+	'</style>').appendTo('head');
+	$('#sections-tree #toggle-radial').click(DMW.navigation.RadLevelOneToggle);
+	DMW.navigation.register();
+    DMW.main.socket.register('section-added', DMW.navigation.sectionsUpdated);
+    DMW.main.socket.register('section-removed', DMW.navigation.sectionsUpdated);        
+    DMW.main.socket.register('section-tree', DMW.navigation.sectionsReceived);
+};
+
+DMW.navigation.register = function() {							
+	$('#sections-tree > ul li').addClass('radial-menu-items');
+	$('#sections-tree ul li > a').addClass('radial-menu-links');
+	
+	$('#sections-tree ul.level-1').addClass('hide');
+	$('#sections-tree ul.level-1').addClass('radial-first-items');
+	$('#sections-tree ul.level-2').addClass('hide');
+	$('#sections-tree ul.level-2').addClass('radial-upper-items')
+	$('#sections-tree ul.level-3').addClass('hide');
+	$('#sections-tree ul.level-3').addClass('radial-upper-items')
+		
+	$('#sections-tree li > ul').parent().addClass('have-subs');
+	// $('#sections-tree ul li > a').wrap('<div class="radial-label" />')
+	$('#sections-tree ul.level-1 > li.have-subs > a').click(DMW.navigation.RadLevelTwoToggle);
+	$('#sections-tree ul.level-2 > li.have-subs > a').click(DMW.navigation.RadLevelThreeToggle);
+
+	var sections = document.querySelectorAll('#sections-tree ul li:not(.have-subs) > a');
 	for (var i = sections.length - 1; i >= 0; i--) {
 		sections[i].addEventListener('click', DMW.navigation.selectSection, false);
-	};
-};
+	};	
+}
 
 DMW.navigation.selectSection = function(e) {
  	e.stopPropagation(); //so that it doesn't trigger click event on document
+ 	DMW.navigation.RadLevelOneToggle();
  	var id = e.target.dataset.section;
  	DMW.main.section.setAttribute('sectionid', id);
 };
 
-(function($){
-	$.fn.radialResponsiveMenu = function(options) {
-	options = $.extend({}, $.fn.radialResponsiveMenu.defaults, options);			
-		
-		return this.each(function(){
-			/* ------------------------ Function for Radial Responsive menu  ------------------------ */
-			var radLevelOneShown = false, 	radLevelTwoShown = false, 	radLevelThreeShown = false,
-				$radFirstLevel, $radSecondLevel,
-				$radLevelOneItems, $radLevelTwoItems,
-				$level1, $level2, $level3,
-				$menuItems,
-				
-				angleDegree, angleRad,
-				outerAngleIncrease = 90/(options.outerRing_items-1),
-				innerAngleIncrease = 90/(options.innerRing_items-1),
-				toRadians = Math.PI / 180,
-			
-				xCoord, yCoord,
-				xPosMod, yPosMod, yAdjustMod,
-				positionOne, positionTwo,
-				togglePosition;
-				
-				togglePosition = $('#toggle-radial').offset();
-				
-				$('<style type="text/css">' +
-					'.radial-menu-items { height:'+ options.circleRadius +'px; width:'+ options.circleRadius +'px; border-radius: '+ options.circleRadius +'px }'+
-					'.radial-first-items { top: -'+ ($('#toggle-radial').outerHeight() + 2) +'px; left: -2px }'+
-					'.radial-upper-items { top: -2px; left: -1px; }'+ 
-					'.radial-menu-links { height:'+ options.circleRadius +'px; width:'+ options.circleRadius +'px; border-radius: '+ options.circleRadius +'px; }' +
-				'</style>').appendTo('head');
-				
-				xPosMod = 1;
-				yPosMod = -1;
-				yAdjustMod = -1;
-				
-				$('#sections-list > ul li').addClass('radial-menu-items');
-				$('#sections-list ul li > a').addClass('radial-menu-links');
-				
-				$('#sections-list ul.level-1').addClass('hide');
-				$('#sections-list ul.level-1').addClass('radial-first-items');
-				$('#sections-list ul.level-2').addClass('hide');
-				$('#sections-list ul.level-2').addClass('radial-upper-items')
-				$('#sections-list ul.level-3').addClass('hide');
-				$('#sections-list ul.level-3').addClass('radial-upper-items')
-					
-				$('#sections-list li > ul').parent().addClass('have-subs');
-				// $('#sections-list ul li > a').wrap('<div class="radial-label" />')
-				$('#sections-list #toggle-radial').click(RadLevelOneToggle);
-				$('#sections-list ul.level-1 > li.have-subs > a').click(RadLevelTwoToggle);
-				$('#sections-list ul.level-2 > li.have-subs > a').click(RadLevelThreeToggle);
-				$menuItems = $('#sections-list ul li');
-	
-			/* ------------ Radial toggle button related behavior: Toggling level-1 Menu ------------*/		
-			function RadLevelOneToggle(){
-				if(!radLevelOneShown){
-					$(this).addClass('active');
-					
-					$level1 = $('ul.level-1');
-					toggleMenuItems.call(this, $level1, options.lv1_outerRing );
-			
-					$('#sections-list ul.level-1').removeClass('hide');
-					$('#sections-list ul.level-1').addClass('show');
-					radLevelOneShown = true;		
-				} else {
-					radLevelOneShown = false;	
-					$(this).removeClass('active');
-					$('#sections-list ul.level-1 > li').animate({ left: '0px', top: '0px' }, 150);
-					$('#sections-list ul.level-1').fadeOut(200, function(){
-						$('#sections-list ul.level-1 > li.have-subs').removeClass('active');
-						$('#sections-list ul.level-1').removeClass('show');
-						$('#sections-list ul.level-1').addClass('hide');			
-						if(radLevelTwoShown){
-							$radFirstLevel.fadeTo(200, 1);
-							$radLevelOneItems.bind('click', RadLevelTwoToggle);
-							$('#sections-list ul.level-2 > li').animate({ top: positionOne.top, left: positionOne.left }, 200);
-							$('#sections-list ul.level-2 > li.have-subs').removeClass('active');
-							$('#sections-list ul.level-2').removeClass('show');
-							$('#sections-list ul.level-2').addClass('hide');
-							radLevelTwoShown = false;
-						}
-						if(radLevelThreeShown){
-							$radSecondLevel.fadeTo(200, 1);
-							$radLevelTwoItems.bind('click', RadLevelThreeToggle);
-							$('#sections-list ul.level-3 > li').animate({ top: positionTwo.top, left: positionTwo.left }, 200);
-							$('#sections-list ul.level-3').removeClass('show');
-							$('#sections-list ul.level-3').addClass('hide');
-							radLevelThreeShown = false;
-						}
-					});	
-				}
+DMW.navigation.sectionsUpdated = function() {
+	DMW.main.socket.send('section-gettree');
+};
+
+DMW.navigation.sectionsReceived = function(topic, json) {
+	var root = DMW.main.navigation.querySelector('ul');
+	DMW.main.navigation.removeChild(root);
+	var nodes = DMW.navigation.generateLevelNodes(json);
+	if (nodes) {
+		DMW.main.navigation.appendChild(nodes);
+	}
+	DMW.navigation.register();
+};
+
+DMW.navigation.generateLevelNodes = function(section) {
+	var childs = section['childs'];
+	if (childs.length > 0) {
+		var newlevel = parseInt(section['level']) + 1;
+		var ul = document.createElement('ul');
+		ul.setAttribute('class', 'level-' + newlevel);
+		var li = document.createElement('li');
+		var a = document.createElement('a');
+		a.setAttribute('href','#');
+		a.dataset.section = section['id'];
+		a.appendChild(document.createTextNode(section['name']));
+		li.appendChild(a);
+		ul.appendChild(li);
+
+		for (var i = 0; i < childs.length; i++) {
+			child = childs[i];
+			var li = document.createElement('li');
+			var a = document.createElement('a');
+			a.setAttribute('href','#');
+			a.dataset.section = child['id'];
+			a.appendChild(document.createTextNode(child['name']));
+			li.appendChild(a);
+			var nodes = DMW.navigation.generateLevelNodes(child);
+			if (nodes) {
+				li.appendChild(nodes);
 			}
+			ul.appendChild(li);
+		};
+		return ul;
+	}
+	return null;
+};
 
-			/* ------------ Radial toggle button related behavior: Toggling level-2 Menu ------------*/	
-			function RadLevelTwoToggle(){
-				$radFirstLevel = $(this).parent().siblings();
-				$radLevelOneItems = $(this).parent().siblings('.have-subs').children('a');
-				positionOne = $(this).position();
-				if(!radLevelTwoShown){
-					$(this).parent().addClass('active');
-					$radFirstLevel.fadeTo(200, 0.1);
-					$radLevelOneItems.unbind('click');
-					
-					$level2 = ('ul.level-2');
-					toggleMenuItems.call(this, $level2, options.lv2_outerRing );
+/* ------------ Radial toggle button related behavior: Toggling level-1 Menu ------------*/		
+DMW.navigation.RadLevelOneToggle = function() {
+	if(!DMW.navigation.radLevelOneShown){
+		$(this).addClass('active');
+		
+		var $level1 = $('ul.level-1');
+		DMW.navigation.toggleMenuItems(this, $level1, DMW.navigation.lv1_outerRing );
 
-					$(this).parent().children('ul.level-2').removeClass('hide');
-					$(this).parent().children('ul.level-2').addClass('show');
-					radLevelTwoShown = true;
-				} else {
-					radLevelTwoShown = false;	
-					$(this).parent().removeClass('active');
-					$radFirstLevel.fadeTo(200, 1);
-					$radLevelOneItems.bind('click', RadLevelTwoToggle);
-					$('#sections-list ul.level-2 > li').animate({ top: positionOne.top, left: positionOne.left }, 200);		
-					$('#sections-list ul.level-2').fadeOut(200, function(){	
-						$('#sections-list ul.level-2 > li.have-subs').removeClass('active');	
-						$('#sections-list ul.level-2').removeClass('show');
-						$('#sections-list ul.level-2').addClass('hide');
-						if(radLevelThreeShown){
-							$radSecondLevel.fadeTo(200, 1);
-							$radLevelTwoItems.bind('click', RadLevelThreeToggle);
-							$('#sections-list ul.level-3 > li').animate({ top: positionTwo.top, left: positionTwo.left }, 200);
-							$('#sections-list ul.level-3').removeClass('show');
-							$('#sections-list ul.level-3').addClass('hide');
-							radLevelThreeShown = false;
-						}
-					});	
-				}
+		$('#sections-tree ul.level-1').removeClass('hide');
+		$('#sections-tree ul.level-1').addClass('show');
+		DMW.navigation.radLevelOneShown = true;		
+	} else {
+		DMW.navigation.radLevelOneShown = false;	
+		$(this).removeClass('active');
+		$('#sections-tree ul.level-1 > li').animate({ left: '0px', top: '0px' }, 150);
+		$('#sections-tree ul.level-1').fadeOut(200, function(){
+			$('#sections-tree ul.level-1 > li.have-subs').removeClass('active');
+			$('#sections-tree ul.level-1').removeClass('show');
+			$('#sections-tree ul.level-1').addClass('hide');			
+			if(DMW.navigation.radLevelTwoShown){
+				DMW.navigation.$radFirstLevel.fadeTo(200, 1);
+				DMW.navigation.$radLevelOneItems.bind('click', DMW.navigation.RadLevelTwoToggle);
+				$('#sections-tree ul.level-2 > li').animate({ top: DMW.navigation.positionOne.top, left: DMW.navigation.positionOne.left }, 200);
+				$('#sections-tree ul.level-2 > li.have-subs').removeClass('active');
+				$('#sections-tree ul.level-2').removeClass('show');
+				$('#sections-tree ul.level-2').addClass('hide');
+				DMW.navigation.radLevelTwoShown = false;
 			}
-
-			/* ------------ Radial toggle button related behavior: Toggling level-3 Menu ------------*/
-			function RadLevelThreeToggle(){
-				$radSecondLevel = $(this).parent().siblings();
-				$radLevelTwoItems = $(this).parent().siblings('.have-subs').children('a');
-				positionTwo = $(this).position();
-				if(!radLevelThreeShown){
-					$(this).parent().addClass('active');
-					$radSecondLevel.fadeTo(200, 0.1);
-					$radLevelTwoItems.unbind('click');
-					
-					$level3 = ('ul.level-3');
-					toggleMenuItems.call(this, $level3, options.lv3_outerRing );
-		
-					$(this).parent().children('ul.level-3').removeClass('hide');
-					$(this).parent().children('ul.level-3').addClass('show');
-					radLevelThreeShown = true;
-				} else {
-					radLevelThreeShown = false;	
-					$(this).parent().removeClass('active');
-					$radSecondLevel.fadeTo(200, 1);
-					$radLevelTwoItems.bind('click', RadLevelThreeToggle);
-					$('#sections-list ul.level-3 > li').animate({ top: positionTwo.top, left: positionTwo.left }, 200);		
-					$('#sections-list ul.level-3').fadeOut(200, function(){				
-						$('#sections-list ul.level-3').removeClass('show');
-						$('#sections-list ul.level-3').addClass('hide');
-					});	
-				}
-			}	
-		
-			function toggleMenuItems(selectParent, isOuterRing){
-				var yPositionAdjust, xPositionAdjust;
-					
-				yPositionAdjust = (options.circleRadius - $(this).outerHeight())/2;
-				xPositionAdjust = (options.circleRadius - $(this).outerHeight())/2;			
-	
-				angleDegree = 0;
-				/* ------------ Looping for INNER Ring - Sub-Menu level toggle and animation ------------*/		
-				for( var index = 0; index < options.innerRing_items; index++ ){
-				    angleRad = angleDegree * toRadians;
-					xCoord = options.innerRing_radius * Math.cos( angleRad );
-					yCoord = options.innerRing_radius * Math.sin( angleRad );	
-					$(this).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust , top: yCoord*yPosMod-yPositionAdjust}, 200);
-					angleDegree += innerAngleIncrease;
-				}
-
-				angleDegree = 0;
-				if(isOuterRing){
-					for( var index = options.innerRing_items; index < options.innerRing_items + options.outerRing_items; index++ ){
-						$(this).parent().children(selectParent).children('li:nth-child('+ (index+1) +')').removeClass('hide');		    				
-					}
-					/* ------------ Looping for OUTER Ring (if enabled) - Sub-Menu level toggle and animation ------------*/				
-					for( var index = options.innerRing_items; index < options.innerRing_items + options.outerRing_items; index++ ){
-			    		angleRad = angleDegree * toRadians;
-						xCoord = options.outerRing_radius * Math.cos( angleRad );
-						yCoord = options.outerRing_radius * Math.sin( angleRad );			
-						$(this).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust, top: yCoord*yPosMod-yPositionAdjust }, 200);
-						angleDegree += outerAngleIncrease;
-					}
-				} else {
-					for( var index = options.innerRing_items; index < options.innerRing_items + options.outerRing_items; index++ ){		    				
-						$(this).parent().children(selectParent).children('li:nth-child('+ (index+1) +')').addClass('hide');
-					}
-				}					
+			if(DMW.navigation.radLevelThreeShown){
+				DMW.navigation.$radSecondLevel.fadeTo(200, 1);
+				DMW.navigation.$radLevelTwoItems.bind('click', DMW.navigation.RadLevelThreeToggle);
+				$('#sections-tree ul.level-3 > li').animate({ top: DMW.navigation.positionTwo.top, left: DMW.navigation.positionTwo.left }, 200);
+				$('#sections-tree ul.level-3').removeClass('show');
+				$('#sections-tree ul.level-3').addClass('hide');
+				DMW.navigation.radLevelThreeShown = false;
 			}
 		});	
-	};
-	
-	$.fn.radialResponsiveMenu.defaults = {
-		'circleRadius': 80,
-		'lv1_outerRing': true,
-		'lv2_outerRing': true,
-		'lv3_outerRing': true,
-		'innerRing_items': 3,
-		'outerRing_items': 5,
-		'innerRing_radius': 110,
-		'outerRing_radius': 220,
-		'togglePosition': 'bottom-left'
-	};
-	
-})( jQuery );
+	}
+}
+
+/* ------------ Radial toggle button related behavior: Toggling level-2 Menu ------------*/	
+DMW.navigation.RadLevelTwoToggle = function() {
+	DMW.navigation.$radFirstLevel = $(this).parent().siblings();
+	DMW.navigation.$radLevelOneItems = $(this).parent().siblings('.have-subs').children('a');
+	DMW.navigation.positionOne = $(this).position();
+	if(!DMW.navigation.radLevelTwoShown){
+		$(this).parent().addClass('active');
+		DMW.navigation.$radFirstLevel.fadeTo(200, 0.1);
+		DMW.navigation.$radLevelOneItems.unbind('click');
+		
+		var $level2 = ('ul.level-2');
+		DMW.navigation.toggleMenuItems(this, $level2, DMW.navigation.lv2_outerRing );
+
+		$(this).parent().children('ul.level-2').removeClass('hide');
+		$(this).parent().children('ul.level-2').addClass('show');
+		DMW.navigation.radLevelTwoShown = true;
+	} else {
+		DMW.navigation.radLevelTwoShown = false;	
+		$(this).parent().removeClass('active');
+		DMW.navigation.$radFirstLevel.fadeTo(200, 1);
+		DMW.navigation.$radLevelOneItems.bind('click', DMW.navigation.RadLevelTwoToggle);
+		$('#sections-tree ul.level-2 > li').animate({ top: DMW.navigation.positionOne.top, left: DMW.navigation.positionOne.left }, 200);		
+		$('#sections-tree ul.level-2').fadeOut(200, function(){	
+			$('#sections-tree ul.level-2 > li.have-subs').removeClass('active');	
+			$('#sections-tree ul.level-2').removeClass('show');
+			$('#sections-tree ul.level-2').addClass('hide');
+			if(DMW.navigation.radLevelThreeShown){
+				DMW.navigation.$radSecondLevel.fadeTo(200, 1);
+				DMW.navigation.$radLevelTwoItems.bind('click', DMW.navigation.RadLevelThreeToggle);
+				$('#sections-tree ul.level-3 > li').animate({ top: DMW.navigation.positionTwo.top, left: DMW.navigation.positionTwo.left }, 200);
+				$('#sections-tree ul.level-3').removeClass('show');
+				$('#sections-tree ul.level-3').addClass('hide');
+				DMW.navigation.radLevelThreeShown = false;
+			}
+		});	
+	}
+}
+
+/* ------------ Radial toggle button related behavior: Toggling level-3 Menu ------------*/
+DMW.navigation.RadLevelThreeToggle = function() {
+	DMW.navigation.$radSecondLevel = $(this).parent().siblings();
+	DMW.navigation.$radLevelTwoItems = $(this).parent().siblings('.have-subs').children('a');
+	DMW.navigation.positionTwo = $(this).position();
+	if(!DMW.navigation.radLevelThreeShown){
+		$(this).parent().addClass('active');
+		DMW.navigation.$radSecondLevel.fadeTo(200, 0.1);
+		DMW.navigation.$radLevelTwoItems.unbind('click');
+		
+		var $level3 = ('ul.level-3');
+		DMW.navigation.toggleMenuItems(this, $level3, DMW.navigation.lv3_outerRing );
+
+		$(this).parent().children('ul.level-3').removeClass('hide');
+		$(this).parent().children('ul.level-3').addClass('show');
+		DMW.navigation.radLevelThreeShown = true;
+	} else {
+		DMW.navigation.radLevelThreeShown = false;	
+		$(this).parent().removeClass('active');
+		DMW.navigation.$radSecondLevel.fadeTo(200, 1);
+		DMW.navigation.$radLevelTwoItems.bind('click', DMW.navigation.RadLevelThreeToggle);
+		$('#sections-tree ul.level-3 > li').animate({ top: DMW.navigation.positionTwo.top, left: DMW.navigation.positionTwo.left }, 200);		
+		$('#sections-tree ul.level-3').fadeOut(200, function(){				
+			$('#sections-tree ul.level-3').removeClass('show');
+			$('#sections-tree ul.level-3').addClass('hide');
+		});	
+	}
+}
+
+DMW.navigation.toggleMenuItems = function(node, selectParent, isOuterRing) {
+	var yPositionAdjust, xPositionAdjust;
+		
+	yPositionAdjust = (DMW.navigation.circleRadius - $(node).outerHeight())/2;
+	xPositionAdjust = (DMW.navigation.circleRadius - $(node).outerHeight())/2;			
+
+	var angleDegree = 0;
+
+	var xPosMod = 1;
+	var yPosMod = -1;
+
+	var outerAngleIncrease = 90/(DMW.navigation.outerRing_items-1);
+	var innerAngleIncrease = 90/(DMW.navigation.innerRing_items-1);
+
+	/* ------------ Looping for INNER Ring - Sub-Menu level toggle and animation ------------*/		
+	for( var index = 0; index < DMW.navigation.innerRing_items; index++ ){
+	    angleRad = angleDegree * toRadians;
+		xCoord = DMW.navigation.innerRing_radius * Math.cos( angleRad );
+		yCoord = DMW.navigation.innerRing_radius * Math.sin( angleRad );	
+		$(node).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust , top: yCoord*yPosMod-yPositionAdjust}, 200);
+		angleDegree += innerAngleIncrease;
+	}
+
+	angleDegree = 0;
+	if(isOuterRing){
+		for( var index = DMW.navigation.innerRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.outerRing_items; index++ ){
+			$(node).parent().children(selectParent).children('li:nth-child('+ (index+1) +')').removeClass('hide');		    				
+		}
+		/* ------------ Looping for OUTER Ring (if enabled) - Sub-Menu level toggle and animation ------------*/				
+		for( var index = DMW.navigation.innerRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.outerRing_items; index++ ){
+    		angleRad = angleDegree * toRadians;
+			xCoord = DMW.navigation.outerRing_radius * Math.cos( angleRad );
+			yCoord = DMW.navigation.outerRing_radius * Math.sin( angleRad );			
+			$(node).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust, top: yCoord*yPosMod-yPositionAdjust }, 200);
+			angleDegree += outerAngleIncrease;
+		}
+	} else {
+		for( var index = DMW.navigation.innerRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.outerRing_items; index++ ){		    				
+			$(node).parent().children(selectParent).children('li:nth-child('+ (index+1) +')').addClass('hide');
+		}
+	}					
+}

@@ -33,7 +33,6 @@ class MainHandler(RequestHandler):
         sections = Section.getTree()
         print sections
         self.render('base.html',
-            function = displayTree,
             section = section,
             params = params,
             packs = packs,
@@ -125,6 +124,8 @@ class WSHandler(websocket.WebSocketHandler):
             data = {
                 'section-get' : self.WSSectionGet,
                 'section-getall' : self.WSSectionGetall,
+                'section-gettree' : self.WSSectionGettree,
+                'section-remove' : self.WSSectionRemove,
                 'widget-getall' : self.WSWidgetsGetall,
                 'widgetinstance-getsection' : self.WSWidgetInstanceGetsection,
                 'widgetinstance-getoptions' : self.WSWidgetInstanceGetoptions,
@@ -164,10 +165,31 @@ class WSHandler(websocket.WebSocketHandler):
         return ['section-details', j]
 
     def WSSectionGetall(self, data):
-        sections = Section.getAll()
+        root = Section.getAll()
         j = to_json(sections)
-        packs = Widget.getSectionPacks(section_id=id)
         return ['section-list', j]
+
+    def WSSectionGettree(self, data):
+        root = Section.getTree()
+        j = to_json(root)
+        j["childs"] = self.json_childs(root, 1)
+        j["level"] = 0
+        return ['section-tree', j]
+
+    def json_childs(self, section, level):
+        res = []
+        if section._childrens:
+            for child in section._childrens:
+                c = to_json(child)
+                c["childs"] = self.json_childs(child, level+1)
+                c["level"] = level
+                res.append(c)
+        return res
+
+    def WSSectionRemove(self, data):
+        i = Section.delete(data['section_id'])
+        json = to_json(i)
+        return ['section-removed', json];
 
     def WSWidgetsGetall(self, data):
         widgets = Widget.getAll()

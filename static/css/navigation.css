@@ -2,13 +2,13 @@
 
 /*--------------  SAFELY CUSTOMIZABLE - Visual styling for menu elements -------------------*/
 
-.active { 
-	background-color: #222222 !important; 
+#sections-tree .active { 
+	background-color: #2D2C2F !important; 
 	color: #ffffff !important; 
 	z-index: 15; 
 }
 
-#sections-list {
+#sections-tree {
 	font-size: 0.8em;
 	position: fixed;
 	bottom: 0;
@@ -37,64 +37,52 @@
 
 /* -------------- Menu Levels general styling -------------- */
 
-#sections-list ul.level-1 { 
+#sections-tree ul.level-1 { 
 	font-size: 1.2em; 
 }
-#sections-list ul.level-2 { 
-	font-size: 1.2em; 
-}
-#sections-list ul.level-3 { 
-	font-size: 1.2em; 
-}
-
 
 /* -------------- Menu Items -------------- */
 
-#sections-list > ul li {
+#sections-tree > ul li {
 	color: #ffffff;
     box-shadow: 0 3px 3px rgba(0,0,0,.1);
-}
-
-#sections-list > ul li:nth-child(odd) {
-	background-color: #005774;
-}
-
-#sections-list > ul li:nth-child(even) {
 	background-color: #00506A;
 }
 
-#sections-list > ul li:hover { 
+#sections-tree > ul li.level-main {
+	color: #2D2C2F; 
+	background-color: #B13822;
+}
+
+#sections-tree > ul li:hover { 
 	background-color: #2D2C2F; 
 }
-#sections-list ul li.have-subs { 
+#sections-tree ul li.have-subs { 
 	border: 2px solid #B13822; 
 }
 
 /* -------------- Menu Items - Links -------------- */
-#sections-list ul li a { 
+#sections-tree ul li a { 
 	text-decoration: none; 
 	color: #ffffff;
 }
-#sections-list ul li.have-subs > a {
+#sections-tree ul li.have-subs > a {
  	background: url("../images/multi-level-arrow.png") no-repeat right bottom; 
 }
-#sections-list ul li.active > a { 
+#sections-tree ul li.active > a { 
 	color: #ffffff; 
 }
-#sections-list ul li > a:hover, nav.square ul li > a:active {
+#sections-tree ul li > a:hover, nav.square ul li > a:active {
 	color: #ffffff; 
 }
 
 
 /*--------------------------- RESTRICTED - Should not be modified ---------------------------*/
 	
-input:focus { 
-	outline: none; 
-}
-.hide { 
+#sections-tree .hide { 
 	display: none !important; 
 }
-.show { 
+#sections-tree .show { 
 	display: inherit !important; 
 }
 /*
@@ -103,31 +91,31 @@ input:focus {
 } 
 */
 
-#toggle-radial {
+#sections-tree #toggle-radial {
 	cursor: pointer;
 	position: relative;
 	z-index: 15;
 }
 
-#sections-list ul {
+#sections-tree ul {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 	position: relative;
 }
 
-#sections-list > ul li {
+#sections-tree > ul li {
 	display: block;			
 	position: absolute;
 }
 
-#sections-list ul.level-2, #sections-list ul.level-3 {
+#sections-tree ul.level-2, #sections-tree ul.level-3 {
 	padding: 0;
 	margin: 0;
 	position: absolute;
 }
 	
-#sections-list ul li a {	
+#sections-tree ul li a {	
 	display: table-cell;
 	vertical-align: middle;
 	text-align: center;

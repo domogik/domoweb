@@ -7,7 +7,8 @@ DMW.main.socket = document.getElementById('socket'),
 DMW.main.layout = document.getElementById('grid-layout'),
 DMW.main.modalOverlay = document.getElementById('modal-overlay'),
 DMW.main.ajax = document.getElementById('ajax'),
-DMW.main.navigation = document.getElementById('main-menu');
+DMW.main.menu = document.getElementById('main-menu');
+DMW.main.navigation = document.getElementById('sections-tree');
 
 function sectionUpdated(e) {
 	var details = e.detail;
@@ -274,6 +275,13 @@ function addSectionHandler() {
 	DMW.main.ajax.setAttribute('method', 'GET');
 	DMW.main.ajax.setAttribute('params', '{"action":"addsection", "id":"' + DMW.main.section.getAttribute('sectionid') + '"}');
 	DMW.main.ajax.go();
+}
+
+function removeSectionHandler() {
+	var id = DMW.main.section.getAttribute('sectionid');
+	if (id >1) { // Don't delete Root
+	   	DMW.main.socket.send("section-remove", {'section_id':id});
+	}
 }
 
 function onWidgetStyleChange(e) {
