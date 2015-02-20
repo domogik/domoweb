@@ -1,13 +1,12 @@
 DMW.navigation = DMW.navigation || {};
 
 DMW.navigation.circleRadius = 80;
-DMW.navigation.lv1_outerRing = true;
-DMW.navigation.lv2_outerRing = true;
-DMW.navigation.lv3_outerRing = true;
 DMW.navigation.innerRing_items = 3;
-DMW.navigation.outerRing_items = 5;
+DMW.navigation.middleRing_items = 5;
+DMW.navigation.outerRing_items = 7;
 DMW.navigation.innerRing_radius = 110;
-DMW.navigation.outerRing_radius = 220;
+DMW.navigation.middleRing_radius = 220;
+DMW.navigation.outerRing_radius = 330;
 
 DMW.navigation.radLevelOneShown = false;
 DMW.navigation.radLevelTwoShown = false;
@@ -117,7 +116,7 @@ DMW.navigation.RadLevelOneToggle = function() {
 		$(this).addClass('active');
 		
 		var $level1 = $('ul.level-1');
-		DMW.navigation.toggleMenuItems(this, $level1, DMW.navigation.lv1_outerRing );
+		DMW.navigation.toggleMenuItems(this, $level1);
 
 		$('#sections-tree ul.level-1').removeClass('hide');
 		$('#sections-tree ul.level-1').addClass('show');
@@ -162,7 +161,7 @@ DMW.navigation.RadLevelTwoToggle = function() {
 		DMW.navigation.$radLevelOneItems.unbind('click');
 		
 		var $level2 = ('ul.level-2');
-		DMW.navigation.toggleMenuItems(this, $level2, DMW.navigation.lv2_outerRing );
+		DMW.navigation.toggleMenuItems(this, $level2);
 
 		$(this).parent().children('ul.level-2').removeClass('hide');
 		$(this).parent().children('ul.level-2').addClass('show');
@@ -200,7 +199,7 @@ DMW.navigation.RadLevelThreeToggle = function() {
 		DMW.navigation.$radLevelTwoItems.unbind('click');
 		
 		var $level3 = ('ul.level-3');
-		DMW.navigation.toggleMenuItems(this, $level3, DMW.navigation.lv3_outerRing );
+		DMW.navigation.toggleMenuItems(this, $level3);
 
 		$(this).parent().children('ul.level-3').removeClass('hide');
 		$(this).parent().children('ul.level-3').addClass('show');
@@ -218,7 +217,7 @@ DMW.navigation.RadLevelThreeToggle = function() {
 	}
 }
 
-DMW.navigation.toggleMenuItems = function(node, selectParent, isOuterRing) {
+DMW.navigation.toggleMenuItems = function(node, selectParent) {
 	var yPositionAdjust, xPositionAdjust;
 		
 	yPositionAdjust = (DMW.navigation.circleRadius - $(node).outerHeight())/2;
@@ -230,6 +229,7 @@ DMW.navigation.toggleMenuItems = function(node, selectParent, isOuterRing) {
 	var yPosMod = -1;
 
 	var outerAngleIncrease = 90/(DMW.navigation.outerRing_items-1);
+	var middleAngleIncrease = 90/(DMW.navigation.middleRing_items-1);
 	var innerAngleIncrease = 90/(DMW.navigation.innerRing_items-1);
 
 	/* ------------ Looping for INNER Ring - Sub-Menu level toggle and animation ------------*/		
@@ -242,21 +242,29 @@ DMW.navigation.toggleMenuItems = function(node, selectParent, isOuterRing) {
 	}
 
 	angleDegree = 0;
-	if(isOuterRing){
-		for( var index = DMW.navigation.innerRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.outerRing_items; index++ ){
-			$(node).parent().children(selectParent).children('li:nth-child('+ (index+1) +')').removeClass('hide');		    				
-		}
-		/* ------------ Looping for OUTER Ring (if enabled) - Sub-Menu level toggle and animation ------------*/				
-		for( var index = DMW.navigation.innerRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.outerRing_items; index++ ){
-    		angleRad = angleDegree * toRadians;
-			xCoord = DMW.navigation.outerRing_radius * Math.cos( angleRad );
-			yCoord = DMW.navigation.outerRing_radius * Math.sin( angleRad );			
-			$(node).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust, top: yCoord*yPosMod-yPositionAdjust }, 200);
-			angleDegree += outerAngleIncrease;
-		}
-	} else {
-		for( var index = DMW.navigation.innerRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.outerRing_items; index++ ){		    				
-			$(node).parent().children(selectParent).children('li:nth-child('+ (index+1) +')').addClass('hide');
-		}
-	}					
+
+	/* ------------ Looping for MIDDLE Ring - Sub-Menu level toggle and animation ------------*/	
+
+	for( var index = DMW.navigation.innerRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.middleRing_items; index++ ){
+		angleRad = angleDegree * toRadians;
+		xCoord = DMW.navigation.middleRing_radius * Math.cos( angleRad );
+		yCoord = DMW.navigation.middleRing_radius * Math.sin( angleRad );			
+		$(node).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust, top: yCoord*yPosMod-yPositionAdjust }, 200);
+		angleDegree += middleAngleIncrease;
+	}
+	/* ------------ Looping for OUTER Ring - Sub-Menu level toggle and animation ------------*/	
+
+	angleDegree = 0;
+
+	for( var index = DMW.navigation.innerRing_items + DMW.navigation.middleRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.middleRing_items + DMW.navigation.outerRing_items; index++ ){
+		angleRad = angleDegree * toRadians;
+		xCoord = DMW.navigation.outerRing_radius * Math.cos( angleRad );
+		yCoord = DMW.navigation.outerRing_radius * Math.sin( angleRad );			
+		$(node).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust, top: yCoord*yPosMod-yPositionAdjust }, 200);
+		angleDegree += outerAngleIncrease;
+	}
+/*
+	for( var index = DMW.navigation.innerRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.outerRing_items; index++ ){
+		$(node).parent().children(selectParent).children('li:nth-child('+ (index+1) +')').removeClass('hide');		    				
+	}*/
 }
