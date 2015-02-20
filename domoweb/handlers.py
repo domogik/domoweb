@@ -1,7 +1,11 @@
 #!/usr/bin/env python
-from tornado import web, websocket
+from tornado import web, websocket, gen
 from tornado.options import options
 from tornado.web import RequestHandler, StaticFileHandler
+from tornado.gen import Return
+from tornado.escape import json_decode
+from tornado.httpclient import AsyncHTTPClient
+
 from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, SectionParam, Sensor
 from domoweb.forms import WidgetInstanceForms, WidgetStyleForm
 
@@ -24,35 +28,21 @@ class MainHandler(RequestHandler):
         if not id:
             id = 1
         section = Section.get(id)
-        widgets = Widget.getSection(section_id=id)
         packs = Widget.getSectionPacks(section_id=id)
-        instances = WidgetInstance.getSection(section_id=id)
-        for j, i in enumerate(instances):
-            try:
-                i.optionsdict = WidgetInstance.getOptionsDict(id=i.id)
-            except:
-                logger.error("Error while getting options for a widget instance. Maybe you delete a widget folder but it is still defined in database? Error: {0}".format(traceback.format_exc()))
         params = Section.getParamsDict(id)
+        sections = Section.getTree()
+        print sections
         self.render('base.html',
             section = section,
             params = params,
-            widgets = widgets,
             packs = packs,
-            instances = instances,
-            )
-
-class TestHandler(RequestHandler):
-    def get(self, id):
-        instance = WidgetInstance.get(id);
-        self.render('test.html',
-            instance = instance,
+            sections = sections,
             )
 
 class ConfigurationHandler(RequestHandler):
     def get(self):
         action = self.get_argument('action', None)
         id = self.get_argument('id', None)
-        # Widget section box
         if action=='widget':
             instance = WidgetInstance.get(id);
             forms = WidgetInstanceForms(instance=instance)
@@ -65,6 +55,8 @@ class ConfigurationHandler(RequestHandler):
             widgetForm = WidgetStyleForm(data=dataOptions, prefix='params')
             backgrounds = [f for f in os.listdir('/var/lib/domoweb/backgrounds') if any(f.lower().endswith(x) for x in ('.jpeg', '.jpg','.gif','.png'))]
             self.render('sectionConfiguration.html', section=section, params=params, backgrounds=backgrounds, widgetForm=widgetForm)
+        elif action=='addsection':
+            self.render('sectionAdd.html')
 
     def post(self):
         action = self.get_argument('action', None)
@@ -107,6 +99,11 @@ class ConfigurationHandler(RequestHandler):
             WSHandler.sendAllMessage(['section-details', json])
 
             self.write("{success:true}")
+        elif action=='addsection':
+            s = Section.add(id, self.get_argument('sectionName'), self.get_argument('sectionDescription'))
+            json = to_json(s)
+            WSHandler.sendAllMessage(['section-added', json])
+            self.write("{success:true}")
 
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
@@ -114,26 +111,33 @@ class WSHandler(websocket.WebSocketHandler):
     def on_close(self):
         socket_connections.remove(self)
 
+    @gen.coroutine
     def on_message(self, message):
         logger.info("WS: Received message %s" % message)
         jsonmessage = json.loads(message)
 
-        data = {
-            'section-get' : self.WSSectionGet,
-            'widget-getall' : self.WSWidgetsGetall,
-            'widgetinstance-getsection' : self.WSWidgetInstanceGetsection,
-            'widgetinstance-getoptions' : self.WSWidgetInstanceGetoptions,
-            'widgetinstance-getsensors' : self.WSWidgetInstanceGetsensors,
-            'widgetinstance-getcommands' : self.WSWidgetInstanceGetcommands,
-            'widgetinstance-getdevices' : self.WSWidgetInstanceGetdevices,
-            'datatype-getall' : self.WSDatatypesGetall,
-            'command-send' : self.WSCommandSend,
-            'sensor-gethistory': self.WSSensorGetHistory,
-            'sensor-getlast': self.WSSensorGetLast,
-            'widgetinstance-add' : self.WSWidgetInstanceAdd,
-            'widgetinstance-order' : self.WSWidgetInstanceOrder,
-            'widgetinstance-remove' : self.WSWidgetInstanceRemove,
-        }[jsonmessage[0]](jsonmessage[1])
+        if (jsonmessage[0] == 'sensor-gethistory'): 
+            data = yield self.WSSensorGetHistory(jsonmessage[1])
+        elif(jsonmessage[0] == 'sensor-getlast'): 
+            data = yield self.WSSensorGetLast(jsonmessage[1])
+        else:
+            data = {
+                'section-get' : self.WSSectionGet,
+                'section-getall' : self.WSSectionGetall,
+                'section-gettree' : self.WSSectionGettree,
+                'section-remove' : self.WSSectionRemove,
+                'widget-getall' : self.WSWidgetsGetall,
+                'widgetinstance-getsection' : self.WSWidgetInstanceGetsection,
+                'widgetinstance-getoptions' : self.WSWidgetInstanceGetoptions,
+                'widgetinstance-getsensors' : self.WSWidgetInstanceGetsensors,
+                'widgetinstance-getcommands' : self.WSWidgetInstanceGetcommands,
+                'widgetinstance-getdevices' : self.WSWidgetInstanceGetdevices,
+                'datatype-getall' : self.WSDatatypesGetall,
+                'command-send' : self.WSCommandSend,
+                'widgetinstance-add' : self.WSWidgetInstanceAdd,
+                'widgetinstance-order' : self.WSWidgetInstanceOrder,
+                'widgetinstance-remove' : self.WSWidgetInstanceRemove,
+            }[jsonmessage[0]](jsonmessage[1])
         if (data):
             # If the modif is global we send the result to all listeners
             if (jsonmessage[0] in ['widgetinstance-add', 'widgetinstance-order', 'widgetinstance-remove']):
@@ -143,9 +147,49 @@ class WSHandler(websocket.WebSocketHandler):
 
     def WSSectionGet(self, data):
         section = Section.get(data['id'])
+        widgets = Widget.getSection(section_id=data['id'])
+        instances = WidgetInstance.getSection(section_id=data['id'])
         j = to_json(section)
-        j['params'] = dict ((p.key, p.value) for p in SectionParam.getSection(data['id']))
+        j['params'] = Section.getParamsDict(data['id'])
+        j["widgets"] = to_json(widgets)
+        j["instances"] = to_json(instances)
+        for index, item in enumerate(instances):
+            if item.widget:
+                j['instances'][index]["widget"] = to_json(item.widget)
+            try:
+                optionsdict = WidgetInstance.getOptionsDict(id=item.id)
+                j['instances'][index]["options"] = optionsdict
+            except:
+                logger.error("Error while getting options for a widget instance. Maybe you delete a widget folder but it is still defined in database? Error: {0}".format(traceback.format_exc()))
+
         return ['section-details', j]
+
+    def WSSectionGetall(self, data):
+        root = Section.getAll()
+        j = to_json(sections)
+        return ['section-list', j]
+
+    def WSSectionGettree(self, data):
+        root = Section.getTree()
+        j = to_json(root)
+        j["childs"] = self.json_childs(root, 1)
+        j["level"] = 0
+        return ['section-tree', j]
+
+    def json_childs(self, section, level):
+        res = []
+        if section._childrens:
+            for child in section._childrens:
+                c = to_json(child)
+                c["childs"] = self.json_childs(child, level+1)
+                c["level"] = level
+                res.append(c)
+        return res
+
+    def WSSectionRemove(self, data):
+        i = Section.delete(data['section_id'])
+        json = to_json(i)
+        return ['section-removed', json];
 
     def WSWidgetsGetall(self, data):
         widgets = Widget.getAll()
@@ -217,27 +261,33 @@ class WSHandler(websocket.WebSocketHandler):
         msg.add_data('cmdparams', data['parameters'])
         return cli.request('xplgw', msg.get(), timeout=10).get()
 
+    @gen.coroutine
     def WSSensorGetHistory(self, data):
-        import requests
         url = '%s/sensorhistory/id/%d/from/%d/to/%d/interval/%s/selector/avg' % (options.rest_url, data['id'],data['from'],data['to'],data['interval'])
         logger.info("REST Call : %s" % url)
-        response = requests.get(url)
+        http = AsyncHTTPClient()
+        response = yield http.fetch(url)
+        j = json_decode(response.body)
         try:
-            history = response.json()['values']
+            history = j['values']
         except ValueError:
             history = []
         json = {'caller':data['caller'], 'id':data['id'], 'history':history}
-        return ['sensor-history', json];
+        raise Return(['sensor-history', json])
 
+    @gen.coroutine
     def WSSensorGetLast(self, data):
-        import requests
-        response = requests.get('%s/sensorhistory/id/%d/last/%d' % (options.rest_url, data['id'],data['count']))
+        url = '%s/sensorhistory/id/%d/last/%d' % (options.rest_url, data['id'],data['count'])
+        logger.info("REST Call : %s" % url)
+        http = AsyncHTTPClient()
+        response = yield http.fetch(url)
+        j = json_decode(response.body)
         try:
-            history = response.json()
+            history = j['values']
         except ValueError:
             history = []
         json = {'caller':data['caller'], 'id':data['id'], 'history':history}
-        return ['sensor-history', json];
+        raise Return(['sensor-history', json])
 
     def sendMessage(self, content):
         data=json.dumps(content)
@@ -300,7 +350,6 @@ class UploadHandler(RequestHandler):
         self.finish("{success:true}")
 
 class MultiStaticFileHandler(StaticFileHandler):
-
     def get(self, ns, lang, file):
         path = "%s/locales/%s/%s" % (ns, lang, file)
         return super(MultiStaticFileHandler, self).get(path)

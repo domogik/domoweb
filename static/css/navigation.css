@@ -1,0 +1,136 @@
+@charset "UTF-8";
+
+/*--------------  SAFELY CUSTOMIZABLE - Visual styling for menu elements -------------------*/
+
+#sections-tree .active { 
+	background-color: #2D2C2F !important; 
+	color: #ffffff !important; 
+	z-index: 15; 
+}
+
+#sections-tree {
+	font-size: 0.8em;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+}
+
+/*--------------  Toggle Button -------------- */
+
+#toggle-radial {
+	width: 4em;
+	height: 4em;
+	border-radius: 0 4em 0 0;
+	border: 0;
+	background: #2D2C2F;
+	color: #ffffff;
+}
+#toggle-radial span {
+	font-size: 1.6em;
+	margin: 0.5em 0.5em 0 0;
+}
+#toggle-radial:hover, #toggle-radial:active, #toggle-radial.active {
+	background: #ffffff;
+	color: #2D2C2F;
+}
+
+
+/* -------------- Menu Levels general styling -------------- */
+
+#sections-tree ul.level-1 { 
+	font-size: 1.2em; 
+}
+
+/* -------------- Menu Items -------------- */
+
+#sections-tree > ul li {
+	color: #ffffff;
+    box-shadow: 0 3px 3px rgba(0,0,0,.1);
+	background-color: #00506A;
+}
+
+#sections-tree > ul li.level-main {
+	color: #2D2C2F; 
+	background-color: #B13822;
+}
+
+#sections-tree > ul li:hover { 
+	background-color: #2D2C2F; 
+}
+#sections-tree ul li.have-subs { 
+	border: 2px solid #B13822; 
+}
+
+/* -------------- Menu Items - Links -------------- */
+#sections-tree ul li a { 
+	text-decoration: none; 
+	color: #ffffff;
+}
+#sections-tree ul li.have-subs > a {
+ 	background: url("../images/multi-level-arrow.png") no-repeat right bottom; 
+}
+#sections-tree ul li.active > a { 
+	color: #ffffff; 
+}
+#sections-tree ul li > a:hover, nav.square ul li > a:active {
+	color: #ffffff; 
+}
+
+
+/*--------------------------- RESTRICTED - Should not be modified ---------------------------*/
+	
+#sections-tree .hide { 
+	display: none !important; 
+}
+#sections-tree .show { 
+	display: inherit !important; 
+}
+/*
+.disable {  
+	opacity: 0.2; 
+} 
+*/
+
+#sections-tree #toggle-radial {
+	cursor: pointer;
+	position: relative;
+	z-index: 15;
+}
+
+#sections-tree ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	position: relative;
+}
+
+#sections-tree > ul li {
+	display: block;			
+	position: absolute;
+}
+
+#sections-tree ul.level-2, #sections-tree ul.level-3 {
+	padding: 0;
+	margin: 0;
+	position: absolute;
+}
+	
+#sections-tree ul li a {	
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+	/* Styling for unwrapped item labels (Experimental) 
+	display: block;
+	line-height: 55px;
+	margin-left: -50%;
+	white-space: nowrap;
+	*/
+}
+	
+/*Styling for unwrapped item labels (Experimental)
+.radial-label {
+	display: inline-block;
+	position: relative;
+	left: 50%;
+}*/
+

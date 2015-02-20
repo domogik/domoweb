@@ -4,7 +4,11 @@
 		"configuration": "Config",
 		"widgets": "Widgets",
 		"finishWidgets": "Finish",
-		"addwidget": "Add Widget"
+		"addWidget": "Add",
+		"sections": "Sections",
+		"addSection": "Add",
+		"removeSection": "Remove",
+		"finishSections": "Finish"
 	},
 	"unit": "__value__",
 	"unit_DT_Byte": "b",

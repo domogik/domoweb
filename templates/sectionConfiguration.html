@@ -25,14 +25,14 @@
             </div>
             <div class="form-group">
               <label for="sectionName">Description</label>
-              <input type="text" class="form-control" id="sectionDescription" name="sectionDescription" placeholder="Enter Section name" value="{{section.description}}">
+              <input type="text" class="form-control" id="sectionDescription" name="sectionDescription" placeholder="Enter Section description" value="{{section.description}}">
             </div>
             <div class="form-group">
-              <label for="SectionBackground">Background</label>
-              <select class="image-picker form-control" id="SectionBackground" name="paramsSectionBackground">
-                <option data-img-src="images/background_default_thumbnail.png" value=""{% if 'SectionBackground' not in params %} selected='selected'{% end %}>Default background</option>
+              <label for="SectionBackgroundImage">Background Image</label>
+              <select class="image-picker form-control" id="SectionBackgroundImageUploaded" name="paramsSectionBackgroundImageUploaded">
+                <option data-img-src="images/background_default_thumbnail.png" value=""{% if 'SectionBackgroundImageUploaded' not in params %} selected='selected'{% end %}>Default background</option>
               {% for background in backgrounds %}
-                <option data-img-src="/backgrounds/thumbnails/{{ background }}" value="{{ background }}"{% if 'SectionBackground' in params and params['SectionBackground'] == background %} selected='selected'{% end %}>{{ background }}</option>
+                <option data-img-src="/backgrounds/thumbnails/{{ background }}" value="{{ background }}"{% if 'SectionBackgroundImageUploaded' in params and params['SectionBackgroundImageUploaded'] == background %} selected='selected'{% end %}>{{ background }}</option>
               {% end %}
               </select>
               </div>

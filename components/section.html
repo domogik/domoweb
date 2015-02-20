@@ -10,10 +10,13 @@
 				this._name = [];
 				this._description = [];
 				this._params = [];
-		        this.$.socket.register('section-details', this.messageReceived.bind(this), null);
+		        this.$.socket.register('section-details', this.sectionReceived.bind(this), null);
+		        this.$.socket.register('section-removed', this.sectionRemoved.bind(this), null);
 			},
 			sectionidChanged: function(oldValue, newValue) {
-				this.$.socket.send('section-get', {'id':this.sectionid});
+				if (newValue) {
+					this.$.socket.send('section-get', {'id':newValue});
+				}
 			},
 			get name() {
 				return this._name[this.sectionid];
@@ -24,11 +27,16 @@
 			get params() {
 				return this._params[this.sectionid];
 			},
-			messageReceived: function(topic, json) {
+			sectionReceived: function(topic, json) {
 				this._name[this.sectionid] = json['name'];
 				this._description[this.sectionid] = json['description'];
 				this._params[this.sectionid] = json['params'];
-	        	this.fire('section-updated');
+	        	this.fire('section-updated', json);
+	    	},
+			sectionRemoved: function(topic, json) {
+				if (this.sectionid == json['id']) {
+					this.sectionid = 1;
+				}
 	    	},
 	    });
 	</script>

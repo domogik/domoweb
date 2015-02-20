@@ -2,6 +2,8 @@ import json
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, Unicode, UnicodeText, Boolean, ForeignKey, String, Text
 from sqlalchemy.orm import backref, relationship, sessionmaker, joinedload
+import logging
+logger = logging.getLogger('domoweb')
 
 # alembic revision --autogenerate -m "xxxx"
 
@@ -15,6 +17,7 @@ Base = declarative_base()
 metadata = Base.metadata
 # create a configured "Session" class
 Session = sessionmaker(bind=engine)
+session = Session()
 
 class Parameter(Base):
 	__tablename__ = 'parameter'
@@ -36,34 +39,22 @@ class Widget(Base):
 	
 	@classmethod
 	def getAll(cls):
-		# create a Session
-		session = Session()
 		s = session.query(cls).all()
-		session.close()
 		return s
 
 	@classmethod
 	def get(cls, id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).get(id)
-		session.close()
 		return s
 		
 	@classmethod
 	def getSection(cls, section_id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).join(cls.instances).distinct().all()
-		session.close()
 		return s
 
 	@classmethod
 	def getSectionPacks(cls, section_id):
-		# create a Session
-		session = Session()
 		s = session.query(cls.set_id).join(cls.instances).distinct().all()
-		session.close()
 		return s
 
 class WidgetOption(Base):
@@ -80,10 +71,7 @@ class WidgetOption(Base):
 
 	@classmethod
 	def getWidget(cls, widget_id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).filter_by(widget_id=widget_id).all()
-		session.close()
 		return s
 
 class WidgetSensor(Base):
@@ -102,10 +90,7 @@ class WidgetSensor(Base):
 
 	@classmethod
 	def getWidget(cls, widget_id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).filter_by(widget_id=widget_id).all()
-		session.close()
 		return s
 
 class WidgetCommand(Base):
@@ -121,10 +106,7 @@ class WidgetCommand(Base):
 
 	@classmethod
 	def getWidget(cls, widget_id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).filter_by(widget_id=widget_id).all()
-		session.close()
 		return s
 
 class WidgetDevice(Base):
@@ -139,10 +121,7 @@ class WidgetDevice(Base):
 
 	@classmethod
 	def getWidget(cls, widget_id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).filter_by(widget_id=widget_id).all()
-		session.close()
 		return s
 
 class Theme(Base):
@@ -161,15 +140,11 @@ class SectionParam(Base):
 
 	@classmethod
 	def getSection(cls, section_id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).filter_by(section_id = section_id).all()
-		session.close()
 		return s
 
 	@classmethod
 	def saveKey(cls, section_id, key, value):
-		session = Session()
 		s = session.query(cls).filter_by(section_id = section_id, key = key).first()
 		if not s:
 			s = cls(section_id=section_id, key=key)
@@ -177,12 +152,10 @@ class SectionParam(Base):
 		session.add(s)
 		session.commit()
 		session.flush()
-		session.close()
 		return s
 
 	@classmethod
 	def delete(cls, section_id, key):
-		session = Session()
 		s = session.query(cls).filter_by(section_id = section_id, key = key).first()
 		if s:
 			session.delete(s)
@@ -190,6 +163,8 @@ class SectionParam(Base):
 		return s
 
 class Section(Base):
+	# http://mikehillyer.com/articles/managing-hierarchical-data-in-mysql/
+	# http://www.sitepoint.com/hierarchical-data-database-2/
 	__tablename__ = 'section'
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	left = Column(Integer(), default=0)
@@ -200,46 +175,68 @@ class Section(Base):
 	theme = relationship("Theme")
 	params = relationship("SectionParam")
 
+	_leafs = None
+	_childrens = None
+	_level = None
+	_max_level = None
+
 	@classmethod
-	def add(cls, name, parent_id, description=None, icon=None):
-		# create a Session
-		session = Session()
-		s = cls(name=name, description=description, icon=icon)
+	def add(cls, parent_id, name, description=None):
+		s = cls(name=name, description=description)
 		parent = session.query(cls).get(parent_id)
-		s.left = int(parent.left) + 1
-		s.right = int(parent.left) + 2
-		session.query(cls).filter('right >:sleft').\
-			params(sleft=parent.left).update({'right':cls.right + 2}, synchronize_session='fetch')
-		session.query(cls).filter('left >:sleft').\
-			params(sleft=parent.left).update({'left':cls.left + 2}, synchronize_session='fetch')
-		session.add(s)
-		session.commit()
+		if parent:
+			s.left = int(parent.right)
+			s.right = int(parent.right) + 1
+			session.query(cls).filter('left > :sright').\
+				params({'sright':parent.right}).update({cls.left: cls.left + 2}, synchronize_session='fetch')
+			session.query(cls).filter('right >= :sright').\
+				params({'sright':parent.right}).update({cls.right: cls.right + 2}, synchronize_session='fetch')
+			session.add(s)
+			session.commit()
+			session.flush()
+		else:
+			logger.info("Section Add: Parent not found")
 		return s
 
 	@classmethod
+	def delete(cls, id):
+		s = session.query(cls).get(id)
+		if s:
+			# Move all childs to parent
+			q = session.query(cls).filter('left > :sleft AND right < :sright').\
+				params({'sleft':s.left, 'sright':s.right}).update({cls.left: cls.left - 1, cls.right: cls.right - 1 }, synchronize_session='fetch')
+			session.query(cls).filter('left > :sright').\
+				params({'sright':s.right}).update({cls.left: cls.left - 2}, synchronize_session='fetch')
+			session.query(cls).filter('right > :sright').\
+				params({'sright':s.right}).update({cls.right: cls.right - 2}, synchronize_session='fetch')
+			session.delete(s)
+			session.commit()
+			session.flush()
+		else:
+			logger.info("Section Remove: Section not found")		
+		return s
+
+	@classmethod
+	def getAll(cls):
+		s = session.query(cls).order_by('left').all()
+		return s
+		
+	@classmethod
 	def get(cls, id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).\
 			options(joinedload('theme')).\
 			get(id)
-		session.close()
 		return s
 
 	@classmethod
 	def getInstances(cls, id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).\
 			options(joinedload('instances')).\
 			get(id)
-		session.close()
 		return s.instances
 
 	@classmethod
 	def update(cls, id, name, description=None):
-		# create a Session
-		session = Session()
 		s = session.query(cls).get(id)
 		s.name = name
 		s.description = description
@@ -250,8 +247,6 @@ class Section(Base):
 
 	@classmethod
 	def getParamsDict(cls, id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).get(id)
 		# Combine Params for section
 		style = json.loads(s.theme.style)
@@ -267,6 +262,59 @@ class Section(Base):
 		session.flush()
 		return params
 
+	@classmethod
+	def getTree(cls):
+		data = cls.getAll()
+		_current_path = []
+		top_node = None
+		if data:
+			for obj in data:
+				obj._childrens = []
+				obj._leafs = 0
+				if top_node == None:
+					top_node = obj
+					obj._level = 0
+					obj._max_level = 0
+					_current_path.append(obj)
+				else:
+					while (obj.left > _current_path[-1].right): # Level down
+						top = _current_path.pop()
+						_current_path[-1]._leafs = _current_path[-1]._leafs + top._leafs
+					obj._level = len(_current_path)
+					if obj._level > top_node._max_level:
+						# Save the number of levels in the root node
+						top_node._max_level = obj._level
+					_current_path[-1]._childrens.append(obj)
+					if not obj._is_leaf():
+						_current_path.append(obj) # Level up
+					else:
+						_current_path[-1]._leafs = _current_path[-1]._leafs + 1
+			while (len(_current_path) > 1): # Level down
+				top = _current_path.pop()
+				_current_path[-1]._leafs = _current_path[-1]._leafs + top._leafs
+		return top_node
+
+	def _is_leaf(self):
+		# If right = left + 1 then it is a leaf
+		return ((self.left + 1) == self.right)
+	is_leaf = property(_is_leaf)
+
+	def _get_leafs(self):
+		return self._leafs
+	leafs = property(_get_leafs)
+
+	def _get_childrens(self):
+		return self._childrens
+	childrens = property(_get_childrens)
+
+	def _get_level(self):
+		return self._level
+	level = property(_get_level)
+
+	def _get_max_level(self):
+		return self._max_level
+	max_level = property(_get_max_level)
+    
 class DataType(Base):
 	__tablename__ = 'dataType'
 	id = Column(String(50), primary_key=True)
@@ -274,19 +322,14 @@ class DataType(Base):
 
 	@classmethod
 	def getAll(cls):
-		# create a Session
-		session = Session()
 		s = session.query(cls).all()
-		session.close()
 		return s
 
 	@classmethod
 	def getChilds(cls, id):
-		session = Session()
 		s = session.query(cls).get(id)
 		if s:
 			c = json.loads(s.parameters)		
-			session.close()
 			return c['childs']
 		else:
 			return None
@@ -301,7 +344,6 @@ class Device(Base):
 	
 	@classmethod
 	def clean(cls):
-		session = Session()
 		session.query(cls).delete()
 		session.query(Command).delete()
 		session.query(CommandParam).delete()
@@ -311,11 +353,9 @@ class Device(Base):
 
 	@classmethod
 	def getTypesFilter(cls, types):
-		session = Session()
 		s = session.query(cls.type, cls.type, cls.id, cls.name).\
 			filter(cls.type.in_(types)).\
 			order_by(cls.id).all()
-		session.close()
 		return s
 
 class Command(Base):
@@ -330,12 +370,10 @@ class Command(Base):
 
 	@classmethod
 	def getTypesFilter(cls, types):
-		session = Session()
 		s = session.query(cls.device_id, Device.name, cls.id, cls.name).\
 			join(Device).\
 			filter(cls.datatypes.in_(types)).\
 			order_by(cls.device_id).all()
-		session.close()
 		return s
 
 class CommandParam(Base):
@@ -349,10 +387,7 @@ class CommandParam(Base):
 	
 	@classmethod
 	def getCommand(cls, command_id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).filter_by(command_id = command_id).all()
-		session.close()
 		return s
 
 class Sensor(Base):
@@ -370,17 +405,14 @@ class Sensor(Base):
 
 	@classmethod
 	def getTypesFilter(cls, types):
-		session = Session()
 		s = session.query(cls.device_id, Device.name, cls.id, cls.name).\
 			join(Device).\
 			filter(cls.datatype_id.in_(types)).\
 			order_by(cls.device_id).all()
-		session.close()
 		return s
 
 	@classmethod
 	def update(cls, id, timestamp, value):
-		session = Session()
 		s = session.query(cls).get(id)
 		if s:
 			s.last_received = timestamp
@@ -393,27 +425,22 @@ class WidgetInstance(Base):
 	__tablename__ = 'widgetInstance'
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	section_id = Column(String(50), ForeignKey('section.id'))
-	section = relationship("Section", backref='instances')
+	section = relationship("Section", backref='instances', single_parent=True, cascade="all, delete-orphan")
 	order = Column(Integer())
 	widget_id = Column(String(50), ForeignKey('widget.id'))
 	widget = relationship("Widget", foreign_keys='WidgetInstance.widget_id', lazy='joined', backref='instances')
-	options = relationship("WidgetInstanceOption", cascade="all")
-	sensors = relationship("WidgetInstanceSensor", cascade="all")
-	commands = relationship("WidgetInstanceCommand", cascade="all")
+	options = relationship("WidgetInstanceOption", cascade="all, delete-orphan")
+	sensors = relationship("WidgetInstanceSensor", cascade="all, delete-orphan")
+	commands = relationship("WidgetInstanceCommand", cascade="all, delete-orphan")
 
 	@classmethod
 	def get(cls, id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).options(joinedload('widget')).get(id)
 		session.expunge_all()
-		session.close()
 		return s
 
 	@classmethod
 	def add(cls, section_id, widget_id):
-		# create a Session
-		session = Session()
 		s = cls(section_id=section_id, widget_id=widget_id)
 		session.add(s)
 		session.commit()
@@ -421,16 +448,12 @@ class WidgetInstance(Base):
 
 	@classmethod
 	def getSection(cls, section_id):
-		# create a Session
-		session = Session()
 		s = session.query(cls).options(joinedload('widget')).filter_by(section_id = section_id).order_by(cls.order).all()
 		session.expunge_all()
-		session.close()
 		return s
 
 	@classmethod
 	def getFullOptionsDict(cls, id):
-		session = Session()
 		s = session.query(cls).get(id)
 		sstyle = json.loads(s.section.theme.style)
 		if s.widget.style:
@@ -458,7 +481,6 @@ class WidgetInstance(Base):
 
 	@classmethod
 	def getOptionsDict(cls, id):
-		session = Session()
 		s = session.query(cls).get(id)
 		options = {}
 		# Override with widget options
@@ -475,7 +497,6 @@ class WidgetInstance(Base):
 
 	@classmethod
 	def delete(cls, id):
-		session = Session()
 		s = session.query(cls).get(id)
 		session.delete(s)
 		session.commit()
@@ -483,7 +504,6 @@ class WidgetInstance(Base):
 
 	@classmethod
 	def updateOrder(cls, id, order):
-		session = Session()
 		s = session.query(cls).get(id)
 		s.order = order
 		session.add(s)
@@ -499,16 +519,12 @@ class WidgetInstanceOption(Base):
 	
 	@classmethod
 	def getKey(cls, instance_id, key):
-		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
-		session.close()
 		return s
 
 	@classmethod
 	def getInstance(cls, instance_id):
-		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id).all()
-		session.close()
 		return s
 
 	@classmethod
@@ -521,7 +537,6 @@ class WidgetInstanceOption(Base):
 
 	@classmethod
 	def saveKey(cls, instance_id, key, value):
-		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
 		if not s:
 			s = cls(instance_id=instance_id, key=key)
@@ -529,12 +544,10 @@ class WidgetInstanceOption(Base):
 		session.add(s)
 		session.commit()
 		session.flush()
-		session.close()
 		return s
 
 	@classmethod
 	def delete(cls, instance_id, key):
-		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
 		if s:
 			session.delete(s)
@@ -551,17 +564,13 @@ class WidgetInstanceSensor(Base):
 	
 	@classmethod
 	def getKey(cls, instance_id, key):
-		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
-		session.close()
 		return s
 
 	@classmethod
 	def getInstance(cls, instance_id):
-		session = Session()
 		s = session.query(cls).options(joinedload('sensor').joinedload('device')).filter_by(instance_id = instance_id).all()
 		session.expunge_all()
-		session.close()
 		return s
 
 	@classmethod
@@ -577,7 +586,6 @@ class WidgetInstanceSensor(Base):
 
 	@classmethod
 	def saveKey(cls, instance_id, key, sensor_id):
-		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
 		if not s:
 			s = cls(instance_id=instance_id, key=key)
@@ -585,12 +593,10 @@ class WidgetInstanceSensor(Base):
 		session.add(s)
 		session.commit()
 		session.flush()
-		session.close()
 		return s
 
 	@classmethod
 	def saveArrayKey(cls, instance_id, key, sensors):
-		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id).filter(cls.key.like(key+"-%")).all()
 		[session.delete(x) for x in s]
 		i = 0
@@ -602,7 +608,6 @@ class WidgetInstanceSensor(Base):
 				i = i + 1
 		session.commit()
 		session.flush()
-		session.close()
 
 class WidgetInstanceCommand(Base):
 	__tablename__ = 'widgetInstanceCommand'
@@ -614,17 +619,13 @@ class WidgetInstanceCommand(Base):
 	
 	@classmethod
 	def getKey(cls, instance_id, key):
-		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
-		session.close()
 		return s
 
 	@classmethod
 	def getInstance(cls, instance_id):
-		session = Session()
 		s = session.query(cls).options(joinedload('command').joinedload('device')).filter_by(instance_id = instance_id).all()
 		session.expunge_all()
-		session.close()
 		return s
 
 	@classmethod
@@ -641,7 +642,6 @@ class WidgetInstanceCommand(Base):
 
 	@classmethod
 	def saveKey(cls, instance_id, key, command_id):
-		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
 		if not s:
 			s = cls(instance_id=instance_id, key=key)
@@ -649,7 +649,6 @@ class WidgetInstanceCommand(Base):
 		session.add(s)
 		session.commit()
 		session.flush()
-		session.close()
 		return s
 
 class WidgetInstanceDevice(Base):
@@ -662,17 +661,13 @@ class WidgetInstanceDevice(Base):
 	
 	@classmethod
 	def getKey(cls, instance_id, key):
-		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
-		session.close()
 		return s
 
 	@classmethod
 	def getInstance(cls, instance_id):
-		session = Session()
 		s = session.query(cls).options(joinedload('device').joinedload('sensors')).options(joinedload('device').joinedload('commands')).filter_by(instance_id = instance_id).all()
 		session.expunge_all()
-		session.close()
 		return s
 
 	@classmethod
@@ -692,7 +687,6 @@ class WidgetInstanceDevice(Base):
 
 	@classmethod
 	def saveKey(cls, instance_id, key, device_id):
-		session = Session()
 		s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
 		if not s:
 			s = cls(instance_id=instance_id, key=key)
@@ -700,7 +694,6 @@ class WidgetInstanceDevice(Base):
 		session.add(s)
 		session.commit()
 		session.flush()
-		session.close()
 		return s
 
 def to_json(model):

@@ -2,7 +2,7 @@
 <link rel="import" href="/components/websockets.html">
 <link rel="import" href="/components/sensor.html">
 
-<polymer-element name="dmw-widgets-selector" attributes="section">
+<polymer-element name="dmw-widgets-selector">
 	<script src="/libraries/isotope/dist/isotope.pkgd.min.js"></script>
 	<template>
   		<style>
@@ -30,10 +30,10 @@
 			background: #F0F0F0;
 			color: #000000;
 			padding: 0.5em;
-			height: 8em;
+			min-height: 8em;
 			position: relative;
 		}
-		article .body .overlay {
+		article .body .btnoverlay {
 			position: absolute;
 			top: 0;
 			left: 0;
@@ -43,12 +43,12 @@
 			padding: 1em;
 			display: none;
 		}
-		article .body .overlay button {
+		article .body .btnoverlay button {
 			margin: 0.5em auto 0.5em auto;
 			display: block;
 		}
-		article .body:hover .overlay,
-		article .body:focus .overlay {
+		article .body:hover .btnoverlay,
+		article .body:focus .btnoverlay {
 			display: block;
 		}
 		article img {
@@ -87,7 +87,7 @@
 			        		<h2>{{ w.name }}</h2>
 			        		<div class="body">
 			        			<img src='/widget/{{ w.set_id }}/{{ w.set_ref }}.png'/>
-				        		<div class="overlay"><button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}">Add</button><button class="add-widget btn btn-success" on-click="{{addWidgetClose}}" data-widget-id="{{ w.id }}">Add and Close</button></div>
+				        		<div class="btnoverlay"><button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}">Add</button><button class="add-widget btn btn-success" on-click="{{addWidgetClose}}" data-widget-id="{{ w.id }}">Add and Close</button></div>
 				        	</div>
 				        	<div class="footer">{{ w.set_name }}</div>
 			        	</article>
@@ -108,7 +108,7 @@
 				});
 				var self = this;
 				this.$.closeModal.addEventListener('click', function () {
-					var modalOverlay = document.querySelector('#modal-overlay');
+					var modalOverlay = document.getElementById('modal-overlay');
 					modalOverlay.classList.remove('on');
 					self.remove();
 				});
@@ -144,12 +144,14 @@
 		    },
 		    addWidget: function(e) {
 		    	var widget_id = e.target.dataset.widgetId;
-		    	this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':this.section});
+		    	var section = document.getElementById('currentsection');
+		    	this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':section.sectionid});
 		    },
 		    addWidgetClose: function(e) {
 		    	var widget_id = e.target.dataset.widgetId;
-		    	this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':this.section});
-				var modalOverlay = document.querySelector('#modal-overlay');
+		    	var section = document.getElementById('currentsection');
+		    	this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':section.sectionid});
+				var modalOverlay = document.getElementById('modal-overlay');
 				modalOverlay.classList.remove('on');
 				this.remove();
 		    }

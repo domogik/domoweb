@@ -27,7 +27,7 @@
 		Polymer('dmw-navigation-sectionTitle', {
 			ready: function() {
 				this.super();
-				this.section = document.querySelector('.mainsection');
+				this.section = document.getElementById('currentsection');
 			},
 			loadingDone: function() {
 				this.setSection();

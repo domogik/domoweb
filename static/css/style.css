@@ -21,7 +21,17 @@ body {
 	z-index: 20;
 }
 
-#modal-overlay {
+#modal-overlay .col-nav {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.overlay.on {
+	visibility: visible;
+	opacity: 1;
+}
+
+.overlay {
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0,0,0,0.9);
@@ -38,16 +48,6 @@ body {
 	transition: all .3s ease;
 	z-index: 10;
 	overflow-y:auto;
-}
-
-#modal-overlay.on {
-	visibility: visible;
-	opacity: 1;
-}
-
-#modal-overlay .col-nav {
-	padding-left: 0;
-	padding-right: 0;
 }
 
 /* Widget default style */
