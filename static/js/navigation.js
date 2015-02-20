@@ -29,10 +29,14 @@ DMW.navigation.init = function() {
 	'</style>').appendTo('head');
 	$('#sections-tree #toggle-radial').click(DMW.navigation.RadLevelOneToggle);
 	DMW.navigation.register();
+};
+
+window.addEventListener('polymer-ready', function(){
     DMW.main.socket.register('section-added', DMW.navigation.sectionsUpdated);
     DMW.main.socket.register('section-removed', DMW.navigation.sectionsUpdated);        
     DMW.main.socket.register('section-tree', DMW.navigation.sectionsReceived);
-};
+});
+
 
 DMW.navigation.register = function() {							
 	$('#sections-tree > ul li').addClass('radial-menu-items');

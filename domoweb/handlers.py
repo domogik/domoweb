@@ -140,7 +140,7 @@ class WSHandler(websocket.WebSocketHandler):
             }[jsonmessage[0]](jsonmessage[1])
         if (data):
             # If the modif is global we send the result to all listeners
-            if (jsonmessage[0] in ['widgetinstance-add', 'widgetinstance-order', 'widgetinstance-remove']):
+            if (jsonmessage[0] in ['widgetinstance-add', 'widgetinstance-order', 'widgetinstance-remove', 'section-remove']):
                 WSHandler.sendAllMessage(data)
             else:
                 self.sendMessage(data)
