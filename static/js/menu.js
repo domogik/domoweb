@@ -145,11 +145,7 @@ DMW.menu.appendMenu = function(item) {
 		button.setAttribute('role', 'button');
 		button.setAttribute('tabindex', 0);
 		button.addEventListener('click', DMW.menu.selectItem, false);
-
-		var label = document.createElement('span');
-		label.setAttribute('class', 'label');
-		label.appendChild(document.createTextNode(item.label));
-		button.appendChild(label);
+		button.appendChild(document.createTextNode(item.label));
 		li.appendChild(button);
 	} else {
 		var button = document.createElement('div');

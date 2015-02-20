@@ -70,9 +70,9 @@
 #main-menu nav li .menuitem {
 	outline: none;
 	display: block;
-	font-size: 1.18em;
-	height: 14.5em;
-	width: 14.5em;
+	font-size: 0.7em;
+	height: 19em;
+	width: 19em;
 	position: absolute;
 /*	position: fixed; /* fix the "displacement" bug in webkit browsers when using tab key */
 	bottom: -7.25em;
@@ -80,7 +80,8 @@
 	border-radius: 50%;
 	text-decoration: none;
 	color: #fff;
-	padding-top: 0.5em;
+	padding-top: 4em;
+	padding-right: 1em;
 	text-align: center;
 	cursor: pointer;
 	-webkit-transform: skew(-60deg) rotate(-75deg) scale(1);
