@@ -25,6 +25,3 @@
 [submodule "static/libraries/isotope"]
 	path = static/libraries/isotope
 	url = https://github.com/metafizzy/isotope.git
-[submodule "static/libraries/webcomponentsjs"]
-	path = static/libraries/webcomponentsjs
-	url = https://github.com/webcomponents/webcomponentsjs.git
