@@ -9,11 +9,16 @@
 
 html,
 body {
-        /* this border allows to avoid scrolling on the background... 
-           color is taken from ./components/navigation.html */
-	border: solid 1px #2D2C2F;
 	height: 100%;
 	width: 100%;
+	overflow: hidden;
+}
+
+@media screen and (max-width:480px) {
+	html,
+	body {
+		overflow: auto;
+	}
 }
 
 /* Configuration overlay */
