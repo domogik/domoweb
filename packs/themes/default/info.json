@@ -11,10 +11,7 @@
     },
     "style" : {
         "section" : {
-            "backgroundImage" : "url('theme/default/images/background.jpg')",
-            "backgroundPosition" : "50% 0",
-            "backgroundRepeat" : "no-repeat",
-            "backgroundSize" : "cover"
+            "backgroundImage" : "url('theme/default/images/background.jpg')"
         },
         "grid" : {
             "size" : "100",

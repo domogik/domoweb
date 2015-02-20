@@ -150,7 +150,7 @@ class WSHandler(websocket.WebSocketHandler):
         widgets = Widget.getSection(section_id=data['id'])
         instances = WidgetInstance.getSection(section_id=data['id'])
         j = to_json(section)
-        j['params'] = dict ((p.key, p.value) for p in SectionParam.getSection(data['id']))
+        j['params'] = Section.getParamsDict(data['id'])
         j["widgets"] = to_json(widgets)
         j["instances"] = to_json(instances)
         for index, item in enumerate(instances):

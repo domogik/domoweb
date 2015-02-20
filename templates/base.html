@@ -16,10 +16,21 @@
   <style type="text/css" id="sectionstyle" shim-shadowdom>
   body {
     background-attachment: fixed;
-    background-position: {{ params['SectionBackgroundPosition'] }};
-    background-repeat: {{ params['SectionBackgroundRepeat'] }};
-    background-size: {{ params['SectionBackgroundSize'] }};
-    background-image: {% if 'SectionBackground' in params %}url('/backgrounds/{{params['SectionBackground']}}'){% else %}{% raw params['SectionBackgroundImage'] %}{% end %};
+    {% if 'SectionBackgroundImage' in params %}
+      background-image: {% raw params['SectionBackgroundImage'] %};
+      background-position: {% if 'SectionBackgroundPosition' in params %}{{ params['SectionBackgroundPosition'] }}{% else %}0 0{% end %};
+      background-repeat: {% if 'SectionBackgroundRepeat' in params %}{{ params['SectionBackgroundRepeat'] }}{% else %}no-repeat{% end %};
+      background-size: {% if 'SectionBackgroundSize' in params %}{{ params['SectionBackgroundSize'] }}{% else %}cover{% end %};
+    {% end %}
+    {% if 'SectionBackground' in params %}    
+      background: {% raw params['SectionBackground'] %};
+    {% end %}
+    {% if 'SectionBackgroundImageUploaded' in params %}
+      background-image: url('/backgrounds/{% raw params['SectionBackgroundImageUploaded'] %}');
+      background-position: 0 0;
+      background-repeat: no-repeat;
+      background-size: cover;
+    {% end %}
   }
   body /deep/ .widget.style-general {
     border: 1px solid {{ params['WidgetBorderColor'] }};

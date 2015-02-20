@@ -19,11 +19,34 @@ function sectionUpdated(e) {
 	/* Update page style */
 	var ss = document.getElementById('sectionstyle');
 	var bodyStyle = ss.sheet.cssRules[0];
-	if ('SectionBackground' in DMW.main.section.params) {
-		bodyStyle.style.backgroundImage="url('/backgrounds/" + DMW.main.section.params['SectionBackground'] + "')";
-	} else {
-		bodyStyle.style.backgroundImage=DMW.main.section.params['SectionBackgroundImage'];
+	if ('SectionBackgroundImage' in DMW.main.section.params) {
+		bodyStyle.style.backgroundImage = DMW.main.section.params['SectionBackgroundImage'];
+		if ('SectionBackgroundRepeat' in DMW.main.section.params) {
+			bodyStyle.style.backgroundRepeat = DMW.main.section.params['SectionBackgroundRepeat'];
+		} else {
+			bodyStyle.style.backgroundRepeat = "no-repeat";
+		}
+		if ('SectionBackgroundPosition' in DMW.main.section.params) {
+			bodyStyle.style.backgroundPosition = DMW.main.section.params['SectionBackgroundPosition'];
+		} else {
+			bodyStyle.style.backgroundPosition = "0 0";
+		}
+		if ('SectionBackgroundSize' in DMW.main.section.params) {
+			bodyStyle.style.backgroundSize = DMW.main.section.params['SectionBackgroundSize'];
+		} else {
+			bodyStyle.style.backgroundSize = "cover";
+		}
 	}
+	if ('SectionBackground' in DMW.main.section.params) {
+		bodyStyle.style.background = DMW.main.section.params['SectionBackground'];
+	}
+	if ('SectionBackgroundImageUploaded' in DMW.main.section.params) {
+		bodyStyle.style.backgroundImage = "url('/backgrounds/" + DMW.main.section.params['SectionBackgroundImageUploaded'] + "')";
+		bodyStyle.style.backgroundRepeat = "no-repeat";
+		bodyStyle.style.backgroundPosition = "0 0";
+		bodyStyle.style.backgroundSize = "cover";
+	}
+
 	var widgetStyle = ss.sheet.cssRules[1];
 	widgetStyle.style.color=DMW.main.section.params['WidgetTextColor'];
 	widgetStyle.style.backgroundColor=DMW.main.section.params['WidgetBackgroundColor'];
@@ -33,17 +56,21 @@ function sectionUpdated(e) {
 
 	DMW.grid.destroy();
 
-	for (var i = 0; i < details.widgets.length; i++) {
-		widget = details.widgets[i];
-		insertWidgetLink(widget.id, widget.set_id, widget.set_ref);
+	if (details.widgets) {
+		for (var i = 0; i < details.widgets.length; i++) {
+			widget = details.widgets[i];
+			insertWidgetLink(widget.id, widget.set_id, widget.set_ref);
+		}		
 	}
-	for (var i = 0; i < details.instances.length; i++) {
-		instance = details.instances[i];
-		var node = insertWidgetInstance(instance.id, instance.widget);
+	if (details.instances) {
+		for (var i = 0; i < details.instances.length; i++) {
+			instance = details.instances[i];
+			var node = insertWidgetInstance(instance.id, instance.widget);
 
-		if (instance.widget.default_style == 'true') {
-			insertWidgetStyle(instance);
-		}
+			if (instance.widget.default_style == 'true') {
+				insertWidgetStyle(instance);
+			}
+		}		
 	}
 	setTimeout(function(){
 		DMW.grid.init();
@@ -196,15 +223,15 @@ function configureHandler() {
 				});
 
 				// Background selector
-				$("#SectionBackground").imagepicker();
+				$("#SectionBackgroundImageUploaded").imagepicker();
 
 				// Upload button
 				var uploader = new qq.FileUploader({
                     element: document.getElementById('file-uploader-background'),
                     action: '/upload',
                     onComplete: function(id, fileName, responseJSON){
-                    	$("#SectionBackground").append("<option data-img-src='/backgrounds/thumbnails/" + fileName + "' value='" + fileName + "'>" + fileName + "</option>");
-                    	$("#SectionBackground").imagepicker();
+                    	$("#SectionBackgroundImageUploaded").append("<option data-img-src='/backgrounds/thumbnails/" + fileName + "' value='" + fileName + "'>" + fileName + "</option>");
+                    	$("#SectionBackgroundImageUploaded").imagepicker();
                     },
                 });           
 
