@@ -67,7 +67,7 @@ class WidgetOption(Base):
 	default = Column(Unicode(50), nullable=True)
 	description = Column(UnicodeText(), nullable=True)
 	parameters = Column(UnicodeText(), nullable=True)
-	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+	widget_id = Column(String(50), ForeignKey('widget.id'), nullable=False)
 
 	@classmethod
 	def getWidget(cls, widget_id):
@@ -86,7 +86,7 @@ class WidgetSensor(Base):
 	group = Column(Boolean(), nullable=True)
 	groupmin = Column(Integer(), nullable=True)
 	groupmax = Column(Integer(), nullable=True)
-	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+	widget_id = Column(String(50), ForeignKey('widget.id'), nullable=False)
 
 	@classmethod
 	def getWidget(cls, widget_id):
@@ -102,7 +102,7 @@ class WidgetCommand(Base):
 	types = Column(String(255))
 	filters = Column(String(255), nullable=True)
 	description = Column(Unicode(255), nullable=True)
-	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+	widget_id = Column(String(50), ForeignKey('widget.id'), nullable=False)
 
 	@classmethod
 	def getWidget(cls, widget_id):
@@ -117,7 +117,7 @@ class WidgetDevice(Base):
 	required = Column(Boolean())
 	types = Column(String(255))
 	description = Column(Unicode(255), nullable=True)
-	widget_id = Column(String(50), ForeignKey('widget.id', ondelete="cascade"), nullable=False)
+	widget_id = Column(String(50), ForeignKey('widget.id'), nullable=False)
 
 	@classmethod
 	def getWidget(cls, widget_id):
@@ -147,7 +147,7 @@ class Theme(Base):
 
 class SectionParam(Base):
 	__tablename__ = 'sectionParam'
-	section_id = Column(Integer(), ForeignKey('section.id', ondelete="cascade"), primary_key=True)
+	section_id = Column(Integer(), ForeignKey('section.id'), primary_key=True)
 	key = Column(String(50), primary_key=True)
 	value = Column(String(255), nullable=True)
 
@@ -186,7 +186,8 @@ class Section(Base):
 	description = Column(UnicodeText(), nullable=True)
 	theme_id = Column(String(50), ForeignKey('theme.id'), nullable=False, server_default='default')
 	theme = relationship("Theme")
-	params = relationship("SectionParam")
+	params = relationship("SectionParam", cascade="all, delete-orphan")
+	instances = relationship("WidgetInstance", cascade="all, delete-orphan")
 
 	_leafs = None
 	_childrens = None
@@ -369,7 +370,7 @@ class Command(Base):
 	__tablename__ = 'command'
 	id = Column(Integer(), primary_key=True)
 	name = Column(Unicode(50))
-	device_id = Column(Integer(), ForeignKey('device.id', ondelete="cascade"), nullable=False)
+	device_id = Column(Integer(), ForeignKey('device.id'), nullable=False)
 	device = relationship("Device", cascade="all", backref="commands")
 	reference = Column(String(50))
 	return_confirmation = Column(Boolean(), default=True)
@@ -386,7 +387,7 @@ class Command(Base):
 class CommandParam(Base):
 	__tablename__ = 'commandParam'
 	id = Column(Integer(), primary_key=True, autoincrement=True)
-	command_id = Column(Integer(), ForeignKey('command.id', ondelete="cascade"), nullable=False)
+	command_id = Column(Integer(), ForeignKey('command.id'), nullable=False)
 	command = relationship("Command", cascade="all", backref="parameters")
 	key = Column(String(50))
 	datatype_id = Column(String(50), ForeignKey('dataType.id'))
@@ -401,7 +402,7 @@ class Sensor(Base):
 	__tablename__ = 'sensor'
 	id = Column(Integer(), primary_key=True)
 	name = Column(Unicode(50))
-	device_id = Column(Integer(), ForeignKey('device.id', ondelete="cascade"), nullable=False)
+	device_id = Column(Integer(), ForeignKey('device.id'), nullable=False)
 	device = relationship("Device", cascade="all", backref="sensors")
 	reference = Column(String(50))
 	datatype_id = Column(String(50), ForeignKey('dataType.id'))
@@ -432,7 +433,7 @@ class WidgetInstance(Base):
 	__tablename__ = 'widgetInstance'
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	section_id = Column(String(50), ForeignKey('section.id'))
-	section = relationship("Section", backref='instances', single_parent=True, cascade="all, delete-orphan")
+	section = relationship("Section")
 	order = Column(Integer())
 	widget_id = Column(String(50), ForeignKey('widget.id'))
 	widget = relationship("Widget", foreign_keys='WidgetInstance.widget_id', lazy='joined', backref='instances')
@@ -523,7 +524,7 @@ class WidgetInstance(Base):
 
 class WidgetInstanceOption(Base):
 	__tablename__ = 'widgetInstanceOption'
-	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), primary_key=True, nullable=False)
+	instance_id = Column(Integer(), ForeignKey('widgetInstance.id'), primary_key=True, nullable=False)
 	instance = relationship("WidgetInstance")
 	key = Column(String(50), primary_key=True)
 	value = Column(Unicode(50))
@@ -567,7 +568,7 @@ class WidgetInstanceOption(Base):
 
 class WidgetInstanceSensor(Base):
 	__tablename__ = 'widgetInstanceSensor'
-	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), primary_key=True, nullable=False)
+	instance_id = Column(Integer(), ForeignKey('widgetInstance.id'), primary_key=True, nullable=False)
 	instance = relationship("WidgetInstance")
 	key = Column(String(50), primary_key=True)
 	sensor_id = Column(Integer(), ForeignKey('sensor.id'))
@@ -622,7 +623,7 @@ class WidgetInstanceSensor(Base):
 
 class WidgetInstanceCommand(Base):
 	__tablename__ = 'widgetInstanceCommand'
-	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), primary_key=True, nullable=False)
+	instance_id = Column(Integer(), ForeignKey('widgetInstance.id'), primary_key=True, nullable=False)
 	instance = relationship("WidgetInstance")
 	key = Column(String(50), primary_key=True)
 	command_id = Column(Integer(), ForeignKey('command.id'))
@@ -664,7 +665,7 @@ class WidgetInstanceCommand(Base):
 
 class WidgetInstanceDevice(Base):
 	__tablename__ = 'widgetInstanceDevice'
-	instance_id = Column(Integer(), ForeignKey('widgetInstance.id', ondelete="cascade"), primary_key=True, nullable=False)
+	instance_id = Column(Integer(), ForeignKey('widgetInstance.id'), primary_key=True, nullable=False)
 	instance = relationship("WidgetInstance")
 	key = Column(String(50), primary_key=True)
 	device_id = Column(Integer(), ForeignKey('device.id'))
