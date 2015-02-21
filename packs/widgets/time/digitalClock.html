@@ -1,16 +1,29 @@
 <script type="text/javascript" src='/widget/time/js/moment.js'></script>
-<link rel="stylesheet" href="/widget/time/css/digitalClock.css">
 
 <polymer-element name="dmw-time-digitalClock" extends="dmw-widget">
 	<template>
+		<link rel="stylesheet" href="/widget/time/css/digitalClock.css">
 		<style>
 			:host {
 				height: 100%;
-				padding: 5px;
+				color: {{ textColor }};
+				background: {{ backgroundColor }};
 			}
 			:host.loading {
 				opacity: 0;
 			}
+
+		    :host /deep/ .digits div span {
+		    	background-color: {{ textColor }};
+		    	border-color: {{ textColor }};
+		    }
+		    :host /deep/ .digits div.dots:before, .digits div.dots:after {
+		    	background-color: {{ textColor }};
+		    }
+		    :host /deep/ .display{
+		    	background-color: {{ colorA }};
+		    	box-shadow: 0 1px 1px rgba(0,0,0,0.08) inset, 0 1px 1px {{ colorB }};
+		    }
 		</style>
 		<shadow></shadow>
 		<div id="clock" class="display">
@@ -65,22 +78,25 @@
 			},
 			optionsUpdated: function() {
 				if ('dark' in this.options && this.options['dark'] == 1) {
-					backgroundColor = this.options['WidgetBackgroundColorAlt1'];
-					textColor = this.options['WidgetForegroundColorAlt1'];
-					colorA = this.options['WidgetBackgroundColorAlt3'];
-					colorB = this.options['WidgetForegroundColorAlt3'];			
+					this.backgroundColor = this.options['WidgetBackgroundColorAlt1'];
+					this.textColor = this.options['WidgetForegroundColorAlt1'];
+					this.colorA = this.options['WidgetBackgroundColorAlt3'];
+					this.colorB = this.options['WidgetForegroundColorAlt3'];			
 				} else {
-					backgroundColor = this.options['WidgetBackgroundColor'];
-					textColor = this.options['WidgetTextColor'];
-					colorA = this.options['WidgetBackgroundColorAlt2'];
-					colorB = this.options['WidgetForegroundColorAlt2'];
+					this.backgroundColor = this.options['WidgetBackgroundColor'];
+					this.textColor = this.options['WidgetTextColor'];
+					this.colorA = this.options['WidgetBackgroundColorAlt2'];
+					this.colorB = this.options['WidgetForegroundColorAlt2'];
 				}
-
-		        var css = '#instance-'+this.instanceid+' { color:' + textColor + '; background:' + backgroundColor + '; }';
-		        css += '#instance-'+this.instanceid+' .digits div span{ background-color:' + textColor + ';	border-color:' + textColor + ';}';
-		        css += '#instance-'+this.instanceid+' .digits div.dots:before, .digits div.dots:after{	background-color:' + textColor + ';	}';
-		        css += '#instance-'+this.instanceid+' .display{	background-color:' + colorA + '; box-shadow:0 1px 1px rgba(0,0,0,0.08) inset, 0 1px 1px ' + colorB + ';	}';
-				createStyle(this.instanceid, css);
+				// https://github.com/Polymer/polymer/issues/270
+				// https://gist.github.com/sorvell/6772909
+				if (window.ShadowDOMPolyfill) { // For Polyfil browsers (FireFox)
+					var css = '#instance-'+this.instanceid+' { color:' + this.textColor + '; background:' + this.backgroundColor + '; }';
+					css += '#instance-'+this.instanceid+' .digits div span{ background-color:' + this.textColor + '; border-color:' + this.textColor + ';}';
+					css += '#instance-'+this.instanceid+' .digits div.dots:before, .digits div.dots:after{ background-color:' + this.textColor + '; }';
+					css += '#instance-'+this.instanceid+' .display{ background-color:' + this.colorA + '; box-shadow:0 1px 1px rgba(0,0,0,0.08) inset, 0 1px 1px ' + this.colorB + '; }';
+					createStyle(this.instanceid, css);
+				}
 			},
 			// Run a timer every second and update the clock
 			update_time: function() {
@@ -120,7 +136,6 @@
 				// Schedule this function to be run again in 1 sec
 				setTimeout(this.update_time.bind(this), 1000);
 			}
-
 		});
 	</script>
 </polymer-element>
