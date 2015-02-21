@@ -55,6 +55,9 @@
 			margin-top:-1.4em;
 		}
 		</style>
+		<style class='custom' type="text/css">
+			{{ customCSS }}
+		</style>
 	    <web-socket id="socket"></web-socket>
 	    <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
 		<div id='labelprimary'>{{labelprimary}}</div>
@@ -179,16 +182,11 @@
 			optionsReceived: function(topic, json) {
 				this.options = json['options'];
 				if (this.default_style!=null) {
-			      var ss = document.querySelector('style#style-instance-'+this.instanceid);
-			      if (!ss) { /* Style does not exist yet */
-			      	ss = createStyle(this.instanceid, "#instance-"+this.instanceid+" {}");			      	      
-			      }
-			      var widgetStyle = ss.sheet.cssRules[0];
-			      widgetStyle.style.color=this.options['WidgetTextColor'];
-			      widgetStyle.style.backgroundColor=this.options['WidgetBackgroundColor'];
-			      widgetStyle.style.borderColor=this.options['WidgetBorderColor'];
-			      widgetStyle.style.borderRadius=this.options['WidgetBorderRadius'];
-			      widgetStyle.style.boxShadow=this.options['WidgetBoxShadow'];						
+			      this.style.color=this.options['WidgetTextColor'];
+			      this.style.backgroundColor=this.options['WidgetBackgroundColor'];
+			      this.style.borderColor=this.options['WidgetBorderColor'];
+			      this.style.borderRadius=this.options['WidgetBorderRadius'];
+			      this.style.boxShadow=this.options['WidgetBoxShadow'];						
 				}
 				this.optionsUpdated();
 				if (!this.loaded && this.datatypes) this.initialStepReady();
@@ -289,21 +287,6 @@
 				}
 			}
 		});
-	function createStyle(id, css) {
-		var existingstyle = document.querySelector('style#style-instance-'+id);
-		if (existingstyle) existingstyle.remove();
-		var style = document.createElement('style');
-		style.id = "style-instance-"+id;
-		style.type = "text/css";
-		// WebKit hack
-		if (style.styleSheet){
-		  	style.styleSheet.cssText = css;
-		} else {
-		  	style.appendChild(document.createTextNode(css));
-		}
-		document.head.appendChild(style);
-		return style;
-	}
 	</script>
 </polymer-element>
 

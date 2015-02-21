@@ -132,6 +132,19 @@ class Theme(Base):
 	description = Column(Unicode(255), nullable=True)
 	style = Column(UnicodeText())
 
+	@classmethod
+	def getParamsDict(cls, id, parts):
+		t = session.query(cls).get(id)
+		style = json.loads(t.style)
+		params = {}
+		for part in parts:
+			p = part[0].upper() + part[1:]
+			for key in style[part]:
+				k = key[0].upper() + key[1:]
+				params[p + k] = style[part][key]
+		session.flush()
+		return params
+
 class SectionParam(Base):
 	__tablename__ = 'sectionParam'
 	section_id = Column(Integer(), ForeignKey('section.id', ondelete="cascade"), primary_key=True)
@@ -248,14 +261,8 @@ class Section(Base):
 	@classmethod
 	def getParamsDict(cls, id):
 		s = session.query(cls).get(id)
-		# Combine Params for section
-		style = json.loads(s.theme.style)
-		params = {}
-		for part in ["section", "grid", "widget"]:
-			p = part[0].upper() + part[1:]
-			for key in style[part]:
-				k = key[0].upper() + key[1:]
-				params[p + k] = style[part][key]
+		# Combine Params for section theme
+		params = Theme.getParamsDict(s.theme.id, ["section", "grid", "widget"])
 		# Override with user params
 		for p in s.params:
 			params[p.key] = p.value
@@ -455,6 +462,7 @@ class WidgetInstance(Base):
 	@classmethod
 	def getFullOptionsDict(cls, id):
 		s = session.query(cls).get(id)
+		# Load theme style
 		sstyle = json.loads(s.section.theme.style)
 		if s.widget.style:
 			wstyle = json.loads(s.widget.style)
@@ -463,10 +471,13 @@ class WidgetInstance(Base):
 			p = part[0].upper() + part[1:]
 			for key in sstyle[part]:
 				k = key[0].upper() + key[1:] # Uppercase first char
-				options[p + k] = sstyle[part][key]
-		# Override with section options
+				# We keep those for the section params
+				if (p + k) not in ['WidgetTextColor', 'WidgetBackgroundColor', 'WidgetBorderColor', 'WidgetBorderRadius', 'WidgetBoxShadow']:
+					options[p + k] = sstyle[part][key]
+		# Override with section user options
 		for p in s.section.params:
-			if p.key.startswith('Widget'):
+			# We keep those for the section params
+			if p.key.startswith('Widget') and p.key not in ['WidgetTextColor', 'WidgetBackgroundColor', 'WidgetBorderColor', 'WidgetBorderRadius', 'WidgetBoxShadow']:
 				options[p.key] = p.value
 		# Override with widget options
 		if s.widget.style:
@@ -483,7 +494,7 @@ class WidgetInstance(Base):
 	def getOptionsDict(cls, id):
 		s = session.query(cls).get(id)
 		options = {}
-		# Override with widget options
+		# Load widget options
 		if s.widget.style:
 			wstyle = json.loads(s.widget.style)
 			for key in wstyle:

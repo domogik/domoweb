@@ -110,8 +110,9 @@
       DMW.main.socket.addEventListener('websocket-connected', websocketConnected);
       DMW.main.socket.addEventListener('websocket-closed', websocketClosed);
       DMW.main.socket.register('widgetinstance-added', instanceAdded);
-      DMW.main.socket.register('widgetinstance-removed', instanceRemoved);        
+      DMW.main.socket.register('widgetinstance-removed', instanceRemoved);
       DMW.main.section.addEventListener('section-updated', sectionUpdated);
+      DMW.main.section.addEventListener('section-changed', sectionChanged);
     });
   </script>
   </body>

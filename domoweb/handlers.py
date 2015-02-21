@@ -6,7 +6,7 @@ from tornado.gen import Return
 from tornado.escape import json_decode
 from tornado.httpclient import AsyncHTTPClient
 
-from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, SectionParam, Sensor
+from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, SectionParam, Sensor, Theme
 from domoweb.forms import WidgetInstanceForms, WidgetStyleForm
 
 import os
@@ -50,11 +50,12 @@ class ConfigurationHandler(RequestHandler):
         elif action=='section':
             section = Section.get(id)
             params = Section.getParamsDict(id)
+            themeStyle = Theme.getParamsDict(section.theme.id, ["widget"])
             options = SectionParam.getSection(section_id=id)
             dataOptions = dict([(r.key, r.value) for r in options])
             widgetForm = WidgetStyleForm(data=dataOptions, prefix='params')
             backgrounds = [f for f in os.listdir('/var/lib/domoweb/backgrounds') if any(f.lower().endswith(x) for x in ('.jpeg', '.jpg','.gif','.png'))]
-            self.render('sectionConfiguration.html', section=section, params=params, backgrounds=backgrounds, widgetForm=widgetForm)
+            self.render('sectionConfiguration.html', section=section, params=params, backgrounds=backgrounds, widgetForm=widgetForm, themeStyle=themeStyle)
         elif action=='addsection':
             self.render('sectionAdd.html')
 
@@ -89,14 +90,14 @@ class ConfigurationHandler(RequestHandler):
             for p, v in self.request.arguments.iteritems():
                 if p.startswith( 'params' ):
                     if v[0]:
-                        SectionParam.saveKey(section_id=id, key=p[6:], value=v[0])
+                        SectionParam.saveKey(section_id=id, key=p[7:], value=v[0])
                     else:
-                        SectionParam.delete(section_id=id, key=p[6:])
+                        SectionParam.delete(section_id=id, key=p[7:])
 
             # Send section updated params
             json = to_json(Section.get(id))
             json['params'] = Section.getParamsDict(id)
-            WSHandler.sendAllMessage(['section-details', json])
+            WSHandler.sendAllMessage(['section-params', json])
 
             self.write("{success:true}")
         elif action=='addsection':

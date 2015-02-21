@@ -10,7 +10,8 @@
 				this._name = [];
 				this._description = [];
 				this._params = [];
-		        this.$.socket.register('section-details', this.sectionReceived.bind(this), null);
+		        this.$.socket.register('section-details', this.sectionChanged.bind(this), null);
+		        this.$.socket.register('section-params', this.sectionReceived.bind(this), null);
 		        this.$.socket.register('section-removed', this.sectionRemoved.bind(this), null);
 			},
 			sectionidChanged: function(oldValue, newValue) {
@@ -32,6 +33,12 @@
 				this._description[this.sectionid] = json['description'];
 				this._params[this.sectionid] = json['params'];
 	        	this.fire('section-updated', json);
+	    	},
+			sectionChanged: function(topic, json) {
+				this._name[this.sectionid] = json['name'];
+				this._description[this.sectionid] = json['description'];
+				this._params[this.sectionid] = json['params'];
+	        	this.fire('section-changed', json);
 	    	},
 			sectionRemoved: function(topic, json) {
 				if (this.sectionid == json['id']) {

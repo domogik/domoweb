@@ -10,13 +10,9 @@ DMW.main.ajax = document.getElementById('ajax'),
 DMW.main.menu = document.getElementById('main-menu');
 DMW.main.navigation = document.getElementById('sections-tree');
 
+/* When section params changed */
 function sectionUpdated(e) {
 	var details = e.detail;
-	/* Remove current widgets */
-	while (DMW.main.layout.firstChild) {
-  		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
-	}
-	/* Update page style */
 	var ss = document.getElementById('sectionstyle');
 	var bodyStyle = ss.sheet.cssRules[0];
 	if ('SectionBackgroundImage' in DMW.main.section.params) {
@@ -53,6 +49,18 @@ function sectionUpdated(e) {
 	widgetStyle.style.borderColor=DMW.main.section.params['WidgetBorderColor'];
 	widgetStyle.style.borderRadius=DMW.main.section.params['WidgetBorderRadius'];
 	widgetStyle.style.boxShadow=DMW.main.section.params['WidgetBoxShadow'];
+}
+
+/* When Section changed (navigation) */
+function sectionChanged(e) {
+	var details = e.detail;
+
+	sectionUpdated(e);
+
+	/* Remove current widgets */
+	while (DMW.main.layout.firstChild) {
+  		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
+	}
 
 	DMW.grid.destroy();
 
@@ -66,10 +74,6 @@ function sectionUpdated(e) {
 		for (var i = 0; i < details.instances.length; i++) {
 			instance = details.instances[i];
 			var node = insertWidgetInstance(instance.id, instance.widget);
-
-			if (instance.widget.default_style == 'true') {
-				insertWidgetStyle(instance);
-			}
 		}		
 	}
 	setTimeout(function(){
@@ -128,33 +132,6 @@ function insertWidgetInstance(id, widget) {
 	return instance;
 }
 
-/*
- * Insert Widget <style> into <head>
- */
-function insertWidgetStyle(instance) {
-	var style = document.createElement('style');
-	style.setAttribute('id', 'style-instance-' + instance.id);
-	style.setAttribute('type', 'text/css');
-	var css = "#instance-" + instance.id + " {";
-	if ('WidgetBackgroundColor' in instance.options)
-		css += "background-color: " + instance.options['WidgetBackgroundColor'] + ";"
-	if ('WidgetBorderColor' in instance.options)
-		css += "border: 1px solid " + instance.options['WidgetBorderColor'] + ";"
-    if ('WidgetBorderRadius' in instance.options)
-    	css += "border-radius: " + instance.options['WidgetBorderRadius'] + ";"
-    if ('WidgetTextColor' in instance.options)
-    	css += "color: " + instance.options['WidgetTextColor'] + ";"
-    if ('WidgetBoxShadow' in instance.options)
-    	css += "box-shadow: " + instance.options['WidgetBoxShadow'] + ";"
-	css += "}";
-	if (style.styleSheet){
-	  style.styleSheet.cssText = css;
-	} else {
-	  style.appendChild(document.createTextNode(css));
-	}
-	document.head.appendChild(style);
-}
-
 function configureHandler() {
 	var libs = document.head.querySelector('link#fileuploader');
 	if (!libs) { // Libraries not loaded yet
@@ -170,16 +147,6 @@ function configureHandler() {
 		link.setAttribute('type', "text/css");
 		link.setAttribute('href', "/libraries/image-picker/image-picker/image-picker.css")
 		document.head.appendChild(link);
-
-		var script = document.createElement('script');
-		script.setAttribute('type', "text/javascript");
-		script.setAttribute('src', "/libraries/file-uploader/client/fileuploader.js")
-		document.head.appendChild(script);
-
-		var script = document.createElement('script');
-		script.setAttribute('type', "text/javascript");
-		script.setAttribute('src', "/libraries/image-picker/image-picker/image-picker.min.js")
-		document.head.appendChild(script);
 	}
 
 	DMW.main.ajax.setAttribute('handleAs', 'text');
@@ -222,18 +189,31 @@ function configureHandler() {
 					element.addEventListener('change', onWidgetStyleChange);
 				});
 
-				// Background selector
-				$("#SectionBackgroundImageUploaded").imagepicker();
+				$.getScript("/libraries/image-picker/image-picker/image-picker.min.js", function() {
+					// Background selector
+					$("#SectionBackgroundImageUploaded").imagepicker();
+				});
 
-				// Upload button
-				var uploader = new qq.FileUploader({
-                    element: document.getElementById('file-uploader-background'),
-                    action: '/upload',
-                    onComplete: function(id, fileName, responseJSON){
-                    	$("#SectionBackgroundImageUploaded").append("<option data-img-src='/backgrounds/thumbnails/" + fileName + "' value='" + fileName + "'>" + fileName + "</option>");
-                    	$("#SectionBackgroundImageUploaded").imagepicker();
-                    },
-                });           
+				$.getScript('/libraries/file-uploader/client/fileuploader.js', function() {
+					// Upload button
+					var uploader = new qq.FileUploader({
+	                    element: document.getElementById('file-uploader-background'),
+	                    action: '/upload',
+	                    onComplete: function(id, fileName, responseJSON){
+	                    	$("#SectionBackgroundImageUploaded").append("<option data-img-src='/backgrounds/thumbnails/" + fileName + "' value='" + fileName + "'>" + fileName + "</option>");
+	                    	$("#SectionBackgroundImageUploaded").imagepicker();
+	                    },
+	                });           
+
+				});
+
+				// Init preview
+				var widgetpreview = document.getElementById('widgetpreview');
+				widgetpreview.style.color = document.getElementById('params-WidgetTextColor').value;
+				widgetpreview.style.borderColor = document.getElementById('params-WidgetBorderColor').value;
+				widgetpreview.style.backgroundColor = document.getElementById('params-WidgetBackgroundColor').value;
+				widgetpreview.style.borderRadius = document.getElementById('params-WidgetBorderRadius').value;
+				widgetpreview.style.boxShadow = document.getElementById('params-WidgetBoxShadow').value;
 
 				DMW.main.modalOverlay.classList.add('on');
 			}
@@ -312,7 +292,8 @@ function removeSectionHandler() {
 }
 
 function onWidgetStyleChange(e) {
-	var widgetpreview = document.getElementById('modal-overlay #widgetpreview');
+	var widgetpreview = document.getElementById('widgetpreview');
+	
 	switch(e.target.id) {
 	    case 'params-WidgetTextColor':
 	    	widgetpreview.style.color = e.target.value;
