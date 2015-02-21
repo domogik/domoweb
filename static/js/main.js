@@ -125,8 +125,8 @@ function insertWidgetInstance(id, widget) {
 	}
 	instance.setAttribute('instanceid', id);
 	instance.setAttribute('tabindex', 0);
-	if (DMW.main.layout.getAttribute('edit') != null) {
-		instance.setAttribute('edit', '');
+	if (DMW.main.edit == true) {
+		instance.setAttribute('edit', 'true');
 	}
 	DMW.main.layout.appendChild(instance);
 	return instance;
