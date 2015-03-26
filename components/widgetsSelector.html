@@ -87,7 +87,7 @@
 			        		<h2>{{ w.name }}</h2>
 			        		<div class="body">
 			        			<img src='/widget/{{ w.set_id }}/{{ w.set_ref }}.png'/>
-				        		<div class="btnoverlay"><button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}">Add</button><button class="add-widget btn btn-success" on-click="{{addWidgetClose}}" data-widget-id="{{ w.id }}">Add and Close</button></div>
+				        		<div class="btnoverlay"><button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}" data-widget-width="{{ w.width }}" data-widget-height="{{ w.height }}">Add</button><button class="add-widget btn btn-success" on-click="{{addWidgetClose}}" data-widget-id="{{ w.id }}" data-widget-width="{{ w.width }}" data-widget-height="{{ w.height }}">Add and Close</button></div>
 				        	</div>
 				        	<div class="footer">{{ w.set_name }}</div>
 			        	</article>
@@ -119,7 +119,7 @@
 				for (w in json) {
 					if (sets.indexOf(json[w].set_id)==-1) {
 						sets.push(json[w].set_id);
-						this.sets.push({'id':json[w].set_id, 'name':json[w].set_name});
+						this.sets.push({'id':json[w].set_id, 'name':json[w].set_name, 'width':json[w].width, 'height':json[w].height});
 					}
 				}
 		        this.widgets = json;
@@ -144,13 +144,14 @@
 		    },
 		    addWidget: function(e) {
 		    	var widget_id = e.target.dataset.widgetId;
+		    	var widget_width = e.target.dataset.widgetWidth;
+		    	var widget_height = e.target.dataset.widgetHeight;
 		    	var section = document.getElementById('currentsection');
-		    	this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':section.sectionid});
+		    	var coord = DMW.grid.firstEmptyPosition(widget_width, widget_height);
+		    	this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':section.sectionid, 'x':coord[0], 'y':coord[1]});
 		    },
 		    addWidgetClose: function(e) {
-		    	var widget_id = e.target.dataset.widgetId;
-		    	var section = document.getElementById('currentsection');
-		    	this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':section.sectionid});
+		    	this.addWidget(e);
 				var modalOverlay = document.getElementById('modal-overlay');
 				modalOverlay.classList.remove('on');
 				this.remove();

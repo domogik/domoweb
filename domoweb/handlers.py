@@ -197,7 +197,7 @@ class WSHandler(websocket.WebSocketHandler):
         return ['widget-list', to_json(widgets)]
 
     def WSWidgetInstanceAdd(self, data):
-        i = WidgetInstance.add(section_id=data['section_id'], widget_id=data['widget_id'])
+        i = WidgetInstance.add(section_id=data['section_id'], widget_id=data['widget_id'], x=data['x'], y=data['y'])
         json = to_json(i)
         json["widget"] = to_json(i.widget)
         return ['widgetinstance-added', json];

@@ -434,7 +434,8 @@ class WidgetInstance(Base):
 	id = Column(Integer(), primary_key=True, autoincrement=True)
 	section_id = Column(String(50), ForeignKey('section.id'))
 	section = relationship("Section")
-	order = Column(Integer())
+	x = Column(Integer())
+	y = Column(Integer())
 	widget_id = Column(String(50), ForeignKey('widget.id'))
 	widget = relationship("Widget", foreign_keys='WidgetInstance.widget_id', lazy='joined', backref='instances')
 	options = relationship("WidgetInstanceOption", cascade="all, delete-orphan")
@@ -448,15 +449,15 @@ class WidgetInstance(Base):
 		return s
 
 	@classmethod
-	def add(cls, section_id, widget_id):
-		s = cls(section_id=section_id, widget_id=widget_id)
+	def add(cls, section_id, widget_id, x, y):
+		s = cls(section_id=section_id, widget_id=widget_id, x=x, y=y)
 		session.add(s)
 		session.commit()
 		return s
 
 	@classmethod
 	def getSection(cls, section_id):
-		s = session.query(cls).options(joinedload('widget')).filter_by(section_id = section_id).order_by(cls.order).all()
+		s = session.query(cls).options(joinedload('widget')).filter_by(section_id = section_id).all()
 		session.expunge_all()
 		return s
 

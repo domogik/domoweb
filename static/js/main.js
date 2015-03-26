@@ -62,7 +62,7 @@ function sectionChanged(e) {
   		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
 	}
 
-	DMW.grid.destroy();
+	DMW.grid.init();
 
 	if (details.widgets) {
 		for (var i = 0; i < details.widgets.length; i++) {
@@ -74,25 +74,23 @@ function sectionChanged(e) {
 		for (var i = 0; i < details.instances.length; i++) {
 			instance = details.instances[i];
 			var node = insertWidgetInstance(instance.id, instance.widget);
+			DMW.grid.appendedInstance(node, instance);
 		}		
 	}
-	setTimeout(function(){
-		DMW.grid.init();
-	}, 500);
 }
 
 function instanceAdded(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
 		insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
 		var node = insertWidgetInstance(json.id, json.widget);
-		DMW.grid.appendedInstance(node);
+		DMW.grid.appendedInstance(node, json);
 	}
 }
 
 function instanceRemoved(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
 		var node = document.getElementById('instance-' + json.id);
-		DMW.grid.removedInstance(node);
+		DMW.grid.removedInstance(node, json);
 		node.remove();
 	}
 }
