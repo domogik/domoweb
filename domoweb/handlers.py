@@ -136,12 +136,12 @@ class WSHandler(websocket.WebSocketHandler):
                 'datatype-getall' : self.WSDatatypesGetall,
                 'command-send' : self.WSCommandSend,
                 'widgetinstance-add' : self.WSWidgetInstanceAdd,
-                'widgetinstance-order' : self.WSWidgetInstanceOrder,
+                'widgetinstance-location' : self.WSWidgetInstanceLocation,
                 'widgetinstance-remove' : self.WSWidgetInstanceRemove,
             }[jsonmessage[0]](jsonmessage[1])
         if (data):
             # If the modif is global we send the result to all listeners
-            if (jsonmessage[0] in ['widgetinstance-add', 'widgetinstance-order', 'widgetinstance-remove', 'section-remove']):
+            if (jsonmessage[0] in ['widgetinstance-add', 'widgetinstance-location', 'widgetinstance-remove', 'section-remove']):
                 WSHandler.sendAllMessage(data)
             else:
                 self.sendMessage(data)
@@ -208,11 +208,11 @@ class WSHandler(websocket.WebSocketHandler):
         json["widget"] = to_json(i.widget)
         return ['widgetinstance-removed', json];
 
-    def WSWidgetInstanceOrder(self, data):
-        i = WidgetInstance.updateOrder(id=data['instance_id'], order=data['order'])
+    def WSWidgetInstanceLocation(self, data):
+        i = WidgetInstance.updateLocation(id=data['instance_id'], x=data['x'], y=data['y'])
         json = to_json(i)
         json["widget"] = to_json(i.widget)
-        return True;
+        return ['widgetinstance-moved', json];
 
     def WSWidgetInstanceGetsection(self, data):
         r = WidgetInstance.getSection(section_id=data['section_id'])

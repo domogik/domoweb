@@ -13,11 +13,7 @@
   <link rel="stylesheet" href="/libraries/bootstrap-3.2.0/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/libraries/notifit/notifIt%21-1.1/css/notifIt.css">
   <link rel="stylesheet" href="/css/style.css">
-  <style type="text/css" id="gridstyle">
-    #grid-layout {
-      display: block;
-    }
-  </style>
+  <style type="text/css" id="gridstyle"></style>
   <style type="text/css" id="sectionstyle" shim-shadowdom>
   body {
     background-attachment: fixed;
@@ -52,7 +48,6 @@
     window.onload = function(){
       DMW.menu.init();
       DMW.navigation.init();
-      DMW.grid.init();
     };
   </script>
   <script src="/libraries/webcomponentsjs-0.5.5/webcomponents.min.js"></script>
@@ -90,14 +85,15 @@
   <script src="/libraries/moment/min/moment.min.js"></script>
   <script type="text/javascript" src="/libraries/notifit/notifIt%21-1.1/js/notifIt.js"></script>
   <script src="/js/main.js"></script>
-  <script src="/libraries/draggability/draggabilly.js"></script>
-    <script src="/js/menu.js"></script>
-    <link rel="stylesheet" href="/css/menu.css">
-    <script src="/js/grid-layout.js"></script>
-    <script src="/js/navigation.js"></script>
-    <link rel="stylesheet" href="/css/navigation.css">
+  <script src="/libraries/draggabilly/draggabilly.pkgd.min.js"></script>
+  <script src="/js/dragdrop.js"></script>
+  <script src="/js/menu.js"></script>
+  <link rel="stylesheet" href="/css/menu.css">
+  <script src="/js/grid-layout.js"></script>
+  <script src="/js/navigation.js"></script>
+  <link rel="stylesheet" href="/css/navigation.css">
 
-      <script type="text/javascript">
+  <script type="text/javascript">
           i18n.init({
       getAsync: false,
       load: 'current',
@@ -115,6 +111,7 @@
       DMW.main.socket.addEventListener('websocket-closed', websocketClosed);
       DMW.main.socket.register('widgetinstance-added', instanceAdded);
       DMW.main.socket.register('widgetinstance-removed', instanceRemoved);
+      DMW.main.socket.register('widgetinstance-moved', instanceMoved);
       DMW.main.section.addEventListener('section-updated', sectionUpdated);
       DMW.main.section.addEventListener('section-changed', sectionChanged);
     });

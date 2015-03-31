@@ -74,7 +74,7 @@ function sectionChanged(e) {
 		for (var i = 0; i < details.instances.length; i++) {
 			instance = details.instances[i];
 			var node = insertWidgetInstance(instance.id, instance.widget);
-			DMW.grid.appendedInstance(node, instance);
+			DMW.grid.appendInstance(node, instance);
 		}		
 	}
 }
@@ -83,15 +83,22 @@ function instanceAdded(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
 		insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
 		var node = insertWidgetInstance(json.id, json.widget);
-		DMW.grid.appendedInstance(node, json);
+		DMW.grid.appendInstance(node, json);
 	}
 }
 
 function instanceRemoved(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
 		var node = document.getElementById('instance-' + json.id);
-		DMW.grid.removedInstance(node, json);
+		DMW.grid.removeInstance(node, json);
 		node.remove();
+	}
+}
+
+function instanceMoved(topic, json) {
+	if (DMW.main.section.sectionid == json.section_id) {
+		var node = document.getElementById('instance-' + json.id);
+		DMW.grid.moveInstance(node, json);
 	}
 }
 

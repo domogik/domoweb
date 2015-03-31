@@ -516,9 +516,10 @@ class WidgetInstance(Base):
 		return s
 
 	@classmethod
-	def updateOrder(cls, id, order):
+	def updateLocation(cls, id, x, y):
 		s = session.query(cls).get(id)
-		s.order = order
+		s.x = x
+		s.y = y
 		session.add(s)
 		session.commit()
 		return s
