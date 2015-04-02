@@ -25,7 +25,7 @@ DMW.grid.init = function () {
 	// Insert style
 	var ss = document.getElementById('gridstyle');
 	ss.sheet.insertRule("#grid-layout .dropZone { z-index:0; position: absolute; width: " + DMW.grid.widgetsize + "px; height: " + DMW.grid.widgetsize + "px;}", ss.sheet.cssRules.length);
-	ss.sheet.insertRule("#grid-layout .dropZone.highlight { background-color: rgba(255, 255, 255, 0.5);", ss.sheet.cssRules.length);
+	ss.sheet.insertRule("#grid-layout .dropZone.highlight { background-color: rgba(255, 255, 255, 0.5);}", ss.sheet.cssRules.length);
 	ss.sheet.insertRule("#grid-layout .widget { width: " + DMW.grid.widgetsize + "px; height: " + DMW.grid.widgetsize + "px; transform-style: flat;}", ss.sheet.cssRules.length);
 	for (var i=2; i <= 7; i++) {
 		// Calculate the pixel size of widgets
