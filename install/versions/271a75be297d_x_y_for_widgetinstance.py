@@ -27,4 +27,5 @@ def downgrade():
 ##    op.add_column('widgetInstance', sa.Column('order', sa.INTEGER(), nullable=True))
 ##    op.drop_column('widgetInstance', 'y')
 ##    op.drop_column('widgetInstance', 'x')
+	pass
     ### end Alembic commands ###
