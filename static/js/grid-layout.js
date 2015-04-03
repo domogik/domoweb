@@ -5,7 +5,8 @@ DMW.grid.draggables = [];
 DMW.grid.widgetsize = 100; // px
 DMW.grid.widgetspace = 20; // px
 DMW.grid.matrix = null;
-DMW.grid.draggables = []
+DMW.grid.draggables = [];
+DMW.grid.edit = false;
 
 DMW.grid.init = function () {
 	DMW.grid.browserWidth = window.innerWidth;
@@ -57,6 +58,8 @@ DMW.grid.appendInstance = function(node, instance) {
 			DMW.grid.matrix[i][j] = parseInt(instance.id);
 		}
 	}
+
+	if (DMW.grid.edit) DMW.grid.addDraggable(node);
 };
 
 DMW.grid.moveInstance = function(node, instance) {
@@ -68,47 +71,51 @@ DMW.grid.locationChanged = function(node, x, y) {
 	DMW.main.socket.send("widgetinstance-location", {'instance_id':node.getAttribute('instanceid'), 'x':x, 'y':y});
 };
 
+DMW.grid.addDraggable = function(el) {
+	DMW.grid.draggables.push( new Draggable( el, {
+		draggabilly : { containment: document.body },
+		onStart : function(instance) {
+			var el = instance.el;
+			var droppableArr = [];
+			// insert drop zones
+			for(var y=0; y<DMW.grid.matrix.length; y++) {
+				for(var x=0; x<DMW.grid.matrix[y].length; x++) {
+					if (DMW.grid.hasEnoughSpace(x, y, el.dataset.w, el.dataset.h, el.getAttribute('instanceid'))) {
+						var zone = DMW.grid.insertDropzone(x, y, el.dataset.w, el.dataset.h);
+						droppableArr.push( new Droppable( zone, {
+							dropMargin : DMW.grid.widgetsize/2,
+							onDrop : function( instance, draggableEl, changed ) {
+								var el = instance.el;
+								// If the widget was moved
+								if (changed) {
+									DMW.grid.locationChanged(draggableEl, el.dataset.x, el.dataset.y);
+								}
+							}
+						} ) );
+					}
+				}
+			}
+			instance.updateDroppables(droppableArr);
+		},
+		onEnd : function(wasDropped) {
+			// Remove all drop zones
+			var elements = document.querySelectorAll(".dropZone");
+			Array.prototype.forEach.call( elements, function( node ) {
+			    node.parentNode.removeChild( node );
+			});
+		},
+		testChanged: function(droppableEl, draggableEl) {
+			return (draggableEl.dataset.x != droppableEl.dataset.x || draggableEl.dataset.y != droppableEl.dataset.y); 
+		}
+	} ) );
+};
+
 DMW.grid.editChanged = function(value) {
+	DMW.grid.edit = value;
 	if (value == true) {
 		// initialize draggable(s)
 		[].slice.call(document.querySelectorAll( '.widget' )).forEach( function( el ) {
-			DMW.grid.draggables.push( new Draggable( el, {
-				draggabilly : { containment: document.body },
-				onStart : function(instance) {
-					var el = instance.el;
-					var droppableArr = [];
-					// insert drop zones
-					for(var y=0; y<DMW.grid.matrix.length; y++) {
-						for(var x=0; x<DMW.grid.matrix[y].length; x++) {
-							if (DMW.grid.hasEnoughSpace(x, y, el.dataset.w, el.dataset.h, el.getAttribute('instanceid'))) {
-								var zone = DMW.grid.insertDropzone(x, y, el.dataset.w, el.dataset.h);
-								droppableArr.push( new Droppable( zone, {
-									dropMargin : DMW.grid.widgetsize/2,
-									onDrop : function( instance, draggableEl, changed ) {
-										var el = instance.el;
-										// If the widget was moved
-										if (changed) {
-											DMW.grid.locationChanged(draggableEl, el.dataset.x, el.dataset.y);
-										}
-									}
-								} ) );
-							}
-						}
-					}
-					instance.updateDroppables(droppableArr);
-				},
-				onEnd : function(wasDropped) {
-					// Remove all drop zones
-					var elements = document.querySelectorAll(".dropZone");
-					Array.prototype.forEach.call( elements, function( node ) {
-					    node.parentNode.removeChild( node );
-					});
-				},
-				testChanged: function(droppableEl, draggableEl) {
-					return (draggableEl.dataset.x != droppableEl.dataset.x || draggableEl.dataset.y != droppableEl.dataset.y); 
-				}
-
-			} ) );
+			DMW.grid.addDraggable(el);
 		} );
 	} else {
 		Array.prototype.forEach.call( DMW.grid.draggables, function( draggables ) {
