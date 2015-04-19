@@ -66,3 +66,8 @@ body {
     box-sizing: border-box;
     z-index: 5;
 }
+
+/* Form */
+legend {
+	color: #ffffff;
+}

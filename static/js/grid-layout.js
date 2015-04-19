@@ -2,37 +2,109 @@ DMW.grid = DMW.grid || {};
 
 DMW.grid.draggables = [];
 
-DMW.grid.widgetsize = 100; // px
-DMW.grid.widgetspace = 20; // px
 DMW.grid.matrix = null;
 DMW.grid.draggables = [];
 DMW.grid.edit = false;
 
-DMW.grid.init = function () {
+DMW.grid.init = function (sizeX, sizeY, widgetSize, widgetSpace, refresh) {
 	DMW.grid.browserWidth = window.innerWidth;
 	DMW.grid.browserHeight = window.innerHeight;
-	DMW.grid.sizeX = Math.floor(DMW.grid.browserWidth / (DMW.grid.widgetsize + DMW.grid.widgetspace));
-	DMW.grid.sizeY = Math.floor(DMW.grid.browserHeight / (DMW.grid.widgetsize + DMW.grid.widgetspace));
-	DMW.grid.marginLeft = Math.floor((DMW.grid.browserWidth - (DMW.grid.sizeX * DMW.grid.widgetsize) - ((DMW.grid.sizeX-1) * DMW.grid.widgetspace)) / 2);
-	DMW.grid.marginTop = Math.floor((DMW.grid.browserHeight - (DMW.grid.sizeY * DMW.grid.widgetsize) - ((DMW.grid.sizeY-1) * DMW.grid.widgetspace)) / 2);
+	if (sizeX && sizeY) {
+		DMW.grid.sizeX = parseInt(sizeX);
+		DMW.grid.sizeY = parseInt(sizeY);
+		if (widgetSize) {
+			DMW.grid.widgetSize = parseInt(widgetSize);
+			DMW.grid.widgetSpace = DMW.grid.generateWidgetSpace(DMW.grid.sizeX, DMW.grid.widgetSize);
+		} else {
+			DMW.grid.widgetSpace = parseInt(widgetSpace)
+			DMW.grid.widgetSize = DMW.grid.generateWidgetSize(DMW.grid.sizeX, DMW.grid.widgetSpace);
+		}
+	} else if (widgetSize) {
+		DMW.grid.widgetSize = parseInt(widgetSize);
+		DMW.grid.widgetSpace = parseInt(widgetSpace);
+		DMW.grid.sizeX = DMW.grid.generateSizeX(DMW.grid.widgetSize, DMW.grid.widgetSpace);
+		DMW.grid.sizeY = DMW.grid.generateSizeY(DMW.grid.widgetSize, DMW.grid.widgetSpace);
+	}
 
-	DMW.grid.matrix = [];
+	DMW.grid.marginLeft = Math.floor((DMW.grid.browserWidth - (DMW.grid.sizeX * DMW.grid.widgetSize) - ((DMW.grid.sizeX-1) * DMW.grid.widgetSpace)) / 2);
+	DMW.grid.marginTop = Math.floor((DMW.grid.browserHeight - (DMW.grid.sizeY * DMW.grid.widgetSize) - ((DMW.grid.sizeY-1) * DMW.grid.widgetSpace)) / 2);
 
-	// Placement matrix creation
-	for(var i=0; i<DMW.grid.sizeY; i++) {
-		DMW.grid.matrix[i] = new Array(DMW.grid.sizeX);
+
+	if (refresh) {
+		
+	} else { // Re-create
+		DMW.grid.matrix = [];
+
+		// Placement matrix creation
+		for(var i=0; i<DMW.grid.sizeY; i++) {
+			DMW.grid.matrix[i] = new Array(DMW.grid.sizeX);
+		}
 	}
 
 	// Insert style
 	var ss = document.getElementById('gridstyle');
-	ss.sheet.insertRule("#grid-layout .dropZone { z-index:0; position: absolute; width: " + DMW.grid.widgetsize + "px; height: " + DMW.grid.widgetsize + "px;}", ss.sheet.cssRules.length);
+	ss.innerHTML = "";
+	ss.sheet.insertRule("#grid-layout .dropZone { z-index:0; position: absolute; width: " + DMW.grid.widgetSize + "px; height: " + DMW.grid.widgetSize + "px;}", ss.sheet.cssRules.length);
 	ss.sheet.insertRule("#grid-layout .dropZone.highlight { background-color: rgba(255, 255, 255, 0.5);}", ss.sheet.cssRules.length);
-	ss.sheet.insertRule("#grid-layout .widget { width: " + DMW.grid.widgetsize + "px; height: " + DMW.grid.widgetsize + "px; transform-style: flat;}", ss.sheet.cssRules.length);
+	ss.sheet.insertRule("#grid-layout .widget { width: " + DMW.grid.widgetSize + "px; height: " + DMW.grid.widgetSize + "px; transform-style: flat;}", ss.sheet.cssRules.length);
 	for (var i=2; i <= 7; i++) {
 		// Calculate the pixel size of widgets
-		var px = i * DMW.grid.widgetsize + (i-1) * DMW.grid.widgetspace;
+		var px = i * DMW.grid.widgetSize + (i-1) * DMW.grid.widgetSpace;
 		ss.sheet.insertRule("#grid-layout .widget.widgetw" + i + ", #grid-layout .dropZone.widgetw" + i + " { width: " + px + "px; }", ss.sheet.cssRules.length);
 		ss.sheet.insertRule("#grid-layout .widget.widgeth" + i + ", #grid-layout .dropZone.widgeth" + i + " { height: " + px + "px; }", ss.sheet.cssRules.length);
+	}
+};
+
+DMW.grid.generateSizeX = function(widgetSize, widgetSpace) {
+	return Math.floor((DMW.grid.browserWidth + widgetSpace) / (widgetSize + widgetSpace));
+};
+
+DMW.grid.generateSizeY = function(widgetSize, widgetSpace) {
+	return Math.floor((DMW.grid.browserHeight + widgetSpace) / (widgetSize + widgetSpace));
+};
+
+DMW.grid.generateWidgetSize = function(sizeX, widgetSpace) {
+	return Math.floor((DMW.grid.browserWidth - ((sizeX + 1) * widgetSpace)) / sizeX);
+};
+
+DMW.grid.generateWidgetSpace = function(sizeX, widgetSize) {
+	return Math.floor((DMW.grid.browserWidth - (sizeX * widgetSpace)) / (sizeX + 1));
+};
+
+DMW.grid.checkValues = function (sizeX, sizeY, widgetSize, widgetSpace) {
+	if (sizeX && sizeY && widgetSize && widgetSpace) {
+		return "Error: To many parameters";
+	}
+	if ((sizeX && !sizeY) || (!sizeX && sizeY) || (sizeX && sizeY && !widgetSize && !widgetSpace) || (!sizeX && !sizeY && !widgetSize && widgetSpace) || (!sizeX && !sizeY && widgetSize && !widgetSpace)) {
+		return "Error: Missing a parameter";
+	}
+
+	if (sizeX && sizeY) {
+		sizeX = parseInt(sizeX);
+		sizeY = parseInt(sizeY);
+		if (widgetSize) {
+			widgetSize = parseInt(widgetSize);
+			widgetSpace = DMW.grid.generateWidgetSpace(sizeX, widgetSize);
+		} else {
+			widgetSpace = parseInt(widgetSpace)
+			widgetSize = DMW.grid.generateWidgetSize(sizeX, widgetSpace);
+		}
+	} else if (widgetSize) {
+		widgetSize = parseInt(widgetSize);
+		widgetSpace = parseInt(widgetSpace);
+		sizeX = DMW.grid.generateSizeX(widgetSize, widgetSpace);
+		sizeY = DMW.grid.generateSizeY(widgetSize, widgetSpace);
+	}
+
+	// Check if it is not bigger than the browser size
+	if (sizeX == 0 || sizeY == 0) {
+		return "Error: Grid too small Width:" + sizeX + " Height:" + sizeY;
+	} else if ((sizeX * widgetSize + (sizeX - 1) * widgetSpace) > DMW.grid.browserWidth) {
+		return "Error: This combination (" + (sizeX * widgetSize + (sizeX - 1) * widgetSpace) + ") is bigger than the browser width (" + DMW.grid.browserWidth + ")";
+	} else if ((sizeY * widgetSize + (sizeY - 1) * widgetSpace) > DMW.grid.browserHeight) {
+		return "Error: This combination (" + (sizeY * widgetSize + (sizeY - 1) * widgetSpace) + ") is bigger than the browser height (" + DMW.grid.browserHeight + ")";
+	} else {
+		return "OK: Grid size " + sizeX + "x" + sizeY + " - Widgets size " + widgetSize + "px - Widgets space " + widgetSpace + "px";
 	}
 };
 
@@ -83,7 +155,7 @@ DMW.grid.addDraggable = function(el) {
 					if (DMW.grid.hasEnoughSpace(x, y, el.dataset.w, el.dataset.h, el.getAttribute('instanceid'))) {
 						var zone = DMW.grid.insertDropzone(x, y, el.dataset.w, el.dataset.h);
 						droppableArr.push( new Droppable( zone, {
-							dropMargin : DMW.grid.widgetsize/2,
+							dropMargin : DMW.grid.widgetSize/2,
 							onDrop : function( instance, draggableEl, changed ) {
 								var el = instance.el;
 								// If the widget was moved
@@ -139,8 +211,8 @@ DMW.grid.placeNode = function(node, x, y) {
 	var top = DMW.grid.marginTop;
 	var left = DMW.grid.marginLeft;
 
-	top += y * (DMW.grid.widgetsize + DMW.grid.widgetspace);
-	left += x * (DMW.grid.widgetsize + DMW.grid.widgetspace);
+	top += y * (DMW.grid.widgetSize + DMW.grid.widgetSpace);
+	left += x * (DMW.grid.widgetSize + DMW.grid.widgetSpace);
 	node.style.top = top + "px";
 	node.style.left = left + "px";
 };

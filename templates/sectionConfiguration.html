@@ -27,16 +27,38 @@
               <label for="sectionName">Description</label>
               <input type="text" class="form-control" id="sectionDescription" name="sectionDescription" placeholder="Enter Section description" value="{{section.description}}">
             </div>
-            <div class="form-group">
-              <label for="SectionBackgroundImage">Background Image</label>
-              <select class="image-picker form-control" id="SectionBackgroundImageUploaded" name="paramsSectionBackgroundImageUploaded">
+            <fieldset class="form-group">
+              <legend>Grid size</legend>
+              <p>A combination of 2 values are needed : Width/Height + Widget size, Width/Height + Widget space or Widget size + Widget space</p>
+              <p id="gridMessage"></p>
+              <div class="col-xs-3">
+                <label for="params-GridWidth">Width</label>
+                <input type="text" class="form-control paramGrid" id="params-GridWidth" name="params-GridWidth"{% if 'GridWidth' in params %} value="{{params['GridWidth']}}"{% end %}>
+              </div>
+              <div class="col-xs-3">
+                <label for="params-GridHeight">Height</label>
+                <input type="text" class="form-control paramGrid" id="params-GridHeight" name="params-GridHeight"{% if 'GridHeight' in params %}  value="{{params['GridHeight']}}"{% end %}>
+              </div>
+              <div class="col-xs-3">
+                <label for="params-GridWidgetSize">Base widget size</label>
+                <input type="text" class="form-control paramGrid" id="params-GridWidgetSize" name="params-GridWidgetSize"{% if 'GridWidgetSize' in params %} value="{{params['GridWidgetSize']}}"{% end %}>
+              </div>
+              <div class="col-xs-3">
+                <label for="params-GridWidgetSpace">Space between</label>
+                <input type="text" class="form-control paramGrid" id="params-GridWidgetSpace" name="params-GridWidgetSpace"{% if 'GridWidgetSpace' in params %}  value="{{params['GridWidgetSpace']}}"{% end %}>
+              </div>
+            </fieldset>
+            <fieldset class="form-group">
+              <legend>Background</legend>
+              <label for="SectionBackgroundImage">Image</label>
+              <select class="image-picker form-control" id="SectionBackgroundImageUploaded" name="params-SectionBackgroundImageUploaded">
                 <option data-img-src="images/background_default_thumbnail.png" value=""{% if 'SectionBackgroundImageUploaded' not in params %} selected='selected'{% end %}>Default background</option>
               {% for background in backgrounds %}
                 <option data-img-src="/backgrounds/thumbnails/{{ background }}" value="{{ background }}"{% if 'SectionBackgroundImageUploaded' in params and params['SectionBackgroundImageUploaded'] == background %} selected='selected'{% end %}>{{ background }}</option>
               {% end %}
               </select>
-              </div>
-              <div id="file-uploader-background"></div>
+                <div id="file-uploader-background"></div>
+              </fieldset>
           </div>
           <div class="tab-pane" id="widgetstyle">
             {% for field in widgetForm %}

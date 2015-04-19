@@ -263,7 +263,7 @@ class Section(Base):
 	def getParamsDict(cls, id):
 		s = session.query(cls).get(id)
 		# Combine Params for section theme
-		params = Theme.getParamsDict(s.theme.id, ["section", "grid", "widget"])
+		params = Theme.getParamsDict(s.theme.id, ["section", "widget"])
 		# Override with user params
 		for p in s.params:
 			params[p.key] = p.value

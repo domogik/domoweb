@@ -102,6 +102,11 @@ class ConfigurationHandler(RequestHandler):
             self.write("{success:true}")
         elif action=='addsection':
             s = Section.add(id, self.get_argument('sectionName'), self.get_argument('sectionDescription'))
+            for p, v in self.request.arguments.iteritems():
+                if p.startswith( 'params' ):
+                    if v[0]:
+                        SectionParam.saveKey(section_id=id, key=p[7:], value=v[0])
+
             json = to_json(s)
             WSHandler.sendAllMessage(['section-added', json])
             self.write("{success:true}")

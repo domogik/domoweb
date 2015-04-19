@@ -13,6 +13,9 @@ DMW.main.navigation = document.getElementById('sections-tree');
 /* When section params changed */
 function sectionUpdated(e) {
 	var details = e.detail;
+
+	DMW.grid.init(details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace, true);
+
 	var ss = document.getElementById('sectionstyle');
 	var bodyStyle = ss.sheet.cssRules[0];
 	if ('SectionBackgroundImage' in DMW.main.section.params) {
@@ -62,7 +65,7 @@ function sectionChanged(e) {
   		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
 	}
 
-	DMW.grid.init();
+	DMW.grid.init(details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace, false);
 
 	if (details.widgets) {
 		for (var i = 0; i < details.widgets.length; i++) {
@@ -220,6 +223,27 @@ function configureHandler() {
 				widgetpreview.style.borderRadius = document.getElementById('params-WidgetBorderRadius').value;
 				widgetpreview.style.boxShadow = document.getElementById('params-WidgetBoxShadow').value;
 
+				// Grid check values
+				var params = DMW.main.modalOverlay.querySelectorAll('.paramGrid');
+				[].forEach.call(params, function(param) {
+					param.addEventListener("change", function() {
+						var sizeX = document.getElementById('params-GridWidth').value;
+						var sizeY = document.getElementById('params-GridHeight').value;
+						var widgetSize = document.getElementById('params-GridWidgetSize').value;
+						var widgetSpace = document.getElementById('params-GridWidgetSpace').value;
+
+						var message = DMW.grid.checkValues(sizeX, sizeY, widgetSize, widgetSpace);
+						document.getElementById('gridMessage').innerHTML = message;
+						if (message.indexOf('Error') === 0) {
+							document.getElementById('gridMessage').className = "error";
+						} else {
+							document.getElementById('gridMessage').className = "info";
+						}
+
+					}, false);
+				});
+
+				// Display modal
 				DMW.main.modalOverlay.classList.add('on');
 			}
 		});
@@ -281,6 +305,28 @@ function addSectionHandler() {
 						e.stopPropagation();
 						return false;
 					});
+
+				// Grid check values
+				var params = DMW.main.modalOverlay.querySelectorAll('.paramGrid');
+				[].forEach.call(params, function(param) {
+					param.addEventListener("change", function() {
+						var sizeX = document.getElementById('params-GridWidth').value;
+						var sizeY = document.getElementById('params-GridHeight').value;
+						var widgetSize = document.getElementById('params-GridWidgetSize').value;
+						var widgetSpace = document.getElementById('params-GridWidgetSpace').value;
+
+						var error = DMW.grid.checkValues(sizeX, sizeY, widgetSize, widgetSpace);
+						
+						if (error) {
+							document.getElementById('gridError').innerHTML = error;
+						} else {
+							document.getElementById('gridError').innerHTML = "";							
+						}
+
+					}, false);
+				});
+
+				// Display modal
 				DMW.main.modalOverlay.classList.add('on');
 			}
 		});
