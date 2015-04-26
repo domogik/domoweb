@@ -3,10 +3,41 @@ DMW.grid = DMW.grid || {};
 DMW.grid.draggables = [];
 
 DMW.grid.matrix = null;
+DMW.grid.list =null;
 DMW.grid.draggables = [];
 DMW.grid.edit = false;
 
-DMW.grid.init = function (sizeX, sizeY, widgetSize, widgetSpace, refresh) {
+
+DMW.grid.init = function (sizeX, sizeY, widgetSize, widgetSpace) {
+	DMW.grid.setParams(sizeX, sizeY, widgetSize, widgetSpace);
+	// Placement matrix creation
+	DMW.grid.initMatrix(DMW.grid.sizeX, DMW.grid.sizeY);
+	DMW.grid.list = []
+	DMW.grid.setCSSstyle();
+};
+
+DMW.grid.refresh = function (sizeX, sizeY, widgetSize, widgetSpace) {
+	DMW.grid.setParams(sizeX, sizeY, widgetSize, widgetSpace);
+	// Update matrix size
+	var removed = DMW.grid.resizeMatrix(DMW.grid.sizeX, DMW.grid.sizeY);
+
+	// Remove deleted node from list
+	for(var i=0; i<removed.length; i++) {
+		delete DMW.grid.list[i];
+	}
+	// Update nodes location after grid resize
+	for(var i in DMW.grid.list) {
+		if (DMW.grid.list.hasOwnProperty(i)) {
+			var item = DMW.grid.list[i];
+			DMW.grid.placeNode(item['node'], item['x'], item['y']);			
+		}
+	}
+
+	DMW.grid.setCSSstyle();
+	return removed;
+};
+
+DMW.grid.setParams = function (sizeX, sizeY, widgetSize, widgetSpace) {
 	DMW.grid.browserWidth = window.innerWidth;
 	DMW.grid.browserHeight = window.innerHeight;
 	if (sizeX && sizeY) {
@@ -28,19 +59,9 @@ DMW.grid.init = function (sizeX, sizeY, widgetSize, widgetSpace, refresh) {
 
 	DMW.grid.marginLeft = Math.floor((DMW.grid.browserWidth - (DMW.grid.sizeX * DMW.grid.widgetSize) - ((DMW.grid.sizeX-1) * DMW.grid.widgetSpace)) / 2);
 	DMW.grid.marginTop = Math.floor((DMW.grid.browserHeight - (DMW.grid.sizeY * DMW.grid.widgetSize) - ((DMW.grid.sizeY-1) * DMW.grid.widgetSpace)) / 2);
+};
 
-
-	if (refresh) {
-		
-	} else { // Re-create
-		DMW.grid.matrix = [];
-
-		// Placement matrix creation
-		for(var i=0; i<DMW.grid.sizeY; i++) {
-			DMW.grid.matrix[i] = new Array(DMW.grid.sizeX);
-		}
-	}
-
+DMW.grid.setCSSstyle = function () {
 	// Insert style
 	var ss = document.getElementById('gridstyle');
 	ss.innerHTML = "";
@@ -53,6 +74,48 @@ DMW.grid.init = function (sizeX, sizeY, widgetSize, widgetSpace, refresh) {
 		ss.sheet.insertRule("#grid-layout .widget.widgetw" + i + ", #grid-layout .dropZone.widgetw" + i + " { width: " + px + "px; }", ss.sheet.cssRules.length);
 		ss.sheet.insertRule("#grid-layout .widget.widgeth" + i + ", #grid-layout .dropZone.widgeth" + i + " { height: " + px + "px; }", ss.sheet.cssRules.length);
 	}
+};
+
+DMW.grid.initMatrix = function(x, y) {
+	DMW.grid.matrix = [];
+	for(var i=0; i<y; i++) {
+		DMW.grid.matrix[i] = new Array(x);
+	}
+};
+
+DMW.grid.resizeMatrix = function(x, y) {
+	var tmp = DMW.grid.matrix;
+	DMW.grid.initMatrix(x, y);
+	var outside = [];
+	// Find Widgets outside the matrix
+	if (tmp.length > y) {
+		for(var i=y; i<tmp.length; i++) {
+			for(var j=0; j<tmp[0].length; j++) {
+				if (tmp[i][j] != null && outside.indexOf(tmp[i][j]) < 0) {
+					outside.push(tmp[i][j]);
+				}
+			}
+		}
+	}
+	if (tmp[0].length > x) {
+		for(var j=x; j<tmp[0].length; j++) {
+			for(var i=0; i<y; i++) {
+				if (tmp[i][j] != null && outside.indexOf(tmp[i][j]) < 0) {
+					outside.push(tmp[i][j]);
+				}
+			}
+		}
+	}
+	// Copy existing values
+	for(var i=0; i<tmp.length; i++) {
+		for(var j=0; j<tmp[0].length; j++) {
+			if (DMW.grid.matrix[i] !== undefined && DMW.grid.matrix[i][j] !== undefined && outside.indexOf(tmp[i][j]) < 0) {
+				DMW.grid.matrix[i][j] = tmp[i][j];
+			}
+		}
+	}
+
+	return outside;
 };
 
 DMW.grid.generateSizeX = function(widgetSize, widgetSpace) {
@@ -116,6 +179,7 @@ DMW.grid.removeInstance = function(instance) {
 			}
 		}
 	}
+	delete DMW.grid.list[parseInt(instance.id)];
 };
 
 DMW.grid.appendInstance = function(node, instance) {
@@ -130,6 +194,8 @@ DMW.grid.appendInstance = function(node, instance) {
 			DMW.grid.matrix[i][j] = parseInt(instance.id);
 		}
 	}
+
+	DMW.grid.list[parseInt(instance.id)] = {'node':node, 'x':instance.x, 'y':instance.y};
 
 	if (DMW.grid.edit) DMW.grid.addDraggable(node);
 };

@@ -14,8 +14,45 @@ DMW.main.navigation = document.getElementById('sections-tree');
 function sectionUpdated(e) {
 	var details = e.detail;
 
-	DMW.grid.init(details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace, true);
+	var removed = DMW.grid.refresh(details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace);
 
+	// Remove widgets outside the grid
+	for (var i=0; i<removed.length; i++) {
+		DMW.main.socket.send("widgetinstance-remove", {'instance_id': removed[i]});
+	}
+
+	setSectionStyle();
+}
+
+/* When Section changed (navigation) */
+function sectionChanged(e) {
+	var details = e.detail;
+
+	setSectionStyle();
+
+	/* Remove current widgets */
+	while (DMW.main.layout.firstChild) {
+  		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
+	}
+
+	DMW.grid.init(details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace);
+
+	if (details.widgets) {
+		for (var i = 0; i < details.widgets.length; i++) {
+			widget = details.widgets[i];
+			insertWidgetLink(widget.id, widget.set_id, widget.set_ref);
+		}		
+	}
+	if (details.instances) {
+		for (var i = 0; i < details.instances.length; i++) {
+			instance = details.instances[i];
+			var node = insertWidgetInstance(instance.id, instance.widget);
+			DMW.grid.appendInstance(node, instance);
+		}		
+	}
+}
+
+function setSectionStyle() {
 	var ss = document.getElementById('sectionstyle');
 	var bodyStyle = ss.sheet.cssRules[0];
 	if ('SectionBackgroundImage' in DMW.main.section.params) {
@@ -52,34 +89,6 @@ function sectionUpdated(e) {
 	widgetStyle.style.borderColor=DMW.main.section.params['WidgetBorderColor'];
 	widgetStyle.style.borderRadius=DMW.main.section.params['WidgetBorderRadius'];
 	widgetStyle.style.boxShadow=DMW.main.section.params['WidgetBoxShadow'];
-}
-
-/* When Section changed (navigation) */
-function sectionChanged(e) {
-	var details = e.detail;
-
-	sectionUpdated(e);
-
-	/* Remove current widgets */
-	while (DMW.main.layout.firstChild) {
-  		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
-	}
-
-	DMW.grid.init(details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace, false);
-
-	if (details.widgets) {
-		for (var i = 0; i < details.widgets.length; i++) {
-			widget = details.widgets[i];
-			insertWidgetLink(widget.id, widget.set_id, widget.set_ref);
-		}		
-	}
-	if (details.instances) {
-		for (var i = 0; i < details.instances.length; i++) {
-			instance = details.instances[i];
-			var node = insertWidgetInstance(instance.id, instance.widget);
-			DMW.grid.appendInstance(node, instance);
-		}		
-	}
 }
 
 function instanceAdded(topic, json) {
