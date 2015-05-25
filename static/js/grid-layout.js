@@ -6,13 +6,13 @@ DMW.grid.matrix = null;
 DMW.grid.list =null;
 DMW.grid.draggables = [];
 DMW.grid.edit = false;
-
+DMW.grid.mode = null;
 
 DMW.grid.init = function (sizeX, sizeY, widgetSize, widgetSpace) {
 	DMW.grid.setParams(sizeX, sizeY, widgetSize, widgetSpace);
 	// Placement matrix creation
-	DMW.grid.initMatrix(DMW.grid.sizeX, DMW.grid.sizeY);
-	DMW.grid.list = []
+	DMW.grid.matrix = [[null]];
+	DMW.grid.list = [];
 	DMW.grid.setCSSstyle();
 };
 
@@ -37,28 +37,37 @@ DMW.grid.refresh = function (sizeX, sizeY, widgetSize, widgetSpace) {
 	return removed;
 };
 
+DMW.grid.browserWidth = function() { return window.innerWidth; };
+DMW.grid.browserHeight = function() { return window.innerHeight; };
+
 DMW.grid.setParams = function (sizeX, sizeY, widgetSize, widgetSpace) {
-	DMW.grid.browserWidth = window.innerWidth;
-	DMW.grid.browserHeight = window.innerHeight;
 	if (sizeX && sizeY) {
 		DMW.grid.sizeX = parseInt(sizeX);
 		DMW.grid.sizeY = parseInt(sizeY);
 		if (widgetSize) {
+			DMW.grid.mode = 1;
 			DMW.grid.widgetSize = parseInt(widgetSize);
 			DMW.grid.widgetSpace = DMW.grid.generateWidgetSpace(DMW.grid.sizeX, DMW.grid.widgetSize);
+			if (DMW.grid.widgetSpace < 0) DMW.grid.widgetSpace = 0;
 		} else {
+			DMW.grid.mode = 2;			
 			DMW.grid.widgetSpace = parseInt(widgetSpace)
 			DMW.grid.widgetSize = DMW.grid.generateWidgetSize(DMW.grid.sizeX, DMW.grid.widgetSpace);
+			if (DMW.grid.widgetSize < 50) DMW.grid.widgetSize = 50;
 		}
 	} else if (widgetSize) {
+		DMW.grid.mode = 3;
 		DMW.grid.widgetSize = parseInt(widgetSize);
 		DMW.grid.widgetSpace = parseInt(widgetSpace);
 		DMW.grid.sizeX = DMW.grid.generateSizeX(DMW.grid.widgetSize, DMW.grid.widgetSpace);
 		DMW.grid.sizeY = DMW.grid.generateSizeY(DMW.grid.widgetSize, DMW.grid.widgetSpace);
 	}
 
-	DMW.grid.marginLeft = Math.floor((DMW.grid.browserWidth - (DMW.grid.sizeX * DMW.grid.widgetSize) - ((DMW.grid.sizeX-1) * DMW.grid.widgetSpace)) / 2);
-	DMW.grid.marginTop = Math.floor((DMW.grid.browserHeight - (DMW.grid.sizeY * DMW.grid.widgetSize) - ((DMW.grid.sizeY-1) * DMW.grid.widgetSpace)) / 2);
+	DMW.grid.marginLeft = Math.floor((DMW.grid.browserWidth() - (DMW.grid.sizeX * DMW.grid.widgetSize) - ((DMW.grid.sizeX-1) * DMW.grid.widgetSpace)) / 2);
+	if (DMW.grid.marginLeft < 0) DMW.grid.marginLeft = 0;
+
+	DMW.grid.marginTop = Math.floor((DMW.grid.browserHeight() - (DMW.grid.sizeY * DMW.grid.widgetSize) - ((DMW.grid.sizeY-1) * DMW.grid.widgetSpace)) / 2);
+	if (DMW.grid.marginTop < 0) DMW.grid.marginTop = 0;
 };
 
 DMW.grid.setCSSstyle = function () {
@@ -73,13 +82,6 @@ DMW.grid.setCSSstyle = function () {
 		var px = i * DMW.grid.widgetSize + (i-1) * DMW.grid.widgetSpace;
 		ss.sheet.insertRule("#grid-layout .widget.widgetw" + i + ", #grid-layout .dropZone.widgetw" + i + " { width: " + px + "px; }", ss.sheet.cssRules.length);
 		ss.sheet.insertRule("#grid-layout .widget.widgeth" + i + ", #grid-layout .dropZone.widgeth" + i + " { height: " + px + "px; }", ss.sheet.cssRules.length);
-	}
-};
-
-DMW.grid.initMatrix = function(x, y) {
-	DMW.grid.matrix = [];
-	for(var i=0; i<y; i++) {
-		DMW.grid.matrix[i] = new Array(x);
 	}
 };
 
@@ -118,20 +120,93 @@ DMW.grid.resizeMatrix = function(x, y) {
 	return outside;
 };
 
+function printMatrix(matrix) {
+	var output = "";
+	for (var i=0; i < matrix.length; i++) {
+		output += "\n|";
+		for (var j=0; j < matrix[i].length; j++) {
+			if (matrix[i][j]) {
+				if (parseInt(matrix[i][j]) > 9) {
+					output += " " + matrix[i][j] + " |";
+				} else {
+					output += "  " + matrix[i][j] + " |";
+				}
+			} else {
+				output += "    |";
+			}
+		}
+	}
+//	console.debug(output);
+}
+
+/* Adjust widgets positions to match browser size */
+DMW.grid.adjustPlacement = function() {
+	if (DMW.grid.mode == 1) {
+		DMW.grid.adjustMode1();
+	} else if (DMW.grid.mode == 2) {
+		DMW.grid.adjustMode2();
+	} else if (DMW.grid.mode == 3) {
+		DMW.grid.adjustMode3();
+	}
+};
+
+DMW.grid.adjustMode1 = function() {
+	// Adjust spaces between elements
+	DMW.grid.setParams(DMW.grid.sizeX, DMW.grid.sizeY, DMW.grid.widgetSize, null);
+	// Update nodes location after grid resize
+	for(var i in DMW.grid.list) {
+		if (DMW.grid.list.hasOwnProperty(i)) {
+			var item = DMW.grid.list[i];
+			DMW.grid.placeNode(item['node'], item['x'], item['y']);			
+		}
+	}
+	DMW.grid.setCSSstyle();
+}
+
+DMW.grid.adjustMode2 = function() {
+	// Adjust widget size
+	DMW.grid.setParams(DMW.grid.sizeX, DMW.grid.sizeY, null, DMW.grid.widgetSpace);
+	// Update nodes location after grid resize
+	for(var i in DMW.grid.list) {
+		if (DMW.grid.list.hasOwnProperty(i)) {
+			var item = DMW.grid.list[i];
+			DMW.grid.placeNode(item['node'], item['x'], item['y']);			
+		}
+	}
+	DMW.grid.setCSSstyle();
+}
+
+DMW.grid.adjustMode3 = function() {
+	var x = DMW.grid.generateSizeX(DMW.grid.widgetSize, DMW.grid.widgetSpace);
+	var y = DMW.grid.generateSizeY(DMW.grid.widgetSize, DMW.grid.widgetSpace);
+	if (x > 0) {
+		DMW.grid.list = adjustMatrix(DMW.grid.list, DMW.grid.matrix, x, y);
+		// Update nodes location after grid resize
+		for(var i in DMW.grid.list) {
+			if (DMW.grid.list.hasOwnProperty(i)) {
+				var item = DMW.grid.list[i];
+				if (item['status'] == 'moved') {
+					DMW.grid.placeNode(item['node'], item['x'], item['y']);			
+				}
+			}
+		}
+	}
+}
+
 DMW.grid.generateSizeX = function(widgetSize, widgetSpace) {
-	return Math.floor((DMW.grid.browserWidth + widgetSpace) / (widgetSize + widgetSpace));
+	return Math.floor((DMW.grid.browserWidth() + widgetSpace) / (widgetSize + widgetSpace));
 };
 
 DMW.grid.generateSizeY = function(widgetSize, widgetSpace) {
-	return Math.floor((DMW.grid.browserHeight + widgetSpace) / (widgetSize + widgetSpace));
+	return Math.floor((DMW.grid.browserHeight() + widgetSpace) / (widgetSize + widgetSpace));
 };
 
 DMW.grid.generateWidgetSize = function(sizeX, widgetSpace) {
-	return Math.floor((DMW.grid.browserWidth - ((sizeX + 1) * widgetSpace)) / sizeX);
+	return Math.floor((DMW.grid.browserWidth() - ((sizeX + 1) * widgetSpace)) / sizeX);
 };
 
 DMW.grid.generateWidgetSpace = function(sizeX, widgetSize) {
-	return Math.floor((DMW.grid.browserWidth - (sizeX * widgetSpace)) / (sizeX + 1));
+	return Math.floor((DMW.grid.browserWidth() - (sizeX * widgetSize)) / (sizeX + 1));
 };
 
 DMW.grid.checkValues = function (sizeX, sizeY, widgetSize, widgetSpace) {
@@ -162,23 +237,17 @@ DMW.grid.checkValues = function (sizeX, sizeY, widgetSize, widgetSpace) {
 	// Check if it is not bigger than the browser size
 	if (sizeX == 0 || sizeY == 0) {
 		return "Error: Grid too small Width:" + sizeX + " Height:" + sizeY;
-	} else if ((sizeX * widgetSize + (sizeX - 1) * widgetSpace) > DMW.grid.browserWidth) {
-		return "Error: This combination (" + (sizeX * widgetSize + (sizeX - 1) * widgetSpace) + ") is bigger than the browser width (" + DMW.grid.browserWidth + ")";
-	} else if ((sizeY * widgetSize + (sizeY - 1) * widgetSpace) > DMW.grid.browserHeight) {
-		return "Error: This combination (" + (sizeY * widgetSize + (sizeY - 1) * widgetSpace) + ") is bigger than the browser height (" + DMW.grid.browserHeight + ")";
+	} else if ((sizeX * widgetSize + (sizeX - 1) * widgetSpace) > DMW.grid.browserWidth()) {
+		return "Error: This combination (" + (sizeX * widgetSize + (sizeX - 1) * widgetSpace) + ") is bigger than the browser width (" + DMW.grid.browserWidth() + ")";
+	} else if ((sizeY * widgetSize + (sizeY - 1) * widgetSpace) > DMW.grid.browserHeight()) {
+		return "Error: This combination (" + (sizeY * widgetSize + (sizeY - 1) * widgetSpace) + ") is bigger than the browser height (" + DMW.grid.browserHeight() + ")";
 	} else {
 		return "OK: Grid size " + sizeX + "x" + sizeY + " - Widgets size " + widgetSize + "px - Widgets space " + widgetSpace + "px";
 	}
 };
 
 DMW.grid.removeInstance = function(instance) {
-	for(var i=0; i<DMW.grid.matrix.length; i++) {
-		for(var j=0; j<DMW.grid.matrix[i].length; j++) {
-			if (DMW.grid.matrix[i][j] == parseInt(instance.id)) {
-				DMW.grid.matrix[i][j] = null;
-			}
-		}
-	}
+	removeMatrix(DMW.grid.matrix, parseInt(instance.id));
 	delete DMW.grid.list[parseInt(instance.id)];
 };
 
@@ -189,13 +258,9 @@ DMW.grid.appendInstance = function(node, instance) {
 	node.dataset.x = instance.x;
 	node.dataset.y = instance.y;
 
-	for(var i=instance.y; i<instance.y+instance.widget.height; i++) {
-		for(var j=instance.x; j<instance.x+instance.widget.width; j++) {
-			DMW.grid.matrix[i][j] = parseInt(instance.id);
-		}
-	}
+	insertMatrix(DMW.grid.matrix, parseInt(instance.id), instance.x, instance.y, instance.widget.width, instance.widget.height);
 
-	DMW.grid.list[parseInt(instance.id)] = {'node':node, 'x':instance.x, 'y':instance.y};
+	DMW.grid.list[parseInt(instance.id)] = {'node':node, 'x':instance.x, 'y':instance.y, 'originalX':instance.x, 'originalY':instance.y, 'width':instance.widget.width, 'height':instance.widget.height, 'status': null};
 
 	if (DMW.grid.edit) DMW.grid.addDraggable(node);
 };
@@ -284,26 +349,7 @@ DMW.grid.placeNode = function(node, x, y) {
 };
 
 DMW.grid.firstEmptyPosition = function(w, h) {
-	for(var y=0; y<DMW.grid.matrix.length; y++) {
-		for(var x=0; x<DMW.grid.matrix[y].length; x++) {
-			// Find the first empty space, that matches the widget size
-			var isAvailable = true;
-			var i = 0;
-			while (isAvailable && i <= (h-1)) {
-				var j = 0;
-				while (isAvailable && j <= (w-1)) {
-					if (DMW.grid.matrix[y+i][x+j] != null) {
-						isAvailable = false;
-					}
-					j++;
-				}
-				i++;
-			}
-			if (isAvailable) {
-				return [x, y];
-			}
-		}
-	}
+	return findEmptyPositionMatrix(DMW.grid.matrix, w, h);
 };
 
 DMW.grid.hasEnoughSpace = function(x, y, w, h, id) {
@@ -314,8 +360,8 @@ DMW.grid.hasEnoughSpace = function(x, y, w, h, id) {
 	h = parseInt(h)
 	var i = y;
 
-	// If does exeed the matrix length
-	if (DMW.grid.matrix.length < (y+h) || DMW.grid.matrix[0].length < (x+w)) {
+	// If does exeed the matrix size
+	if (DMW.grid.sizeY < (y+h) || DMW.grid.sizeX < (x+w)) {
 		isAvailable = false;
 	}
 	// If not we test the matrix content
@@ -330,4 +376,158 @@ DMW.grid.hasEnoughSpace = function(x, y, w, h, id) {
 		i++;
 	}
 	return isAvailable;
+};
+
+function insertMatrix(matrix, id, x, y, width, height) {
+	// Resize Matrix if too small
+	if (matrix.length < y+height) {
+		for (var i=matrix.length; i<y+height; i++) {
+			matrix[i] = [];
+			for(var j=0; j<matrix[0].length; j++) {
+				matrix[i][j] = null;
+			}
+		}
+	}
+
+	if (matrix[0].length < x+width) {
+		for (var i=0; i<matrix.length; i++) {
+			for (var j=matrix[0].length; j<x+width; j++) {
+				matrix[i][j] = null;
+			}
+		}
+	}
+
+	// Place the node in matrix
+	for(var i=y; i<y+height; i++) {
+		for(var j=x; j<x+width; j++) {
+			matrix[i][j] = id;
+		}
+	}
+}
+
+function removeMatrix(matrix, id) {
+	for(var i=0; i<matrix.length; i++) {
+		for(var j=0; j<matrix[i].length; j++) {
+			if (matrix[i][j] == id) {
+				matrix[i][j] = null;
+			}
+		}
+	}	
+}
+
+function findEmptyPositionMatrix(matrix, w, h) {
+	for(var y=0; y<matrix.length; y++) {
+		for(var x=0; x<matrix[y].length; x++) {
+			// Find the first empty space, that matches the widget size
+			var isAvailable = true;
+			var i = 0;
+			while (isAvailable && i <= (h-1)) {
+				var j = 0;
+				while (isAvailable && j <= (w-1)) {
+					if (matrix[y+i][x+j] != null) {
+						isAvailable = false;
+					}
+					j++;
+				}
+				i++;
+			}
+			if (isAvailable) {
+				return [x, y];
+			}
+		}
+	}
+}
+
+function findEmptyPositionMatrix2(matrix, sizeX, sizeY, w, h) {
+	for(var y=0; y<sizeY; y++) {
+		for(var x=0; x<sizeX; x++) {
+			// Find the first empty space, that matches the widget size
+			var isAvailable = true;
+			var i = 0;
+			while (isAvailable && i <= (h-1)) {
+				var j = 0;
+				while (isAvailable && j <= (w-1)) {
+					if (matrix[y+i][x+j] != null) {
+						isAvailable = false;
+					}
+					j++;
+				}
+				i++;
+			}
+			if (isAvailable) {
+				return [x, y];
+			}
+		}
+	}
+}
+
+function adjustMatrix(list, matrix, sizeX, sizeY) {
+	var placement = [];
+	var outside = [];
+	// Init placement matrix
+	for (var i=0; i < matrix.length; i++) {
+		placement[i] = matrix[i].slice();
+	}
+	printMatrix(placement);
+
+	// List elements outside the new matrix
+	for (var i=0; i < placement.length; i++) {
+		for (var j=sizeX; j < placement[0].length; j++) {
+			if (placement[i][j] != null) {
+				var id = placement[i][j];
+				if (outside.indexOf(id) == -1) outside.push(id);
+			}
+		}
+	}
+
+	// Identify and move elements
+	for(var id in DMW.grid.list) {
+		if (DMW.grid.list.hasOwnProperty(id)) {
+			id = parseInt(id);
+			var item = DMW.grid.list[id];
+			if (outside.indexOf(id) >= 0) {
+				// Is outside the new matrix, and needs to be moved
+				removeMatrix(placement, id);
+				var newPos = findEmptyPositionMatrix2(placement, sizeX, sizeY, list[id]['width'], list[id]['height']);
+				insertMatrix(placement, id, newPos[0], newPos[1], list[id]['width'], list[id]['height']);
+				list[id]['status'] = 'moved';
+				list[id]['x'] = newPos[0];
+				list[id]['y'] = newPos[1];
+			} else if (list[id]['x'] != list[id]['originalX'] || list[id]['y'] != list[id]['originalY']) {
+				// Was previously moved, but need to be moved back
+				list[id]['status'] = 'moved';
+				list[id]['x'] = list[id]['originalX'];
+				list[id]['y'] = list[id]['originalY'];
+			} else {
+				list[id]['status'] = null;
+			}
+		}
+	}
+	printMatrix(placement);
+
+	return list;
+}
+
+DMW.grid.hasResized = debounce(function() {
+//	console.debug(DMW.grid.browserWidth(), DMW.grid.browserHeight());
+	DMW.grid.adjustPlacement();
+}, 100);
+
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
 };

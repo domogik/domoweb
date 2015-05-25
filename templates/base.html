@@ -46,6 +46,7 @@
     DMW.main = DMW.main || {};
     DMW.main.edit = false;
     window.onload = function(){
+      window.addEventListener('resize', DMW.grid.hasResized);
       DMW.menu.init();
       DMW.navigation.init();
     };

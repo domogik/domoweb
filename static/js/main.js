@@ -48,7 +48,8 @@ function sectionChanged(e) {
 			instance = details.instances[i];
 			var node = insertWidgetInstance(instance.id, instance.widget);
 			DMW.grid.appendInstance(node, instance);
-		}		
+		}
+		DMW.grid.adjustPlacement();	
 	}
 }
 
