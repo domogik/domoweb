@@ -184,6 +184,13 @@ The final test to check the Domoweb installation. ::
     ==>  Default login is 'admin', password is '123'       <==  
     ==> ================================================== <==
 
+Make Domoweb start with your computer
+=====================================
+
+For Debian or Ubuntu systems: ::
+
+    $ sudo update-rc.d domoweb defaults
+
 Start Domoweb
 =============
 
