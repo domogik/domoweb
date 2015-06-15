@@ -331,8 +331,8 @@ def install_dependencies():
 #    pkg_resources.get_distribution('django').activate()
     
 def updateDb(user, db):
-    from domoweb.models import metadata, engine, Session, Section
-    from sqlalchemy import create_engine
+    from domoweb.models import metadata, engine, Session, Section, SectionParam
+    from sqlalchemy import create_engine, func
     from alembic.config import Config
     from alembic import command
 
@@ -348,9 +348,25 @@ def updateDb(user, db):
         session = Session()
         s = Section(name=unicode('Root'), description=unicode('Root dashboard'), left=1, right=2)
         session.add(s)
+        p = SectionParam(section_id=1, key='GridWidgetSize', value='100')
+        session.add(p)
+        p = SectionParam(section_id=1, key='GridWidgetSpace', value='20')
+        session.add(p)
         session.commit()
     else:
         ok("Upgrading existing database")
+        session = Session()
+        sections = session.query(Section).all()
+        for s in sections:
+            p = session.query(SectionParam).filter_by(section_id=s.id).filter(SectionParam.key.in_(['GridWidgetSize', 'GridWidgetSpace', 'GridWidth', 'GridHeight'])).count()
+            if p == 0:
+                ok("Updating section '%s'" % s.name)
+                p = SectionParam(section_id=s.id, key='GridWidgetSize', value='100')
+                session.add(p)
+                p = SectionParam(section_id=s.id, key='GridWidgetSpace', value='20')
+                session.add(p)
+                session.commit()
+
         command.upgrade(alembic_cfg, "head")
 
 def testImports():
