@@ -8,10 +8,22 @@ DMW.grid.draggables = [];
 DMW.grid.edit = false;
 DMW.grid.mode = null;
 
+
+/**
+ * init - called when a section is loaded
+ * @param  sizeX - the section configured horizontal number of widgets
+ * @param  sizeY - the section configured vertical number of widgets
+ * @param  widgetSize - The size of widgets
+ * @param  widgetSpace - The size between widgets
+ */
 DMW.grid.init = function (sizeX, sizeY, widgetSize, widgetSpace) {
 	DMW.grid.setParams(sizeX, sizeY, widgetSize, widgetSpace);
 	// Placement matrix creation
-	DMW.grid.matrix = [[null]];
+	DMW.grid.matrix = [];
+	for(var i=0; i<DMW.grid.sizeY; i++) {
+		DMW.grid.matrix[i] = new Array(DMW.grid.sizeX);
+	}
+
 	DMW.grid.list = [];
 	DMW.grid.setCSSstyle();
 };
