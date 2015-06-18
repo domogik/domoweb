@@ -151,7 +151,11 @@ function printMatrix(matrix) {
 //	console.debug(output);
 }
 
-/* Adjust widgets positions to match browser size */
+/**
+ * adjustPlacement - Adjust grid and widgets positions to match browser size
+ * This method is called on browser resize event
+ * 
+ */
 DMW.grid.adjustPlacement = function() {
 	if (DMW.grid.mode == 1) {
 		DMW.grid.adjustMode1();

@@ -29,23 +29,28 @@
             </div>
             <fieldset class="form-group">
               <legend>Grid size</legend>
-              <p>A combination of 2 values are needed : Width/Height + Widget size, Width/Height + Widget space or Widget size + Widget space</p>
+              <p>A combination of 2 parameters is needed</p>
               <p id="gridMessage"></p>
-              <div class="col-xs-3">
+              <ul>
+                <li><input type="radio" class="gridType" name="gridType" value="1" />Width/Height + Widget size</li>
+                <li><input type="radio" class="gridType" name="gridType" value="2" />Width/Height + Widget space</li>
+                <li><input type="radio" class="gridType" name="gridType" value="3" checked="checked" />Widget size + Widget space</li>
+              </ul>
+              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode2" style="display:none">
                 <label for="params-GridWidth">Width</label>
-                <input type="text" class="form-control paramGrid" id="params-GridWidth" name="params-GridWidth"{% if 'GridWidth' in params %} value="{{params['GridWidth']}}"{% end %}>
+                <input type="text" class="form-control" id="params-GridWidth" name="params-GridWidth"{% if 'GridWidth' in params %} value="{{params['GridWidth']}}"{% end %}/>
               </div>
-              <div class="col-xs-3">
+              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode2" style="display:none">
                 <label for="params-GridHeight">Height</label>
-                <input type="text" class="form-control paramGrid" id="params-GridHeight" name="params-GridHeight"{% if 'GridHeight' in params %}  value="{{params['GridHeight']}}"{% end %}>
+                <input type="text" class="form-control" id="params-GridHeight" name="params-GridHeight"{% if 'GridHeight' in params %}  value="{{params['GridHeight']}}"{% end %}/>
               </div>
-              <div class="col-xs-3">
-                <label for="params-GridWidgetSize">Base widget size</label>
-                <input type="text" class="form-control paramGrid" id="params-GridWidgetSize" name="params-GridWidgetSize"{% if 'GridWidgetSize' in params %} value="{{params['GridWidgetSize']}}"{% end %}>
+              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode3">
+                <label for="params-GridWidgetSize">Base widget size (px)</label>
+                <input type="text" class="form-control" id="params-GridWidgetSize" name="params-GridWidgetSize"{% if 'GridWidgetSize' in params %} value="{{params['GridWidgetSize']}}"{% end %}/>
               </div>
-              <div class="col-xs-3">
-                <label for="params-GridWidgetSpace">Space between</label>
-                <input type="text" class="form-control paramGrid" id="params-GridWidgetSpace" name="params-GridWidgetSpace"{% if 'GridWidgetSpace' in params %}  value="{{params['GridWidgetSpace']}}"{% end %}>
+              <div class="col-xs-4 gridParam gridParamMode2 gridParamMode3">
+                <label for="params-GridWidgetSpace">Space between widgets (px)</label>
+                <input type="text" class="form-control" id="params-GridWidgetSpace" name="params-GridWidgetSpace"{% if 'GridWidgetSpace' in params %} value="{{params['GridWidgetSpace']}}"{% end %}/>
               </div>
             </fieldset>
             <fieldset class="form-group">

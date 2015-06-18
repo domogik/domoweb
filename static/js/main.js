@@ -10,6 +10,9 @@ DMW.main.ajax = document.getElementById('ajax'),
 DMW.main.menu = document.getElementById('main-menu');
 DMW.main.navigation = document.getElementById('sections-tree');
 
+NodeList.prototype.forEach = Array.prototype.forEach; 
+HTMLCollection.prototype.forEach = Array.prototype.forEach; // Because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
+
 /* When section params changed */
 function sectionUpdated(e) {
 	var details = e.detail;
@@ -233,24 +236,14 @@ function configureHandler() {
 				widgetpreview.style.borderRadius = document.getElementById('params-WidgetBorderRadius').value;
 				widgetpreview.style.boxShadow = document.getElementById('params-WidgetBoxShadow').value;
 
-				// Grid check values
-				var params = DMW.main.modalOverlay.querySelectorAll('.paramGrid');
-				[].forEach.call(params, function(param) {
-					param.addEventListener("change", function() {
-						var sizeX = document.getElementById('params-GridWidth').value;
-						var sizeY = document.getElementById('params-GridHeight').value;
-						var widgetSize = document.getElementById('params-GridWidgetSize').value;
-						var widgetSpace = document.getElementById('params-GridWidgetSpace').value;
+				// Mode selector
+				document.querySelectorAll('input.gridType').forEach(function(input) {
+					input.addEventListener('click', gridModeSwitch, false);
+				});
 
-						var message = DMW.grid.checkValues(sizeX, sizeY, widgetSize, widgetSpace);
-						document.getElementById('gridMessage').innerHTML = message;
-						if (message.indexOf('Error') === 0) {
-							document.getElementById('gridMessage').className = "error";
-						} else {
-							document.getElementById('gridMessage').className = "info";
-						}
-
-					}, false);
+				// Grid check values				
+				document.querySelectorAll('.paramGrid').forEach(function(param) {
+					param.addEventListener("change", gridParameterChange, false);
 				});
 
 				// Display modal
@@ -316,24 +309,14 @@ function addSectionHandler() {
 						return false;
 					});
 
-				// Grid check values
-				var params = DMW.main.modalOverlay.querySelectorAll('.paramGrid');
-				[].forEach.call(params, function(param) {
-					param.addEventListener("change", function() {
-						var sizeX = document.getElementById('params-GridWidth').value;
-						var sizeY = document.getElementById('params-GridHeight').value;
-						var widgetSize = document.getElementById('params-GridWidgetSize').value;
-						var widgetSpace = document.getElementById('params-GridWidgetSpace').value;
+				// Mode selector
+				document.querySelectorAll('input.gridType').forEach(function(input) {
+					input.addEventListener('click', gridModeSwitch, false);
+				});
 
-						var error = DMW.grid.checkValues(sizeX, sizeY, widgetSize, widgetSpace);
-						
-						if (error) {
-							document.getElementById('gridError').innerHTML = error;
-						} else {
-							document.getElementById('gridError').innerHTML = "";							
-						}
-
-					}, false);
+				// Grid check values				
+				document.querySelectorAll('.gridParam input').forEach(function(param) {
+					param.addEventListener("change", gridParameterChange, false);
 				});
 
 				// Display modal
@@ -343,6 +326,40 @@ function addSectionHandler() {
 	DMW.main.ajax.setAttribute('method', 'GET');
 	DMW.main.ajax.setAttribute('params', '{"action":"addsection", "id":"' + DMW.main.section.getAttribute('sectionid') + '"}');
 	DMW.main.ajax.go();
+}
+
+/**
+ * gridModeSwitch - Method called when a grid type is selected
+ * @param  e Event
+ */
+function gridModeSwitch(e) {
+
+	document.querySelectorAll('.gridParam').forEach(function(param){
+		param.style.display = 'none';
+	});
+	var mode = e.target.value;
+	document.querySelectorAll('.gridParamMode' + mode).forEach(function(param){
+		param.style.display = 'inline-block';
+	});
+}
+
+/**
+ * gridParameterChange - Method called when a grid parameter field has changed.
+ * This method check and validates the values
+ * @param  e Event
+ */
+function gridParameterChange(e) {
+	var sizeX = document.getElementById('params-GridWidth').value;
+	var sizeY = document.getElementById('params-GridHeight').value;
+	var widgetSize = document.getElementById('params-GridWidgetSize').value;
+	var widgetSpace = document.getElementById('params-GridWidgetSpace').value;
+	var message = DMW.grid.checkValues(sizeX, sizeY, widgetSize, widgetSpace);
+	document.getElementById('gridMessage').innerHTML = message;
+	if (message.indexOf('Error') === 0) {
+		document.getElementById('gridMessage').className = "error";
+	} else {
+		document.getElementById('gridMessage').className = "info";
+	}
 }
 
 function removeSectionHandler() {
