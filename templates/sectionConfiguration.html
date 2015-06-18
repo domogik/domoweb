@@ -32,23 +32,23 @@
               <p>A combination of 2 parameters is needed</p>
               <p id="gridMessage"></p>
               <ul>
-                <li><input type="radio" class="gridType" name="gridType" value="1" />Width/Height + Widget size</li>
-                <li><input type="radio" class="gridType" name="gridType" value="2" />Width/Height + Widget space</li>
-                <li><input type="radio" class="gridType" name="gridType" value="3" checked="checked" />Widget size + Widget space</li>
+                <li><input type="radio" class="gridType" name="params-GridMode" value="1" {% if 'GridMode' in params and params['GridMode'] == '1' %} checked="checked"{% end %}/>Width/Height + Widget size</li>
+                <li><input type="radio" class="gridType" name="params-GridMode" value="2" {% if 'GridMode' in params and params['GridMode'] == '2' %} checked="checked"{% end %}/>Width/Height + Widget space</li>
+                <li><input type="radio" class="gridType" name="params-GridMode" value="3" {% if 'GridMode' in params and params['GridMode'] == '3' %} checked="checked"{% end %}/>Widget size + Widget space</li>
               </ul>
-              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode2" style="display:none">
+              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode2"{% if 'GridMode' in params and params['GridMode'] == '3' %} style="display:none"{% end %}>
                 <label for="params-GridWidth">Width</label>
                 <input type="text" class="form-control" id="params-GridWidth" name="params-GridWidth"{% if 'GridWidth' in params %} value="{{params['GridWidth']}}"{% end %}/>
               </div>
-              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode2" style="display:none">
+              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode2"{% if 'GridMode' in params and params['GridMode'] == '3' %} style="display:none"{% end %}>
                 <label for="params-GridHeight">Height</label>
                 <input type="text" class="form-control" id="params-GridHeight" name="params-GridHeight"{% if 'GridHeight' in params %}  value="{{params['GridHeight']}}"{% end %}/>
               </div>
-              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode3">
+              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode3"{% if 'GridMode' in params and params['GridMode'] == '2' %} style="display:none"{% end %}>
                 <label for="params-GridWidgetSize">Base widget size (px)</label>
                 <input type="text" class="form-control" id="params-GridWidgetSize" name="params-GridWidgetSize"{% if 'GridWidgetSize' in params %} value="{{params['GridWidgetSize']}}"{% end %}/>
               </div>
-              <div class="col-xs-4 gridParam gridParamMode2 gridParamMode3">
+              <div class="col-xs-4 gridParam gridParamMode2 gridParamMode3"{% if 'GridMode' in params and params['GridMode'] == '1' %} style="display:none"{% end %}>
                 <label for="params-GridWidgetSpace">Space between widgets (px)</label>
                 <input type="text" class="form-control" id="params-GridWidgetSpace" name="params-GridWidgetSpace"{% if 'GridWidgetSpace' in params %} value="{{params['GridWidgetSpace']}}"{% end %}/>
               </div>

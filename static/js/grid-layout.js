@@ -6,8 +6,6 @@ DMW.grid.matrix = null;
 DMW.grid.list =null;
 DMW.grid.draggables = [];
 DMW.grid.edit = false;
-DMW.grid.mode = null;
-
 
 /**
  * init - called when a section is loaded
@@ -16,8 +14,8 @@ DMW.grid.mode = null;
  * @param  widgetSize - The size of widgets
  * @param  widgetSpace - The size between widgets
  */
-DMW.grid.init = function (sizeX, sizeY, widgetSize, widgetSpace) {
-	DMW.grid.setParams(sizeX, sizeY, widgetSize, widgetSpace);
+DMW.grid.init = function (mode, sizeX, sizeY, widgetSize, widgetSpace) {
+	DMW.grid.setParams(mode, sizeX, sizeY, widgetSize, widgetSpace);
 	// Placement matrix creation
 	DMW.grid.matrix = [];
 	for(var i=0; i<DMW.grid.sizeY; i++) {
@@ -28,8 +26,8 @@ DMW.grid.init = function (sizeX, sizeY, widgetSize, widgetSpace) {
 	DMW.grid.setCSSstyle();
 };
 
-DMW.grid.refresh = function (sizeX, sizeY, widgetSize, widgetSpace) {
-	DMW.grid.setParams(sizeX, sizeY, widgetSize, widgetSpace);
+DMW.grid.refresh = function (mode, sizeX, sizeY, widgetSize, widgetSpace) {
+	DMW.grid.setParams(mode, sizeX, sizeY, widgetSize, widgetSpace);
 	// Update matrix size
 	var removed = DMW.grid.resizeMatrix(DMW.grid.sizeX, DMW.grid.sizeY);
 
@@ -52,27 +50,37 @@ DMW.grid.refresh = function (sizeX, sizeY, widgetSize, widgetSpace) {
 DMW.grid.browserWidth = function() { return window.innerWidth; };
 DMW.grid.browserHeight = function() { return window.innerHeight; };
 
-DMW.grid.setParams = function (sizeX, sizeY, widgetSize, widgetSpace) {
-	if (sizeX && sizeY) {
-		DMW.grid.sizeX = parseInt(sizeX);
-		DMW.grid.sizeY = parseInt(sizeY);
-		if (widgetSize) {
-			DMW.grid.mode = 1;
+/**
+ * setParams - generate the missing grid parameters base on the mode, and the provided values
+ * @param mode        The grid mode
+ * @param sizeX       The grid horizontal number
+ * @param sizeY       The grid vertical number
+ * @param widgetSize  The widgets size
+ * @param widgetSpace The space between widgets
+ */
+DMW.grid.setParams = function (mode, sizeX, sizeY, widgetSize, widgetSpace) {
+	DMW.grid.mode = parseInt(mode);
+	switch(DMW.grid.mode) {
+		case 1:
+			DMW.grid.sizeX = parseInt(sizeX);
+			DMW.grid.sizeY = parseInt(sizeY);
 			DMW.grid.widgetSize = parseInt(widgetSize);
 			DMW.grid.widgetSpace = DMW.grid.generateWidgetSpace(DMW.grid.sizeX, DMW.grid.widgetSize);
 			if (DMW.grid.widgetSpace < 0) DMW.grid.widgetSpace = 0;
-		} else {
-			DMW.grid.mode = 2;			
+			break;
+		case 2:
+			DMW.grid.sizeX = parseInt(sizeX);
+			DMW.grid.sizeY = parseInt(sizeY);
 			DMW.grid.widgetSpace = parseInt(widgetSpace)
 			DMW.grid.widgetSize = DMW.grid.generateWidgetSize(DMW.grid.sizeX, DMW.grid.widgetSpace);
 			if (DMW.grid.widgetSize < 50) DMW.grid.widgetSize = 50;
-		}
-	} else if (widgetSize) {
-		DMW.grid.mode = 3;
-		DMW.grid.widgetSize = parseInt(widgetSize);
-		DMW.grid.widgetSpace = parseInt(widgetSpace);
-		DMW.grid.sizeX = DMW.grid.generateSizeX(DMW.grid.widgetSize, DMW.grid.widgetSpace);
-		DMW.grid.sizeY = DMW.grid.generateSizeY(DMW.grid.widgetSize, DMW.grid.widgetSpace);
+			break;
+		case 3:
+			DMW.grid.widgetSize = parseInt(widgetSize);
+			DMW.grid.widgetSpace = parseInt(widgetSpace);
+			DMW.grid.sizeX = DMW.grid.generateSizeX(DMW.grid.widgetSize, DMW.grid.widgetSpace);
+			DMW.grid.sizeY = DMW.grid.generateSizeY(DMW.grid.widgetSize, DMW.grid.widgetSpace);
+			break;
 	}
 
 	DMW.grid.marginLeft = Math.floor((DMW.grid.browserWidth() - (DMW.grid.sizeX * DMW.grid.widgetSize) - ((DMW.grid.sizeX-1) * DMW.grid.widgetSpace)) / 2);
@@ -132,24 +140,6 @@ DMW.grid.resizeMatrix = function(x, y) {
 	return outside;
 };
 
-function printMatrix(matrix) {
-	var output = "";
-	for (var i=0; i < matrix.length; i++) {
-		output += "\n|";
-		for (var j=0; j < matrix[i].length; j++) {
-			if (matrix[i][j]) {
-				if (parseInt(matrix[i][j]) > 9) {
-					output += " " + matrix[i][j] + " |";
-				} else {
-					output += "  " + matrix[i][j] + " |";
-				}
-			} else {
-				output += "    |";
-			}
-		}
-	}
-//	console.debug(output);
-}
 
 /**
  * adjustPlacement - Adjust grid and widgets positions to match browser size
@@ -168,7 +158,7 @@ DMW.grid.adjustPlacement = function() {
 
 DMW.grid.adjustMode1 = function() {
 	// Adjust spaces between elements
-	DMW.grid.setParams(DMW.grid.sizeX, DMW.grid.sizeY, DMW.grid.widgetSize, null);
+	DMW.grid.setParams(DMW.grid.mode, DMW.grid.sizeX, DMW.grid.sizeY, DMW.grid.widgetSize, null);
 	// Update nodes location after grid resize
 	for(var i in DMW.grid.list) {
 		if (DMW.grid.list.hasOwnProperty(i)) {
@@ -181,7 +171,7 @@ DMW.grid.adjustMode1 = function() {
 
 DMW.grid.adjustMode2 = function() {
 	// Adjust widget size
-	DMW.grid.setParams(DMW.grid.sizeX, DMW.grid.sizeY, null, DMW.grid.widgetSpace);
+	DMW.grid.setParams(DMW.grid.mode, DMW.grid.sizeX, DMW.grid.sizeY, null, DMW.grid.widgetSpace);
 	// Update nodes location after grid resize
 	for(var i in DMW.grid.list) {
 		if (DMW.grid.list.hasOwnProperty(i)) {
@@ -484,7 +474,7 @@ function adjustMatrix(list, matrix, sizeX, sizeY) {
 	for (var i=0; i < matrix.length; i++) {
 		placement[i] = matrix[i].slice();
 	}
-	printMatrix(placement);
+//	printMatrix(placement);
 
 	// List elements outside the new matrix
 	for (var i=0; i < placement.length; i++) {
@@ -519,7 +509,7 @@ function adjustMatrix(list, matrix, sizeX, sizeY) {
 			}
 		}
 	}
-	printMatrix(placement);
+//	printMatrix(placement);
 
 	return list;
 }
@@ -547,3 +537,22 @@ function debounce(func, wait, immediate) {
 		if (callNow) func.apply(context, args);
 	};
 };
+
+function printMatrix(matrix) {
+	var output = "";
+	for (var i=0; i < matrix.length; i++) {
+		output += "\n|";
+		for (var j=0; j < matrix[i].length; j++) {
+			if (matrix[i][j]) {
+				if (parseInt(matrix[i][j]) > 9) {
+					output += " " + matrix[i][j] + " |";
+				} else {
+					output += "  " + matrix[i][j] + " |";
+				}
+			} else {
+				output += "    |";
+			}
+		}
+	}
+	console.debug(output);
+}

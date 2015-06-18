@@ -17,7 +17,7 @@ HTMLCollection.prototype.forEach = Array.prototype.forEach; // Because of https:
 function sectionUpdated(e) {
 	var details = e.detail;
 
-	var removed = DMW.grid.refresh(details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace);
+	var removed = DMW.grid.refresh(details.params.GridMode, details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace);
 
 	// Remove widgets outside the grid
 	for (var i=0; i<removed.length; i++) {
@@ -38,7 +38,7 @@ function sectionChanged(e) {
   		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
 	}
 
-	DMW.grid.init(details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace);
+	DMW.grid.init(details.params.GridMode, details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace);
 
 	if (details.widgets) {
 		for (var i = 0; i < details.widgets.length; i++) {
