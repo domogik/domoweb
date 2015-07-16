@@ -41,6 +41,7 @@ application = tornado.web.Application(
         (r"/locales/domoweb/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", "locales")}),
         (r"/locales/(.*)/(.*)/(.*)", MultiStaticFileHandler, { "path": os.path.join(os.path.dirname(__file__), "packs", 'widgets')}),
         (r"/components/(.*)", NoCacheStaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "components")}),
+        (r"/manifests/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "manifests")}),
         (r'/ws/', WSHandler),
         (r'/upload', UploadHandler),
         (r"/backgrounds/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(domoweb.VARPATH, "backgrounds")}),
