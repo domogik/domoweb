@@ -358,7 +358,7 @@ def updateDb(user, db):
         session = Session()
         sections = session.query(Section).all()
         for s in sections:
-            p = session.query(SectionParam).filter_by(section_id=s.id).filter(SectionParam.key.in_(['GridWidgetSize', 'GridWidgetSpace', 'GridWidth', 'GridHeight'])).count()
+            p = session.query(SectionParam).filter_by(section_id=s.id).filter(SectionParam.key.in_(['GridWidgetSize', 'GridWidgetSpace', 'GridColumns', 'GridRows'])).count()
             if p == 0:
                 ok("Updating section '%s'" % s.name)
                 p = SectionParam(section_id=s.id, key='GridWidgetSize', value='100')

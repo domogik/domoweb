@@ -17,7 +17,7 @@ HTMLCollection.prototype.forEach = Array.prototype.forEach; // Because of https:
 function sectionUpdated(e) {
 	var details = e.detail;
 
-	var removed = DMW.grid.refresh(details.params.GridMode, details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace);
+	var removed = DMW.grid.refresh(details.params.GridMode, details.params.GridColumns, details.params.GridRows, details.params.GridWidgetSize, details.params.GridWidgetSpace);
 
 	// Remove widgets outside the grid
 	for (var i=0; i<removed.length; i++) {
@@ -38,7 +38,7 @@ function sectionChanged(e) {
   		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
 	}
 
-	DMW.grid.init(details.params.GridMode, details.params.GridWidth, details.params.GridHeight, details.params.GridWidgetSize, details.params.GridWidgetSpace);
+	DMW.grid.init(details.params.GridMode, details.params.GridColumns, details.params.GridRows, details.params.GridWidgetSize, details.params.GridWidgetSpace);
 
 	if (details.widgets) {
 		for (var i = 0; i < details.widgets.length; i++) {
@@ -241,8 +241,10 @@ function configureHandler() {
 					input.addEventListener('click', gridModeSwitch, false);
 				});
 
+				console.debug('a');
 				// Grid check values				
-				document.querySelectorAll('.paramGrid').forEach(function(param) {
+				document.querySelectorAll('.gridParam input').forEach(function(param) {
+					console.debug(param);
 					param.addEventListener("change", gridParameterChange, false);
 				});
 
@@ -349,11 +351,11 @@ function gridModeSwitch(e) {
  * @param  e Event
  */
 function gridParameterChange(e) {
-	var sizeX = document.getElementById('params-GridWidth').value;
-	var sizeY = document.getElementById('params-GridHeight').value;
+	var columns = document.getElementById('params-GridColumns').value;
+	var rows = document.getElementById('params-GridRows').value;
 	var widgetSize = document.getElementById('params-GridWidgetSize').value;
 	var widgetSpace = document.getElementById('params-GridWidgetSpace').value;
-	var message = DMW.grid.checkValues(sizeX, sizeY, widgetSize, widgetSpace);
+	var message = DMW.grid.checkValues(columns, rows, widgetSize, widgetSpace);
 	document.getElementById('gridMessage').innerHTML = message;
 	if (message.indexOf('Error') === 0) {
 		document.getElementById('gridMessage').className = "error";

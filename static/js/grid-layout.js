@@ -9,27 +9,27 @@ DMW.grid.edit = false;
 
 /**
  * init - called when a section is loaded
- * @param  sizeX - the section configured horizontal number of widgets
- * @param  sizeY - the section configured vertical number of widgets
+ * @param  columns - the section configured horizontal number of widgets
+ * @param  rows - the section configured vertical number of widgets
  * @param  widgetSize - The size of widgets
  * @param  widgetSpace - The size between widgets
  */
-DMW.grid.init = function (mode, sizeX, sizeY, widgetSize, widgetSpace) {
-	DMW.grid.setParams(mode, sizeX, sizeY, widgetSize, widgetSpace);
+DMW.grid.init = function (mode, columns, rows, widgetSize, widgetSpace) {
+	DMW.grid.setParams(mode, columns, rows, widgetSize, widgetSpace);
 	// Placement matrix creation
 	DMW.grid.matrix = [];
-	for(var i=0; i<DMW.grid.sizeY; i++) {
-		DMW.grid.matrix[i] = new Array(DMW.grid.sizeX);
+	for(var i=0; i<DMW.grid.rows; i++) {
+		DMW.grid.matrix[i] = new Array(DMW.grid.columns);
 	}
 
 	DMW.grid.list = [];
 	DMW.grid.setCSSstyle();
 };
 
-DMW.grid.refresh = function (mode, sizeX, sizeY, widgetSize, widgetSpace) {
-	DMW.grid.setParams(mode, sizeX, sizeY, widgetSize, widgetSpace);
+DMW.grid.refresh = function (mode, columns, rows, widgetSize, widgetSpace) {
+	DMW.grid.setParams(mode, columns, rows, widgetSize, widgetSpace);
 	// Update matrix size
-	var removed = DMW.grid.resizeMatrix(DMW.grid.sizeX, DMW.grid.sizeY);
+	var removed = DMW.grid.resizeMatrix(DMW.grid.columns, DMW.grid.rows);
 
 	// Remove deleted node from list
 	for(var i=0; i<removed.length; i++) {
@@ -53,40 +53,40 @@ DMW.grid.browserHeight = function() { return window.innerHeight; };
 /**
  * setParams - generate the missing grid parameters base on the mode, and the provided values
  * @param mode        The grid mode
- * @param sizeX       The grid horizontal number
- * @param sizeY       The grid vertical number
+ * @param columns       The grid horizontal number
+ * @param rows       The grid vertical number
  * @param widgetSize  The widgets size
  * @param widgetSpace The space between widgets
  */
-DMW.grid.setParams = function (mode, sizeX, sizeY, widgetSize, widgetSpace) {
+DMW.grid.setParams = function (mode, columns, rows, widgetSize, widgetSpace) {
 	DMW.grid.mode = parseInt(mode);
 	switch(DMW.grid.mode) {
 		case 1:
-			DMW.grid.sizeX = parseInt(sizeX);
-			DMW.grid.sizeY = parseInt(sizeY);
+			DMW.grid.columns = parseInt(columns);
+			DMW.grid.rows = parseInt(rows);
 			DMW.grid.widgetSize = parseInt(widgetSize);
-			DMW.grid.widgetSpace = DMW.grid.generateWidgetSpace(DMW.grid.sizeX, DMW.grid.widgetSize);
+			DMW.grid.widgetSpace = DMW.grid.generateWidgetSpace(DMW.grid.columns, DMW.grid.widgetSize);
 			if (DMW.grid.widgetSpace < 0) DMW.grid.widgetSpace = 0;
 			break;
 		case 2:
-			DMW.grid.sizeX = parseInt(sizeX);
-			DMW.grid.sizeY = parseInt(sizeY);
+			DMW.grid.columns = parseInt(columns);
+			DMW.grid.rows = parseInt(rows);
 			DMW.grid.widgetSpace = parseInt(widgetSpace)
-			DMW.grid.widgetSize = DMW.grid.generateWidgetSize(DMW.grid.sizeX, DMW.grid.widgetSpace);
+			DMW.grid.widgetSize = DMW.grid.generateWidgetSize(DMW.grid.columns, DMW.grid.widgetSpace);
 			if (DMW.grid.widgetSize < 50) DMW.grid.widgetSize = 50;
 			break;
 		case 3:
 			DMW.grid.widgetSize = parseInt(widgetSize);
 			DMW.grid.widgetSpace = parseInt(widgetSpace);
-			DMW.grid.sizeX = DMW.grid.generateSizeX(DMW.grid.widgetSize, DMW.grid.widgetSpace);
-			DMW.grid.sizeY = DMW.grid.generateSizeY(DMW.grid.widgetSize, DMW.grid.widgetSpace);
+			DMW.grid.columns = DMW.grid.generateSizeX(DMW.grid.widgetSize, DMW.grid.widgetSpace);
+			DMW.grid.rows = DMW.grid.generateSizeY(DMW.grid.widgetSize, DMW.grid.widgetSpace);
 			break;
 	}
 
-	DMW.grid.marginLeft = Math.floor((DMW.grid.browserWidth() - (DMW.grid.sizeX * DMW.grid.widgetSize) - ((DMW.grid.sizeX-1) * DMW.grid.widgetSpace)) / 2);
+	DMW.grid.marginLeft = Math.floor((DMW.grid.browserWidth() - (DMW.grid.columns * DMW.grid.widgetSize) - ((DMW.grid.columns-1) * DMW.grid.widgetSpace)) / 2);
 	if (DMW.grid.marginLeft < 0) DMW.grid.marginLeft = 0;
 
-	DMW.grid.marginTop = Math.floor((DMW.grid.browserHeight() - (DMW.grid.sizeY * DMW.grid.widgetSize) - ((DMW.grid.sizeY-1) * DMW.grid.widgetSpace)) / 2);
+	DMW.grid.marginTop = Math.floor((DMW.grid.browserHeight() - (DMW.grid.rows * DMW.grid.widgetSize) - ((DMW.grid.rows-1) * DMW.grid.widgetSpace)) / 2);
 	if (DMW.grid.marginTop < 0) DMW.grid.marginTop = 0;
 };
 
@@ -158,7 +158,7 @@ DMW.grid.adjustPlacement = function() {
 
 DMW.grid.adjustMode1 = function() {
 	// Adjust spaces between elements
-	DMW.grid.setParams(DMW.grid.mode, DMW.grid.sizeX, DMW.grid.sizeY, DMW.grid.widgetSize, null);
+	DMW.grid.setParams(DMW.grid.mode, DMW.grid.columns, DMW.grid.rows, DMW.grid.widgetSize, null);
 	// Update nodes location after grid resize
 	for(var i in DMW.grid.list) {
 		if (DMW.grid.list.hasOwnProperty(i)) {
@@ -171,7 +171,7 @@ DMW.grid.adjustMode1 = function() {
 
 DMW.grid.adjustMode2 = function() {
 	// Adjust widget size
-	DMW.grid.setParams(DMW.grid.mode, DMW.grid.sizeX, DMW.grid.sizeY, null, DMW.grid.widgetSpace);
+	DMW.grid.setParams(DMW.grid.mode, DMW.grid.columns, DMW.grid.rows, null, DMW.grid.widgetSpace);
 	// Update nodes location after grid resize
 	for(var i in DMW.grid.list) {
 		if (DMW.grid.list.hasOwnProperty(i)) {
@@ -207,48 +207,45 @@ DMW.grid.generateSizeY = function(widgetSize, widgetSpace) {
 	return Math.floor((DMW.grid.browserHeight() + widgetSpace) / (widgetSize + widgetSpace));
 };
 
-DMW.grid.generateWidgetSize = function(sizeX, widgetSpace) {
-	return Math.floor((DMW.grid.browserWidth() - ((sizeX + 1) * widgetSpace)) / sizeX);
+DMW.grid.generateWidgetSize = function(columns, widgetSpace) {
+	return Math.floor((DMW.grid.browserWidth() - ((columns + 1) * widgetSpace)) / columns);
 };
 
-DMW.grid.generateWidgetSpace = function(sizeX, widgetSize) {
-	return Math.floor((DMW.grid.browserWidth() - (sizeX * widgetSize)) / (sizeX + 1));
+DMW.grid.generateWidgetSpace = function(columns, widgetSize) {
+	return Math.floor((DMW.grid.browserWidth() - (columns * widgetSize)) / (columns + 1));
 };
 
-DMW.grid.checkValues = function (sizeX, sizeY, widgetSize, widgetSpace) {
-	if (sizeX && sizeY && widgetSize && widgetSpace) {
-		return "Error: To many parameters";
-	}
-	if ((sizeX && !sizeY) || (!sizeX && sizeY) || (sizeX && sizeY && !widgetSize && !widgetSpace) || (!sizeX && !sizeY && !widgetSize && widgetSpace) || (!sizeX && !sizeY && widgetSize && !widgetSpace)) {
+DMW.grid.checkValues = function (columns, rows, widgetSize, widgetSpace) {
+	if ((columns && !rows) || (!columns && rows) || (columns && rows && !widgetSize && !widgetSpace) || (!columns && !rows && !widgetSize && widgetSpace) || (!columns && !rows && widgetSize && !widgetSpace)) {
 		return "Error: Missing a parameter";
 	}
 
-	if (sizeX && sizeY) {
-		sizeX = parseInt(sizeX);
-		sizeY = parseInt(sizeY);
+	if (columns && rows) {
+		columns = parseInt(columns);
+		rows = parseInt(rows);
 		if (widgetSize) {
 			widgetSize = parseInt(widgetSize);
-			widgetSpace = DMW.grid.generateWidgetSpace(sizeX, widgetSize);
+			widgetSpace = DMW.grid.generateWidgetSpace(columns, widgetSize);
 		} else {
 			widgetSpace = parseInt(widgetSpace)
-			widgetSize = DMW.grid.generateWidgetSize(sizeX, widgetSpace);
+			widgetSize = DMW.grid.generateWidgetSize(columns, widgetSpace);
 		}
 	} else if (widgetSize) {
 		widgetSize = parseInt(widgetSize);
 		widgetSpace = parseInt(widgetSpace);
-		sizeX = DMW.grid.generateSizeX(widgetSize, widgetSpace);
-		sizeY = DMW.grid.generateSizeY(widgetSize, widgetSpace);
+		columns = DMW.grid.generateSizeX(widgetSize, widgetSpace);
+		rows = DMW.grid.generateSizeY(widgetSize, widgetSpace);
 	}
 
 	// Check if it is not bigger than the browser size
-	if (sizeX == 0 || sizeY == 0) {
-		return "Error: Grid too small Width:" + sizeX + " Height:" + sizeY;
-	} else if ((sizeX * widgetSize + (sizeX - 1) * widgetSpace) > DMW.grid.browserWidth()) {
-		return "Error: This combination (" + (sizeX * widgetSize + (sizeX - 1) * widgetSpace) + ") is bigger than the browser width (" + DMW.grid.browserWidth() + ")";
-	} else if ((sizeY * widgetSize + (sizeY - 1) * widgetSpace) > DMW.grid.browserHeight()) {
-		return "Error: This combination (" + (sizeY * widgetSize + (sizeY - 1) * widgetSpace) + ") is bigger than the browser height (" + DMW.grid.browserHeight() + ")";
+	if (columns == 0 || rows == 0) {
+		return "Error: Grid too small Width:" + columns + " Height:" + rows;
+	} else if ((columns * widgetSize + (columns - 1) * widgetSpace) > DMW.grid.browserWidth()) {
+		return "Error: This combination (" + (columns * widgetSize + (columns - 1) * widgetSpace) + ") is bigger than the browser width (" + DMW.grid.browserWidth() + ")";
+	} else if ((rows * widgetSize + (rows - 1) * widgetSpace) > DMW.grid.browserHeight()) {
+		return "Error: This combination (" + (rows * widgetSize + (rows - 1) * widgetSpace) + ") is bigger than the browser height (" + DMW.grid.browserHeight() + ")";
 	} else {
-		return "OK: Grid size " + sizeX + "x" + sizeY + " - Widgets size " + widgetSize + "px - Widgets space " + widgetSpace + "px";
+		return "OK: Grid size " + columns + "x" + rows + " - Widgets size " + widgetSize + "px - Widgets space " + widgetSpace + "px";
 	}
 };
 
@@ -367,7 +364,7 @@ DMW.grid.hasEnoughSpace = function(x, y, w, h, id) {
 	var i = y;
 
 	// If does exeed the matrix size
-	if (DMW.grid.sizeY < (y+h) || DMW.grid.sizeX < (x+w)) {
+	if (DMW.grid.rows < (y+h) || DMW.grid.columns < (x+w)) {
 		isAvailable = false;
 	}
 	// If not we test the matrix content
@@ -444,9 +441,9 @@ function findEmptyPositionMatrix(matrix, w, h) {
 	}
 }
 
-function findEmptyPositionMatrix2(matrix, sizeX, sizeY, w, h) {
-	for(var y=0; y<sizeY; y++) {
-		for(var x=0; x<sizeX; x++) {
+function findEmptyPositionMatrix2(matrix, columns, rows, w, h) {
+	for(var y=0; y<rows; y++) {
+		for(var x=0; x<columns; x++) {
 			// Find the first empty space, that matches the widget size
 			var isAvailable = true;
 			var i = 0;
@@ -467,7 +464,7 @@ function findEmptyPositionMatrix2(matrix, sizeX, sizeY, w, h) {
 	}
 }
 
-function adjustMatrix(list, matrix, sizeX, sizeY) {
+function adjustMatrix(list, matrix, columns, rows) {
 	var placement = [];
 	var outside = [];
 	// Init placement matrix
@@ -478,7 +475,7 @@ function adjustMatrix(list, matrix, sizeX, sizeY) {
 
 	// List elements outside the new matrix
 	for (var i=0; i < placement.length; i++) {
-		for (var j=sizeX; j < placement[0].length; j++) {
+		for (var j=columns; j < placement[0].length; j++) {
 			if (placement[i][j] != null) {
 				var id = placement[i][j];
 				if (outside.indexOf(id) == -1) outside.push(id);
@@ -494,7 +491,7 @@ function adjustMatrix(list, matrix, sizeX, sizeY) {
 			if (outside.indexOf(id) >= 0) {
 				// Is outside the new matrix, and needs to be moved
 				removeMatrix(placement, id);
-				var newPos = findEmptyPositionMatrix2(placement, sizeX, sizeY, list[id]['width'], list[id]['height']);
+				var newPos = findEmptyPositionMatrix2(placement, columns, rows, list[id]['width'], list[id]['height']);
 				insertMatrix(placement, id, newPos[0], newPos[1], list[id]['width'], list[id]['height']);
 				list[id]['status'] = 'moved';
 				list[id]['x'] = newPos[0];
