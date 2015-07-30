@@ -31,7 +31,6 @@ class MainHandler(RequestHandler):
         packs = Widget.getSectionPacks(section_id=id)
         params = Section.getParamsDict(id)
         sections = Section.getTree()
-        print sections
         self.render('base.html',
             section = section,
             params = params,

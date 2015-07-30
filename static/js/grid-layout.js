@@ -215,37 +215,36 @@ DMW.grid.generateWidgetSpace = function(columns, widgetSize) {
 	return Math.floor((DMW.grid.browserWidth() - (columns * widgetSize)) / (columns + 1));
 };
 
-DMW.grid.checkValues = function (columns, rows, widgetSize, widgetSpace) {
-	if ((columns && !rows) || (!columns && rows) || (columns && rows && !widgetSize && !widgetSpace) || (!columns && !rows && !widgetSize && widgetSpace) || (!columns && !rows && widgetSize && !widgetSpace)) {
-		return "Error: Missing a parameter";
-	}
+DMW.grid.checkValues = function (type, columns, rows, widgetSize, widgetSpace) {
+	type = parseInt(type);
+	columns = parseInt(columns);
+	rows = parseInt(rows);
+	widgetSize = parseInt(widgetSize);
+	widgetSpace = parseInt(widgetSpace)
+	if (type == 1) {
+		if (!columns || !rows || !widgetSize) return "Error: Missing or incorrect parameter";
+		widgetSpace = DMW.grid.generateWidgetSpace(columns, widgetSize);
 
-	if (columns && rows) {
-		columns = parseInt(columns);
-		rows = parseInt(rows);
-		if (widgetSize) {
-			widgetSize = parseInt(widgetSize);
-			widgetSpace = DMW.grid.generateWidgetSpace(columns, widgetSize);
-		} else {
-			widgetSpace = parseInt(widgetSpace)
-			widgetSize = DMW.grid.generateWidgetSize(columns, widgetSpace);
-		}
-	} else if (widgetSize) {
-		widgetSize = parseInt(widgetSize);
-		widgetSpace = parseInt(widgetSpace);
+	} else if (type == 2) {
+		if (!columns || !rows || !widgetSpace) return "Error: Missing or incorrect parameter";
+		widgetSize = DMW.grid.generateWidgetSize(columns, widgetSpace);
+
+	} else if (type == 3) {
+		if (!widgetSize || !widgetSpace) return "Error: Missing or incorrect parameter";
 		columns = DMW.grid.generateSizeX(widgetSize, widgetSpace);
 		rows = DMW.grid.generateSizeY(widgetSize, widgetSpace);
-	}
+	} else
+		return "Error: Unknown grid type";
 
 	// Check if it is not bigger than the browser size
 	if (columns == 0 || rows == 0) {
 		return "Error: Grid too small Width:" + columns + " Height:" + rows;
 	} else if ((columns * widgetSize + (columns - 1) * widgetSpace) > DMW.grid.browserWidth()) {
-		return "Error: This combination (" + (columns * widgetSize + (columns - 1) * widgetSpace) + ") is bigger than the browser width (" + DMW.grid.browserWidth() + ")";
+		return "Warning: This combination (" + columns + " col. = " + (columns * widgetSize + (columns - 1) * widgetSpace) + "px) is bigger than the browser width (" + DMW.grid.browserWidth() + "px)";
 	} else if ((rows * widgetSize + (rows - 1) * widgetSpace) > DMW.grid.browserHeight()) {
-		return "Error: This combination (" + (rows * widgetSize + (rows - 1) * widgetSpace) + ") is bigger than the browser height (" + DMW.grid.browserHeight() + ")";
+		return "Warning: This combination (" + rows + " rows = " + (rows * widgetSize + (rows - 1) * widgetSpace) + "px) is bigger than the browser height (" + DMW.grid.browserHeight() + "px)";
 	} else {
-		return "OK: Grid size " + columns + "x" + rows + " - Widgets size " + widgetSize + "px - Widgets space " + widgetSpace + "px";
+		return "Info: Grid size " + columns + "x" + rows + " - Widgets size " + widgetSize + "px - Widgets space " + widgetSpace + "px";
 	}
 };
 
@@ -419,6 +418,7 @@ function removeMatrix(matrix, id) {
 }
 
 function findEmptyPositionMatrix(matrix, w, h) {
+	printMatrix(matrix);
 	for(var y=0; y<matrix.length; y++) {
 		for(var x=0; x<matrix[y].length; x++) {
 			// Find the first empty space, that matches the widget size

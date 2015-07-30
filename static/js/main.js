@@ -186,10 +186,12 @@ function configureHandler() {
 
 				saveConfig.addEventListener("click",
 					function(e) {
-						DMW.main.ajax.setAttribute('body', serialize(formConfig));
-						DMW.main.ajax.setAttribute('method', 'POST');
-						DMW.main.ajax.setAttribute('params', '{"action":"section", "id":"' + DMW.main.section.sectionid + '"}');
-						DMW.main.ajax.go();
+						if (gridParametersCheck()) {
+							DMW.main.ajax.setAttribute('body', serialize(form));
+							DMW.main.ajax.setAttribute('method', 'POST');
+							DMW.main.ajax.setAttribute('params', '{"action":"section", "id":"' + DMW.main.section.sectionid + '"}');
+							DMW.main.ajax.go();
+						}
 						e.preventDefault();
 						e.stopPropagation();
 						return false;
@@ -241,10 +243,8 @@ function configureHandler() {
 					input.addEventListener('click', gridModeSwitch, false);
 				});
 
-				console.debug('a');
 				// Grid check values				
 				document.querySelectorAll('.gridParam input').forEach(function(param) {
-					console.debug(param);
 					param.addEventListener("change", gridParameterChange, false);
 				});
 
@@ -294,10 +294,12 @@ function addSectionHandler() {
 				var form = DMW.main.modalOverlay.querySelector('#formAddSection');
 				saveConfig.addEventListener("click",
 					function(e) {
-						DMW.main.ajax.setAttribute('body', serialize(form));
-						DMW.main.ajax.setAttribute('method', 'POST');
-						DMW.main.ajax.setAttribute('params', '{"action":"addsection", "id":"' + DMW.main.section.sectionid + '"}');
-						DMW.main.ajax.go();
+						if (gridParametersCheck()) {
+							DMW.main.ajax.setAttribute('body', serialize(form));
+							DMW.main.ajax.setAttribute('method', 'POST');
+							DMW.main.ajax.setAttribute('params', '{"action":"addsection", "id":"' + DMW.main.section.sectionid + '"}');
+							DMW.main.ajax.go();
+						}
 						e.preventDefault();
 						e.stopPropagation();
 						return false;
@@ -351,16 +353,26 @@ function gridModeSwitch(e) {
  * @param  e Event
  */
 function gridParameterChange(e) {
+	gridParametersCheck();
+}
+
+function gridParametersCheck() {
+	var type = document.querySelector('input[name="params-GridMode"]:checked').value;
 	var columns = document.getElementById('params-GridColumns').value;
 	var rows = document.getElementById('params-GridRows').value;
 	var widgetSize = document.getElementById('params-GridWidgetSize').value;
 	var widgetSpace = document.getElementById('params-GridWidgetSpace').value;
-	var message = DMW.grid.checkValues(columns, rows, widgetSize, widgetSpace);
+	var message = DMW.grid.checkValues(type, columns, rows, widgetSize, widgetSpace);
 	document.getElementById('gridMessage').innerHTML = message;
-	if (message.indexOf('Error') === 0) {
-		document.getElementById('gridMessage').className = "error";
-	} else {
+	if (message.indexOf('Info') === 0) {
 		document.getElementById('gridMessage').className = "info";
+		return true;
+	} else if (message.indexOf('Warning') === 0) {
+		document.getElementById('gridMessage').className = "warning";
+		return true;
+	} else {
+		document.getElementById('gridMessage').className = "error";
+		return false;
 	}
 }
 
