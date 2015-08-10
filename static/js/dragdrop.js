@@ -373,7 +373,9 @@
 	}
 
 	Draggable.prototype.destroy = function() {
-		this.draggie.destroy();
+		this.draggie.disable();
+		// unbind handles
+		this.draggie.bindHandles( false );
 	}
 
 	window.Droppable = Droppable;

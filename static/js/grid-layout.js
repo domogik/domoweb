@@ -17,22 +17,50 @@ DMW.grid.edit = false;
 DMW.grid.init = function (mode, columns, rows, widgetSize, widgetSpace) {
 	DMW.grid.setParams(mode, columns, rows, widgetSize, widgetSpace);
 	// Placement matrix creation
-	DMW.grid.matrix = [];
-	for(var i=0; i<DMW.grid.rows; i++) {
-		DMW.grid.matrix[i] = new Array(DMW.grid.columns);
-	}
-
+	DMW.grid.matrix = generateMatrix(DMW.grid.columns, DMW.grid.rows);
 	DMW.grid.list = [];
 	DMW.grid.setCSSstyle();
 };
 
 DMW.grid.refresh = function (mode, columns, rows, widgetSize, widgetSpace) {
 	DMW.grid.setParams(mode, columns, rows, widgetSize, widgetSpace);
-	// Update matrix size
-	var removed = DMW.grid.resizeMatrix(DMW.grid.columns, DMW.grid.rows);
+
+	// Save current matrix
+	var tmp = DMW.grid.matrix;	
+	// Create matrix with new size
+	DMW.grid.matrix = generateMatrix(DMW.grid.columns, DMW.grid.rows);
+
+	var outside = [];
+	// Find Widgets outside the matrix
+	if (tmp.length > DMW.grid.rows) {
+		for(var i=DMW.grid.rows; i<tmp.length; i++) {
+			for(var j=0; j<tmp[0].length; j++) {
+				if (tmp[i][j] != null && outside.indexOf(tmp[i][j]) < 0) {
+					outside.push(tmp[i][j]);
+				}
+			}
+		}
+	}
+	if (tmp[0].length > DMW.grid.columns) {
+		for(var j=DMW.grid.columns; j<tmp[0].length; j++) {
+			for(var i=0; i<DMW.grid.rows; i++) {
+				if (tmp[i][j] != null && outside.indexOf(tmp[i][j]) < 0) {
+					outside.push(tmp[i][j]);
+				}
+			}
+		}
+	}
+	// Copy existing values
+	for(var i=0; i<tmp.length; i++) {
+		for(var j=0; j<tmp[0].length; j++) {
+			if (DMW.grid.matrix[i] !== undefined && DMW.grid.matrix[i][j] !== undefined && outside.indexOf(tmp[i][j]) < 0) {
+				DMW.grid.matrix[i][j] = tmp[i][j];
+			}
+		}
+	}
 
 	// Remove deleted node from list
-	for(var i=0; i<removed.length; i++) {
+	for(var i=0; i<outside.length; i++) {
 		delete DMW.grid.list[i];
 	}
 	// Update nodes location after grid resize
@@ -44,7 +72,7 @@ DMW.grid.refresh = function (mode, columns, rows, widgetSize, widgetSpace) {
 	}
 
 	DMW.grid.setCSSstyle();
-	return removed;
+	return outside;
 };
 
 DMW.grid.browserWidth = function() { return window.innerWidth; };
@@ -104,42 +132,6 @@ DMW.grid.setCSSstyle = function () {
 		ss.sheet.insertRule("#grid-layout .widget.widgeth" + i + ", #grid-layout .dropZone.widgeth" + i + " { height: " + px + "px; }", ss.sheet.cssRules.length);
 	}
 };
-
-DMW.grid.resizeMatrix = function(x, y) {
-	var tmp = DMW.grid.matrix;
-	DMW.grid.initMatrix(x, y);
-	var outside = [];
-	// Find Widgets outside the matrix
-	if (tmp.length > y) {
-		for(var i=y; i<tmp.length; i++) {
-			for(var j=0; j<tmp[0].length; j++) {
-				if (tmp[i][j] != null && outside.indexOf(tmp[i][j]) < 0) {
-					outside.push(tmp[i][j]);
-				}
-			}
-		}
-	}
-	if (tmp[0].length > x) {
-		for(var j=x; j<tmp[0].length; j++) {
-			for(var i=0; i<y; i++) {
-				if (tmp[i][j] != null && outside.indexOf(tmp[i][j]) < 0) {
-					outside.push(tmp[i][j]);
-				}
-			}
-		}
-	}
-	// Copy existing values
-	for(var i=0; i<tmp.length; i++) {
-		for(var j=0; j<tmp[0].length; j++) {
-			if (DMW.grid.matrix[i] !== undefined && DMW.grid.matrix[i][j] !== undefined && outside.indexOf(tmp[i][j]) < 0) {
-				DMW.grid.matrix[i][j] = tmp[i][j];
-			}
-		}
-	}
-
-	return outside;
-};
-
 
 /**
  * adjustPlacement - Adjust grid and widgets positions to match browser size
@@ -233,8 +225,9 @@ DMW.grid.checkValues = function (type, columns, rows, widgetSize, widgetSpace) {
 		if (!widgetSize || !widgetSpace) return "Error: Missing or incorrect parameter";
 		columns = DMW.grid.generateSizeX(widgetSize, widgetSpace);
 		rows = DMW.grid.generateSizeY(widgetSize, widgetSpace);
-	} else
+	} else {
 		return "Error: Unknown grid type";
+	}
 
 	// Check if it is not bigger than the browser size
 	if (columns == 0 || rows == 0) {
@@ -380,6 +373,14 @@ DMW.grid.hasEnoughSpace = function(x, y, w, h, id) {
 	return isAvailable;
 };
 
+function generateMatrix(columns, rows) {
+	var tmp = [];
+	for(var i=0; i<rows; i++) {
+		tmp[i] = new Array(columns);
+	}
+	return tmp;
+}
+
 function insertMatrix(matrix, id, x, y, width, height) {
 	// Resize Matrix if too small
 	if (matrix.length < y+height) {
@@ -418,7 +419,6 @@ function removeMatrix(matrix, id) {
 }
 
 function findEmptyPositionMatrix(matrix, w, h) {
-	printMatrix(matrix);
 	for(var y=0; y<matrix.length; y++) {
 		for(var x=0; x<matrix[y].length; x++) {
 			// Find the first empty space, that matches the widget size

@@ -187,10 +187,10 @@ function configureHandler() {
 				saveConfig.addEventListener("click",
 					function(e) {
 						if (gridParametersCheck()) {
-							DMW.main.ajax.setAttribute('body', serialize(form));
+							DMW.main.ajax.setAttribute('body', serialize(formConfig));
 							DMW.main.ajax.setAttribute('method', 'POST');
 							DMW.main.ajax.setAttribute('params', '{"action":"section", "id":"' + DMW.main.section.sectionid + '"}');
-							DMW.main.ajax.go();
+							DMW.main.ajax.go();							
 						}
 						e.preventDefault();
 						e.stopPropagation();
