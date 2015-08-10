@@ -27,16 +27,43 @@
               <label for="sectionName">Description</label>
               <input type="text" class="form-control" id="sectionDescription" name="sectionDescription" placeholder="Enter Section description" value="{{section.description}}">
             </div>
-            <div class="form-group">
-              <label for="SectionBackgroundImage">Background Image</label>
-              <select class="image-picker form-control" id="SectionBackgroundImageUploaded" name="paramsSectionBackgroundImageUploaded">
+            <fieldset class="form-group">
+              <legend>Grid size</legend>
+              <p>A combination of 2 parameters is needed</p>
+              <p id="gridMessage"></p>
+              <ul>
+                <li><input type="radio" class="gridType" name="params-GridMode" value="1" {% if 'GridMode' in params and params['GridMode'] == '1' %} checked="checked"{% end %}/>Columns/Rows + Widget size</li>
+                <li><input type="radio" class="gridType" name="params-GridMode" value="2" {% if 'GridMode' in params and params['GridMode'] == '2' %} checked="checked"{% end %}/>Columns/Rows + Widget space</li>
+                <li><input type="radio" class="gridType" name="params-GridMode" value="3" {% if 'GridMode' in params and params['GridMode'] == '3' %} checked="checked"{% end %}/>Widget size + Widget space</li>
+              </ul>
+              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode2"{% if 'GridMode' in params and params['GridMode'] == '3' %} style="display:none"{% end %}>
+                <label for="params-GridColumns">Columns</label>
+                <input type="text" class="form-control" id="params-GridColumns" name="params-GridColumns"{% if 'GridColumns' in params %} value="{{params['GridColumns']}}"{% end %}/>
+              </div>
+              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode2"{% if 'GridMode' in params and params['GridMode'] == '3' %} style="display:none"{% end %}>
+                <label for="params-GridRows">Rows</label>
+                <input type="text" class="form-control" id="params-GridRows" name="params-GridRows"{% if 'GridRows' in params %}  value="{{params['GridRows']}}"{% end %}/>
+              </div>
+              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode3"{% if 'GridMode' in params and params['GridMode'] == '2' %} style="display:none"{% end %}>
+                <label for="params-GridWidgetSize">Base widget size (px)</label>
+                <input type="text" class="form-control" id="params-GridWidgetSize" name="params-GridWidgetSize"{% if 'GridWidgetSize' in params %} value="{{params['GridWidgetSize']}}"{% end %}/>
+              </div>
+              <div class="col-xs-4 gridParam gridParamMode2 gridParamMode3"{% if 'GridMode' in params and params['GridMode'] == '1' %} style="display:none"{% end %}>
+                <label for="params-GridWidgetSpace">Space between widgets (px)</label>
+                <input type="text" class="form-control" id="params-GridWidgetSpace" name="params-GridWidgetSpace"{% if 'GridWidgetSpace' in params %} value="{{params['GridWidgetSpace']}}"{% end %}/>
+              </div>
+            </fieldset>
+            <fieldset class="form-group">
+              <legend>Background</legend>
+              <label for="SectionBackgroundImage">Image</label>
+              <select class="image-picker form-control" id="SectionBackgroundImageUploaded" name="params-SectionBackgroundImageUploaded">
                 <option data-img-src="images/background_default_thumbnail.png" value=""{% if 'SectionBackgroundImageUploaded' not in params %} selected='selected'{% end %}>Default background</option>
               {% for background in backgrounds %}
                 <option data-img-src="/backgrounds/thumbnails/{{ background }}" value="{{ background }}"{% if 'SectionBackgroundImageUploaded' in params and params['SectionBackgroundImageUploaded'] == background %} selected='selected'{% end %}>{{ background }}</option>
               {% end %}
               </select>
-              </div>
-              <div id="file-uploader-background"></div>
+                <div id="file-uploader-background"></div>
+              </fieldset>
           </div>
           <div class="tab-pane" id="widgetstyle">
             {% for field in widgetForm %}

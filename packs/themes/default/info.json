@@ -13,10 +13,6 @@
         "section" : {
             "backgroundImage" : "url('theme/default/images/background.jpg')"
         },
-        "grid" : {
-            "size" : "100",
-            "space" : "20"
-        },
         "widget" : {
             "borderColor" : "#f0f0f0",
             "borderRadius" : "6px",

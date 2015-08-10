@@ -9,6 +9,7 @@
 }
 
 #sections-tree {
+        z-index: 1000;
 	font-size: 0.8em;
 	position: fixed;
 	bottom: 0;

@@ -10,9 +10,53 @@ DMW.main.ajax = document.getElementById('ajax'),
 DMW.main.menu = document.getElementById('main-menu');
 DMW.main.navigation = document.getElementById('sections-tree');
 
+NodeList.prototype.forEach = Array.prototype.forEach; 
+HTMLCollection.prototype.forEach = Array.prototype.forEach; // Because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
+
 /* When section params changed */
 function sectionUpdated(e) {
 	var details = e.detail;
+
+	var removed = DMW.grid.refresh(details.params.GridMode, details.params.GridColumns, details.params.GridRows, details.params.GridWidgetSize, details.params.GridWidgetSpace);
+
+	// Remove widgets outside the grid
+	for (var i=0; i<removed.length; i++) {
+		DMW.main.socket.send("widgetinstance-remove", {'instance_id': removed[i]});
+	}
+
+	setSectionStyle();
+}
+
+/* When Section changed (navigation) */
+function sectionChanged(e) {
+	var details = e.detail;
+
+	setSectionStyle();
+
+	/* Remove current widgets */
+	while (DMW.main.layout.firstChild) {
+  		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
+	}
+
+	DMW.grid.init(details.params.GridMode, details.params.GridColumns, details.params.GridRows, details.params.GridWidgetSize, details.params.GridWidgetSpace);
+
+	if (details.widgets) {
+		for (var i = 0; i < details.widgets.length; i++) {
+			widget = details.widgets[i];
+			insertWidgetLink(widget.id, widget.set_id, widget.set_ref);
+		}		
+	}
+	if (details.instances) {
+		for (var i = 0; i < details.instances.length; i++) {
+			instance = details.instances[i];
+			var node = insertWidgetInstance(instance.id, instance.widget);
+			DMW.grid.appendInstance(node, instance);
+		}
+		DMW.grid.adjustPlacement();	
+	}
+}
+
+function setSectionStyle() {
 	var ss = document.getElementById('sectionstyle');
 	var bodyStyle = ss.sheet.cssRules[0];
 	if ('SectionBackgroundImage' in DMW.main.section.params) {
@@ -51,49 +95,26 @@ function sectionUpdated(e) {
 	widgetStyle.style.boxShadow=DMW.main.section.params['WidgetBoxShadow'];
 }
 
-/* When Section changed (navigation) */
-function sectionChanged(e) {
-	var details = e.detail;
-
-	sectionUpdated(e);
-
-	/* Remove current widgets */
-	while (DMW.main.layout.firstChild) {
-  		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
-	}
-
-	DMW.grid.destroy();
-
-	if (details.widgets) {
-		for (var i = 0; i < details.widgets.length; i++) {
-			widget = details.widgets[i];
-			insertWidgetLink(widget.id, widget.set_id, widget.set_ref);
-		}		
-	}
-	if (details.instances) {
-		for (var i = 0; i < details.instances.length; i++) {
-			instance = details.instances[i];
-			var node = insertWidgetInstance(instance.id, instance.widget);
-		}		
-	}
-	setTimeout(function(){
-		DMW.grid.init();
-	}, 500);
-}
-
 function instanceAdded(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
 		insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
 		var node = insertWidgetInstance(json.id, json.widget);
-		DMW.grid.appendedInstance(node);
+		DMW.grid.appendInstance(node, json);
 	}
 }
 
 function instanceRemoved(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
 		var node = document.getElementById('instance-' + json.id);
-		DMW.grid.removedInstance(node);
+		DMW.grid.removeInstance(node, json);
 		node.remove();
+	}
+}
+
+function instanceMoved(topic, json) {
+	if (DMW.main.section.sectionid == json.section_id) {
+		var node = document.getElementById('instance-' + json.id);
+		DMW.grid.moveInstance(node, json);
 	}
 }
 
@@ -165,10 +186,12 @@ function configureHandler() {
 
 				saveConfig.addEventListener("click",
 					function(e) {
-						DMW.main.ajax.setAttribute('body', serialize(formConfig));
-						DMW.main.ajax.setAttribute('method', 'POST');
-						DMW.main.ajax.setAttribute('params', '{"action":"section", "id":"' + DMW.main.section.sectionid + '"}');
-						DMW.main.ajax.go();
+						if (gridParametersCheck()) {
+							DMW.main.ajax.setAttribute('body', serialize(formConfig));
+							DMW.main.ajax.setAttribute('method', 'POST');
+							DMW.main.ajax.setAttribute('params', '{"action":"section", "id":"' + DMW.main.section.sectionid + '"}');
+							DMW.main.ajax.go();							
+						}
 						e.preventDefault();
 						e.stopPropagation();
 						return false;
@@ -215,6 +238,17 @@ function configureHandler() {
 				widgetpreview.style.borderRadius = document.getElementById('params-WidgetBorderRadius').value;
 				widgetpreview.style.boxShadow = document.getElementById('params-WidgetBoxShadow').value;
 
+				// Mode selector
+				document.querySelectorAll('input.gridType').forEach(function(input) {
+					input.addEventListener('click', gridModeSwitch, false);
+				});
+
+				// Grid check values				
+				document.querySelectorAll('.gridParam input').forEach(function(param) {
+					param.addEventListener("change", gridParameterChange, false);
+				});
+
+				// Display modal
 				DMW.main.modalOverlay.classList.add('on');
 			}
 		});
@@ -260,10 +294,12 @@ function addSectionHandler() {
 				var form = DMW.main.modalOverlay.querySelector('#formAddSection');
 				saveConfig.addEventListener("click",
 					function(e) {
-						DMW.main.ajax.setAttribute('body', serialize(form));
-						DMW.main.ajax.setAttribute('method', 'POST');
-						DMW.main.ajax.setAttribute('params', '{"action":"addsection", "id":"' + DMW.main.section.sectionid + '"}');
-						DMW.main.ajax.go();
+						if (gridParametersCheck()) {
+							DMW.main.ajax.setAttribute('body', serialize(form));
+							DMW.main.ajax.setAttribute('method', 'POST');
+							DMW.main.ajax.setAttribute('params', '{"action":"addsection", "id":"' + DMW.main.section.sectionid + '"}');
+							DMW.main.ajax.go();
+						}
 						e.preventDefault();
 						e.stopPropagation();
 						return false;
@@ -276,12 +312,68 @@ function addSectionHandler() {
 						e.stopPropagation();
 						return false;
 					});
+
+				// Mode selector
+				document.querySelectorAll('input.gridType').forEach(function(input) {
+					input.addEventListener('click', gridModeSwitch, false);
+				});
+
+				// Grid check values				
+				document.querySelectorAll('.gridParam input').forEach(function(param) {
+					param.addEventListener("change", gridParameterChange, false);
+				});
+
+				// Display modal
 				DMW.main.modalOverlay.classList.add('on');
 			}
 		});
 	DMW.main.ajax.setAttribute('method', 'GET');
 	DMW.main.ajax.setAttribute('params', '{"action":"addsection", "id":"' + DMW.main.section.getAttribute('sectionid') + '"}');
 	DMW.main.ajax.go();
+}
+
+/**
+ * gridModeSwitch - Method called when a grid type is selected
+ * @param  e Event
+ */
+function gridModeSwitch(e) {
+
+	document.querySelectorAll('.gridParam').forEach(function(param){
+		param.style.display = 'none';
+	});
+	var mode = e.target.value;
+	document.querySelectorAll('.gridParamMode' + mode).forEach(function(param){
+		param.style.display = 'inline-block';
+	});
+}
+
+/**
+ * gridParameterChange - Method called when a grid parameter field has changed.
+ * This method check and validates the values
+ * @param  e Event
+ */
+function gridParameterChange(e) {
+	gridParametersCheck();
+}
+
+function gridParametersCheck() {
+	var type = document.querySelector('input[name="params-GridMode"]:checked').value;
+	var columns = document.getElementById('params-GridColumns').value;
+	var rows = document.getElementById('params-GridRows').value;
+	var widgetSize = document.getElementById('params-GridWidgetSize').value;
+	var widgetSpace = document.getElementById('params-GridWidgetSpace').value;
+	var message = DMW.grid.checkValues(type, columns, rows, widgetSize, widgetSpace);
+	document.getElementById('gridMessage').innerHTML = message;
+	if (message.indexOf('Info') === 0) {
+		document.getElementById('gridMessage').className = "info";
+		return true;
+	} else if (message.indexOf('Warning') === 0) {
+		document.getElementById('gridMessage').className = "warning";
+		return true;
+	} else {
+		document.getElementById('gridMessage').className = "error";
+		return false;
+	}
 }
 
 function removeSectionHandler() {

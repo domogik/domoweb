@@ -22,9 +22,35 @@
 							<input type="text" class="form-control" id="sectionName" name="sectionName" placeholder="Enter Section name">
 						</div>
 						<div class="form-group">
-							<label for="sectionName">Description</label>
+							<label for="sectionDescription">Description</label>
 							<input type="text" class="form-control" id="sectionDescription" name="sectionDescription" placeholder="Enter Section description">
 						</div>
+						<fieldset class="form-group">
+							<legend>Grid size</legend>
+							<p>A combination of 2 parameters is needed</p>
+							<p id="gridMessage"></p>
+							<ul>
+								<li><input type="radio" class="gridType" name="params-GridMode" value="1" />Columns/Rows + Widget size</li>
+								<li><input type="radio" class="gridType" name="params-GridMode" value="2" />Columns/Rows + Widget space</li>
+								<li><input type="radio" class="gridType" name="params-GridMode" value="3" checked="checked" />Widget size + Widget space</li>
+							</ul>
+							<div class="col-xs-4 gridParam gridParamMode1 gridParamMode2" style="display:none">
+								<label for="params-GridColumns">Columns</label>
+								<input type="text" class="form-control" id="params-GridColumns" name="params-GridColumns"/>
+							</div>
+							<div class="col-xs-4 gridParam gridParamMode1 gridParamMode2" style="display:none">
+								<label for="params-GridRows">Rows</label>
+								<input type="text" class="form-control" id="params-GridRows" name="params-GridRows"/>
+							</div>
+							<div class="col-xs-4 gridParam gridParamMode1 gridParamMode3">
+								<label for="params-GridWidgetSize">Base widget size (px)</label>
+								<input type="text" class="form-control" id="params-GridWidgetSize" name="params-GridWidgetSize" value="100"/>
+							</div>
+							<div class="col-xs-4 gridParam gridParamMode2 gridParamMode3">
+								<label for="params-GridWidgetSpace">Space between widgets (px)</label>
+								<input type="text" class="form-control" id="params-GridWidgetSpace" name="params-GridWidgetSpace" value="20"/>
+							</div>
+						</fieldset>
 					</div>
 				</div>
 			</div>

@@ -1,9 +1,3 @@
-[submodule "static/libraries/packery"]
-	path = static/libraries/packery
-	url = https://github.com/metafizzy/packery.git
-[submodule "static/libraries/draggability"]
-	path = static/libraries/draggability
-	url = https://github.com/desandro/draggabilly.git
 [submodule "static/libraries/file-uploader"]
 	path = static/libraries/file-uploader
 	url = https://github.com/Valums-File-Uploader/file-uploader.git
