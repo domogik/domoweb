@@ -67,7 +67,7 @@ DMW.grid.refresh = function (mode, columns, rows, widgetSize, widgetSpace) {
 	for(var i in DMW.grid.list) {
 		if (DMW.grid.list.hasOwnProperty(i)) {
 			var item = DMW.grid.list[i];
-			DMW.grid.placeNode(item['node'], item['x'], item['y']);			
+			DMW.grid.placeNode(item['node'], item['x'], item['y']);
 		}
 	}
 
@@ -122,7 +122,8 @@ DMW.grid.setCSSstyle = function () {
 	// Insert style
 	var ss = document.getElementById('gridstyle');
 	ss.innerHTML = "";
-	ss.sheet.insertRule("#grid-layout .dropZone { z-index:0; position: absolute; width: " + DMW.grid.widgetSize + "px; height: " + DMW.grid.widgetSize + "px; background-color: rgba(255, 255, 255, 0.5);}", ss.sheet.cssRules.length);
+	ss.sheet.insertRule("#grid-layout .dropZone { z-index:0; position: absolute; width: " + DMW.grid.widgetSize + "px; height: " + DMW.grid.widgetSize + "px;}", ss.sheet.cssRules.length);
+	ss.sheet.insertRule("#grid-layout .mark { z-index:0; position: absolute; width: " + DMW.grid.widgetSize + "px; height: " + DMW.grid.widgetSize + "px; background-color: rgba(255, 255, 255, 0.5);}", ss.sheet.cssRules.length);
 	ss.sheet.insertRule("#grid-layout .dropZone.highlight { background-color: #B13822;}", ss.sheet.cssRules.length);
 	ss.sheet.insertRule("#grid-layout .widget { width: " + DMW.grid.widgetSize + "px; height: " + DMW.grid.widgetSize + "px; transform-style: flat;}", ss.sheet.cssRules.length);
 	for (var i=2; i <= 7; i++) {
@@ -328,6 +329,11 @@ DMW.grid.insertDropzone = function(x, y, w, h) {
 	zone.className = "dropZone widgetw" + w + " widgeth" + h;
 	zone.dataset.x = x;
 	zone.dataset.y = y;
+	var mark = document.createElement('div');
+	mark.className = "mark";
+	mark.dataset.x = 0;
+	mark.dataset.y = 0;
+	zone.appendChild(mark);
 	DMW.grid.placeNode(zone, x, y);
 	DMW.main.layout.appendChild(zone);
 	return zone;

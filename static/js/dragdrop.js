@@ -4,7 +4,7 @@
  *
  * Licensed under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
- * 
+ *
  * Copyright 2014, Codrops
  * http://www.codrops.com
  */
@@ -26,7 +26,7 @@
 		threshhold || (threshhold = 250);
 		var last,
 			deferTimer;
-		
+
 		return function () {
 			var context = scope || this;
 			var now = +new Date,
@@ -124,7 +124,7 @@
 			if (!this.over) {
 				this.over = true;
 				this.options.onEnter( this, draggableEl );
-			}			
+			}
 		} else {
 			classie.remove( this.el, 'highlight' );
 			if(this.over) {
@@ -229,7 +229,7 @@
 			// reset this.scrollIncrement
 			this.scrollIncrement = 0;
 		}
-		
+
 		// if the draggable && droppable elements intersect then "drop" and move back the draggable
 		var dropped = false;
 		var changed = null;
@@ -246,14 +246,14 @@
 		this.options.onEnd(dropped, changed);
 
 		var withAnimation = true;
-		
+
 		if( dropped ) {
 			// add class is-dropped to draggable ( controls how the draggable appears again at its original position)
 			classie.add( instance.element, 'is-dropped' );
 			// after a timeout remove that class to trigger the transition
 			setTimeout( function() {
 				classie.add( instance.element, 'is-complete' );
-				
+
 				onEndTransition( instance.element, function() {
 					classie.remove( instance.element, 'is-complete' );
 					classie.remove( instance.element, 'is-dropped' );
@@ -266,7 +266,7 @@
 			if( this.position.left === instance.position.x && this.position.top === instance.position.y || dropped ) {
 				// in this case we will not set a transition for the item to move back
 				withAnimation = false;
-			}			
+			}
 			// move back the draggable element (with or without a transition)
 			this.moveBack( withAnimation );
 		}
@@ -303,8 +303,8 @@
 		var anim = this.options.animBack && withAnimation;
 
 		// add animate class (where the transition is defined)
-		if( anim ) { 
-			classie.add( this.el, 'animate' ); 
+		if( anim ) {
+			classie.add( this.el, 'animate' );
 		}
 		// reset translation value
 		setTransformStyle( this.el, is3d ? 'translate3d(0,0,0)' : 'translate(0,0)' );
@@ -313,8 +313,8 @@
 		this.el.style.top = this.position.top + 'px';
 		// remove class animate (transition) and is-active to the draggable element (z-index)
 		var callbackFn = function() {
-			if( anim ) { 
-				classie.remove( this.el, 'animate' ); 
+			if( anim ) {
+				classie.remove( this.el, 'animate' );
 			}
 			classie.remove( this.el, 'is-active' );
 			if( this.options.helper ) {
@@ -367,8 +367,8 @@
 		this.scrollIncrement++;
 		var val = this.scrollIncrement < speed ? this.scrollIncrement : speed;
 
-		this.scrollableEl === window ? 
-			this.scrollableEl.scrollBy( 0, this.scrolldir === 'up' ? val * -1 : val ) : 
+		this.scrollableEl === window ?
+			this.scrollableEl.scrollBy( 0, this.scrolldir === 'up' ? val * -1 : val ) :
 			this.scrollableEl.scrollTop += this.scrolldir === 'up' ? val * -1 : val;
 	}
 
