@@ -6,15 +6,16 @@
 				padding: 5px;
 				color: #ffffff;
 			}
-			#labelprimary {
+			::content #labelprimary {
 				position: relative;
 				top: 50%;
 				-webkit-transform: translateY(-50%);
 				-ms-transform: translateY(-50%);
 				transform: translateY(-50%);
 				overflow: hidden;
+                display: inline-block;
 			}
-			#labelsecondary {
+			::content #labelsecondary {
 				position: absolute;
 				bottom: 5px;
 				right: 5px;
@@ -23,7 +24,7 @@
 		</style>
 		<shadow></shadow>
 	</template>
-	<script>  
+	<script>
 		Polymer('dmw-navigation-sectionTitle', {
 			ready: function() {
 				this.super();
@@ -59,7 +60,7 @@
 			while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
 			    element.style.fontSize = i+"px";
 			    i++;
-			}			
+			}
 		}
 	</script>
 </polymer-element>
