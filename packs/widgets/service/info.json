@@ -34,7 +34,7 @@
                     "name": "Teleinfo",
                     "description": "Electric Meter device",
                     "types" : ["teleinfo.electric_meter"],
-                    "required": true                   
+                    "required": true
                 }
             }
         }
