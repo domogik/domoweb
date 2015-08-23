@@ -37,38 +37,7 @@
                     "types" : ["DT_Number"],
                     "group": true,
                     "groupmin": 1,
-                    "groupmax": 5        
-                }
-            }
-        },
-        "smallLineChart": {
-            "name" : "Small line Chart",
-            "description" : "Small line Chart",
-            "height" : 1,
-            "width" : 2,
-            "default_style" : false,
-            "options" : {
-                "title" : {
-                    "name": "Graph Title",
-                    "type": "string",
-                    "default": "Graph",
-                    "required": true
-                },
-                "subtitle" : {
-                    "name": "Sub Title",
-                    "type": "string",
-                    "default": "",
-                    "required": false
-                }
-            },
-            "sensors" : {
-                "series" : {
-                    "name": "Data",
-                    "description": "Data series",
-                    "types" : ["DT_Number"],
-                    "group": true,
-                    "groupmin": 1,
-                    "groupmax": 5        
+                    "groupmax": 5
                 }
             }
         }
