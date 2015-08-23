@@ -41,7 +41,7 @@
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
-                }        
+                }
             },
             sensorvalueChanged: function(oldValue, newValue) {
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
@@ -64,10 +64,17 @@
             adjustText: function(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
                 var i = fontsize.substr(0,2);
-                while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
-                    element.style.fontSize = i+"px";
-                    i++;
-                }            
+                if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
+                    while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
+                        element.style.fontSize = i+"px";
+                        i++;
+                    }
+                } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
+                    while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
+                        element.style.fontSize = i+"px";
+                        i--;
+                    }
+                }
             }
         });
     </script>
