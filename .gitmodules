@@ -13,6 +13,3 @@
 [submodule "static/libraries/notifit"]
 	path = static/libraries/notifit
 	url = https://github.com/naoxink/notifIt.git
-[submodule "static/libraries/isotope"]
-	path = static/libraries/isotope
-	url = https://github.com/metafizzy/isotope.git
