@@ -33,22 +33,22 @@ DMW.navigation.init = function() {
 
 window.addEventListener('polymer-ready', function(){
     DMW.main.socket.register('section-added', DMW.navigation.sectionsUpdated);
-    DMW.main.socket.register('section-removed', DMW.navigation.sectionsUpdated);        
+    DMW.main.socket.register('section-removed', DMW.navigation.sectionsUpdated);
     DMW.main.socket.register('section-tree', DMW.navigation.sectionsReceived);
 });
 
 
-DMW.navigation.register = function() {							
+DMW.navigation.register = function() {
 	$('#sections-tree > ul li').addClass('radial-menu-items');
 	$('#sections-tree ul li > a').addClass('radial-menu-links');
-	
+
 	$('#sections-tree ul.level-1').addClass('hide');
 	$('#sections-tree ul.level-1').addClass('radial-first-items');
 	$('#sections-tree ul.level-2').addClass('hide');
 	$('#sections-tree ul.level-2').addClass('radial-upper-items')
 	$('#sections-tree ul.level-3').addClass('hide');
 	$('#sections-tree ul.level-3').addClass('radial-upper-items')
-		
+
 	$('#sections-tree li > ul').parent().addClass('have-subs');
 	// $('#sections-tree ul li > a').wrap('<div class="radial-label" />')
 	$('#sections-tree ul.level-1 > li.have-subs > a').click(DMW.navigation.RadLevelTwoToggle);
@@ -57,7 +57,7 @@ DMW.navigation.register = function() {
 	var sections = document.querySelectorAll('#sections-tree ul li:not(.have-subs) > a');
 	for (var i = sections.length - 1; i >= 0; i--) {
 		sections[i].addEventListener('click', DMW.navigation.selectSection, false);
-	};	
+	};
 }
 
 DMW.navigation.selectSection = function(e) {
@@ -83,11 +83,12 @@ DMW.navigation.sectionsReceived = function(topic, json) {
 
 DMW.navigation.generateLevelNodes = function(section) {
 	var childs = section['childs'];
+	var newlevel = parseInt(section['level']) + 1;
 	if (childs.length > 0) {
-		var newlevel = parseInt(section['level']) + 1;
 		var ul = document.createElement('ul');
 		ul.setAttribute('class', 'level-' + newlevel);
 		var li = document.createElement('li');
+		li.setAttribute('class', 'level-main');
 		var a = document.createElement('a');
 		a.setAttribute('href','#');
 		a.dataset.section = section['id'];
@@ -110,29 +111,41 @@ DMW.navigation.generateLevelNodes = function(section) {
 			ul.appendChild(li);
 		};
 		return ul;
+	} else if (parseInt(section['level']) == 0) { // Root case
+		var ul = document.createElement('ul');
+		ul.setAttribute('class', 'level-' + newlevel);
+		var li = document.createElement('li');
+		li.setAttribute('class', 'level-main');
+		var a = document.createElement('a');
+		a.setAttribute('href','#');
+		a.dataset.section = section['id'];
+		a.appendChild(document.createTextNode(section['name']));
+		li.appendChild(a);
+		ul.appendChild(li);
+		return ul;
 	}
 	return null;
 };
 
-/* ------------ Radial toggle button related behavior: Toggling level-1 Menu ------------*/		
+/* ------------ Radial toggle button related behavior: Toggling level-1 Menu ------------*/
 DMW.navigation.RadLevelOneToggle = function() {
 	if(!DMW.navigation.radLevelOneShown){
 		$(this).addClass('active');
-		
+
 		var $level1 = $('ul.level-1');
 		DMW.navigation.toggleMenuItems(this, $level1);
 
 		$('#sections-tree ul.level-1').removeClass('hide');
 		$('#sections-tree ul.level-1').addClass('show');
-		DMW.navigation.radLevelOneShown = true;		
+		DMW.navigation.radLevelOneShown = true;
 	} else {
-		DMW.navigation.radLevelOneShown = false;	
+		DMW.navigation.radLevelOneShown = false;
 		$(this).removeClass('active');
 		$('#sections-tree ul.level-1 > li').animate({ left: '0px', top: '0px' }, 150);
 		$('#sections-tree ul.level-1').fadeOut(200, function(){
 			$('#sections-tree ul.level-1 > li.have-subs').removeClass('active');
 			$('#sections-tree ul.level-1').removeClass('show');
-			$('#sections-tree ul.level-1').addClass('hide');			
+			$('#sections-tree ul.level-1').addClass('hide');
 			if(DMW.navigation.radLevelTwoShown){
 				DMW.navigation.$radFirstLevel.fadeTo(200, 1);
 				DMW.navigation.$radLevelOneItems.bind('click', DMW.navigation.RadLevelTwoToggle);
@@ -163,7 +176,7 @@ DMW.navigation.RadLevelTwoToggle = function() {
 		$(this).parent().addClass('active');
 		DMW.navigation.$radFirstLevel.fadeTo(200, 0.1);
 		DMW.navigation.$radLevelOneItems.unbind('click');
-		
+
 		var $level2 = ('ul.level-2');
 		DMW.navigation.toggleMenuItems(this, $level2);
 
@@ -171,7 +184,7 @@ DMW.navigation.RadLevelTwoToggle = function() {
 		$(this).parent().children('ul.level-2').addClass('show');
 		DMW.navigation.radLevelTwoShown = true;
 	} else {
-		DMW.navigation.radLevelTwoShown = false;	
+		DMW.navigation.radLevelTwoShown = false;
 		$(this).parent().removeClass('active');
 		DMW.navigation.$radFirstLevel.fadeTo(200, 1);
 		DMW.navigation.$radLevelOneItems.bind('click', DMW.navigation.RadLevelTwoToggle);
