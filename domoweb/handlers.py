@@ -75,10 +75,13 @@ class ConfigurationHandler(RequestHandler):
                 jsonsensors = {'instance_id':id, 'sensors':d}
                 d = WidgetInstanceCommand.getInstanceDict(instance_id=id)
                 jsoncommands = {'instance_id':id, 'commands':d}
+                d = WidgetInstanceDevice.getInstanceDict(instance_id=id)
+                jsondevices = {'instance_id':id, 'devices':d}
                 for socket in socket_connections:
                     socket.sendMessage(['widgetinstance-options', jsonoptions]);
                     socket.sendMessage(['widgetinstance-sensors', jsonsensors]);
                     socket.sendMessage(['widgetinstance-commands', jsoncommands]);
+                    socket.sendMessage(['widgetinstance-devices', jsondevices]);
                 self.write("{success:true}")
             else:
                 self.render('widgetConfiguration.html', instance=instance, forms=forms)

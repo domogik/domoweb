@@ -18,7 +18,10 @@
           {% if forms.has_commands %}
           <li{% if not(forms.has_options) and not(forms.has_sensors) %} class="active"{% end %}><a href="#commands" role="tab" data-toggle="tab">Commands</a></li>
           {% end %}
-          <li{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) %} class="active"{% end %}><a href="#general" role="tab" data-toggle="tab">General</a></li>
+          {% if forms.has_devices %}
+          <li{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) %} class="active"{% end %}><a href="#devices" role="tab" data-toggle="tab">Devices</a></li>
+          {% end %}
+          <li{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) and not(forms.has_devices) %} class="active"{% end %}><a href="#general" role="tab" data-toggle="tab">General</a></li>
         </ul>
       </div>
       <!-- Content -->
