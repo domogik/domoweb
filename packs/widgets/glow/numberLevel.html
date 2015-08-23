@@ -56,7 +56,7 @@
 				margin-left: -4em;
 			}
 		</style>
-	    <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+		<dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
 		<shadow></shadow>
 		<canvas id="backCanvas" width="340" height="340"></canvas>
 		<canvas id="indicatorsCanvas" width="340" height="340"></canvas>
@@ -106,7 +106,6 @@
 					this.labelprimary = this.$.primary.device['name'];
 					this.labelsecondary = this.$.primary.name;
 					displayLabel(context, this.centerX, this.centerY, this.labelprimary);
-					this.displayValue(parseInt(this.$.primary.sensorvalue), this.datatypes[this.$.primary.datatype_id]['unit']);
 				}
 				if (this.options['maximum']) {
 					percent = parseInt(this.$.primary.sensorvalue) * 100 / parseInt(this.options['maximum']);
@@ -114,7 +113,7 @@
 				}
 			},
 			sensorvalueChanged: function(oldValue, newValue) {
-				number = parseInt(newValue);
+				number = parseFloat(newValue);
 				this.displayValue(number, this.datatypes[this.$.primary.datatype_id]['unit']);
 				if (this.options['maximum']) {
 					percent = number * 100 / parseInt(this.options['maximum']);
@@ -158,7 +157,7 @@
 			if (level == 0 ) {
 				from = coordCircle(centerX, centerY, 90, deg);
 			} else {
-				from = coordCircle(centerX, centerY, 80, deg);						    	
+				from = coordCircle(centerX, centerY, 80, deg);
 			}
 			to = coordCircle(centerX, centerY, (radius - 20), deg);
 			context.strokeStyle = "#565552";
@@ -192,7 +191,7 @@
 				r = Math.radians(deg-180);
 			} else {
 				var y = radius;
-				r = Math.radians(deg);						        	
+				r = Math.radians(deg);
 			}
 			context.rotate(r);
 			context.fillText(text,0,y);
@@ -215,27 +214,27 @@
 				context.fillStyle = '#03C7E0';
 				context.fill();
 				context.strokeStyle = "#03C7E0";
-				context.stroke();					    	
+				context.stroke();
 			} else if (t==2) {
 				context.shadowBlur = 10;
 				context.shadowColor = "#D68C1D";
 				context.fillStyle = '#D68C1D';
 				context.fill();
 				context.strokeStyle = "#D68C1D";
-				context.stroke();					    	
+				context.stroke();
 			} else if (t==3) {
 				context.shadowBlur = 10;
 				context.shadowColor = "#990000";
 				context.fillStyle = '#990000';
 				context.fill();
 				context.strokeStyle = "#990000";
-				context.stroke();					    	
+				context.stroke();
 			} else {
 				context.shadowBlur = null;
 				context.fillStyle = '#9B9B9B';
 				context.fill();
 				context.strokeStyle = "#565552";
-				context.stroke();					    						    	
+				context.stroke();
 			}
 		}
 		function displayLabel(context, centerX, centerY, text) {
