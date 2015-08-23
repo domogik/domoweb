@@ -10,9 +10,6 @@
 [submodule "static/libraries/d3"]
 	path = static/libraries/d3
 	url = https://github.com/mbostock/d3.git
-[submodule "static/libraries/moment"]
-	path = static/libraries/moment
-	url = https://github.com/moment/moment.git
 [submodule "static/libraries/notifit"]
 	path = static/libraries/notifit
 	url = https://github.com/naoxink/notifIt.git
