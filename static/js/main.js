@@ -20,9 +20,10 @@ function sectionUpdated(e) {
 	var removed = DMW.grid.refresh(details.params.GridMode, details.params.GridColumns, details.params.GridRows, details.params.GridWidgetSize, details.params.GridWidgetSpace);
 
 	// Remove widgets outside the grid
-	for (var i=0; i<removed.length; i++) {
-		DMW.main.socket.send("widgetinstance-remove", {'instance_id': removed[i]});
-	}
+	// Disabled per issue #28, need to figure out a better way
+//	for (var i=0; i<removed.length; i++) {
+//		DMW.main.socket.send("widgetinstance-remove", {'instance_id': removed[i]});
+//	}
 
 	setSectionStyle();
 }

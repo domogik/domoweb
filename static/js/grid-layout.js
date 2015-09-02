@@ -156,7 +156,7 @@ DMW.grid.adjustMode1 = function() {
 	for(var i in DMW.grid.list) {
 		if (DMW.grid.list.hasOwnProperty(i)) {
 			var item = DMW.grid.list[i];
-			DMW.grid.placeNode(item['node'], item['x'], item['y']);			
+			DMW.grid.placeNode(item['node'], item['x'], item['y']);
 		}
 	}
 	DMW.grid.setCSSstyle();
@@ -169,7 +169,7 @@ DMW.grid.adjustMode2 = function() {
 	for(var i in DMW.grid.list) {
 		if (DMW.grid.list.hasOwnProperty(i)) {
 			var item = DMW.grid.list[i];
-			DMW.grid.placeNode(item['node'], item['x'], item['y']);			
+			DMW.grid.placeNode(item['node'], item['x'], item['y']);
 		}
 	}
 	DMW.grid.setCSSstyle();
@@ -185,7 +185,7 @@ DMW.grid.adjustMode3 = function() {
 			if (DMW.grid.list.hasOwnProperty(i)) {
 				var item = DMW.grid.list[i];
 				if (item['status'] == 'moved') {
-					DMW.grid.placeNode(item['node'], item['x'], item['y']);			
+					DMW.grid.placeNode(item['node'], item['x'], item['y']);
 				}
 			}
 		}
@@ -421,7 +421,7 @@ function removeMatrix(matrix, id) {
 				matrix[i][j] = null;
 			}
 		}
-	}	
+	}
 }
 
 function findEmptyPositionMatrix(matrix, w, h) {
