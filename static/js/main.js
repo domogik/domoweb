@@ -10,7 +10,7 @@ DMW.main.ajax = document.getElementById('ajax'),
 DMW.main.menu = document.getElementById('main-menu');
 DMW.main.navigation = document.getElementById('sections-tree');
 
-NodeList.prototype.forEach = Array.prototype.forEach; 
+NodeList.prototype.forEach = Array.prototype.forEach;
 HTMLCollection.prototype.forEach = Array.prototype.forEach; // Because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
 
 /* When section params changed */
@@ -45,7 +45,7 @@ function sectionChanged(e) {
 		for (var i = 0; i < details.widgets.length; i++) {
 			widget = details.widgets[i];
 			insertWidgetLink(widget.id, widget.set_id, widget.set_ref);
-		}		
+		}
 	}
 	if (details.instances) {
 		for (var i = 0; i < details.instances.length; i++) {
@@ -53,7 +53,7 @@ function sectionChanged(e) {
 			var node = insertWidgetInstance(instance.id, instance.widget);
 			DMW.grid.appendInstance(node, instance);
 		}
-		DMW.grid.adjustPlacement();	
+		DMW.grid.adjustPlacement();
 	}
 }
 
@@ -191,7 +191,7 @@ function configureHandler() {
 							DMW.main.ajax.setAttribute('body', serialize(formConfig));
 							DMW.main.ajax.setAttribute('method', 'POST');
 							DMW.main.ajax.setAttribute('params', '{"action":"section", "id":"' + DMW.main.section.sectionid + '"}');
-							DMW.main.ajax.go();							
+							DMW.main.ajax.go();
 						}
 						e.preventDefault();
 						e.stopPropagation();
@@ -227,7 +227,7 @@ function configureHandler() {
 	                    	$("#SectionBackgroundImageUploaded").append("<option data-img-src='/backgrounds/thumbnails/" + fileName + "' value='" + fileName + "'>" + fileName + "</option>");
 	                    	$("#SectionBackgroundImageUploaded").imagepicker();
 	                    },
-	                });           
+	                });
 
 				});
 
@@ -244,7 +244,7 @@ function configureHandler() {
 					input.addEventListener('click', gridModeSwitch, false);
 				});
 
-				// Grid check values				
+				// Grid check values
 				document.querySelectorAll('.gridParam input').forEach(function(param) {
 					param.addEventListener("change", gridParameterChange, false);
 				});
@@ -263,7 +263,6 @@ function widgetsEditHandler() {
 	for (var i = 0; i < DMW.main.layout.children.length; i++) {
 		DMW.main.layout.children[i].setAttribute('edit', '');
 	}
-	DMW.grid.editChanged(DMW.main.edit);
 }
 
 function widgetsFinishHandler() {
@@ -271,7 +270,6 @@ function widgetsFinishHandler() {
 	for (var i = 0; i < DMW.main.layout.children.length; i++) {
 		DMW.main.layout.children[i].removeAttribute('edit');
 	}
-	DMW.grid.editChanged(DMW.main.edit);
 }
 
 function addWidgetHandler() {
@@ -319,7 +317,7 @@ function addSectionHandler() {
 					input.addEventListener('click', gridModeSwitch, false);
 				});
 
-				// Grid check values				
+				// Grid check values
 				document.querySelectorAll('.gridParam input').forEach(function(param) {
 					param.addEventListener("change", gridParameterChange, false);
 				});
@@ -386,7 +384,7 @@ function removeSectionHandler() {
 
 function onWidgetStyleChange(e) {
 	var widgetpreview = document.getElementById('widgetpreview');
-	
+
 	switch(e.target.id) {
 	    case 'params-WidgetTextColor':
 	    	widgetpreview.style.color = e.target.value;
@@ -403,7 +401,7 @@ function onWidgetStyleChange(e) {
 	    case 'params-WidgetBoxShadow':
 		    widgetpreview.style.boxShadow = e.target.value;
 	        break;
-	} 
+	}
 }
 var websocketConnection = null;
 function websocketConnected(e) {
@@ -414,7 +412,7 @@ function websocketConnected(e) {
 		  position: "center",
 		  width: "all",
 		  height: 60,
-		});		
+		});
 	}
 	websocketConnection = true;
 }

@@ -1,11 +1,7 @@
 DMW.grid = DMW.grid || {};
 
-DMW.grid.draggables = [];
-
 DMW.grid.matrix = null;
 DMW.grid.list =null;
-DMW.grid.draggables = [];
-DMW.grid.edit = false;
 
 /**
  * init - called when a section is loaded
@@ -26,7 +22,7 @@ DMW.grid.refresh = function (mode, columns, rows, widgetSize, widgetSpace) {
 	DMW.grid.setParams(mode, columns, rows, widgetSize, widgetSpace);
 
 	// Save current matrix
-	var tmp = DMW.grid.matrix;	
+	var tmp = DMW.grid.matrix;
 	// Create matrix with new size
 	DMW.grid.matrix = generateMatrix(DMW.grid.columns, DMW.grid.rows);
 
@@ -257,8 +253,8 @@ DMW.grid.appendInstance = function(node, instance) {
 	insertMatrix(DMW.grid.matrix, parseInt(instance.id), instance.x, instance.y, instance.widget.width, instance.widget.height);
 
 	DMW.grid.list[parseInt(instance.id)] = {'node':node, 'x':instance.x, 'y':instance.y, 'originalX':instance.x, 'originalY':instance.y, 'width':instance.widget.width, 'height':instance.widget.height, 'status': null};
-
-	if (DMW.grid.edit) DMW.grid.addDraggable(node);
+	node.addEventListener('drag-start', DMW.grid.onDragStart);
+	node.addEventListener('drag-end', DMW.grid.onDragEnd);
 };
 
 DMW.grid.moveInstance = function(node, instance) {
@@ -270,59 +266,39 @@ DMW.grid.locationChanged = function(node, x, y) {
 	DMW.main.socket.send("widgetinstance-location", {'instance_id':node.getAttribute('instanceid'), 'x':x, 'y':y});
 };
 
-DMW.grid.addDraggable = function(el) {
-	DMW.grid.draggables.push( new Draggable( el, {
-		draggabilly : { containment: document.body },
-		onStart : function(instance) {
-			var el = instance.el;
-			var droppableArr = [];
-			// insert drop zones
-			for(var y=0; y<DMW.grid.matrix.length; y++) {
-				for(var x=0; x<DMW.grid.matrix[y].length; x++) {
-					if (DMW.grid.hasEnoughSpace(x, y, el.dataset.w, el.dataset.h, el.getAttribute('instanceid'))) {
-						var zone = DMW.grid.insertDropzone(x, y, el.dataset.w, el.dataset.h);
-						droppableArr.push( new Droppable( zone, {
-							dropMargin : DMW.grid.widgetSize/2,
-							onDrop : function( instance, draggableEl, changed ) {
-								var el = instance.el;
-								// If the widget was moved
-								if (changed) {
-									DMW.grid.locationChanged(draggableEl, el.dataset.x, el.dataset.y);
-								}
-							}
-						} ) );
+// Called when a widget is dragged
+DMW.grid.onDragStart = function(e) {
+	var el = e.target;
+	var droppableArr = [];
+	// insert drop zones
+	for(var y=0; y<DMW.grid.matrix.length; y++) {
+		for(var x=0; x<DMW.grid.matrix[y].length; x++) {
+			if (DMW.grid.hasEnoughSpace(x, y, el.dataset.w, el.dataset.h, el.getAttribute('instanceid'))) {
+				var zone = DMW.grid.insertDropzone(x, y, el.dataset.w, el.dataset.h);
+				droppableArr.push( new Droppable( zone, {
+					dropMargin : DMW.grid.widgetSize/2,
+					onDrop : function( instance, draggableEl, changed ) {
+						var el = instance.el;
+						// If the widget was moved
+						if (changed) {
+							DMW.grid.locationChanged(draggableEl, el.dataset.x, el.dataset.y);
+						}
 					}
-				}
+				} ) );
 			}
-			instance.updateDroppables(droppableArr);
-		},
-		onEnd : function(wasDropped) {
-			// Remove all drop zones
-			var elements = document.querySelectorAll(".dropZone");
-			Array.prototype.forEach.call( elements, function( node ) {
-			    node.parentNode.removeChild( node );
-			});
-		},
-		testChanged: function(droppableEl, draggableEl) {
-			return (draggableEl.dataset.x != droppableEl.dataset.x || draggableEl.dataset.y != droppableEl.dataset.y); 
 		}
-	} ) );
-};
-
-DMW.grid.editChanged = function(value) {
-	DMW.grid.edit = value;
-	if (value == true) {
-		// initialize draggable(s)
-		[].slice.call(document.querySelectorAll( '.widget' )).forEach( function( el ) {
-			DMW.grid.addDraggable(el);
-		} );
-	} else {
-		Array.prototype.forEach.call( DMW.grid.draggables, function( draggables ) {
-			draggables.destroy();
-		});
-		DMW.grid.draggables = [];
 	}
-};
+	el.draggie.updateDroppables(droppableArr);
+}
+
+// Called when a widget is dropped
+DMW.grid.onDragEnd = function(e) {
+	// Remove all drop zones
+	var elements = document.querySelectorAll(".dropZone");
+	Array.prototype.forEach.call( elements, function( node ) {
+		node.parentNode.removeChild( node );
+	});
+}
 
 DMW.grid.insertDropzone = function(x, y, w, h) {
 	var zone = document.createElement('div');
