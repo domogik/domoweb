@@ -1,66 +1,82 @@
 <polymer-element name="dmw-navigation-sectionTitle" extends="dmw-widget">
-	<template>
-		<style type="text/css">
-			:host {
-				height: 100%;
-				padding: 5px;
-				color: #ffffff;
-			}
-			::content #labelprimary {
-				position: relative;
-				top: 50%;
-				-webkit-transform: translateY(-50%);
-				-ms-transform: translateY(-50%);
-				transform: translateY(-50%);
-				overflow: hidden;
+    <template>
+        <style type="text/css">
+            :host {
+                height: 100%;
+                padding: 5px;
+                color: #ffffff;
+            }
+            ::content #labelprimary {
+                position: relative;
+                top: 50%;
+                -webkit-transform: translateY(-50%);
+                -ms-transform: translateY(-50%);
+                transform: translateY(-50%);
+                overflow: hidden;
                 display: inline-block;
-			}
-			::content #labelsecondary {
-				position: absolute;
-				bottom: 5px;
-				right: 5px;
-				font-style: italic;
-			}
-		</style>
-		<shadow></shadow>
-	</template>
-	<script>
-		Polymer('dmw-navigation-sectionTitle', {
-			ready: function() {
-				this.super();
-				this.section = document.getElementById('currentsection');
-			},
-			loadingDone: function() {
-				this.setSection();
-			},
-			optionsUpdated: function() {
-				this.setSection();
-			},
-			setSection: function () {
-				this.section.addEventListener('section-updated', this.sectionUpdated.bind(this));
-				this.sectionUpdated();
-			},
-			sectionUpdated: function() {
-				if (this.options['overrideLabel']) {
-					this.$.labelprimary.innerHTML = this.options['overrideLabel'];
-				} else {
-					this.$.labelprimary.innerHTML = this.section.name;
-				}
-				if (this.options['overrideDescription']) {
-					this.labelsecondary = this.options['overrideDescription'];
-				} else {
-					this.labelsecondary = this.section.description;
-				}
-				adjustText(this, this.$.labelprimary);
-			}
-		});
-		function adjustText(parent, element) {
-			var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
-			var i = fontsize.substr(0,2);
-			while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
-			    element.style.fontSize = i+"px";
-			    i++;
-			}
-		}
-	</script>
+            }
+            ::content #labelsecondary {
+                position: absolute;
+                bottom: 5px;
+                right: 5px;
+                font-style: italic;
+            }
+        </style>
+        <shadow></shadow>
+    </template>
+    <script>
+        Polymer('dmw-navigation-sectionTitle', {
+            ready: function() {
+                this.super();
+                this.section = document.getElementById('currentsection');
+            },
+            loadingDone: function() {
+                this.setSection();
+            },
+            optionsUpdated: function() {
+                this.setSection();
+            },
+            setSection: function () {
+                this.section.addEventListener('section-updated', this.sectionUpdated.bind(this));
+                this.sectionUpdated();
+            },
+            sectionUpdated: function() {
+                if (this.options['overrideLabel']) {
+                    this.$.labelprimary.innerHTML = this.options['overrideLabel'];
+                } else {
+                    this.$.labelprimary.innerHTML = this.section.name;
+                }
+                if (this.options['overrideDescription']) {
+                    this.labelsecondary = this.options['overrideDescription'];
+                } else {
+                    this.labelsecondary = this.section.description;
+                }
+                this.adjustText(this, this.$.labelprimary);
+            },
+            adjustText: function(parent, element) {
+                var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
+                var i = fontsize.substr(0,2);
+                //alert("cw = " + parent.clientWidth + ", cw = " + parent.clientHeight);
+                // in case the page is not yet nicely loaded...
+                if (parent.clientWidth == 0 || parent.clientHeight == 0) {
+                    setTimeout(function(){
+                        this.adjustText(parent, element);
+                        }.bind(this), 1000);
+                }
+                else {
+                    if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
+                        while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
+                            element.style.fontSize = i+"px";
+                            i++;
+                        }
+                    } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
+                        while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
+                            element.style.fontSize = i+"px";
+                            i--;
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </polymer-element>
