@@ -42,9 +42,13 @@
                 var self = this;
                 this.$.mapsapi.addEventListener('api-load', function(e) {
                     // this.api === google.maps
+
+                    // you asked why this place ?
+                    // well... I like this place ;)
+                    // -- Fritz
                     var mapOptions = {
-                        zoom: 8,
-                        center: new this.api.LatLng(47, 1)
+                        zoom: 11,
+                        center: new this.api.LatLng(48.67, -3.89)
                     };
                     self.map = new this.api.Map(self.$.map,
                         mapOptions);
@@ -64,12 +68,13 @@
                 this.addMarker(newValue);
             },
             historyChanged: function(oldValue, newValue) {
+/*
                 var pathCoordinates = [];
                 for (idx=0; idx<newValue.length; idx++) {
                     coords = newValue[idx]['value_str'].split(",");
                     pathCoordinates[idx] = new google.maps.LatLng(coords[1], coords[0]);
                 }
-
+console.err(pathCoordinates);
                 for (var i = 0; i < pathCoordinates.length-1; i++) {
                     var path = new google.maps.Polyline({
                         path: [pathCoordinates[i], pathCoordinates[i+1]],
@@ -80,6 +85,7 @@
                         map: this.map
                     });
                 }
+*/
             },
 
             // Add a marker to the map and push to the array.
@@ -91,7 +97,7 @@
                     position: gmap_location,
                     map: this.map,
                     title: this.$.primary.device['name'],
-                    //animation: google.maps.Animation.DROP
+                    label: this.$.primary.device['name']
                 });
                 this.markers.push(marker);
             },
