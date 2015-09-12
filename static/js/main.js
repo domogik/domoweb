@@ -98,9 +98,11 @@ function setSectionStyle() {
 
 function instanceAdded(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
-		insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
-		var node = insertWidgetInstance(json.id, json.widget);
-		DMW.grid.appendInstance(node, json);
+		i18n.loadNamespace(json.widget.set_id, function() {
+			insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
+			var node = insertWidgetInstance(json.id, json.widget);
+			DMW.grid.appendInstance(node, json);
+		});
 	}
 }
 
