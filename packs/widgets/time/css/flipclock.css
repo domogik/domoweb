@@ -181,8 +181,9 @@
   float: left;
   display: inline-block;
   position: relative;
-  width: 20px;
-  height: 100px; }
+  width: 4%;
+  height: 100px;
+}
 
 :host /deep/ .flip-clock-divider:first-child {
   width: 0; }
