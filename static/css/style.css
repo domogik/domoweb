@@ -13,12 +13,20 @@ body {
 	width: 100vw;
 	overflow-x: hidden;
 }
-
 @media screen and (max-width:480px) {
 	html,
 	body {
 		overflow: auto;
 	}
+}
+
+h2 {
+	border-bottom: 1px solid #e5e5e5;
+	font-size: 1.6em;
+}
+
+h3 {
+	font-size: 1.4em;
 }
 
 /* Configuration overlay */
@@ -68,6 +76,9 @@ body {
 }
 
 /* Form */
+
 legend {
 	color: #ffffff;
+	border:none;
+	font-size: 1em;
 }
