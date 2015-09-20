@@ -11,7 +11,7 @@
     },
     "style" : {
         "section" : {
-            "backgroundImage" : "url('theme/default/images/background.jpg')"
+            "backgroundImage" : "theme/default/images/background.jpg"
         },
         "widget" : {
             "borderColor" : "#f0f0f0",

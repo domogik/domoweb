@@ -1,7 +1,6 @@
 <link rel="import" href="/libraries/polymer/polymer.html">
 <link rel="import" href="/components/sensor.html">
 <link rel="import" href="/components/command.html">
-<script src="/js/serialize-0.2.min.js"></script>
 
 <polymer-element name="dmw-widget" attributes="instanceid edit debug default_style">
 	<template>
@@ -134,7 +133,7 @@
 							var formConfig = modalOverlay.querySelector('#formConfig');
 							saveConfig.addEventListener("click",
 								function(e) {
-									self.$.ajax.setAttribute('body', serialize(formConfig));
+									self.$.ajax.setAttribute('body', $(formConfig).serialize());
 									self.$.ajax.setAttribute('method', 'POST');
 									self.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + self.instanceid + '"}');
 									self.$.ajax.go();

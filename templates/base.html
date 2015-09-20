@@ -16,30 +16,21 @@
   <link rel="manifest" href="/manifests/manifest.json">
   <style type="text/css" id="gridstyle"></style>
   <style type="text/css" id="sectionstyle" shim-shadowdom>
-  body {
-    background-attachment: fixed;
-    {% if 'SectionBackgroundImage' in params %}
-      background-image: {% raw params['SectionBackgroundImage'] %};
-      background-position: {% if 'SectionBackgroundPosition' in params %}{{ params['SectionBackgroundPosition'] }}{% else %}0 0{% end %};
-      background-repeat: {% if 'SectionBackgroundRepeat' in params %}{{ params['SectionBackgroundRepeat'] }}{% else %}no-repeat{% end %};
-      background-size: {% if 'SectionBackgroundSize' in params %}{{ params['SectionBackgroundSize'] }}{% else %}cover{% end %};
-    {% end %}
-    {% if 'SectionBackground' in params %}    
-      background: {% raw params['SectionBackground'] %};
-    {% end %}
-    {% if 'SectionBackgroundImageUploaded' in params %}
-      background-image: url('/backgrounds/{% raw params['SectionBackgroundImageUploaded'] %}');
-      background-position: 0 0;
-      background-repeat: no-repeat;
-      background-size: cover;
-    {% end %}
-  }
   body /deep/ .widget.style-general {
     border: 1px solid {{ params['WidgetBorderColor'] }};
     background-color: {{ params['WidgetBackgroundColor'] }};
     border-radius: {{ params['WidgetBorderRadius'] }};
     color: {{ params['WidgetTextColor'] }};
     box-shadow: {{ params['WidgetBoxShadow'] }};
+  }
+  body::after {
+    content: "";
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: 1;
   }
   </style>
   <script type="text/javascript">
@@ -62,7 +53,7 @@
   <link rel="import" href="/components/section.html">
   <link rel="import" href="/components/widgetsSelector.html">
 </head>
-<body unresolved>
+<body id="body" unresolved>
   <dmw-datatypes id="datatypes"></dmw-datatypes>
   <web-socket id="socket"></web-socket>
   <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
@@ -94,6 +85,8 @@
   <script src="/js/grid-layout.js"></script>
   <script src="/js/navigation.js"></script>
   <link rel="stylesheet" href="/css/navigation.css">
+  <script src="/libraries/colorful-background-css-generator/dist/colorful-background-css-generator.min.js"></script>
+  <script src="/js/background.js"></script>
 
   <script type="text/javascript">
           i18n.init({
