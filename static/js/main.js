@@ -145,7 +145,7 @@ function configureHandler() {
 		link.setAttribute('id', "fileuploader");
 		link.setAttribute('rel', "stylesheet");
 		link.setAttribute('type', "text/css");
-		link.setAttribute('href', "/libraries/file-uploader/client/fileuploader.css")
+		link.setAttribute('href', "/libraries/file-uploader-2.0b/client/fileuploader.css")
 		document.head.appendChild(link);
 
 		var link = document.createElement('link');
