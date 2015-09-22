@@ -1,9 +1,6 @@
 [submodule "static/libraries/file-uploader"]
 	path = static/libraries/file-uploader
 	url = https://github.com/Valums-File-Uploader/file-uploader.git
-[submodule "static/libraries/i18next"]
-	path = static/libraries/i18next
-	url = https://github.com/jamuhl/i18next.git
 [submodule "static/libraries/notifit"]
 	path = static/libraries/notifit
 	url = https://github.com/naoxink/notifIt.git
