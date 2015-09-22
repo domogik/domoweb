@@ -64,22 +64,22 @@
               <h2 class="panel-title">Preview</h2>
               <div id="backgroundpreview"><div id="imagepreview"></div></div>
               <h2 class="panel-title">Gradient</h2>
-              <button class="btn" id="randomgradient">Random</button>
+              <button class="btn btn-default" id="randomgradient">Random</button>
               <fieldset class="form-inline">
                   <div class="form-group">
                     <legend>Layer 1: </legend>
                   </div>
                   <div class="form-group">
                     <label for="SectionL0Hue">hue</label>
-                    <input id="SectionL0Hue" name="params-SectionL0Hue" type="range" min="0" max="359" step="1"/>
+                    <input id="SectionL0Hue" name="params-SectionL0Hue" class="gradient" type="range" min="0" max="359" step="1"/>
                   </div>
                   <div class="form-group">
                     <label for="SectionL0Saturation">saturation</label>
-                    <input id="SectionL0Saturation" name="params-SectionL0Saturation" type="range" min="0" max="100" step="1"/>
+                    <input id="SectionL0Saturation" name="params-SectionL0Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
                   </div>
                   <div class="form-group">
                     <label for="SectionL0Lightness">lightness</label>
-                    <input id="SectionL0Lightness" name="params-SectionL0Lightness" type="range" min="0" max="100" step="1"/>
+                    <input id="SectionL0Lightness" name="params-SectionL0Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
                   </div>
               </fieldset>
               <fieldset class="form-inline">
@@ -88,15 +88,15 @@
                   </div>
                   <div class="form-group">
                     <label for="SectionL1Hue">hue</label>
-                    <input id="SectionL1Hue" name="params-SectionL1Hue" type="range" min="0" max="359" step="1"/>
+                    <input id="SectionL1Hue" name="params-SectionL1Hue" class="gradient" type="range" min="0" max="359" step="1"/>
                   </div>
                   <div class="form-group">
                     <label for="SectionL1Saturation">saturation</label>
-                    <input id="SectionL1Saturation" name="params-SectionL1Saturation" type="range" min="0" max="100" step="1"/>
+                    <input id="SectionL1Saturation" name="params-SectionL1Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
                   </div>
                   <div class="form-group">
                     <label for="SectionL1Lightness">lightness</label>
-                    <input id="SectionL1Lightness" name="params-SectionL1Lightness" type="range" min="0" max="100" step="1"/>
+                    <input id="SectionL1Lightness" name="params-SectionL1Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
                   </div>
               </fieldset>
               <fieldset class="form-inline">
@@ -105,15 +105,15 @@
                   </div>
                   <div class="form-group">
                     <label for="SectionL2Hue">hue</label>
-                    <input id="SectionL2Hue" name="params-SectionL2Hue" type="range" min="0" max="359" step="1"/>
+                    <input id="SectionL2Hue" name="params-SectionL2Hue" class="gradient" type="range" min="0" max="359" step="1"/>
                   </div>
                   <div class="form-group">
                     <label for="SectionL2Saturation">saturation</label>
-                    <input id="SectionL2Saturation" name="params-SectionL2Saturation" type="range" min="0" max="100" step="1"/>
+                    <input id="SectionL2Saturation" name="params-SectionL2Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
                   </div>
                   <div class="form-group">
                     <label for="SectionL2Lightness">lightness</label>
-                    <input id="SectionL2Lightness" name="params-SectionL2Lightness" type="range" min="0" max="100" step="1"/>
+                    <input id="SectionL2Lightness" name="params-SectionL2Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
                   </div>
               </fieldset>
               <fieldset class="form-inline">
@@ -122,15 +122,15 @@
                   </div>
                   <div class="form-group">
                     <label for="SectionL3Hue">hue</label>
-                    <input id="SectionL3Hue" name="params-SectionL3Hue" type="range" min="0" max="359" step="1"/>
+                    <input id="SectionL3Hue" name="params-SectionL3Hue" class="gradient" type="range" min="0" max="359" step="1"/>
                   </div>
                   <div class="form-group">
                     <label for="SectionL3Saturation">saturation</label>
-                    <input id="SectionL3Saturation" name="params-SectionL3Saturation" type="range" min="0" max="100" step="1"/>
+                    <input id="SectionL3Saturation" name="params-SectionL3Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
                   </div>
                   <div class="form-group">
                     <label for="SectionL3Lightness">lightness</label>
-                    <input id="SectionL3Lightness" name="params-SectionL3Lightness" type="range" min="0" max="100" step="1"/>
+                    <input id="SectionL3Lightness" name="params-SectionL3Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
                   </div>
               </fieldset>
               <h2 class="panel-title"><label for="SectionBackgroundCSS">Raw Color</label></h2>
@@ -200,23 +200,8 @@
                       font-size: 0.8em;
                       text-overflow: ellipsis;
                     }
-                    #backgroundpreview {
-                      margin: 20px auto 0 auto;
-                      width: 300px;
-                      height: 200px;
-                      border: 1px solid #e5e5e5;
-                      position: relative;
-                    }
 
                     #backgroundpreview #imagepreview {
-                      top: 0;
-                      left: 0;
-                      bottom: 0;
-                      right: 0;
-                      position: absolute;
-                      background-position: 0 0;
-                      background-repeat: no-repeat;
-                      background-size: cover;
                       {% if 'SectionBackgroundImage' in params and params['SectionBackgroundImage'] != 'none' %} background-image: url('{{params['SectionBackgroundImage']}}'); {% end %}
                       {% if 'SectionBackgroundOpacity' in params %} opacity: {{params['SectionBackgroundOpacity']}}; {% end %}
                     }
@@ -249,7 +234,7 @@
       <div class="row">
         <div class="col-sm-offset-3 col-sm-6">
           <button id="saveConfig" class="btn btn-primary">Save</button>
-          <button id="cancelConfig" class="btn">Cancel</button>
+          <button id="cancelConfig" class="btn btn-default">Cancel</button>
         </div>
       </div>
     </form>

@@ -82,3 +82,31 @@ legend {
 	border:none;
 	font-size: 1em;
 }
+
+input[type='range'] {
+	background-color: #000000;
+}
+
+/* Section configuration */
+form#formConfig {
+	padding-bottom: 30px;
+}
+
+#backgroundpreview {
+	margin: 20px auto 0 auto;
+	width: 300px;
+	height: 200px;
+	border: 1px solid #e5e5e5;
+	position: relative;
+}
+
+#backgroundpreview #imagepreview {
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	position: absolute;
+	background-position: 0 0;
+	background-repeat: no-repeat;
+	background-size: cover;
+}

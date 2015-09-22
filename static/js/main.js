@@ -65,6 +65,8 @@ function setSectionStyle() {
 	}
 	if ('SectionBackgroundImage' in DMW.main.section.params) {
 		DMW.background.setImage(DMW.main.section.params['SectionBackgroundImage'], DMW.main.section.params['SectionBackgroundPosition'], DMW.main.section.params['SectionBackgroundRepeat'], DMW.main.section.params['SectionBackgroundSize'], DMW.main.section.params['SectionBackgroundOpacity']);
+	} else {
+		DMW.background.setImage('none', null, null, null, null);
 	}
 
 	var ss = document.getElementById('sectionstyle');
@@ -234,13 +236,14 @@ function configureHandler() {
 					}
 				}, false);
 
-				document.querySelectorAll('input[type="range"]').forEach(function(input){
+				document.querySelectorAll('input.gradient[type="range"]').forEach(function(input){
 					input.addEventListener('input', function(e) {
-						var index = e.target.getAttribute("id").substring(15, 16);
-						var value = e.target.getAttribute("id").substring(16);
+						var index = e.target.getAttribute("id").substring(8, 9);
+						var value = e.target.getAttribute("id").substring(9);
 
 						var c = generator.getLayerByIndex(index);
-					        switch (value) {
+
+					    switch (value) {
 					        case "Hue":
 					            c.hue = e.target.value;
 					            break;
@@ -250,8 +253,8 @@ function configureHandler() {
 					        case "Saturation":
 					            c.saturation = e.target.value;
 					    }
-					    if (!sectionBackgroundCSS.value) gradientHandler(generator, 'backgroundpreview');
-					}, false);
+					    if (!sectionBackgroundCSS.value) generator.assignStyleToElementId('backgroundpreview');
+					});
 				})
 				document.getElementById('randomgradient').addEventListener('click', function(e) {
 					for (var a = generator.getNumberOfLayers() - 1; a >= 0; a--) {
@@ -348,7 +351,7 @@ function addSectionHandler() {
 				saveConfig.addEventListener("click",
 					function(e) {
 						if (gridParametersCheck()) {
-							DMW.main.ajax.setAttribute('body', serialize(form));
+							DMW.main.ajax.setAttribute('body', $(form).serialize());
 							DMW.main.ajax.setAttribute('method', 'POST');
 							DMW.main.ajax.setAttribute('params', '{"action":"addsection", "id":"' + DMW.main.section.sectionid + '"}');
 							DMW.main.ajax.go();
@@ -398,10 +401,10 @@ function addSectionHandler() {
 					}
 				}, false);
 
-				document.querySelectorAll('input[type="range"]').forEach(function(input){
+				document.querySelectorAll('input.gradient[type="range"]').forEach(function(input){
 					input.addEventListener('input', function(e) {
-						var index = e.target.getAttribute("id").substring(15, 16);
-						var value = e.target.getAttribute("id").substring(16);
+						var index = e.target.getAttribute("id").substring(8, 9);
+						var value = e.target.getAttribute("id").substring(9);
 
 						var c = generator.getLayerByIndex(index);
 					        switch (value) {
@@ -414,7 +417,7 @@ function addSectionHandler() {
 					        case "Saturation":
 					            c.saturation = e.target.value;
 					    }
-					    if (!sectionBackgroundCSS.value) gradientHandler(generator, 'backgroundpreview');
+					    if (!sectionBackgroundCSS.value) generator.assignStyleToElementId('backgroundpreview');
 					}, false);
 				})
 				document.getElementById('randomgradient').addEventListener('click', function(e) {
