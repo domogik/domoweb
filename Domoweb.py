@@ -3,7 +3,7 @@
 import sys
 if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
-    sys.exit(1)    
+    sys.exit(1)
 
 # MQ
 import os
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     if not os.path.isdir("/var/log/domoweb"):
         sys.stderr.write("Error: /var/log/domoweb do not exist")
         sys.exit(1)
-    
+
     # Check config file
     SERVER_CONFIG = '/etc/domoweb.cfg'
     if not os.path.isfile(SERVER_CONFIG):
@@ -69,22 +69,23 @@ if __name__ == '__main__':
 
     options.define("sqlite_db", default="/var/lib/domoweb/db.sqlite", help="Database file path", type=str)
     options.define("port", default=40404, help="Launch on the given port", type=int)
-    options.define("debut", default=False, help="Debug mode", type=bool)
+    options.define("debug", default=False, help="Debug mode", type=bool)
     options.define("rest_url", default="http://127.0.0.1:40405", help="RINOR REST Url", type=str)
+    options.define("develop", default=False, help="Develop mode", type=bool)
     options.parse_config_file(SERVER_CONFIG)
 
     logger.info("Running from : %s" % domoweb.PROJECTPATH)
 
-    packLoader.loadWidgets(domoweb.PACKSPATH)
-    packLoader.loadThemes(domoweb.PACKSPATH)
+    packLoader.loadWidgets(domoweb.PACKSPATH, options.develop)
+    packLoader.loadThemes(domoweb.PACKSPATH, options.develop)
     if not os.path.isdir(os.path.join(domoweb.VARPATH, 'backgrounds')):
         os.mkdir(os.path.join(domoweb.VARPATH, 'backgrounds'))
         logger.info("Creating : %s" % os.path.join(domoweb.VARPATH, 'backgrounds'))
     if not os.path.isdir(os.path.join(domoweb.VARPATH, 'backgrounds', 'thumbnails')):
         os.mkdir(os.path.join(domoweb.VARPATH, 'backgrounds', 'thumbnails'))
 
-    mqDataLoader.loadDatatypes()
-    mqDataLoader.loadDevices()
+    mqDataLoader.loadDatatypes(options.develop)
+    mqDataLoader.loadDevices(options.develop)
 
     logger.info("Starting tornado web server")
     application.listen(options.port)

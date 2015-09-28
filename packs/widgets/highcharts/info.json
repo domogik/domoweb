@@ -11,6 +11,7 @@
     },
     "widgets": {
         "lineChart": {
+            "dev" : true,
             "name" : "Line Chart",
             "description" : "Simple Line Chart",
             "height" : 4,
