@@ -11,6 +11,8 @@
       <div class="col-sm-3 col-nav">
         <ul class="nav nav-pills nav-stacked" role="tablist">
           <li class="active"><a href="#section" role="tab" data-toggle="tab">Section</a></li>
+          <li><a href="#grid" role="tab" data-toggle="tab">Grid</a></li>
+          <li><a href="#background" role="tab" data-toggle="tab">Background</a></li>
           <li><a href="#widgetstyle" role="tab" data-toggle="tab">Widgets</a></li>
         </ul>
       </div>
@@ -27,8 +29,9 @@
               <label for="sectionName">Description</label>
               <input type="text" class="form-control" id="sectionDescription" name="sectionDescription" placeholder="Enter Section description" value="{{section.description}}">
             </div>
-            <fieldset class="form-group">
-              <legend>Grid size</legend>
+          </div>
+          <div class="tab-pane" id="grid">
+            <div class="form-group">
               <p>A combination of 2 parameters is needed</p>
               <p id="gridMessage"></p>
               <ul>
@@ -36,61 +39,129 @@
                 <li><input type="radio" class="gridType" name="params-GridMode" value="2" {% if 'GridMode' in params and params['GridMode'] == '2' %} checked="checked"{% end %}/>Columns/Rows + Widget space</li>
                 <li><input type="radio" class="gridType" name="params-GridMode" value="3" {% if 'GridMode' in params and params['GridMode'] == '3' %} checked="checked"{% end %}/>Widget size + Widget space</li>
               </ul>
-              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode2"{% if 'GridMode' in params and params['GridMode'] == '3' %} style="display:none"{% end %}>
-                <label for="params-GridColumns">Columns</label>
-                <input type="text" class="form-control" id="params-GridColumns" name="params-GridColumns"{% if 'GridColumns' in params %} value="{{params['GridColumns']}}"{% end %}/>
+              <div class="form-inline">
+                <div class="form-group gridParam gridParamMode1 gridParamMode2"{% if 'GridMode' in params and params['GridMode'] == '3' %} style="display:none"{% end %}>
+                  <label for="GridColumns">Columns</label>
+                  <input type="text" class="form-control" id="GridColumns" name="params-GridColumns"{% if 'GridColumns' in params %} value="{{params['GridColumns']}}"{% end %}/>
+                </div>
+                <div class="form-group gridParam gridParamMode1 gridParamMode2"{% if 'GridMode' in params and params['GridMode'] == '3' %} style="display:none"{% end %}>
+                  <label for="GridRows">Rows</label>
+                  <input type="text" class="form-control" id="GridRows" name="params-GridRows"{% if 'GridRows' in params %}  value="{{params['GridRows']}}"{% end %}/>
+                </div>
+                <div class="form-group gridParam gridParamMode1 gridParamMode3"{% if 'GridMode' in params and params['GridMode'] == '2' %} style="display:none"{% end %}>
+                  <label for="GridWidgetSize">Base widget size (px)</label>
+                  <input type="text" class="form-control" id="GridWidgetSize" name="params-GridWidgetSize"{% if 'GridWidgetSize' in params %} value="{{params['GridWidgetSize']}}"{% end %}/>
+                </div>
+                <div class="form-group gridParam gridParamMode2 gridParamMode3"{% if 'GridMode' in params and params['GridMode'] == '1' %} style="display:none"{% end %}>
+                  <label for="GridWidgetSpace">Space between widgets (px)</label>
+                  <input type="text" class="form-control" id="GridWidgetSpace" name="params-GridWidgetSpace"{% if 'GridWidgetSpace' in params %} value="{{params['GridWidgetSpace']}}"{% end %}/>
+                </div>
               </div>
-              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode2"{% if 'GridMode' in params and params['GridMode'] == '3' %} style="display:none"{% end %}>
-                <label for="params-GridRows">Rows</label>
-                <input type="text" class="form-control" id="params-GridRows" name="params-GridRows"{% if 'GridRows' in params %}  value="{{params['GridRows']}}"{% end %}/>
-              </div>
-              <div class="col-xs-4 gridParam gridParamMode1 gridParamMode3"{% if 'GridMode' in params and params['GridMode'] == '2' %} style="display:none"{% end %}>
-                <label for="params-GridWidgetSize">Base widget size (px)</label>
-                <input type="text" class="form-control" id="params-GridWidgetSize" name="params-GridWidgetSize"{% if 'GridWidgetSize' in params %} value="{{params['GridWidgetSize']}}"{% end %}/>
-              </div>
-              <div class="col-xs-4 gridParam gridParamMode2 gridParamMode3"{% if 'GridMode' in params and params['GridMode'] == '1' %} style="display:none"{% end %}>
-                <label for="params-GridWidgetSpace">Space between widgets (px)</label>
-                <input type="text" class="form-control" id="params-GridWidgetSpace" name="params-GridWidgetSpace"{% if 'GridWidgetSpace' in params %} value="{{params['GridWidgetSpace']}}"{% end %}/>
-              </div>
-            </fieldset>
-            <fieldset class="form-group">
-              <legend>Background</legend>
-              <label for="SectionBackgroundImage">Image</label>
-              <select class="image-picker form-control" id="SectionBackgroundImageUploaded" name="params-SectionBackgroundImageUploaded">
-                <option data-img-src="images/background_default_thumbnail.png" value=""{% if 'SectionBackgroundImageUploaded' not in params %} selected='selected'{% end %}>Default background</option>
+            </div>
+          </div>
+          <div class="tab-pane" id="background">
+            <div class="form-group">
+              <h2 class="panel-title">Preview</h2>
+              <div id="backgroundpreview"><div id="imagepreview"></div></div>
+              <h2 class="panel-title">Gradient</h2>
+              <button class="btn btn-default" id="randomgradient">Random</button>
+              <fieldset class="form-inline">
+                  <div class="form-group">
+                    <legend>Layer 1: </legend>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL0Hue">hue</label>
+                    <input id="SectionL0Hue" name="params-SectionL0Hue" class="gradient" type="range" min="0" max="359" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL0Saturation">saturation</label>
+                    <input id="SectionL0Saturation" name="params-SectionL0Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL0Lightness">lightness</label>
+                    <input id="SectionL0Lightness" name="params-SectionL0Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+              </fieldset>
+              <fieldset class="form-inline">
+                  <div class="form-group">
+                    <legend>Layer 2: </legend>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL1Hue">hue</label>
+                    <input id="SectionL1Hue" name="params-SectionL1Hue" class="gradient" type="range" min="0" max="359" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL1Saturation">saturation</label>
+                    <input id="SectionL1Saturation" name="params-SectionL1Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL1Lightness">lightness</label>
+                    <input id="SectionL1Lightness" name="params-SectionL1Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+              </fieldset>
+              <fieldset class="form-inline">
+                  <div class="form-group">
+                    <legend>Layer 3: </legend>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL2Hue">hue</label>
+                    <input id="SectionL2Hue" name="params-SectionL2Hue" class="gradient" type="range" min="0" max="359" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL2Saturation">saturation</label>
+                    <input id="SectionL2Saturation" name="params-SectionL2Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL2Lightness">lightness</label>
+                    <input id="SectionL2Lightness" name="params-SectionL2Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+              </fieldset>
+              <fieldset class="form-inline">
+                  <div class="form-group">
+                    <legend>Layer 4: </legend>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL3Hue">hue</label>
+                    <input id="SectionL3Hue" name="params-SectionL3Hue" class="gradient" type="range" min="0" max="359" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL3Saturation">saturation</label>
+                    <input id="SectionL3Saturation" name="params-SectionL3Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL3Lightness">lightness</label>
+                    <input id="SectionL3Lightness" name="params-SectionL3Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+              </fieldset>
+              <h2 class="panel-title"><label for="SectionBackgroundCSS">Raw Color</label></h2>
+              <input type="text" class="form-control" id="SectionBackgroundCSS" name="params-SectionBackgroundCSS" placeholder="Enter color value" {% if 'SectionBackgroundCSS' in params %} value="{{params['SectionBackgroundCSS']}}"{% end %}>
+
+              <h2 class="panel-title"><label for="SectionBackgroundImage">Overlay Image</label></h2>
+              <select class="image-picker form-control" id="SectionBackgroundImage" name="params-SectionBackgroundImage">
+                <option data-img-src="images/background_none_thumbnail.png" value="none">No background</option>
               {% for background in backgrounds %}
-                <option data-img-src="/backgrounds/thumbnails/{{ background }}" value="{{ background }}"{% if 'SectionBackgroundImageUploaded' in params and params['SectionBackgroundImageUploaded'] == background %} selected='selected'{% end %}>{{ background }}</option>
+                <option data-img-src="{{ background['href'] }}" value="{{ background['value'] }}"{% if 'SectionBackgroundImage' in params and params['SectionBackgroundImage'] == background['value'] %} selected='selected'{% end %}>{{ background['value'] }}</option>
               {% end %}
               </select>
                 <div id="file-uploader-background"></div>
-              </fieldset>
+                <div class="form-group">
+                    <label for="SectionBackgroundOpacity">Opacity</label>
+                    <input id="SectionBackgroundOpacity" name="params-SectionBackgroundOpacity" type="range" min="0.1" max="1" step="0.1" {% if 'SectionBackgroundOpacity' in params %} value="{{params['SectionBackgroundOpacity']}}"{% else %}value="1"{% end %}/>
+                  </div>
+
+              </div>
           </div>
           <div class="tab-pane" id="widgetstyle">
-            {% for field in widgetForm %}
-            <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
-              {% raw field.label() %}
-              {% if field.type == 'BooleanField' %}
-                {% raw field() %}<br/>
-              {% else %}
-                {% raw field(class_='form-control') %}
-              {% end %}
-              <span>{% raw field.description %}</span>
-              {% if field.errors %}
-              <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-              <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
-              {% end %}
-            </div>
-            {% end %}
-              <h2 class="panel-title">Preview</h2>
+            <h2 class="panel-title">Preview</h2>
                   <style type="text/css">
                     #widgetpreview {
                       width:  100px; height: 100px;
                       margin: 1em auto 1em auto;
-                      border: 1px solid {{ themeStyle['WidgetBorderColor'] }};
-                      background: {{ themeStyle['WidgetBackgroundColor'] }};
-                      border-radius: {{ themeStyle['WidgetBorderRadius'] }};
-                      color: {{ themeStyle['WidgetTextColor'] }};
-                      box-shadow: {{ themeStyle['WidgetBoxShadow'] }};
+                      border: 1px solid {{ themeWidgetsStyle['WidgetBorderColor'] }};
+                      background: {{ themeWidgetsStyle['WidgetBackgroundColor'] }};
+                      border-radius: {{ themeWidgetsStyle['WidgetBorderRadius'] }};
+                      color: {{ themeWidgetsStyle['WidgetTextColor'] }};
+                      box-shadow: {{ themeWidgetsStyle['WidgetBoxShadow'] }};
                     }
                     #widgetpreview .number {
                       position: relative;
@@ -129,6 +200,11 @@
                       font-size: 0.8em;
                       text-overflow: ellipsis;
                     }
+
+                    #backgroundpreview #imagepreview {
+                      {% if 'SectionBackgroundImage' in params and params['SectionBackgroundImage'] != 'none' %} background-image: url('{{params['SectionBackgroundImage']}}'); {% end %}
+                      {% if 'SectionBackgroundOpacity' in params %} opacity: {{params['SectionBackgroundOpacity']}}; {% end %}
+                    }
                   </style>
               <div id="widgetpreview">
                 <span class="labelprimary">Température</span>
@@ -136,6 +212,21 @@
                 <div class="number">29</div>
                 <div class="unit">°C</div>
               </div>
+            {% for field in widgetForm %}
+            <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
+              {% raw field.label() %}
+              {% if field.type == 'BooleanField' %}
+                {% raw field() %}<br/>
+              {% else %}
+                {% raw field(class_='form-control') %}
+              {% end %}
+              <span>{% raw field.description %}</span>
+              {% if field.errors %}
+              <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+              <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+              {% end %}
+            </div>
+            {% end %}
           </div>
         </div>
       </div>
@@ -143,7 +234,7 @@
       <div class="row">
         <div class="col-sm-offset-3 col-sm-6">
           <button id="saveConfig" class="btn btn-primary">Save</button>
-          <button id="cancelConfig" class="btn">Cancel</button>
+          <button id="cancelConfig" class="btn btn-default">Cancel</button>
         </div>
       </div>
     </form>

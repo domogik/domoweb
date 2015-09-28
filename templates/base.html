@@ -11,35 +11,26 @@
     <meta http-equiv="Expires" content="-1" />
   <title>Domoweb</title>
   <link rel="stylesheet" href="/libraries/bootstrap-3.3.5/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="/libraries/notifit/notifIt%21-1.1/css/notifIt.css">
+  <link rel="stylesheet" type="text/css" href="/libraries/notifIt-1.1/notifIt/css/notifIt.css">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="manifest" href="/manifests/manifest.json">
   <style type="text/css" id="gridstyle"></style>
   <style type="text/css" id="sectionstyle" shim-shadowdom>
-  body {
-    background-attachment: fixed;
-    {% if 'SectionBackgroundImage' in params %}
-      background-image: {% raw params['SectionBackgroundImage'] %};
-      background-position: {% if 'SectionBackgroundPosition' in params %}{{ params['SectionBackgroundPosition'] }}{% else %}0 0{% end %};
-      background-repeat: {% if 'SectionBackgroundRepeat' in params %}{{ params['SectionBackgroundRepeat'] }}{% else %}no-repeat{% end %};
-      background-size: {% if 'SectionBackgroundSize' in params %}{{ params['SectionBackgroundSize'] }}{% else %}cover{% end %};
-    {% end %}
-    {% if 'SectionBackground' in params %}    
-      background: {% raw params['SectionBackground'] %};
-    {% end %}
-    {% if 'SectionBackgroundImageUploaded' in params %}
-      background-image: url('/backgrounds/{% raw params['SectionBackgroundImageUploaded'] %}');
-      background-position: 0 0;
-      background-repeat: no-repeat;
-      background-size: cover;
-    {% end %}
-  }
   body /deep/ .widget.style-general {
     border: 1px solid {{ params['WidgetBorderColor'] }};
     background-color: {{ params['WidgetBackgroundColor'] }};
     border-radius: {{ params['WidgetBorderRadius'] }};
     color: {{ params['WidgetTextColor'] }};
     box-shadow: {{ params['WidgetBoxShadow'] }};
+  }
+  body::after {
+    content: "";
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: 1;
   }
   </style>
   <script type="text/javascript">
@@ -54,7 +45,7 @@
   </script>
   <script src="/libraries/webcomponentsjs-0.7.12/webcomponents.min.js"></script>
   <script src="/libraries/jquery-1.11.0/jquery.min.js"></script>
-  <script type="text/javascript" src="/libraries/i18next/i18next.min.js"></script>
+  <script type="text/javascript" src="/libraries/i18next-1.10.1/i18next-1.10.1.min.js"></script>
   <link rel="import" href="/components/polymer-ajax.html">
   <link rel="import" href="/components/websockets.html">
   <link rel="import" href="/components/widget.html">
@@ -62,7 +53,7 @@
   <link rel="import" href="/components/section.html">
   <link rel="import" href="/components/widgetsSelector.html">
 </head>
-<body unresolved>
+<body id="body" unresolved>
   <dmw-datatypes id="datatypes"></dmw-datatypes>
   <web-socket id="socket"></web-socket>
   <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
@@ -83,17 +74,19 @@
   </div>
   <div id="modal-overlay" class="overlay"></div>
   <script src="/libraries/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-  <script src="/libraries/d3/d3.min.js"></script>
+  <script src="/libraries/d3-3.5.6/d3.min.js"></script>
   <script src="/libraries/moment-2.10.6/min/moment.min.js"></script>
-  <script type="text/javascript" src="/libraries/notifit/notifIt%21-1.1/js/notifIt.js"></script>
+  <script type="text/javascript" src="/libraries/notifIt-1.1/notifIt/js/notifIt.min.js"></script>
   <script src="/js/main.js"></script>
-  <script src="/libraries/draggabilly/draggabilly.pkgd.min.js"></script>
+  <script src="/libraries/draggabilly-1.1.2-modified/dist/draggabilly.pkgd.js"></script>
   <script src="/js/dragdrop.js"></script>
   <script src="/js/menu.js"></script>
   <link rel="stylesheet" href="/css/menu.css">
   <script src="/js/grid-layout.js"></script>
   <script src="/js/navigation.js"></script>
   <link rel="stylesheet" href="/css/navigation.css">
+  <script src="/libraries/colorful-background-css-generator/dist/colorful-background-css-generator.min.js"></script>
+  <script src="/js/background.js"></script>
 
   <script type="text/javascript">
           i18n.init({

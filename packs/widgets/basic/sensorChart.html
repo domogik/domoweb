@@ -33,9 +33,15 @@
                 padding: 10px;
             }
             #minmax {
-                position: absolute;
-                bottom: 5px;
+                position: relative;
+                top: -20%;
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                left: 50%;
                 text-align: center;
+                overflow: hidden;
+                display: inline-block;
                 width: 100%;
             }
             #minvalue {
@@ -100,27 +106,56 @@
 
             },
             historyChanged: function(oldValue, newValue) { 
-                var self = this;
-                var chartValues = [];
-                for(i=0;i<newValue.length;i++) {
-                    // 5 because : [ year, month, week, day, hour, value ]
-                    chartValues.push(newValue[i][5]);
+                // in case the page is not yet nicely loaded...
+                if (this.$.spark.clientWidth == 0 || this.$.spark.clientHeight == 0) {
+                    setTimeout(function(){
+                        this.historyChanged(oldValue, newValue);
+                        }.bind(this), 1000);
                 }
-                // display the chart
-                minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
-                maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
-                this.min = minvalue;
-                this.max = maxvalue;
-                $(this.$.spark).sparkline(chartValues, { height: '100%', width: '100%' });
-                $.sparkline_display_visible();
+                else {
+                    var self = this;
+                    var chartValues = [];
+                    for(i=0;i<newValue.length;i++) {
+                        // 5 because : [ year, month, week, day, hour, value ]
+                        chartValues.push(newValue[i][5]);
+                    }
+                    // display the chart
+                    minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
+                    maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
+                    this.min = minvalue;
+                    this.max = maxvalue;
+                    $(this.$.spark).sparkline(chartValues, {type: 'line',
+                                                            lineColor: '#ffffff',  
+                                                            fillColor: '#ffffff',  
+                                                            spotColor: undefined,
+                                                            minSpotColor: undefined,
+                                                            maxSpotColor: undefined,
+                                                            height: '100%', width: '100%' });
+                    $.sparkline_display_visible();
+                }
             },
             adjustText: function(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
                 var i = fontsize.substr(0,2);
-                while ( parent.clientWidth/2 > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
-                    element.style.fontSize = i+"px";
-                    i++;
-                }            
+                //alert("cw = " + parent.clientWidth + ", cw = " + parent.clientHeight);
+                if (parent.clientWidth == 0 || parent.clientHeight == 0) {
+                    setTimeout(function(){
+                        this.adjustText(parent, element);
+                        }.bind(this), 1000);
+                }
+                else {
+                    if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
+                        while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
+                            element.style.fontSize = i+"px";
+                            i++;
+                        }
+                    } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
+                        while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
+                            element.style.fontSize = i+"px";
+                            i--;
+                        }
+                    }
+                }
             }
         });
  

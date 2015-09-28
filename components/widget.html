@@ -1,7 +1,6 @@
 <link rel="import" href="/libraries/polymer/polymer.html">
 <link rel="import" href="/components/sensor.html">
 <link rel="import" href="/components/command.html">
-<script src="/js/serialize-0.2.min.js"></script>
 
 <polymer-element name="dmw-widget" attributes="instanceid edit debug default_style">
 	<template>
@@ -11,9 +10,16 @@
 			height: 100%;
 			width: 100%;
 			display: block;
-            max-width:100%;
+			max-width:100%;
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
 		}
 		#editOverlay {
+			color: #f0f0F0;
 			position: absolute;
 			background-color: rgba(0,0,0,0.6);
 			top: -1px;
@@ -21,33 +27,58 @@
 			bottom: -1px;
 			right: -1px;
 			z-index: 9;
-			cursor:move;
+			display: none;
+		    justify-content: center;
+		    align-items: center;
+		}
+
+		#editOverlay.visible {
+			display: flex
 		}
 
 		#editOverlay button {
+			display: flex;
+		    justify-content: center;
+		    align-items: center;
 			background: #000000;
 			display: block;
 			width: 2em;
 			height: 2em;
 			border: 1px solid #f0f0F0;
-			color: #f0f0F0;
 			margin: 1em auto 1em auto;
 			-moz-border-radius: 1em;
 			-webkit-border-radius: 1em;
 			border-radius: 1em;
 		}
 
+		#editOverlay .moveWidget {
+			display: flex;
+		    justify-content: center;
+		    align-items: center;
+			cursor:move;
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 2em;
+			height: 2em;
+			border: 1px solid #f0f0F0;
+			background: #000000;
+			-moz-border-radius: 0 0 0 1em;
+			-webkit-border-radius: 0 0 0 1em;
+			border-radius: 0 0 0 1em;
+		}
+
 		#editOverlay button:hover,
 		#editOverlay button:focus {
 			background: #f0f0F0;
-			color: #000000;	
+			color: #000000;
 		}
 		#timeoutOverlay {
 			position: absolute;
 			top:50%;
 			display: none;
 			/*background: #99312C;*/
-            background-color: rgba(153, 49, 44, 0.85);
+			background-color: rgba(153, 49, 44, 0.85);
 			color: #ffffff;
 			z-index: 8;
 			width: 100%;
@@ -56,17 +87,18 @@
 			margin-top:-1.4em;
 		}
 		</style>
-	    <web-socket id="socket"></web-socket>
-	    <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
+		<web-socket id="socket"></web-socket>
+		<polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
 		<div id='labelprimary'>{{labelprimary}}</div>
 		<div id='labelsecondary'>{{labelsecondary}}</div>
-	    <template if="{{ edit!=null }}">
-	    	<div id="editOverlay">
-		    	<button class="editWidget" on-click="{{editWidget}}" aria-label="Edit"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></button>
-		    	<button class="removeWidget" on-click="{{removeWidget}}" aria-label="Remove"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-	    	</div>
-	    </template>
-	    <div id="timeoutOverlay"></div>
+		<div id="editOverlay">
+			<div class="moveWidget" id="handle"><span class="glyphicon glyphicon-move" aria-hidden="true"></span></div>
+			<div class="buttons">
+				<button class="editWidget" on-click="{{editWidget}}" aria-label="Edit"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></button>
+				<button class="removeWidget" on-click="{{removeWidget}}" aria-label="Remove"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+			</div>
+		</div>
+		<div id="timeoutOverlay"></div>
 	</template>
 	<script>
 		Polymer("dmw-widget", {
@@ -76,8 +108,9 @@
 				this.commandsReady = false;
 				this.devicesReady = false;
 				this.loaded = false;
+				this.draggie = null;
 				if (this.datatypes === null || this.datatypes === undefined) {
-					document.querySelector("dmw-datatypes").addEventListener("datatype-received", this.datatypesReceived.bind(this), false);	
+					document.querySelector("dmw-datatypes").addEventListener("datatype-received", this.datatypesReceived.bind(this), false);
 				}
 			},
 			removeWidget: function(e) {
@@ -100,7 +133,7 @@
 							var formConfig = modalOverlay.querySelector('#formConfig');
 							saveConfig.addEventListener("click",
 								function(e) {
-									self.$.ajax.setAttribute('body', serialize(formConfig));
+									self.$.ajax.setAttribute('body', $(formConfig).serialize());
 									self.$.ajax.setAttribute('method', 'POST');
 									self.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + self.instanceid + '"}');
 									self.$.ajax.go();
@@ -120,14 +153,13 @@
 
 							$("fieldset[data-toggle=fieldset]").each(function() {
 							    var $this = $(this);
-							        
+
 						        //Add new entry
 							    $this.find("button[data-toggle=fieldset-add-row]").click(function() {
 							        var target = $($(this).data("target"))
 							        var oldrow = target.find("div[data-toggle=fieldset-entry]:last");
 							        var row = oldrow.clone(true, true);
 							        var elem_id = row.find(":input")[0].id;
-							        console.debug(elem_id);
 							        var reg = /.*-(\d{1,2})/m;
 							        var elem_num = parseInt(reg.exec(elem_id)[1]) + 1;
 							        row.attr('data-id', elem_num);
@@ -184,7 +216,7 @@
 			      this.style.backgroundColor=this.options['WidgetBackgroundColor'];
 			      this.style.borderColor=this.options['WidgetBorderColor'];
 			      this.style.borderRadius=this.options['WidgetBorderRadius'];
-			      this.style.boxShadow=this.options['WidgetBoxShadow'];						
+			      this.style.boxShadow=this.options['WidgetBoxShadow'];
 				}
 				this.optionsUpdated();
 				if (!this.loaded && this.datatypes) this.initialStepReady();
@@ -281,7 +313,34 @@
 			timeoutFinished: function(e) {
 				if (this.sensorlost && e.target.id == this.sensorlost.id) {
 					this.sensorlost = null;
-					this.$.timeoutOverlay.style.display = 'none';					
+					this.$.timeoutOverlay.style.display = 'none';
+				}
+			},
+			editChanged: function(oldValue, newValue) {
+				var self = this;
+				var editOverlay = this.$.editOverlay;
+				if (newValue != null) {
+					// Show config overlay
+					editOverlay.classList.add('visible');
+					// Make widget draggable
+					this.draggie = new Draggable( this, {
+						draggabilly : { containment: document.body, handle: this.$.handle },
+						onStart : function(instance) {
+							self.fire('drag-start');
+						},
+						onEnd : function(wasDropped) {
+							self.fire('drag-end');
+						},
+						testChanged: function(droppableEl, draggableEl) {
+							return (draggableEl.dataset.x != droppableEl.dataset.x || draggableEl.dataset.y != droppableEl.dataset.y);
+						}
+					} );
+				} else {
+					// Remove widget draggability
+					this.draggie.destroy();
+					this.draggie = null;
+					// Hide config overlay
+					editOverlay.classList.remove('visible');
 				}
 			}
 		});

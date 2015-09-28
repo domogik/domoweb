@@ -64,15 +64,24 @@
             adjustText: function(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
                 var i = fontsize.substr(0,2);
-                if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
-                    while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
-                        element.style.fontSize = i+"px";
-                        i++;
-                    }
-                } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
-                    while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
-                        element.style.fontSize = i+"px";
-                        i--;
+                //alert("cw = " + parent.clientWidth + ", cw = " + parent.clientHeight);
+                // in case the page is not yet nicely loaded...
+                if (parent.clientWidth == 0 || parent.clientHeight == 0) {
+                    setTimeout(function(){
+                        this.adjustText(parent, element);
+                        }.bind(this), 1000);
+                }
+                else {
+                    if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
+                        while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
+                            element.style.fontSize = i+"px";
+                            i++;
+                        }
+                    } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
+                        while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
+                            element.style.fontSize = i+"px";
+                            i--;
+                        }
                     }
                 }
             }

@@ -10,7 +10,7 @@ DMW.main.ajax = document.getElementById('ajax'),
 DMW.main.menu = document.getElementById('main-menu');
 DMW.main.navigation = document.getElementById('sections-tree');
 
-NodeList.prototype.forEach = Array.prototype.forEach; 
+NodeList.prototype.forEach = Array.prototype.forEach;
 HTMLCollection.prototype.forEach = Array.prototype.forEach; // Because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
 
 /* When section params changed */
@@ -20,9 +20,10 @@ function sectionUpdated(e) {
 	var removed = DMW.grid.refresh(details.params.GridMode, details.params.GridColumns, details.params.GridRows, details.params.GridWidgetSize, details.params.GridWidgetSpace);
 
 	// Remove widgets outside the grid
-	for (var i=0; i<removed.length; i++) {
-		DMW.main.socket.send("widgetinstance-remove", {'instance_id': removed[i]});
-	}
+	// Disabled per issue #28, need to figure out a better way
+//	for (var i=0; i<removed.length; i++) {
+//		DMW.main.socket.send("widgetinstance-remove", {'instance_id': removed[i]});
+//	}
 
 	setSectionStyle();
 }
@@ -44,7 +45,7 @@ function sectionChanged(e) {
 		for (var i = 0; i < details.widgets.length; i++) {
 			widget = details.widgets[i];
 			insertWidgetLink(widget.id, widget.set_id, widget.set_ref);
-		}		
+		}
 	}
 	if (details.instances) {
 		for (var i = 0; i < details.instances.length; i++) {
@@ -52,42 +53,24 @@ function sectionChanged(e) {
 			var node = insertWidgetInstance(instance.id, instance.widget);
 			DMW.grid.appendInstance(node, instance);
 		}
-		DMW.grid.adjustPlacement();	
+		DMW.grid.adjustPlacement();
 	}
 }
 
 function setSectionStyle() {
-	var ss = document.getElementById('sectionstyle');
-	var bodyStyle = ss.sheet.cssRules[0];
+	if ('SectionBackgroundCSS' in DMW.main.section.params) {
+		DMW.background.setCSS(DMW.main.section.params['SectionBackgroundCSS']);
+	} else {
+		DMW.background.setGradient(DMW.main.section.params['SectionL0Hue'], DMW.main.section.params['SectionL0Saturation'], DMW.main.section.params['SectionL0Lightness'], DMW.main.section.params['SectionL1Hue'], DMW.main.section.params['SectionL1Saturation'], DMW.main.section.params['SectionL1Lightness'], DMW.main.section.params['SectionL2Hue'], DMW.main.section.params['SectionL2Saturation'], DMW.main.section.params['SectionL2Lightness'], DMW.main.section.params['SectionL3Hue'], DMW.main.section.params['SectionL3Saturation'], DMW.main.section.params['SectionL3Lightness']);
+	}
 	if ('SectionBackgroundImage' in DMW.main.section.params) {
-		bodyStyle.style.backgroundImage = DMW.main.section.params['SectionBackgroundImage'];
-		if ('SectionBackgroundRepeat' in DMW.main.section.params) {
-			bodyStyle.style.backgroundRepeat = DMW.main.section.params['SectionBackgroundRepeat'];
-		} else {
-			bodyStyle.style.backgroundRepeat = "no-repeat";
-		}
-		if ('SectionBackgroundPosition' in DMW.main.section.params) {
-			bodyStyle.style.backgroundPosition = DMW.main.section.params['SectionBackgroundPosition'];
-		} else {
-			bodyStyle.style.backgroundPosition = "0 0";
-		}
-		if ('SectionBackgroundSize' in DMW.main.section.params) {
-			bodyStyle.style.backgroundSize = DMW.main.section.params['SectionBackgroundSize'];
-		} else {
-			bodyStyle.style.backgroundSize = "cover";
-		}
-	}
-	if ('SectionBackground' in DMW.main.section.params) {
-		bodyStyle.style.background = DMW.main.section.params['SectionBackground'];
-	}
-	if ('SectionBackgroundImageUploaded' in DMW.main.section.params) {
-		bodyStyle.style.backgroundImage = "url('/backgrounds/" + DMW.main.section.params['SectionBackgroundImageUploaded'] + "')";
-		bodyStyle.style.backgroundRepeat = "no-repeat";
-		bodyStyle.style.backgroundPosition = "0 0";
-		bodyStyle.style.backgroundSize = "cover";
+		DMW.background.setImage(DMW.main.section.params['SectionBackgroundImage'], DMW.main.section.params['SectionBackgroundPosition'], DMW.main.section.params['SectionBackgroundRepeat'], DMW.main.section.params['SectionBackgroundSize'], DMW.main.section.params['SectionBackgroundOpacity']);
+	} else {
+		DMW.background.setImage('none', null, null, null, null);
 	}
 
-	var widgetStyle = ss.sheet.cssRules[1];
+	var ss = document.getElementById('sectionstyle');
+	var widgetStyle = ss.sheet.cssRules[0];
 	widgetStyle.style.color=DMW.main.section.params['WidgetTextColor'];
 	widgetStyle.style.backgroundColor=DMW.main.section.params['WidgetBackgroundColor'];
 	widgetStyle.style.borderColor=DMW.main.section.params['WidgetBorderColor'];
@@ -97,9 +80,11 @@ function setSectionStyle() {
 
 function instanceAdded(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
-		insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
-		var node = insertWidgetInstance(json.id, json.widget);
-		DMW.grid.appendInstance(node, json);
+		i18n.loadNamespace(json.widget.set_id, function() {
+			insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
+			var node = insertWidgetInstance(json.id, json.widget);
+			DMW.grid.appendInstance(node, json);
+		});
 	}
 }
 
@@ -160,13 +145,13 @@ function configureHandler() {
 		link.setAttribute('id', "fileuploader");
 		link.setAttribute('rel', "stylesheet");
 		link.setAttribute('type', "text/css");
-		link.setAttribute('href', "/libraries/file-uploader/client/fileuploader.css")
+		link.setAttribute('href', "/libraries/file-uploader-2.0b/client/fileuploader.css")
 		document.head.appendChild(link);
 
 		var link = document.createElement('link');
 		link.setAttribute('rel', "stylesheet");
 		link.setAttribute('type', "text/css");
-		link.setAttribute('href', "/libraries/image-picker/image-picker/image-picker.css")
+		link.setAttribute('href', "/libraries/image-picker-0.2.4/image-picker/image-picker.css")
 		document.head.appendChild(link);
 	}
 
@@ -183,14 +168,13 @@ function configureHandler() {
 				var cancelConfig = DMW.main.modalOverlay.querySelector('#cancelConfig');
 				var formConfig = DMW.main.modalOverlay.querySelector('#formConfig');
 			    var section = document.getElementById('currentsection');
-
 				saveConfig.addEventListener("click",
 					function(e) {
 						if (gridParametersCheck()) {
-							DMW.main.ajax.setAttribute('body', serialize(formConfig));
+							DMW.main.ajax.setAttribute('body', $(formConfig).serialize());
 							DMW.main.ajax.setAttribute('method', 'POST');
 							DMW.main.ajax.setAttribute('params', '{"action":"section", "id":"' + DMW.main.section.sectionid + '"}');
-							DMW.main.ajax.go();							
+							DMW.main.ajax.go();
 						}
 						e.preventDefault();
 						e.stopPropagation();
@@ -212,25 +196,7 @@ function configureHandler() {
 					element.addEventListener('change', onWidgetStyleChange);
 				});
 
-				$.getScript("/libraries/image-picker/image-picker/image-picker.min.js", function() {
-					// Background selector
-					$("#SectionBackgroundImageUploaded").imagepicker();
-				});
-
-				$.getScript('/libraries/file-uploader/client/fileuploader.js', function() {
-					// Upload button
-					var uploader = new qq.FileUploader({
-	                    element: document.getElementById('file-uploader-background'),
-	                    action: '/upload',
-	                    onComplete: function(id, fileName, responseJSON){
-	                    	$("#SectionBackgroundImageUploaded").append("<option data-img-src='/backgrounds/thumbnails/" + fileName + "' value='" + fileName + "'>" + fileName + "</option>");
-	                    	$("#SectionBackgroundImageUploaded").imagepicker();
-	                    },
-	                });           
-
-				});
-
-				// Init preview
+				// Init Widget Preview
 				var widgetpreview = document.getElementById('widgetpreview');
 				widgetpreview.style.color = document.getElementById('params-WidgetTextColor').value;
 				widgetpreview.style.borderColor = document.getElementById('params-WidgetBorderColor').value;
@@ -243,9 +209,93 @@ function configureHandler() {
 					input.addEventListener('click', gridModeSwitch, false);
 				});
 
-				// Grid check values				
+				// Grid check values
 				document.querySelectorAll('.gridParam input').forEach(function(param) {
 					param.addEventListener("change", gridParameterChange, false);
+				});
+
+				// Background
+				var sectionBackgroundCSS = document.getElementById('SectionBackgroundCSS'),
+				backgroundPreview = document.getElementById('backgroundpreview'),
+				imagePreview = document.getElementById('imagepreview');
+
+				// Gradient generator
+				var generator = new ColorfulBackgroundGenerator();
+				generator.addLayer(new ColorfulBackgroundLayer(315, section.params.SectionL0Hue, section.params.SectionL0Saturation, section.params.SectionL0Lightness, 100, 70));
+				generator.addLayer(new ColorfulBackgroundLayer(225, section.params.SectionL1Hue, section.params.SectionL1Saturation, section.params.SectionL1Lightness, 10, 80));
+				generator.addLayer(new ColorfulBackgroundLayer(135, section.params.SectionL2Hue, section.params.SectionL2Saturation, section.params.SectionL2Lightness, 10, 80))
+				generator.addLayer(new ColorfulBackgroundLayer(45, section.params.SectionL3Hue, section.params.SectionL3Saturation, section.params.SectionL3Lightness, 0, 70));
+				// Assign generated style to the element identified by it's id
+				if (!sectionBackgroundCSS.value) gradientHandler(generator, 'backgroundpreview');
+
+				sectionBackgroundCSS.addEventListener('change', function(e) {
+					if (sectionBackgroundCSS.value) {
+						backgroundPreview.style.background = sectionBackgroundCSS.value;
+					} else {
+						gradientHandler(generator, 'backgroundpreview');
+					}
+				}, false);
+
+				document.querySelectorAll('input.gradient[type="range"]').forEach(function(input){
+					input.addEventListener('input', function(e) {
+						var index = e.target.getAttribute("id").substring(8, 9);
+						var value = e.target.getAttribute("id").substring(9);
+
+						var c = generator.getLayerByIndex(index);
+
+					    switch (value) {
+					        case "Hue":
+					            c.hue = e.target.value;
+					            break;
+					        case "Lightness":
+					            c.lightness = e.target.value;
+					            break;
+					        case "Saturation":
+					            c.saturation = e.target.value;
+					    }
+					    if (!sectionBackgroundCSS.value) generator.assignStyleToElementId('backgroundpreview');
+					});
+				})
+				document.getElementById('randomgradient').addEventListener('click', function(e) {
+					for (var a = generator.getNumberOfLayers() - 1; a >= 0; a--) {
+						generator.getLayerByIndex(a).hue = Math.ceil(359 * Math.random());
+						generator.getLayerByIndex(a).saturation = Math.ceil(10 * Math.random()) + 90;
+						generator.getLayerByIndex(a).lightness = Math.ceil(10 * Math.random()) + 40;
+					}
+					e.preventDefault();
+					e.stopPropagation();
+					if (!sectionBackgroundCSS.value) gradientHandler(generator, 'backgroundpreview');
+				}, false);
+
+				// Background selector
+				$.getScript("/libraries/image-picker-0.2.4/image-picker/image-picker.min.js", function() {
+					$("#SectionBackgroundImage").imagepicker({
+			          hide_select : true,
+			          changed  : function(oldValue, newValue) {
+			          	if (newValue != "none") {
+							imagePreview.style.backgroundImage = "url('" + newValue + "')";
+			          	} else {
+			          		imagePreview.style.backgroundImage = "none";
+			          	}
+			          }
+			        });
+				});
+
+				document.getElementById('SectionBackgroundOpacity').addEventListener('change', function(e){
+					imagePreview.style.opacity = e.target.value;
+				}, false);
+
+				$.getScript('/libraries/file-uploader/client/fileuploader.js', function() {
+					// Upload button
+					var uploader = new qq.FileUploader({
+	                    element: document.getElementById('file-uploader-background'),
+	                    action: '/upload',
+	                    onComplete: function(id, fileName, responseJSON){
+	                    	$("#SectionBackgroundImageUploaded").append("<option data-img-src='/backgrounds/thumbnails/" + fileName + "' value='" + fileName + "'>" + fileName + "</option>");
+	                    	$("#SectionBackgroundImageUploaded").imagepicker();
+	                    },
+	                });
+
 				});
 
 				// Display modal
@@ -257,12 +307,19 @@ function configureHandler() {
 	DMW.main.ajax.go();
 }
 
+function gradientHandler(generator, id) {
+	for (var a = generator.getNumberOfLayers() - 1; a >= 0; a--) {
+		document.getElementById("SectionL" + a + "Hue").value = generator.getLayerByIndex(a).hue;
+		document.getElementById("SectionL" + a + "Lightness").value = generator.getLayerByIndex(a).lightness;
+		document.getElementById("SectionL" + a + "Saturation").value = generator.getLayerByIndex(a).saturation;
+	}
+	generator.assignStyleToElementId(id);
+}
 function widgetsEditHandler() {
 	DMW.main.edit = true;
 	for (var i = 0; i < DMW.main.layout.children.length; i++) {
 		DMW.main.layout.children[i].setAttribute('edit', '');
 	}
-	DMW.grid.editChanged(DMW.main.edit);
 }
 
 function widgetsFinishHandler() {
@@ -270,7 +327,6 @@ function widgetsFinishHandler() {
 	for (var i = 0; i < DMW.main.layout.children.length; i++) {
 		DMW.main.layout.children[i].removeAttribute('edit');
 	}
-	DMW.grid.editChanged(DMW.main.edit);
 }
 
 function addWidgetHandler() {
@@ -295,7 +351,7 @@ function addSectionHandler() {
 				saveConfig.addEventListener("click",
 					function(e) {
 						if (gridParametersCheck()) {
-							DMW.main.ajax.setAttribute('body', serialize(form));
+							DMW.main.ajax.setAttribute('body', $(form).serialize());
 							DMW.main.ajax.setAttribute('method', 'POST');
 							DMW.main.ajax.setAttribute('params', '{"action":"addsection", "id":"' + DMW.main.section.sectionid + '"}');
 							DMW.main.ajax.go();
@@ -318,10 +374,62 @@ function addSectionHandler() {
 					input.addEventListener('click', gridModeSwitch, false);
 				});
 
-				// Grid check values				
+				// Grid check values
 				document.querySelectorAll('.gridParam input').forEach(function(param) {
 					param.addEventListener("change", gridParameterChange, false);
 				});
+
+				// Background
+				var sectionBackgroundCSS = document.getElementById('SectionBackgroundCSS'),
+				backgroundPreview = document.getElementById('backgroundpreview');
+
+				// Gradient generator
+				var generator = new ColorfulBackgroundGenerator();
+				generator.addLayer(new ColorfulBackgroundLayer(315, Math.ceil(359 * Math.random()), Math.ceil(10 * Math.random()) + 90, Math.ceil(10 * Math.random()) + 40, 100, 70));
+				generator.addLayer(new ColorfulBackgroundLayer(225, Math.ceil(359 * Math.random()), Math.ceil(10 * Math.random()) + 90, Math.ceil(10 * Math.random()) + 40, 10, 80));
+				generator.addLayer(new ColorfulBackgroundLayer(135, Math.ceil(359 * Math.random()), Math.ceil(10 * Math.random()) + 90, Math.ceil(10 * Math.random()) + 40, 10, 80))
+				generator.addLayer(new ColorfulBackgroundLayer(45, Math.ceil(359 * Math.random()), Math.ceil(10 * Math.random()) + 90, Math.ceil(10 * Math.random()) + 40, 0, 70));
+
+				// Assign generated style to the element identified by it's id
+				if (!sectionBackgroundCSS.value) gradientHandler(generator, 'backgroundpreview');
+
+				sectionBackgroundCSS.addEventListener('change', function(e) {
+					if (sectionBackgroundCSS.value) {
+						backgroundPreview.style.background = sectionBackgroundCSS.value;
+					} else {
+						gradientHandler(generator, 'backgroundpreview');
+					}
+				}, false);
+
+				document.querySelectorAll('input.gradient[type="range"]').forEach(function(input){
+					input.addEventListener('input', function(e) {
+						var index = e.target.getAttribute("id").substring(8, 9);
+						var value = e.target.getAttribute("id").substring(9);
+
+						var c = generator.getLayerByIndex(index);
+					        switch (value) {
+					        case "Hue":
+					            c.hue = e.target.value;
+					            break;
+					        case "Lightness":
+					            c.lightness = e.target.value;
+					            break;
+					        case "Saturation":
+					            c.saturation = e.target.value;
+					    }
+					    if (!sectionBackgroundCSS.value) generator.assignStyleToElementId('backgroundpreview');
+					}, false);
+				})
+				document.getElementById('randomgradient').addEventListener('click', function(e) {
+					for (var a = generator.getNumberOfLayers() - 1; a >= 0; a--) {
+						generator.getLayerByIndex(a).hue = Math.ceil(359 * Math.random());
+						generator.getLayerByIndex(a).saturation = Math.ceil(10 * Math.random()) + 90;
+						generator.getLayerByIndex(a).lightness = Math.ceil(10 * Math.random()) + 40;
+					}
+					e.preventDefault();
+					e.stopPropagation();
+					if (!sectionBackgroundCSS.value) gradientHandler(generator, 'backgroundpreview');
+				}, false);
 
 				// Display modal
 				DMW.main.modalOverlay.classList.add('on');
@@ -358,10 +466,10 @@ function gridParameterChange(e) {
 
 function gridParametersCheck() {
 	var type = document.querySelector('input[name="params-GridMode"]:checked').value;
-	var columns = document.getElementById('params-GridColumns').value;
-	var rows = document.getElementById('params-GridRows').value;
-	var widgetSize = document.getElementById('params-GridWidgetSize').value;
-	var widgetSpace = document.getElementById('params-GridWidgetSpace').value;
+	var columns = document.getElementById('GridColumns').value;
+	var rows = document.getElementById('GridRows').value;
+	var widgetSize = document.getElementById('GridWidgetSize').value;
+	var widgetSpace = document.getElementById('GridWidgetSpace').value;
 	var message = DMW.grid.checkValues(type, columns, rows, widgetSize, widgetSpace);
 	document.getElementById('gridMessage').innerHTML = message;
 	if (message.indexOf('Info') === 0) {
@@ -385,24 +493,24 @@ function removeSectionHandler() {
 
 function onWidgetStyleChange(e) {
 	var widgetpreview = document.getElementById('widgetpreview');
-	
+
 	switch(e.target.id) {
-	    case 'params-WidgetTextColor':
+	    case 'WidgetTextColor':
 	    	widgetpreview.style.color = e.target.value;
 	        break;
-	    case 'params-WidgetBorderColor':
+	    case 'WidgetBorderColor':
 		    widgetpreview.style.borderColor = e.target.value;
 	        break;
-	    case 'params-WidgetBackgroundColor':
+	    case 'WidgetBackgroundColor':
 	    	widgetpreview.style.backgroundColor = e.target.value;
 	        break;
-	    case 'params-WidgetBorderRadius':
+	    case 'WidgetBorderRadius':
 		    widgetpreview.style.borderRadius = e.target.value;
 	        break;
-	    case 'params-WidgetBoxShadow':
+	    case 'WidgetBoxShadow':
 		    widgetpreview.style.boxShadow = e.target.value;
 	        break;
-	} 
+	}
 }
 var websocketConnection = null;
 function websocketConnected(e) {
@@ -413,7 +521,7 @@ function websocketConnected(e) {
 		  position: "center",
 		  width: "all",
 		  height: 60,
-		});		
+		});
 	}
 	websocketConnection = true;
 }

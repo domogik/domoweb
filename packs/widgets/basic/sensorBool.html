@@ -1,56 +1,60 @@
 <polymer-element name="dmw-basic-sensorBool" extends="dmw-widget">
-	<template>
-		<link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
-		<style type="text/css">
-			:host {
-				height: 100%;
-			}
-			#bool {
-				position: relative;
-				top: 50%;
-				-webkit-transform: translateY(-50%);
-				-ms-transform: translateY(-50%);
-				transform: translateY(-50%);
-	  			text-align: center;
-				font-size: 4em;
-			}
-			.glyphicon {
-				line-height: inherit;
-			}
-			#bool.true {
-				color: #5cb85c;
-			}
-			#bool.false {
-				color: #d9534f;
-			}
-		</style>
-	    <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
-		<shadow></shadow>
-		<div id='bool'><span id='boolicon' class='glyphicon glyphicon-question-sign'></span><span class='sr-only'>{{booltext}}</span></div>
-	</template>
-	<script>
-		Polymer('dmw-basic-sensorBool', {
-			ready: function() {
-				this.super();
-			},
-			sensorsUpdated: function() {
-				if (this.$.primary.isSet) {
-					this.labelprimary = this.$.primary.device['name'];
-					this.labelsecondary = this.$.primary.name;
-				}
-			},
-			sensorvalueChanged: function(oldValue, newValue) {
-				this.booltext = i18n.t("domoweb:bool." + newValue, { context: this.$.primary.datatype_id });
-				if (newValue == 1) {
-					this.$.boolicon.className = 'glyphicon glyphicon-ok';
-					this.$.bool.classList.add('true');
-					this.$.bool.classList.remove('false');
-				} else if (newValue == 0) {
-					this.$.boolicon.className = 'glyphicon glyphicon-remove';
-					this.$.bool.classList.add('false');
-					this.$.bool.classList.remove('true');
-				}
-			}
-		});
-	</script>
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            #bool {
+                position: relative;
+                top: 50%;
+                -webkit-transform: translateY(-50%);
+                -ms-transform: translateY(-50%);
+                transform: translateY(-50%);
+                  text-align: center;
+                font-size: 2em;
+            }
+            .glyphicon {
+                line-height: inherit;
+            }
+            #bool.true {
+                color: #5cb85c;
+            }
+            #bool.false {
+                color: #d9534f;
+            }
+        </style>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <shadow></shadow>
+        <div id='bool'>
+          <span id='boolicon' class='glyphicon glyphicon-question-sign' aria-label='{{booltext}}'>{{booltext}}</span>
+        </div>
+    </template>
+    <script>
+        Polymer('dmw-basic-sensorBool', {
+            ready: function() {
+                this.super();
+            },
+            sensorsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                }
+            },
+            sensorvalueChanged: function(oldValue, newValue) {
+                this.booltext = i18n.t("domoweb:bool." + newValue, { context: this.$.primary.datatype_id });
+                this.$.boolicon.className = '';
+
+                if (newValue == 1) {
+                    //this.$.boolicon.className = 'glyphicon glyphicon-ok';
+                    this.$.bool.classList.add('true');
+                    this.$.bool.classList.remove('false');
+                } else if (newValue == 0) {
+                    //this.$.boolicon.className = 'glyphicon glyphicon-remove';
+                    this.$.bool.classList.add('false');
+                    this.$.bool.classList.remove('true');
+                }
+            }
+        });
+    </script>
 </polymer-element>

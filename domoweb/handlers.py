@@ -49,12 +49,16 @@ class ConfigurationHandler(RequestHandler):
         elif action=='section':
             section = Section.get(id)
             params = Section.getParamsDict(id)
-            themeStyle = Theme.getParamsDict(section.theme.id, ["widget"])
+            themeWidgetsStyle = Theme.getParamsDict(section.theme.id, ["widget"])
             options = SectionParam.getSection(section_id=id)
             dataOptions = dict([(r.key, r.value) for r in options])
             widgetForm = WidgetStyleForm(data=dataOptions, prefix='params')
-            backgrounds = [f for f in os.listdir('/var/lib/domoweb/backgrounds') if any(f.lower().endswith(x) for x in ('.jpeg', '.jpg','.gif','.png'))]
-            self.render('sectionConfiguration.html', section=section, params=params, backgrounds=backgrounds, widgetForm=widgetForm, themeStyle=themeStyle)
+            backgrounds = [{'type':'uploaded', 'href': 'backgrounds/thumbnails/%s'%f, 'value': 'backgrounds/%s'%f} for f in os.listdir('/var/lib/domoweb/backgrounds') if any(f.lower().endswith(x) for x in ('.jpeg', '.jpg','.gif','.png'))]
+            themeSectionStyle = Theme.getParamsDict(section.theme.id, ["section"])
+            if 'SectionBackgroundImage' in themeSectionStyle:
+                href = "%s/thumbnails/%s" % (os.path.dirname(themeSectionStyle['SectionBackgroundImage']), os.path.basename(themeSectionStyle['SectionBackgroundImage']))
+                backgrounds.insert(0, {'type': 'theme', 'href': href, 'value': themeSectionStyle['SectionBackgroundImage']})
+            self.render('sectionConfiguration.html', section=section, params=params, backgrounds=backgrounds, widgetForm=widgetForm, themeWidgetsStyle=themeWidgetsStyle)
         elif action=='addsection':
             self.render('sectionAdd.html')
 
@@ -87,11 +91,14 @@ class ConfigurationHandler(RequestHandler):
                 self.render('widgetConfiguration.html', instance=instance, forms=forms)
         elif action=='section':
             Section.update(id, self.get_argument('sectionName'), self.get_argument('sectionDescription', None))
+            section = Section.get(id)
+            themeSectionStyle = Theme.getParamsDict(section.theme.id, ["section"])
 
             widgetForm = WidgetStyleForm(handler=self, prefix='params')
+
             for p, v in self.request.arguments.iteritems():
                 if p.startswith( 'params' ):
-                    if v[0]:
+                    if v[0] and not (p[0] == 'params-SectionBackgroundImage' and v[0] == themeSectionStyle['SectionBackgroundImage']):
                         SectionParam.saveKey(section_id=id, key=p[7:], value=v[0])
                     else:
                         SectionParam.delete(section_id=id, key=p[7:])

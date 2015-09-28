@@ -9,14 +9,16 @@
 			<!-- Navigation Buttons -->
 			<div class="col-sm-3 col-nav">
 				<ul class="nav nav-pills nav-stacked" role="tablist">
-					<li class="active"><a href="#details" role="tab" data-toggle="tab">Details</a></li>
+					<li class="active"><a href="#section" role="tab" data-toggle="tab">Section</a></li>
+        		  	<li><a href="#grid" role="tab" data-toggle="tab">Grid</a></li>
+		          	<li><a href="#background" role="tab" data-toggle="tab">Background</a></li>
 				</ul>
 			</div>
 			<!-- Content -->
 			<div class="col-sm-6">
 				<!-- Tab panes -->
 				<div class="tab-content">
-					<div class="tab-pane active" id="details">
+					<div class="tab-pane active" id="section">
 						<div class="form-group">
 							<label for="sectionName">Section name</label>
 							<input type="text" class="form-control" id="sectionName" name="sectionName" placeholder="Enter Section name">
@@ -25,8 +27,9 @@
 							<label for="sectionDescription">Description</label>
 							<input type="text" class="form-control" id="sectionDescription" name="sectionDescription" placeholder="Enter Section description">
 						</div>
-						<fieldset class="form-group">
-							<legend>Grid size</legend>
+					</div>
+					<div class="tab-pane" id="grid">
+						<div class="form-group">
 							<p>A combination of 2 parameters is needed</p>
 							<p id="gridMessage"></p>
 							<ul>
@@ -35,30 +38,106 @@
 								<li><input type="radio" class="gridType" name="params-GridMode" value="3" checked="checked" />Widget size + Widget space</li>
 							</ul>
 							<div class="col-xs-4 gridParam gridParamMode1 gridParamMode2" style="display:none">
-								<label for="params-GridColumns">Columns</label>
-								<input type="text" class="form-control" id="params-GridColumns" name="params-GridColumns"/>
+								<label for="GridColumns">Columns</label>
+								<input type="text" class="form-control" id="GridColumns" name="params-GridColumns"/>
 							</div>
 							<div class="col-xs-4 gridParam gridParamMode1 gridParamMode2" style="display:none">
-								<label for="params-GridRows">Rows</label>
-								<input type="text" class="form-control" id="params-GridRows" name="params-GridRows"/>
+								<label for="GridRows">Rows</label>
+								<input type="text" class="form-control" id="GridRows" name="params-GridRows"/>
 							</div>
 							<div class="col-xs-4 gridParam gridParamMode1 gridParamMode3">
-								<label for="params-GridWidgetSize">Base widget size (px)</label>
-								<input type="text" class="form-control" id="params-GridWidgetSize" name="params-GridWidgetSize" value="100"/>
+								<label for="GridWidgetSize">Base widget size (px)</label>
+								<input type="text" class="form-control" id="GridWidgetSize" name="params-GridWidgetSize" value="100"/>
 							</div>
 							<div class="col-xs-4 gridParam gridParamMode2 gridParamMode3">
-								<label for="params-GridWidgetSpace">Space between widgets (px)</label>
-								<input type="text" class="form-control" id="params-GridWidgetSpace" name="params-GridWidgetSpace" value="20"/>
+								<label for="GridWidgetSpace">Space between widgets (px)</label>
+								<input type="text" class="form-control" id="GridWidgetSpace" name="params-GridWidgetSpace" value="20"/>
 							</div>
-						</fieldset>
+						</div>
 					</div>
+          <div class="tab-pane" id="background">
+            <div class="form-group">
+              <h2 class="panel-title">Preview</h2>
+              <div id="backgroundpreview"></div>
+              <h2 class="panel-title">Gradient</h2>
+              <button class="btn btn-default" id="randomgradient">Random</button>
+              <fieldset class="form-inline">
+                  <div class="form-group">
+                    <legend>Layer 1: </legend>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL0Hue">hue</label>
+                    <input id="SectionL0Hue" name="params-SectionL0Hue" class="gradient" type="range" min="0" max="359" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL0Saturation">saturation</label>
+                    <input id="SectionL0Saturation" name="params-SectionL0Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL0Lightness">lightness</label>
+                    <input id="SectionL0Lightness" name="params-SectionL0Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+              </fieldset>
+              <fieldset class="form-inline">
+                  <div class="form-group">
+                    <legend>Layer 2: </legend>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL1Hue">hue</label>
+                    <input id="SectionL1Hue" name="params-SectionL1Hue" class="gradient" type="range" min="0" max="359" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL1Saturation">saturation</label>
+                    <input id="SectionL1Saturation" name="params-SectionL1Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL1Lightness">lightness</label>
+                    <input id="SectionL1Lightness" name="params-SectionL1Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+              </fieldset>
+              <fieldset class="form-inline">
+                  <div class="form-group">
+                    <legend>Layer 3: </legend>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL2Hue">hue</label>
+                    <input id="SectionL2Hue" name="params-SectionL2Hue" class="gradient" type="range" min="0" max="359" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL2Saturation">saturation</label>
+                    <input id="SectionL2Saturation" name="params-SectionL2Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL2Lightness">lightness</label>
+                    <input id="SectionL2Lightness" name="params-SectionL2Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+              </fieldset>
+              <fieldset class="form-inline">
+                  <div class="form-group">
+                    <legend>Layer 4: </legend>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL3Hue">hue</label>
+                    <input id="SectionL3Hue" name="params-SectionL3Hue" class="gradient" type="range" min="0" max="359" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL3Saturation">saturation</label>
+                    <input id="SectionL3Saturation" name="params-SectionL3Saturation" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+                  <div class="form-group">
+                    <label for="SectionL3Lightness">lightness</label>
+                    <input id="SectionL3Lightness" name="params-SectionL3Lightness" class="gradient" type="range" min="0" max="100" step="1"/>
+                  </div>
+              </fieldset>
+              <h2 class="panel-title"><label for="SectionBackgroundCSS">Raw Color</label></h2>
+              <input type="text" class="form-control" id="SectionBackgroundCSS" name="params-SectionBackgroundCSS" placeholder="Enter color value">
 				</div>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-sm-offset-3 col-sm-6">
 				<button id="saveConfig" class="btn btn-primary">Save</button>
-				<button id="cancelConfig" class="btn">Cancel</button>
+				<button id="cancelConfig" class="btn btn-default">Cancel</button>
 			</div>
 		</div>
 	</form>

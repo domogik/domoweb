@@ -1,74 +1,75 @@
 <polymer-element name="dmw-basic-commandBool" extends="dmw-widget">
-	<template>
-		<link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
-		<style type="text/css">
-			:host {
-				height: 100%;
-			}
-			button#send {
-				display: block;
-				width: 80%;
-				height: 80%;
-				margin: 10%;
-				color: #000000;
-			}
-			button#send.true {
-				background: #5cb85c;
-				color: #ffffff;
-			}
-			button#send.false {
-				background: #d9534f;
-				color: #ffffff;
-			}
-		</style>
-	    <dmw-command id="primary" commandkey="primary"></dmw-command>
-	    <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}"></dmw-sensor>
-		<shadow></shadow>
-		<button id="send" class="btn">{{sendtext}}</button>
-	</template>
-	<script>
-		Polymer('dmw-basic-commandBool', {
-			ready: function() {
-				this.super();
-				this.boolstate = null;
-				this.nextValue = 1;
-			},
-			sensorsUpdated: function() {
-				if (this.$.boolstate.isSet) {
-					this.hasFeedback = true;
-				}
-			},
-			commandsUpdated: function() {
-				if (this.$.primary.isSet) {
-					this.labelprimary = this.$.primary.device['name'];
-					this.labelsecondary = this.$.primary.name;
-					this.sendtext = i18n.t("domoweb:bool.0", { context: this.$.primary.parameters[0]['datatype_id'] });
-					this.$.send.addEventListener('click', this.send.bind(this));					
-				}
-			},
-			send: function(e) {
-				var parameters = {};
-				parameters[this.$.primary.parameters[0]['key']] = this.nextValue;
-				this.$.primary.send(parameters);
-				e.preventDefault();
-				e.stopPropagation();
-				if (!this.hasFeedback) { //If no feedback sensor, we assume ok
-					this.boolstate = this.nextValue;
-				}
-			},
-			boolstateChanged: function(oldValue, newValue) {
-				var currentvalue = parseInt(newValue);
-				if (currentvalue == 1) {
-					this.nextValue = 0;
-					this.$.send.classList.add('true');
-					this.$.send.classList.remove('false');
-				} else {
-					this.nextValue = 1;
-					this.$.send.classList.add('false');
-					this.$.send.classList.remove('true');
-				}
-				this.sendtext = i18n.t("domoweb:bool." + currentvalue, { context: this.$.primary.parameters[0]['datatype_id'] });
-			}
-		});
-	</script>
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            button#send {
+                display: block;
+                border-style: none;
+                width: 80%;
+                height: 80%;
+                margin: 10%;
+                color: #000000;
+            }
+            button#send.true {
+                background: #5cb85c;
+                color: #ffffff;
+            }
+            button#send.false {
+                background: #d9534f;
+                color: #ffffff;
+            }
+        </style>
+        <dmw-command id="primary" commandkey="primary"></dmw-command>
+        <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}"></dmw-sensor>
+        <shadow></shadow>
+        <button id="send" class="btn">{{sendtext}}</button>
+    </template>
+    <script>
+        Polymer('dmw-basic-commandBool', {
+            ready: function() {
+                this.super();
+                this.boolstate = null;
+                this.nextValue = 1;
+            },
+            sensorsUpdated: function() {
+                if (this.$.boolstate.isSet) {
+                    this.hasFeedback = true;
+                }
+            },
+            commandsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                    this.sendtext = i18n.t("domoweb:bool.0", { context: this.$.primary.parameters[0]['datatype_id'] });
+                    this.$.send.addEventListener('click', this.send.bind(this));                    
+                }
+            },
+            send: function(e) {
+                var parameters = {};
+                parameters[this.$.primary.parameters[0]['key']] = this.nextValue;
+                this.$.primary.send(parameters);
+                e.preventDefault();
+                e.stopPropagation();
+                if (!this.hasFeedback) { //If no feedback sensor, we assume ok
+                    this.boolstate = this.nextValue;
+                }
+            },
+            boolstateChanged: function(oldValue, newValue) {
+                var currentvalue = parseInt(newValue);
+                if (currentvalue == 1) {
+                    this.nextValue = 0;
+                    this.$.send.classList.add('true');
+                    this.$.send.classList.remove('false');
+                } else {
+                    this.nextValue = 1;
+                    this.$.send.classList.add('false');
+                    this.$.send.classList.remove('true');
+                }
+                this.sendtext = i18n.t("domoweb:bool." + currentvalue, { context: this.$.primary.parameters[0]['datatype_id'] });
+            }
+        });
+    </script>
 </polymer-element>

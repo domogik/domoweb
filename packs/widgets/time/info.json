@@ -14,7 +14,7 @@
             "name" : "FlipClock",
             "description" : "Based on flipclockjs.com library",
             "height" : 1,
-            "width" : 6,
+            "width" : 4,
             "options" : {
                 "12hr" : {
                     "name": "Display in 12hr mode",
@@ -28,7 +28,7 @@
             "name" : "Digital Clock",
             "description" : "Based on http://tutorialzine.com/2013/06/digital-clock/",
             "height" : 1,
-            "width" : 4,
+            "width" : 3,
             "options" : {
                 "dark" : {
                     "name": "Dark theme",
