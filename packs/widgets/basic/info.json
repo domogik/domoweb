@@ -27,7 +27,7 @@
                     "name": "Number",
                     "description": "Number sensor",
                     "types" : ["DT_Number"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
@@ -40,7 +40,7 @@
                     "name": "Bool",
                     "description": "Bool sensor",
                     "types" : ["DT_Bool"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
@@ -54,7 +54,7 @@
                     "types" : [
                         ["DT_String"]
                     ],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
@@ -76,7 +76,7 @@
                     "types" : [
                         ["DT_Bool"]
                     ],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
@@ -98,7 +98,7 @@
                     "types" : [
                         ["DT_Scaling"]
                     ],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
@@ -119,7 +119,7 @@
                     "name": "Number",
                     "description": "Number sensor",
                     "types" : ["DT_Number"],
-                    "required": true                   
+                    "required": true
                 }
             }
         }

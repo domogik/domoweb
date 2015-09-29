@@ -32,7 +32,7 @@
             ready: function() {
                 this.super();
                 this.boolstate = null;
-                this.nextValue = 1;
+                this.currentValue = 0;
             },
             sensorsUpdated: function() {
                 if (this.$.boolstate.isSet) {
@@ -43,32 +43,32 @@
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
-                    this.sendtext = i18n.t("domoweb:bool.0", { context: this.$.primary.parameters[0]['datatype_id'] });
-                    this.$.send.addEventListener('click', this.send.bind(this));                    
+                    this.sendtext = i18n.t("domoweb:bool." + this.currentvalue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                    this.$.send.addEventListener('click', this.send.bind(this));
                 }
             },
             send: function(e) {
                 var parameters = {};
-                parameters[this.$.primary.parameters[0]['key']] = this.nextValue;
+                parameters[this.$.primary.parameters[0]['key']] = !this.currentValue;
                 this.$.primary.send(parameters);
                 e.preventDefault();
                 e.stopPropagation();
                 if (!this.hasFeedback) { //If no feedback sensor, we assume ok
-                    this.boolstate = this.nextValue;
+                    this.boolstate = !this.currentValue;
                 }
             },
             boolstateChanged: function(oldValue, newValue) {
-                var currentvalue = parseInt(newValue);
-                if (currentvalue == 1) {
-                    this.nextValue = 0;
+                this.currentvalue = parseInt(newValue);
+                if (this.currentvalue == 1) {
                     this.$.send.classList.add('true');
                     this.$.send.classList.remove('false');
                 } else {
-                    this.nextValue = 1;
                     this.$.send.classList.add('false');
                     this.$.send.classList.remove('true');
                 }
-                this.sendtext = i18n.t("domoweb:bool." + currentvalue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                if (this.$.primary.isSet) {
+                    this.sendtext = i18n.t("domoweb:bool." + this.currentvalue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                }
             }
         });
     </script>
