@@ -43,23 +43,24 @@
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
-                    this.sendtext = i18n.t("domoweb:bool." + this.currentvalue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                    this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
                     this.$.send.addEventListener('click', this.send.bind(this));
                 }
             },
             send: function(e) {
                 var parameters = {};
-                parameters[this.$.primary.parameters[0]['key']] = !this.currentValue;
+                var nextValue = (this.currentValue == 1?0:1);
+                parameters[this.$.primary.parameters[0]['key']] = nextValue;
                 this.$.primary.send(parameters);
                 e.preventDefault();
                 e.stopPropagation();
                 if (!this.hasFeedback) { //If no feedback sensor, we assume ok
-                    this.boolstate = !this.currentValue;
+                    this.boolstate = nextValue;
                 }
             },
             boolstateChanged: function(oldValue, newValue) {
-                this.currentvalue = parseInt(newValue);
-                if (this.currentvalue == 1) {
+                this.currentValue = parseInt(newValue);
+                if (this.currentValue == 1) {
                     this.$.send.classList.add('true');
                     this.$.send.classList.remove('false');
                 } else {
@@ -67,7 +68,7 @@
                     this.$.send.classList.remove('true');
                 }
                 if (this.$.primary.isSet) {
-                    this.sendtext = i18n.t("domoweb:bool." + this.currentvalue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                    this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
                 }
             }
         });
