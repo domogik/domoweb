@@ -10,7 +10,7 @@ Two components are needed to install Domoweb :
 * **domogik-mq** : the message queue component used by all components which want/need to use the message queue (Domogik, Domoweb, ...)
 * **domoweb**
 
-Only if you don't install Domoweb on the same server as Domogik, install domogik-mq. Please do as you did for Domogik-mq installation during installing Domogik and just set the install as *client* instead of *master*.
+You have to install Domogik-mq only if you don't install Domoweb on the same server as Domogik. Please do as you did for Domogik-mq installation during installing Domogik and just set the install as *client* instead of *master*.
 
 .. note::
     The following commands assume that you are using the **/opt/dmg/** folder as the root folder for Domoweb. And so Domoweb will be installed in the */opt/dmg/domoweb/* folder.
@@ -178,7 +178,7 @@ Start Domoweb
 
     sudo /etc/init.d/domoweb start
 
-Now, you can access UI on this url : http://127.0.0.1:40404/(external link)
+Now, you can access UI on this url : http://127.0.0.1:40404/
 
     
 Uninstall
