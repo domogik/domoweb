@@ -2,52 +2,33 @@
 Installation
 ============
 
-Get the sources
-===============
+Get the packages
+================
 
-Repository versions
--------------------
-.. note:: The repository installation require git to be installed.
-
-Two components are needed to install domogik : 
+Two components are needed to install Domoweb : 
 
 * **domogik-mq** : the message queue component used by all components which want/need to use the message queue (Domogik, Domoweb, ...)
 * **domoweb**
 
-Git is used to get the sources (be sure that your user is able to create some directories where you will clone the sources).
+Only if you don't install Domoweb on the same server as Domogik, install domogik-mq. Please do as you did for Domogik-mq installation during installing Domogik and just set the install as *client* instead of *master*.
 
-Download Domogik-mq :
-
-.. code-block:: bash
-
-    $ cd /opt/
-    $ git clone https://github.com/domogik/domogik-mq.git
-    $ cd domogik-mq
-    $ git checkout master
-
-Install Domogik-mq :
-
-.. code-block:: bash
-
-    $ cd domogik-mq
-    $ sudo ./install.py
+.. note::
+    The following commands assume that you are using the **/opt/dmg/** folder as the root folder for Domoweb. And so Domoweb will be installed in the */opt/dmg/domoweb/* folder.
 
 Download Domoweb :
 
 .. code-block:: bash
 
-    $ git clone https://github.com/domogik/domoweb.git
+    $ cd /opt/dmg
+    $ wget --content-disposition https://github.com/domogik/domoweb/archive/0.4.0.tar.gz
+    $ tar xvzf domoweb-0.4.0.tar.gz
+    $ ln -s domoweb-0.4.0 domoweb
     $ cd domoweb
-    $ git submodule update --init --recursive
 
 Launch the installation script
 ==============================
-The folder where you run install.py will become the final domoweb folder.
-So if you want to make a clean install of domoweb you should copy Domoweb to his final place before running the install script. ::
 
-    sudo mv domoweb /usr/share
-
-Then run the install script.
+Run the install script.
 If needed the install script provide options: ::
 
     $ sudo python install.py -h
@@ -181,7 +162,6 @@ The final test to check the Domoweb installation. ::
     ==>             or /etc/rc.d/domoweb start             <==  
     ==>  DomoWeb UI is available on                        <==  
     ==>                            http://127.0.0.1:40404/ <==  
-    ==>  Default login is 'admin', password is '123'       <==  
     ==> ================================================== <==
 
 Make Domoweb start with your computer
@@ -200,10 +180,6 @@ Start Domoweb
 
 Now, you can access UI on this url : http://127.0.0.1:40404/(external link)
 
-To access to the administration panel :
-
-    login : admin
-    password : 123
     
 Uninstall
 =========
