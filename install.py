@@ -324,12 +324,12 @@ def install_dependencies():
         'simplejson >= 1.9.2',
         'WTForms >= 2.0',
         'WTForms-Components',
-        'pillow',
+        'pillow < 3.0.0',
         'pyzmq'
     ])
 
 #    pkg_resources.get_distribution('django').activate()
-    
+
 def updateDb(user, db):
     from domoweb.models import metadata, engine, Session, Section, SectionParam
     from sqlalchemy import create_engine, func
@@ -343,7 +343,7 @@ def updateDb(user, db):
         command.stamp(alembic_cfg, "head")
         uid = pwd.getpwnam(user).pw_uid
         os.chown(db, uid, -1)
-        
+
         ok("Adding initial data")
         session = Session()
         s = Section(name=unicode('Root'), description=unicode('Root dashboard'), left=1, right=2)
@@ -351,6 +351,8 @@ def updateDb(user, db):
         p = SectionParam(section_id=1, key='GridWidgetSize', value='100')
         session.add(p)
         p = SectionParam(section_id=1, key='GridWidgetSpace', value='20')
+        session.add(p)
+        p = SectionParam(section_id=1, key='GridMode', value='3')
         session.add(p)
         session.commit()
     else:
@@ -364,6 +366,8 @@ def updateDb(user, db):
                 p = SectionParam(section_id=s.id, key='GridWidgetSize', value='100')
                 session.add(p)
                 p = SectionParam(section_id=s.id, key='GridWidgetSpace', value='20')
+                session.add(p)
+                p = SectionParam(section_id=s.id, key='GridMode', value='3')
                 session.add(p)
                 session.commit()
 
