@@ -234,8 +234,10 @@
 					var sensor = json['sensors'][key];
 					var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
 					if (dmwsensor) {
-						dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
-						dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
+						if (this.options['WidgetSensorTimeout'] == 1) {
+							dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
+							dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
+						}
 						dmwsensor.init(sensor);
 					}
 				}
@@ -267,8 +269,10 @@
 							var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
 							if (dmwsensor) {
 								dmwsensor.init(device['sensors'][key]);
-								dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
-								dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
+								if (this.options['WidgetSensorTimeout'] == 1) {
+									dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
+									dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
+								}
 							}
 						}
 					}

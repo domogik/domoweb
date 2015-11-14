@@ -140,7 +140,7 @@ class ParametersForm(wtforms.Form):
         else:
             choices += [(unicode(g[2]), g[3]) for g in queryset]
         setattr(cls, key, SelectField(label, validators=validators, choices=choices, description=help_text))
-    
+
     @classmethod
     def addGroupModelChoiceField(cls, key, label, queryset, group_by_field, empty_label, min, max, help_text=None):
         from itertools import groupby
@@ -406,6 +406,7 @@ class WidgetDevicesForm(ParametersForm):
             WidgetInstanceDevice.saveKey(instance_id=self.instance.id, key=key, device_id=value)
 
 class WidgetGeneralForm(Form):
+    WidgetSensorTimeout = BooleanField(u'Sensor Timeout', default=True, description=u'Enable widget sensor timeout check')
     debug = BooleanField(u'Debug', default=False, description=u'Enable widget debug mode')
 
 class WidgetStyleForm(Form):
