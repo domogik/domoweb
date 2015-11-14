@@ -1,0 +1,49 @@
+<polymer-element name="dmw-basic-commandTrigger" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            button#send {
+                display: block;
+                border-style: none;
+                width: 80%;
+                height: 80%;
+                margin: 10%;
+                background: #4671BD;
+                color: #ffffff;
+                cursor: pointer;
+            }
+            button#send:active {
+                background: #D73032;
+                color: #ffffff;
+            }
+        </style>
+        <dmw-command id="primary" commandkey="primary"></dmw-command>
+        <shadow></shadow>
+        <button id="send" class="btn btn-default">{{sendtext}}</button>
+    </template>
+    <script>
+        Polymer('dmw-basic-commandTrigger', {
+            ready: function() {
+                this.super();
+            },
+            commandsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                    this.sendtext = i18n.t("basic:trigger");
+                    this.$.send.addEventListener('click', this.send.bind(this));
+                }
+            },
+            send: function(e) {
+                var parameters = {};
+                parameters[this.$.primary.parameters[0]['key']] = 1;
+                this.$.primary.send(parameters);
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+    </script>
+</polymer-element>

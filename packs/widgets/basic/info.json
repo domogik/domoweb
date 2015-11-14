@@ -80,6 +80,20 @@
                 }
             }
         },
+        "commandTrigger": {
+            "name" : "Command Trigger",
+            "height" : 1,
+            "width" : 1,
+            "commands" : {
+                "primary" : {
+                    "name": "Trigger",
+                    "types" : [
+                        ["DT_Trigger"]
+                    ],
+                    "required": true
+                }
+            }
+        },
         "commandRange": {
             "name" : "Command Range",
             "height" : 1,
