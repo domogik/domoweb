@@ -55,7 +55,7 @@
 					if (diff > this.checkdelay) { // If the sensor already timed out
 				        this.fire('sensor-timeout', {'minutes': diff.humanize()});
 				        this.intervalid = window.setInterval(this.intervalHandler.bind(this), this.recheckdelay); // adjust time every 1 minute
-					}					
+					}
 				}
 		    },
 		    getLast: function(num) {
@@ -94,7 +94,7 @@
 		        	delete this.timeoutid;
 		    	}
 		    	// and replace it with regular recheck
-		        this.intervalid = window.setInterval(this.intervalHandler.bind(this), this.recheckdelay); // adjust time every 1 minute 	
+		        this.intervalid = window.setInterval(this.intervalHandler.bind(this), this.recheckdelay); // adjust time every 1 minute
 		    },
 		    intervalHandler: function() {
 				var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));

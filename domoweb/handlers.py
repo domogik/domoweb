@@ -299,7 +299,7 @@ class WSHandler(websocket.WebSocketHandler):
         response = yield http.fetch(url)
         j = json_decode(response.body)
         try:
-            history = j['values']
+            history = j
         except ValueError:
             history = []
         json = {'caller':data['caller'], 'id':data['id'], 'history':history}
