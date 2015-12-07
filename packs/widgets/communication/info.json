@@ -1,0 +1,28 @@
+{
+    "json_version" : 1,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "communication",
+        "version" : 1,
+        "name" : "Communication",
+        "description" : "Dedicated widgets for communication",
+        "author" : "Ferllings",
+        "author_email" : "cedric@domogik.org"
+    },
+    "widgets": {
+        "phoneCalls": {
+            "name" : "Phone Calls",
+            "description" : "List of phone calls",
+            "height" : 1,
+            "width" : 3,
+            "sensors" : {
+                "primary" : {
+                    "name": "Caller id",
+                    "description": "Caller id",
+                    "types" : ["DT_String"],
+                    "required": true
+                }
+            }
+        }
+    }
+}

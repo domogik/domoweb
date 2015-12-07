@@ -1,0 +1,73 @@
+<polymer-element name="dmw-communication-phoneCalls" extends="dmw-widget">
+	<template>
+		<style type="text/css">
+			:host {
+				height: 100%;
+			}
+            #icon_phone {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                width: 38px;
+                height: 38px;
+            }
+		</style>
+		<dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}">></dmw-sensor>
+		<shadow></shadow>
+        <img id="icon_phone" src="/widget/communication/images/phone38.png" alt=""/>
+        <div id="last_number">{{last_call.number}}<span class="date">{{last_call.date}}</span><span class="count">{{last_call.count}}</span></div>
+		<ul id="list">
+            <template repeat="{{ call in calls }}">
+                <li>{{call.number}} - {{call.date}} - {{call.count}}</li>
+            </template>
+        </ul>
+	</template>
+	<script>
+        Polymer('dmw-communication-phoneCalls', {
+            ready: function() {
+                this.super();
+                this.calls = [];
+                this.last_call = null;
+            },
+            sensorsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.$.labelprimary.classList.add('sr-only');
+                    this.labelsecondary = this.$.primary.name;
+                    this.$.labelsecondary.classList.add('sr-only');
+                    this.$.primary.getLast(10);
+                }
+            },
+            sensorvalueChanged: function(oldValue, newValue) {
+            },
+            historyChanged: function(oldValue, newValue) {
+                
+                for(i=newValue.length-1;i>=0;i--) {
+
+                    this.addCall(newValue[i]['value_str'], moment(newValue[i]['date']).format("H:mm (DD/MM)"));
+                }
+            },
+            addCall: function(number, date) {
+                if (this.last_call) {
+                    if (this.last_call["number"] == number) {
+                        this.last_call["date"] = date;
+                        this.last_call["count"]++;
+                    } else {
+                        this.calls.unshift(this.last_call);
+                        this.last_call = {
+                            "number": number,
+                            "date" : date,
+                            "count" : 1
+                        };
+                    }
+                } else {
+                    this.last_call = {
+                            "number": number,
+                            "date" : date,
+                            "count" : 1
+                        };
+                }
+            }
+        });
+	</script>
+</polymer-element>
