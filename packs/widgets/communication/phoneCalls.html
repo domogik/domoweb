@@ -1,28 +1,51 @@
 <polymer-element name="dmw-communication-phoneCalls" extends="dmw-widget">
-	<template>
-		<style type="text/css">
-			:host {
-				height: 100%;
-			}
-            #icon_phone {
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                width: 38px;
-                height: 38px;
+    <template>
+        <style type="text/css">
+            :host {
+                height: 100%;
             }
-		</style>
-		<dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}">></dmw-sensor>
-		<shadow></shadow>
-        <img id="icon_phone" src="/widget/communication/images/phone38.png" alt=""/>
-        <div id="last_number">{{last_call.number}}<span class="date">{{last_call.date}}</span><span class="count">{{last_call.count}}</span></div>
-		<ul id="list">
+            #icon_phone {
+                border: 1px solid red;
+                position: relative;
+                float: left;
+                padding: 1em;
+                width: 25%;
+            }
+            #last {
+                border: 1px solid blue;
+                position: relative;
+                float: left;
+            }
+            #last_number {
+                border: 1px solid black;
+            }
+            #last_details .date {
+            }
+            #last_details .count {
+            }
+            #list {
+                 display: none;
+            }
+        </style>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}">></dmw-sensor>
+        <shadow></shadow>
+        <div id="icon_phone">
+        <i class="fa fa-phone"></i>
+        <img  src="/widget/communication/images/phone38.png" alt=""/>
+        </div>
+        <div id="last" on-tap="{{displayHistory}}">
+          <div id="last_number">{{last_call.number}}</div>
+          <div id="last_details">
+            <span class="date">{{last_call.date}}</span>
+            <span class="count">x{{last_call.count}}</span>
+        </div>
+        <ul id="list">
             <template repeat="{{ call in calls }}">
                 <li>{{call.number}} - {{call.date}} - {{call.count}}</li>
             </template>
         </ul>
-	</template>
-	<script>
+    </template>
+    <script>
         Polymer('dmw-communication-phoneCalls', {
             ready: function() {
                 this.super();
@@ -36,9 +59,12 @@
                     this.labelsecondary = this.$.primary.name;
                     this.$.labelsecondary.classList.add('sr-only');
                     this.$.primary.getLast(10);
+                    this.$.icon_phone.addEventListener('click', this.displayHistory.bind(this));
                 }
             },
             sensorvalueChanged: function(oldValue, newValue) {
+                this.addCall(newValue['value_str'], moment(newValue['date']).format("H:mm (DD/MM)"));
+                //this.adjustText(this, this.$.last_number);
             },
             historyChanged: function(oldValue, newValue) {
                 
@@ -67,7 +93,35 @@
                             "count" : 1
                         };
                 }
+            },
+            displayHistory: function() {
+                alert('ty');
+            },
+            adjustText: function(parent, element) {
+                var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
+                var i = fontsize.substr(0,2);
+                //alert("cw = " + parent.clientWidth + ", cw = " + parent.clientHeight);
+                //alert("cw = " + element.clientWidth + ", cw = " + element.clientHeight);
+                // in case the page is not yet nicely loaded...
+                if (parent.clientWidth == 0 || parent.clientHeight == 0 || element.clientWidth == 0 || element.clientHeight == 0) {
+                    setTimeout(function(){
+                        this.adjustText(parent, element);
+                        }.bind(this), 1000);
+                }
+                else {
+                    if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
+                        while ( parent.clientWidth >= element.clientWidth && parent.clientHeight >= element.clientHeight && i < 100){
+                            element.style.fontSize = i+"px";
+                            i++;
+                        }
+                    } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
+                        while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
+                            element.style.fontSize = i+"px";
+                            i--;
+                        }
+                    }
+                }
             }
         });
-	</script>
+    </script>
 </polymer-element>
