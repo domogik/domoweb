@@ -1,23 +1,22 @@
 <polymer-element name="dmw-communication-phoneCalls" extends="dmw-widget">
     <template>
+        <link rel="stylesheet" href="/libraries/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
         <style type="text/css">
             :host {
                 height: 100%;
             }
             #icon_phone {
-                border: 1px solid red;
                 position: relative;
                 float: left;
-                padding: 1em;
-                width: 25%;
+                width: 33%;
             }
             #last {
-                border: 1px solid blue;
                 position: relative;
                 float: left;
+                width: 66%;
+                height: 100%;
             }
             #last_number {
-                border: 1px solid black;
             }
             #last_details .date {
             }
@@ -64,7 +63,7 @@
             },
             sensorvalueChanged: function(oldValue, newValue) {
                 this.addCall(newValue['value_str'], moment(newValue['date']).format("H:mm (DD/MM)"));
-                //this.adjustText(this, this.$.last_number);
+                this.adjustText(this, this.$.last_number);
             },
             historyChanged: function(oldValue, newValue) {
                 
