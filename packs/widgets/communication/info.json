@@ -16,11 +16,23 @@
             "height" : 1,
             "width" : 3,
             "sensors" : {
-                "primary" : {
+                "callerid" : {
                     "name": "Caller id",
-                    "description": "Caller id",
+                    "description": "Caller id (inbound phone number)",
                     "types" : ["DT_String"],
                     "required": true
+                },
+                "name" : {
+                    "name": "Caller name",
+                    "description": "Caller id name",
+                    "types" : ["DT_String"],
+                    "required": false
+                },
+                "blacklisted" : {
+                    "name": "Blacklisted flag",
+                    "description": "Is the inbound call blacklisted ?",
+                    "types" : ["DT_Bool"],
+                    "required": false
                 }
             }
         }

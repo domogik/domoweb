@@ -1,6 +1,15 @@
+<style>
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('/widget/communication/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?v=4.5.0');
+  src: url('/widget/communication/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?#iefix&v=4.5.0') format('embedded-opentype'), url('/widget/communication/font-awesome-4.5.0/fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'), url('/widget/communication/font-awesome-4.5.0/fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('/widget/communication/font-awesome-4.5.0/fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('/widget/communication/font-awesome-4.5.0/fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+</style>
 <polymer-element name="dmw-communication-phoneCalls" extends="dmw-widget">
     <template>
-        <link rel="stylesheet" href="/libraries/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
+        <link rel="stylesheet" href="/widget/communication/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
         <style type="text/css">
             :host {
                 height: 100%;
@@ -8,41 +17,108 @@
             #icon_phone {
                 position: relative;
                 float: left;
-                width: 33%;
+                width: 24%;
+                height: 100%;
+            }
+            #icon_phone i {
+                position: relative;
+                top: 50%;
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                left: 50%;
+                text-align: center;
+                overflow: hidden;
+                display: inline-block;
+                padding: 10px;
             }
             #last {
                 position: relative;
                 float: left;
-                width: 66%;
+                width: 75%;
                 height: 100%;
+                z-index: 1;
             }
             #last_number {
+                margin-top: 0.3em;
+                font-size: 2.3em;
             }
-            #last_details .date {
-            }
-            #last_details .count {
+            #last_details {
+                position: absolute;
+                bottom: 5px; 
+                right: 0.3em;
+                font-size: 1.5em;
             }
             #list {
+                background-color: rgba(50, 50, 50, 0.8);
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                width: 100%;
+                padding: 0;
+                z-index: 2;
+            }
+            #list tr {
+                display: table;
+                width: 100%;
+            }
+            #list td {
+            }
+            #list .number {
+                padding: 5px;
+                font-size: 1.5em;
+            }
+            #list .details {
+                padding: 5px;
+                font-size: 1.2em;
+                text-align: right;
+                font-style: italic;
+            }
+            .show {
+                 display: table;
+            }
+            .hide {
                  display: none;
             }
+            del {
+                color: red;
+            }
         </style>
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}">></dmw-sensor>
+        <dmw-sensor id='callerid' sensorkey="callerid" sensorvalue="{{callerid_value}}" sensorhistory="{{callerid_history}}">></dmw-sensor>
+        <dmw-sensor id='name' sensorkey="name" sensorvalue="{{name_value}}" sensorhistory="{{name_history}}">></dmw-sensor>
+        <dmw-sensor id='blacklisted' sensorkey="blacklisted" sensorvalue="{{blacklisted_value}}" sensorhistory="{{blacklisted_history}}">></dmw-sensor>
         <shadow></shadow>
         <div id="icon_phone">
-        <i class="fa fa-phone"></i>
-        <img  src="/widget/communication/images/phone38.png" alt=""/>
+          <i class="fa fa-phone fa-4x"></i>
         </div>
+        <table id="list" class="hide" on-tap="{{hideHistory}}">
+          <template repeat="{{ call in calls }}">
+            <tr>
+              <td class="number">
+                <template bind if="{{call.blacklisted}}">
+                  <del>{{ call.number }}</del>
+                </template>
+                <template bind if="{{!call.blacklisted}}">
+                  {{ call.number }}
+                </template>
+              </td>
+              <td class="details">{{call.date}}<!-- - {{call.count}}  --></td>
+            </tr>
+          </template>
+        </table>
         <div id="last" on-tap="{{displayHistory}}">
-          <div id="last_number">{{last_call.number}}</div>
+          <div id="last_number">
+            <template bind if="{{list_call.blacklisted}}">
+              <del>{{last_call.number}}</del>
+            </template>
+            <template bind if="{{!list_call.blacklisted}}">
+              {{last_call.number}}
+            </template>
+          </div>
           <div id="last_details">
             <span class="date">{{last_call.date}}</span>
-            <span class="count">x{{last_call.count}}</span>
+          </div>
         </div>
-        <ul id="list">
-            <template repeat="{{ call in calls }}">
-                <li>{{call.number}} - {{call.date}} - {{call.count}}</li>
-            </template>
-        </ul>
     </template>
     <script>
         Polymer('dmw-communication-phoneCalls', {
@@ -52,27 +128,50 @@
                 this.last_call = null;
             },
             sensorsUpdated: function() {
-                if (this.$.primary.isSet) {
-                    this.labelprimary = this.$.primary.device['name'];
+                if (this.$.callerid.isSet) {
+                    this.labelprimary = this.$.callerid.device['name'];
                     this.$.labelprimary.classList.add('sr-only');
-                    this.labelsecondary = this.$.primary.name;
+                    this.labelsecondary = this.$.callerid.name;
                     this.$.labelsecondary.classList.add('sr-only');
-                    this.$.primary.getLast(10);
-                    this.$.icon_phone.addEventListener('click', this.displayHistory.bind(this));
+                    this.$.callerid.getLast(10);
+                }
+                if (this.$.name.isSet) {
+                    this.$.name.getLast(10);
+                }
+                if (this.$.blacklisted.isSet) {
+                    this.$.blacklisted.getLast(10);
                 }
             },
-            sensorvalueChanged: function(oldValue, newValue) {
-                this.addCall(newValue['value_str'], moment(newValue['date']).format("H:mm (DD/MM)"));
-                this.adjustText(this, this.$.last_number);
+            callerid_valueChanged: function(oldValue, newValue) {
+                //console.error("1:" + newValue);
+                //alert(newValue);
+             
+                // In this widget we don't process the newvalue from this function :
+                // we need (currently) to manually find if the 'name' sensor last value correponds to the 
+                // 'callerid' sensor last value. In this function we got ONLY the last value and not the timestamp
+                //this.addCall(newValue['value_str'], moment(newValue['date']).format("H:mm (DD/MM)"));
+                //this.adjustText(this, this.$.last_number);
             },
-            historyChanged: function(oldValue, newValue) {
+            callerid_historyChanged: function(oldValue, newValue) {
                 
                 for(i=newValue.length-1;i>=0;i--) {
 
-                    this.addCall(newValue[i]['value_str'], moment(newValue[i]['date']).format("H:mm (DD/MM)"));
+                    //this.addCall(newValue[i]['value_str'], moment(newValue[i]['timestamp']).format("H:mm (DD/MM)"));
+                    this.addCall(newValue[i]['value_str'], newValue[i]['timestamp']);
                 }
             },
-            addCall: function(number, date) {
+            name_historyChanged: function(oldValue, newValue) {
+                for(i=newValue.length-1;i>=0;i--) {
+                    this.completeCallsByNames(newValue[i]['value_str'], newValue[i]['timestamp']);
+                }
+            },
+            blacklisted_historyChanged: function(oldValue, newValue) {
+                for(i=newValue.length-1;i>=0;i--) {
+                    this.completeCallsByBlacklisted(newValue[i]['value_str'], newValue[i]['timestamp']);
+                }
+            },
+            addCall: function(number, timestamp) {
+                /*
                 if (this.last_call) {
                     if (this.last_call["number"] == number) {
                         this.last_call["date"] = date;
@@ -92,9 +191,45 @@
                             "count" : 1
                         };
                 }
+                */
+                this.last_call = {
+                        "number": number,
+                        "date" : moment(timestamp * 1000).format("H:mm (DD/MM)"),
+                        "timestamp" : timestamp,
+                        "blacklisted" : false,
+                        "count" : 1
+                    };
+                this.calls.unshift(this.last_call);
+            },
+            completeCallsByNames: function(name, timestamp) {
+                for(idx in this.calls) {
+                    if (timestamp == this.calls[idx]["timestamp"]) {
+                        this.calls[idx]["number"] = name;
+                    }
+                }
+            },
+            completeCallsByBlacklisted: function(bl, timestamp) {
+                if (bl == true) {
+                    for(idx in this.calls) {
+                        if (timestamp == this.calls[idx]["timestamp"]) {
+                            this.calls[idx]["blacklisted"] = true;
+                        }
+                    }
+                }
+            },
+            isBlacklisted: function(status) {
+                return status;
+            },
+            isNotBlacklisted: function(status) {
+                return !status;
             },
             displayHistory: function() {
-                alert('ty');
+                this.$.list.classList.add('show');
+                this.$.list.classList.remove('hide');
+            },
+            hideHistory: function() {
+                this.$.list.classList.add('hide');
+                this.$.list.classList.remove('show');
             },
             adjustText: function(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
