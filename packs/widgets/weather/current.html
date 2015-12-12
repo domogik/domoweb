@@ -11,7 +11,6 @@
                 margin: 10px;
                 font-size: 1.2em;
                 position: relative;
-                text-shadow: 0px 0px 2px rgba(0, 0, 0, 1);
             }
             #temperature {
                 position: absolute;
@@ -22,19 +21,28 @@
                 right: 20px;
                 text-align: right;
                 font-size: 5em;
+                /*
                 text-shadow: 0px 0px 2px rgba(0, 0, 0, 1);
+                */
             }
             #unit {
                 position: absolute;
                 top:5px;
                 right: 5px;
                 font-size: 1em;
+                /*
                 text-shadow: 0px 0px 2px rgba(0, 0, 0, 1);
+                */
             }
             #text {
                 font-size: 1.4em;
                 text-align: center;
+                /*
                 text-shadow: 0px 0px 2px rgba(0, 0, 0, 1);
+                */
+            }
+            .withshadow {
+                text-shadow: 0px 0px 2px rgba(122, 122, 122, 1);
             }
             </style>
         <shadow></shadow>
@@ -53,7 +61,14 @@
                 this.super();
             },
             current_codeChanged: function(oldValue, newValue) {
-                if (this.options['displayBackground']) {
+                // needed only the first time :)
+                // strangely it does not work in sensorUpdated()... : this.options == undefined
+                if (this.options['displayBackground'] == 1) {
+                    this.$.text.classList.add('withshadow');
+                    this.$.temperature.classList.add('withshadow');
+                    this.$.unit.classList.add('withshadow');
+                }
+                if (this.options['displayBackground'] == 1) {
                     this.style.backgroundImage = "url('/widget/weather/images/weather/" + newValue + ".png')";
                 }
             },
