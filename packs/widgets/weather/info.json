@@ -54,7 +54,14 @@
             "description" : "Weather current condition, with temperature",
             "height" : 1,
             "width" : 3,
-            "options" : {},
+            "options" : {
+                "displayBackground" : {
+                    "name": "Display a dynamic background",
+                    "description": "Display a background related to the current conditions",
+                    "type": "boolean",
+                    "default": "True"
+                }
+            },
             "devices" : {
                 "weather" : {
                     "name": "Location",

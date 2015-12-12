@@ -53,7 +53,9 @@
                 this.super();
             },
             current_codeChanged: function(oldValue, newValue) {
-                this.style.backgroundImage = "url('/widget/weather/images/weather/" + newValue + ".png')";
+                if (this.options['displayBackground']) {
+                    this.style.backgroundImage = "url('/widget/weather/images/weather/" + newValue + ".png')";
+                }
             },
             current_stationChanged: function(oldValue, newValue) {
                 this.labelprimary = newValue;
