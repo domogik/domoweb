@@ -26,7 +26,7 @@
                 -webkit-transform: translate(-50%, -50%);
                 -ms-transform: translate(-50%, -50%);
                 transform: translate(-50%, -50%);
-                left: 50%;
+                left: 51%;
                 text-align: center;
                 overflow: hidden;
                 display: inline-block;
@@ -50,7 +50,7 @@
                 font-size: 1.5em;
             }
             #list {
-                background-color: rgba(50, 50, 50, 0.8);
+                background-color: rgba(50, 50, 50, 1);
                 position: absolute;
                 top: 0px;
                 left: 0px;
@@ -133,8 +133,17 @@
                     this.$.labelprimary.classList.add('sr-only');
                     this.labelsecondary = this.$.callerid.name;
                     this.$.labelsecondary.classList.add('sr-only');
-                    this.$.callerid.getLast(10);
+                    // This call is done in callerid_valueChanged()
+                    //this.$.callerid.getLast(10);
                 }
+            },
+            callerid_valueChanged: function(oldValue, newValue) {
+                // In this widget we don't process the newvalue from this function :
+                // we need (currently) to manually find if the 'name' sensor last value correponds to the 
+                // 'callerid' sensor last value. In this function we got ONLY the last value and not the timestamp
+                //this.addCall(newValue['value_str'], moment(newValue['date']).format("H:mm (DD/MM)"));
+                //this.adjustText(this, this.$.last_number);
+                this.$.callerid.getLast(10);
                 if (this.$.name.isSet) {
                     this.$.name.getLast(10);
                 }
@@ -142,17 +151,9 @@
                     this.$.blacklisted.getLast(10);
                 }
             },
-            callerid_valueChanged: function(oldValue, newValue) {
-                //console.error("1:" + newValue);
-                //alert(newValue);
-             
-                // In this widget we don't process the newvalue from this function :
-                // we need (currently) to manually find if the 'name' sensor last value correponds to the 
-                // 'callerid' sensor last value. In this function we got ONLY the last value and not the timestamp
-                //this.addCall(newValue['value_str'], moment(newValue['date']).format("H:mm (DD/MM)"));
-                //this.adjustText(this, this.$.last_number);
-            },
             callerid_historyChanged: function(oldValue, newValue) {
+                this.calls = [];
+                this.last_call = null;
                 
                 for(i=newValue.length-1;i>=0;i--) {
 
