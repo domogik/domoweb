@@ -126,6 +126,12 @@
                     "description": "Automatically convert big value to K(x) / M(x) / G(x) / T(x)",
                     "type": "boolean",
                     "default": "False"
+                },
+                "chartColor" : {
+                    "name": "Chart color",
+                    "description": "Set the chart color",
+                    "type": "string",
+                    "default": "ff0000"
                 }
             },
             "sensors" : {
