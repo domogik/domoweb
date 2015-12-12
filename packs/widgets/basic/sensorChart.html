@@ -124,12 +124,15 @@
                     maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
                     this.min = minvalue;
                     this.max = maxvalue;
+                    //fillColor: this.options['chartColor'],
                     $(this.$.spark).sparkline(chartValues, {type: 'line',
                                                             lineColor: this.options['chartColor'],
                                                             fillColor: this.options['chartColor'],
                                                             spotColor: undefined,
                                                             minSpotColor: undefined,
                                                             maxSpotColor: undefined,
+                                                            chartRangeMin: this.options['chartMinValue'],
+                                                            chartRangeMax: this.options['chartMaxValue'],
                                                             height: '100%', width: '100%' });
                     $.sparkline_display_visible();
                 }

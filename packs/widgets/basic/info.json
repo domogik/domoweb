@@ -131,7 +131,19 @@
                     "name": "Chart color",
                     "description": "Set the chart color",
                     "type": "string",
-                    "default": "ff0000"
+                    "default": "#ffffff"
+                },
+                "chartMinValue" : {
+                    "name": "Chart minimun value",
+                    "description": "Set the chart minimum value",
+                    "type": "number",
+                    "default": "None"
+                },
+                "chartMaxValue" : {
+                    "name": "Chart maximum value",
+                    "description": "Set the chart maximum value",
+                    "type": "number",
+                    "default": "None"
                 }
             },
             "sensors" : {
