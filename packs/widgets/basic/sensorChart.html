@@ -122,9 +122,21 @@
                     // display the chart
                     minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
                     maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
-                    this.min = minvalue;
-                    this.max = maxvalue;
-                    //fillColor: this.options['chartColor'],
+ 
+                    // as the graph history is an average, the current value could be lower or bigger than the min/max average value. So we adjust
+                    current = this.$.number.innerHTML;
+                    if (current > maxvalue) {
+                        maxvalue = current;
+                    }
+                    else {
+                        this.max = maxvalue;
+                    }
+                    if (current < minvalue) {
+                        minvalue = current;
+                    }
+                    else {
+                        this.min = minvalue;
+                    }
                     $(this.$.spark).sparkline(chartValues, {type: 'line',
                                                             lineColor: this.options['chartColor'],
                                                             fillColor: this.options['chartColor'],
