@@ -68,6 +68,20 @@
                     "description": "Display the button as a circle instead of a square",
                     "type": "boolean",
                     "default": "False"
+                },
+                "label0" : {
+                    "name": "Label for value 0",
+                    "description": "Override the default label for the value 0 of the sensor",
+                    "type": "string",
+                    "default": null,
+                    "required": false
+                },
+                "label1" : {
+                    "name": "Label for value 1",
+                    "description": "Override the default label for the value 1 of the sensor",
+                    "type": "string",
+                    "default": null,
+                    "required": false
                 }
             },
             "sensors" : {
@@ -98,6 +112,13 @@
                     "description": "Display the button as a circle instead of a square",
                     "type": "boolean",
                     "default": "False"
+                },
+                "label" : {
+                    "name": "Label for the button",
+                    "description": "Override the default label for the trigger button",
+                    "type": "string",
+                    "default": null,
+                    "required": false
                 }
             },
             "commands" : {
@@ -166,13 +187,15 @@
                     "name": "Chart minimun value",
                     "description": "Set the chart minimum value",
                     "type": "number",
-                    "default": "None"
+                    "default": null,
+                    "required": false
                 },
                 "chartMaxValue" : {
                     "name": "Chart maximum value",
                     "description": "Set the chart maximum value",
                     "type": "number",
-                    "default": "None"
+                    "default": null,
+                    "required": false
                 }
             },
             "sensors" : {

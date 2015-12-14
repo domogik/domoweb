@@ -52,7 +52,15 @@
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
-                    this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                    if ((this.currentValue == 0) && (this.options['label0'] != undefined) && (this.options['label0'] != "")) {
+                        this.sendtext = this.options['label0'];
+                    }
+                    else if ((this.currentValue == 1) && (this.options['label1'] != undefined) && (this.options['label1'] != "")) {
+                        this.sendtext = this.options['label1'];
+                    }
+                    else {
+                        this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                    }
                     this.$.send.addEventListener('click', this.send.bind(this));
                 }
             },
@@ -77,7 +85,15 @@
                     this.$.send.classList.remove('true');
                 }
                 if (this.$.primary.isSet) {
-                    this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                    if ((this.currentValue == 0) && (this.options['label0'] != undefined) && (this.options['label0'] != "")) {
+                        this.sendtext = this.options['label0'];
+                    }
+                    else if ((this.currentValue == 1) && (this.options['label1'] != undefined) && (this.options['label1'] != "")) {
+                        this.sendtext = this.options['label1'];
+                    }
+                    else {
+                        this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                    }
                 }
             }
         });

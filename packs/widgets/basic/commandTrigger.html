@@ -36,7 +36,12 @@
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
-                    this.sendtext = i18n.t("basic:trigger");
+                    if ((this.options['label'] != undefined) && (this.options['label'] != "")) {
+                        this.sendtext = this.options['label'];
+                    }
+                    else {
+                        this.sendtext = i18n.t("basic:trigger");
+                    }
                     this.$.send.addEventListener('click', this.send.bind(this));
                 }
                 if (this.options['circle'] == 1) {
