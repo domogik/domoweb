@@ -1,0 +1,54 @@
+{
+    "json_version" : 1,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "gauges",
+        "version" : 1,
+        "name" : "Gauges",
+        "description" : "Gauges widgets",
+        "author" : "Fritz SMH",
+        "author_email" : "fritz@domogik.org"
+    },
+    "widgets": {
+        "gauge1": {
+            "name" : "Gauge",
+            "description" : "A simple gauge",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+                "autoconvert" : {
+                    "name": "Automatic conversion",
+                    "description": "Automatically convert big value to K(x) / M(x) / G(x) / T(x)",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "minValue" : {
+                    "name": "Minimal value",
+                    "description": "Minimal value for the gauge",
+                    "type": "number",
+                    "default": 0
+                },
+                "maxValue" : {
+                    "name": "Maximal value",
+                    "description": "Maximal value for the gauge",
+                    "type": "number",
+                    "default": 100
+                },
+                "colorProfile" : {
+                    "name": "Color profile",
+                    "description": "Color profile for the gauge (classic, temperature)",
+                    "type": "string",
+                    "default": "classic"
+                }
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "Number",
+                    "description": "Number sensor",
+                    "types" : ["DT_Number"],
+                    "required": true
+                }
+            }
+        }
+    }
+}
