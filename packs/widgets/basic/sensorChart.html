@@ -126,13 +126,13 @@
                     // as the graph history is an average, the current value could be lower or bigger than the min/max average value. So we adjust
                     current = this.$.number.innerHTML;
                     if (current > maxvalue) {
-                        maxvalue = current;
+                        this.max = current;
                     }
                     else {
                         this.max = maxvalue;
                     }
                     if (current < minvalue) {
-                        minvalue = current;
+                        this.min = current;
                     }
                     else {
                         this.min = minvalue;
