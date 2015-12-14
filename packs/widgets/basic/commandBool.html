@@ -13,6 +13,9 @@
                 margin: 10%;
                 color: #000000;
             }
+            button#send.circle {
+                border-radius: 50%;
+            }
             button#send.true {
                 background: #5cb85c;
                 color: #ffffff;
@@ -37,6 +40,12 @@
             sensorsUpdated: function() {
                 if (this.$.boolstate.isSet) {
                     this.hasFeedback = true;
+                }
+                if (this.options['circle'] == 1) {
+                    this.$.send.classList.add('circle');
+                }
+                if (this.options['circle'] == 0) {
+                    this.$.send.classList.remove('circle');
                 }
             },
             commandsUpdated: function() {

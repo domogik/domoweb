@@ -1,0 +1,40 @@
+<polymer-element name="dmw-basic-sensorString" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            #text {
+                position: relative;
+                top: 50%;
+                -webkit-transform: translateY(-50%);
+                -ms-transform: translateY(-50%);
+                transform: translateY(-50%);
+                  text-align: center;
+                font-size: 2em;
+            }
+        </style>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <shadow></shadow>
+        <div id='text'>
+          {{text}}
+        </div>
+    </template>
+    <script>
+        Polymer('dmw-basic-sensorString', {
+            ready: function() {
+                this.super();
+            },
+            sensorsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                }
+            },
+            sensorvalueChanged: function(oldValue, newValue) {
+                this.text = newValue;
+            }
+        });
+    </script>
+</polymer-element>

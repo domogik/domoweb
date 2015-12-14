@@ -62,6 +62,14 @@
             "name" : "Command Boolean",
             "height" : 1,
             "width" : 1,
+            "options" : {
+                "circle" : {
+                    "name": "Round button",
+                    "description": "Display the button as a circle instead of a square",
+                    "type": "boolean",
+                    "default": "False"
+                }
+            },
             "sensors" : {
                 "boolstate" : {
                     "name": "Bool state",
@@ -112,6 +120,19 @@
                     "types" : [
                         ["DT_Scaling"]
                     ],
+                    "required": true
+                }
+            }
+        },
+        "sensorString": {
+            "name" : "Sensor String",
+            "height" : 1,
+            "width" : 3,
+            "sensors" : {
+                "primary" : {
+                    "name": "Text",
+                    "description": "A text sensor to display",
+                    "types" : ["DT_String"],
                     "required": true
                 }
             }
