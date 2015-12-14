@@ -92,6 +92,14 @@
             "name" : "Command Trigger",
             "height" : 1,
             "width" : 1,
+            "options" : {
+                "circle" : {
+                    "name": "Round button",
+                    "description": "Display the button as a circle instead of a square",
+                    "type": "boolean",
+                    "default": "False"
+                }
+            },
             "commands" : {
                 "primary" : {
                     "name": "Trigger",

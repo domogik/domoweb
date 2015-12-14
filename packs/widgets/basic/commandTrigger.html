@@ -15,6 +15,9 @@
                 color: #ffffff;
                 cursor: pointer;
             }
+            button#send.circle {
+                border-radius: 50%;
+            }
             button#send:active {
                 background: #D73032;
                 color: #ffffff;
@@ -35,6 +38,12 @@
                     this.labelsecondary = this.$.primary.name;
                     this.sendtext = i18n.t("basic:trigger");
                     this.$.send.addEventListener('click', this.send.bind(this));
+                }
+                if (this.options['circle'] == 1) {
+                    this.$.send.classList.add('circle');
+                }
+                if (this.options['circle'] == 0) {
+                    this.$.send.classList.remove('circle');
                 }
             },
             send: function(e) {
