@@ -6,8 +6,8 @@
         "version" : 1,
         "name" : "Communication",
         "description" : "Dedicated widgets for communication",
-        "author" : "Ferllings",
-        "author_email" : "cedric@domogik.org"
+        "author" : "Ferllings, Fritz",
+        "author_email" : "cedric@domogik.org fritz@domogik.org"
     },
     "widgets": {
         "phoneCalls": {
@@ -15,6 +15,15 @@
             "description" : "List of phone calls",
             "height" : 1,
             "width" : 3,
+            "commands" : {
+                "doblacklist" : {
+                    "name": "Blacklist a number",
+                    "types" : [
+                        ["DT_String"]
+                    ],
+                    "required": false
+                }
+            },
             "sensors" : {
                 "callerid" : {
                     "name": "Caller id",

@@ -37,7 +37,6 @@
                 float: left;
                 width: 75%;
                 height: 100%;
-                z-index: 1;
             }
             #last_number {
                 margin-top: 0.3em;
@@ -54,25 +53,33 @@
                 position: absolute;
                 top: 0px;
                 left: 0px;
+                min-height: 100%;
                 width: 100%;
                 padding: 0;
-                z-index: 2;
+                z-index: 100;
             }
             #list tr {
-                display: table;
                 width: 100%;
+                display: table;
             }
             #list td {
             }
             #list .number {
                 padding: 5px;
                 font-size: 1.5em;
+                width: 50%;
+                overflow: hidden;
             }
             #list .details {
                 padding: 5px;
                 font-size: 1.2em;
                 text-align: right;
                 font-style: italic;
+                width: 40%;
+            }
+            #list .ban {
+                width: 10%;
+                text-align: center;
             }
             .show {
                  display: table;
@@ -84,6 +91,7 @@
                 color: red;
             }
         </style>
+        <dmw-command id="doblacklist" commandkey="doblacklist"></dmw-command>
         <dmw-sensor id='callerid' sensorkey="callerid" sensorvalue="{{callerid_value}}" sensorhistory="{{callerid_history}}">></dmw-sensor>
         <dmw-sensor id='name' sensorkey="name" sensorvalue="{{name_value}}" sensorhistory="{{name_history}}">></dmw-sensor>
         <dmw-sensor id='blacklisted' sensorkey="blacklisted" sensorvalue="{{blacklisted_value}}" sensorhistory="{{blacklisted_history}}">></dmw-sensor>
@@ -91,34 +99,42 @@
         <div id="icon_phone">
           <i class="fa fa-phone fa-4x"></i>
         </div>
-        <table id="list" class="hide" on-tap="{{hideHistory}}">
-          <template repeat="{{ call in calls }}">
+        <table id="list" class="hide"  on-click="{{hideHistory}}"> 
+          <template repeat="{{ call,idx in calls }}">
             <tr>
               <td class="number">
                 <template bind if="{{call.blacklisted}}">
-                  <del>{{ call.number }}</del>
+                  <del>{{ call.who }}</del>
                 </template>
                 <template bind if="{{!call.blacklisted}}">
-                  {{ call.number }}
+                  {{ call.who }}
                 </template>
               </td>
-              <td class="details">{{call.date}}<!-- - {{call.count}}  --></td>
+              <td class="details">
+                <span>{{call.date}}<span>
+              </td>
+              <td class="ban">
+                <template bind if="{{!call.blacklisted && blacklistCommand}}">
+                  <a on-click="{{doBlacklist}}" data-number="{{ call.number }}"><i class="fa fa-ban"></i></a>
+                </template>
+              </td>
             </tr>
           </template>
         </table>
-        <div id="last" on-tap="{{displayHistory}}">
+        <div id="last" on-click="{{displayHistory}}">
           <div id="last_number">
-            <template bind if="{{list_call.blacklisted}}">
-              <del>{{last_call.number}}</del>
+            <template if="{{last_call.blacklisted}}">
+              <del>{{last_call.who}}</del>
             </template>
-            <template bind if="{{!list_call.blacklisted}}">
-              {{last_call.number}}
+            <template if="{{!last_call.blacklisted}}">
+              {{last_call.who}}
             </template>
           </div>
           <div id="last_details">
             <span class="date">{{last_call.date}}</span>
           </div>
         </div>
+
     </template>
     <script>
         Polymer('dmw-communication-phoneCalls', {
@@ -126,6 +142,7 @@
                 this.super();
                 this.calls = [];
                 this.last_call = null;
+                this.blacklistCommand = false;
             },
             sensorsUpdated: function() {
                 if (this.$.callerid.isSet) {
@@ -135,6 +152,12 @@
                     this.$.labelsecondary.classList.add('sr-only');
                     // This call is done in callerid_valueChanged()
                     //this.$.callerid.getLast(10);
+                }
+            },
+            commandsUpdated: function() {
+                if (this.$.doblacklist.isSet) {
+                    // to allow the ban button 
+                    this.blacklistCommand = true;
                 }
             },
             callerid_valueChanged: function(oldValue, newValue) {
@@ -172,28 +195,8 @@
                 }
             },
             addCall: function(number, timestamp) {
-                /*
-                if (this.last_call) {
-                    if (this.last_call["number"] == number) {
-                        this.last_call["date"] = date;
-                        this.last_call["count"]++;
-                    } else {
-                        this.calls.unshift(this.last_call);
-                        this.last_call = {
-                            "number": number,
-                            "date" : date,
-                            "count" : 1
-                        };
-                    }
-                } else {
-                    this.last_call = {
-                            "number": number,
-                            "date" : date,
-                            "count" : 1
-                        };
-                }
-                */
                 this.last_call = {
+                        "who": number,
                         "number": number,
                         "date" : moment(timestamp * 1000).format("H:mm (DD/MM)"),
                         "timestamp" : timestamp,
@@ -205,13 +208,16 @@
             completeCallsByNames: function(name, timestamp) {
                 for(idx in this.calls) {
                     if (timestamp == this.calls[idx]["timestamp"]) {
-                        this.calls[idx]["number"] = name;
+                        this.calls[idx]["who"] = name;
                     }
                 }
             },
             completeCallsByBlacklisted: function(bl, timestamp) {
                 if (bl == true) {
                     for(idx in this.calls) {
+                        if (timestamp == this.last_call["timestamp"]) {
+                            this.last_call["blacklisted"] = true;
+                        }
                         if (timestamp == this.calls[idx]["timestamp"]) {
                             this.calls[idx]["blacklisted"] = true;
                         }
@@ -232,11 +238,18 @@
                 this.$.list.classList.add('hide');
                 this.$.list.classList.remove('show');
             },
+            doBlacklist: function(e, detail, target) {
+                if (window.confirm(i18n.t("Blacklist the number ") + target.dataset["number"] + " ?")) {
+                    var parameters = {};
+                    parameters[this.$.doblacklist.parameters[0]['key']] = target.dataset["number"];
+                    this.$.doblacklist.send(parameters);
+                }
+                e.preventDefault();
+                e.stopPropagation();
+            },
             adjustText: function(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
                 var i = fontsize.substr(0,2);
-                //alert("cw = " + parent.clientWidth + ", cw = " + parent.clientHeight);
-                //alert("cw = " + element.clientWidth + ", cw = " + element.clientHeight);
                 // in case the page is not yet nicely loaded...
                 if (parent.clientWidth == 0 || parent.clientHeight == 0 || element.clientWidth == 0 || element.clientHeight == 0) {
                     setTimeout(function(){
