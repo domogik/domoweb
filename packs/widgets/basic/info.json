@@ -153,6 +153,58 @@
                 }
             }
         },
+        "commandColorRGB": {
+            "name" : "Control RGB colors",
+            "height" : 2,
+            "width" : 2,
+            "options" : {
+                "color1" : {
+                    "name": "Color 1",
+                    "description": "The color 1 (rrggbb)",
+                    "type": "string",
+                    "default": "ff0000",
+                    "required": false
+                },
+                "color2" : {
+                    "name": "Color 2",
+                    "description": "The color 2 (rrggbb)",
+                    "type": "string",
+                    "default": "00ff00",
+                    "required": false
+                },
+                "color3" : {
+                    "name": "Color 3",
+                    "description": "The color 3 (rrggbb)",
+                    "type": "string",
+                    "default": "0000ff",
+                    "required": false
+                },
+                "color4" : {
+                    "name": "Color 4",
+                    "description": "The color 4 (rrggbb)",
+                    "type": "string",
+                    "default": "888888",
+                    "required": false
+                }
+            },
+            "sensors" : {
+                "color" : {
+                    "name": "Color state",
+                    "description": "Color feedback value",
+                    "types" : ["DT_ColorRGBHexa"],
+                    "required": true
+                }
+            },
+            "commands" : {
+                "setcolor" : {
+                    "name": "Color command",
+                    "types" : [
+                        ["DT_ColorRGBHexa"]
+                    ],
+                    "required": true
+                }
+            }
+        },
         "sensorString": {
             "name" : "Sensor String",
             "height" : 1,
