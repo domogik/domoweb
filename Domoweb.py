@@ -45,6 +45,7 @@ application = tornado.web.Application(
         (r'/ws/', WSHandler),
         (r'/upload', UploadHandler),
         (r"/backgrounds/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(domoweb.VARPATH, "backgrounds")}),
+        (r"/(.*)", MainHandler),
     ],
     template_path=os.path.join(os.path.dirname(__file__), "templates"),
     debug=True,

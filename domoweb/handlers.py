@@ -28,6 +28,7 @@ class MainHandler(RequestHandler):
         if not id:
             id = 1
         section = Section.get(id)
+        id = section.id
         packs = Widget.getSectionPacks(section_id=id)
         params = Section.getParamsDict(id)
         sections = Section.getTree()
