@@ -1,0 +1,84 @@
+<style>
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('/widget/basic/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?v=4.5.0');
+  src: url('/widget/basic/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?#iefix&v=4.5.0') format('embedded-opentype'), url('/widget/basic/font-awesome-4.5.0/fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'), url('/widget/basic/font-awesome-4.5.0/fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('/widget/basic/font-awesome-4.5.0/fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('/widget/basic/font-awesome-4.5.0/fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+</style>
+
+<polymer-element name="dmw-basic-commandRollingShutter" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <link rel="stylesheet" href="/widget/basic/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            button#open {
+                position: absolute;
+                display: block;
+                border-style: none;
+                width: 80%;
+                height: 30%;
+                top: 5%;
+                left: 10%;
+                background-color: transparent;
+            }
+            button#close {
+                position: absolute;
+                display: block;
+                border-style: none;
+                width: 80%;
+                height: 30%;
+                bottom: 5%;
+                left: 10%;
+                background-color: transparent;
+            }
+        </style>
+        <dmw-command id="primary" commandkey="primary"></dmw-command>
+        <!-- 
+        <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}"></dmw-sensor>
+        -->
+        <shadow></shadow>
+        <button id="open" class=""><i class="fa fa-angle-double-up fa-4x"></i></button>
+        <button id="close" class=""><i class="fa fa-angle-double-down fa-4x"></i></button>
+    </template>
+    <script>
+        Polymer('dmw-basic-commandRollingShutter', {
+            ready: function() {
+                this.super();
+                //this.boolstate = null;
+            },
+            optionsUpdated: function() {
+                this.$.open.style.color = this.options['WidgetTextColor'];
+                this.$.close.style.color = this.options['WidgetTextColor'];
+            },
+            sensorsUpdated: function() {
+            },
+            commandsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                    this.$.open.addEventListener('click', this.open.bind(this));
+                    this.$.close.addEventListener('click', this.close.bind(this));
+                }
+            },
+            open: function(e) {
+                var parameters = {};
+                parameters[this.$.primary.parameters[0]['key']] = 1;
+                this.$.primary.send(parameters);
+                e.preventDefault();
+                e.stopPropagation();
+            },
+            close: function(e) {
+                var parameters = {};
+                parameters[this.$.primary.parameters[0]['key']] = 0;
+                this.$.primary.send(parameters);
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+    </script>
+</polymer-element>

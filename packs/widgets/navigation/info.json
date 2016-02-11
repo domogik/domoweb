@@ -36,6 +36,33 @@
             },
             "css" : [],
             "js" : []
+        },
+        "simpleNavigation": {
+            "name" : "Simple navigation",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+                "targetSection" : {
+                    "name": "Section name or id to go to",
+                    "type": "string",
+                    "default": "1",
+                    "required": true
+                },
+                "faIcon" : {
+                    "name": "Font awesome icon name",
+                    "type": "string",
+                    "default": "external-link",
+                    "required": false
+                }
+            },
+            "commands" : {
+            },
+            "sensors" : {
+            },
+            "devices" : {
+            },
+            "css" : [],
+            "js" : []
         }
     }
 }

@@ -205,6 +205,24 @@
                 }
             }
         },
+        "commandRollingShutter": {
+            "name" : "Command Rolling Shutter",
+            "height" : 2,
+            "width" : 1,
+            "options" : {
+            },
+            "sensors" : {
+            },
+            "commands" : {
+                "primary" : {
+                    "name": "Shutter command",
+                    "types" : [
+                        ["DT_Bool"]
+                    ],
+                    "required": true
+                }
+            }
+        },
         "sensorString": {
             "name" : "Sensor String",
             "height" : 1,

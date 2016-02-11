@@ -14,6 +14,9 @@
             :host {
                 height: 100%;
             }
+            a {
+                text-decoration: none;
+            }
             #icon_phone {
                 position: relative;
                 float: left;
@@ -59,13 +62,15 @@
                 min-height: 100%;
                 width: 100%;
                 padding: 0;
-                z-index: 100;
+                z-index: 10;
             }
             #list tr {
                 width: 100%;
                 display: table;
+                z-index: 10;
             }
             #list td {
+                z-index: 10;
             }
             #list .number {
                 padding: 5px;
@@ -73,6 +78,7 @@
                 width: 50%;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                z-index: 10;
             }
             #list .details {
                 padding: 5px;
@@ -81,10 +87,12 @@
                 font-style: italic;
                 width: 40%;
                 white-space: nowrap;
+                z-index: 10;
             }
             #list .ban {
                 width: 10%;
                 text-align: center;
+                z-index: 10;
             }
             .show {
                  display: table;
@@ -112,6 +120,7 @@
                   <del>{{ call.who }}</del>
                 </template>
                 <template bind if="{{!call.blacklisted}}">
+                  <!-- <a class="callto" href="tel:{{call.number}}">{{ call.who }}</a> -->
                   {{ call.who }}
                 </template>
               </td>
@@ -120,7 +129,7 @@
               </td>
               <td class="ban">
                 <template bind if="{{!call.blacklisted && blacklistCommand}}">
-                  <a on-click="{{doBlacklist}}" data-number="{{ call.number }}"><i class="fa fa-ban"></i></a>
+                  <a on-click="{{doBlacklist}}" data-number="{{ call.number }}"><i class="fa fa-ban"></i></a> 
                 </template>
               </td>
             </tr>
@@ -132,6 +141,7 @@
               <del>{{last_call.who}}</del>
             </template>
             <template if="{{!last_call.blacklisted}}">
+              <!-- <a class="callto" href="tel:{{last_call.number}}">{{last_call.who}}</a> -->
               {{last_call.who}}
             </template>
           </div>
@@ -158,6 +168,16 @@
                     // This call is done in callerid_valueChanged()
                     //this.$.callerid.getLast(10);
                 }
+                // dynamically change the a tag text color from the widget config
+
+                // First, call the function to change the links color once.
+                // it will only apply on the main <a...></a> (last call) as the other ones are not yet built!
+                // Then, wait 1 second to change again the links color (and now, they are all built...)
+                // I hope 1 second will be enough for all users!!!
+                this.putColorOnLinks();
+                setTimeout(function(){
+                    this.putColorOnLinks();
+                    }.bind(this), 1000);
             },
             commandsUpdated: function() {
                 if (this.$.doblacklist.isSet) {
@@ -178,6 +198,8 @@
                 if (this.$.blacklisted.isSet) {
                     this.$.blacklisted.getLast(10);
                 }
+
+
             },
             callerid_historyChanged: function(oldValue, newValue) {
                 this.calls = [];
@@ -273,6 +295,16 @@
                             i--;
                         }
                     }
+                }
+            },
+            putColorOnLinks: function() {
+                var links = this.shadowRoot.querySelectorAll('a');
+                console.error(links);
+                console.error(this.options);
+                for (var i = 0; i < links.length; i++) {
+                    console.error("links[i] = " + i + " / " + links[i]);
+                    console.error(links[i]);
+                    links[i].style.color = this.options['WidgetTextColor'];
                 }
             }
         });

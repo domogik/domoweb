@@ -1,0 +1,49 @@
+<style>
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?v=4.5.0');
+  src: url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?#iefix&v=4.5.0') format('embedded-opentype'), url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'), url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+</style>
+
+<polymer-element name="dmw-navigation-simpleNavigation" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/navigation/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            button {
+                position: absolute;
+                display: block;
+                border-style: none;
+                width: 80%;
+                height: 80%;
+                top: 10%;
+                left: 10%;
+                background-color: transparent;
+            }
+        </style>
+        <shadow></shadow>
+        <button id="goto" class=""><i class="fa fa-{{ icon }} fa-4x"></i></button>
+    </template>
+    <script>
+        Polymer('dmw-navigation-simpleNavigation', {
+            ready: function() {
+                this.super();
+                this.$.goto.addEventListener('click', this.goto.bind(this));
+            },
+            optionsUpdated: function() {
+                this.$.goto.style.color = this.options['WidgetTextColor'];
+                this.icon = this.options['faIcon'];
+            },
+            goto: function(e) {
+                DMW.main.section.setAttribute('sectionid', this.options['targetSection']);
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+    </script>
+</polymer-element>
