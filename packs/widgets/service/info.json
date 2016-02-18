@@ -11,6 +11,7 @@
     },
     "widgets": {
         "teleinfo": {
+            "dev" : true,
             "name" : "Teleinfo",
             "description" : "Electric meter information",
             "height" : 1,
