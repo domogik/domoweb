@@ -299,11 +299,7 @@
             },
             putColorOnLinks: function() {
                 var links = this.shadowRoot.querySelectorAll('a');
-                console.error(links);
-                console.error(this.options);
                 for (var i = 0; i < links.length; i++) {
-                    console.error("links[i] = " + i + " / " + links[i]);
-                    console.error(links[i]);
                     links[i].style.color = this.options['WidgetTextColor'];
                 }
             }
