@@ -43,8 +43,8 @@
             "width" : 1,
             "options" : {
                 "targetSection" : {
-                    "name": "Section name or id to go to",
-                    "type": "string",
+                    "name": "Section id to go to",
+                    "type": "number",
                     "default": "1",
                     "required": true
                 },
