@@ -198,7 +198,7 @@ def main():
     else:
         ok("Everything seems to be good, DomoWeb should be installed correctly.")
         ok("Testing installation")
-        raw_input('Please press Enter when ready.')
+        #raw_input('Please press Enter when ready.')
         try:
             testConfigFiles()
             testInit()
