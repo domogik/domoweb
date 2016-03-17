@@ -1,0 +1,46 @@
+{
+    "json_version" : 1,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "camera",
+        "version" : 1,
+        "name" : "Camera",
+        "description" : "Dedicated widgets for cameras",
+        "author" : "Fritz",
+        "author_email" : "fritz@domogik.org"
+    },
+    "widgets": {
+        "mjpeg": {
+            "name" : "Mjpeg camera",
+            "description" : "Mjpeg camera",
+            "height" : 2,
+            "width" : 3,
+            "options" : {
+                "cameraName" : {
+                    "name": "Camera name",
+                    "description": "The camera name to display",
+                    "type": "string",
+                    "default": null,
+                    "required" : false
+                },
+                "cameraUrl" : {
+                    "name": "Camera url",
+                    "description": "If you don't use a camera managed by a plugin, you can set an url here",
+                    "type": "string",
+                    "default": null,
+                    "required" : false
+                }
+            },
+            "commands" : {
+            },
+            "sensors" : {
+                "camera" : {
+                    "name": "Camera (handled by a plugin)",
+                    "description": "Select a camera handler by a plugin",
+                    "types" : ["DT_VideoMjpeg"],
+                    "required": false
+                }
+            }
+        }
+    }
+}

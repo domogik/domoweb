@@ -1,0 +1,125 @@
+<polymer-element name="dmw-camera-mjpeg" extends="dmw-widget">
+    <template>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            #camera {
+            }
+            #cameralabel {
+                position: absolute;
+                bottom: 0px;
+                text-align: center;
+                width: 100%;
+            }
+            #cameralabel span {
+                text-shadow: 0px 0px 4px rgba(0, 0, 0, 1);
+                font-size: 1.4em;
+            }
+            #motionjpeg {
+            }
+            .camera-zoom {
+                object-fit: none;
+                position: fixed;
+                top: 0px;
+                left: 0px;
+                width: 100vw;
+                height: 100vh;
+                background-color: black;
+            }
+            .camera-normal {
+                position: absolute;
+                top: 0px;
+                margin-left: 1%;
+                margin-right: 1%;
+                margin-top: 2%;
+                height: 83%; 
+                width: 98%; 
+                object-fit: contain;
+            }
+            .mjpeg-zoom {
+                position: relative;
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                left: 50%;
+                top: 50%;
+
+                object-fit: fill;
+                min-width: 80%;
+                max-width: 95%;
+                max-height: 95%;
+            }
+            .mjpeg-normal {
+                object-fit: contain;
+                height: 100%; 
+                width: 100%; 
+            }
+        </style>
+        <dmw-sensor id='camera' sensorkey="camera" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <shadow></shadow>
+        <div id="camera" class="camera-normal">
+          <img id="motionjpeg" class="mjpeg-normal" src="{{url}}" on-click="{{zoom}}"/>
+        </div>
+        <div id="cameralabel"><span>{{label}}</span></div>
+    </template>
+    <script>
+        Polymer('dmw-camera-mjpeg', {
+            ready: function() {
+                this.mode = "normal";
+                this.super();
+                this.url = "/widget/camera/noname.png";
+                this.urlRaw = this.url;
+
+                // refresh the video stream each 20s to reload automatically if the stream was shut for a while
+                self = this;
+                setInterval(function(){
+                    self.url = self.urlRaw + "?" + +new Date().getTime();
+                },20000);
+
+
+            },
+            optionsUpdated: function() {
+                if (this.options['cameraName']) {
+                    this.label = this.options['cameraName']
+                }
+                else {
+                    this.label = "Camera";
+                }
+                if (this.options['cameraUrl']) {
+                    this.url = this.options['cameraUrl']
+                    this.urlRaw = this.url;
+                }
+                else {
+                    // will be set from sensor
+                }
+            },
+            sensorsUpdated: function() {
+            },
+            commandsUpdated: function() {
+            },
+            sensorvalueChanged: function(oldValue, newValue) {
+                this.url = newValue;
+                this.urlRaw = this.url;
+            },
+            zoom: function() {
+                if (this.mode == "normal") {
+                    this.mode = "zoom";
+                    this.$.camera.classList.add('camera-zoom');
+                    this.$.camera.classList.remove('camera-normal');
+                    this.$.motionjpeg.classList.add('mjpeg-zoom');
+                    this.$.motionjpeg.classList.remove('mjpeg-normal');
+                    this.$.cameralabel.style.visibility = "hidden";
+                }
+                else {
+                    this.mode = "normal";
+                    this.$.camera.classList.add('camera-normal');
+                    this.$.camera.classList.remove('camera-zoom');
+                    this.$.motionjpeg.classList.add('mjpeg-normal');
+                    this.$.motionjpeg.classList.remove('mjpeg-zoom');
+                    this.$.cameralabel.style.visibility = "initial";
+                }
+            }
+        });
+    </script>
+</polymer-element>
