@@ -61,6 +61,7 @@
                 this.super();
             },
             current_codeChanged: function(oldValue, newValue) {
+                newValue = newValue.last_value;
                 // needed only the first time :)
                 // strangely it does not work in sensorUpdated()... : this.options == undefined
                 if (this.options['displayBackground'] == 1) {
@@ -73,9 +74,11 @@
                 }
             },
             current_stationChanged: function(oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.labelprimary = newValue;
             },
             current_textChanged: function(oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.condition = newValue; // Add i18n ("Fair/Windy")
             },
         });

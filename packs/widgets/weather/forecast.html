@@ -175,6 +175,7 @@
             },
             */
             forecast_0_condition_code_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 /* easter egg inside ;) 
                    on each 1st april : ufo alert */
 
@@ -186,61 +187,79 @@
                 }
             },
             forecast_0_temperature_high_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_0_temperature_high = newValue
             },
             forecast_0_temperature_low_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_0_temperature_low = newValue
             },
 
             forecast_1_day_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_1_day = newValue
             },
             forecast_1_condition_code_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.$.forecast_1_condition_code.innerHTML = setWeatherIcon(newValue)
             },
             forecast_1_temperature_high_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_1_temperature_high = newValue
             },
             forecast_1_temperature_low_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_1_temperature_low = newValue
             },
 
             forecast_2_day_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_2_day = newValue
             },
             forecast_2_condition_code_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.$.forecast_2_condition_code.innerHTML = setWeatherIcon(newValue)
             },
             forecast_2_temperature_high_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_2_temperature_high = newValue
             },
             forecast_2_temperature_low_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_2_temperature_low = newValue
             },
 
             forecast_3_day_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_3_day = newValue
             },
             forecast_3_condition_code_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.$.forecast_3_condition_code.innerHTML = setWeatherIcon(newValue)
             },
             forecast_3_temperature_high_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_3_temperature_high = newValue
             },
             forecast_3_temperature_low_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_3_temperature_low = newValue
             },
 
             forecast_4_day_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_4_day = newValue
             },
             forecast_4_condition_code_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.$.forecast_4_condition_code.innerHTML = setWeatherIcon(newValue)
             },
             forecast_4_temperature_high_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_4_temperature_high = newValue
             },
             forecast_4_temperature_low_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.forecast_4_temperature_low = newValue
             }
 

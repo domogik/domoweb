@@ -139,16 +139,19 @@
                 }
             },
             directionvalueChanged: function(oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.$.center.style.backgroundColor = this.options['WidgetTextColor'];
                 this.$.path2050.style.fill = this.options['WidgetTextColor'];
                 this.$.arrow.style.transform = 'rotate(' + newValue + 'deg)';
                 this.$.arrow.style.webkitTransform = 'rotate(' + newValue + 'deg)';
             },
             speedvalueChanged: function(oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.speedunit = i18n.t("domoweb:unit", { context: this.$.speed.datatype_id, value: this.datatypes[this.$.speed.datatype_id]['unit'] });
                 this.speed = newValue;
             },
             gustvalueChanged: function(oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.gustunit = i18n.t("domoweb:unit", { context: this.$.gust.datatype_id, value: this.datatypes[this.$.gust.datatype_id]['unit'] });
                 this.gust = newValue;
             }

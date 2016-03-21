@@ -51,6 +51,7 @@
 				}		
 			},
 			sensorvalueChanged: function(oldValue, newValue) {
+				newValue newValue.last_value;
 				var levels = this.shadowRoot.querySelectorAll(".level");
 				for (var i = levels.length - 1; i >= 0; i--) {
 					levels[i].classList.remove('current');
