@@ -47,11 +47,11 @@
                 this.super();
             },
             current_sunriseChanged: function(oldValue, newValue) {
-                newValue = newValue.last_value;
+                newValue = newValue.stored_value;
                 this.sunrise = newValue;
             },
             current_sunsetChanged: function(oldValue, newValue) {
-                newValue = newValue.last_value;
+                newValue = newValue.stored_value;
                 this.sunset = newValue;
             },
         });

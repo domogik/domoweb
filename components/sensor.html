@@ -48,6 +48,7 @@
                 // Fritz
                 //this.sensorvalue = sensor['last_value'];
                 this.sensorvalue = sensor;
+                this.sensorvalue['stored_value'] = this.sensorvalue['last_value'];
                 this.sensorreceived = sensor['last_received'];
                 this.sensorid = sensor['id'];
                 this.device = sensor['device'];

@@ -139,19 +139,19 @@
 				}
 			},
 			iinstvalueChanged: function (oldValue, newValue) {
-				newValue = newValue.last_value;
+				newValue = newValue.stored_value;
 				this.iinst = parseInt(newValue);
 			},
 			pappvalueChanged: function (oldValue, newValue) {
-				newValue = newValue.last_value;
+				newValue = newValue.stored_value;
 				this.papp = parseInt(newValue);
 			},
 			ptecvalueChanged: function (oldValue, newValue) {
-				newValue = newValue.last_value;
+				newValue = newValue.stored_value;
 				this.ptec = newValue.substr(0, 2);
 			},
 			ptecChanged: function (oldValue, newValue) {
-				newValue = newValue.last_value;
+				newValue = newValue.stored_value;
 				this.classList.add(newValue);
 				this.classList.remove(oldValue);
 			},
@@ -163,15 +163,15 @@
 				this.redrawGraph();
 			},
 			basevalueChanged: function (oldValue, newValue) {
-				newValue = newValue.last_value;
+				newValue = newValue.stored_value;
 				this.base = ~~(parseInt(newValue) / 1000); // We convert in kW
 			},		
 			hchcvalueChanged: function (oldValue, newValue) {
-				newValue = newValue.last_value;
+				newValue = newValue.stored_value;
 				this.hchc = ~~(parseInt(newValue) / 1000); // We convert in kW
 			},		
 			hchpvalueChanged: function (oldValue, newValue) {
-				newValue = newValue.last_value;
+				newValue = newValue.stored_value;
 				this.hchp = ~~(parseInt(newValue) / 1000); // We convert in kW
 			},		
 			papplastChanged: function(oldValue, newValue) {

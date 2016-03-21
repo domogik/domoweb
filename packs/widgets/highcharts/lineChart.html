@@ -97,7 +97,7 @@
 			sensorvalue3Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 3)},
 			sensorvalue4Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 4)},
 			sensorvalueUpdate: function(oldValue, newValue, series_num) {
-                                newValue = newValue.last_value;
+                                newValue = newValue.stored_value;
 				var date = moment().valueOf();
 				if (this.chart.series[series_num]) {
 			    	this.chart.series[series_num].addPoint({x:date, y: newValue}, true, true);

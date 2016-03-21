@@ -272,7 +272,7 @@
 				this.labelprimary = this.options['title'];
 			},
 			pumpvalueChanged: function(oldValue, newValue) {
-				newValue = newValue.last_value;
+				newValue = newValue.stored_value;
 				this.pumpStatus = i18n.t("domoweb:bool." + newValue, { context: 'DT_State' });
 				if (value == 1) {
 					this.$.propeller.classList.add('running');
@@ -281,12 +281,12 @@
 				}
 			},
 			temperaturevalueChanged: function(oldValue, newValue) {
-				newValue = newValue.last_value;
+				newValue = newValue.stored_value;
 				this.unit = i18n.t("domoweb:unit", { context: this.$.temperature.datatype_id, value: this.datatypes[this.$.temperature.datatype_id]['unit'] });
 				this.temperature = newValue;
 			},
 			phvalueChanged: function(oldValue, newValue) {
-				newValue = newValue.last_value;
+				newValue = newValue.stored_value;
 				var levels = this.shadowRoot.querySelectorAll(".phlevel");
 				for (var i = levels.length - 1; i >= 0; i--) {
 					levels[i].classList.remove('current');
@@ -313,7 +313,7 @@
 				}
 			},
 			chlorinevalueChanged: function(oldValue, newValue) {
-				newValue = newValue.last_value;
+				newValue = newValue.stored_value;
 				var levels = this.shadowRoot.querySelectorAll(".cllevel");
 				for (var i = levels.length - 1; i >= 0; i--) {
 					levels[i].classList.remove('current');

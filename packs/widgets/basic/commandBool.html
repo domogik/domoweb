@@ -76,7 +76,7 @@
                 }
             },
             boolstateChanged: function(oldValue, newValue) {
-                this.currentValue = parseInt(newValue.last_value);
+                this.currentValue = parseInt(newValue.stored_value);
                 if (this.currentValue == 1) {
                     this.$.send.classList.add('true');
                     this.$.send.classList.remove('false');
