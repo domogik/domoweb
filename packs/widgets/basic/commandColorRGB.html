@@ -229,7 +229,7 @@
             },
             colorvalueChanged: function(oldValue, newValue) {
                 if (this.$.color.isSet) {
-                    this.$.current.style.backgroundColor = "#"+newValue;
+                    this.$.current.style.backgroundColor = "#"+newValue.last_value;
                 }
             },
             colorNameToHex: function(colour) {

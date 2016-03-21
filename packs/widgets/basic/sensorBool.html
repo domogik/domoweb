@@ -42,6 +42,7 @@
                 }
             },
             sensorvalueChanged: function(oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.booltext = i18n.t("domoweb:bool." + newValue, { context: this.$.primary.datatype_id });
                 this.$.boolicon.className = '';
 

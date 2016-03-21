@@ -44,6 +44,7 @@
                 }
             },
             sensorvalueChanged: function(oldValue, newValue) {
+                newValue = newValue.last_value;
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
                 if (this.options['autoconvert']==1 && newValue > 0) {
                        var k = 1000;

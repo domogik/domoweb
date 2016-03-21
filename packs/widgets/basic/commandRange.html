@@ -87,7 +87,7 @@
 				}
 			},
 			scalingstateChanged: function(oldValue, newValue) {
-				this.current = newValue;
+				this.current = newValue.last_value;
 				this.$.range.value = this.current;
 			},
 			send: function(e) {
