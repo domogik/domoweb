@@ -51,7 +51,7 @@
         <dmw-sensor id='current_text' sensorkey="current_text" sensorvalue="{{current_text}}"></dmw-sensor>
         <dmw-sensor id='current_temperature' sensorkey="current_temperature" sensorvalue="{{current_temperature}}"></dmw-sensor>
         <div id='text'>{{ condition }}</div>
-        <div id='temperature'>{{current_temperature}}</div>
+        <div id='temperature'>{{ temperature }}</div>
         <div id='unit'>&deg;C</div>
         <shadow></shadow>
     </template>
@@ -76,6 +76,10 @@
             current_stationChanged: function(oldValue, newValue) {
                 newValue = newValue.last_value;
                 this.labelprimary = newValue;
+            },
+            current_temperatureChanged: function(oldValue, newValue) {
+                newValue = newValue.last_value;
+                this.temperature = newValue; 
             },
             current_textChanged: function(oldValue, newValue) {
                 newValue = newValue.last_value;
