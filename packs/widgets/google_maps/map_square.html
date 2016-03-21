@@ -64,6 +64,7 @@
                 }        
             },
             sensorvalueChanged: function(oldValue, newValue) {
+                newValue = newValue.last_value;
                 this.deleteMarkers();
                 this.addMarker(newValue);
             },
