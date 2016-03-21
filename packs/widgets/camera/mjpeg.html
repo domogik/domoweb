@@ -99,7 +99,7 @@
             commandsUpdated: function() {
             },
             sensorvalueChanged: function(oldValue, newValue) {
-                this.url = newValue;
+                this.url = newValue.last_value;
                 this.urlRaw = this.url;
             },
             zoom: function() {
