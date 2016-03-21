@@ -113,6 +113,7 @@
 				}
 			},
 			sensorvalueChanged: function(oldValue, newValue) {
+                                newValue = newValue.last_value;
 				number = parseFloat(newValue);
 				this.displayValue(number, this.datatypes[this.$.primary.datatype_id]['unit']);
 				if (this.options['maximum']) {
