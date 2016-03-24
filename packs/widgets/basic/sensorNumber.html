@@ -44,8 +44,6 @@
                 }
             },
             sensorvalueChanged: function(oldValue, newValue) {
-                console.error("--------------");
-                console.error(newValue);
                 newValue = newValue.stored_value;
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
                 if (this.options['autoconvert']==1 && newValue > 0) {
