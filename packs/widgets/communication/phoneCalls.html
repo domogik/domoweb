@@ -109,7 +109,7 @@
         <dmw-sensor id='name' sensorkey="name" sensorvalue="{{name_value}}" sensorhistory="{{name_history}}">></dmw-sensor>
         <dmw-sensor id='blacklisted' sensorkey="blacklisted" sensorvalue="{{blacklisted_value}}" sensorhistory="{{blacklisted_history}}">></dmw-sensor>
         <shadow></shadow>
-        <div id="icon_phone">
+        <div id="icon_phone" on-click="{{displayHistory}}">
           <i class="fa fa-phone fa-4x"></i>
         </div>
         <table id="list" class="hide"  on-click="{{hideHistory}}"> 
@@ -235,7 +235,9 @@
             completeCallsByNames: function(name, timestamp) {
                 for(idx in this.calls) {
                     if (timestamp == this.calls[idx]["timestamp"]) {
-                        this.calls[idx]["who"] = name;
+                        if (name != "") {
+                            this.calls[idx]["who"] = name;
+                        }
                     }
                 }
             },
