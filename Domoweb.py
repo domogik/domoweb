@@ -71,7 +71,7 @@ if __name__ == '__main__':
     options.define("sqlite_db", default="/var/lib/domoweb/db.sqlite", help="Database file path", type=str)
     options.define("port", default=40404, help="Launch on the given port", type=int)
     options.define("debug", default=False, help="Debug mode", type=bool)
-    options.define("rest_url", default="http://127.0.0.1:40405", help="RINOR REST Url", type=str)
+    options.define("rest_url", default="http://127.0.0.1:40406/rest", help="RINOR REST Url", type=str)
     options.define("develop", default=False, help="Develop mode", type=bool)
     options.parse_config_file(SERVER_CONFIG)
 
