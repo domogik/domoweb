@@ -13,6 +13,9 @@
                 border-radius: 50%;
                 border: 1px solid #ffffff;
             }
+            #speakButton {
+                margin-top: 40%;
+            }
             #speakButton span {
                 position: relative;
                 top: 50%;
@@ -23,27 +26,213 @@
                 text-align: center;
                 display: inline-block;
             }
+            #speach_errors {
+                 background: red;
+            }
+            #chat {
+                 list-style: none;
+            }
+            #chat .item {
+                 font-size: 3em;
+                 margin-bottom: 1em;
+                 border-left: 1px solid #ffffff;
+                 padding-left: 0.5em;
+            }
+
+            /*** Animation ***/
+            .pulse1 {
+            	-webkit-animation: pulse1 2s linear infinite;
+            	-moz-animation: pulse1 2s linear infinite;
+            	-ms-animation: pulse1 2s linear infinite;
+            	animation: pulse1 2s linear infinite;
+            }
+            
+            @keyframes "pulse1" {
+             0% {
+                background-color: rgba(255,0,0,1.0);
+             }
+             50% {
+                background-color: rgba(255,0,0,0.0);
+             }
+             100% {
+                background-color: rgba(255,0,0,1.0);
+             }
+            
+            }
+            @-moz-keyframes pulse1 {
+             0% {
+               background-color: rgba(255,0,0,1.0);
+             }
+             50% {
+               background-color: rgba(255,0,0,0.0);
+             }
+             100% {
+               background-color: rgba(255,0,0,1.0);
+             }
+            
+            }
+            
+            @-webkit-keyframes "pulse1" {
+             0% {
+               background-color: rgba(255,0,0,1.0);
+             }
+             50% {
+               background-color: rgba(255,0,0,0.0);
+             }
+             100% {
+               background-color: rgba(255,0,0,1.0);
+             }
+            
+            }
+            
+            @-ms-keyframes "pulse1" {
+             0% {
+               background-color: rgba(255,0,0,1.0);
+             }
+             90% {
+               background-color: rgba(255,0,0,0.0);
+             }
+             100% {
+               background-color: rgba(255,0,0,1.0);
+             }
+            
+            }
         </style>
         <web-socket id="socket"></web-socket>
         <div id="container">
           <div class="row">
-            <div class="col-md-10 col-md-offset-1">
-              <h1>Butler</h1>
-              <div id="speakButton"><span>SPEAK</span></div>
+            <div class="col-md-2 col-md-offset-1">
               <!-- <button id="closeModal" type="button" class="btn btn-default">Close</button> -->
+
+              <!--
+              <h1>Butler</h1>
+              -->
+
+              <div id="speakButton" on-click="{{startVoiceRecog}}">
+                <span>SPEAK</span>
+              </div>
+
+            </div>
+            <div class="col-md-8">
+              <ul id="chat">
+                <li id="request" class="item"><span>{{ request }}</span></li>
+                <li id="butlerResponse" class="item"><span>{{ butlerResponse }}</span></li>
+              </ul>
+
             </div>
           </div>       
-        </div>
+          <div id="speach_errors">
+            <div id="err_voices">{{err_voices}}</div>
+            <div id="err_tts">{{err_tts}}</div>
+            <div id="err_stt">{{err_stt}}</div>
+          </div>
     </template>
     <script>
         Polymer("dmw-butler", {
             ready:function(){
                 var self = this;
+                /*
                 this.$.closeModal.addEventListener('click', function () {
                     var modalOverlay = document.getElementById('modal-overlay');
                     modalOverlay.classList.remove('on');
                     self.remove();
                 });
+                */
+
+                doSTT = true;
+                // display warning if no STT support :(
+                if (!(window.hasOwnProperty('webkitSpeechRecognition'))) {
+                    this.err_stt = 'NO STT!';
+                    doSTT = false;
+                }
+                // display warning if no TTS support :(
+                if (!('speechSynthesis' in window)) {
+                    this.err_tts = 'NO TTS!';
+                }
+
+                /* TODO : mieux gérer....
+                console.error(speechSynthesis.getVoices());
+                console.error(speechSynthesis.getVoices().length);
+                if (speechSynthesis.getVoices().length == 0) {
+                    this.err_voices = 'NO VOICES!';
+                }
+                */
+
+                // On page display, start STT
+                if (doSTT == true) {
+                    this.startVoiceRecog();
+                }
+            },
+            startVoiceRecog: function(e) {
+                if (window.hasOwnProperty('webkitSpeechRecognition')) {
+                    var recognition = new webkitSpeechRecognition();
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                    recognition.lang = "fr-FR";
+                    this.$.speakButton.classList.add('pulse1');
+                    recognition.start();
+
+                    self = this;
+                    recognition.onresult = function(e) {
+                        recognition.stop();
+                        //alert(e.results[0][0].transcript);
+                        self.speaked = e.results[0][0].transcript;
+                        self.displayRequest(self.speaked);
+
+                        url = "http://192.168.1.50:50000/rest/butler/discuss";
+                        $.ajax({
+                           url: url,
+                           type: 'GET',
+                           dataType : 'jsonp',
+                           crossDomain: true,
+                           contentType: "application/json;",
+                           success: function(data) {
+                              //console.log("Response from butler="+data);
+                              self.tts(data, self.displayResponse(data));
+                              self.$.speakButton.classList.remove('pulse1');
+                           },
+                           error: function() {
+                              alert("Error while calling the butler component over the REST url");
+                              self.$.speakButton.classList.remove('pulse1');
+                           },
+                           data : {"data" : JSON.stringify({"text" : self.speaked, "source" : "domoweb"}, null, '\t')}
+                        });
+                    };
+
+                    recognition.onerror = function(e) {
+                        recognition.stop();
+                        self.$.speakButton.classList.remove('pulse1');
+                    }
+                }
+            },
+            displayRequest: function(requestText) {
+                this.request = requestText;
+            },
+            displayResponse: function(response) {
+                this.butlerResponse = response['text'];
+            },
+            tts: function(json, callback) {
+                 var u = new SpeechSynthesisUtterance();
+                 u.text = json['text'];
+                 u.lang = 'fr-FR';
+ 
+                 u.onend = function () {
+                     if (callback) {
+                         callback();
+                     }
+                 };
+ 
+                 u.onerror = function (e) {
+                     alert('Error while speeaking');
+                     console.error("Error while speaking : " + e);
+                     console.error(e);
+                     if (callback) {
+                         callback(e);
+                     }
+                 };
+ 
+                 console.error(u);
+                 speechSynthesis.speak(u);
             },
         });
     </script>
