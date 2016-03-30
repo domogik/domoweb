@@ -52,6 +52,7 @@
   <link rel="import" href="/components/datatypes.html">
   <link rel="import" href="/components/section.html">
   <link rel="import" href="/components/widgetsSelector.html">
+  <link rel="import" href="/components/butler.html">
 </head>
 <body id="body" unresolved>
   <dmw-datatypes id="datatypes"></dmw-datatypes>
@@ -71,6 +72,9 @@
   <div id="sections-tree">
     <button id="toggle-radial"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></button>
       {{ display_tree(sections, 0) }}
+  </div>
+  <div id="butler">
+    <button id="toggle-radial-top-right"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
   </div>
   <div id="modal-overlay" class="overlay"></div>
   <script src="/libraries/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -99,6 +103,10 @@
         namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}], 
         defaultNs: 'domoweb'
       }
+    });
+
+    $('#butler').click(function() {
+        addButlerHandler();
     });
 
     window.addEventListener('polymer-ready', function(){

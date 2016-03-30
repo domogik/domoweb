@@ -1,0 +1,50 @@
+<link rel="import" href="/libraries/polymer/polymer.html">
+<link rel="import" href="/components/websockets.html">
+
+<polymer-element name="dmw-butler">
+    <template>
+        <style>
+              @import '/libraries/bootstrap-3.3.5/css/bootstrap.min.css';
+          </style>
+        <style type="text/css">
+            #speakButton {
+                width: 6em;
+                height: 6em;
+                border-radius: 50%;
+                border: 1px solid #ffffff;
+            }
+            #speakButton span {
+                position: relative;
+                top: 50%;
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                left: 50%;
+                text-align: center;
+                display: inline-block;
+            }
+        </style>
+        <web-socket id="socket"></web-socket>
+        <div id="container">
+          <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+              <h1>Butler</h1>
+              <div id="speakButton"><span>SPEAK</span></div>
+              <!-- <button id="closeModal" type="button" class="btn btn-default">Close</button> -->
+            </div>
+          </div>       
+        </div>
+    </template>
+    <script>
+        Polymer("dmw-butler", {
+            ready:function(){
+                var self = this;
+                this.$.closeModal.addEventListener('click', function () {
+                    var modalOverlay = document.getElementById('modal-overlay');
+                    modalOverlay.classList.remove('on');
+                    self.remove();
+                });
+            },
+        });
+    </script>
+</polymer-element>

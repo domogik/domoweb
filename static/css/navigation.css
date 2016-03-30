@@ -2,6 +2,21 @@
 
 /*--------------  SAFELY CUSTOMIZABLE - Visual styling for menu elements -------------------*/
 
+#butler .active { 
+	background-color: #2D2C2F !important; 
+	color: #ffffff !important; 
+	z-index: 15; 
+}
+
+#butler {
+        z-index: 1000;
+	font-size: 0.8em;
+	position: fixed;
+	top: 0;
+	right: 0;
+}
+
+
 #sections-tree .active { 
 	background-color: #2D2C2F !important; 
 	color: #ffffff !important; 
@@ -36,6 +51,23 @@
 	color: #2D2C2F;
 }
 
+#toggle-radial-top-right {
+	width: 4em;
+	height: 4em;
+	border-radius: 0 0 0 4em;
+	border: 0;
+	background: #2D2C2F;
+	color: #ffffff;
+	outline: none;
+}
+#toggle-radial-top-right span {
+	font-size: 1.6em;
+	margin: 0 0 0.5em 0.5em;
+}
+#toggle-radial-top-right:hover, #toggle-radial-top-right:active, #toggle-radial-top-right.active {
+	background: #ffffff;
+	color: #2D2C2F;
+}
 
 /* -------------- Menu Levels general styling -------------- */
 

@@ -335,6 +335,12 @@ function addWidgetHandler() {
 	DMW.main.modalOverlay.classList.add('on');
 }
 
+function addButlerHandler() {
+	selector = document.createElement('dmw-butler');
+	DMW.main.modalOverlay.appendChild(selector);
+	DMW.main.modalOverlay.classList.add('on');
+}
+
 function addSectionHandler() {
 	DMW.main.ajax.setAttribute('handleAs', 'text');
 	DMW.main.ajax.addEventListener("polymer-response",
