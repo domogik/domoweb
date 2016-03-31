@@ -1,3 +1,13 @@
+<style>
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?v=4.5.0');
+  src: url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?#iefix&v=4.5.0') format('embedded-opentype'), url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'), url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+</style>
+
 <link rel="import" href="/libraries/polymer/polymer.html">
 <link rel="import" href="/components/websockets.html">
 
@@ -5,16 +15,21 @@
     <template>
         <style>
               @import '/libraries/bootstrap-3.3.5/css/bootstrap.min.css';
-          </style>
+        </style>
+        <link rel="stylesheet" href="/static/libraries/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
         <style type="text/css">
             #speakButton {
                 width: 6em;
                 height: 6em;
                 border-radius: 50%;
                 border: 1px solid #ffffff;
-            }
-            #speakButton {
-                margin-top: 40%;
+                margin-top: 2em;
+                margin-bottom: 2em;
+                position: relative;
+                left: 50%;
+                -webkit-transform: translate(-50%, 0%);
+                -ms-transform: translate(-50%, 0);
+                transform: translate(-50%, 0);
             }
             #speakButton span {
                 position: relative;
@@ -26,17 +41,39 @@
                 text-align: center;
                 display: inline-block;
             }
-            #speach_errors {
-                 background: red;
+            #speech_errors {
+                background: red;
+                color: white;
+                position: fixed;
+                bottom: 4em;
+                left: 5%;
+                width: 90%;
+                border-radius: 1em;
+                padding: 1em;
             }
             #chat {
                  list-style: none;
+                 margin-left: 0px;
+                 padding: 0 0 0 0;
             }
-            #chat .item {
+            #chat .itemUser {
+                 font-size: 3em;
+                 margin-bottom: 1em;
+                 border-right: 1px solid #ffffff;
+                 padding-right: 0.5em;
+                 text-align: right;
+            }
+            #chat .itemButler {
+                 margin-left: 0px;
                  font-size: 3em;
                  margin-bottom: 1em;
                  border-left: 1px solid #ffffff;
                  padding-left: 0.5em;
+            }
+            .box {
+                 /*
+                 border: 1px solid blue;
+                 */
             }
 
             /*** Animation ***/
@@ -99,9 +136,9 @@
             }
         </style>
         <web-socket id="socket"></web-socket>
-        <div id="container">
+        <div class="container">
           <div class="row">
-            <div class="col-md-2 col-md-offset-1">
+            <div class="box col-md-12">
               <!-- <button id="closeModal" type="button" class="btn btn-default">Close</button> -->
 
               <!--
@@ -109,29 +146,30 @@
               -->
 
               <div id="speakButton" on-click="{{startVoiceRecog}}">
+                <!-- <span><i class="fa fa-microphone"></i></span> -->
                 <span>SPEAK</span>
               </div>
 
-            </div>
-            <div class="col-md-8">
               <ul id="chat">
-                <li id="request" class="item"><span>{{ request }}</span></li>
-                <li id="butlerResponse" class="item"><span>{{ butlerResponse }}</span></li>
+                <li id="request" class="itemButler"><span>{{ request }}</span></li>
+                <li id="butlerResponse" class="itemButler"><span>{{ butlerResponse }}</span></li>
               </ul>
 
             </div>
           </div>       
-          <div id="speach_errors">
-            <div id="err_voices">{{err_voices}}</div>
-            <div id="err_tts">{{err_tts}}</div>
-            <div id="err_stt">{{err_stt}}</div>
-          </div>
+        </div>
+        <div id="speech_errors">
+          <div id="err_voices">{{err_voices}}</div>
+          <div id="err_tts">{{err_tts}}</div>
+          <div id="err_stt">{{err_stt}}</div>
+        </div>
     </template>
     <script>
         Polymer("dmw-butler", {
             ready:function(){
                 this.callback = Math.floor(Math.random() * 10000);
                 this.$.socket.register('butler-discuss', this.tts.bind(this), { 'caller':this.callback });
+                this.$.speech_errors.style.visibility = "hidden";
 
                 var self = this;
                 /*
@@ -145,19 +183,22 @@
                 doSTT = true;
                 // display warning if no STT support :(
                 if (!(window.hasOwnProperty('webkitSpeechRecognition'))) {
-                    this.err_stt = 'NO STT!';
+                    this.$.speech_errors.style.visibility = "visible";
+                    this.err_stt = "Your browser doesn't support the Speech to Text feature!";
                     doSTT = false;
                 }
                 // display warning if no TTS support :(
                 if (!('speechSynthesis' in window)) {
-                    this.err_tts = 'NO TTS!';
+                    this.$.speech_errors.style.visibility = "visible";
+                    this.err_tts = "Your browser doesn't support the Text to Speech feature!";
                 }
 
                 /* TODO : mieux gérer....
                 console.error(speechSynthesis.getVoices());
                 console.error(speechSynthesis.getVoices().length);
                 if (speechSynthesis.getVoices().length == 0) {
-                    this.err_voices = 'NO VOICES!';
+                    this.$.speech_errors.show();
+                    this.err_voices = "Your browser doesn't include any voice for the Text to Speech feature!";
                 }
                 */
 
@@ -166,11 +207,6 @@
                     this.startVoiceRecog();
                 }
             },
-            /*
-            callback: function(e) {
-                alert('foo');
-            },
-            */
             startVoiceRecog: function(e) {
                 if (window.hasOwnProperty('webkitSpeechRecognition')) {
                     var recognition = new webkitSpeechRecognition();
@@ -212,6 +248,10 @@
 
                     };
 
+                    recognition.onend = function(e) {
+                        recognition.stop();
+                        self.$.speakButton.classList.remove('pulse1');
+                    }
                     recognition.onerror = function(e) {
                         recognition.stop();
                         self.$.speakButton.classList.remove('pulse1');
