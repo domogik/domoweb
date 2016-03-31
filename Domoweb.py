@@ -17,6 +17,7 @@ from domoweb import ui_methods
 
 #import tornado.ioloop
 import tornado.web
+import tornado.httpserver
 from tornado.options import options
 import logging
 
@@ -28,6 +29,7 @@ domoweb.FULLPATH = os.path.normpath(os.path.abspath(__file__))
 domoweb.PROJECTPATH = os.path.dirname(domoweb.FULLPATH)
 domoweb.PACKSPATH = os.path.join(domoweb.PROJECTPATH, 'packs')
 domoweb.VARPATH = "/var/lib/domoweb/"
+
 application = tornado.web.Application(
     handlers=[
         (r"/(\d*)", MainHandler),
@@ -50,7 +52,7 @@ application = tornado.web.Application(
     template_path=os.path.join(os.path.dirname(__file__), "templates"),
     debug=True,
     autoreload=True,
-    ui_methods=ui_methods,
+    ui_methods=ui_methods
 )
 
 if __name__ == '__main__':
@@ -73,6 +75,9 @@ if __name__ == '__main__':
     options.define("debug", default=False, help="Debug mode", type=bool)
     options.define("rest_url", default="http://127.0.0.1:40406/rest", help="RINOR REST Url", type=str)
     options.define("develop", default=False, help="Develop mode", type=bool)
+    options.define("use_ssl", default=False, help="Use SSL", type=bool)
+    options.define("ssl_certificate", default="ssl_cert.pem", help="SSL certificate file path", type=str)
+    options.define("ssl_key", default="ssl_key.pem", help="SSL key file path", type=str)
     options.parse_config_file(SERVER_CONFIG)
 
     logger.info("Running from : %s" % domoweb.PROJECTPATH)
@@ -89,7 +94,20 @@ if __name__ == '__main__':
     mqDataLoader.loadDevices(options.develop)
 
     logger.info("Starting tornado web server")
-    application.listen(options.port)
+    if options.use_ssl:
+        logger.info("SSL activated")
+        logger.info("SSL certificate file : {0}".format(options.ssl_certificate))
+        logger.info("SSL certificate file : {0}".format(options.ssl_key))
+        http_server = tornado.httpserver.HTTPServer(application,
+                                            ssl_options = {
+                                                "certfile": os.path.join(options.ssl_certificate),
+                                                "keyfile": os.path.join(options.ssl_key)
+                                            })
+    else:
+        logger.info("SSL not activated")
+        http_server = tornado.httpserver.HTTPServer(application)
+                                                
+    http_server.listen(options.port)
     logger.info("Starting MQ Handler")
     MQHandler()
     ioloop.IOLoop.instance().start() 

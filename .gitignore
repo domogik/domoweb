@@ -20,3 +20,4 @@ settings_local.py
 domogik.sqlite
 _build/*
 ._*
+*.pem

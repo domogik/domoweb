@@ -130,6 +130,7 @@
     <script>
         Polymer("dmw-butler", {
             ready:function(){
+                this.$.socket.send("butler-discuss", {'caller': this.callback, 'text': 'bonjour'});
                 var self = this;
                 /*
                 this.$.closeModal.addEventListener('click', function () {
@@ -234,6 +235,9 @@
                  console.error(u);
                  speechSynthesis.speak(u);
             },
+            callback: function(data) {
+                console.error("YEAH");
+            }
         });
     </script>
 </polymer-element>

@@ -21,6 +21,9 @@ from domogikmq.message import MQMessage
 
 import traceback
 
+# TODO : python3
+import urllib
+
 socket_connections = []
 
 class MainHandler(RequestHandler):
@@ -137,6 +140,8 @@ class WSHandler(websocket.WebSocketHandler):
             data = yield self.WSSensorGetHistory(jsonmessage[1])
         elif(jsonmessage[0] == 'sensor-getlast'): 
             data = yield self.WSSensorGetLast(jsonmessage[1])
+        elif(jsonmessage[0] == 'butler-discuss'): 
+            data = yield self.WSButlerDiscuss(jsonmessage[1])
         else:
             data = {
                 'section-get' : self.WSSectionGet,
@@ -305,6 +310,31 @@ class WSHandler(websocket.WebSocketHandler):
             history = []
         json = {'caller':data['caller'], 'id':data['id'], 'history':history}
         raise Return(['sensor-history', json])
+
+    @gen.coroutine
+    def WSButlerDiscuss(self, data):
+
+        def handle_request(response):
+            if response.error:
+                logger.error("Call to butler in Error: {0}".format(response.error))
+            else:
+                logger.info("Call to butler OK")
+
+        logger.info("IN WSButlerDiscuss")
+        url = '%s/butler/discuss' % (options.rest_url)
+        logger.info("REST Call : %s" % url)
+        http = AsyncHTTPClient()
+        
+        discuss_data = {"text" : data["text"], "source" : "Domoweb"}
+        #body = urllib.urlencode(data) 
+        body = json.dumps(discuss_data)
+        headers = {'Content-Type': 'application/json'}
+        logger.info("BEFORE")
+        response = yield http.fetch(url, handle_request, method='POST', headers=headers, body=body) 
+        logger.info("REST response : {0}".format(response.body))
+        j = json_decode(response.body)
+        json_ret = j
+        raise Return(['butler-discuss', json_ret])
 
     def sendMessage(self, content):
         data=json.dumps(content)

@@ -13,7 +13,11 @@
 		}
 
 		WebsocketHandler.prototype.connect = function() {
-			this._socket = new WebSocket("ws://" + window.location.hostname + ":" + window.location.port + "/ws/");
+                        if (window.location.protocol == "http:") 
+                            protocol = "ws:"
+                        else
+                            protocol = "wss:"
+			this._socket = new WebSocket(protocol + "//" + window.location.hostname + ":" + window.location.port + "/ws/");
 			this._socket.onmessage = this.onMessage.bind(this);
 			this._socket.onerror = this.onError.bind(this);
 			this._socket.onopen = this.onOpen.bind(this);
