@@ -179,14 +179,22 @@
                 this.$.socket.register('butler-discuss', this.tts.bind(this), { 'caller':this.callback });
                 this.$.speech_errors.style.visibility = "hidden";
 
-                var self = this;
                 /*
+                var self = this;
                 this.$.closeModal.addEventListener('click', function () {
                     var modalOverlay = document.getElementById('modal-overlay');
                     modalOverlay.classList.remove('on');
                     self.remove();
                 });
                 */
+
+                // close when touching the screen
+                var self = this;
+                document.getElementById('modal-overlay').addEventListener('click', function () {
+                    var modalOverlay = document.getElementById('modal-overlay');
+                    modalOverlay.classList.remove('on');
+                    self.remove();
+                });
 
                 doSTT = true;
                 // display warning if no STT support :(
