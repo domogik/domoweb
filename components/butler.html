@@ -130,7 +130,9 @@
     <script>
         Polymer("dmw-butler", {
             ready:function(){
-                this.$.socket.send("butler-discuss", {'caller': this.callback, 'text': 'bonjour'});
+                this.callback = Math.floor(Math.random() * 10000);
+                this.$.socket.register('butler-discuss', this.tts.bind(this), { 'caller':this.callback });
+
                 var self = this;
                 /*
                 this.$.closeModal.addEventListener('click', function () {
@@ -164,6 +166,11 @@
                     this.startVoiceRecog();
                 }
             },
+            /*
+            callback: function(e) {
+                alert('foo');
+            },
+            */
             startVoiceRecog: function(e) {
                 if (window.hasOwnProperty('webkitSpeechRecognition')) {
                     var recognition = new webkitSpeechRecognition();
@@ -180,6 +187,9 @@
                         self.speaked = e.results[0][0].transcript;
                         self.displayRequest(self.speaked);
 
+                        self.$.socket.send("butler-dodiscuss", {'caller': self.callback, 'data': {"text" : self.speaked, "source" : "domoweb"}});
+                        //self.$.socket.send("butler-dodiscuss", {'caller': self.callback, 'text': self.speaked});
+                        /* OLD url calling way ***************************************************
                         url = "http://192.168.1.50:50000/rest/butler/discuss";
                         $.ajax({
                            url: url,
@@ -189,7 +199,7 @@
                            contentType: "application/json;",
                            success: function(data) {
                               //console.log("Response from butler="+data);
-                              self.tts(data, self.displayResponse(data));
+                              self.tts("butler-discuss", data, self.displayResponse(data));
                               self.$.speakButton.classList.remove('pulse1');
                            },
                            error: function() {
@@ -198,6 +208,8 @@
                            },
                            data : {"data" : JSON.stringify({"text" : self.speaked, "source" : "domoweb"}, null, '\t')}
                         });
+                        */
+
                     };
 
                     recognition.onerror = function(e) {
@@ -209,13 +221,22 @@
             displayRequest: function(requestText) {
                 this.request = requestText;
             },
-            displayResponse: function(response) {
-                this.butlerResponse = response['text'];
+            displayResponse: function(text) {
+                this.butlerResponse = text;
             },
-            tts: function(json, callback) {
+            tts: function(topic, json) {
+                 // topic is related to the WS usage
+                 // json is the json from the WS, so : ["butler-discuss", {"caller": 6516, "data": {"mood": null, "media": null, "sex": "female", "location": null, "text": "Salut", "reply_to": "Domoweb", "identity": "Aria"}}]
+
+                 callback = undefined;
+
+                 console.log("Text to speak : " + json["data"]["text"]);
                  var u = new SpeechSynthesisUtterance();
-                 u.text = json['text'];
+                 u.text = json['data']['text'];
                  u.lang = 'fr-FR';
+
+                 this.$.speakButton.classList.remove('pulse1');
+                 this.displayResponse(u.text);
  
                  u.onend = function () {
                      if (callback) {
@@ -235,9 +256,6 @@
                  console.error(u);
                  speechSynthesis.speak(u);
             },
-            callback: function(data) {
-                console.error("YEAH");
-            }
         });
     </script>
 </polymer-element>

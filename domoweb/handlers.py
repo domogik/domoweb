@@ -140,7 +140,7 @@ class WSHandler(websocket.WebSocketHandler):
             data = yield self.WSSensorGetHistory(jsonmessage[1])
         elif(jsonmessage[0] == 'sensor-getlast'): 
             data = yield self.WSSensorGetLast(jsonmessage[1])
-        elif(jsonmessage[0] == 'butler-discuss'): 
+        elif(jsonmessage[0] == 'butler-dodiscuss'): 
             data = yield self.WSButlerDiscuss(jsonmessage[1])
         else:
             data = {
@@ -325,7 +325,7 @@ class WSHandler(websocket.WebSocketHandler):
         logger.info("REST Call : %s" % url)
         http = AsyncHTTPClient()
         
-        discuss_data = {"text" : data["text"], "source" : "Domoweb"}
+        discuss_data = {"text" : data["data"]["text"], "source" : data["data"]["source"]}
         #body = urllib.urlencode(data) 
         body = json.dumps(discuss_data)
         headers = {'Content-Type': 'application/json'}
@@ -333,7 +333,7 @@ class WSHandler(websocket.WebSocketHandler):
         response = yield http.fetch(url, handle_request, method='POST', headers=headers, body=body) 
         logger.info("REST response : {0}".format(response.body))
         j = json_decode(response.body)
-        json_ret = j
+        json_ret = {"caller" : data['caller'], "data" : j}
         raise Return(['butler-discuss', json_ret])
 
     def sendMessage(self, content):
