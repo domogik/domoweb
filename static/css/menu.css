@@ -31,12 +31,12 @@
 #main-menu .cnbutton {
 	outline: none;
 	border: none;
-	background: #2D2C2F url('../images/logo_highlight_small.png') 15px 15px no-repeat;
-	height: 8em;
-	width: 8em;
+	background: #2D2C2F url('../images/logo_highlight_small.png') 22px 22px no-repeat;
+	height: 10em;
+	width: 10em;
 	position: fixed;
-	right: -4em;
-	bottom: -4em;
+	right: -5em;
+	bottom: -5em;
 	border-radius: 50%;
 	cursor: pointer;
 	z-index: 20;

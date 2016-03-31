@@ -34,16 +34,16 @@
 /*--------------  Toggle Button -------------- */
 
 #toggle-radial {
-	width: 4em;
-	height: 4em;
-	border-radius: 0 4em 0 0;
+	width: 6em;
+	height: 6em;
+	border-radius: 0 6em 0 0;
 	border: 0;
 	background: #2D2C2F;
 	color: #ffffff;
 	outline: none;
 }
 #toggle-radial span {
-	font-size: 1.6em;
+	font-size: 2em;
 	margin: 0.5em 0.5em 0 0;
 }
 #toggle-radial:hover, #toggle-radial:active, #toggle-radial.active {
@@ -52,16 +52,16 @@
 }
 
 #toggle-radial-top-right {
-	width: 4em;
-	height: 4em;
-	border-radius: 0 0 0 4em;
+	width: 6em;
+	height: 6em;
+	border-radius: 0 0 0 6em;
 	border: 0;
 	background: #2D2C2F;
 	color: #ffffff;
 	outline: none;
 }
 #toggle-radial-top-right span {
-	font-size: 1.6em;
+	font-size: 2em;
 	margin: 0 0 0.5em 0.5em;
 }
 #toggle-radial-top-right:hover, #toggle-radial-top-right:active, #toggle-radial-top-right.active {
