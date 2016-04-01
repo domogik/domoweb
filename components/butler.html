@@ -1,8 +1,8 @@
 <style>
 @font-face {
   font-family: 'FontAwesome';
-  src: url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?v=4.5.0');
-  src: url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?#iefix&v=4.5.0') format('embedded-opentype'), url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'), url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('/static/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
+  src: url('/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?v=4.5.0');
+  src: url('/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?#iefix&v=4.5.0') format('embedded-opentype'), url('/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'), url('/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('/libraries/font-awesome-4.5.0/fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -16,7 +16,7 @@
         <style>
               @import '/libraries/bootstrap-3.3.5/css/bootstrap.min.css';
         </style>
-        <link rel="stylesheet" href="/static/libraries/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
+        <link rel="stylesheet" href="/libraries/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
         <style type="text/css">
             #speakButton {
                 width: 6em;
@@ -154,12 +154,12 @@
               -->
 
               <div id="speakButton" on-click="{{startVoiceRecog}}">
-                <!-- <span><i class="fa fa-microphone"></i></span> -->
-                <span>SPEAK</span>
+                <span><i class="fa fa-microphone fa-3x"></i></span> 
+                <!-- <span>SPEAK</span> -->
               </div>
 
               <ul id="chat">
-                <li id="request" class="itemButler"><span>{{ request }}</span></li>
+                <li id="request" class="itemUser"><span>{{ request }}</span></li>
                 <li id="butlerResponse" class="itemButler"><span>{{ butlerResponse }}</span></li>
               </ul>
 

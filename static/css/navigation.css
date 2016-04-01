@@ -64,6 +64,10 @@
 	font-size: 2em;
 	margin: 0 0 0.5em 0.5em;
 }
+#toggle-radial-top-right i {
+	font-size: 2em;
+	margin: 0 0 0.5em 0.5em;
+}
 #toggle-radial-top-right:hover, #toggle-radial-top-right:active, #toggle-radial-top-right.active {
 	background: #ffffff;
 	color: #2D2C2F;

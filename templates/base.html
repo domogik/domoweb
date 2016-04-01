@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/libraries/bootstrap-3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/libraries/notifIt-1.1/notifIt/css/notifIt.css">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/libraries/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
   <link rel="manifest" href="/manifests/manifest.json">
   <style type="text/css" id="gridstyle"></style>
   <style type="text/css" id="sectionstyle" shim-shadowdom>
@@ -74,7 +75,9 @@
       {{ display_tree(sections, 0) }}
   </div>
   <div id="butler">
-    <button id="toggle-radial-top-right"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span></button>
+    <button id="toggle-radial-top-right">
+      <i class="fa fa-microphone"></i>
+    </button>
   </div>
   <div id="modal-overlay" class="overlay"></div>
   <script src="/libraries/bootstrap-3.3.5/js/bootstrap.min.js"></script>
