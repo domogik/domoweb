@@ -18,6 +18,15 @@
         </style>
         <link rel="stylesheet" href="/libraries/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
         <style type="text/css">
+            #background {
+                /* background-color: blue; */
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 0;
+            }
             #speakButton {
                 width: 6em;
                 height: 6em;
@@ -30,6 +39,7 @@
                 -webkit-transform: translate(-50%, 0%);
                 -ms-transform: translate(-50%, 0);
                 transform: translate(-50%, 0);
+                z-index: 1;
             }
             #speakButton span {
                 position: relative;
@@ -149,10 +159,6 @@
             <div class="box col-md-12">
               <!-- <button id="closeModal" type="button" class="btn btn-default">Close</button> -->
 
-              <!--
-              <h1>Butler</h1>
-              -->
-
               <div id="speakButton" on-click="{{startVoiceRecog}}">
                 <span><i class="fa fa-microphone fa-3x"></i></span> 
                 <!-- <span>SPEAK</span> -->
@@ -171,6 +177,10 @@
           <div id="err_tts">{{err_tts}}</div>
           <div id="err_stt">{{err_stt}}</div>
         </div>
+
+        <!-- big clicking zone to close the page when we click somewhere on it -->
+        <div id="background" on-click="{{close}}">
+        </div>
     </template>
     <script>
         Polymer("dmw-butler", {
@@ -179,22 +189,11 @@
                 this.$.socket.register('butler-discuss', this.tts.bind(this), { 'caller':this.callback });
                 this.$.speech_errors.style.visibility = "hidden";
 
-                /*
-                var self = this;
-                this.$.closeModal.addEventListener('click', function () {
-                    var modalOverlay = document.getElementById('modal-overlay');
-                    modalOverlay.classList.remove('on');
-                    self.remove();
-                });
-                */
+                // Hide the corner buttons
+                document.getElementById('butler').style.visibility = "hidden";
+                document.getElementById('main-menu').style.visibility = "hidden";
+                document.getElementById('sections-tree').style.visibility = "hidden";
 
-                // close when touching the screen
-                var self = this;
-                document.getElementById('modal-overlay').addEventListener('click', function () {
-                    var modalOverlay = document.getElementById('modal-overlay');
-                    modalOverlay.classList.remove('on');
-                    self.remove();
-                });
 
                 doSTT = true;
                 // display warning if no STT support :(
@@ -222,6 +221,15 @@
                 if (doSTT == true) {
                     this.startVoiceRecog();
                 }
+            },
+            close: function(e) {
+                // Redisplay the corner buttons
+                document.getElementById('butler').style.visibility = "visible";
+                document.getElementById('main-menu').style.visibility = "visible";
+                document.getElementById('sections-tree').style.visibility = "visible";
+                var modalOverlay = document.getElementById('modal-overlay');
+                modalOverlay.classList.remove('on');
+                this.remove();
             },
             startVoiceRecog: function(e) {
                 if (window.hasOwnProperty('webkitSpeechRecognition')) {
