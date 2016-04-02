@@ -160,7 +160,7 @@
               <!-- <button id="closeModal" type="button" class="btn btn-default">Close</button> -->
 
               <div id="speakButton" on-click="{{startVoiceRecog}}">
-                <span><i class="fa fa-microphone fa-3x"></i></span> 
+                <span><i class="fa {{icon}} fa-3x"></i></span> 
                 <!-- <span>SPEAK</span> -->
               </div>
 
@@ -185,7 +185,38 @@
     <script>
         Polymer("dmw-butler", {
             ready:function(){
-                this.voiceRecogInProgress = false;
+                //this.voiceRecogInProgress = false;
+
+                // Current status of the page
+                /* Values : 
+                        WAITING : do nothing, wait for the user to clic on the icon
+                        STT     : voice recognition
+                        CALLING_BUTLER : call the butler and wait for the response
+                        TTS     : speaking
+
+
+
+                           +---------------<-----------------------------+ error
+                           |                                             |
+                           |                                             |
+                           |            +-------------<------------------+ auto continue dialog
+                           |            |                                |
+                           |            |                                |
+                           |            |                                |
+                        WAITING -----> STT -----> CALLING_BUTLER -----> TTS 
+                           |            |   ok            |        ok
+                           |            |                 |
+                           |            |                 |
+                           +----<-------+ error           |
+                           |                              |
+                           |                              |
+                           |                              |
+                           +-----------------<------------+ error
+                */
+                this.status = "WAITING"
+                this.icon = "fa-microphone-slash";
+
+
                 this.callback = Math.floor(Math.random() * 10000);
                 this.$.socket.register('butler-discuss', this.tts.bind(this), { 'caller':this.callback });
                 this.$.speech_errors.style.visibility = "hidden";
@@ -235,14 +266,19 @@
             startVoiceRecog: function(e) {
                 if (window.hasOwnProperty('webkitSpeechRecognition')) {
                     // first, check if voice recnognition is already in process or not.
-                    if (this.voiceRecogInProgress == true) {
+                    //if (this.voiceRecogInProgress == true) {
+                    if (this.status == "STT") {
                         if (recognition) {
                             recognition.stop();
                         }
-                        this.voiceRecogInProgress = false;
+                        //this.voiceRecogInProgress = false;
+                        this.status = "WAITING";
+                        this.icon = "fa-microphone-slash";
                         return;
                     }
-                    this.voiceRecogInProgress = true;
+                    //this.voiceRecogInProgress = true;
+                    this.status = "STT";
+                    this.icon = "fa-microphone";
 
                     var recognition = new webkitSpeechRecognition();
                     recognition.continuous = false;
@@ -259,7 +295,9 @@
                         self.displayRequest(self.speaked);
 
                         self.$.socket.send("butler-dodiscuss", {'caller': self.callback, 'data': {"text" : self.speaked, "source" : "domoweb"}});
-                        self.voiceRecogInProgress = false;
+                        //self.voiceRecogInProgress = false;
+                        self.status = "CALLING_BUTLER";
+                        self.icon = "fa-spinner";
 
                         //self.$.socket.send("butler-dodiscuss", {'caller': self.callback, 'text': self.speaked});
                         /* OLD url calling way ***************************************************
@@ -276,8 +314,8 @@
                               self.$.speakButton.classList.remove('pulse1');
                            },
                            error: function() {
-                              alert("Error while calling the butler component over the REST url");
                               self.$.speakButton.classList.remove('pulse1');
+                              alert("Error while calling the butler component over the REST url");
                            },
                            data : {"data" : JSON.stringify({"text" : self.speaked, "source" : "domoweb"}, null, '\t')}
                         });
@@ -286,12 +324,16 @@
                     };
 
                     recognition.onend = function(e) {
-                        this.voiceRecogInProgress = false;
+                        self.status = "WAITING";
+                        self.icon = "fa-microphone-slash";
+                        //this.voiceRecogInProgress = false;
                         recognition.stop();
                         self.$.speakButton.classList.remove('pulse1');
                     }
                     recognition.onerror = function(e) {
-                        this.voiceRecogInProgress = false;
+                        self.status = "WAITING";
+                        self.icon = "fa-microphone-slash";
+                        //this.voiceRecogInProgress = false;
                         recognition.stop();
                         self.$.speakButton.classList.remove('pulse1');
                     }
@@ -299,35 +341,41 @@
             },
             displayRequest: function(requestText) {
                 this.request = requestText;
+                // clean the previous butler response
+                this.butlerResponse = "";
             },
             displayResponse: function(text) {
                 this.butlerResponse = text;
             },
             tts: function(topic, json) {
-                 // topic is related to the WS usage
-                 // json is the json from the WS, so : ["butler-discuss", {"caller": 6516, "data": {"mood": null, "media": null, "sex": "female", "location": null, "text": "Salut", "reply_to": "Domoweb", "identity": "Aria"}}]
+                this.status = "TTS";
+                this.icon = "fa-commenting-o";
+                // topic is related to the WS usage
+                // json is the json from the WS, so : ["butler-discuss", {"caller": 6516, "data": {"mood": null, "media": null, "sex": "female", "location": null, "text": "Salut", "reply_to": "Domoweb", "identity": "Aria"}}]
 
 
-                 console.log("Text to speak : " + json["data"]["text"]);
-                 var u = new SpeechSynthesisUtterance();
-                 u.text = json['data']['text'];
-                 u.lang = 'fr-FR';
+                console.log("Text to speak : " + json["data"]["text"]);
+                var u = new SpeechSynthesisUtterance();
+                u.text = json['data']['text'];
+                u.lang = 'fr-FR';
 
-                 this.$.speakButton.classList.remove('pulse1');
-                 this.displayResponse(u.text);
+                this.$.speakButton.classList.remove('pulse1');
+                this.displayResponse(u.text);
+
+                self = this;
+                u.onend = function () {
+                    self.afterTts();
+                };
  
-                 self = this;
-                 u.onend = function () {
-                     self.afterTts();
-                 };
- 
-                 u.onerror = function (e) {
-                     alert('Error while speeaking');
-                     console.error("Error while speaking : " + e);
-                 };
- 
-                 console.error(u);
-                 speechSynthesis.speak(u);
+                u.onerror = function (e) {
+                    self.status = "WAITING";
+                    self.icon = "fa-microphone-slash";
+                    alert('Error while speeaking');
+                    console.error("Error while speaking : " + e);
+                };
+
+                console.error(u);
+                speechSynthesis.speak(u);
             },
             afterTts: function() {
                 this.startVoiceRecog(undefined);
