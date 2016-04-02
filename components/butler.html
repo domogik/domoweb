@@ -27,6 +27,35 @@
                 bottom: 0;
                 z-index: 0;
             }
+            #help {
+                position: fixed;
+                top: 2em;
+                left: 2em;
+                border-radius: 50%;
+                border: 1px solid #ffffff;
+                width: 3em;
+                height: 3em;
+                z-index: 1;
+            }
+            #helpModal {
+                position: fixed;
+                width: 75%;
+                top: 2em;
+                left: 12%;
+                border: 1px solid #ffffff;
+                border-radius: 4px;
+                background-color: #333333;
+                z-index: 2;
+            }
+            #helpModal h1 {
+                margin-top: 0;
+                border-radius: 4px;
+                background-color: #222222;
+                padding: 0.4em;
+            }
+            #helpModal .body {
+                margin: 1em;
+            }
             #speakButton {
                 width: 6em;
                 height: 6em;
@@ -41,7 +70,7 @@
                 transform: translate(-50%, 0);
                 z-index: 1;
             }
-            #speakButton span {
+            .center {
                 position: relative;
                 top: 50%;
                 -webkit-transform: translate(-50%, -50%);
@@ -50,6 +79,14 @@
                 left: 50%;
                 text-align: center;
                 display: inline-block;
+            }
+            #informations {
+                color: white;
+                position: fixed;
+                bottom: 1em;
+                left: 5%;
+                width: 90%;
+                text-align: center;
             }
             #speech_errors {
                 background: red;
@@ -154,13 +191,30 @@
             }
         </style>
         <web-socket id="socket"></web-socket>
+        <div id="help" on-click="{{help}}">
+          <span class="center"><i class="fa fa-question fa-2x"></i></span>
+        </div>
+        <div id="helpModal" on-click="{{helpEnd}}">
+          <h1>Help</h1>
+          <div class="body">
+            <h2>Purpose</h2>
+            <p>This page allows you to speak with Domogik's butler. When you open this page, the microphone start to listen to you.</p>
+
+            <h2>I am always requested to allow the microphone usage</h2>
+            <p>To be able to allow only one time the microphone, you must set up Domoweb in ssl mode. Please read the installation documentation to activate ssl.</p>
+
+            <h2>It does not work ?</h2>
+            <p>First, you must known that currently, this page can only work on the <strong>Chrome</strong> browser : only this one implements all the needed voice features.</p>
+            <p>In case your browser does not support one of the needed features, you will see a red warning at the bottom of this page.</p>
+          </div>
+        </div>
         <div class="container">
           <div class="row">
             <div class="box col-md-12">
               <!-- <button id="closeModal" type="button" class="btn btn-default">Close</button> -->
 
               <div id="speakButton" on-click="{{startVoiceRecog}}">
-                <span><i class="fa {{icon}} fa-3x"></i></span> 
+                <span class="center"><i class="fa {{icon}} fa-3x"></i></span> 
                 <!-- <span>SPEAK</span> -->
               </div>
 
@@ -171,6 +225,9 @@
 
             </div>
           </div>       
+        </div>
+        <div id="informations">
+          <span id="browserLocale">Browser locale : {{browserLocale}}</span>
         </div>
         <div id="speech_errors">
           <div id="err_voices">{{err_voices}}</div>
@@ -185,7 +242,9 @@
     <script>
         Polymer("dmw-butler", {
             ready:function(){
-                //this.voiceRecogInProgress = false;
+                // Find the browser locale
+                this.browserLocale = window.navigator.languages[0] || "fr-FR"; // why fr as default... because... because ;)
+
 
                 // Current status of the page
                 /* Values : 
@@ -221,6 +280,9 @@
                 this.$.socket.register('butler-discuss', this.tts.bind(this), { 'caller':this.callback });
                 this.$.speech_errors.style.visibility = "hidden";
 
+                // Hide the help box
+                this.$.helpModal.style.visibility = "hidden";
+
                 // Hide the corner buttons
                 document.getElementById('butler').style.visibility = "hidden";
                 document.getElementById('main-menu').style.visibility = "hidden";
@@ -240,14 +302,18 @@
                     this.err_tts = "Your browser doesn't support the Text to Speech feature!";
                 }
 
-                /* TODO : mieux gérer....
-                console.error(speechSynthesis.getVoices());
-                console.error(speechSynthesis.getVoices().length);
-                if (speechSynthesis.getVoices().length == 0) {
-                    this.$.speech_errors.show();
-                    this.err_voices = "Your browser doesn't include any voice for the Text to Speech feature!";
+                // display warning if no voices are available (this is the case of Chomium browser)
+                // Voices are loaded async so we wait the onvoiceschanges to be triggered to check
+                self = this;
+                if (window.hasOwnProperty('speechSynthesis')) {
+                    window.speechSynthesis.onvoiceschanged = function() {
+                        if (speechSynthesis.getVoices().length == 0) {
+                            self.$.speech_errors.style.visibility = "visible";
+                            self.err_voices = "Your browser doesn't include any voice for the Text to Speech feature!";
+                        }
+                    };
                 }
-                */
+
 
                 // On page display, start STT
                 if (doSTT == true) {
@@ -266,38 +332,37 @@
             startVoiceRecog: function(e) {
                 if (window.hasOwnProperty('webkitSpeechRecognition')) {
                     // first, check if voice recnognition is already in process or not.
-                    //if (this.voiceRecogInProgress == true) {
                     if (this.status == "STT") {
                         if (recognition) {
                             recognition.stop();
                         }
-                        //this.voiceRecogInProgress = false;
                         this.status = "WAITING";
                         this.icon = "fa-microphone-slash";
                         return;
                     }
-                    //this.voiceRecogInProgress = true;
                     this.status = "STT";
                     this.icon = "fa-microphone";
 
                     var recognition = new webkitSpeechRecognition();
                     recognition.continuous = false;
                     recognition.interimResults = false;
-                    recognition.lang = "fr-FR";
-                    this.$.speakButton.classList.add('pulse1');
+                    recognition.lang = this.browserLocale;
                     recognition.start();
 
                     self = this;
+                    recognition.onstart = function(e) {
+                        self.$.speakButton.classList.add('pulse1');
+                    }
+
                     recognition.onresult = function(e) {
+                        self.status = "CALLING_BUTLER";
+                        self.icon = "fa-cog";   // TODO : why is this not working ?
                         recognition.stop();
                         //alert(e.results[0][0].transcript);
                         self.speaked = e.results[0][0].transcript;
                         self.displayRequest(self.speaked);
 
                         self.$.socket.send("butler-dodiscuss", {'caller': self.callback, 'data': {"text" : self.speaked, "source" : "domoweb"}});
-                        //self.voiceRecogInProgress = false;
-                        self.status = "CALLING_BUTLER";
-                        self.icon = "fa-spinner";
 
                         //self.$.socket.send("butler-dodiscuss", {'caller': self.callback, 'text': self.speaked});
                         /* OLD url calling way ***************************************************
@@ -326,14 +391,12 @@
                     recognition.onend = function(e) {
                         self.status = "WAITING";
                         self.icon = "fa-microphone-slash";
-                        //this.voiceRecogInProgress = false;
                         recognition.stop();
                         self.$.speakButton.classList.remove('pulse1');
                     }
                     recognition.onerror = function(e) {
                         self.status = "WAITING";
                         self.icon = "fa-microphone-slash";
-                        //this.voiceRecogInProgress = false;
                         recognition.stop();
                         self.$.speakButton.classList.remove('pulse1');
                     }
@@ -381,7 +444,7 @@
                     
                     u[idx] = new SpeechSynthesisUtterance();
                     u[idx].text = arr[idx];
-                    u[idx].lang = 'fr-FR';
+                    u[idx].lang = self.browserLocale;
                     u[idx].dmg_idx = idx;
 
                     u[idx].onend = function () {
@@ -407,7 +470,14 @@
             },
             afterTts: function() {
                 this.startVoiceRecog(undefined);
+            },
+            help: function() {
+                this.$.helpModal.style.visibility = "visible";
+            },
+            helpEnd: function() {
+                this.$.helpModal.style.visibility = "hidden";
             }
+
         });
     </script>
 </polymer-element>
