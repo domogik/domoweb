@@ -185,6 +185,7 @@
     <script>
         Polymer("dmw-butler", {
             ready:function(){
+                this.voiceRecogInProgress = false;
                 this.callback = Math.floor(Math.random() * 10000);
                 this.$.socket.register('butler-discuss', this.tts.bind(this), { 'caller':this.callback });
                 this.$.speech_errors.style.visibility = "hidden";
@@ -233,6 +234,16 @@
             },
             startVoiceRecog: function(e) {
                 if (window.hasOwnProperty('webkitSpeechRecognition')) {
+                    // first, check if voice recnognition is already in process or not.
+                    if (this.voiceRecogInProgress == true) {
+                        if (recognition) {
+                            recognition.stop();
+                        }
+                        this.voiceRecogInProgress = false;
+                        return;
+                    }
+                    this.voiceRecogInProgress = true;
+
                     var recognition = new webkitSpeechRecognition();
                     recognition.continuous = false;
                     recognition.interimResults = false;
@@ -248,6 +259,8 @@
                         self.displayRequest(self.speaked);
 
                         self.$.socket.send("butler-dodiscuss", {'caller': self.callback, 'data': {"text" : self.speaked, "source" : "domoweb"}});
+                        self.voiceRecogInProgress = false;
+
                         //self.$.socket.send("butler-dodiscuss", {'caller': self.callback, 'text': self.speaked});
                         /* OLD url calling way ***************************************************
                         url = "http://192.168.1.50:50000/rest/butler/discuss";
@@ -259,7 +272,7 @@
                            contentType: "application/json;",
                            success: function(data) {
                               //console.log("Response from butler="+data);
-                              self.tts("butler-discuss", data, self.displayResponse(data));
+                              self.tts("butler-discuss", data, self.displayResponse(data), self.afterTts());
                               self.$.speakButton.classList.remove('pulse1');
                            },
                            error: function() {
@@ -273,10 +286,12 @@
                     };
 
                     recognition.onend = function(e) {
+                        this.voiceRecogInProgress = false;
                         recognition.stop();
                         self.$.speakButton.classList.remove('pulse1');
                     }
                     recognition.onerror = function(e) {
+                        this.voiceRecogInProgress = false;
                         recognition.stop();
                         self.$.speakButton.classList.remove('pulse1');
                     }
@@ -292,7 +307,6 @@
                  // topic is related to the WS usage
                  // json is the json from the WS, so : ["butler-discuss", {"caller": 6516, "data": {"mood": null, "media": null, "sex": "female", "location": null, "text": "Salut", "reply_to": "Domoweb", "identity": "Aria"}}]
 
-                 callback = undefined;
 
                  console.log("Text to speak : " + json["data"]["text"]);
                  var u = new SpeechSynthesisUtterance();
@@ -302,24 +316,22 @@
                  this.$.speakButton.classList.remove('pulse1');
                  this.displayResponse(u.text);
  
+                 self = this;
                  u.onend = function () {
-                     if (callback) {
-                         callback();
-                     }
+                     self.afterTts();
                  };
  
                  u.onerror = function (e) {
                      alert('Error while speeaking');
                      console.error("Error while speaking : " + e);
-                     console.error(e);
-                     if (callback) {
-                         callback(e);
-                     }
                  };
  
                  console.error(u);
                  speechSynthesis.speak(u);
             },
+            afterTts: function() {
+                this.startVoiceRecog(undefined);
+            }
         });
     </script>
 </polymer-element>
