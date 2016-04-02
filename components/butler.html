@@ -348,34 +348,62 @@
                 this.butlerResponse = text;
             },
             tts: function(topic, json) {
+                // Google speech synthetesis is bugged with long texts...
+                // - http://stackoverflow.com/questions/21947730/chrome-speech-synthesis-with-longer-texts
+                // So we spllit the text if it is too long to handle this.
+ 
                 this.status = "TTS";
                 this.icon = "fa-commenting-o";
+                this.$.speakButton.classList.remove('pulse1');
+
                 // topic is related to the WS usage
                 // json is the json from the WS, so : ["butler-discuss", {"caller": 6516, "data": {"mood": null, "media": null, "sex": "female", "location": null, "text": "Salut", "reply_to": "Domoweb", "identity": "Aria"}}]
 
 
                 console.log("Text to speak : " + json["data"]["text"]);
-                var u = new SpeechSynthesisUtterance();
-                u.text = json['data']['text'];
-                u.lang = 'fr-FR';
 
-                this.$.speakButton.classList.remove('pulse1');
-                this.displayResponse(u.text);
+                this.displayResponse(json["data"]["text"]);
+
+                // The below code split the text to allow speech of long texts
+
+                var chunkLength = 120;
+                var pattRegex = new RegExp('^[\\s\\S]{' + Math.floor(chunkLength / 2) + ',' + chunkLength + '}[.!?,]{1}|^[\\s\\S]{1,' + chunkLength + '}$|^[\\s\\S]{1,' + chunkLength + '} ');
 
                 self = this;
-                u.onend = function () {
-                    self.afterTts();
-                };
- 
-                u.onerror = function (e) {
-                    self.status = "WAITING";
-                    self.icon = "fa-microphone-slash";
-                    alert('Error while speeaking');
-                    console.error("Error while speaking : " + e);
-                };
+                var arr = [];
+                var txt = json["data"]["text"];
+                while (txt.length > 0) {
+                    arr.push(txt.match(pattRegex)[0]);
+                    txt = txt.substring(arr[arr.length - 1].length);
+                }
+                var u = []
+                for (idx in arr) {
+                    
+                    u[idx] = new SpeechSynthesisUtterance();
+                    u[idx].text = arr[idx];
+                    u[idx].lang = 'fr-FR';
+                    u[idx].dmg_idx = idx;
 
-                console.error(u);
-                speechSynthesis.speak(u);
+                    u[idx].onend = function () {
+                        //console.error(this);
+                        //console.error(arr.length-1);
+                        //console.error(this.dmg_idx);
+                        if (arr.length-1 == this.dmg_idx) {
+                            self.afterTts();
+                        }
+                    };
+
+                    u[idx].onerror = function (e) {
+                        self.status = "WAITING";
+                        self.icon = "fa-microphone-slash";
+                        alert('Error while speeaking');
+                        console.error("Error while speaking : " + e);
+                    };
+
+                    console.log(u[idx]);
+                    speechSynthesis.speak(u[idx]);
+                }
+
             },
             afterTts: function() {
                 this.startVoiceRecog(undefined);
