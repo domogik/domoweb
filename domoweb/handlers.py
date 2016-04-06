@@ -8,6 +8,7 @@ from tornado.httpclient import AsyncHTTPClient
 
 from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, SectionParam, Sensor, Theme
 from domoweb.forms import WidgetInstanceForms, WidgetStyleForm
+from domoweb.loaders import mqDataLoader
 
 import os
 import json
@@ -355,21 +356,25 @@ class NoCacheStaticFileHandler(web.StaticFileHandler):
 
 class MQHandler(MQAsyncSub):
     def __init__(self):
-        MQAsyncSub.__init__(self, zmq.Context(), 'test', ['device-stats'])
+        MQAsyncSub.__init__(self, zmq.Context(), 'test', ['device-stats', 'device.update'])
 
     def on_message(self, msgid, content):
         #logger.info(u"MQ: New pub message {0}".format(msgid))
         #logger.info(u"MQ: {0}".format(content))
 
-        if isinstance(content["stored_value"], list):
-            content["stored_value"] = content["stored_value"][0]
-            logger.error(u"MQ: PATCH for issue #1976")
-
         # If sensor stat, we update the sensor last value
         if msgid == 'device-stats':
-            Sensor.update(content["sensor_id"], content["timestamp"], content["stored_value"])
+            if isinstance(content["stored_value"], list):
+                content["stored_value"] = content["stored_value"][0]
+                logger.error(u"MQ: PATCH for issue #1976")
 
-        WSHandler.sendAllMessage([msgid, content])
+            Sensor.update(content["sensor_id"], content["timestamp"], content["stored_value"])
+            WSHandler.sendAllMessage([msgid, content])
+
+        elif msgid == 'device.update':
+            logger.info("MQ: message 'device.update' catched! Reloading the devices list")
+            mqDataLoader.loadDevices(options.develop)
+
 
 class UploadHandler(RequestHandler):
     def post(self):
