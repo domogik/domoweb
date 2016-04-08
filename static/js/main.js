@@ -525,7 +525,7 @@ function websocketConnected(e) {
 		  type: "success",
 		  msg: "Connection restored",
 		  position: "center",
-		  width: "all",
+		  //width: "all",
 		  height: 60,
 		});
 	}
@@ -537,7 +537,7 @@ function websocketClosed(e) {
 		  type: "error",
 		  msg: "Connection lost with Domoweb",
 		  position: "center",
-		  width: "all",
+		  //width: "all",
 		  height: 60,
 		  autohide: false
 		});
