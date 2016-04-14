@@ -61,8 +61,23 @@
 			this.listeners.push([comp, name, func, filters]);
 		};
 
-		WebsocketHandler.prototype.send = function(json) {
-			var data = JSON.stringify(json);
+		WebsocketHandler.prototype.send = function(aTuple) {
+                        // aTuple[0] : message id
+                        // aTuple[1] : message json data
+
+                        // For REST authentication, add the local information of the user session to each message
+                        // Notice that for now we send user+clear password which is NOT FINE !!!!!
+                        // TODO
+                        // This should be improved in 0.6 release!!!
+                        if (aTuple[1] == undefined) {
+                            aTuple[1] = {};
+                        }
+                        aTuple[1]['rest_auth'] = {};
+                        aTuple[1]['rest_auth']['username'] = localStorage.getItem("username");
+                        aTuple[1]['rest_auth']['password'] = localStorage.getItem("password");
+
+                        // Send the message
+			var data = JSON.stringify(aTuple);
 			if (this._isConnected) {
 				try {
 					console.info("WS: sending message " + data);

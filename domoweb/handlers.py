@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 from tornado import web, websocket, gen
 from tornado.options import options
-from tornado.web import RequestHandler, StaticFileHandler
+from tornado.web import RequestHandler, StaticFileHandler, authenticated
 from tornado.gen import Return
 from tornado.escape import json_decode
-from tornado.httpclient import AsyncHTTPClient
+from tornado.httpclient import AsyncHTTPClient, HTTPClient, HTTPError, HTTPRequest
 
 from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, SectionParam, Sensor, Theme
 from domoweb.forms import WidgetInstanceForms, WidgetStyleForm
@@ -27,7 +27,12 @@ import urllib
 
 socket_connections = []
 
-class MainHandler(RequestHandler):
+class BaseHandler(RequestHandler):
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
+
+class MainHandler(BaseHandler):
+    @authenticated
     def get(self, id):
         if not id:
             id = 1
@@ -43,7 +48,65 @@ class MainHandler(RequestHandler):
             sections = sections,
             )
 
-class ConfigurationHandler(RequestHandler):
+class LoginHandler(BaseHandler):
+    def get(self):
+        msg = None
+        if options.rest_url.startswith("http://"):
+            msg = "You are not using a secured Domogik server. Please consider activating SSL on Domogik and configure Domoweb to use the new url!"
+        self.render("login.html", error = None, info = msg)
+
+    def post(self):
+        print("LOGIN (post)")
+        print(self.request.body)
+        status, msg = self.check_permission(self.get_argument("name", None), self.get_argument("password", None))
+        if status:
+            self.set_secure_cookie("user", self.get_argument("name"))
+            self.redirect("/")
+        else:
+            self.render("login.html", error = msg, info = None)
+
+    def check_permission(self, username, password):
+        logger.info("Authentication : checking persmission. User='{0}'".format(username))
+
+        # we test a protected url on the rest server to check if the account exists
+        url = '{0}/device'.format(options.rest_url).replace("://", "://{0}:{1}@".format(username, password))
+        logger.info("REST Call : %s" % url)
+
+        http_client = HTTPClient()
+        # TODO : improve this part!
+        # For security reasons, using validate_cert = False is not good as someone may replace the Domogik server
+        # by another one.
+        # In 0.6 we should add a way to validate a certificate or not from the login page
+        request = HTTPRequest(url=url, validate_cert=False)
+        try:
+            response = http_client.fetch(request)
+            #print response.body
+            return True, None
+        except HTTPError as e:
+            # HTTPError is raised for non-200 responses; the response
+            # can be found in e.response.
+
+            # Access denied, so bad login/password
+            if e.response.code == 401:
+                logger.warning("Authentication denied by REST")
+                return False, "Access denied. Incorrect name or password"
+            # Other error
+            else:
+                logger.error("Error ({0}) : {1}".format(e.response.code, str(e)))
+                return False, "HTTP error while calling the rest server : {0}<br>Url called is {1}".format(str(e), url)
+        except Exception as e:
+            # Other errors are possible, such as IOError.
+            logger.error("Error: " + str(e))
+            return False, "An error occured while logging : {0}".format(str(e))
+        http_client.close()
+
+        return False, "An unknown error occured while logging"
+
+
+
+# TODO : use BaseHandler also ?
+#class ConfigurationHandler(RequestHandler):
+class ConfigurationHandler(BaseHandler):
     def get(self):
         action = self.get_argument('action', None)
         id = self.get_argument('id', None)
@@ -286,10 +349,11 @@ class WSHandler(websocket.WebSocketHandler):
 
     @gen.coroutine
     def WSSensorGetHistory(self, data):
-        url = '%s/sensorhistory/id/%d/from/%d/to/%d/interval/%s/selector/avg' % (options.rest_url, data['id'],data['from'],data['to'],data['interval'])
+        url = '{0}/sensorhistory/id/{1}/from/{2}/to/{3}/interval/{4}/selector/avg'.format(options.rest_url, data['id'],data['from'],data['to'],data['interval']).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
         logger.info("REST Call : %s" % url)
         http = AsyncHTTPClient()
-        response = yield http.fetch(url)
+        request = HTTPRequest(url=url, validate_cert=False)
+        response = yield http.fetch(request)
         j = json_decode(response.body)
         try:
             history = j['values']
@@ -300,10 +364,11 @@ class WSHandler(websocket.WebSocketHandler):
 
     @gen.coroutine
     def WSSensorGetLast(self, data):
-        url = '%s/sensorhistory/id/%d/last/%d' % (options.rest_url, data['id'],data['count'])
+        url = '{0}/sensorhistory/id/{1}/last/{2}'.format(options.rest_url, data['id'],data['count']).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
         logger.info("REST Call : %s" % url)
         http = AsyncHTTPClient()
-        response = yield http.fetch(url)
+        request = HTTPRequest(url=url, validate_cert=False)
+        response = yield http.fetch(request)
         j = json_decode(response.body)
         try:
             history = j
@@ -322,7 +387,7 @@ class WSHandler(websocket.WebSocketHandler):
                 logger.info("Call to butler OK")
 
         logger.info("IN WSButlerDiscuss")
-        url = '%s/butler/discuss' % (options.rest_url)
+        url = '{0}/butler/discuss'.format(options.rest_url).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
         logger.info("REST Call : %s" % url)
         http = AsyncHTTPClient()
         
@@ -331,7 +396,9 @@ class WSHandler(websocket.WebSocketHandler):
         body = json.dumps(discuss_data)
         headers = {'Content-Type': 'application/json'}
         logger.info("BEFORE")
-        response = yield http.fetch(url, handle_request, method='POST', headers=headers, body=body) 
+        #response = yield http.fetch(url, handle_request, method='POST', headers=headers, body=body) 
+        request = HTTPRequest(url, handle_request, method='POST', headers=headers, body=body, validate_cert=False)
+        response = yield http.fetch(request)
         logger.info("REST response : {0}".format(response.body))
         j = json_decode(response.body)
         json_ret = {"caller" : data['caller'], "data" : j}
@@ -376,7 +443,9 @@ class MQHandler(MQAsyncSub):
             mqDataLoader.loadDevices(options.develop)
 
 
-class UploadHandler(RequestHandler):
+# TODO : use BaseHandler also ?
+#class UploadHandler(RequestHandler):
+class UploadHandler(BaseHandler):
     def post(self):
         from PIL import Image
         original_fname = self.get_argument('qqfile', None)
