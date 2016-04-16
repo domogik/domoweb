@@ -397,7 +397,7 @@ class WSHandler(websocket.WebSocketHandler):
         headers = {'Content-Type': 'application/json'}
         logger.info("BEFORE")
         #response = yield http.fetch(url, handle_request, method='POST', headers=headers, body=body) 
-        request = HTTPRequest(url, handle_request, method='POST', headers=headers, body=body, validate_cert=False)
+        request = HTTPRequest(url, method='POST', headers=headers, body=body, validate_cert=False)
         response = yield http.fetch(request)
         logger.info("REST response : {0}".format(response.body))
         j = json_decode(response.body)
