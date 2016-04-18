@@ -56,8 +56,6 @@ class LoginHandler(BaseHandler):
         self.render("login.html", error = None, info = msg)
 
     def post(self):
-        print("LOGIN (post)")
-        print(self.request.body)
         status, msg = self.check_permission(self.get_argument("name", None), self.get_argument("password", None))
         if status:
             self.set_secure_cookie("user", self.get_argument("name"))
@@ -398,9 +396,18 @@ class WSHandler(websocket.WebSocketHandler):
         logger.info("BEFORE")
         #response = yield http.fetch(url, handle_request, method='POST', headers=headers, body=body) 
         request = HTTPRequest(url, method='POST', headers=headers, body=body, validate_cert=False)
-        response = yield http.fetch(request)
-        logger.info("REST response : {0}".format(response.body))
-        j = json_decode(response.body)
+        try:
+            response = yield http.fetch(request)
+            logger.info("REST response : {0}".format(response.body))
+            j = json_decode(response.body)
+        except HTTPError as e:
+            # Handle HTTP errors
+            logger.warning("REST error : {0}".format(str(e)))
+            
+            if e.code == 599:
+                j = {"text" : "Timeout while requesting the butler over REST (Error 599)"}
+            else:
+                j = {"text" : "Error while requesting the butler over REST (Error {0})".format(e.code)}
         json_ret = {"caller" : data['caller'], "data" : j}
         raise Return(['butler-discuss', json_ret])
 
