@@ -20,9 +20,8 @@ Download Domoweb :
 .. code-block:: bash
 
     $ cd /opt/dmg
-    $ wget --content-disposition https://github.com/domogik/domoweb/archive/0.4.0.tar.gz
-    $ tar xvzf domoweb-0.4.0.tar.gz
-    $ ln -s domoweb-0.4.0 domoweb
+    $ git clone https://github.com/domogik/domoweb.git
+    $ git checkout develop
     $ cd domoweb
 
 Launch the installation script
@@ -163,6 +162,28 @@ The final test to check the Domoweb installation. ::
     ==>  DomoWeb UI is available on                        <==  
     ==>                            http://127.0.0.1:40404/ <==  
     ==> ================================================== <==
+
+If you are a already a Domoweb 0.4 user
+=======================================
+
+You will need to upgrade your configuration file : **/etc/domoweb.cfg**.
+
+Upgrade the **rest_url** value with the new port and path in the url : the REST server on Domogik side is now included in the Administration component. For a basic configuration, replace 40405 by 40406 and add **/rest** at the end of the url.
+
+For example:  ::
+    rest_url = 'http://127.0.0.1:40405'
+
+Will become : ::
+    rest_url = 'http://127.0.0.1:40406/rest'
+
+Activate SSL support
+====================
+
+If you wish to use the microphone with Domoweb to speak to the butler, you will need to use configure Domoweb to use SSL. You can simply activate ssl by executing the **ssl_activate.sh** script : ::
+
+    ./ssl_activate.sh
+
+A self signed certificate will be generated and the configuration file **/etc/domoweb/cfg** will be upgraded.
 
 Make Domoweb start with your computer
 =====================================
