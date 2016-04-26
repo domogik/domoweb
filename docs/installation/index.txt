@@ -201,6 +201,13 @@ Start Domoweb
 
 Now, you can access UI on this url : http://127.0.0.1:40404/
 
+You will need a login and password to access Domoweb. You can create a new account in Domogik administration or use the default one : 
+
+* login = admin
+* password = 123
+
+To change the password, you can go in Domogik administration.
+
     
 Uninstall
 =========
