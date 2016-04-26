@@ -84,7 +84,6 @@
                     this.$.range.value = 0;
                 }
                 if (this.$.primary.isSet) {
-                    alert('set');
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                     this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: this.datatypes[this.$.primary.datatype_id]['unit']});
