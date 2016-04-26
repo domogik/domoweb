@@ -45,6 +45,7 @@
             }
         },
         "commandString": {
+            "dev" : true,
             "name" : "Command String",
             "height" : 1,
             "width" : 2,
