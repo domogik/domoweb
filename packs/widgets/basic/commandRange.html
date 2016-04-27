@@ -15,41 +15,80 @@
                 transform: translate(-50%, -50%);
                 left: 50%;
             }
-            input[type='range'] {
-                outline: none;
-                -webkit-appearance: none;
-                border-radius: 5px;
-                box-shadow: none;
-                height: 4px;
-                width: 98%;
-                background-color: transparent;
+
+
+            input[type=range] {
+              -webkit-appearance: none;
+              width: 98%;
+              background-color: transparent;
             }
-            input[type='range']::-moz-range-track {
-                -moz-appearance: none;
-                border: none;
-                border-radius: 4px;
-                box-shadow: none;
-                background-color: red;
-                height: 4px;
+            input[type=range]:focus {
+              outline: none;
             }
-            input[type='range']::-webkit-slider-thumb {
-                -webkit-appearance: none !important;
-                border-radius: 50%;
-                background-color: rgba(255,255,255,1);
-                box-shadow:none;
-                border: none;
-                height: 50px;
-                width: 50px;
+            input[type=range]::-webkit-slider-runnable-track {
+              width: 100%;
+              height: 4px;
+              cursor: pointer;
+              background-color: transparent;
+              border-radius: 5.4px;
+              border: none;
             }
-            input[type='range']::-moz-range-thumb {
-                -moz-appearance: none;
-                border-radius: 50%;
-                background-color: rgba(255,255,255,1);
-                box-shadow:none;
-                border: none;
-                height: 50px;
-                width: 50px;
+            input[type=range]::-webkit-slider-thumb {
+              height: 50px;
+              width: 50px;
+              border-radius: 50px;
+              background: #ffffff;
+              cursor: pointer;
+              -webkit-appearance: none;
+              margin-top: -23px;
             }
+            input[type=range]:focus::-webkit-slider-runnable-track {
+              background: transparent;
+            }
+            input[type=range]::-moz-range-track {
+              width: 100%;
+              height: 4px;
+              cursor: pointer;
+              background: transparent;
+              border-radius: 5.4px;
+              border: none;
+            }
+            input[type=range]::-moz-range-thumb {
+              height: 50px;
+              width: 50px;
+              border-radius: 50px;
+              background: #ffffff;
+              cursor: pointer;
+            }
+            input[type=range]::-ms-track {
+              width: 100%;
+              height: 4px;
+              cursor: pointer;
+              background: transparent;
+              border-color: transparent;
+              color: transparent;
+            }
+            input[type=range]::-ms-fill-lower {
+              background: transparent;
+              border: none;
+              border-radius: 10.8px;
+            }
+            input[type=range]::-ms-fill-upper {
+              background: transparent;
+              border: none;
+              border-radius: 10.8px;
+            }
+            input[type=range]::-ms-thumb {
+              height: 50px;
+              width: 50px;
+              border-radius: 50px;
+              background: #ffffff;
+              cursor: pointer;
+            }
+
+
+
+
             #current {
                 font-size: 3.5em;
                 float: left;
@@ -63,10 +102,10 @@
         <dmw-sensor id='scalingstate' sensorkey="scalingstate" sensorvalue="{{scalingstate}}"></dmw-sensor>
         <shadow></shadow>
         <div class="slider">
-          <input type="range" id="range" min="0" max="100" step="5" on-tap="{{onInput}}">
+          <input type="range" id="range" min="0" max="100" step="5">
         </div>
         <!--
-        <div id="current" on-tap="{{onInput}}">{{current}}{{unit}}</div>
+        <div id="current">{{current}}{{unit}}</div>
         <div id="prevalue">{{prevalue}}</div>
         -->
     </template>
@@ -83,10 +122,12 @@
                     this.current = 0;
                     this.$.range.value = 0;
                 }
+            },
+            commandsUpdated: function() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
-                    this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: this.datatypes[this.$.primary.datatype_id]['unit']});
+                    this.$.range.addEventListener('change', this.onInput.bind(this));
                 }
             },
             scalingstateChanged: function(oldValue, newValue) {
