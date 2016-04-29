@@ -232,6 +232,7 @@
           <span id="browserLocale">Browser locale : {{browserLocale}}</span>
         </div>
         <div id="speech_errors">
+          <div id="error">{{error}}</div>
           <div id="err_voices">{{err_voices}}</div>
           <div id="err_tts">{{err_tts}}</div>
           <div id="err_stt">{{err_stt}}</div>
@@ -332,6 +333,7 @@
                 this.remove();
             },
             startVoiceRecog: function(e) {
+                this.error = "";
                 if (window.hasOwnProperty('webkitSpeechRecognition')) {
                     // first, check if voice recnognition is already in process or not.
                     if (this.status == "STT") {
@@ -401,6 +403,7 @@
                         self.icon = "fa-microphone-slash";
                         recognition.stop();
                         self.$.speakButton.classList.remove('pulse1');
+                        this.error = "Error : " + e;
                     }
                 }
             },
