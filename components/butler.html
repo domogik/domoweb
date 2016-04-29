@@ -98,6 +98,16 @@
                 border-radius: 1em;
                 padding: 1em;
             }
+            #error {
+                background: blue;
+                color: white;
+                position: fixed;
+                bottom: 4em;
+                left: 5%;
+                width: 90%;
+                border-radius: 1em;
+                padding: 1em;
+            }
 
             #chat {
                 /* font-weight: 100; */
@@ -231,8 +241,8 @@
         <div id="informations">
           <span id="browserLocale">Browser locale : {{browserLocale}}</span>
         </div>
+        <div id="error">{{error}}</div>
         <div id="speech_errors">
-          <div id="error">{{error}}</div>
           <div id="err_voices">{{err_voices}}</div>
           <div id="err_tts">{{err_tts}}</div>
           <div id="err_stt">{{err_stt}}</div>
@@ -324,6 +334,8 @@
                 }
             },
             close: function(e) {
+                this.recognition.stop();
+
                 // Redisplay the corner buttons
                 document.getElementById('butler').style.visibility = "visible";
                 document.getElementById('main-menu').style.visibility = "visible";
@@ -332,13 +344,22 @@
                 modalOverlay.classList.remove('on');
                 this.remove();
             },
-            startVoiceRecog: function(e) {
+            cleanError: function() {
+                this.$.error.style.visibility = "hidden";
                 this.error = "";
+            },
+            showError: function(e) {
+                this.$.error.style.visibility = "visible";
+                this.error = text;
+                console.error(e);
+            },
+            startVoiceRecog: function(e) {
+                this.cleanError();
                 if (window.hasOwnProperty('webkitSpeechRecognition')) {
                     // first, check if voice recnognition is already in process or not.
                     if (this.status == "STT") {
-                        if (recognition) {
-                            recognition.stop();
+                        if (this.recognition) {
+                            this.recognition.stop();
                         }
                         this.status = "WAITING";
                         this.icon = "fa-microphone-slash";
@@ -347,21 +368,21 @@
                     this.status = "STT";
                     this.icon = "fa-microphone";
 
-                    var recognition = new webkitSpeechRecognition();
-                    recognition.continuous = false;
-                    recognition.interimResults = false;
-                    recognition.lang = this.browserLocale;
-                    recognition.start();
+                    this.recognition = new webkitSpeechRecognition();
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = false;
+                    this.recognition.lang = this.browserLocale;
 
                     self = this;
-                    recognition.onstart = function(e) {
+                    this.recognition.onstart = function(e) {
                         self.$.speakButton.classList.add('pulse1');
                     }
 
-                    recognition.onresult = function(e) {
+                    this.recognition.onresult = function(e) {
+                        //alert('onresult');
                         self.status = "CALLING_BUTLER";
                         self.icon = "fa-cog";   // TODO : why is this not working ?
-                        recognition.stop();
+                        self.recognition.stop();
                         //alert(e.results[0][0].transcript);
                         self.speaked = e.results[0][0].transcript;
                         self.displayRequest(self.speaked);
@@ -392,19 +413,25 @@
 
                     };
 
-                    recognition.onend = function(e) {
+                    this.recognition.onend = function(e) {
+                        //alert('onend');
                         self.status = "WAITING";
                         self.icon = "fa-microphone-slash";
-                        recognition.stop();
+                        self.recognition.stop();
                         self.$.speakButton.classList.remove('pulse1');
+                        //self.showError("OnEnd");
                     }
-                    recognition.onerror = function(e) {
+                    this.recognition.onerror = function(e) {
+                        //alert('onerror');
+                        self.status = "WAITING";
                         self.status = "WAITING";
                         self.icon = "fa-microphone-slash";
-                        recognition.stop();
+                        self.recognition.stop();
                         self.$.speakButton.classList.remove('pulse1');
-                        this.error = "Error : " + e;
+                        self.showError("Error : " + e);
                     }
+
+                    this.recognition.start();
                 }
             },
             displayRequest: function(requestText) {
