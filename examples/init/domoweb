@@ -43,7 +43,28 @@ if [ $UID != 0 ];then
 fi
 
 function start_domoweb {
-    echo -n " * Starting DomoWeb..."
+    echo " * Starting DomoWeb..."
+
+    # wait until domogik is not listening...
+
+    DOMOGIK_LISTEN=no
+    DMG_HOST=$(grep rest_url /etc/domoweb.cfg | sed "s#.*://\(.*\):.*#\1#")
+    DMG_PORT=$(grep rest_url /etc/domoweb.cfg | sed "s#.*://\(.*\):\([0-9]*\).*#\2#")
+    # test if domogik available
+    (exec 3<>/dev/tcp/${DMG_HOST}/${DMG_PORT}) &>/dev/null
+    [ $? -eq 0 ] && DOMOGIK_LISTEN=yes
+
+    echo -n "   Checking if Domogik is available (${DMG_HOST}:${DMG_PORT}) ..."
+
+    # if not, do a loop until it is available
+    while [ "x$DOMOGIK_LISTEN" != "xyes" ]
+    do
+        sleep 1
+        (exec 3<>/dev/tcp/${DMG_HOST}/${DMG_PORT}) &>/dev/null
+        [ $? -eq 0 ] && DOMOGIK_LISTEN=yes
+        echo -n "."
+    done
+
     [ ! -d /var/log/domoweb ] && \
         /bin/mkdir /var/log/domoweb
     /bin/chown -Rf ${DOMOWEB_USER}:root /var/log/domoweb
