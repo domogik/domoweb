@@ -109,8 +109,8 @@
                   generateGradient: true
                 };
                 this.gauge = new Gauge(this.$.gauge).setOptions(opts);
-                this.gauge.minValue = this.options['minValue'];
-                this.gauge.maxValue = this.options['maxValue'];
+                this.gauge.minValue = parseFloat(this.options['minValue']);
+                this.gauge.maxValue = parseFloat(this.options['maxValue']);
                 this.gauge.animationSpeed = 32;
 
                 // Avoid a library bug with newValue == 0....
