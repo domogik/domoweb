@@ -144,8 +144,8 @@
                                                             spotColor: undefined,
                                                             minSpotColor: undefined,
                                                             maxSpotColor: undefined,
-                                                            chartRangeMin: this.options['chartMinValue'],
-                                                            chartRangeMax: this.options['chartMaxValue'],
+                                                            chartRangeMin: parseFloat(this.options['chartMinValue']),
+                                                            chartRangeMax: parseFloat(this.options['chartMaxValue']),
                                                             height: '100%', width: '100%' });
                     $.sparkline_display_visible();
                 }
