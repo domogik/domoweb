@@ -44,6 +44,7 @@ application = tornado.web.Application(
         (r"/locales/(.*)/(.*)/(.*)", MultiStaticFileHandler, { "path": os.path.join(os.path.dirname(__file__), "packs", 'widgets')}),
         (r"/components/(.*)", NoCacheStaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "components")}),
         (r"/manifests/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "manifests")}),
+        (r"/(favico..ico)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", "images")}),  # yes, favico..ico and not favicon.ico. We need a wildcard as tornado does not allow to serve only 1 file....
         (r'/ws/', WSHandler),
         (r'/upload', UploadHandler),
         (r"/backgrounds/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(domoweb.VARPATH, "backgrounds")}),
