@@ -320,10 +320,12 @@
                 self = this;
                 if (window.hasOwnProperty('speechSynthesis')) {
                     window.speechSynthesis.onvoiceschanged = function() {
-                        if (speechSynthesis.getVoices().length == 0) {
-                            self.$.speech_errors.style.visibility = "visible";
-                            self.err_voices = "Your browser doesn't include any voice for the Text to Speech feature!";
-                        }
+                        setTimeout(function() {
+                            if (speechSynthesis.getVoices().length == 0) {
+                                self.$.speech_errors.style.visibility = "visible";
+                                self.err_voices = "Your browser doesn't include any voice for the Text to Speech feature!";
+                            }
+                        }, 500);
                     };
                 }
 
