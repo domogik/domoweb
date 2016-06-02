@@ -350,8 +350,8 @@
             },
             showError: function(e) {
                 this.$.error.style.visibility = "visible";
-                this.error = text;
                 console.error(e);
+                this.error = e;
             },
             startVoiceRecog: function(e) {
                 this.cleanError();
@@ -379,11 +379,9 @@
                     }
 
                     this.recognition.onresult = function(e) {
-                        //alert('onresult');
                         self.status = "CALLING_BUTLER";
                         self.icon = "fa-cog";   // TODO : why is this not working ?
                         self.recognition.stop();
-                        //alert(e.results[0][0].transcript);
                         self.speaked = e.results[0][0].transcript;
                         self.displayRequest(self.speaked);
 
@@ -414,7 +412,6 @@
                     };
 
                     this.recognition.onend = function(e) {
-                        //alert('onend');
                         self.status = "WAITING";
                         self.icon = "fa-microphone-slash";
                         self.recognition.stop();
@@ -422,13 +419,40 @@
                         //self.showError("OnEnd");
                     }
                     this.recognition.onerror = function(e) {
-                        //alert('onerror');
                         self.status = "WAITING";
                         self.status = "WAITING";
                         self.icon = "fa-microphone-slash";
                         self.recognition.stop();
                         self.$.speakButton.classList.remove('pulse1');
-                        self.showError("Error : " + e);
+                        console.error(e);
+                        // DOC : https://dvcs.w3.org/hg/speech-api/raw-file/tip/speechapi.html#speechreco-error
+                        if (e.error == "no-speech") {
+                            return; // do nothing
+                        }
+                        else if (e.error == "aborted"){
+                            return; // canceled by the user or app
+                        }
+                        else if (e.error == "audio-capture") {
+                            self.showError("Error : audio capture failed.");
+                        }
+                        else if (e.error == "network") {
+                            self.showError("Error : network error or microphone already used by another application.");
+                            // yes, I tested... with The Butler android app launched in keyspotting mode, when I try to use mic in domoweb, the error code is 'network'
+                            // WTF ????? Fritz - june 2016
+                        }
+                        else if (e.error == "not-allowed") {
+                            self.showError("Error : speech input not allowed. Maybe another application is using the microphone ?");
+                        }
+                        else if (e.error == "service-not-allowed") {
+                            self.showError("Error : speech input not allowed.");
+                        }
+                        else if (e.error == "bad-grammar") {
+                            self.showError("Error : grammar error.");
+                        }
+                        else if (e.error == "language-not-supported") {
+                            self.showError("Error : language not supported.");
+                        }
+
                     }
 
                     this.recognition.start();
