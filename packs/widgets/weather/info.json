@@ -100,6 +100,36 @@
                     "required": true                   
                 }
             }
+        },
+        "current2": {
+            "name" : "Current condition - 2",
+            "description" : "Weather current condition, with temperature",
+            "height" : 1,
+            "width" : 2,
+            "options" : {},
+            "devices" : {
+                "forecast" : {
+                    "name": "Location",
+                    "description": "Weather location",
+                    "types" : ["weather.weather"],
+                    "required": true                   
+                }
+            }
+        },
+        "forecast2": {
+            "name" : "Forecast - 2",
+            "description" : "Weather forecast",
+            "height" : 2,
+            "width" : 2,
+            "options" : {},
+            "devices" : {
+                "forecast" : {
+                    "name": "Location",
+                    "description": "Forecast location",
+                    "types" : ["weather.weather"],
+                    "required": true                   
+                }
+            }
         }
     }
 }

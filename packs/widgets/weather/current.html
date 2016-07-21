@@ -61,7 +61,9 @@
                 this.super();
             },
             current_codeChanged: function(oldValue, newValue) {
+                console.error(newValue);
                 newValue = newValue.stored_value;
+                this.code = newValue;
                 // needed only the first time :)
                 // strangely it does not work in sensorUpdated()... : this.options == undefined
                 if (this.options['displayBackground'] == 1) {
@@ -83,7 +85,8 @@
             },
             current_textChanged: function(oldValue, newValue) {
                 newValue = newValue.stored_value;
-                this.condition = newValue; // Add i18n ("Fair/Windy")
+                //this.condition = newValue; // Add i18n ("Fair/Windy")
+                this.condition = i18n.t("weather:" + this.code, newValue);
             },
         });
     </script>
