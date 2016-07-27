@@ -67,14 +67,14 @@
             },
             open: function(e) {
                 var parameters = {};
-                parameters[this.$.primary.parameters[0]['key']] = 1;
+                parameters[this.$.primary.parameters[0]['key']] = 0;
                 this.$.primary.send(parameters);
                 e.preventDefault();
                 e.stopPropagation();
             },
             close: function(e) {
                 var parameters = {};
-                parameters[this.$.primary.parameters[0]['key']] = 0;
+                parameters[this.$.primary.parameters[0]['key']] = 1;
                 this.$.primary.send(parameters);
                 e.preventDefault();
                 e.stopPropagation();
