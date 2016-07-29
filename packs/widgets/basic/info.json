@@ -238,7 +238,7 @@
             }
         },
         "sensorChart": {
-            "name" : "Chart for sensor Number",
+            "name" : "Chart for numeric sensor",
             "height" : 1,
             "width" : 2,
             "options" : {
@@ -275,6 +275,127 @@
                     "description": "Number sensor",
                     "types" : ["DT_Number"],
                     "required": true
+                }
+            }
+        },
+        "sensorChartMulti": {
+            "name" : "Chart for several numeric sensors",
+            "height" : 2,
+            "width" : 3,
+            "options" : {
+                "autoconvert" : {
+                    "name": "Automatic conversion",
+                    "description": "Automatically convert big value to K(x) / M(x) / G(x) / T(x)",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "chartColor" : {
+                    "name": "Chart color",
+                    "description": "Set the chart color",
+                    "type": "string",
+                    "default": "#ffffff"
+                },
+                "chartMinValue_primary" : {
+                    "name": "Chart minimun value for sensor 1",
+                    "description": "Set the chart minimum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                },
+                "chartMaxValue_primary" : {
+                    "name": "Chart maximum value for sensor 1",
+                    "description": "Set the chart maximum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                },
+                "chartMinValue_secondary" : {
+                    "name": "Chart minimun value for sensor 2",
+                    "description": "Set the chart minimum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                },
+                "chartMaxValue_secondary" : {
+                    "name": "Chart maximum value for sensor 2",
+                    "description": "Set the chart maximum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                },
+                "chartMinValue_third" : {
+                    "name": "Chart minimun value for sensor 3",
+                    "description": "Set the chart minimum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                },
+                "chartMaxValue_third" : {
+                    "name": "Chart maximum value for sensor 3",
+                    "description": "Set the chart maximum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                },
+                "chartMinValue_fourth" : {
+                    "name": "Chart minimun value for sensor 4",
+                    "description": "Set the chart minimum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                },
+                "chartMaxValue_fourth" : {
+                    "name": "Chart maximum value for sensor 4",
+                    "description": "Set the chart maximum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                },
+                "chartMinValue_fifth" : {
+                    "name": "Chart minimun value for sensor 5",
+                    "description": "Set the chart minimum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                },
+                "chartMaxValue_fifth" : {
+                    "name": "Chart maximum value for sensor 5",
+                    "description": "Set the chart maximum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                }
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "Numeric sensor 1",
+                    "description": "Numeric sensor 1",
+                    "types" : ["DT_Number"],
+                    "required": true
+                },
+                "secondary" : {
+                    "name": "Numeric sensor 2",
+                    "description": "Numeric sensor 2",
+                    "types" : ["DT_Number"],
+                    "required": false
+                },
+                "third" : {
+                    "name": "Numeric sensor 3",
+                    "description": "Numeric sensor 3",
+                    "types" : ["DT_Number"],
+                    "required": false
+                },
+                "fourth" : {
+                    "name": "Numeric sensor 4",
+                    "description": "Numeric sensor 4",
+                    "types" : ["DT_Number"],
+                    "required": false
+                },
+                "fifth" : {
+                    "name": "Numeric sensor 5",
+                    "description": "Numeric sensor 5",
+                    "types" : ["DT_Number"],
+                    "required": false
                 }
             }
         }

@@ -1,0 +1,311 @@
+<style>
+@font-face {
+  font-family: 'weathericons';
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot');
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');  
+  font-weight: normal;
+  font-style: normal;
+}     
+
+</style>
+<polymer-element name="dmw-basic-sensorChartMulti" extends="dmw-widget">
+    <template>
+        <style type="text/css">
+            @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
+            :host {
+                height: 100%;
+                display: block;
+            }
+            table {
+                margin: 2%;
+                width: 96%;
+                height: 96%;
+                font-size: 1.3em;
+            }
+            table td{
+                border: 1px solid transparent;
+            }
+            table .name {
+                font-size: 1em;
+                white-space: nowrap;
+            }
+            table .type {
+                font-size: 1em;
+            }
+            table .minmax {
+                font-size: 0.5em;
+            }
+            table .chart {
+                font-size: 1em;
+            }
+            table .value {
+                text-align: right;
+            }
+            table .value .unit {
+                vertical-align: text-top;
+                font-size: 0.6em;
+            }
+        </style>
+        <shadow></shadow>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{primary_value}}" sensorhistory="{{primary_history}}"></dmw-sensor>
+        <dmw-sensor id='secondary' sensorkey="secondary" sensorvalue="{{secondary_value}}" sensorhistory="{{secondary_history}}"></dmw-sensor>
+        <dmw-sensor id='third' sensorkey="third" sensorvalue="{{third_value}}" sensorhistory="{{third_history}}"></dmw-sensor>
+        <dmw-sensor id='fourth' sensorkey="fourth" sensorvalue="{{fourth_value}}" sensorhistory="{{fourth_history}}"></dmw-sensor>
+        <dmw-sensor id='fifth' sensorkey="fifth" sensorvalue="{{fifth_value}}" sensorhistory="{{fifth_history}}"></dmw-sensor>
+
+        <table>
+          <tbody>
+            <tr>
+              <td id="primary_type" class="type"></td>
+              <td class="name" >{{ the_primary_name }}</td>
+              <td class="minmax">
+                <div id="the_primary_max"></div>
+                <div id="the_primary_min"></div>
+              </td>
+              <td class="chart" id="primary_spark" class="spark inlinesparkline">{{the_primary_spark}}</td>
+              <td class="value">
+                <span>{{the_primary_value}}</span><span class="unit">{{ the_primary_unit }}</span>
+              </td>
+            </tr>
+            <tr>
+              <td id="secondary_type" class="type"></td>
+              <td class="name" >{{ the_secondary_name }}</td>
+              <td class="minmax">
+                <div id="the_secondary_max"></div>
+                <div id="the_secondary_min"></div>
+              </td>
+              <td class="chart" id="secondary_spark" class="spark inlinesparkline">{{the_secondary_spark}}</td>
+              <td class="value">
+                <span>{{the_secondary_value}}</span><span class="unit">{{ the_secondary_unit }}</span>
+              </td>
+            </tr>
+            <tr>
+              <td id="third_type" class="type"></td>
+              <td class="name" >{{ the_third_name }}</td>
+              <td class="minmax">
+                <div id="the_third_max"></div>
+                <div id="the_third_min"></div>
+              </td>
+              <td class="chart" id="third_spark" class="spark inlinesparkline">{{the_third_spark}}</td>
+              <td class="value">
+                <span>{{the_third_value}}</span><span class="unit">{{ the_third_unit }}</span>
+              </td>
+            </tr>
+            <tr>
+              <td id="fourth_type" class="type"></td>
+              <td class="name" >{{ the_fourth_name }}</td>
+              <td class="minmax">
+                <div id="the_fourth_max"></div>
+                <div id="the_fourth_min"></div>
+              </td>
+              <td class="chart" id="fourth_spark" class="spark inlinesparkline">{{the_fourth_spark}}</td>
+              <td class="value">
+                <span>{{the_fourth_value}}</span><span class="unit">{{ the_fourth_unit }}</span>
+              </td>
+            </tr>
+            <tr>
+              <td id="fifth_type" class="type"></td>
+              <td class="name" >{{ the_fifth_name }}</td>
+              <td class="minmax">
+                <div id="the_fifth_max"></div>
+                <div id="the_fifth_min"></div>
+              </td>
+              <td class="chart" id="fifth_spark" class="spark inlinesparkline">{{the_fifth_spark}}</td>
+              <td class="value">
+                <span>{{the_fifth_value}}</span><span class="unit">{{ the_fifth_unit }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+    </template>
+    <script>
+        Polymer('dmw-basic-sensorChartMulti', {
+            ready: function() {
+                this.super();
+
+
+            },
+            sensorsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.the_primary_name = this.$.primary.device['name'];
+                    this.$.primary_type.innerHTML = setTypeIcon(this.$.primary.datatype_id);
+                    var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
+                    if (unit) {
+                        this.the_primary_unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                    }
+                    this.$.primary.getCurrentDayPerHour();
+                }
+                else {
+                    this.the_primary_name = "";  
+                    this.the_primary_type = "";  
+                    this.the_primary_unit = "";  
+                }
+
+                if (this.$.secondary.isSet) {
+                    this.the_secondary_name = this.$.secondary.device['name'];
+                    this.$.secondary_type.innerHTML = setTypeIcon(this.$.secondary.datatype_id);
+                    var unit = this.datatypes[this.$.secondary.datatype_id]['unit'];
+                    if (unit) {
+                        this.the_secondary_unit = i18n.t("domoweb:unit", { context: this.$.secondary.datatype_id, value: unit });
+                    }
+                    this.$.secondary.getCurrentDayPerHour();
+                }
+                else {
+                    this.the_secondary_name = "";  
+                    this.the_secondary_type = "";  
+                    this.the_secondary_unit = "";  
+                }
+
+                if (this.$.third.isSet) {
+                    this.the_third_name = this.$.third.device['name'];
+                    this.$.third_type.innerHTML = setTypeIcon(this.$.third.datatype_id);
+                    var unit = this.datatypes[this.$.third.datatype_id]['unit'];
+                    if (unit) {
+                        this.the_third_unit = i18n.t("domoweb:unit", { context: this.$.third.datatype_id, value: unit });
+                    }
+                    this.$.third.getCurrentDayPerHour();
+                }
+                else {
+                    this.the_third_name = "";  
+                    this.the_third_type = "";  
+                    this.the_third_unit = "";  
+                }
+
+                if (this.$.fourth.isSet) {
+                    this.the_fourth_name = this.$.fourth.device['name'];
+                    this.$.fourth_type.innerHTML = setTypeIcon(this.$.fourth.datatype_id);
+                    var unit = this.datatypes[this.$.fourth.datatype_id]['unit'];
+                    if (unit) {
+                        this.the_fourth_unit = i18n.t("domoweb:unit", { context: this.$.fourth.datatype_id, value: unit });
+                    }
+                    this.$.fourth.getCurrentDayPerHour();
+                }
+                else {
+                    this.the_fourth_name = "";  
+                    this.the_fourth_type = "";  
+                    this.the_fourth_unit = "";  
+                }
+
+                if (this.$.fifth.isSet) {
+                    this.the_fifth_name = this.$.fifth.device['name'];
+                    this.$.fifth_type.innerHTML = setTypeIcon(this.$.fifth.datatype_id);
+                    var unit = this.datatypes[this.$.fifth.datatype_id]['unit'];
+                    if (unit) {
+                        this.the_fifth_unit = i18n.t("domoweb:unit", { context: this.$.fifth.datatype_id, value: unit });
+                    }
+                    this.$.fifth.getCurrentDayPerHour();
+                }
+                else {
+                    this.the_fifth_name = "";  
+                    this.the_fifth_type = "";  
+                    this.the_fifth_unit = "";  
+                }
+            },
+            primary_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.the_primary_value = newValue;
+            },
+            secondary_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.the_secondary_value = newValue;
+            },
+            third_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.the_third_value = newValue;
+            },
+            fourth_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.the_fourth_value = newValue;
+            },
+            fifth_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.the_fifth_value = newValue;
+            },
+            primary_historyChanged: function(oldValue, newValue) { 
+                this.generic_historyChanged(oldValue, newValue, this.$.primary_spark, this.the_primary_value, this.$.the_primary_max, this.$.the_primary_min, "primary");
+            },
+            secondary_historyChanged: function(oldValue, newValue) { 
+                this.generic_historyChanged(oldValue, newValue, this.$.secondary_spark, this.the_secondary_value, this.$.the_secondary_max, this.$.the_secondary_min, "secondary");
+            },
+            third_historyChanged: function(oldValue, newValue) { 
+                this.generic_historyChanged(oldValue, newValue, this.$.third_spark, this.the_third_value, this.$.the_third_max, this.$.the_third_min, "third");
+            },
+            fourth_historyChanged: function(oldValue, newValue) { 
+                this.generic_historyChanged(oldValue, newValue, this.$.fourth_spark, this.the_fourth_value, this.$.the_fourth_max, this.$.the_fourth_min, "fourth");
+            },
+            fifth_historyChanged: function(oldValue, newValue) { 
+                this.generic_historyChanged(oldValue, newValue, this.$.fifth_spark, this.the_fifth_value, this.$.the_fifth_max, this.$.the_fifth_min, "fifth");
+            },
+            generic_historyChanged: function(oldValue, newValue, generic_spark, generic_value, generic_max, generic_min, name) { 
+                // in case the page is not yet nicely loaded...
+                if (generic_spark.clientWidth == 0 || generic_spark.clientHeight == 0) {
+                    setTimeout(function(){
+                        this.generic_historyChanged(oldValue, newValue, generic_spark, generic_value, generic_max, generic_min, name);
+                        }.bind(this), 1000);
+                }
+                else {
+                    var self = this;
+                    var chartValues = [];
+                    for(i=0;i<newValue.length;i++) {
+                        // 5 because : [ year, month, week, day, hour, value ]
+                        chartValues.push(newValue[i][5]);
+                    }
+                    // display the chart
+                    minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
+                    maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
+ 
+                    // as the graph history is an average, the current value could be lower or bigger than the min/max average value. So we adjust
+                    current = generic_value;
+                    if (current > maxvalue) {
+                        generic_max.innerHTML = current;
+                    }
+                    else {
+                        generic_max.innerHTML = maxvalue;
+                    }
+                    if (current < minvalue) {
+                        generic_min.innerHTML = current;
+                    }
+                    else {
+                        generic_min.innerHTML = minvalue;
+                    }
+                    $(generic_spark).sparkline(chartValues, {type: 'line',
+                                                            lineColor: this.options['chartColor'],
+                                                            fillColor: this.options['chartColor'],
+                                                            spotColor: undefined,
+                                                            minSpotColor: undefined,
+                                                            maxSpotColor: undefined,
+                                                            chartRangeMin: parseFloat(this.options['chartMinValue_'+name]),
+                                                            chartRangeMax: parseFloat(this.options['chartMaxValue_'+name]),
+                                                            height: '1.5em', width: '100%' });
+                    $.sparkline_display_visible();
+                }
+            }
+
+        });        
+
+        function setTypeIcon(type) {
+         
+            switch(type) {
+                case 'DT_Temp': var icon = '<i class="wi wi-thermometer"></i>';
+                break;
+                case 'DT_TempK': var icon = '<i class="wi wi-thermometer"></i>';
+                break;
+                case 'DT_TempF': var icon = '<i class="wi wi-thermometer"></i>';
+                break;
+                case 'DT_Pressure': var icon = '<i class="wi wi-barometer"></i>';
+                break;
+                case 'DT_mbarPressure': var icon = '<i class="wi wi-barometer"></i>';
+                break;
+                case 'DT_Humidity': var icon = '<i class="wi wi-humidity"></i>';
+                break;
+                default: var icon = '<i class="wi wi-na"></i>';
+                break;
+            }
+             
+            return icon;
+         
+        } 
+
+    </script>
+</polymer-element>
