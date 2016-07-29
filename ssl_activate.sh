@@ -31,7 +31,7 @@ echo "----------------------------------------------------------"
 echo "Setting domogik configuration..."
 echo "----------------------------------------------------------"
 echo ""
-sed -i "s/^use_ssl.*/use_ssl = True/" /etc/domogik/domogik.cfg
+sed -i "s/^use_ssl.*/use_ssl = True/" /etc/domoweb.cfg
 sed -i "s#^ssl_certificate.*#ssl_certificate = '$DIR/ssl_cert.pem'#" /etc/domoweb.cfg
 sed -i "s#^ssl_key.*#ssl_key = '$DIR/ssl_key.pem'#" /etc/domoweb.cfg
 if [[ $? -ne 0 ]] ; then

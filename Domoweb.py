@@ -75,7 +75,8 @@ if __name__ == '__main__':
         sys.exit(1)
 
     options.define("sqlite_db", default="/var/lib/domoweb/db.sqlite", help="Database file path", type=str)
-    options.define("port", default=40404, help="Launch on the given port", type=int)
+    options.define("port", default=40404, help="Launch on the given port (http)", type=int)
+    options.define("ssl_port", default=40405, help="Launch on the given port (https)", type=int)
     options.define("debug", default=False, help="Debug mode", type=bool)
     options.define("rest_url", default="http://127.0.0.1:40406/rest", help="RINOR REST Url", type=str)
     options.define("develop", default=False, help="Develop mode", type=bool)
@@ -98,20 +99,26 @@ if __name__ == '__main__':
     mqDataLoader.loadDevices(options.develop)
 
     logger.info("Starting tornado web server")
+    # https
     if options.use_ssl:
         logger.info("SSL activated")
         logger.info("SSL certificate file : {0}".format(options.ssl_certificate))
         logger.info("SSL certificate file : {0}".format(options.ssl_key))
-        http_server = tornado.httpserver.HTTPServer(application,
+        http_server_ssl = tornado.httpserver.HTTPServer(application,
                                             ssl_options = {
                                                 "certfile": os.path.join(options.ssl_certificate),
                                                 "keyfile": os.path.join(options.ssl_key)
                                             })
+        logger.info("Start https server on port '{0}'".format(options.ssl_port))
+        http_server_ssl.listen(options.ssl_port)
     else:
         logger.info("SSL not activated")
-        http_server = tornado.httpserver.HTTPServer(application)
                                                 
+    # http
+    logger.info("Start http server on port '{0}'".format(options.port))
+    http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(options.port)
+
     logger.info("Starting MQ Handler")
     MQHandler()
     ioloop.IOLoop.instance().start() 
