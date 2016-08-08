@@ -60,6 +60,7 @@
         <shadow></shadow>
         <div id="camera" class="camera-normal">
           <img id="motionjpeg" class="mjpeg-normal" src="{{url}}" on-click="{{zoom}}"/>
+
         </div>
         <div id="cameralabel"><span>{{label}}</span></div>
     </template>
@@ -76,6 +77,11 @@
                 setInterval(function(){
                     self.url = self.urlRaw + "?" + +new Date().getTime();
                 },20000);
+
+                // but first, refresh the image 1s after the component is loaded to avoid a broken image in case of 401 error (see comment before the iframe for more informations
+                setTimeout(function(){
+                    self.url = self.urlRaw + "?" + +new Date().getTime();
+                }.bind(this), 5000);
 
 
             },
