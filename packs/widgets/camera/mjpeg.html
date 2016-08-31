@@ -25,7 +25,7 @@
                 left: 0px;
                 width: 100vw;
                 height: 100vh;
-                background-color: black;
+                background-color: rgba(0, 0, 0, 0.9);
             }
             .camera-normal {
                 position: absolute;
@@ -72,17 +72,20 @@
                 this.url = "/widget/camera/noname.png";
                 this.urlRaw = this.url;
 
-                // refresh the video stream each 20s to reload automatically if the stream was shut for a while
+                // refresh the video stream each 60s to reload automatically if the stream was shut for a while
                 self = this;
                 setInterval(function(){
                     self.url = self.urlRaw + "?" + +new Date().getTime();
-                },20000);
+                },60000);
 
                 // but first, refresh the image 1s after the component is loaded to avoid a broken image in case of 401 error (see comment before the iframe for more informations
                 setTimeout(function(){
                     self.url = self.urlRaw + "?" + +new Date().getTime();
                 }.bind(this), 5000);
 
+
+                // z-index for the zoom mode
+                initialZIndex = this.style.zIndex;
 
             },
             optionsUpdated: function() {
@@ -116,6 +119,8 @@
                     this.$.motionjpeg.classList.add('mjpeg-zoom');
                     this.$.motionjpeg.classList.remove('mjpeg-normal');
                     this.$.cameralabel.style.visibility = "hidden";
+                    // z-index for the zoom mode
+                    this.style.zIndex = 5000;
                 }
                 else {
                     this.mode = "normal";
@@ -124,6 +129,8 @@
                     this.$.motionjpeg.classList.add('mjpeg-normal');
                     this.$.motionjpeg.classList.remove('mjpeg-zoom');
                     this.$.cameralabel.style.visibility = "initial";
+                    // z-index for the zoom mode
+                    this.style.zIndex = initialZIndex;
                 }
             }
         });

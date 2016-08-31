@@ -158,6 +158,8 @@
                 this.calls = [];
                 this.last_call = null;
                 this.blacklistCommand = false;
+                // z-index for the zoom mode
+                initialZIndex = this.style.zIndex;
             },
             sensorsUpdated: function() {
                 if (this.$.callerid.isSet) {
@@ -262,10 +264,14 @@
             displayHistory: function() {
                 this.$.list.classList.add('show');
                 this.$.list.classList.remove('hide');
+                // z-index for the zoom mode
+                this.style.zIndex = 5000;
             },
             hideHistory: function() {
                 this.$.list.classList.add('hide');
                 this.$.list.classList.remove('show');
+                // z-index for the zoom mode
+                this.style.zIndex = initialZIndex;
             },
             doBlacklist: function(e, detail, target) {
                 if (window.confirm(i18n.t("Blacklist the number ") + target.dataset["number"] + " ?")) {
