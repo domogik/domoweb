@@ -92,7 +92,7 @@ console.err(pathCoordinates);
             // Add a marker to the map and push to the array.
             addMarker: function(location) {
                 coords = location.split(",");
-                gmap_location = new google.maps.LatLng(coords[1], coords[0]);
+                gmap_location = new google.maps.LatLng(coords[0], coords[1]);
                 this.map.setCenter(gmap_location);
                 var marker = new google.maps.Marker({
                     position: gmap_location,
