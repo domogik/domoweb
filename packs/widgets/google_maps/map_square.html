@@ -73,7 +73,7 @@
                 var pathCoordinates = [];
                 for (idx=0; idx<newValue.length; idx++) {
                     coords = newValue[idx]['value_str'].split(",");
-                    pathCoordinates[idx] = new google.maps.LatLng(coords[1], coords[0]);
+                    pathCoordinates[idx] = new google.maps.LatLng(coords[0], coords[1]);
                 }
 console.err(pathCoordinates);
                 for (var i = 0; i < pathCoordinates.length-1; i++) {
