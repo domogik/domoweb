@@ -1,26 +1,92 @@
+<style>
+@font-face {
+  font-family: 'FontAwesome';
+  src: url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?v=4.5.0');
+  src: url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.eot?#iefix&v=4.5.0') format('embedded-opentype'), url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.woff2?v=4.5.0') format('woff2'), url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.woff?v=4.5.0') format('woff'), url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.ttf?v=4.5.0') format('truetype'), url('/widget/navigation/font-awesome-4.5.0/fonts/fontawesome-webfont.svg?v=4.5.0#fontawesomeregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+</style>
+
 <link rel="import" href="/widget/google_maps/google-maps-api.html">
 
 <polymer-element name="dmw-google_maps-map_square" extends="dmw-widget">
     <template>
         <google-maps-api id="mapsapi" version="3.exp"></google-maps-api>
+        <link rel="stylesheet" href="/widget/google_maps/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
         <link rel="stylesheet" href="/widget/google_maps/css/common.css" shim-domshadow>
         <style type="text/css">
             :host {
                 height: 100%;
                 display: block;
             }
+            #themap {
+            }
             #map {
-                height: 100%;
+                height: 92%;
+                width: 92%;
+                top: 4%;
+                left: 4%;
                 display: block;
             }
+            #zoomBtn {
+                position: absolute;
+                top: 5%;
+                right: 5%;
+                border-radius: 50%;
+                background-color: rgba(0,0,0,0.3);
+                width: 3em;
+                height: 3em;
+            }
+            #zoomBtn i {
+                color: rgba(0,0,0,0.3);
+                position: relative;
+                top: 50%;
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                left: 50%;
+                text-align: center;
+            }
+
+            /* fullscren or not */
+            .themap-zoom {
+                object-fit: none;
+                position: fixed;
+                top: 0px;
+                left: 0px;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.9);
+            }
+            .themap-normal {
+                height: 100%;
+                width: 100%;
+                display: block;
+            }
+            .map-zoom {
+                object-fit: fill;
+                min-width: 80%;
+                max-width: 95%;
+                max-height: 95%;
+            }
+            .map-normal {
+            }
+           
         </style>
         <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
         <shadow></shadow>
-        <div id='map'></div>
+        <div id="themap" class="themap-normal">
+          <div id='map' class="map-normal"></div>
+          <div id='zoomBtn' on-click="{{zoom}}">
+            <i class="fa fa-arrows-alt fa-2x"></i>
+          </div>
+        </div>
     </template>
     <script>
         Polymer('dmw-google_maps-map_square', {
             ready: function() {
+                this.mode = "normal";
                 // define gradient colors for the polyline (path on the map)
                 this.Colors = [
                     "#0C00BF", 
@@ -56,8 +122,14 @@
                     };
                     self.map = new this.api.Map(self.$.map,
                         mapOptions);
+                    // for resize events
+                    self.resize_callback = google.maps.event.trigger;
+
 
                 });
+
+                // z-index for the zoom mode
+                initialZIndex = this.style.zIndex;
 
             },
             sensorsUpdated: function() {
@@ -95,6 +167,7 @@
             addMarker: function(location) {
                 coords = location.split(",");
                 gmap_location = new google.maps.LatLng(coords[0], coords[1]);
+                this.current_location = gmap_location;   // for the zoom function
                 this.map.setCenter(gmap_location);
                 var marker = new google.maps.Marker({
                     position: gmap_location,
@@ -121,6 +194,30 @@
             deleteMarkers: function() {
                 this.clearMarkers();
                 this.markers = [];
+            },
+            // map in fullscreen or not mode
+            zoom: function() {
+                if (this.mode == "normal") {
+                    this.mode = "zoom";
+                    this.$.themap.classList.add('themap-zoom');
+                    this.$.themap.classList.remove('themap-normal');
+                    this.$.map.classList.add('map-zoom');
+                    this.$.map.classList.remove('map-normal');
+                    // z-index for the zoom mode
+                    this.style.zIndex = 5000;
+                }
+                else {
+                    this.mode = "normal";
+                    this.$.themap.classList.add('themap-normal');
+                    this.$.themap.classList.remove('themap-zoom');
+                    this.$.map.classList.add('map-normal');
+                    this.$.map.classList.remove('map-zoom');
+                    // z-index for the zoom mode
+                    this.style.zIndex = initialZIndex;
+                }
+                // resize google map and recenter on last value
+                this.resize_callback(this.map, "resize");
+                this.map.setCenter(this.current_location);
             }
         });
     </script>
