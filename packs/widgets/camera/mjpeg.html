@@ -58,8 +58,8 @@
         </style>
         <dmw-sensor id='camera' sensorkey="camera" sensorvalue="{{sensorvalue}}"></dmw-sensor>
         <shadow></shadow>
-        <div id="camera" class="camera-normal">
-          <img id="motionjpeg" class="mjpeg-normal" src="{{url}}" on-click="{{zoom}}"/>
+        <div id="camera" class="camera-normal"  on-click="{{zoom}}">
+          <img id="motionjpeg" class="mjpeg-normal" src="{{url}}"/>
 
         </div>
         <div id="cameralabel"><span>{{label}}</span></div>
