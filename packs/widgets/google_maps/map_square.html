@@ -37,15 +37,19 @@
 
                 var self = this;
                 this.super();
-                this.map;
+                //this.map;
                 this.markers = [];
                 var self = this;
                 this.$.mapsapi.addEventListener('api-load', function(e) {
                     // this.api === google.maps
 
-                    // you asked why this place ?
+                    // you wonder why this place ?
                     // well... I like this place ;)
                     // -- Fritz
+                    //var mapOptions = {
+                    //    zoom: 11,
+                    //    center: new this.api.LatLng(48.67, -3.89)
+                    //};
                     var mapOptions = {
                         zoom: 11,
                         center: new this.api.LatLng(48.67, -3.89)
@@ -69,13 +73,12 @@
                 this.addMarker(newValue);
             },
             historyChanged: function(oldValue, newValue) {
-/*
+                console.log(newValue);
                 var pathCoordinates = [];
                 for (idx=0; idx<newValue.length; idx++) {
                     coords = newValue[idx]['value_str'].split(",");
-                    pathCoordinates[idx] = new google.maps.LatLng(coords[1], coords[0]);
+                    pathCoordinates[idx] = new google.maps.LatLng(coords[0], coords[1]);
                 }
-console.err(pathCoordinates);
                 for (var i = 0; i < pathCoordinates.length-1; i++) {
                     var path = new google.maps.Polyline({
                         path: [pathCoordinates[i], pathCoordinates[i+1]],
@@ -86,13 +89,12 @@ console.err(pathCoordinates);
                         map: this.map
                     });
                 }
-*/
             },
 
             // Add a marker to the map and push to the array.
             addMarker: function(location) {
                 coords = location.split(",");
-                gmap_location = new google.maps.LatLng(coords[1], coords[0]);
+                gmap_location = new google.maps.LatLng(coords[0], coords[1]);
                 this.map.setCenter(gmap_location);
                 var marker = new google.maps.Marker({
                     position: gmap_location,
