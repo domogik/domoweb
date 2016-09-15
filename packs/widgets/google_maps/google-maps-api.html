@@ -38,9 +38,20 @@ Fired when the Maps API library is loaded and ready.
 <polymer-element name="google-maps-api" extends="core-shared-lib" attributes="version apiKey clientId libraries">
 <script>
 
+  /* 
+  
+       /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\
+
+        The API key is currently (15 sept 2016) created and managed by Fritz SMH
+
+        One day we should remove the hardcoded key and let each user set the key 
+        himself in the widget configuration (or domoweb configuration ?)
+
+       /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\
+  */
   Polymer({
 
-    defaultUrl: 'https://maps.googleapis.com/maps/api/js?callback=%%callback%%',
+    defaultUrl: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDyLLfDg0z-QrPrOsa1lvJZ-qjLPosHq_M&callback=%%callback%%',
 
     /**
      * A Maps API key. To obtain an API key, see developers.google.com/maps/documentation/javascript/tutorial#api_key.
