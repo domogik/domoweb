@@ -5,7 +5,7 @@
 	height: 26em;
 	overflow: hidden;
 	position: fixed;
-	z-index: 15;
+	z-index: 1000;
 	bottom: -13em;
 	right: -13em;
 	border-radius: 50%;
@@ -39,7 +39,7 @@
 	bottom: -5em;
 	border-radius: 50%;
 	cursor: pointer;
-	z-index: 20;
+	z-index: 1005;
 }
 
 #main-menu .cnbutton:hover,
