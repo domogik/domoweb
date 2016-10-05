@@ -130,6 +130,36 @@
                     "required": true                   
                 }
             }
+        },
+        "rainhour": {
+            "name" : "Rain forecast",
+            "description" : "Weather rain forecast",
+            "height" : 2,
+            "width" : 2,
+            "options" : {},
+            "devices" : {
+                "forecast" : {
+                    "name": "Rain",
+                    "description": "Forecast rain",
+                    "types" : ["rainhour.forecast"],
+                    "required": true                   
+                }
+            }
+        },
+        "rainhour2": {
+            "name" : "Rain forecast 2",
+            "description" : "Weather rain forecast",
+            "height" : 2,
+            "width" : 3,
+            "options" : {},
+            "devices" : {
+                "forecast" : {
+                    "name": "Rain",
+                    "description": "Forecast rain",
+                    "types" : ["rainhour.forecast"],
+                    "required": true                   
+                }
+            }
         }
     }
 }
