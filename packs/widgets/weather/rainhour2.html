@@ -1,0 +1,150 @@
+<style>
+@font-face {
+  font-family: 'weathericons';
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot');
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');  
+  font-weight: normal;
+  font-style: normal;
+}     
+
+</style>
+<polymer-element name="dmw-weather-rainhour2" extends="dmw-widget">
+    <template>
+        <style type="text/css">
+            @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
+            :host {
+                height: 100%;
+                display: block;
+            }
+            #title {
+                position: absolute;
+                top:3px;
+                right: 5px;
+                font-size: 0.9em;
+            }
+            #rainlocation {
+                margin: 10px;
+                font-size: 1.3em;
+                position: relative;
+            }
+            #rainforecast {
+                width: 99%;
+                height: 78%;
+                font-size: 0.9em;
+                line-height: 90%;
+                /*border-style: solid;*/
+            }
+            #raindate {
+                padding: 10px;
+            }
+            #rainicon {
+                position: absolute;
+                right: 20px;
+            }
+            </style>
+        <shadow></shadow>
+
+        <dmw-sensor id='rainForecastLocation' sensorkey="rainForecastLocation" sensorvalue="{{rainForecastLocation_value}}"></dmw-sensor>
+        <dmw-sensor id='rainForecastTxt' sensorkey="rainForecastTxt" sensorvalue="{{rainForecastTxt_value}}"></dmw-sensor>
+        
+        
+        <div id='rainlocation'><span>{{rainForecastLocationName}}</span><span id='title'>Rain Forecast</span></div>
+        <div id='rainforecast'>
+            <!-- 
+            <div><span id='raindate'>44h00-44h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
+            -->
+        </div>
+
+        <shadow></shadow>
+    </template>
+    
+    
+    <script>
+        Polymer('dmw-weather-rainhour2', {
+            ready: function() {
+                this.super();
+            },
+
+            rainForecastLocation_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                //console.error(newValue) ;
+                this.rainForecastLocationName = newValue ;
+            },            
+            
+            rainForecastTxt_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                //console.error(newValue);
+                var rainDateLevelList = newValue.split(',') ;
+                rainDateLevelNb = rainDateLevelList.length ;
+                // 4:3, 5:2.5, 6:2.2, 7:1.9, 8:1.6, 9:1.4, 10:1.3, 11:1.2, 12:1.1
+                if (rainDateLevelNb <= 4) {
+                    rainDateLevelSize = "3.0em" ;
+                } else if (rainDateLevelNb == 5) {
+                    rainDateLevelSize = "2.5em" ;
+                } else if (rainDateLevelNb == 6) {
+                    rainDateLevelSize = "2.2em" ;
+                } else if (rainDateLevelNb == 7) {
+                    rainDateLevelSize = "1.9em" ;
+                } else if (rainDateLevelNb == 8) {
+                    rainDateLevelSize = "1.6em" ;
+                } else if (rainDateLevelNb == 9) {
+                    rainDateLevelSize = "1.4em" ;
+                } else if (rainDateLevelNb == 10) {
+                    rainDateLevelSize = "1.3em" ;
+                } else if (rainDateLevelNb == 11) {
+                    rainDateLevelSize = "1.2em" ;
+                } else if (rainDateLevelNb == 12) {
+                    rainDateLevelSize = "1.1em" ;
+                } ;
+                //console.error(rainDateLevelSize);
+                
+                
+                var rainDateLevelLines = "" ;
+                for (i = 0; i < rainDateLevelNb; i++) 
+                {
+                    //console.error("Element de la list = " + rainDateLevelList[i]);
+                    datelevel = rainDateLevelList[i].split(":") ;
+                    //console.error("date = " + datelevel[0] + " level = " + datelevel[1]) ;
+                    rainDateLevelLines = rainDateLevelLines + "<div><span id='raindate'>" + datelevel[0] + "</span><span id='rainicon'>" + setRainIcon(datelevel[1]) + "</span></div>" ;
+                } ;
+                this.$.rainforecast.innerHTML = rainDateLevelLines ;
+                this.$.rainforecast.style.fontSize = rainDateLevelSize ;
+                
+            }            
+            
+        });        
+
+
+        function setRainIcon(condid) {   // wi-na / wi-cloud / wi-rain-mix / wi-showers / wi-rain   
+         
+            switch(condid) {
+                case '0': var icon = '<i class="wi wi-na"></i>';
+                break;
+                case '1': var icon = '<i class="wi wi-cloud"></i>';
+                break;
+                case '2': var icon = '<i class="wi wi-showers"></i>';
+                break;
+                case '3': var icon = '<i class="wi wi-hail"></i>';
+                break;
+                case '4': var icon = '<i class="wi wi-rain"></i>';
+                break;
+                default: var icon = '<i class="wi wi-na"></i>';
+                break;
+            }             
+            return icon;    
+        } 
+        
+       
+    </script>
+</polymer-element>
