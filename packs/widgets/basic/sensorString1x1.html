@@ -1,4 +1,4 @@
-<polymer-element name="dmw-basic-sensorString" extends="dmw-widget">
+<polymer-element name="dmw-basic-sensorString1x1" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -18,32 +18,15 @@
                 text-overflow: ellipsis;
             }
 
-            /* just a try to make a vertical slide of the text... not very fine/usefull :(
-               Code kept just in case for later...
-
-            .marquee {
-                margin: 0 auto;
-                overflow: hidden;
-                white-space: nowrap;
-                box-sizing: border-box;
-                animation: marquee 10s linear infinite;
-            }
-            
-            @keyframes marquee {
-                0%   { text-indent: 3em }
-                100% { text-indent: -3em }
-            }
-            */
-
         </style>
         <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
         <shadow></shadow>
-        <div id='text' class="marquee">
+        <div id='text'>
           {{text}}
         </div>
     </template>
     <script>
-        Polymer('dmw-basic-sensorString', {
+        Polymer('dmw-basic-sensorString1x1', {
             ready: function() {
                 this.super();
                 this.text = "--";

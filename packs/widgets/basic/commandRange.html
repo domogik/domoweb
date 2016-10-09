@@ -114,6 +114,16 @@
             ready: function() {
                 this.super();
             },
+            optionsUpdated: function() {
+                if (this.options['hideLabels'] == true ) {         
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
+            },
             sensorsUpdated: function() {
                                 
                 if (this.$.scalingstate.isSet) {

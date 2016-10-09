@@ -16,6 +16,12 @@
             "height" : 1,
             "width" : 1,
             "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                },
                 "autoconvert" : {
                     "name": "Automatic conversion",
                     "description": "Automatically convert big value to K(x) / M(x) / G(x) / T(x)",

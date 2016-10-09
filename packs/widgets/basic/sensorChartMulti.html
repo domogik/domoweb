@@ -121,12 +121,23 @@
         </table>
 
     </template>
+    <script src="/widget/basic/js/jquery.sparkline.min.js"></script>
     <script>
         Polymer('dmw-basic-sensorChartMulti', {
             ready: function() {
                 this.super();
 
 
+            },
+            optionsUpdated: function() {
+                if (this.options['hideLabels'] == true ) {         
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
             },
             sensorsUpdated: function() {
                 if (this.$.primary.isSet) {
@@ -271,6 +282,7 @@
                     else {
                         generic_min.innerHTML = minvalue;
                     }
+                    console.error(generic_spark);
                     $(generic_spark).sparkline(chartValues, {type: 'line',
                                                             lineColor: this.options['chartColor'],
                                                             fillColor: this.options['chartColor'],

@@ -347,7 +347,11 @@ class WSHandler(websocket.WebSocketHandler):
 
     @gen.coroutine
     def WSSensorGetHistory(self, data):
-        url = '{0}/sensorhistory/id/{1}/from/{2}/to/{3}/interval/{4}/selector/avg'.format(options.rest_url, data['id'],data['from'],data['to'],data['interval']).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
+        if 'selector' in data:
+            selector = data['selector']
+        else:
+            selector = 'avg'
+        url = '{0}/sensorhistory/id/{1}/from/{2}/to/{3}/interval/{4}/selector/{5}'.format(options.rest_url, data['id'],data['from'],data['to'],data['interval'], selector).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
         logger.info("REST Call : %s" % url)
         http = AsyncHTTPClient()
         request = HTTPRequest(url=url, validate_cert=False)

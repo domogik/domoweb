@@ -1,46 +1,56 @@
 <polymer-element name="dmw-basic-commandString" extends="dmw-widget">
-	<template>
-		<link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
-		<style type="text/css">
-			:host {
-				height: 100%;
-				padding: 0.5em;
-			}
-			textarea#text {
-				width: 100%;
-				height: 70%;
-				color: #000000;
-			}
-			button#send {
-				float: right;
-			}
-		</style>
-	    <dmw-command id="primary" commandkey="primary"></dmw-command>
-		<shadow></shadow>
-		<textarea id="text" aria-labeledby="labelprimary"></textarea>
-		<button id="send" class="btn btn-primary btn-xs"></button>
-	</template>
-	<script>
-		Polymer('dmw-basic-commandString', {
-			ready: function() {
-				this.super();
-				this.$.send.innerHTML = i18n.t("basic:send");
-			},
-			sensorsUpdated: function() {
-				if (this.$.primary.isSet) {
-					this.labelprimary = this.$.primary.device['name'];
-					this.labelsecondary = this.$.primary.name;
-					this.$.send.addEventListener('click', this.send.bind(this));
-				}
-			},
-			send: function(e) {
-				var parameters = {};
-				parameters[this.$.primary.parameters[0]['key']] = this.$.text.value;
-				this.$.primary.send(parameters);
-				this.$.text.value = null;
-				e.preventDefault();
-				e.stopPropagation();
-			}
-		});
-	</script>
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+                padding: 0.5em;
+            }
+            textarea#text {
+                width: 100%;
+                height: 70%;
+                color: #000000;
+            }
+            button#send {
+                float: right;
+            }
+        </style>
+        <dmw-command id="primary" commandkey="primary"></dmw-command>
+        <shadow></shadow>
+        <textarea id="text" aria-labeledby="labelprimary"></textarea>
+        <button id="send" class="btn btn-primary btn-xs"></button>
+    </template>
+    <script>
+        Polymer('dmw-basic-commandString', {
+            ready: function() {
+                this.super();
+                this.$.send.innerHTML = i18n.t("basic:send");
+            },
+            optionsUpdated: function() {
+                if (this.options['hideLabels'] == true ) {         
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
+            },
+            sensorsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                    this.$.send.addEventListener('click', this.send.bind(this));
+                }
+            },
+            send: function(e) {
+                var parameters = {};
+                parameters[this.$.primary.parameters[0]['key']] = this.$.text.value;
+                this.$.primary.send(parameters);
+                this.$.text.value = null;
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+    </script>
 </polymer-element>

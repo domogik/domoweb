@@ -71,25 +71,37 @@
                 this.historyMode = 'day';
                 var from = moment().subtract(1, 'days').unix();
                 var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, interval: 'minute'});
+                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'minute'});
             },
             getCurrentDayPerHour: function() {
                 this.historyMode = 'dayPerHour';
                 var from = moment().subtract(1, 'days').unix();
                 var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, interval: 'hour'});
+                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
             },
             getCurrentWeek: function() {
                 this.historyMode = 'week';
                 var from = moment().subtract(1, 'weeks').unix();
                 var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, interval: 'hour'});
+                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
+            },
+            getCurrentWeekPerDay: function() {
+                this.historyMode = 'weekPerDay';
+                var from = moment().subtract(1, 'weeks').startOf('day').unix();
+                var to = moment().unix();
+                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day'});
+            },
+            getCurrentWeekPerDayWithSelectorMax: function() {
+                this.historyMode = 'weekPerDayWithSelectorMax';
+                var from = moment().subtract(1, 'weeks').startOf('day').unix();
+                var to = moment().unix();
+                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day', 'selector': 'max'});
             },
             getCurrentMonth: function() {
                 this.historyMode = 'month';
                 var from = moment().subtract(1, 'months').unix();
                 var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, interval: 'day'});
+                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day'});
             },
             timeoutHandler: function() {
                 var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
