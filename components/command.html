@@ -1,26 +1,30 @@
 <polymer-element name="dmw-command" attributes="commandid">
-	<template>
-	    <web-socket id="socket"></web-socket>
-	</template>
-	<script>
-		Polymer("dmw-command", {
-			ready:function(){
-				this.isSet = false;
-			},
-		    commandidChanged: function(oldValue, newValue) {
-		    },
-   		    init: function(command) {
-		    	this.name = command['name'];
-		    	this.commandid = command['id'];
-		    	this.device = command['device'];
-		    	this.parameters = command['parameters'];
-				this.isSet = true;
-		    },
-		    send: function(parameters) {
-		    	var json = {"command_id":this.commandid, "parameters": parameters};
-				this.$.socket.send("command-send", json);
-		    }
-		});
-	</script>
+    <template>
+        <web-socket id="socket"></web-socket>
+    </template>
+    <script>
+        Polymer("dmw-command", {
+            ready:function(){
+                this.isSet = false;
+            },
+            commandidChanged: function(oldValue, newValue) {
+            },
+               init: function(command) {
+                this.name = command['name'];
+                this.commandid = command['id'];
+                this.device = command['device'];
+                this.parameters = command['parameters'];
+                this.isSet = true;
+            },
+            send: function(parameters) {
+                // vibrate to ack the user the command will be sent
+                navigator.vibrate(100);
+             
+                // Send the command
+                var json = {"command_id":this.commandid, "parameters": parameters};
+                this.$.socket.send("command-send", json);
+            }
+        });
+    </script>
 </polymer-element>
 
