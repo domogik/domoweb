@@ -1,0 +1,379 @@
+<polymer-element name="dmw-service-teleinfoWeeklyConsumption" extends="dmw-widget">
+    <template>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            #title {
+                position: absolute;
+                width: 100%;
+                height: 20%;
+                font-size: 1.3em;
+                text-align: center;
+            }
+            #legend {
+                position: absolute;
+                width: 20%;
+                height: 100%;
+                left: 0%;
+                text-align: center;
+                font-size: 2em;
+            }
+            #legend #hptext {
+                position: absolute;
+                top: 25%;
+                width: 100%;
+            }
+            #legend #hctext {
+                position: absolute;
+                top: 65%;
+                width: 100%;
+            }
+            #graphs {
+                position: absolute;
+                width: 77%;
+                height: 100%;
+                right: 0%;
+            }
+
+            #graphs .barcontainer {
+                position: relative;
+                width: 13%;
+                margin-right: 1px;
+                height: 100%;
+                float: left;
+            }
+
+            #graphs #hp {
+                position: absolute;
+                width: 100%;
+                height: 30%;
+                top: 20%;
+            }
+            #graphs #hp .bar {
+                position: absolute;
+                height: 1px;
+                width: 100%;
+                background-color: white;
+                bottom: 0px;
+            }
+            #graphs .value {
+                position: absolute;
+                width: 100%;
+                text-align: center;
+                font-size: 0.8em;
+            }
+/*
+            #graphs .day0 {
+                left: 0%;
+            }
+            #graphs .day1 {
+                left: 14%;
+            }
+            #graphs .day2 {
+                left: 28%;
+            }
+            #graphs .day3 {
+                left: 42%;
+            }
+            #graphs .day4 {
+                left: 56%;
+            }
+            #graphs .day5 {
+                left: 70%;
+            }
+            #graphs .day6 {
+                left: 84%;
+            }
+*/
+            #graphs #days {
+                font-size: 0.8em;
+                position: absolute;
+                width: 100%;
+                height: 10%;
+                top: 50%;
+                text-align: center;
+            }
+            #graphs #days .day {
+                position: relative;
+                width: 100%;
+                top: 50%;
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                left: 50%;
+                text-align: center;
+                overflow: hidden;
+                display: inline-block;
+            }
+            #graphs #hc {
+                position: absolute;
+                width: 100%;
+                height: 30%;
+                top: 60%;
+            }
+            #graphs #hc .bar {
+                position: absolute;
+                width: 100%;
+                height: 1px;
+                background-color: white;
+                top: 0px;
+            }
+        </style>
+        <dmw-sensor id='hchc' sensorkey="hchc" sensorvalue="{{hchcvalue}}" sensorhistory="{{hchchistory}}"></dmw-sensor>
+        <dmw-sensor id='hphc' sensorkey="hchp" sensorvalue="{{hphcvalue}}" sensorhistory="{{hphchistory}}"></dmw-sensor>
+<!--
+        <div>
+          <div>
+-->
+            <div id="title">
+              {{ title }}
+            </div>
+            <div id="legend">
+              <div id="hptext">
+                HP
+              </div>
+              <div id="hctext">
+                HC
+              </div>
+            </div>
+            <div id="graphs">
+              <div id="hp">
+                <div class="barcontainer">
+                  <div class="value day0" id="hpday0value">{{hpday0value}}</div>
+                  <div class="bar day0" id="hpday0"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day1" id="hpday1value">{{hpday1value}}</div>
+                  <div class="bar day1" id="hpday1"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day2" id="hpday2value">{{hpday2value}}</div>
+                  <div class="bar day2" id="hpday2"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day3" id="hpday3value">{{hpday3value}}</div>
+                  <div class="bar day3" id="hpday3"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day4" id="hpday4value">{{hpday4value}}</div>
+                  <div class="bar day4" id="hpday4"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day5" id="hpday5value">{{hpday5value}}</div>
+                  <div class="bar day5" id="hpday5"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day6" id="hpday6value">{{hpday6value}}</div>
+                  <div class="bar day6" id="hpday6"></div>
+                </div>
+              </div>
+              <div id="days">
+                <div class="barcontainer">
+                  <div class=" day day0" id="day0">{{day0}}</div>
+                </div>
+                <div class="barcontainer">
+                  <div class=" day day1" id="day1">{{day1}}</div>
+                </div>
+                <div class="barcontainer">
+                  <div class=" day day2" id="day2">{{day2}}</div>
+                </div>
+                <div class="barcontainer">
+                  <div class=" day day3" id="day3">{{day3}}</div>
+                </div>
+                <div class="barcontainer">
+                  <div class=" day day4" id="day4">{{day4}}</div>
+                </div>
+                <div class="barcontainer">
+                  <div class=" day day5" id="day5">{{day5}}</div>
+                </div>
+                <div class="barcontainer">
+                  <div class=" day day6" id="day6">{{day6}}</div>
+                </div>
+              </div>
+              <div id="hc">
+                <div class="barcontainer">
+                  <div class="value day0" id="hcday0value">{{hcday0value}}</div>
+                  <div class="bar day0" id="hcday0"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day1" id="hcday1value">{{hcday1value}}</div>
+                  <div class="bar day1" id="hcday1"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day2" id="hcday2value">{{hcday2value}}</div>
+                  <div class="bar day2" id="hcday2"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day3" id="hcday3value">{{hcday3value}}</div>
+                  <div class="bar day3" id="hcday3"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day4" id="hcday4value">{{hcday4value}}</div>
+                  <div class="bar day4" id="hcday4"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day5" id="hcday5value">{{hcday5value}}</div>
+                  <div class="bar day5" id="hcday5"></div>
+                </div>
+                <div class="barcontainer">
+                  <div class="value day6" id="hcday6value">{{hcday6value}}</div>
+                  <div class="bar day6" id="hcday6"></div>
+                </div>
+              </div>
+            </div>
+<!--
+          </div>
+        </div>
+-->
+        <shadow></shadow>
+    </template>
+    <script>
+        Polymer('dmw-service-teleinfoWeeklyConsumption', {
+            ready: function() {
+                this.super();
+                this.title = i18n.t("service:teleinfo_weekly_hphc");
+                this.hchcHist = [];
+                this.hchcMax = 0;
+                this.hphcHist = [];
+                this.hphcMax = 0;
+                //this.day0 = 0;
+                //this.day1 = 1;
+            },
+            //loadingDone: function() {
+            //    //this.setGraph();
+            //},
+            /******
+            iinstvalueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.iinst = parseInt(newValue);
+            },
+            *****/
+            hchcvalueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.hchc = parseInt(newValue);
+                this.$.hchc.getCurrentWeekPerDayWithSelectorMax();
+            },
+            hchchistoryChanged: function(oldValue, newValue) { 
+                for (i=1; i < newValue.length; i++) {
+                    this.hchcHist[i-1] = newValue[i][4] - newValue[i-1][4];
+                    if (this.hchcHist[i-1] > this.hchcMax) {
+                        this.hchcMax = this.hchcHist[i-1];
+                    }
+                }
+                this.drawHC();
+                this.drawDays();
+            },
+            hphcvalueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.hphc = parseInt(newValue);
+                this.$.hphc.getCurrentWeekPerDayWithSelectorMax();
+            },
+            hphchistoryChanged: function(oldValue, newValue) { 
+                for (i=1; i < newValue.length; i++) {
+                    this.hphcHist[i-1] = newValue[i][4] - newValue[i-1][4];
+                    if (this.hphcHist[i-1] > this.hphcMax) {
+                        this.hphcMax = this.hphcHist[i-1];
+                    }
+                }
+                this.drawHP();
+                this.drawDays();
+            },
+            drawDays: function() {
+                idx = 0;
+                for (idx=0; idx<this.hphcHist.length; idx++) {
+                    idx2 = this.hphcHist.length - 1 - idx;
+                    theday = moment().subtract(idx, 'days').format('ddd');
+                    if (idx2 == 0) this.day0 = theday;
+                    if (idx2 == 1) this.day1 = theday;
+                    if (idx2 == 2) this.day2 = theday;
+                    if (idx2 == 3) this.day3 = theday;
+                    if (idx2 == 4) this.day4 = theday;
+                    if (idx2 == 5) this.day5 = theday;
+                    if (idx2 == 6) this.day6 = theday;
+            
+                }
+            },
+            drawHP: function() {
+                hpRatio = 100 / this.hphcMax;
+                for (i=0;i<this.hphcHist.length;i++) {
+                    if (i == 0) { 
+                        this.$.hpday0.style.height = this.hphcHist[i]*hpRatio + "%";
+                        this.$.hpday0value.style.bottom = this.hphcHist[i]*hpRatio + "%";
+                        this.hpday0value = this.hphcHist[i];
+                    }
+                    if (i == 1) { 
+                        this.$.hpday1.style.height = this.hphcHist[i]*hpRatio + "%";
+                        this.$.hpday1value.style.bottom = this.hphcHist[i]*hpRatio + "%";
+                        this.hpday1value = this.hphcHist[i];
+                    }
+                    if (i == 2) { 
+                        this.$.hpday2.style.height = this.hphcHist[i]*hpRatio + "%";
+                        this.$.hpday2value.style.bottom = this.hphcHist[i]*hpRatio + "%";
+                        this.hpday2value = this.hphcHist[i];
+                    }
+                    if (i == 3) { 
+                        this.$.hpday3.style.height = this.hphcHist[i]*hpRatio + "%";
+                        this.$.hpday3value.style.bottom = this.hphcHist[i]*hpRatio + "%";
+                        this.hpday3value = this.hphcHist[i];
+                    }
+                    if (i == 4) { 
+                        this.$.hpday4.style.height = this.hphcHist[i]*hpRatio + "%";
+                        this.$.hpday4value.style.bottom = this.hphcHist[i]*hpRatio + "%";
+                        this.hpday4value = this.hphcHist[i];
+                    }
+                    if (i == 5) { 
+                        this.$.hpday5.style.height = this.hphcHist[i]*hpRatio + "%";
+                        this.$.hpday5value.style.bottom = this.hphcHist[i]*hpRatio + "%";
+                        this.hpday5value = this.hphcHist[i];
+                    }
+                    if (i == 6) { 
+                        this.$.hpday6.style.height = this.hphcHist[i]*hpRatio + "%";
+                        this.$.hpday6value.style.bottom = this.hphcHist[i]*hpRatio + "%";
+                        this.hpday6value = this.hphcHist[i];
+                    }
+                }
+            },
+            drawHC: function() {
+                hcRatio = 100 / this.hchcMax;
+                for (i=0;i<this.hchcHist.length;i++) {
+                    if (i == 0) { 
+                        this.$.hcday0.style.height = this.hchcHist[i]*hcRatio + "%";
+                        this.$.hcday0value.style.top = this.hchcHist[i]*hcRatio + "%";
+                        this.hcday0value = this.hchcHist[i];
+                    }
+                    if (i == 1) { 
+                        this.$.hcday1.style.height = this.hchcHist[i]*hcRatio + "%";
+                        this.$.hcday1value.style.top = this.hchcHist[i]*hcRatio + "%";
+                        this.hcday1value = this.hchcHist[i];
+                    }
+                    if (i == 2) { 
+                        this.$.hcday2.style.height = this.hchcHist[i]*hcRatio + "%";
+                        this.$.hcday2value.style.top = this.hchcHist[i]*hcRatio + "%";
+                        this.hcday2value = this.hchcHist[i];
+                    }
+                    if (i == 3) { 
+                        this.$.hcday3.style.height = this.hchcHist[i]*hcRatio + "%";
+                        this.$.hcday3value.style.top = this.hchcHist[i]*hcRatio + "%";
+                        this.hcday3value = this.hchcHist[i];
+                    }
+                    if (i == 4) { 
+                        this.$.hcday4.style.height = this.hchcHist[i]*hcRatio + "%";
+                        this.$.hcday4value.style.top = this.hchcHist[i]*hcRatio + "%";
+                        this.hcday4value = this.hchcHist[i];
+                    }
+                    if (i == 5) { 
+                        this.$.hcday5.style.height = this.hchcHist[i]*hcRatio + "%";
+                        this.$.hcday5value.style.top = this.hchcHist[i]*hcRatio + "%";
+                        this.hcday5value = this.hchcHist[i];
+                    }
+                    if (i == 6) { 
+                        this.$.hcday6.style.height = this.hchcHist[i]*hcRatio + "%";
+                        this.$.hcday6value.style.top = this.hchcHist[i]*hcRatio + "%";
+                        this.hcday6value = this.hchcHist[i];
+                    }
+                }
+            }
+        });        
+    </script>
+</polymer-element>

@@ -1,0 +1,205 @@
+<polymer-element name="dmw-c3_charts-spline" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/c3_charts/css/common.css" shim-domshadow>
+        <link rel="stylesheet" href="/widget/c3_charts/css/c3.min.css" shim-domshadow>
+        <style type="text/css" is="dmw-c3-charts-spline">
+            :host {
+                height: 100%;
+            }
+            #container {
+                position: absolute;
+                height: 100%;
+                width: 100%;
+            }
+            #legend {
+                position: absolute;
+                bottom: 0px;
+                width: 100%;
+                font-size: 1.3em;
+                text-align: center;
+            }
+            #chart {
+                height: 98%;
+                width: 100%;
+            }
+
+/* colors */
+#chart .c3-legend-item text {
+/* TODO : dynamic update !!!! */
+    fill: white;
+    font-size: 12px;
+}
+#chart .c3-axis-x text {
+/* TODO : dynamic update !!!! */
+    fill: white;
+    font-size: 12px;
+}
+#chart .c3-axis-y text {
+/* TODO : dynamic update !!!! */
+    fill: white;
+    font-size: 12px;
+}
+#chart .c3-axis-x path, .c3 .c3-axis-x line {
+/* TODO : dynamic update !!!! */
+    stroke: white;
+    stroke-width: 2px;
+}
+#chart .c3-axis-y path, .c3 .c3-axis-y line {
+/* TODO : dynamic update !!!! */
+    stroke: white;
+    stroke-width: 2px;
+}
+
+/* width */
+#chart .c3-line {
+    stroke-width: 2px;
+}
+
+/* hide ticks */
+#chart .c3-axis-x .tick {
+   display: none;
+}
+
+        </style>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
+        <shadow></shadow>
+        <div id='container'>
+          <div id='chart'>
+          </div>
+          <div id='legend'>
+            {{ legend }}
+          </div>
+        </div>
+    </template>
+    <script src="/widget/c3_charts/js/d3.v3.min.js" charset="utf-8"></script>
+    <script src="/widget/c3_charts/js/c3.min.js"></script>
+
+    <script>
+        Polymer('dmw-c3_charts-spline', {
+            ready: function() {
+                this.super();
+                this.x = [];
+                this.xlines = [];
+                this.data1 = [];
+                this.updateStyles();
+            },
+            draw: function() {
+                // build this.xlines for grid lines on x
+                this.xlines = [];
+                //var from = moment().subtract(1, 'weeks').startOf('day').format("%Y-%m-%d");    // copied from ../../../components/sensor.html
+                for (idx=0;idx<8;idx++) {
+                    this.xlines[idx] = { value : moment().subtract(7-idx, 'days').format("YYYY-MM-DD 00:00"),
+                                         text : moment().subtract(7-idx+1, 'days').format("DD/MM")};
+                }
+                console.error("TOTO");
+                console.error(this.xlines);
+         
+
+                // draw the chart
+                console.error(this.options);
+                this.chart = c3.generate({
+                    bindto: this.$.chart,
+                    data: {
+                        x: 'x',
+                        xFormat: '%Y-%m-%d %H:%M',
+                        columns: [
+                            this.x,
+                            this.data1
+                        ],
+                        types: {
+                            data1: 'area-spline'
+                        }
+                    },
+                    color: {
+                        pattern: [this.options['WidgetTextColor']]
+                    },
+                    legend: {
+                        show: false
+                    },
+                    axis: {
+                        x: {
+                            type: 'timeseries',
+                            tick: {
+                                format: '%d/%m',
+                                format: function (x) { return ''; }
+                            },
+                        },
+                        y : {
+                            min: parseInt(this.options['chartMinValue']),
+                            max: parseInt(this.options['chartMaxValue'])
+                        }
+                    },
+                    grid: {
+                        x: {
+                            lines : this.xlines
+                        }
+                    },
+                    point: {
+                        show: false
+                    },
+                    area: {
+                        zerobased: false
+                    }
+                });
+                this.chart.show(['data1']);
+
+            },
+            optionsUpdated: function() {
+                if (this.options['hideLabels'] == true ) {         
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
+                //this.draw();
+            },
+            sensorsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                    this.legend = this.$.primary.device['name'] + " : " + this.$.primary.name + " (last week)";
+                }
+                else {
+                    this.legend = "--";
+                }
+            },
+            sensorvalueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.primary.getCurrentWeek();
+
+            },
+            historyChanged: function(oldValue, newValue) { 
+                // in case the page is not yet nicely loaded...
+                this.x = ['x'];
+                this.data1 = ['data1'];
+                for (i=0; i<newValue.length; i++) {
+                    this.x[i+1] = newValue[i][0] + '-' +
+                                  newValue[i][1] + '-' +
+                                  ("0" + newValue[i][3]).slice(-2) + ' ' + 
+                                  newValue[i][4] + ':00'; 
+                    //this.x[i+1] = i+1;
+                    this.data1[i+1] = newValue[i][5];
+                    /*
+                    if (newValue[i][4] == 0) {
+                        this.xlines.push({ value : this.x[i+1], text : this.x[i+1]})
+                    }
+                    */
+                }
+                console.error(this.x);
+                console.error(this.data1);
+/*
+                this.chart.load({
+                        columns: [
+                            this.x,
+                            this.data1
+                        ]
+                    });
+*/ 
+                this.draw();
+            }
+        });
+ 
+    </script>
+</polymer-element>

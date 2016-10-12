@@ -81,7 +81,7 @@
             },
             getCurrentWeek: function() {
                 this.historyMode = 'week';
-                var from = moment().subtract(1, 'weeks').unix();
+                var from = moment().subtract(1, 'weeks').startOf('day').unix();
                 var to = moment().unix();
                 this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
             },
