@@ -126,8 +126,11 @@
         Polymer('dmw-basic-sensorChartMulti', {
             ready: function() {
                 this.super();
-
-
+                this.historyPrimary = [];
+                this.historySecondary = [];
+                this.historyThird = [];
+                this.historyFourth = [];
+                this.historyFifth = [];
             },
             optionsUpdated: function() {
                 if (this.options['hideLabels'] == true ) {         
@@ -138,6 +141,11 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
+                this.generic_historyChanged(undefined, this.historyPrimary, this.$.primary_spark, this.the_primary_value, this.$.the_primary_max, this.$.the_primary_min, "primary");
+                this.generic_historyChanged(undefined, this.historySecondary, this.$.secondary_spark, this.the_secondary_value, this.$.the_secondary_max, this.$.the_secondary_min, "secondary");
+                this.generic_historyChanged(undefined, this.historyThird, this.$.third_spark, this.the_third_value, this.$.the_third_max, this.$.the_third_min, "third");
+                this.generic_historyChanged(undefined, this.historyFourth, this.$.fourth_spark, this.the_fourth_value, this.$.the_fourth_max, this.$.the_fourth_min, "fourth");
+                this.generic_historyChanged(undefined, this.historyFifth, this.$.fifth_spark, this.the_fifth_value, this.$.the_fifth_max, this.$.the_fifth_min, "fifth");
             },
             sensorsUpdated: function() {
                 if (this.$.primary.isSet) {
@@ -236,18 +244,23 @@
                 this.the_fifth_value = newValue;
             },
             primary_historyChanged: function(oldValue, newValue) { 
+                this.historyPrimary = newValue;
                 this.generic_historyChanged(oldValue, newValue, this.$.primary_spark, this.the_primary_value, this.$.the_primary_max, this.$.the_primary_min, "primary");
             },
             secondary_historyChanged: function(oldValue, newValue) { 
+                this.historySecondary = newValue;
                 this.generic_historyChanged(oldValue, newValue, this.$.secondary_spark, this.the_secondary_value, this.$.the_secondary_max, this.$.the_secondary_min, "secondary");
             },
             third_historyChanged: function(oldValue, newValue) { 
+                this.historyThird = newValue;
                 this.generic_historyChanged(oldValue, newValue, this.$.third_spark, this.the_third_value, this.$.the_third_max, this.$.the_third_min, "third");
             },
             fourth_historyChanged: function(oldValue, newValue) { 
+                this.historyFourth = newValue;
                 this.generic_historyChanged(oldValue, newValue, this.$.fourth_spark, this.the_fourth_value, this.$.the_fourth_max, this.$.the_fourth_min, "fourth");
             },
             fifth_historyChanged: function(oldValue, newValue) { 
+                this.historyFifth = newValue;
                 this.generic_historyChanged(oldValue, newValue, this.$.fifth_spark, this.the_fifth_value, this.$.the_fifth_max, this.$.the_fifth_min, "fifth");
             },
             generic_historyChanged: function(oldValue, newValue, generic_spark, generic_value, generic_max, generic_min, name) { 
@@ -282,7 +295,6 @@
                     else {
                         generic_min.innerHTML = minvalue;
                     }
-                    console.error(generic_spark);
                     $(generic_spark).sparkline(chartValues, {type: 'line',
                                                             lineColor: this.options['chartColor'],
                                                             fillColor: this.options['chartColor'],
