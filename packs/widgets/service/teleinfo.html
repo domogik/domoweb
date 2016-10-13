@@ -1,198 +1,202 @@
 <polymer-element name="dmw-service-teleinfo" extends="dmw-widget">
-	<template>
-		<style type="text/css">
-			:host {
-				height: 100%;
-			}
-			@font-face {
-				font-family: 'Dosis';
-				font-style: normal;
-				font-weight: 400;
-				src: local('Dosis'), local('Dosis-Regular'), url(/widget/service/fonts/Dosis/Dosis-Regular.ttf) format('truetype');
-			}
-			@font-face {
-				font-family: 'Dosis';
-				font-style: normal;
-				font-weight: 700;
-				src: local('Dosis'), local('Dosis-Bold'), url(/widget/service/fonts/Dosis/Dosis-Bold.ttf) format('truetype');
-			}
-			.top {
-				font-family: 'Dosis';
-				font-weight: bold;
-				font-size: 1.8em;
-				padding:0 0.5em 0 0.5em;
-				text-align: right;
-			}
-			.unit {
-				font-weight: normal;
-				font-size: 0.6em;
-			}
-			.index {
-				float: left;
-			}
-			#graph {
-				position: absolute;
-				bottom: 0;
-				left: 0;
-			}
-			.index .hchp {
-				color: #0282BF;
-			}
-			.index .hchc {
-				color: #FE8A26;
-			}
-			path {
-				stroke-width: 1;
-				fill: none;
-			}
-			:host.th path, :host.hp path {
-				stroke: #0282BF;
-			}
-			:host.hc path {
-				stroke: #FE8A26;
-			}
-			</style>
-		<shadow></shadow>
-	    <dmw-sensor id='optarif' sensorkey="optarif" sensorvalue="{{optarifvalue}}"></dmw-sensor>
-	    <dmw-sensor id='iinst' sensorkey="iinst" sensorvalue="{{iinstvalue}}"></dmw-sensor>
-	    <dmw-sensor id='papp' sensorkey="papp" sensorvalue="{{pappvalue}}" sensorhistory="{{papplast}}"></dmw-sensor>
-	    <dmw-sensor id='base' sensorkey="base" sensorvalue="{{basevalue}}"></dmw-sensor>
-	    <dmw-sensor id='hchc' sensorkey="hchc" sensorvalue="{{hchcvalue}}"></dmw-sensor>
-	    <dmw-sensor id='hchp' sensorkey="hchp" sensorvalue="{{hchpvalue}}"></dmw-sensor>
-	    <dmw-sensor id='ptec' sensorkey="ptec" sensorvalue="{{ptecvalue}}"></dmw-sensor>
-	    <div class="top">
-		    <div class='index'>
-    	    <template if="{{ optarif=='base' }}">
-			    {{base}}
-			</template>
-			<template if="{{ optarif=='hphc' }}">
-				<span class='hchc'>{{hchc}}</span>/<span class="hchp">{{hchp}}</span>
-			</template>
-			<span class="unit">kW</span></div>
-		    <div class='instant'>{{iinst}} <span class="unit">A</span> / {{papp}} <span class="unit">VA</span></div>	
-	    </div>
-	<div id="graph" class="aGraph" style="width:340px; height:50px;"></div>
-	</p>
-	</template>
-	<script>
-		Polymer('dmw-service-teleinfo', {
-			ready: function() {
-				this.super();
-				this.data=[];
-				// create an SVG element inside the #graph div that fills 100% of the div
-				this.graph = d3.select(this.$.graph).append("svg:svg").attr("width", "100%").attr("height", "100%");
-			},
-			loadingDone: function() {
-				this.setGraph();
-			},
-			setGraph: function() {
-				var self = this;
-				var width = 340;
-				var height = 50;
-				var min = (this.options['mingraph'])? parseInt(this.options['mingraph']):0;
-				var max = (this.options['maxgraph'])? parseInt(this.options['maxgraph']):2000;
+    <template>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            @font-face {
+                font-family: 'Dosis';
+                font-style: normal;
+                font-weight: 400;
+                src: local('Dosis'), local('Dosis-Regular'), url(/widget/service/fonts/Dosis/Dosis-Regular.ttf) format('truetype');
+            }
+            @font-face {
+                font-family: 'Dosis';
+                font-style: normal;
+                font-weight: 700;
+                src: local('Dosis'), local('Dosis-Bold'), url(/widget/service/fonts/Dosis/Dosis-Bold.ttf) format('truetype');
+            }
+            .top {
+                font-family: 'Dosis';
+                font-weight: bold;
+                font-size: 1.8em;
+                padding:0 0.5em 0 0.5em;
+                text-align: right;
+            }
+            .unit {
+                font-weight: normal;
+                font-size: 0.6em;
+            }
+            .index {
+                float: left;
+            }
+            #graph {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+            }
+            .index .hchp {
+                color: #0282BF;
+            }
+            .index .hchc {
+                color: #FE8A26;
+            }
+            path {
+                stroke-width: 1;
+                fill: none;
+            }
+            :host.th path, :host.hp path {
+                stroke: #0282BF;
+            }
+            :host.hc path {
+                stroke: #FE8A26;
+            }
+            </style>
+        <shadow></shadow>
+        <dmw-sensor id='optarif' sensorkey="optarif" sensorvalue="{{optarifvalue}}"></dmw-sensor>
+        <dmw-sensor id='iinst' sensorkey="iinst" sensorvalue="{{iinstvalue}}"></dmw-sensor>
+        <dmw-sensor id='papp' sensorkey="papp" sensorvalue="{{pappvalue}}" sensorhistory="{{papplast}}"></dmw-sensor>
+        <dmw-sensor id='base' sensorkey="base" sensorvalue="{{basevalue}}"></dmw-sensor>
+        <dmw-sensor id='hchc' sensorkey="hchc" sensorvalue="{{hchcvalue}}"></dmw-sensor>
+        <dmw-sensor id='hchp' sensorkey="hchp" sensorvalue="{{hchpvalue}}"></dmw-sensor>
+        <dmw-sensor id='ptec' sensorkey="ptec" sensorvalue="{{ptecvalue}}"></dmw-sensor>
+        <div class="top">
+            <div class='index'>
+            <template if="{{ optarif=='base' }}">
+                {{base}}
+            </template>
+            <template if="{{ optarif=='hphc' }}">
+                <span class='hchc'>{{hchc}}</span>/<span class="hchp">{{hchp}}</span>
+            </template>
+            <span class="unit">kW</span></div>
+            <div class='instant'>{{iinst}} <span class="unit">A</span> / {{papp}} <span class="unit">VA</span></div>    
+        </div>
+    <div id="graph" class="aGraph" style="width:340px; height:50px;"></div>
+    </p>
+    </template>
+    <script>
+        Polymer('dmw-service-teleinfo', {
+            ready: function() {
+                this.super();
+                this.data=[];
+                // create an SVG element inside the #graph div that fills 100% of the div
+                this.graph = d3.select(this.$.graph).append("svg:svg").attr("width", "100%").attr("height", "100%");
+            },
+            loadingDone: function() {
+                this.setGraph();
+            },
+            setGraph: function() {
+                var self = this;
+                var width = 340;
+                var height = 50;
+                var min = (this.options['mingraph'])? parseInt(this.options['mingraph']):0;
+                var max = (this.options['maxgraph'])? parseInt(this.options['maxgraph']):2000;
 
-				// X scale will fit values from 0-10 within pixels 0-100
-				this.x = d3.scale.linear().domain([0, 60]).range([-5, width+5]); // starting point is -5 so the first value doesn't show and slides off the edge as part of the transition
-				// Y scale will fit values from 0-10 within pixels 0-100
-				this.y = d3.scale.linear().domain([min, max]).range([0, height]);
+                // X scale will fit values from 0-10 within pixels 0-100
+                this.x = d3.scale.linear().domain([0, 60]).range([-5, width+5]); // starting point is -5 so the first value doesn't show and slides off the edge as part of the transition
+                // Y scale will fit values from 0-10 within pixels 0-100
+                this.y = d3.scale.linear().domain([min, max]).range([0, height]);
 
-				// create a line object that represents the SVN line we're creating
-				this.line = d3.svg.line()
-					// assign the X function to plot our line as we wish
-					.x(function(d,i) { 
-						// verbose logging to show what's actually being done
-//						console.debug('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + self.x(i) + ' using our xScale.');
-						// return the X coordinate where we want to plot this datapoint
-						return self.x(i); 
-					})
-					.y(function(d) { 
-						// verbose logging to show what's actually being done
-//						console.debug('Plotting Y value for data point: ' + d + ' to be at: ' + self.y(d) + " using our yScale.");
-						// return the Y coordinate where we want to plot this datapoint
-						return self.y(d); 
-					})
-					.interpolate("basis");
+                // create a line object that represents the SVN line we're creating
+                this.line = d3.svg.line()
+                    // assign the X function to plot our line as we wish
+                    .x(function(d,i) { 
+                        // verbose logging to show what's actually being done
+//                        console.debug('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + self.x(i) + ' using our xScale.');
+                        // return the X coordinate where we want to plot this datapoint
+                        return self.x(i); 
+                    })
+                    .y(function(d) { 
+                        // verbose logging to show what's actually being done
+//                        console.debug('Plotting Y value for data point: ' + d + ' to be at: ' + self.y(d) + " using our yScale.");
+                        // return the Y coordinate where we want to plot this datapoint
+                        return self.y(d); 
+                    })
+                    .interpolate("basis");
 
-				if (this.$.optarif.isSet) {
-					this.optarif = this.$.optarif.sensorvalue;
-				}
-				if (this.$.ptec.isSet) {
-					this.ptec = this.$.ptec.sensorvalue.substr(0, 2);
-				}
-				if (this.$.base.isSet) {
-					this.base = ~~(parseInt(this.$.base.sensorvalue) / 1000); // We convert in kW
-				}
-				if (this.$.hchc.isSet) {
-					this.hchc = ~~(parseInt(this.$.hchc.sensorvalue) / 1000); // We convert in kW
-				}
-				if (this.$.hchp.isSet) {
-					this.hchp = ~~(parseInt(this.$.hchp.sensorvalue) / 1000); // We convert in kW
-				}
-				if (this.$.iinst.isSet) {
-					this.iinst = parseInt(this.$.iinst.sensorvalue);
-				}
-				if (this.$.papp.isSet) {
-					this.papp = parseInt(this.$.papp.sensorvalue);
-					this.$.papp.addEventListener('sensor-statreceived', this.pappStatReceived.bind(this));
-					this.$.papp.getLast(60);
-				}
-			},
-			iinstvalueChanged: function (oldValue, newValue) {
-				newValue = newValue.stored_value;
-				this.iinst = parseInt(newValue);
-			},
-			pappvalueChanged: function (oldValue, newValue) {
-				newValue = newValue.stored_value;
-				this.papp = parseInt(newValue);
-			},
-			ptecvalueChanged: function (oldValue, newValue) {
-				newValue = newValue.stored_value;
-				this.ptec = newValue.substr(0, 2);
-			},
-			ptecChanged: function (oldValue, newValue) {
-				newValue = newValue.stored_value;
-				this.classList.add(newValue);
-				this.classList.remove(oldValue);
-			},
-			pappStatReceived: function(e) { 
-				// Because pappvalue is only triggered when the value changed
-				var value = parseInt(e.detail.stat.stored_value);
-				this.data.shift();
-				this.data.push(value);
-				this.redrawGraph();
-			},
-			basevalueChanged: function (oldValue, newValue) {
-				newValue = newValue.stored_value;
-				this.base = ~~(parseInt(newValue) / 1000); // We convert in kW
-			},		
-			hchcvalueChanged: function (oldValue, newValue) {
-				newValue = newValue.stored_value;
-				this.hchc = ~~(parseInt(newValue) / 1000); // We convert in kW
-			},		
-			hchpvalueChanged: function (oldValue, newValue) {
-				newValue = newValue.stored_value;
-				this.hchp = ~~(parseInt(newValue) / 1000); // We convert in kW
-			},		
-			papplastChanged: function(oldValue, newValue) {
-				for (var i = newValue.length - 1; i >= 0; i--) {
-			    	this.data.push( parseInt(newValue[i]['value_num']));
-			    };
-				// display the line by appending an svg:path element with the data line we created above
-				this.graph.append("svg:path").attr("d", this.line(this.data));
-			},
-			redrawGraph: function() {
-				var self = this;
-				// update with animation
-				this.graph.selectAll("path")
-					.data([self.data]) // set the new data
-					.attr("transform", "translate(" + self.x(1) + ")") // set the transform to the right by x(1) pixels (6 for the scale we've set) to hide the new value
-					.attr("d", self.line) // apply the new data values ... but the new value is hidden at this point off the right of the canvas
-					.transition() // start a transition to bring the new value into view
-					.ease("linear")
-					.duration(1000) // for this demo we want a continual slide so set this to the same as the setInterval amount below
-					.attr("transform", "translate(" + self.x(0) + ")"); // animate a slide to the left back to x(0) pixels to reveal the new value
-			}
-		});		
-	</script>
+                if (this.$.optarif.isSet) {
+                    this.optarif = this.$.optarif.sensorvalue;
+                }
+                if (this.$.ptec.isSet) {
+                    //this.ptec = this.$.ptec.sensorvalue.substr(0, 2);
+                    this.ptec = this.$.ptec.sensorvalue;
+                }
+                if (this.$.base.isSet) {
+                    this.base = ~~(parseInt(this.$.base.sensorvalue) / 1000); // We convert in kW
+                }
+                if (this.$.hchc.isSet) {
+                    this.hchc = ~~(parseInt(this.$.hchc.sensorvalue) / 1000); // We convert in kW
+                }
+                if (this.$.hchp.isSet) {
+                    this.hchp = ~~(parseInt(this.$.hchp.sensorvalue) / 1000); // We convert in kW
+                }
+                if (this.$.iinst.isSet) {
+                    this.iinst = parseInt(this.$.iinst.sensorvalue);
+                }
+                if (this.$.papp.isSet) {
+                    this.papp = parseInt(this.$.papp.sensorvalue);
+                    this.$.papp.addEventListener('sensor-statreceived', this.pappStatReceived.bind(this));
+                    this.$.papp.getLast(60);
+                }
+            },
+            iinstvalueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.iinst = parseInt(newValue);
+            },
+            pappvalueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.papp = parseInt(newValue);
+            },
+            ptecvalueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.ptec = newValue.substr(0, 2);
+            },
+            ptecChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                if (oldValue != undefined) {
+                    oldValue = oldValue.stored_value;
+                }
+                this.classList.add(newValue);
+                this.classList.remove(oldValue);
+            },
+            pappStatReceived: function(e) { 
+                // Because pappvalue is only triggered when the value changed
+                var value = parseInt(e.detail.stat.stored_value);
+                this.data.shift();
+                this.data.push(value);
+                this.redrawGraph();
+            },
+            basevalueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.base = ~~(parseInt(newValue) / 1000); // We convert in kW
+            },        
+            hchcvalueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.hchc = ~~(parseInt(newValue) / 1000); // We convert in kW
+            },        
+            hchpvalueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.hchp = ~~(parseInt(newValue) / 1000); // We convert in kW
+            },        
+            papplastChanged: function(oldValue, newValue) {
+                for (var i = newValue.length - 1; i >= 0; i--) {
+                    this.data.push( parseInt(newValue[i]['value_num']));
+                };
+                // display the line by appending an svg:path element with the data line we created above
+                this.graph.append("svg:path").attr("d", this.line(this.data));
+            },
+            redrawGraph: function() {
+                var self = this;
+                // update with animation
+                this.graph.selectAll("path")
+                    .data([self.data]) // set the new data
+                    .attr("transform", "translate(" + self.x(1) + ")") // set the transform to the right by x(1) pixels (6 for the scale we've set) to hide the new value
+                    .attr("d", self.line) // apply the new data values ... but the new value is hidden at this point off the right of the canvas
+                    .transition() // start a transition to bring the new value into view
+                    .ease("linear")
+                    .duration(1000) // for this demo we want a continual slide so set this to the same as the setInterval amount below
+                    .attr("transform", "translate(" + self.x(0) + ")"); // animate a slide to the left back to x(0) pixels to reveal the new value
+            }
+        });        
+    </script>
 </polymer-element>
