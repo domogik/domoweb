@@ -61,7 +61,6 @@
                 this.super();
             },
             current_codeChanged: function(oldValue, newValue) {
-                console.error(newValue);
                 newValue = newValue.stored_value;
                 this.code = newValue;
                 // needed only the first time :)
