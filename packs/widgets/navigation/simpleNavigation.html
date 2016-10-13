@@ -36,7 +36,12 @@
                 this.$.goto.addEventListener('click', this.goto.bind(this));
             },
             optionsUpdated: function() {
-                this.$.goto.style.color = this.options['WidgetTextColor'];
+                if (this.options['WidgetTextColor'] == undefined) {
+                    this.$.goto.style.color = "#ffffff";
+                } 
+                else {
+                    this.$.goto.style.color = this.options['WidgetTextColor'];
+                }
                 this.icon = this.options['faIcon'];
             },
             goto: function(e) {
