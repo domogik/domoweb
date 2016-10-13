@@ -81,9 +81,16 @@
                 this.x = [];
                 this.xlines = [];
                 this.data1 = [];
-                this.updateStyles();
             },
             draw: function() {
+                // color
+                if (this.options['WidgetTextColor']  == undefined) {
+                    the_color = "#ffffff";
+                }
+                else {
+                    the_color = this.options['WidgetTextColor'];
+                }
+
                 // build this.xlines for grid lines on x
                 this.xlines = [];
                 //var from = moment().subtract(1, 'weeks').startOf('day').format("%Y-%m-%d");    // copied from ../../../components/sensor.html
@@ -91,12 +98,9 @@
                     this.xlines[idx] = { value : moment().subtract(7-idx, 'days').format("YYYY-MM-DD 00:00"),
                                          text : moment().subtract(7-idx+1, 'days').format("DD/MM")};
                 }
-                console.error("TOTO");
-                console.error(this.xlines);
          
 
                 // draw the chart
-                console.error(this.options);
                 this.chart = c3.generate({
                     bindto: this.$.chart,
                     data: {
@@ -111,7 +115,7 @@
                         }
                     },
                     color: {
-                        pattern: [this.options['WidgetTextColor']]
+                        pattern: [the_color]
                     },
                     legend: {
                         show: false
@@ -187,16 +191,6 @@
                     }
                     */
                 }
-                console.error(this.x);
-                console.error(this.data1);
-/*
-                this.chart.load({
-                        columns: [
-                            this.x,
-                            this.data1
-                        ]
-                    });
-*/ 
                 this.draw();
             }
         });
