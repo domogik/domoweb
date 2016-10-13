@@ -3,159 +3,163 @@
 <link rel="import" href="/components/sensor.html">
 
 <polymer-element name="dmw-widgets-selector">
-	<script src="/libraries/isotope-2.2.2/dist/isotope.pkgd.min.js"></script>
-	<template>
-  		<style>
-  			@import '/libraries/bootstrap-3.3.5/css/bootstrap.min.css';
-  		</style>
-		<style type="text/css">
-		article {
-			padding: 0;
-			margin: 0.5em;
-			text-align: center;
-			float: left;
-			width: 20em;
-		}
-		article h2 {
-			margin: 0;
-			background: #428bca;
-			color: #ffffff;
-			font-size: 1em;
-			padding: 0.5em;
-			-moz-border-radius:  6px 6px 0 0;
-			-webkit-border-radius:  6px 6px 0 0;
-			border-radius: 6px 6px 0 0;
-		}
-		article .body {
-			background: #F0F0F0;
-			color: #000000;
-			padding: 0.5em;
-			min-height: 8em;
-			position: relative;
-		}
-		article .body .btnoverlay {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background-color: rgba(0,0,0,0.6);
-			padding: 1em;
-			display: none;
-		}
-		article .body .btnoverlay button {
-			margin: 0.5em auto 0.5em auto;
-			display: block;
-		}
-		article .body:hover .btnoverlay,
-		article .body:focus .btnoverlay {
-			display: block;
-		}
-		article img {
-			max-width: 19em;
-			max-height: 7em;
-		}
-		article .footer {
-			margin: 0;
-			background: #428bca;
-			color: #ffffff;
-			font-size: 1em;
-			padding: 0.5em;
-			-moz-border-radius:  0 0 6px 6px;
-			-webkit-border-radius:  0 0 6px 6px;
-			border-radius: 0 0 6px 6px;
-			text-align: right;
-			font-style: italic;
-		}
-		</style>
-		<web-socket id="socket"></web-socket>
-   	    <div id="container-fluid">
-  			<div class="row">
-				<div class="col-md-10 col-md-offset-1">
-					<h1>Select Widget</h1>
-					<button id="closeModal" type="button" class="btn btn-default">Close</button>
-					<div id="filters" class="button-group">
-					  	<button class="btn btn-default" data-filter="*">show all</button>
-				    	<template repeat="{{s in sets}}">
-					  		<button class="btn btn-default" data-filter=".{{s.id}}">{{s.name}}</button>
-				  		</template>
-					</div>
+    <script src="/libraries/isotope-2.2.2/dist/isotope.pkgd.min.js"></script>
+    <template>
+        <style>
+              @import '/libraries/bootstrap-3.3.5/css/bootstrap.min.css';
+        </style>
+        <style type="text/css">
+        button {
+            margin-top: 3px;
+        }
+        article {
+            padding: 0;
+            margin: 0.5em;
+            text-align: center;
+            float: left;
+            width: 20em;
+        }
+        article h2 {
+            margin: 0;
+            background: #428bca;
+            color: #ffffff;
+            font-size: 1em;
+            padding: 0.5em;
+            -moz-border-radius:  6px 6px 0 0;
+            -webkit-border-radius:  6px 6px 0 0;
+            border-radius: 6px 6px 0 0;
+        }
+        article .body {
+            background: #F0F0F0;
+            color: #000000;
+            padding: 0.5em;
+            min-height: 8em;
+            position: relative;
+        }
+        article .body .btnoverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            padding: 1em;
+            display: none;
+        }
+        article .body .btnoverlay button {
+            margin: 0.5em auto 0.5em auto;
+            display: block;
+        }
+        article .body:hover .btnoverlay,
+        article .body:focus .btnoverlay {
+            display: block;
+        }
+        article img {
+            max-width: 19em;
+            max-height: 7em;
+        }
+        article .footer {
+            margin: 0;
+            background: #428bca;
+            color: #ffffff;
+            font-size: 1em;
+            padding: 0.5em;
+            -moz-border-radius:  0 0 6px 6px;
+            -webkit-border-radius:  0 0 6px 6px;
+            border-radius: 0 0 6px 6px;
+            text-align: right;
+            font-style: italic;
+        }
+        </style>
+        <web-socket id="socket"></web-socket>
+           <div id="container-fluid">
+              <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    <h1>Select Widget</h1>
+                    <button id="closeModal" type="button" class="btn btn-default">Close</button>
+                    <div id="filters" class="button-group"> 
+                      <button class="btn btn-info" data-filter="*">show all</button>
+                      <template repeat="{{s in sets}}">
+                        <button class="btn btn-default" data-filter=".{{s.id}}">{{s.name}}</button> 
+                      </template>
+                    </div>
 
-					<div id="widgetslist">
-					    <template repeat="{{w in widgets}}">
-			        	<article class="{{ w.set_id }}">
-			        		<h2>{{ w.name }}</h2>
-			        		<div class="body">
-			        			<img src='/widget/{{ w.set_id }}/{{ w.set_ref }}.png'/>
-				        		<div class="btnoverlay"><button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}" data-widget-width="{{ w.width }}" data-widget-height="{{ w.height }}">Add</button><button class="add-widget btn btn-success" on-click="{{addWidgetClose}}" data-widget-id="{{ w.id }}" data-widget-width="{{ w.width }}" data-widget-height="{{ w.height }}">Add and Close</button></div>
-				        	</div>
-				        	<div class="footer">{{ w.set_name }}</div>
-			        	</article>
-				      	</template>
-					</div>
-				</div>
-			</div>   	
-   	    </div>
-	</template>
-	<script>
-		Polymer("dmw-widgets-selector", {
-			ready:function(){
-		    	this.$.socket.register('widget-list', this.messageReceived.bind(this), null);
-				this.$.socket.send("widget-getall", null);
-				this.iso = new Isotope( this.$.widgetslist, {
-				  	itemSelector: 'article',
-				  	layoutMode: 'fitRows',
-				});
-				var self = this;
-				this.$.closeModal.addEventListener('click', function () {
-					var modalOverlay = document.getElementById('modal-overlay');
-					modalOverlay.classList.remove('on');
-					self.remove();
-				});
-			},
-			messageReceived: function(topic, json) {
-				var sets = [];
-				this.sets = [];
-				for (w in json) {
-					if (sets.indexOf(json[w].set_id)==-1) {
-						sets.push(json[w].set_id);
-						this.sets.push({'id':json[w].set_id, 'name':json[w].set_name, 'width':json[w].width, 'height':json[w].height});
-					}
-				}
-		        this.widgets = json;
-		        var self = this;
-		        this.async(
-  					// `async` lets the main loop resume and perform tasks, like DOM updates,
-				  	// then it calls your callback 
-				  	function() {
-						var buttons = self.$.filters.querySelectorAll('button');
-						for (var i = buttons.length - 1; i >= 0; i--) {
-							buttons[i].addEventListener('click', function () {
-								var filterValue = this.dataset['filter'];
-								self.iso.arrange({
-								  filter: filterValue
-								});
-							});
-						};
-				        self.iso.reloadItems();
-				        self.iso.arrange();
-				  	}
-				);
-		    },
-		    addWidget: function(e) {
-		    	var widget_id = e.target.dataset.widgetId;
-		    	var widget_width = e.target.dataset.widgetWidth;
-		    	var widget_height = e.target.dataset.widgetHeight;
-		    	var section = document.getElementById('currentsection');
-		    	var coord = DMW.grid.firstEmptyPosition(widget_width, widget_height);
-		    	this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':section.sectionid, 'x':coord[0], 'y':coord[1]});
-		    },
-		    addWidgetClose: function(e) {
-		    	this.addWidget(e);
-				var modalOverlay = document.getElementById('modal-overlay');
-				modalOverlay.classList.remove('on');
-				this.remove();
-		    }
-		});
-	</script>
+                    <div id="widgetslist">
+                      <template repeat="{{w in widgets}}">
+                        <article class="{{ w.set_id }}">
+                           <h2>{{ w.name }}</h2>
+                           <div class="body">
+                              <img src='/widget/{{ w.set_id }}/{{ w.set_ref }}.png'/>
+                              <div class="btnoverlay"><button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}" data-widget-width="{{ w.width }}" data-widget-height="{{ w.height }}">Add</button><button class="add-widget btn btn-success" on-click="{{addWidgetClose}}" data-widget-id="{{ w.id }}" data-widget-width="{{ w.width }}" data-widget-height="{{ w.height }}">Add and Close</button></div>
+                          </div>
+                          <div class="footer">{{ w.set_name }}</div>
+                        </article>
+                      </template>
+                    </div>
+                </div>
+            </div>       
+           </div>
+    </template>
+    <script>
+        Polymer("dmw-widgets-selector", {
+            ready:function(){
+                this.$.socket.register('widget-list', this.messageReceived.bind(this), null);
+                this.$.socket.send("widget-getall", null);
+                this.iso = new Isotope( this.$.widgetslist, {
+                      itemSelector: 'article',
+                      layoutMode: 'fitRows',
+                });
+                var self = this;
+                this.$.closeModal.addEventListener('click', function () {
+                    var modalOverlay = document.getElementById('modal-overlay');
+                    modalOverlay.classList.remove('on');
+                    self.remove();
+                });
+            },
+            messageReceived: function(topic, json) {
+                var sets = [];
+                this.sets = [];
+                for (w in json) {
+                    if (sets.indexOf(json[w].set_id)==-1) {
+                        sets.push(json[w].set_id);
+                        this.sets.push({'id':json[w].set_id, 'name':json[w].set_name, 'width':json[w].width, 'height':json[w].height});
+                    }
+                }
+                console.error(json);
+                this.widgets = json;
+                var self = this;
+                this.async(
+                      // `async` lets the main loop resume and perform tasks, like DOM updates,
+                      // then it calls your callback 
+                      function() {
+                        var buttons = self.$.filters.querySelectorAll('button');
+                        for (var i = buttons.length - 1; i >= 0; i--) {
+                            buttons[i].addEventListener('click', function () {
+                                var filterValue = this.dataset['filter'];
+                                self.iso.arrange({
+                                  filter: filterValue
+                                });
+                            });
+                        };
+                        self.iso.reloadItems();
+                        self.iso.arrange();
+                      }
+                );
+            },
+            addWidget: function(e) {
+                var widget_id = e.target.dataset.widgetId;
+                var widget_width = e.target.dataset.widgetWidth;
+                var widget_height = e.target.dataset.widgetHeight;
+                var section = document.getElementById('currentsection');
+                var coord = DMW.grid.firstEmptyPosition(widget_width, widget_height);
+                this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':section.sectionid, 'x':coord[0], 'y':coord[1]});
+            },
+            addWidgetClose: function(e) {
+                this.addWidget(e);
+                var modalOverlay = document.getElementById('modal-overlay');
+                modalOverlay.classList.remove('on');
+                this.remove();
+            }
+        });
+    </script>
 </polymer-element>
