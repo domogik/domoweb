@@ -78,6 +78,7 @@
                 this.super();
                 this.number = "--";
                 this.unit = "";
+                this.currentHistoryValue = [];
             },
             optionsUpdated: function() {
                 if (this.options['hideLabels'] == true ) {         
@@ -88,6 +89,9 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
+                console.error("options");
+                console.error(this.currentHistoryValue);
+                this.draw(this.currentHistoryValue);
             },
             sensorsUpdated: function() {
                 if (this.$.primary.isSet) {
@@ -124,41 +128,48 @@
                         }.bind(this), 1000);
                 }
                 else {
-                    var self = this;
-                    var chartValues = [];
-                    for(i=0;i<newValue.length;i++) {
-                        // 5 because : [ year, month, week, day, hour, value ]
-                        chartValues.push(newValue[i][5]);
-                    }
-                    // display the chart
-                    minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
-                    maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
- 
-                    // as the graph history is an average, the current value could be lower or bigger than the min/max average value. So we adjust
-                    current = this.$.number.innerHTML;
-                    if (current > maxvalue) {
-                        this.max = current;
-                    }
-                    else {
-                        this.max = maxvalue;
-                    }
-                    if (current < minvalue) {
-                        this.min = current;
-                    }
-                    else {
-                        this.min = minvalue;
-                    }
-                    $(this.$.spark).sparkline(chartValues, {type: 'line',
-                                                            lineColor: this.options['chartColor'],
-                                                            fillColor: this.options['chartColor'],
-                                                            spotColor: undefined,
-                                                            minSpotColor: undefined,
-                                                            maxSpotColor: undefined,
-                                                            chartRangeMin: parseFloat(this.options['chartMinValue']),
-                                                            chartRangeMax: parseFloat(this.options['chartMaxValue']),
-                                                            height: '100%', width: '100%' });
-                    $.sparkline_display_visible();
+                    this.draw(newValue);
                 }
+            },
+            draw: function(newValue) {
+                // to allow redraw when options changed
+                this.currentHistoryValue = newValue;
+
+                // draw
+                var self = this;
+                var chartValues = [];
+                for(i=0;i<newValue.length;i++) {
+                    // 5 because : [ year, month, week, day, hour, value ]
+                    chartValues.push(newValue[i][5]);
+                }
+                // display the chart
+                minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
+                maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
+ 
+                // as the graph history is an average, the current value could be lower or bigger than the min/max average value. So we adjust
+                current = this.$.number.innerHTML;
+                if (current > maxvalue) {
+                    this.max = current;
+                }
+                else {
+                    this.max = maxvalue;
+                }
+                if (current < minvalue) {
+                    this.min = current;
+                }
+                else {
+                    this.min = minvalue;
+                }
+                $(this.$.spark).sparkline(chartValues, {type: 'line',
+                                                        lineColor: this.options['chartColor'],
+                                                        fillColor: this.options['chartColor'],
+                                                        spotColor: undefined,
+                                                        minSpotColor: undefined,
+                                                        maxSpotColor: undefined,
+                                                        chartRangeMin: parseFloat(this.options['chartMinValue']),
+                                                        chartRangeMax: parseFloat(this.options['chartMaxValue']),
+                                                        height: '100%', width: '100%' });
+                $.sparkline_display_visible();
             },
             adjustText: function(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
