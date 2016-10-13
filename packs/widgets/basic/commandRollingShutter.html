@@ -60,10 +60,20 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-                this.$.open.style.color = this.options['WidgetTextColor'];
-                this.$.close.style.color = this.options['WidgetTextColor'];
             },
             sensorsUpdated: function() {
+                if (this.options['WidgetTextColor'] == undefined) {
+                    this.$.open.style.color = "#ffffff";
+                }
+                else {
+                    this.$.open.style.color = this.options['WidgetTextColor'];
+                }
+                if (this.options['WidgetTextColor'] == undefined) {
+                    this.$.close.style.color = "#ffffff";
+                }
+                else {
+                    this.$.close.style.color = this.options['WidgetTextColor'];
+                }
             },
             commandsUpdated: function() {
                 if (this.$.primary.isSet) {
