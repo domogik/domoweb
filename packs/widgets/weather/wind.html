@@ -91,7 +91,12 @@
                         }.bind(this), 1000);
                 }
                 else {
-                    var color = this.options['WidgetTextColor'];
+                    if (this.options['WidgetTextColor'] == undefined) {
+                        var color = "#ffffff";
+                    }
+                    else {
+                        var color = this.options['WidgetTextColor'];
+                    }
     
                     var context = this.$.compass.getContext('2d');
                     var radius = 70;
