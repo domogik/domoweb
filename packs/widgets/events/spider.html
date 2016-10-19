@@ -1,0 +1,160 @@
+<polymer-element name="dmw-events-spider" extends="dmw-widget">
+    <template>
+        <style type="text/css">
+            :host {
+                height: 100%;
+                display: block;
+            }
+
+
+
+html,
+body {
+  height: 100%;
+  overflow: hidden; 
+}
+
+.container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: -20px;
+  animation: inicio 5s ease-in-out forwards;
+}
+
+.container::after {
+  background: rgba(0,0,0,0.5);
+  content:"";
+  position: absolute;
+  top: -1000px;
+  left: 50%;
+  margin-left: 9px;
+  width: 1px;
+  height: 1000px;
+}
+
+.container::before {
+  background: rgba(0,0,0,1);
+  border-radius: 100%;
+  color: #fff;
+  font-size: 1.3em;
+  content:". .";
+  text-align: center;
+  position: absolute;
+  margin-top: -5px;
+  margin-left: -2px;
+  width: 25px;
+  height: 25px;
+}
+
+.left {
+  position: absolute;
+}
+
+.right {
+  position: absolute;
+  transform: rotateY(180deg);
+}
+
+.uno,
+.dos,
+.tres,
+.cuatro {
+  background: rgba(0,0,0,0.5);
+  position: relative;
+  width: 20px;
+  height: 3px;
+}
+
+.uno > .uno,
+.dos > .dos,
+.tres > .tres,
+.cuatro > .cuatro {
+  transform-origin: 20px top;
+  transform: rotate(-80deg) translateX(20px);
+  animation: seg 2.5s ease infinite;
+}
+
+.uno > .uno > .uno,
+.dos > .dos > .dos,
+.tres > .tres > .tres,
+.cuatro > .cuatro > .cuatro {
+  transform-origin: 20px top;
+  transform: rotate(10deg) translateX(20px);
+  animation: seg 1.5s ease infinite;
+}
+
+.right > .dos > .dos {
+  animation-delay: 200ms;
+}
+
+.dos > .dos {
+  animation-delay: 400ms;
+}
+
+.dos > .dos > .dos {
+  animation-delay: 200ms;
+}
+
+.right >.tres > .tres {
+  animation-delay: 400ms;
+}
+
+.tres > .tres {
+  animation-delay: 600ms;
+}
+
+.tres > .tres > .tres {
+  animation-delay: 300ms;
+}
+
+.right > .cuatro > .cuatro {
+  animation-delay: 100ms;
+}
+
+.cuatro > .cuatro {
+  animation-delay: 800ms;
+}
+
+.cuatro > .cuatro > .cuatro {
+  animation-delay: 400ms;
+}
+
+@keyframes seg {
+  50% {
+    transform: rotate(55deg) translateX(20px);
+  }
+}
+
+@keyframes inicio {
+  100% {
+    top: 50%;
+  }
+}
+
+
+        </style>
+        <shadow></shadow>
+<div class="container">
+  <div class="left">
+    <div class="uno"><div class="uno"><div class="uno"><div class="uno"></div></div></div></div>
+    <div class="dos"><div class="dos"><div class="dos"><div class="dos"></div></div></div></div>
+    <div class="tres"><div class="tres"><div class="tres"><div class="tres"></div></div></div></div>
+    <div class="cuatro"><div class="cuatro"><div class="cuatro"><div class="cuatro"></div></div></div></div>
+  </div>
+  <div class="right">
+    <div class="uno"><div class="uno"><div class="uno"><div class="uno"></div></div></div></div>
+    <div class="dos"><div class="dos"><div class="dos"><div class="dos"></div></div></div></div>
+    <div class="tres"><div class="tres"><div class="tres"><div class="tres"></div></div></div></div>
+    <div class="cuatro"><div class="cuatro"><div class="cuatro"><div class="cuatro"></div></div></div></div>
+  </div>
+</div>
+    </template>
+    <script>
+        Polymer('dmw-events-spider', {
+            ready: function() {
+                this.super();
+            }
+        });
+    </script>
+</polymer-element>

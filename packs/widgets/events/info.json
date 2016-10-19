@@ -1,0 +1,23 @@
+{
+    "json_version" : 2,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "events",
+        "version" : 1,
+        "name" : "Events",
+        "description" : "Useless widgets for some events",
+        "author" : "Fritz",
+        "author_email" : "fritz.smh@gmail.com"
+    },
+    "widgets": {
+        "spider": {
+            "name" : "Halloween spider",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+            },
+            "sensors" : {
+            }
+        }
+    }
+}
