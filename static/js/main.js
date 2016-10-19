@@ -127,7 +127,7 @@ function insertWidgetInstance(id, widget) {
 	instance.classList.add("widget", "loading", "widgetw" + widget.width, "widgeth" + widget.height);
 	if (widget.default_style) { // If we load the default style
 		instance.classList.add("style-general");
-                instance.setAttribute("style", "z-index:" + id);
+                instance.setAttribute("style", "z-index:" + id + 1);   // Don't remove the '+1', else the first widget can't be edited!
 		instance.setAttribute('default_style', true);
 	}
 	instance.setAttribute('instanceid', id);
