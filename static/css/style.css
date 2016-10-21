@@ -68,7 +68,7 @@ h3 {
 	-webkit-transition: all .3s ease;
 	-moz-transition: all .3s ease;
 	transition: all .3s ease;
-	z-index: 1000;
+	z-index: 2000;   /* previsous value was 1000. Fritz - 20161020 */
 	overflow-y:auto;
 }
 
