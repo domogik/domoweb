@@ -1,0 +1,164 @@
+<style>
+@font-face {
+  font-family: 'weathericons';
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot');
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');  
+  font-weight: normal;
+  font-style: normal;
+}     
+
+</style>
+<polymer-element name="dmw-weather-current3" extends="dmw-widget">
+    <template>
+        <style type="text/css">
+            @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
+            :host {
+                height: 100%;
+                display: block;
+                background-repeat: no-repeat;
+                background-position: 50% 50%;
+            }
+            #data {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                bottom: 0px;
+            }
+            #current_code {
+                position: absolute;
+                top: 0.1em;
+                right: 0.1em;
+                font-size: 4.7em;
+            }
+            </style>
+        <shadow></shadow>
+        <dmw-sensor id='current_code' sensorkey="current_code" sensorvalue="{{current_code}}"></dmw-sensor>
+        <div id="data">
+          <div id='current_code'></div>
+        </div>
+        <shadow></shadow>
+    </template>
+    <script>
+        Polymer('dmw-weather-current3', {
+            ready: function() {
+                this.super();
+                this.unit = "";
+            },
+            current_codeChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.current_code.innerHTML = setWeatherIcon(newValue);
+                //this.$.current_code.innerHTML = '<i class="wi wi-day-fog"></i>';
+            }
+        });
+
+
+        function setWeatherIcon(condid) {
+         
+            switch(condid) {
+                case '0': var icon = '<i class="wi wi-tornado"></i>';
+                break;
+                case '1': var icon = '<i class="wi wi-storm-showers"></i>';
+                break;
+                case '2': var icon = '<i class="wi wi-tornado"></i>';
+                break;
+                case '3': var icon = '<i class="wi wi-thunderstorm"></i>';
+                break;
+                case '4': var icon = '<i class="wi wi-thunderstorm"></i>';
+                break;
+                case '5': var icon = '<i class="wi wi-snow"></i>';
+                break;
+                case '6': var icon = '<i class="wi wi-rain-mix"></i>';
+                break;
+                case '7': var icon = '<i class="wi wi-rain-mix"></i>';
+                break;
+                case '8': var icon = '<i class="wi wi-sprinkle"></i>';
+                break;
+                case '9': var icon = '<i class="wi wi-sprinkle"></i>';
+                break;
+                case '10': var icon = '<i class="wi wi-hail"></i>';
+                break;
+                case '11': var icon = '<i class="wi wi-showers"></i>';
+                break;
+                case '12': var icon = '<i class="wi wi-showers"></i>';
+                break;
+                case '13': var icon = '<i class="wi wi-snow"></i>';
+                break;
+                case '14': var icon = '<i class="wi wi-storm-showers"></i>';
+                break;
+                case '15': var icon = '<i class="wi wi-snow"></i>';
+                break;
+                case '16': var icon = '<i class="wi wi-snow"></i>';
+                break;
+                case '17': var icon = '<i class="wi wi-hail"></i>';
+                break;
+                case '18': var icon = '<i class="wi wi-hail"></i>';
+                break;
+                case '19': var icon = '<i class="wi wi-cloudy-gusts"></i>';
+                break;
+                case '20': var icon = '<i class="wi wi-fog"></i>';
+                break;
+                case '21': var icon = '<i class="wi wi-fog"></i>';
+                break;
+                case '22': var icon = '<i class="wi wi-fog"></i>';
+                break;
+                case '23': var icon = '<i class="wi wi-cloudy-gusts"></i>';
+                break;
+                case '24': var icon = '<i class="wi wi-cloudy-windy"></i>';
+                break;
+                case '25': var icon = '<i class="wi wi-thermometer"></i>';
+                break;
+                case '26': var icon = '<i class="wi wi-cloudy"></i>';
+                break;
+                case '27': var icon = '<i class="wi wi-night-cloudy"></i>';
+                break;
+                case '28': var icon = '<i class="wi wi-day-cloudy"></i>';
+                break;
+                case '29': var icon = '<i class="wi wi-night-cloudy"></i>';
+                break;
+                case '30': var icon = '<i class="wi wi-day-cloudy"></i>';
+                break;
+                case '31': var icon = '<i class="wi wi-night-clear"></i>';
+                break;
+                case '32': var icon = '<i class="wi wi-day-sunny"></i>';
+                break;
+                case '33': var icon = '<i class="wi wi-night-clear"></i>';
+                break;
+                case '34': var icon = '<i class="wi wi-day-sunny-overcast"></i>';
+                break;
+                case '35': var icon = '<i class="wi wi-hail"></i>';
+                break;
+                case '36': var icon = '<i class="wi wi-day-sunny"></i>';
+                break;
+                case '37': var icon = '<i class="wi wi-thunderstorm"></i>';
+                break;
+                case '38': var icon = '<i class="wi wi-thunderstorm"></i>';
+                break;
+                case '39': var icon = '<i class="wi wi-thunderstorm"></i>';
+                break;
+                case '40': var icon = '<i class="wi wi-storm-showers"></i>';
+                break;
+                case '41': var icon = '<i class="wi wi-snow"></i>';
+                break;
+                case '42': var icon = '<i class="wi wi-snow"></i>';
+                break;
+                case '43': var icon = '<i class="wi wi-snow"></i>';
+                break;
+                case '44': var icon = '<i class="wi wi-cloudy"></i>';
+                break;
+                case '45': var icon = '<i class="wi wi-lightning"></i>';
+                break;
+                case '46': var icon = '<i class="wi wi-snow"></i>';
+                break;
+                case '47': var icon = '<i class="wi wi-thunderstorm"></i>';
+                break;
+                case '3200': var icon = '<i class="wi wi-cloud"></i>';
+                break;
+                default: var icon = '<i class="wi wi-cloud"></i>';
+                break;
+            }
+             
+            return icon;
+         
+        } 
+    </script>
+</polymer-element>

@@ -116,6 +116,21 @@
                 }
             }
         },
+        "current3": {
+            "name" : "Current condition - 3",
+            "description" : "Weather current condition, without temperature",
+            "height" : 1,
+            "width" : 1,
+            "options" : {},
+            "devices" : {
+                "forecast" : {
+                    "name": "Location",
+                    "description": "Weather location",
+                    "types" : ["weather.weather"],
+                    "required": true                   
+                }
+            }
+        },
         "forecast2": {
             "name" : "Forecast - 2",
             "description" : "Weather forecast",
