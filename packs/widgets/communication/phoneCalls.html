@@ -9,6 +9,7 @@
 </style>
 <polymer-element name="dmw-communication-phoneCalls" extends="dmw-widget">
     <template>
+        <link rel="stylesheet" href="/libraries/bootstrap-3.3.5/css/bootstrap.min.css">
         <link rel="stylesheet" href="/widget/communication/font-awesome-4.5.0/css/font-awesome.min.css" shim-domshadow>
         <style type="text/css">
             :host {
@@ -97,11 +98,32 @@
             .show {
                  display: table;
             }
+            .showtable {
+                 display: table;
+            }
             .hide {
                  display: none;
             }
             del {
                 color: red;
+            }
+            #inboundcall {
+                padding-top: 10%;
+                position: absolute;
+                object-fit: none;
+                position: fixed;
+                top: 0px;
+                left: 0px;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.9);
+            }
+            #inboundcall .icon {
+                font-size: 5em;
+                text-align: center;
+            }
+            #inboundcall .who {
+                font-size: 5em;
             }
         </style>
         <dmw-command id="doblacklist" commandkey="doblacklist"></dmw-command>
@@ -149,12 +171,29 @@
             <span class="date">{{last_call.date}}</span>
           </div>
         </div>
+        <div id="inboundcall" class="container hide" on-click="{{hideInboundCall}}">
+          <div class="row">
+            <div class="icon col-md-4">
+              <i class="fa fa-phone fa-4x"></i>
+            </div>
+            <div class="who col-md-8">
+         
+              <div class="">
+                {{ inboundCallNumber }}
+              </div>
+              <div class="">
+                {{ inboundCallName }}
+              </div>
+            </div>
+          </div>
+        </div>
 
     </template>
     <script>
         Polymer('dmw-communication-phoneCalls', {
             ready: function() {
                 this.super();
+                this.first = true;     // to avoid display the notification on widget first display
                 this.calls = [];
                 this.last_call = null;
                 this.blacklistCommand = false;
@@ -193,6 +232,10 @@
                 // 'callerid' sensor last value. In this function we got ONLY the last value and not the timestamp
                 //this.addCall(newValue['value_str'], moment(newValue['date']).format("H:mm (DD/MM)"));
                 //this.adjustText(this, this.$.last_number);
+                if (this.first == false) {
+                    this.displayInboundCall(newValue.stored_value);
+                }
+                this.first = false;
                 this.$.callerid.getLast(10);
                 if (this.$.name.isSet) {
                     this.$.name.getLast(10);
@@ -239,6 +282,10 @@
                     if (timestamp == this.calls[idx]["timestamp"]) {
                         if (name != "") {
                             this.calls[idx]["who"] = name;
+                            console.error("name = " + name + " / idx = " + idx);
+                            if (idx == 0) { 
+                                this.inboundCallName = name;
+                            }
                         }
                     }
                 }
@@ -261,15 +308,36 @@
             isNotBlacklisted: function(status) {
                 return !status;
             },
+            displayInboundCall: function(callerNumber) {
+                console.error("display!");
+                this.inboundCallNumber = callerNumber;
+                this.inboundCallName = "";
+
+                this.$.inboundcall.classList.add('show');
+                this.$.inboundcall.classList.remove('hide');
+                // z-index for the zoom mode
+                this.style.zIndex = 5001;
+
+                // hide the notification after a few seconds
+                setTimeout(function(){
+                    this.hideInboundCall();
+                    }.bind(this), 10000);
+            },
+            hideInboundCall: function() {
+                this.$.inboundcall.classList.add('hide');
+                this.$.inboundcall.classList.remove('show');
+                // z-index for the zoom mode
+                this.style.zIndex = initialZIndex;
+            },
             displayHistory: function() {
-                this.$.list.classList.add('show');
+                this.$.list.classList.add('showtable');
                 this.$.list.classList.remove('hide');
                 // z-index for the zoom mode
                 this.style.zIndex = 5000;
             },
             hideHistory: function() {
                 this.$.list.classList.add('hide');
-                this.$.list.classList.remove('show');
+                this.$.list.classList.remove('showtable');
                 // z-index for the zoom mode
                 this.style.zIndex = initialZIndex;
             },
