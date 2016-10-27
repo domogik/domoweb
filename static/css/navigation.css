@@ -9,7 +9,7 @@
 }
 
 #butler {
-        z-index: 1000;
+        z-index: 2000;
 	font-size: 0.8em;
 	position: fixed;
 	top: 0;
@@ -24,7 +24,7 @@
 }
 
 #sections-tree {
-        z-index: 1000;
+        z-index: 2000;
 	font-size: 0.8em;
 	position: fixed;
 	bottom: 0;
