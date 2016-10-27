@@ -17,14 +17,18 @@
                 display: block;
             }
             #rainlocation {
-                margin: 10px;
                 font-size: 1.3em;
-                position: relative;
-                line-height: 10%;
+                position: absolute;
+                /*line-height: 10%;*/ 
+                top: 5px;
+                width: 100%;
+                text-align: center;
             }
             table {
+                position: absolute;
+                top: 18%;
                 width: 98%;
-                height: 90%;
+                height: 82%;
                 /*border: 1px solid white;*/
             }
             td, th {
@@ -63,7 +67,8 @@
 
         <shadow></shadow>
 
-        <div id='rainlocation'>{{rainForecastLocationName}}</div>
+        <div id='rainlocation'>Rain in the next hour</div>
+        <!-- <div id='rainlocation'>Rain prevision in the next hour{{rainForecastLocationName}}</div> -->
         <table>
           <tbody>
             <tr id='rainligne'>

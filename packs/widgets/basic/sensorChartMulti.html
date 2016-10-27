@@ -280,6 +280,12 @@
                     // display the chart
                     minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
                     maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
+                    if (minvalue == "Infinity") {
+                        minvalue = "";
+                    }
+                    if (maxvalue == "-Infinity") {
+                        maxvalue = "";
+                    }
  
                     // as the graph history is an average, the current value could be lower or bigger than the min/max average value. So we adjust
                     current = generic_value;
