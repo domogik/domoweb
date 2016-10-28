@@ -34,3 +34,4 @@ Implements
 @organization: Domogik
 """
 
+__version__ = "0.5"

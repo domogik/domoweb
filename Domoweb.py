@@ -12,6 +12,12 @@ ioloop.install()
 import domoweb
 from domoweb.handlers import MainHandler, ConfigurationHandler, WSHandler, NoCacheStaticFileHandler, MQHandler, UploadHandler,MultiStaticFileHandler, LoginHandler
 from domoweb.loaders import packLoader, mqDataLoader
+from domoweb.processinfo import ProcessInfo
+from domogikmq.pubsub.publisher import MQPub
+import zmq
+import threading
+import signal
+
 
 from domoweb import ui_methods
 
@@ -20,6 +26,8 @@ import tornado.web
 import tornado.httpserver
 from tornado.options import options
 import logging
+
+TIME_BETWEEN_EACH_PROCESS_STATUS = 30
 
 logging.basicConfig(format='%(asctime)s %(name)s:%(levelname)s %(message)s',level=logging.INFO)
 
@@ -58,6 +66,20 @@ application = tornado.web.Application(
     cookie_secret="DomowebAndDomogikAreReallyAwesomeProjects",
     login_url="/login"
 )
+
+
+def signal_handler( signum, frame):
+    logging.info("Stop requested... Exiting!")
+    stop.set()
+    ioloop.IOLoop.instance().stop()
+    sys.exit(0)
+
+def send_process_info(pid, data):
+    """ Send process informations to the manager. See ProcessInfo (domoweb/processinfo.py) class for more informations about the content.
+        These data are used for anonymous metrics analysis by the domogik team : number of releases of domogik, etc
+    """
+    mq_pub.send_event('metrics.processinfo', data)
+
 
 if __name__ == '__main__':
 
@@ -119,6 +141,28 @@ if __name__ == '__main__':
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(options.port)
 
+    # Process info
+    mq_pub = MQPub(zmq.Context(), "domoweb-engine")
+    stop = threading.Event()
+    process_info = ProcessInfo(os.getpid(), 
+                               TIME_BETWEEN_EACH_PROCESS_STATUS,
+                               send_process_info,
+                               logger,
+                               stop)
+    thr_send_process_info = threading.Thread(None,
+                                       process_info.start,
+                                       "send_process_info",
+                                       (),
+                                       {})
+    thr_send_process_info.start()
+    # to allow killing the process info thread 
+    signal.signal(signal.SIGTERM, signal_handler)
+
     logger.info("Starting MQ Handler")
     MQHandler()
-    ioloop.IOLoop.instance().start() 
+    try:
+        ioloop.IOLoop.instance().start() 
+    except KeyboardInterrupt:
+        logging.info("Manual stop requested. Exiting!")
+        stop.set()
+        ioloop.IOLoop.instance().stop()
