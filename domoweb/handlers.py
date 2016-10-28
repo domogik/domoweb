@@ -19,8 +19,11 @@ import zmq
 from domogikmq.pubsub.subscriber import MQAsyncSub
 from domogikmq.reqrep.client import MQSyncReq
 from domogikmq.message import MQMessage
+from domogikmq.pubsub.publisher import MQPub
+
 
 import traceback
+import time
 
 # TODO : python3
 import urllib
@@ -218,6 +221,7 @@ class WSHandler(websocket.WebSocketHandler):
                 'widgetinstance-getdevices' : self.WSWidgetInstanceGetdevices,
                 'datatype-getall' : self.WSDatatypesGetall,
                 'command-send' : self.WSCommandSend,
+                'publish-metrics-browser' : self.WSPublishMetricsBrowser,
                 'widgetinstance-add' : self.WSWidgetInstanceAdd,
                 'widgetinstance-location' : self.WSWidgetInstanceLocation,
                 'widgetinstance-remove' : self.WSWidgetInstanceRemove,
@@ -344,6 +348,17 @@ class WSHandler(websocket.WebSocketHandler):
         msg.add_data('cmdid', data['command_id'])
         msg.add_data('cmdparams', data['parameters'])
         return cli.request('xplgw', msg.get(), timeout=10).get()
+
+    def WSPublishMetricsBrowser(self, data):
+        pub = MQPub(zmq.Context(), "domoweb")
+        # we add data on python side in case the web clients are not all at the same time!
+        data['timestamp'] = time.time()
+        # and we make sure to remove auth informations
+        del data['rest_auth']
+
+        logging.info("Publish : 'metrics.browser' > '{0}'".format(data)) 
+        pub.send_event('metrics.browser', data)
+        logging.info("Publish : 'metrics.browser' done")
 
     @gen.coroutine
     def WSSensorGetHistory(self, data):

@@ -1,50 +1,66 @@
 <link rel="import" href="/libraries/polymer/polymer.html">
 
 <polymer-element name="dmw-section" attributes='sectionid'>
-	<template>
-	    <web-socket id="socket"></web-socket>
-	</template>
-	<script>
-		Polymer("dmw-section", {
-			ready: function() {
-				this._name = [];
-				this._description = [];
-				this._params = [];
-		        this.$.socket.register('section-details', this.sectionChanged.bind(this), null);
-		        this.$.socket.register('section-params', this.sectionReceived.bind(this), null);
-		        this.$.socket.register('section-removed', this.sectionRemoved.bind(this), null);
-			},
-			sectionidChanged: function(oldValue, newValue) {
-				if (newValue) {
-					this.$.socket.send('section-get', {'id':newValue});
-				}
-			},
-			get name() {
-				return this._name[this.sectionid];
-			},
-			get description() {
-				return this._description[this.sectionid];
-			},
-			get params() {
-				return this._params[this.sectionid];
-			},
-			sectionReceived: function(topic, json) {
-				this._name[this.sectionid] = json['name'];
-				this._description[this.sectionid] = json['description'];
-				this._params[this.sectionid] = json['params'];
-	        	this.fire('section-updated', json);
-	    	},
-			sectionChanged: function(topic, json) {
-				this._name[this.sectionid] = json['name'];
-				this._description[this.sectionid] = json['description'];
-				this._params[this.sectionid] = json['params'];
-	        	this.fire('section-changed', json);
-	    	},
-			sectionRemoved: function(topic, json) {
-				if (this.sectionid == json['id']) {
-					this.sectionid = 1;
-				}
-	    	},
-	    });
-	</script>
+    <template>
+        <web-socket id="socket"></web-socket>
+    </template>
+    <script>
+        Polymer("dmw-section", {
+            ready: function() {
+                this._name = [];
+                this._description = [];
+                this._params = [];
+                this.$.socket.register('section-details', this.sectionChanged.bind(this), null);
+                this.$.socket.register('section-params', this.sectionReceived.bind(this), null);
+                this.$.socket.register('section-removed', this.sectionRemoved.bind(this), null);
+              
+                self = this;
+                setInterval(function() {
+                    console.error("SEND METRICS");
+                    self.$.socket.send("publish-metrics-browser", {
+                                                                       'measurements' : {
+                                                                           'unit' : 1
+                                                                       },
+                                                                       'tags' : {
+                                                                           'interface': 'yes',
+                                                                           'component': 'domoweb-browser',
+                                                                           'navigator-platform': navigator.platform,
+                                                                           'navigator-userAgent': navigator.userAgent
+                                                                       }
+                                                                  });
+                }, 30000);
+            },
+            sectionidChanged: function(oldValue, newValue) {
+                if (newValue) {
+                    this.$.socket.send('section-get', {'id':newValue});
+                }
+            },
+            get name() {
+                return this._name[this.sectionid];
+            },
+            get description() {
+                return this._description[this.sectionid];
+            },
+            get params() {
+                return this._params[this.sectionid];
+            },
+            sectionReceived: function(topic, json) {
+                this._name[this.sectionid] = json['name'];
+                this._description[this.sectionid] = json['description'];
+                this._params[this.sectionid] = json['params'];
+                this.fire('section-updated', json);
+            },
+            sectionChanged: function(topic, json) {
+                this._name[this.sectionid] = json['name'];
+                this._description[this.sectionid] = json['description'];
+                this._params[this.sectionid] = json['params'];
+                this.fire('section-changed', json);
+            },
+            sectionRemoved: function(topic, json) {
+                if (this.sectionid == json['id']) {
+                    this.sectionid = 1;
+                }
+            },
+        });
+    </script>
 </polymer-element>
