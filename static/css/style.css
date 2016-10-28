@@ -40,7 +40,7 @@ h3 {
 
 /* Configuration overlay */
 #ui_notifIt {
-	z-index: 20;
+	z-index: 10000;
 }
 
 #modal-overlay .col-nav {
