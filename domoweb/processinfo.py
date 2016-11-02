@@ -40,6 +40,10 @@ import threading
 import traceback
 import sys
 from domogik import __version__ as domoweb_version
+import platform
+from subprocess import Popen, PIPE
+import os
+
 
 class ProcessInfo():
     """ This class get informations about a process :
@@ -70,6 +74,31 @@ class ProcessInfo():
         # create psutil object
         self.p = psutil.Process(pid)
         self.pid = self.p.pid
+        self.platform = platform.machine()
+        self.num_core = psutil.cpu_count()
+        self.git_branch = self.get_git_branch()
+        self.git_revision = self.get_git_revision()
+
+    def get_git_branch(self):
+        """ If the current process file source is part of a git repo, return information (branch)
+            Else, return an empty string
+        """
+        path = os.path.dirname(os.path.realpath(sys.argv[0]))
+        cmd = 'cd "{0}" ; echo "$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"'.format(path)
+        sp = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out, err = sp.communicate()
+        return out.strip()
+
+    def get_git_revision(self):
+        """ If the current process file source is part of a git repo, return information (rev)
+            Else, return an empty string
+        """
+        path = os.path.dirname(os.path.realpath(sys.argv[0]))
+        cmd = 'cd "{0}" ; echo "$(git rev-parse --short HEAD 2>/dev/null)"'.format(path)
+        sp = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out, err = sp.communicate()
+        return out.strip()
+
 
     def start(self):
         """ Get values each <interval> seconds while process is up
@@ -104,7 +133,7 @@ class ProcessInfo():
             memory_rss = round(memory_info[0] / divisor, 1)
             memory_vsz = round(memory_info[1] / divisor, 1)
             memory_percent = round(self.p.memory_percent(),1)
-            self.log.debug(u"Process informations|python_version={7}|psutil_version={0}|domoweb_version={8}|pid={1}|cpu_percent_usage={2}|memory_total={3}|memory_percent_usage={4}|memory_rss={5}|memory_vsz={6}|num_threads={9}|num_file_descriptors_used={10}|".format(self.psutil_version, self.pid, cpu_percent, memory_total_phymem, memory_percent, memory_rss, memory_vsz, self.python_version, domoweb_version, num_threads, num_fds))
+            self.log.debug(u"Process informations|python_version={7}|psutil_version={0}|domoweb_version={8}|pid={1}|cpu_percent_usage={2}|memory_total={3}|memory_percent_usage={4}|memory_rss={5}|memory_vsz={6}|num_threads={9}|num_file_descriptors_used={10}|platform={11}|num_core={12}|git_branch={13}|git_revision={14}".format(self.psutil_version, self.pid, cpu_percent, memory_total_phymem, memory_percent, memory_rss, memory_vsz, self.python_version, domoweb_version, num_threads, num_fds, self.platform, self.num_core, self.git_branch, self.git_revision))
             if self._callback != None:
                 # the installation id (key 'id') will be filled by the manager or any other component which will process the below data
 
@@ -114,7 +143,11 @@ class ProcessInfo():
                              'component' : 'domoweb-engine',
                              'component_version' : domoweb_version,
                              'python_version' : self.python_version,
-                             'psutil_version' : self.psutil_version
+                             'psutil_version' : self.psutil_version,
+                             'platform' : self.platform,
+                             'num_core' : self.num_core,
+                             'git_branch' : self.git_branch,
+                             'git_revision' : self.git_revision
                          },
                          'measurements' : {
                              'unit' : 1,                               # this one is used to count items on grafana side
