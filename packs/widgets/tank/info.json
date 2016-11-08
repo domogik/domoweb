@@ -1,0 +1,35 @@
+{
+    "json_version" : 2,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "tank",
+        "version" : 1,
+        "name" : "Tank",
+        "description" : "Various widgets for tanks",
+        "author" : "Fritz SMH",
+        "author_email" : "fritz.smh@gmail.com"
+    },
+    "widgets": {
+        "water1": {
+            "name" : "Water 1",
+            "height" : 2,
+            "width" : 2,
+            "options" : {
+                "waterColor" : {
+                    "name": "Water color",
+                    "type": "string",
+                    "default": "#1d96d3",
+                    "required": true
+                }
+            },
+            "sensors" : {
+                "level" : {
+                    "name": "Level in %",
+                    "description": "Water level",
+                    "types" : ["DT_Scaling"],
+                    "required": true
+                }
+            }
+        }
+    }
+}

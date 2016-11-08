@@ -1,0 +1,249 @@
+<polymer-element name="dmw-tank-water1" extends="dmw-widget">
+    <template>
+        <style type="text/css">
+            :host { * { display: block; } }
+            :host {
+                height: 100%;
+            }
+            .inactive {
+                display: none;
+            }
+            ::content #labelprimary {
+                position: absolute;
+                top: 10%;
+                left: 10%;
+                width: 80%;
+                text-align: center;
+                font-size: 1.2em;
+                z-index: 2;
+            }
+            #levelValue {
+                position: absolute;
+                top: 40%;
+                left: 10%;
+                width: 80%;
+                text-align: center;
+                font-size: 3em;
+                z-index: 2;
+            }
+            #tank {
+                width: 100%;
+                height: 100%;
+            }
+            #canvas {
+                position: absolute;
+                top: 3%;
+                left: 3%;
+                width: 94%;
+                height: 94%;
+            }
+
+        </style>
+        <dmw-sensor id='level' sensorkey="level" sensorvalue="{{levelvalue}}"></dmw-sensor>
+        <shadow></shadow>
+        <div id="tank"> 
+          <div id="levelValue">{{theValue}}</div>
+          <canvas height="100%" width="100%" id="canvas"></canvas>
+        </div>
+    </template>
+    <script>
+        Polymer('dmw-tank-water1', {
+            ready: function() {
+                this.super();
+                /**
+                 *    Wave oscillators by Ken Fyrstenberg Nilsen
+                 *    http://abdiassoftware.com/
+                 *
+                 *    CC-Attribute 3.0 License
+                */
+                this.theCanvas = this.$.canvas;
+                this.ctx = this.theCanvas.getContext('2d');
+                var w, h;
+
+                this.theCanvas.width = this.w = 300;  // this is the value of the canvas before being resized to 100% of the widget
+                this.theCanvas.height = this.h = 300;  // this is the value of the canvas before being resized to 100% of the widget
+
+                this.horizon = this.h * 0.5;
+                this.osc1 = new osc();
+                this.osc2 = new osc();
+                this.osc3 = new osc();
+                this.count = 40;
+                this.step = Math.ceil(this.w / this.count);
+                //points = new Array(count);
+                this.buffer = new ArrayBuffer(this.count * 4);
+                this.points = new Float32Array(this.buffer);
+
+                this.osc1.max = 15;//h * 0.7;
+
+                this.osc2.max = 5;
+                this.osc2.speed = 0.003;
+
+                this.osc2.max = 5;
+                this.osc2.speed = 0.005;
+
+/*
+                self = this;
+                function fill() {
+                    for(var i = 0; i < self.count; i++) {
+                        self.points[i] = self.mixer(self.osc1, self.osc2, self.osc3);
+                    }
+                }
+                fill();
+*/
+
+                this.ctx.lineWidth = 20;
+                this.ctx.strokeStyle = '#1d96d3';
+                this.ctx.fillStyle = '#1d96d3';
+
+
+
+                /*
+                (function animloop(){
+                  window.requestAnimFrame(animloop);
+                  //setTimeout(animloop, 1000 / 60);
+                  loop();
+                })();
+                */
+                this.loop();
+            },
+
+
+                loop: function() {
+                    this.theCanvas = this.$.canvas;
+                    this.ctx = this.theCanvas.getContext('2d');
+
+                    var i;
+
+                    /// move points to the left
+                    for(i = 0; i < this.count - 1; i++) {
+                        this.points[i] = this.points[i + 1];
+                    }
+
+                    /// get a new point
+                    this.points[this.count - 1] = this.mixer(this.osc1, this.osc2, this.osc3);
+
+                    this.ctx.clearRect(0, 0, this.w, this.h);
+                    //ctx.fillRect(0, 0, this.w, this.h);
+
+                    /// render wave
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(-5, this.points[0]);
+
+                    for(i = 1; i < this.count; i++) {
+                        this.ctx.lineTo(i * this.step, this.points[i]);
+                    }
+
+                    this.ctx.lineTo(this.w, this.h);
+                    this.ctx.lineTo(-5, this.h);
+                    this.ctx.lineTo(-5, this.points[1]);
+
+                    this.ctx.stroke();
+                    this.ctx.fill();
+
+                    //window.requestAnimFrame(this.loop);
+                    //setTimeout(this.loop, 500);
+                setTimeout(function(){
+                    this.loop();
+                    }.bind(this), 1000 / 60);
+                },
+
+
+
+                mixer: function() {
+
+                    var d = arguments.length,
+                        i = d,
+                        sum = 0;
+
+                    if (d < 1) return 0;
+
+                    while(i--) sum += arguments[i].getAmp();
+
+                    return sum / d + this.horizon;
+                },
+
+
+            sensorsUpdated: function() {
+                if (this.$.level.isSet) {
+                    this.labelprimary = this.$.level.device['name'];
+                } else {
+                    this.labelprimary = "--";
+                }
+                this.changeStyle();
+            },
+            changeStyle: function() {
+                if (this.options['WidgetBorderRadius'] == undefined) {
+                    this.$.canvas.style.borderRadius = "5px";
+                }
+                else {
+                    this.$.canvas.style.borderRadius = this.options['WidgetBorderRadius'];                
+                }
+                if (this.options['waterColor'] == undefined) {
+                    this.ctx.strokeStyle = '#1d96d3';
+                    this.ctx.fillStyle = '#1d96d3';
+                }
+                else {
+                    this.ctx.strokeStyle = this.options['waterColor'];
+                    this.ctx.fillStyle = this.options['waterColor'];
+                }
+            },
+            optionsUpdated: function() {
+                this.changeStyle();
+            },
+            levelvalueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                // to let the visual wave effect even if the tank is full : easier to understand ;)
+                if (newValue > 95) {
+                    newValue = 95;
+                }
+
+                this.horizon = this.$.canvas.height*(1-newValue/100);
+                this.theValue = newValue + "%";
+            },
+        });
+
+
+                /// oscillator object
+                function osc() {
+
+                    this.variation = 1;
+                    this.max = 10;
+                    this.speed = 0.02;
+
+                    var me = this,
+                        a = 0,
+                        max = getMax();
+
+                    this.getAmp = function() {
+
+                        a += this.speed;
+
+                        if (a >= 2.0) {
+                            a = 0;
+                            max = getMax();
+                        }
+
+                        return max * Math.sin(a * Math.PI);
+                    }
+
+                    function getMax() {
+                        return Math.random() * me.max * me.variation +
+                            me.max * (1 - me.variation);
+                    }
+
+                    return this;
+                }
+
+
+
+        // shim layer with setTimeout fallback
+        window.requestAnimFrame = (function(){
+          return  window.requestAnimationFrame       ||
+                  window.webkitRequestAnimationFrame ||
+                  window.mozRequestAnimationFrame    ||
+                  function( callback ){
+                    window.setTimeout(callback, 1000 / 60);
+                  };
+        })();
+    </script>
+</polymer-element>
