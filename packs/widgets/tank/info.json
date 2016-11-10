@@ -30,6 +30,33 @@
                     "required": true
                 }
             }
-        }
+        },
+        "water2": {
+            "name" : "Water 2",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "waterColor" : {
+                    "name": "Water color",
+                    "type": "string",
+                    "default": "#1d96d3",
+                    "required": true
+                }
+            },
+            "sensors" : {
+                "level" : {
+                    "name": "Level in %",
+                    "description": "Water level",
+                    "types" : ["DT_Scaling"],
+                    "required": true
+                }
+           }
+      }
     }
 }
