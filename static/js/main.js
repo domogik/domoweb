@@ -286,7 +286,7 @@ function configureHandler() {
 					imagePreview.style.opacity = e.target.value;
 				}, false);
 
-				$.getScript('/libraries/file-uploader/client/fileuploader.js', function() {
+				$.getScript('/libraries/file-uploader-2.0b/client/fileuploader.js', function() {
 					// Upload button
 					var uploader = new qq.FileUploader({
 	                    element: document.getElementById('file-uploader-background'),
