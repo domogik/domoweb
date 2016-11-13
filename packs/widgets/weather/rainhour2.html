@@ -48,22 +48,8 @@
         <dmw-sensor id='rainForecastTxt' sensorkey="rainForecastTxt" sensorvalue="{{rainForecastTxt_value}}"></dmw-sensor>
         
         
-        <div id='rainlocation'><span>{{rainForecastLocationName}}</span><span id='title'>Rain Forecast</span></div>
+        <div id='rainlocation'><span>{{rainForecastLocationName}}</span><span id='title'>--</span></div>
         <div id='rainforecast'>
-            <!-- 
-            <div><span id='raindate'>44h00-44h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            <div><span id='raindate'>20h05-20h10</span><span id='rainicon'><i class="wi wi-rain"></i></span></div>
-            -->
         </div>
 
         <shadow></shadow>
@@ -74,6 +60,7 @@
         Polymer('dmw-weather-rainhour2', {
             ready: function() {
                 this.super();
+                this.$.title.innerHTML = i18n.t("weather:Rain Forecast") ;
             },
 
             rainForecastLocation_valueChanged: function (oldValue, newValue) {
