@@ -81,7 +81,7 @@
                 setInterval(function(){
                     self.url = self.urlRaw + "?" + +new Date().getTime();
                     console.error("Camera url = " + self.url);
-                },10000);
+                },60000);
 
                 // but first, refresh the image 1s after the component is loaded to avoid a broken image in case of 401 error (see comment before the iframe for more informations
                 setTimeout(function(){
