@@ -69,14 +69,19 @@
             ready: function() {
                 this.mode = "normal";
                 this.super();
-                this.url = "/widget/camera/noname.png";
-                this.urlRaw = this.url;
+                this.urlVisible = "/widget/camera/noname.png";                // real stream url (updated in sensorUpdated with the real value)
+                this.urlHidden = "/widget/camera/noname.png";                 // fake stream url (to be used when camera widget is not displayed to not consume bandwith)
+                this.url = this.urlHidden;
+                this.urlRaw = this.urlHidden;
+
+                this.visible = false;
 
                 // refresh the video stream each 60s to reload automatically if the stream was shut for a while
                 self = this;
                 setInterval(function(){
                     self.url = self.urlRaw + "?" + +new Date().getTime();
-                },60000);
+                    console.error("Camera url = " + self.url);
+                },10000);
 
                 // but first, refresh the image 1s after the component is loaded to avoid a broken image in case of 401 error (see comment before the iframe for more informations
                 setTimeout(function(){
@@ -96,7 +101,10 @@
                     this.label = "Camera";
                 }
                 if (this.options['cameraUrl']) {
-                    this.url = this.options['cameraUrl']
+                    //this.url = this.options['cameraUrl']
+                    //this.urlRaw = this.url;
+                    this.urlVisible = this.options['cameraUrl']
+                    this.url = this.urlVisible;                           // options updated, so widget visible!
                     this.urlRaw = this.url;
                 }
                 else {
@@ -108,8 +116,12 @@
             commandsUpdated: function() {
             },
             sensorvalueChanged: function(oldValue, newValue) {
-                this.url = newValue.stored_value;
-                this.urlRaw = this.url;
+                this.urlVisible = newValue.stored_value;
+                // change the used url only if widget is displayed
+                if (this.visible == true) {
+                    this.url = this.urlVisible;
+                    this.urlRaw = this.url;
+                }
             },
             zoom: function() {
                 if (this.mode == "normal") {
@@ -132,6 +144,16 @@
                     // z-index for the zoom mode
                     this.style.zIndex = initialZIndex;
                 }
+            },
+            attached: function() {
+                console.error(this.localName + '#' + this.id + ' was attached');
+                this.visible = true;
+            },
+            detached: function() {
+                console.error(this.localName + '#' + this.id + ' was detached');
+                this.visible = false;
+                this.url = "/widget/camera/noname.png";
+                this.urlRaw = this.url;
             }
         });
     </script>
