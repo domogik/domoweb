@@ -282,7 +282,6 @@
                     if (timestamp == this.calls[idx]["timestamp"]) {
                         if (name != "") {
                             this.calls[idx]["who"] = name;
-                            console.error("name = " + name + " / idx = " + idx);
                             if (idx == 0) { 
                                 this.inboundCallName = name;
                             }
@@ -309,7 +308,6 @@
                 return !status;
             },
             displayInboundCall: function(callerNumber) {
-                console.error("display!");
                 this.inboundCallNumber = callerNumber;
                 this.inboundCallName = "";
 
