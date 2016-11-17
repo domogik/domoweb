@@ -1,0 +1,47 @@
+{
+    "json_version" : 2,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "iconsbasic",
+        "version" : 1,
+        "name" : "Icons Basic",
+        "description" : "Basic icons widgets for single sensors",
+        "author" : "domos",
+        "author_email" : "domos pt vesta at gmail.org"
+    },
+    "widgets": {
+        "sensorBool": {
+            "dev" : true,
+            "name" : "Icons Sensor Bool",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "icontype" : {
+                    "name": "Icon type",
+                    "description": "Icon type",
+                    "type": "choice",
+                    "choices" : {
+                            "portal" : "Portal",
+                            "door" : "Door",
+                            "windows": "Windows",
+                            "light" : "Light"
+                    }
+                }
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "Bool",
+                    "description": "Bool sensor",
+                    "types" : ["DT_Bool"],
+                    "required": true
+                }
+            }
+        }
+    }
+}

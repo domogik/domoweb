@@ -1,0 +1,64 @@
+<polymer-element name="dmw-iconsbasic-sensorBool" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/iconsbasic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            #idvalue {
+                position: relative;
+                top: 78%;
+                text-align: center;
+                font-size: 1.2em;
+                z-index: 2;
+                color: #F5F5DC ;
+            }
+        </style>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <shadow></shadow>
+        <div id='idvalue'>{{ value }}</div>
+    </template>
+    <script>
+        Polymer('dmw-iconsbasic-sensorBool', {
+            ready: function() {
+                this.super();
+                this.colorValue = ["OrangeRed", "LawnGreen"]; 
+            },
+            
+            optionsUpdated: function() {
+                if (this.options['hideLabels'] == true ) {         
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
+               this.iconType = this.options['icontype'] ;
+            },
+            
+            sensorsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                }
+            },
+            
+            sensorvalueChanged: function(oldValue, newValue) {
+                var dataType = this.$.primary.datatype_id ;                 // => Ex.: DT_OpenClose ...
+                newValue = newValue.stored_value;
+
+                currentLng = i18n.lng() ;
+                i18n.setLng('en-US') ;
+                this.state = i18n.t("domoweb:bool." + newValue, { context: dataType }) ;    // In english: Open|Close|On|... for image file name.
+                i18n.setLng(currentLng);
+                this.value = i18n.t("domoweb:bool." + newValue, { context: dataType }) ;    // In french: Ouvert|Fermé|Allumé|... for state text.
+                
+                this.$.idvalue.style.color = this.colorValue[newValue] ;    
+                this.style.backgroundSize = "contain" ;
+                this.style.backgroundImage = "url('/widget/iconsbasic/images/" + this.iconType + "/" + this.state + ".png')" ;
+                //console.error("url('/widget/iconsbasic/images/" + this.iconType + "/" + this.state + ".png')");                  
+            }
+        });
+    </script>
+</polymer-element>
