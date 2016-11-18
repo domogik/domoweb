@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="204.16527"
+   height="434.64835"
+   viewBox="0 0 204.16527 434.64835"
+   id="svg3526"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="100.svg">
+  <defs
+     id="defs3528">
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5177"
+       id="linearGradient4184"
+       x1="246.69817"
+       y1="661.42462"
+       x2="390.04175"
+       y2="661.42462"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(147.39245,31.916018)" />
+    <linearGradient
+       id="linearGradient5177">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop5179" />
+      <stop
+         style="stop-color:#bdcb2f;stop-opacity:1;"
+         offset="1"
+         id="stop5181" />
+    </linearGradient>
+    <filter
+       inkscape:collect="always"
+       id="filter4029"
+       x="-0.17878455"
+       width="1.3575691"
+       y="-0.065616757"
+       height="1.1312335">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="4.9991156"
+         id="feGaussianBlur4031" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="11.368347"
+     inkscape:cy="377.3242"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     showborder="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1600"
+     inkscape:window-height="872"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata3531">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-363.63165,-475.03803)">
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;fill:#000000;fill-opacity:1;stroke:none;filter:url(#filter4029)"
+       d="m 410.125,496.25 c -7.17818,1.64388 -14.90346,-1.14496 -21.6875,1.40625 -5.33937,6.1388 -4.27719,15.1333 -7.43387,22.33401 -8.57045,33.33432 -18.0789,66.59181 -26.06507,99.97399 1.47736,5.60088 8.5048,3.27389 11.46769,0.2545 8.05528,-5.4703 17.08368,-9.61989 25.375,-14.875 -0.3761,11.02422 -0.25542,22.75425 -0.9375,33.34375 -4.32408,-2.22612 -12.2191,-0.14071 -10.34375,5.9375 4.92409,13.5626 5.06606,28.76522 11.18774,41.85095 5.77264,1.82666 8.86642,-6.0279 11.06226,-10.1947 5.59333,-9.80356 13.75743,-18.65259 17.16864,-29.43732 -1.13791,-4.84052 -8.52828,-2.8336 -10.98114,-5.21893 7.16545,-23.59135 13.48305,-47.89216 19.5,-71.96875 2.67635,-4.00405 0.25694,-9.43051 -4.75,-7.875 -6.15486,2.46185 -10.98958,7.39253 -17.16895,9.95289 -7.13118,4.2032 -14.26237,8.40641 -21.39355,12.60961 11.1072,-27.80586 23.16511,-55.41416 33.67798,-83.34351 -0.35476,-4.04226 -5.28852,-5.24378 -8.67798,-4.75024 z"
+       id="path3999"
+       inkscape:export-filename="/media/0D64-9616/domogik/electricity/electricity1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       transform="matrix(2.0158568,0,0,2.0158568,-324.98619,-499.90868)" />
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;fill:url(#linearGradient4184);fill-opacity:1;stroke:#9bb528;stroke-width:8.06342697;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 461.67606,509.38907 50.13448,-0.34587 -76.97301,188.15624 98.56495,-58.14924 -43.39083,161.78785 23.98767,4.86672 -45.12449,71.93335 -19.12099,-84.51762 21.30976,5.87463 2.1888,-92.75398 -75.13008,43.62743 63.55374,-240.47951 z"
+       id="path3222"
+       sodipodi:nodetypes="cccccccccccc"
+       inkscape:export-filename="/media/0D64-9616/domogik/electricity/electricity1.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+  </g>
+</svg>

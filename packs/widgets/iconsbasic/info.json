@@ -42,6 +42,63 @@
                     "required": true
                 }
             }
+        },
+        "svgSensorBool": {
+            "dev" : true,
+            "name" : "SVG Icons Sensor Bool",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "hideLegend" : {
+                    "name": "Hide the legend",
+                    "description": "Hide the legend (the bottom label)",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "icontype" : {
+                    "name": "Icon type",
+                    "description": "Icon type",
+                    "type": "choice",
+                    "choices" : {
+                            "air_conditioning" : "Air-conditioning",
+                            "appliance_1" : "Appliance 1",
+                            "appliance_2" : "Appliance 2",
+                            "computer" : "Computer - desktop",
+                            "default" : "Default",
+                            "electricity" : "Electricity",
+                            "heating" : "Heating",
+                            "light_spot" : "Light : spot",
+                            "mirror" : "Mir:ror rfid reader",
+                            "music" : "Music"
+                    },
+                    "default": "light_spot"
+                },
+                "colorset" : {
+                    "name": "Color set",
+                    "description": "The color set for the icon",
+                    "type": "choice",
+                    "choices" : {
+                            "green" : "Green",
+                            "blue" : "Blue",
+                            "red": "Red"
+                    },
+                    "default": "green"
+                }
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "Bool",
+                    "description": "Bool sensor",
+                    "types" : ["DT_Bool"],
+                    "required": true
+                }
+            }
         }
     }
 }

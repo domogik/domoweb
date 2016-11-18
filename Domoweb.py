@@ -43,7 +43,7 @@ application = tornado.web.Application(
         (r"/(\d*)", MainHandler),
         (r"/configuration", ConfigurationHandler),
         (r"/widget/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "packs", 'widgets')}),
-        (r"/iconset/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "packs", 'iconsets')}),
+        (r"/icon/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "packs", 'iconsets')}),
         (r"/theme/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "packs", 'themes')}),
         (r"/images/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'images')}),
         (r"/libraries/(.*)", tornado.web.StaticFileHandler, {"path": os.path.join(os.path.dirname(__file__), "static", 'libraries')}),
@@ -112,6 +112,8 @@ if __name__ == '__main__':
 
     packLoader.loadWidgets(domoweb.PACKSPATH, options.develop)
     packLoader.loadThemes(domoweb.PACKSPATH, options.develop)
+    # TODO
+    #packLoader.loadIcons(domoweb.PACKSPATH, options.develop)
     if not os.path.isdir(os.path.join(domoweb.VARPATH, 'backgrounds')):
         os.mkdir(os.path.join(domoweb.VARPATH, 'backgrounds'))
         logger.info("Creating : %s" % os.path.join(domoweb.VARPATH, 'backgrounds'))

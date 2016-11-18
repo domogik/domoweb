@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg2" width="274.19" height="274.29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs id="defs4">
+  <linearGradient id="linearGradient9821">
+   <stop id="stop9823" stop-color="#fff" offset="0"/>
+   <stop id="stop9825" stop-color="#fff" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <filter id="filter4214">
+   <feGaussianBlur id="feGaussianBlur4216" stdDeviation="6.3884354"/>
+  </filter>
+  <filter id="filter4228">
+   <feGaussianBlur id="feGaussianBlur4230" stdDeviation="2.9952967"/>
+  </filter>
+  <linearGradient id="linearGradient7092" x1="185" x2="185" y1="286.34" y2="468.81" gradientTransform="matrix(.89432 0 0 .89432 119.74 179.7)" gradientUnits="userSpaceOnUse">
+   <stop id="stop6359" stop-color="#fff" offset="0"/>
+   <stop id="stop6361" stop-color="#fff" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <linearGradient id="linearGradient7095" x1="436.5" x2="436.5" y1="355.88" y2="537.81" gradientTransform="matrix(.89432 0 0 .89432 119.02 178.74)" gradientUnits="userSpaceOnUse">
+   <stop id="stop6351" stop-color="#fff" offset="0"/>
+   <stop id="stop6353" stop-color="#fff" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <radialGradient id="radialGradient7263" cx="310.75" cy="412.08" r="95.645" gradientTransform="matrix(.89432 -.89351 .89351 .89432 -248.45 457.3)" gradientUnits="userSpaceOnUse">
+   <stop id="stop4292" stop-color="#fff" offset="0"/>
+   <stop id="stop5784" stop-color="#fff" stop-opacity="0" offset="1"/>
+  </radialGradient>
+  <radialGradient id="radialGradient9849" cx="397.33" cy="548.04" r="76.379" gradientTransform="matrix(1 -1.0086 1.0086 1 -552.73 400.73)" gradientUnits="userSpaceOnUse" xlink:href="#linearGradient9821"/>
+ </defs>
+ <metadata id="metadata7">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="layer1" transform="translate(-237.24 -209.89)">
+  <g id="g3387" transform="translate(-23.321 -201.14)">
+   <path id="path4156" transform="matrix(.89432 0 0 .89432 119.75 179.65)" d="m307.42 284.34c-47.048 0.68077-91.827 29.842-111.88 72.312-20.832 42.245-15.348 96.074 13.75 133.09 27.287 36.325 75.113 55.851 120.27 48.643 49.313-6.7645 91.965-44.889 104.45-92.893 12.309-43.858-1.295-93.517-34.094-124.91-24.39-23.903-58.231-37.262-92.5-36.25z" filter="url(#filter4214)" opacity=".5"/>
+   <circle id="path3294" transform="matrix(.89432 0 0 .89432 207.78 -249.18)" cx="212.31" cy="891.58" r="125.74" fill="#b9c248"/>
+   <path id="path3296" d="m395.66 467.26c-38.716 0.21926-73.811 31.733-78.309 70.121-4.8624 33.761 13.994 69.22 44.768 83.755 29.466 14.536 67.755 9.0311 91.281-13.997 24.1-22.393 32.347-60.45 18.852-90.815-12.604-29.681-44.075-50.492-76.591-49.063z" fill="none" stroke="#b9c248" stroke-width="8.9432"/>
+   <path id="path4270" d="m395.66 467.26c-38.716 0.21926-73.811 31.733-78.309 70.121-4.8624 33.761 13.994 69.22 44.768 83.755 29.466 14.536 67.755 9.0311 91.281-13.997 24.1-22.393 32.347-60.45 18.852-90.815-12.604-29.681-44.075-50.492-76.591-49.063z" fill="url(#radialGradient7263)" stroke="#9bb528" stroke-width="8.9432"/>
+   <circle id="path4218" transform="matrix(.89432 0 0 .89432 -48.153 172.76)" cx="498.49" cy="419.78" r="99.843" fill="none" filter="url(#filter4228)" opacity=".5" stroke="#000" stroke-width="5"/>
+   <path id="path4232" d="m395.22 455.36c-41.455 0.35578-79.926 32.087-88.314 72.58-8.3252 36.097 7.2459 76.222 37.953 96.81 29.966 20.976 72.614 21.845 103.18 1.5651 30.401-19.483 47.66-57.531 41.279-93.317-6.0229-37.872-37.45-70.159-75.445-76.226-6.1389-1.1175-12.407-1.5537-18.654-1.4123z" fill="none" stroke="#9bb528" stroke-width="4.4716"/>
+   <g id="g6132" transform="matrix(.89432 0 0 .89432 119.75 179.83)" fill="#9bb528" stroke="#403e3f">
+    <circle id="path3350" transform="matrix(.50129 0 0 .50129 86.065 -25.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5788" transform="matrix(.50129 0 0 .50129 80.065 -35.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5790" transform="matrix(.50129 0 0 .50129 74.065 -25.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5792" transform="matrix(.50129 0 0 .50129 92.065 -35.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5794" transform="matrix(.50129 0 0 .50129 98.065 -25.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5796" transform="matrix(.50129 0 0 .50129 80.065 -15.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5798" transform="matrix(.50129 0 0 .50129 92.065 -15.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5804" transform="matrix(.50129 0 0 .50129 68.065 -36.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5808" transform="matrix(.50129 0 0 .50129 104.06 -36.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5810" transform="matrix(.50129 0 0 .50129 32.065 -35.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5812" transform="matrix(.50129 0 0 .50129 44.065 -35.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5814" transform="matrix(.50129 0 0 .50129 20.065 -36.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5816" transform="matrix(.50129 0 0 .50129 56.065 -36.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5818" transform="matrix(.50129 0 0 .50129 128.06 -35.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5820" transform="matrix(.50129 0 0 .50129 140.06 -35.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5822" transform="matrix(.50129 0 0 .50129 116.06 -36.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5824" transform="matrix(.50129 0 0 .50129 152.06 -36.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5826" transform="matrix(.50129 0 0 .50129 122.06 -25.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5828" transform="matrix(.50129 0 0 .50129 134.06 -25.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5830" transform="matrix(.50129 0 0 .50129 110.06 -26.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5832" transform="matrix(.50129 0 0 .50129 146.06 -26.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5834" transform="matrix(.50129 0 0 .50129 116.06 -15.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5836" transform="matrix(.50129 0 0 .50129 128.06 -15.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5838" transform="matrix(.50129 0 0 .50129 104.06 -16.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5840" transform="matrix(.50129 0 0 .50129 140.06 -16.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5842" transform="matrix(.50129 0 0 .50129 74.065 -5.9613)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5844" transform="matrix(.50129 0 0 .50129 86.065 -5.9613)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5846" transform="matrix(.50129 0 0 .50129 62.065 -6.1577)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5848" transform="matrix(.50129 0 0 .50129 98.065 -6.1577)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5850" transform="matrix(.50129 0 0 .50129 26.065 -5.9613)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5852" transform="matrix(.50129 0 0 .50129 38.065 -5.9613)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5854" transform="matrix(.50129 0 0 .50129 14.065 -6.1577)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5856" transform="matrix(.50129 0 0 .50129 50.065 -6.1577)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5858" transform="matrix(.50129 0 0 .50129 122.06 -5.9613)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5860" transform="matrix(.50129 0 0 .50129 134.06 -5.9613)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5862" transform="matrix(.50129 0 0 .50129 110.06 -6.1577)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5864" transform="matrix(.50129 0 0 .50129 146.06 -6.1577)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5866" transform="matrix(.50129 0 0 .50129 80.065 4.0387)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5868" transform="matrix(.50129 0 0 .50129 92.065 4.0387)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5870" transform="matrix(.50129 0 0 .50129 68.065 3.8423)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5872" transform="matrix(.50129 0 0 .50129 104.06 3.8423)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5874" transform="matrix(.50129 0 0 .50129 32.065 4.0387)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5876" transform="matrix(.50129 0 0 .50129 44.065 4.0387)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5878" transform="matrix(.50129 0 0 .50129 20.065 3.8423)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5880" transform="matrix(.50129 0 0 .50129 56.065 3.8423)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5882" transform="matrix(.50129 0 0 .50129 128.06 4.0387)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5884" transform="matrix(.50129 0 0 .50129 140.06 4.0387)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5886" transform="matrix(.50129 0 0 .50129 116.06 3.8423)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5888" transform="matrix(.50129 0 0 .50129 152.06 3.8423)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5890" transform="matrix(.50129 0 0 .50129 86.065 14.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5892" transform="matrix(.50129 0 0 .50129 98.065 14.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5894" transform="matrix(.50129 0 0 .50129 74.065 13.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5896" transform="matrix(.50129 0 0 .50129 110.06 13.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5898" transform="matrix(.50129 0 0 .50129 38.065 14.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5900" transform="matrix(.50129 0 0 .50129 50.065 14.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5902" transform="matrix(.50129 0 0 .50129 26.065 13.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5904" transform="matrix(.50129 0 0 .50129 62.065 13.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5906" transform="matrix(.50129 0 0 .50129 134.06 14.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5908" transform="matrix(.50129 0 0 .50129 146.06 14.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5910" transform="matrix(.50129 0 0 .50129 122.06 13.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5914" transform="matrix(.50129 0 0 .50129 158.06 -6.1577)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5916" transform="matrix(.50129 0 0 .50129 152.06 -15.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5920" transform="matrix(.50129 0 0 .50129 158.06 -26.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5922" transform="matrix(.50129 0 0 .50129 26.065 -25.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5924" transform="matrix(.50129 0 0 .50129 14.065 -25.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5926" transform="matrix(.50129 0 0 .50129 38.065 -25.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5928" transform="matrix(.50129 0 0 .50129 62.065 -25.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5930" transform="matrix(.50129 0 0 .50129 50.065 -26.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5932" transform="matrix(.50129 0 0 .50129 32.065 -15.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5934" transform="matrix(.50129 0 0 .50129 20.065 -15.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5936" transform="matrix(.50129 0 0 .50129 44.065 -15.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5938" transform="matrix(.50129 0 0 .50129 68.065 -15.961)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5940" transform="matrix(.50129 0 0 .50129 56.065 -16.158)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5944" transform="matrix(.50129 0 0 .50129 92.065 24.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5946" transform="matrix(.50129 0 0 .50129 104.06 24.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5948" transform="matrix(.50129 0 0 .50129 80.065 23.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5950" transform="matrix(.50129 0 0 .50129 116.06 23.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5952" transform="matrix(.50129 0 0 .50129 44.065 24.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5954" transform="matrix(.50129 0 0 .50129 56.065 24.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5956" transform="matrix(.50129 0 0 .50129 32.065 23.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5958" transform="matrix(.50129 0 0 .50129 68.065 23.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5960" transform="matrix(.50129 0 0 .50129 140.06 24.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5962" transform="matrix(.50129 0 0 .50129 128.06 23.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5964" transform="matrix(.50129 0 0 .50129 98.065 34.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5966" transform="matrix(.50129 0 0 .50129 110.06 34.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5968" transform="matrix(.50129 0 0 .50129 86.065 33.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5970" transform="matrix(.50129 0 0 .50129 122.06 33.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5972" transform="matrix(.50129 0 0 .50129 50.065 34.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5974" transform="matrix(.50129 0 0 .50129 62.065 34.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5976" transform="matrix(.50129 0 0 .50129 38.065 33.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5978" transform="matrix(.50129 0 0 .50129 74.065 33.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5980" transform="matrix(.50129 0 0 .50129 134.06 33.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5982" transform="matrix(.50129 0 0 .50129 104.06 44.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5984" transform="matrix(.50129 0 0 .50129 116.06 44.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5986" transform="matrix(.50129 0 0 .50129 92.065 43.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5990" transform="matrix(.50129 0 0 .50129 56.065 44.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5992" transform="matrix(.50129 0 0 .50129 68.065 44.039)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path5996" transform="matrix(.50129 0 0 .50129 80.065 43.842)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6008" transform="matrix(.50129 0 0 -.50129 74.065 829.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6010" transform="matrix(.50129 0 0 -.50129 86.065 829.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6012" transform="matrix(.50129 0 0 -.50129 62.065 829.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6014" transform="matrix(.50129 0 0 -.50129 98.065 829.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6016" transform="matrix(.50129 0 0 -.50129 26.065 829.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6018" transform="matrix(.50129 0 0 -.50129 38.065 829.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6020" transform="matrix(.50129 0 0 -.50129 14.065 829.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6022" transform="matrix(.50129 0 0 -.50129 50.065 829.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6024" transform="matrix(.50129 0 0 -.50129 122.06 829.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6026" transform="matrix(.50129 0 0 -.50129 134.06 829.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6028" transform="matrix(.50129 0 0 -.50129 110.06 829.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6030" transform="matrix(.50129 0 0 -.50129 146.06 829.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6032" transform="matrix(.50129 0 0 -.50129 80.065 819.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6034" transform="matrix(.50129 0 0 -.50129 92.065 819.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6036" transform="matrix(.50129 0 0 -.50129 68.065 819.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6038" transform="matrix(.50129 0 0 -.50129 104.06 819.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6040" transform="matrix(.50129 0 0 -.50129 32.065 819.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6042" transform="matrix(.50129 0 0 -.50129 44.065 819.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6044" transform="matrix(.50129 0 0 -.50129 20.065 819.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6046" transform="matrix(.50129 0 0 -.50129 56.065 819.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6048" transform="matrix(.50129 0 0 -.50129 128.06 819.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6050" transform="matrix(.50129 0 0 -.50129 140.06 819.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6052" transform="matrix(.50129 0 0 -.50129 116.06 819.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6054" transform="matrix(.50129 0 0 -.50129 152.06 819.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6056" transform="matrix(.50129 0 0 -.50129 86.065 809.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6058" transform="matrix(.50129 0 0 -.50129 98.065 809.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6060" transform="matrix(.50129 0 0 -.50129 74.065 809.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6062" transform="matrix(.50129 0 0 -.50129 110.06 809.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6064" transform="matrix(.50129 0 0 -.50129 38.065 809.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6066" transform="matrix(.50129 0 0 -.50129 50.065 809.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6068" transform="matrix(.50129 0 0 -.50129 26.065 809.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6070" transform="matrix(.50129 0 0 -.50129 62.065 809.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6072" transform="matrix(.50129 0 0 -.50129 134.06 809.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6074" transform="matrix(.50129 0 0 -.50129 146.06 809.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6076" transform="matrix(.50129 0 0 -.50129 122.06 809.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6078" transform="matrix(.50129 0 0 -.50129 158.06 829.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6080" transform="matrix(.50129 0 0 -.50129 92.065 799.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6082" transform="matrix(.50129 0 0 -.50129 104.06 799.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6084" transform="matrix(.50129 0 0 -.50129 80.065 799.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6086" transform="matrix(.50129 0 0 -.50129 116.06 799.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6088" transform="matrix(.50129 0 0 -.50129 44.065 799.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6090" transform="matrix(.50129 0 0 -.50129 56.065 799.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6092" transform="matrix(.50129 0 0 -.50129 32.065 799.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6094" transform="matrix(.50129 0 0 -.50129 68.065 799.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6096" transform="matrix(.50129 0 0 -.50129 140.06 799.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6098" transform="matrix(.50129 0 0 -.50129 128.06 799.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6100" transform="matrix(.50129 0 0 -.50129 98.065 789.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6102" transform="matrix(.50129 0 0 -.50129 110.06 789.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6104" transform="matrix(.50129 0 0 -.50129 86.065 789.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6106" transform="matrix(.50129 0 0 -.50129 122.06 789.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6108" transform="matrix(.50129 0 0 -.50129 50.065 789.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6110" transform="matrix(.50129 0 0 -.50129 62.065 789.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6112" transform="matrix(.50129 0 0 -.50129 38.065 789.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6114" transform="matrix(.50129 0 0 -.50129 74.065 789.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6116" transform="matrix(.50129 0 0 -.50129 134.06 789.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6118" transform="matrix(.50129 0 0 -.50129 104.06 779.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6120" transform="matrix(.50129 0 0 -.50129 116.06 779.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6122" transform="matrix(.50129 0 0 -.50129 92.065 779.92)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6124" transform="matrix(.50129 0 0 -.50129 56.065 779.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6126" transform="matrix(.50129 0 0 -.50129 68.065 779.72)" cx="448.2" cy="873.81" r="9.4742"/>
+    <circle id="path6128" transform="matrix(.50129 0 0 -.50129 80.065 779.92)" cx="448.2" cy="873.81" r="9.4742"/>
+   </g>
+   <path id="path6293" d="m395.45 471.08c-36.477 0.20855-69.543 30.183-73.781 66.695-4.5812 32.112 13.185 65.838 42.179 79.663 27.762 13.826 63.837 8.5899 86.003-13.314 22.707-21.299 30.477-57.497 17.762-86.378-11.876-28.231-41.527-48.026-72.163-46.666z" fill="url(#radialGradient9849)"/>
+   <path id="path6365" d="m497.41 497.01c-0.24788 0.0732-0.5071 0.12186-0.75458 0.19563-3.8811 1.1569-7.7285 2.4162-11.514 3.717-2.8452 0.97762-5.6502 2.0002-8.4402 3.0463 7.0188 12.865 11.011 27.603 11.011 43.291 0 50.015-40.535 90.578-90.55 90.578-34.743 0-64.91-19.58-80.098-48.293-5.9231 2.7636-11.858 5.3195-17.831 7.5738-0.84647 0.3195-1.6953 0.58629-2.5432 0.89433 18.556 36.579 56.424 61.708 100.25 61.708 62.106 0 112.46-50.356 112.46-112.46 0-18.087-4.4021-35.11-11.99-50.25z" fill="url(#linearGradient7095)" opacity=".5"/>
+   <path id="path6367" d="m397.66 435.79c-62.106 0-112.46 50.328-112.46 112.43 0 18.282 4.4722 35.493 12.213 50.753 0.84795-0.30803 1.6968-0.57483 2.5432-0.89432 5.9798-2.257 11.928-4.8063 17.859-7.5738-6.6941-12.635-10.48-27.046-10.48-42.341 0-50.015 40.535-90.55 90.55-90.55 34.341 0 64.214 19.117 79.567 47.287 2.7789-1.0415 5.5785-2.0447 8.4122-3.0183 3.7859-1.3009 7.6333-2.5601 11.514-3.717 0.24748-0.0738 0.5067-0.12248 0.75458-0.19564-18.465-36.844-56.453-62.183-100.47-62.183z" fill="url(#linearGradient7092)" opacity=".5"/>
+   <path id="path9851" d="m395.45 471.08c-36.477 0.20855-69.543 30.183-73.781 66.695-4.5812 32.112 13.185 65.838 42.179 79.663 27.762 13.826 63.837 8.5899 86.003-13.314 22.707-21.299 30.477-57.497 17.762-86.378-11.876-28.231-41.527-48.026-72.163-46.666z" fill="url(#radialGradient9849)"/>
+  </g>
+ </g>
+</svg>

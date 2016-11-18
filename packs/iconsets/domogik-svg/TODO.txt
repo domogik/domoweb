@@ -1,0 +1,10 @@
+appliance_1
+appliance_2
+computer_1
+
+=> faire les versions off
+=> ajouter couleurs manquantes à la palette
+
+-----------
+
+Ajouter 'default' (le crayon) ???
