@@ -70,12 +70,20 @@
                             "appliance_1" : "Appliance 1",
                             "appliance_2" : "Appliance 2",
                             "computer" : "Computer - desktop",
+                            "server" : "Computer - server",
                             "default" : "Default",
                             "electricity" : "Electricity",
                             "heating" : "Heating",
                             "light_spot" : "Light : spot",
                             "mirror" : "Mir:ror rfid reader",
-                            "music" : "Music"
+                            "music" : "Music",
+                            "nanoztag" : "Nanoztag",
+                            "shutter" : "Shutter",
+                            "telephony" : "Telephony",
+                            "television" : "Television",
+                            "temperature" : "Temperature",
+                            "ventilation" : "Ventilation",
+                            "water" : "Water"
                     },
                     "default": "light_spot"
                 },
