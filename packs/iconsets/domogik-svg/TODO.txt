@@ -7,4 +7,8 @@ computer_1
 
 -----------
 
-Ajouter 'default' (le crayon) ???
+Faire une moulinette pour créer les off depuis les on
+
+couleurs ? 
+#d2cdbc
+#eeeeee

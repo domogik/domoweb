@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="241.91" height="357.13" version="1.1" viewBox="0 0 241.90885 357.12632" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <defs>
+  <filter id="filter4186" x="-.15518" y="-.30039" width="1.3104" height="1.6008" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="6.6079217"/>
+  </filter>
+  <filter id="filter4182" x="-.53515" y="-.11724" width="2.0703" height="1.2345" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="6.6079217"/>
+  </filter>
+  <filter id="filter4178" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="6.6079217"/>
+  </filter>
+ </defs>
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g transform="translate(-254.05 -353.8)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="m354.66 469.87c-10.258 0.1791-20.104-0.5156-38.633 23.609-6.198 6.9036-11.466 7.1274-14.022 11.876-9.574 22.648-6.5899 37.1-15.024 73.046-4.9931 29.562-16.169 52.659-16.169 89.071 8.5632 0.66177 19.795 21.534 83.849 21.534 64.053 0 75.285-20.873 83.849-21.534 0-36.412-11.176-59.509-16.169-89.071-8.4342-35.945-5.4501-50.398-15.024-73.046-2.5561-4.7488-7.8244-4.9726-14.022-11.876-18.53-24.125-28.376-23.43-38.633-23.609z" enable-background="new" filter="url(#filter4178)" stroke="#000" stroke-dasharray="4.579, 9.158" stroke-width="4.579"/>
+  <path d="m329.92 478.35c0-174.98-29.634-118.43-29.634 26.575l15.746-11.443 13.888-15.132z" enable-background="new" filter="url(#filter4182)" stroke="#000" stroke-dasharray="4.579, 9.158" stroke-width="4.579"/>
+  <path d="m407.32 505.36c119.8-48.884 78.732-75.096-29.421-28.238l15.399 16.361 14.022 11.876z" enable-background="new" filter="url(#filter4186)" stroke="#000" stroke-dasharray="4.579, 9.158" stroke-width="4.579"/>
+  <path d="m354.66 469.87c-10.258 0.1791-20.104-0.5156-38.633 23.609-6.198 6.9036-11.466 7.1274-14.022 11.876-9.574 22.648-6.5899 37.1-15.024 73.046-4.9931 29.562-16.169 52.659-16.169 89.071 8.5632 0.66177 19.795 21.534 83.849 21.534 64.053 0 75.285-20.873 83.849-21.534 0-36.412-11.176-59.509-16.169-89.071-8.4342-35.945-5.4501-50.398-15.024-73.046-2.5561-4.7488-7.8244-4.9726-14.022-11.876-18.53-24.125-28.376-23.43-38.633-23.609z" enable-background="new" stroke="#9bb528" stroke-dasharray="4.57876396, 9.15752792" stroke-width="4.5788"/>
+  <path d="m329.92 478.35c0-174.98-29.634-118.43-29.634 26.575l15.746-11.443 13.888-15.132z" enable-background="new" stroke="#9bb528" stroke-dasharray="4.57876396, 9.15752792" stroke-width="4.5788"/>
+  <path d="m407.32 505.36c119.8-48.884 78.732-75.096-29.421-28.238l15.399 16.361 14.022 11.876z" enable-background="new" stroke="#9bb528" stroke-dasharray="4.579, 9.158" stroke-width="4.579"/>
+ </g>
+</svg>

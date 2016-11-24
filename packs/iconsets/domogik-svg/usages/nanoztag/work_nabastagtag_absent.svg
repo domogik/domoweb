@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="210" height="297" enable-background="new" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <filter id="filter4178" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="6.6079217"/>
+  </filter>
+  <filter id="filter4182" x="-.53515" y="-.11724" width="2.0703" height="1.2345" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="6.6079217"/>
+  </filter>
+  <filter id="filter4186" x="-.15518" y="-.30039" width="1.3104" height="1.6008" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="6.6079217"/>
+  </filter>
+ </defs>
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g>
+  <rect x="85.016" y="21.479" width="49.875" height="49.875" ry=".6934" fill="#403e3f" stroke="#eeeeea" stroke-width=".089549"/>
+  <rect x="148.09" y="21.479" width="49.875" height="49.875" ry=".63037" fill="#534f45" stroke="#eeeeea" stroke-width=".077603"/>
+  <rect x="208.69" y="21.479" width="49.875" height="49.875" ry=".57784" fill="#625e53" stroke="#eeeeea" stroke-width=".071265"/>
+  <rect x="148.09" y="137.13" width="49.875" height="49.875" ry=".6934" fill="#bdcb2f" stroke="#eeeeea" stroke-width=".076551"/>
+  <rect x="24.016" y="137.13" width="49.875" height="49.875" ry=".66038" fill="#9bb528" stroke="#eeeeea" stroke-width=".073309"/>
+  <rect x="86.054" y="137.13" width="49.875" height="49.875" ry=".57784" fill="#b9c248" stroke="#eeeeea" stroke-width=".069881"/>
+  <rect x="208.49" y="77.135" width="49.875" height="49.875" ry=".63037" fill="#908d6f" fill-opacity=".94118" stroke="#eeeeea" stroke-width=".077603"/>
+  <rect x="24.016" y="76.793" width="49.875" height="49.875" ry=".57784" fill="#d2cdbc" stroke="#eeeeea" stroke-width=".072734"/>
+  <rect x="24.016" y="21.479" width="50.001" height="48.942" ry=".71624" stroke="#eeeeea" stroke-width=".079442"/>
+  <rect x="208.28" y="138.46" width="49.875" height="49.875" ry=".66038" fill="#979387" stroke="#eeeeea" stroke-width=".077756"/>
+  <rect x="86.054" y="76.793" width="49.875" height="49.875" ry=".55472" fill="#ccc" stroke="#eeeeea" stroke-width=".068469"/>
+  <rect x="148.09" y="76.793" width="49.875" height="49.875" ry=".66038" fill="#eee" stroke="#eeeeea" stroke-width=".068417"/>
+  <text x="32.530369" y="48.202286" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="32.530369" y="48.202286">#000000ff</tspan></text>
+  <text x="94.393616" y="48.668861" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="94.393616" y="48.668861">#403e3fff</tspan></text>
+  <text x="157.40475" y="48.668869" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="157.40475" y="48.668869">#534f45ff</tspan></text>
+  <text x="217.2108" y="48.668877" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="217.2108" y="48.668877">#625e53ff</tspan></text>
+  <text x="217.20674" y="104.3242" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="217.20674" y="104.3242">#908d6ff0</tspan></text>
+  <text x="216.73364" y="165.64813" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="216.73364" y="165.64813">#979387ff</tspan></text>
+  <text x="157.68204" y="164.31813" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="157.68204" y="164.31813" fill="#000000">#bdcb2fff</tspan></text>
+  <text x="94.770889" y="164.31815" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="94.770889" y="164.31815" fill="#000000">#b9c248ff</tspan></text>
+  <text x="32.479179" y="164.31813" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="32.479179" y="164.31813" fill="#000000">#9bb528ff</tspan></text>
+  <text x="33.004208" y="103.98284" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="33.004208" y="103.98284" fill="#000000">#d2cdbcff</tspan></text>
+  <text x="96.062851" y="103.98284" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="96.062851" y="103.98284" fill="#000000">#ccccccff</tspan></text>
+  <text x="156.93279" y="103.98283" fill="#fffffe" font-family="Bitstream Vera Sans" font-size="6.0411px" xml:space="preserve"><tspan x="156.93279" y="103.98283" fill="#000000">#eeeeeeff</tspan></text>
+ </g>
+ <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="m487.71 176.48c-10.258 0.1791-20.104-0.5156-38.633 23.609-6.198 6.9036-11.466 7.1274-14.022 11.876-9.574 22.648-6.5899 37.1-15.024 73.046-4.9931 29.562-16.169 52.659-16.169 89.071 8.5632 0.66177 19.795 21.534 83.849 21.534 64.053 0 75.285-20.873 83.849-21.534 0-36.412-11.176-59.509-16.169-89.071-8.4342-35.945-5.4501-50.398-15.024-73.046-2.5561-4.7488-7.8244-4.9726-14.022-11.876-18.53-24.125-28.376-23.43-38.633-23.609z" enable-background="new" filter="url(#filter4178)" stroke="#000" stroke-dasharray="4.579, 9.158" stroke-width="4.579"/>
+  <path d="m462.97 184.96c0-174.98-29.634-118.43-29.634 26.575l15.746-11.443 13.888-15.132z" enable-background="new" filter="url(#filter4182)" stroke="#000" stroke-dasharray="4.579, 9.158" stroke-width="4.579"/>
+  <path d="m540.37 211.96c119.8-48.884 78.732-75.096-29.421-28.238l15.399 16.361 14.022 11.876z" enable-background="new" filter="url(#filter4186)" stroke="#000" stroke-dasharray="4.579, 9.158" stroke-width="4.579"/>
+  <path d="m487.71 176.48c-10.258 0.1791-20.104-0.5156-38.633 23.609-6.198 6.9036-11.466 7.1274-14.022 11.876-9.574 22.648-6.5899 37.1-15.024 73.046-4.9931 29.562-16.169 52.659-16.169 89.071 8.5632 0.66177 19.795 21.534 83.849 21.534 64.053 0 75.285-20.873 83.849-21.534 0-36.412-11.176-59.509-16.169-89.071-8.4342-35.945-5.4501-50.398-15.024-73.046-2.5561-4.7488-7.8244-4.9726-14.022-11.876-18.53-24.125-28.376-23.43-38.633-23.609z" enable-background="new" stroke="#9bb528" stroke-dasharray="4.57876396, 9.15752792" stroke-width="4.5788"/>
+  <path d="m462.97 184.96c0-174.98-29.634-118.43-29.634 26.575l15.746-11.443 13.888-15.132z" enable-background="new" stroke="#9bb528" stroke-dasharray="4.57876396, 9.15752792" stroke-width="4.5788"/>
+  <path d="m540.37 211.96c119.8-48.884 78.732-75.096-29.421-28.238l15.399 16.361 14.022 11.876z" enable-background="new" stroke="#9bb528" stroke-dasharray="4.579, 9.158" stroke-width="4.579"/>
+ </g>
+</svg>

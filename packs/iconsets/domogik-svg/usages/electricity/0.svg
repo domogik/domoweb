@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="204.17" height="434.65" version="1.1" viewBox="0 0 204.16527 434.64835" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="linearGradient4184" x1="246.7" x2="390.04" y1="661.42" y2="661.42" gradientTransform="translate(147.39 31.916)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#fff" offset="0"/>
+   <stop stop-color="#444444" offset="1"/>
+  </linearGradient>
+  <filter id="filter4029" x="-.17878" y="-.065617" width="1.3576" height="1.1312">
+   <feGaussianBlur stdDeviation="4.9991156"/>
+  </filter>
+ </defs>
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g transform="translate(-363.63 -475.04)">
+  <path transform="matrix(2.0159 0 0 2.0159 -324.99 -499.91)" d="m410.12 496.25c-7.1782 1.6439-14.903-1.145-21.688 1.4062-5.3394 6.1388-4.2772 15.133-7.4339 22.334-8.5704 33.334-18.079 66.592-26.065 99.974 1.4774 5.6009 8.5048 3.2739 11.468 0.2545 8.0553-5.4703 17.084-9.6199 25.375-14.875-0.3761 11.024-0.25542 22.754-0.9375 33.344-4.3241-2.2261-12.219-0.14071-10.344 5.9375 4.9241 13.563 5.0661 28.765 11.188 41.851 5.7726 1.8267 8.8664-6.0279 11.062-10.195 5.5933-9.8036 13.757-18.653 17.169-29.437-1.1379-4.8405-8.5283-2.8336-10.981-5.2189 7.1654-23.591 13.483-47.892 19.5-71.969 2.6764-4.004 0.25694-9.4305-4.75-7.875-6.1549 2.4618-10.99 7.3925-17.169 9.9529-7.1312 4.2032-14.262 8.4064-21.394 12.61 11.107-27.806 23.165-55.414 33.678-83.344-0.35476-4.0423-5.2885-5.2438-8.678-4.7502z" filter="url(#filter4029)"/>
+  <path d="m461.68 509.39 50.134-0.34587-76.973 188.16 98.565-58.149-43.391 161.79 23.988 4.8667-45.124 71.933-19.121-84.518 21.31 5.8746 2.1888-92.754-75.13 43.627 63.554-240.48z" fill="url(#linearGradient4184)" stroke="#222222" stroke-linecap="round" stroke-linejoin="round" stroke-width="8.0634"/>
+ </g>
+</svg>

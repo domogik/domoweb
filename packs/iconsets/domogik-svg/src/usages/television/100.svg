@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="272.02502"
+   height="219.60001"
+   viewBox="0 0 272.02503 219.60001"
+   id="svg3598"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="dessin.svg">
+  <defs
+     id="defs3600">
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4816"
+       id="linearGradient4803"
+       gradientUnits="userSpaceOnUse"
+       x1="75.375"
+       y1="191.09375"
+       x2="117.28125"
+       y2="166.83275" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4816">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop4818" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0;"
+         offset="1"
+         id="stop4820" />
+    </linearGradient>
+    <filter
+       inkscape:collect="always"
+       id="filter5804">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="3.0726563"
+         id="feGaussianBlur5806" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="131.01251"
+     inkscape:cy="-33.05714"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     units="px"
+     showborder="false"
+     inkscape:window-width="1600"
+     inkscape:window-height="872"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata3603">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-243.98749,-279.70506)">
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;fill:#000000;fill-opacity:1;stroke:none;filter:url(#filter5804)"
+       d="m 283.28124,298.00506 c -9.21749,0 -16.625,7.40751 -16.625,16.625 l 0,122.71875 c 0,9.21749 7.40751,16.625 16.625,16.625 l 70.71875,0 0,12.46875 -62.375,0 0,14.5625 176.78125,0 0,-14.5625 -62.40625,0 0,-12.46875 70.71875,0 c 9.21749,0 16.625,-7.40751 16.625,-16.625 l 0,-122.71875 c 0,-9.21749 -7.40751,-16.625 -16.625,-16.625 l -193.4375,0 z"
+       id="rect5775"
+       inkscape:export-filename="/media/0D64-9616/domogik/television/sources/television.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <rect
+       y="418.61896"
+       x="354.00522"
+       height="60.312992"
+       width="51.993961"
+       id="rect4881"
+       style="display:inline;fill:#534f45;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/media/0D64-9616/domogik/television/sources/television.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <rect
+       ry="16.638067"
+       y="297.99289"
+       x="266.65524"
+       height="155.98189"
+       width="226.69365"
+       id="rect4885"
+       style="display:inline;fill:#9bb528;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/media/0D64-9616/domogik/television/sources/television.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <rect
+       y="466.45316"
+       x="291.61227"
+       height="14.558307"
+       width="176.77946"
+       id="rect4883"
+       style="display:inline;fill:#625e53;fill-opacity:1;stroke:none"
+       inkscape:export-filename="/media/0D64-9616/domogik/television/sources/television.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       transform="matrix(2.5480236,0,0,2.5096234,6.8007971,-111.9232)"
+       d="m 109.09375,166.875 c -2.25385,0 -4.03125,1.7774 -4.03125,4.03125 l 0,47.3125 c 0,2.25385 1.76329,4 4.03125,4 l 74.59375,0 c 2.26796,0 4,-1.73204 4,-4 l 0,-47.3125 c 0,-2.26796 -1.74615,-4.03125 -4,-4.03125 l -74.59375,0 z"
+       id="path4887"
+       style="display:inline;fill:#bdcb2f;fill-opacity:1;stroke:none"
+       inkscape:original="M 109.09375 164.46875 C 105.53901 164.46875 102.65625 167.35151 102.65625 170.90625 L 102.65625 218.21875 C 102.65625 221.77349 105.53901 224.625 109.09375 224.625 L 183.6875 224.625 C 187.24224 224.625 190.09375 221.77349 190.09375 218.21875 L 190.09375 170.90625 C 190.09375 167.35151 187.24224 164.46875 183.6875 164.46875 L 109.09375 164.46875 z "
+       inkscape:radius="-2.4061892"
+       sodipodi:type="inkscape:offset"
+       inkscape:export-filename="/media/0D64-9616/domogik/television/sources/television.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       transform="matrix(2.5480236,0,0,2.5096234,6.8007971,-112.63484)"
+       d="m 109.09375,168.88086 c -1.19966,0 -2.02539,0.82573 -2.02539,2.02539 l 0,47.3125 c 0,1.20803 0.78664,1.99414 2.02539,1.99414 l 74.59375,0 c 1.24707,0 1.99414,-0.74707 1.99414,-1.99414 l 0,-47.3125 c 0,-1.23875 -0.78611,-2.02539 -1.99414,-2.02539 l -74.59375,0 z"
+       id="path4889"
+       style="display:inline;opacity:0.5;fill:#ffffff;fill-opacity:1;stroke:none"
+       inkscape:original="M 109.09375 166.875 C 106.8399 166.875 105.0625 168.6524 105.0625 170.90625 L 105.0625 218.21875 C 105.0625 220.4726 106.82579 222.21875 109.09375 222.21875 L 183.6875 222.21875 C 185.95546 222.21875 187.6875 220.48671 187.6875 218.21875 L 187.6875 170.90625 C 187.6875 168.63829 185.94135 166.875 183.6875 166.875 L 109.09375 166.875 z "
+       inkscape:radius="-2.0051577"
+       sodipodi:type="inkscape:offset"
+       inkscape:export-filename="/media/0D64-9616/domogik/television/sources/television.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+    <path
+       transform="matrix(4.7937767,0,0,7.1126262,-81.770283,-919.61233)"
+       d="m 117.28516,173.04492 c -0.0644,0.0427 -0.0884,0.0783 -0.15625,0.1211 -1.34093,0.84512 -2.95606,1.68613 -4.91211,2.4414 -1.94919,0.75262 -4.22195,1.43553 -6.88477,2.01758 -2.66471,0.58246 -5.730625,1.05936 -9.224608,1.39648 -2.224399,0.21463 -4.386719,0.48765 -6.50586,0.86329 -2.124498,0.37658 -4.196219,0.83809 -6.179687,1.38281 -1.982626,0.54449 -3.901649,1.18197 -5.693359,1.89844 -0.798519,0.31931 -1.563722,0.72938 -2.357422,1.13281 l 0,4.66992 c 0,1.19071 0.9382,2.12891 2.128906,2.12891 l 37.65625,0 c 1.19071,0 2.12891,-0.9382 2.12891,-2.12891 l 0,-15.92383 z"
+       id="path4921"
+       style="display:inline;opacity:0.5;fill:url(#linearGradient4803);fill-opacity:1;stroke:none"
+       inkscape:original="M 118.40625 170.75 C 117.81932 171.24345 117.30604 171.73043 116.53125 172.21875 C 115.25001 173.02626 113.70148 173.83313 111.8125 174.5625 C 109.92352 175.29187 107.70763 175.9599 105.09375 176.53125 C 102.47987 177.1026 99.455952 177.5728 96 177.90625 C 93.754402 178.12292 91.562561 178.39903 89.40625 178.78125 C 87.249939 179.16347 85.14455 179.63287 83.125 180.1875 C 81.10545 180.74213 79.147814 181.3911 77.3125 182.125 C 76.222093 182.56103 75.262017 183.09252 74.25 183.59375 L 74.25 188.96875 C 74.25 190.7644 75.704354 192.21875 77.5 192.21875 L 115.15625 192.21875 C 116.9519 192.21875 118.40625 190.7644 118.40625 188.96875 L 118.40625 170.75 z "
+       inkscape:radius="-1.1203533"
+       sodipodi:type="inkscape:offset"
+       inkscape:export-filename="/media/0D64-9616/domogik/television/sources/television.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300" />
+  </g>
+</svg>

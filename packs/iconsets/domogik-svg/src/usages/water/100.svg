@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="397.49081"
+   height="375.16769"
+   viewBox="0 0 397.49082 375.1677"
+   id="svg3586"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="100.svg">
+  <defs
+     id="defs3588">
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5177"
+       id="radialGradient4321"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1,0,0,1.4461376,-178.17605,187.47039)"
+       cx="499.52579"
+       cy="254.66525"
+       fx="499.52579"
+       fy="254.66525"
+       r="73.90538" />
+    <linearGradient
+       id="linearGradient5177">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop5179" />
+      <stop
+         style="stop-color:#bdcb2f;stop-opacity:1;"
+         offset="1"
+         id="stop5181" />
+    </linearGradient>
+    <filter
+       style="color-interpolation-filters:sRGB"
+       id="filter4344"
+       inkscape:label="Motion blur, vertical"
+       inkscape:menu="Blurs"
+       inkscape:menu-tooltip="Blur as if the object flies vertically; adjust Standard Deviation to vary force">
+      <feGaussianBlur
+         id="feGaussianBlur4346"
+         in="SourceGraphic"
+         stdDeviation="0.01 5" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4246">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="5.1651242"
+         id="feGaussianBlur4248" />
+    </filter>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5177"
+       id="radialGradient4311"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.2386622,-0.02075612,0.00797658,0.43197976,-300.07533,578.33661)"
+       cx="503.92831"
+       cy="220.59743"
+       fx="503.92831"
+       fy="220.59743"
+       r="73.90538"
+       spreadMethod="reflect" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="245.17403"
+     inkscape:cy="187.58385"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     showborder="false"
+     inkscape:window-width="1600"
+     inkscape:window-height="872"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata3591">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-129.82597,-344.77836)">
+    <path
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csscc"
+       id="path4300"
+       d="m 562.70474,357.42049 c 0,46.45587 -37.52204,84.11583 -83.80783,84.11583 -46.28577,0 -83.80782,-37.65996 -83.80782,-84.11583 0,-46.45589 24.49455,-44.82841 83.80782,-161.47846 60.39891,117.7105 83.80783,115.02257 83.80783,161.47846 z"
+       style="display:inline;opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4246)"
+       transform="matrix(1.9762017,0,0,0.45863765,-617.82553,506.17697)"
+       inkscape:export-filename="/media/0D64-9616/domogik/water/sources/water.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csscc"
+       id="path4302"
+       d="m 494.19258,670.42661 c 0,21.3064 -74.15112,38.5787 -165.62117,38.5787 -91.47002,0 -165.62116,-17.2723 -165.62116,-38.5787 0,-21.3064 48.40617,-20.56 165.62116,-74.0601 119.36043,53.9865 165.62117,52.7537 165.62117,74.0601 z"
+       style="display:inline;opacity:1;fill:#9bb528;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4184)"
+       inkscape:export-filename="/media/0D64-9616/domogik/water/sources/water.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4304"
+       d="m 326.57738,601.29131 c -39.31303,17.7556 -87.72596,34.3678 -136.54836,50.8196 -35.40385,13.7732 -20.81909,32.7905 30.94109,43.4663 47.35873,10.6818 125.85921,12.8276 183.24067,5.3016 66.70738,-7.885 98.78549,-27.289 73.97832,-43.3398 -12.18271,-7.6895 -37.90599,-13.9266 -56.19329,-20.9504 -33.98304,-11.6932 -65.42832,-23.751 -93.38047,-36.2129 -0.67932,0.3052 -1.35864,0.6104 -2.03796,0.9156 z"
+       style="display:inline;opacity:1;fill:#bdcb2f;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4184)"
+       inkscape:export-filename="/media/0D64-9616/domogik/water/sources/water.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4306"
+       d="m 326.02157,607.52781 c -38.90564,16.4921 -88.49662,31.6659 -132.46727,47.5001 -33.05648,16.3716 10.07978,37.7085 87.57044,43.0626 62.57898,4.7811 138.77833,-0.8876 172.02573,-13.7814 30.39483,-11.1059 29.12929,-26.5537 -9.61102,-36.7069 -41.15345,-13.3312 -80.66592,-26.9474 -114.8006,-41.2213 -0.90575,0.3823 -1.81152,0.7646 -2.71728,1.1469 z"
+       style="display:inline;opacity:1;fill:url(#radialGradient4311);fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4184)"
+       inkscape:export-filename="/media/0D64-9616/domogik/water/sources/water.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4246)"
+       d="m 409.14079,530.81625 c 0,46.45586 -37.52204,84.11586 -83.80783,84.11586 -46.28577,0 -83.80782,-37.66 -83.80782,-84.11586 0,-46.45589 24.49455,-44.82841 83.80782,-161.47846 60.39891,117.7105 83.80783,115.02257 83.80783,161.47846 z"
+       id="path4250"
+       sodipodi:nodetypes="csscc"
+       inkscape:export-filename="/media/0D64-9616/domogik/water/sources/water.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;fill:#9bb528;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4184)"
+       d="m 409.14079,531.52088 c 0,46.45583 -37.52204,84.11583 -83.80783,84.11583 -46.28577,0 -83.80782,-37.66 -83.80782,-84.11583 0,-46.45589 24.49455,-44.82841 83.80782,-161.47846 60.39891,117.7105 83.80783,115.02257 83.80783,161.47846 z"
+       id="path4222"
+       sodipodi:nodetypes="csscc"
+       inkscape:export-filename="/media/0D64-9616/domogik/water/sources/water.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;fill:#bdcb2f;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4184)"
+       d="m 324.32394,380.81506 c -19.89323,39.38947 -44.3912,76.24242 -69.09637,112.73951 -17.9151,30.55474 -10.5349,72.74324 15.65685,96.42664 23.96452,23.6969 63.68743,28.457 92.72367,11.7613 33.75535,-17.4923 49.98755,-60.5386 37.4346,-96.1462 -6.16471,-17.05859 -19.18124,-30.895 -28.435,-46.47691 -17.19614,-25.94036 -33.10812,-52.68969 -47.2525,-80.33559 -0.34375,0.67709 -0.6875,1.35417 -1.03125,2.03125 z"
+       id="path4254"
+       inkscape:export-filename="/media/0D64-9616/domogik/water/sources/water.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;fill:url(#radialGradient4321);fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4344)"
+       d="m 324.04269,394.50256 c -19.68708,37.74734 -44.78117,72.47722 -67.03125,108.71875 -16.72728,37.4717 5.10058,86.3079 44.3125,98.5625 31.66629,10.943 70.22478,-2.0316 87.04867,-31.5432 15.38043,-25.4192 14.74004,-60.77657 -4.86338,-84.01514 -20.82452,-30.51269 -40.81867,-61.67758 -58.09154,-94.34791 -0.45833,0.875 -0.91667,1.75 -1.375,2.625 z"
+       id="path4260"
+       inkscape:export-filename="/media/0D64-9616/domogik/water/sources/water.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <path
+       inkscape:connector-curvature="0"
+       style="display:inline;opacity:0.4;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;filter:url(#filter4184)"
+       d="m 406.07818,553.42861 c -2.26176,1.3862 -4.48935,2.821 -6.78125,4.1562 -4.31657,2.5147 -8.68664,4.9295 -13.09375,7.2813 -4.40711,2.3517 -8.86746,4.6314 -13.34375,6.8437 -8.95257,4.4246 -18.02384,8.6171 -27.125,12.625 -9.10116,4.008 -18.2336,7.8455 -27.3125,11.625 -9.0789,3.7796 -18.08296,7.4794 -26.96875,11.2188 -0.38336,0.1613 -0.74217,0.3386 -1.125,0.5 2.01557,0.9347 3.96436,2.0062 6.0625,2.7812 -24.9047,10.4576 -45.47154,18.0179 -63,24.1563 -1.54646,0.8657 -3.13692,1.7081 -4.65625,2.5937 -3.82777,2.2312 -7.54683,4.5323 -11.1875,6.9063 -3.64067,2.374 -7.19278,4.8033 -10.625,7.3437 -3.43222,2.5404 -6.76634,5.176 -9.96875,7.9063 -3.20241,2.7303 -6.2675,5.5562 -9.21875,8.5 -2.95125,2.9437 -5.79002,6.0067 -8.46875,9.1875 -1.90092,2.2571 -3.62051,4.6759 -5.375,7.0625 23.73783,14.5327 83.94942,24.875 154.6875,24.875 91.47005,0 165.625,-17.2561 165.625,-38.5625 0,-19.471 -38.68662,-20.1435 -136.4375,-61.3125 23.61126,-9.953 41.54599,-30.5187 48.3125,-55.6875 z"
+       id="path4332"
+       inkscape:export-filename="/media/0D64-9616/domogik/water/sources/water.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+  </g>
+</svg>

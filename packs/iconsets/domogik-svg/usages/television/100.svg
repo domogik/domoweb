@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg width="272.03" height="219.6" version="1.1" viewBox="0 0 272.02503 219.60001" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <linearGradient id="linearGradient4803" x1="75.375" x2="117.28" y1="191.09" y2="166.83" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#fff" offset="0"/>
+   <stop stop-color="#fff" stop-opacity="0" offset="1"/>
+  </linearGradient>
+  <filter id="filter5804">
+   <feGaussianBlur stdDeviation="3.0726563"/>
+  </filter>
+ </defs>
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g transform="translate(-243.99 -279.71)">
+  <path d="m283.28 298.01c-9.2175 0-16.625 7.4075-16.625 16.625v122.72c0 9.2175 7.4075 16.625 16.625 16.625h70.719v12.469h-62.375v14.562h176.78v-14.562h-62.406v-12.469h70.719c9.2175 0 16.625-7.4075 16.625-16.625v-122.72c0-9.2175-7.4075-16.625-16.625-16.625h-193.44z" filter="url(#filter5804)"/>
+  <rect x="354.01" y="418.62" width="51.994" height="60.313" fill="#534f45"/>
+  <rect x="266.66" y="297.99" width="226.69" height="155.98" ry="16.638" fill="#9bb528"/>
+  <rect x="291.61" y="466.45" width="176.78" height="14.558" fill="#625e53"/>
+  <path transform="matrix(2.548 0 0 2.5096 6.8008 -111.92)" d="m109.09 166.88c-2.2538 0-4.0312 1.7774-4.0312 4.0312v47.312c0 2.2538 1.7633 4 4.0312 4h74.594c2.268 0 4-1.732 4-4v-47.312c0-2.268-1.7462-4.0312-4-4.0312h-74.594z" fill="#bdcb2f"/>
+  <path transform="matrix(2.548 0 0 2.5096 6.8008 -112.63)" d="m109.09 168.88c-1.1997 0-2.0254 0.82573-2.0254 2.0254v47.312c0 1.208 0.78664 1.9941 2.0254 1.9941h74.594c1.2471 0 1.9941-0.74707 1.9941-1.9941v-47.312c0-1.2388-0.78611-2.0254-1.9941-2.0254h-74.594z" fill="#fff" opacity=".5"/>
+  <path transform="matrix(4.7938 0 0 7.1126 -81.77 -919.61)" d="m117.29 173.04c-0.0644 0.0427-0.0884 0.0783-0.15625 0.1211-1.3409 0.84512-2.9561 1.6861-4.9121 2.4414-1.9492 0.75262-4.222 1.4355-6.8848 2.0176-2.6647 0.58246-5.7306 1.0594-9.2246 1.3965-2.2244 0.21463-4.3867 0.48765-6.5059 0.86329-2.1245 0.37658-4.1962 0.83809-6.1797 1.3828-1.9826 0.54449-3.9016 1.182-5.6934 1.8984-0.79852 0.31931-1.5637 0.72938-2.3574 1.1328v4.6699c0 1.1907 0.9382 2.1289 2.1289 2.1289h37.656c1.1907 0 2.1289-0.9382 2.1289-2.1289v-15.924z" fill="url(#linearGradient4803)" opacity=".5"/>
+ </g>
+</svg>
