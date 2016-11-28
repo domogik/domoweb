@@ -16,6 +16,7 @@
               
                 self = this;
                 setInterval(function() {
+                    console.error("SEND METRICS");
                     self.$.socket.send("publish-metrics-browser", {
                                                                        'measurements' : {
                                                                            'unit' : 1
