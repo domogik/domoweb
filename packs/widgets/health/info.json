@@ -1,0 +1,103 @@
+{
+    "json_version" : 1,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "health",
+        "version" : 1,
+        "name" : "Health",
+        "description" : "Health widgets",
+        "author" : "Fritz",
+        "author_email" : "fritz.smh@gmail.com"
+    },
+    "widgets": {
+        "body": {
+            "name" : "Body",
+            "description" : "Body metrics : weight, fat ratio, bone ratio, water ratio, muscle ratio.",
+            "height" : 2,
+            "width" : 3,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "sex" : {
+                    "name": "Man or woman",
+                    "description": "Check for a man icon, uncheck for a woman icon",
+                    "type": "boolean",
+                    "default": "True"
+                }
+            },
+            "commands" : {
+                "set_weight" : {
+                    "name": "Set the body weight",
+                    "types" : [
+                        ["DT_kgWeight"]
+                    ],
+                    "required": true
+                },
+                "set_fat" : {
+                    "name": "Set the body fat",
+                    "types" : [
+                        ["DT_Scaling"]
+                    ],
+                    "required": true
+                },
+                "set_muscle" : {
+                    "name": "Set the body muscle",
+                    "types" : [
+                        ["DT_Scaling"]
+                    ],
+                    "required": true
+                },
+                "set_water" : {
+                    "name": "Set the body water",
+                    "types" : [
+                        ["DT_Scaling"]
+                    ],
+                    "required": true
+                },
+                "set_bone" : {
+                    "name": "Set the body bone",
+                    "types" : [
+                        ["DT_Scaling"]
+                    ],
+                    "required": true
+                }
+            },
+            "sensors" : {
+                "weight" : {
+                    "name": "Weight",
+                    "description": "Body weight",
+                    "types" : ["DT_kgWeight"],
+                    "required": true
+                },
+                "fat" : {
+                    "name": "Fat ratio",
+                    "description": "Body fat ratio",
+                    "types" : ["DT_Scaling"],
+                    "required": true
+                },
+                "muscle" : {
+                    "name": "Muscle ratio",
+                    "description": "Body Muscle ratio",
+                    "types" : ["DT_Scaling"],
+                    "required": true
+                },
+                "water" : {
+                    "name": "Water ratio",
+                    "description": "Body Water ratio",
+                    "types" : ["DT_Scaling"],
+                    "required": true
+                },
+                "bone" : {
+                    "name": "Bone ratio",
+                    "description": "Body Bone ratio",
+                    "types" : ["DT_Scaling"],
+                    "required": true
+                }
+            }
+        }
+    }
+}
