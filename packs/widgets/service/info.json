@@ -40,7 +40,6 @@
             }
         },
         "teleinfoWeeklyConsumption": {
-            "dev" : true,
             "name" : "Teleinfo weekly consumption",
             "description" : "Electric meter weekly consumption",
             "height" : 2,

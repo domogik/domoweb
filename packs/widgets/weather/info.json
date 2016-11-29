@@ -169,6 +169,7 @@
             }
         },
         "rainhour2": {
+            "dev" : true,
             "name" : "Rain forecast 2",
             "description" : "Weather rain forecast",
             "height" : 2,

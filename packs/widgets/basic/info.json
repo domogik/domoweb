@@ -6,8 +6,8 @@
         "version" : 1,
         "name" : "Basic",
         "description" : "Basic widgets for single sensors/commands",
-        "author" : "Ferllings",
-        "author_email" : "cedric@domogik.org"
+        "author" : "Ferllings, Fritz SMH",
+        "author_email" : "cedric@domogik.org, fritz.smh@gmail.com"
     },
     "widgets": {
         "sensorNumber": {
