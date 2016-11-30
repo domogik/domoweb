@@ -75,7 +75,7 @@ The first step will install all required dependencies. ::
 The script will prompt for the system user that will launch DomoWeb. You should keep the default choice.
 
     [ Checking user ] 
-   Which user will run domogik (default : domoweb)?
+    Which user will run domogik (default : domoweb)?
     [ Looking for user domoweb ] 
     ==> User domoweb found
     
