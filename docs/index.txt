@@ -2,20 +2,16 @@
 Domoweb
 =======
 
+What is Domoweb ?
+=================
+
+Domoweb is a web interface for Domogik, a home automation system. Domoweb is responsive : it will be usable on any terminal : computer, tbalet, smartphone, ...
+
+.. image:: 0.5_800x400.jpg
+    :align: center
+    :alt: Domogik
+
 Installation
 ============
 * :doc:`Install Domoweb </installation/index>`
 
-Technical Documentation
-=======================
-* :doc:`General description </technical/index>`
-* :doc:`How Widgets are working </technical/widget_process>`
-* :doc:`How i18n is implemented </technical/i18n>`
-* :doc:`Pages organisation </technical/pages>`
-
-Packs
-=====
-* :doc:`Before creating a pack </packs/index>`
-* Packs types :
-    * :doc:`Iconsets </packs/iconset>`
-    * :doc:`Themes </packs/theme>`

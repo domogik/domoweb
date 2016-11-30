@@ -72,7 +72,7 @@ The first step will install all required dependencies. ::
     Finished processing dependencies for django==1.4
     ...
 
-System user that will launch DomoWeb. You should keep the default choice.
+The script will prompt for the system user that will launch DomoWeb. You should keep the default choice.
 
     [ Checking user ] 
    Which user will run domogik (default : domoweb)?
@@ -100,7 +100,7 @@ The script will next install the system files. ::
     [ Installing /etc/rc.d/domoweb ] 
     [ Installing /etc/logrotate/domoweb ]
     
-Database creation or update if already exist. ::
+Database creation or update if already exist (it is not the Domogik database : it is a local *sqlite* database) ::
 
     [ Updating Domoweb DB... ] 
     Syncing...
@@ -209,6 +209,11 @@ You will need a login and password to access Domoweb. You can create a new accou
 To change the password, you can go in Domogik administration.
 
     
+Use Domoweb
+===========
+
+Currently, to use Domoweb, you should use *Chrome* or *Chromium* browsers to get the best performances. Domoweb will of course work fine with *Firefox*, but it will be slower.
+
 Uninstall
 =========
 
