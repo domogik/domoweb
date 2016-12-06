@@ -20,9 +20,6 @@
     "Sat" : "Sam",
     "Sun" : "Dim",
 
-    "Rain forecast for next hour" : "Prévisions pluie dans l'heure",
-    "Rain Forecast" : "Pluviomètrie",
-
     "0" : "Tornade",
     "1" : "Tempête tropicale",
     "2" : "Ouragan",
@@ -71,6 +68,21 @@
     "45" : "Averses orageuses",
     "46" : "Averses de neiges",
     "47" : "Averses orageuses isolées",
-    "3200" : "Inconnu"
+    "3200" : "Inconnu",
+
+    "Rain forecast for next hour" : "Prévisions pluie dans l'heure",
+    "Rain Forecast" : "Pluviomètrie",
+    
+    "Vigilance" : "Vigilance",
+    "No vigilance": "Pas de vigilance", 
+    "Wind": "Vent",
+    "Rain": "Pluie",
+    "Thunderstorms": "Orages",
+    "Flood": "Inondation",
+    "Snow/ice": "Neige/verglas",
+    "Heat wave": "Canicule",
+    "Intense cold": "Grand froid",
+    "Avalanches": "Avalanches",
+    "Submersion wave": "Vague submersion"
 
 }

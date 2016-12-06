@@ -183,6 +183,28 @@
                     "required": true                   
                 }
             }
+        },
+        "vigilance": {
+            "name" : "Vigilance",
+            "description" : "Weather Vigilance by Meteo France",
+            "height" : 1,
+            "width" : 3,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                }
+            },
+            "devices" : {
+                "vigilance" : {
+                    "name": "Vigilance",
+                    "description": "Weather Vigilance",
+                    "types" : ["vigilance"],
+                    "required": true                   
+                }
+            }
         }
     }
 }
