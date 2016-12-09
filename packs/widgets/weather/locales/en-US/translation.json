@@ -5,5 +5,20 @@
 	"veryhigh": "Very high risk",
 	"extreme": "Extreme risk",
 	"speed": "Speed",
-	"gust": "Gust"
+	"gust": "Gust",
+
+	"Rain forecast for next hour" : "Rain forecast for next hour",
+	"Rain Forecast" : "Rain Forecast",
+
+	"Vigilance" : "Vigilance",
+	"No vigilance": "No vigilance", 
+	"Wind": "Wind",
+	"Rain/flood": "Rain",
+	"Thunderstorms": "Thunderstorms",
+	"Flood": "Flood",
+	"Snow/ice": "Snow/ice",
+	"Heat wave": "Heat wave",
+	"Intense cold": "Intense cold",
+	"Avalanches": "Avalanches",
+	"Submersion wave": "Submersion wave"
 }
