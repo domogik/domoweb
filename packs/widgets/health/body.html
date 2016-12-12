@@ -187,6 +187,7 @@
                 this.muscleValue = 1;
                 this.waterValue = 1;
                 this.fatValue = 1;
+
                 this.unknownValue = 0; // ????? DELETE ?? TODO
                 this.mode = "ratioChart";
                 this.chartToUpdate = true;
@@ -296,11 +297,17 @@
             },
             weightsensorvalueChanged: function(oldValue, newValue) {
                 newValue = newValue.stored_value;
+                if (newValue == null) {
+                    newValue = 0;
+                }
                 //this.$.weight.getCurrentWeek();
                 this.weightValue = newValue;
             },
             bonesensorvalueChanged: function(oldValue, newValue) {
                 newValue = newValue.stored_value;
+                if (newValue == null) {
+                    newValue = 0;
+                }
                 //this.$.bone.getCurrentWeek();
                 this.boneValue = newValue;
                 //this.draw();
@@ -308,6 +315,9 @@
             },
             watersensorvalueChanged: function(oldValue, newValue) {
                 newValue = newValue.stored_value;
+                if (newValue == null) {
+                    newValue = 0;
+                }
                 //this.$.water.getCurrentWeek();
                 this.waterValue = newValue;
                 //this.draw();
@@ -315,6 +325,9 @@
             },
             musclesensorvalueChanged: function(oldValue, newValue) {
                 newValue = newValue.stored_value;
+                if (newValue == null) {
+                    newValue = 0;
+                }
                 //this.$.muscle.getCurrentWeek();
                 this.muscleValue = newValue;
                 //this.draw();
@@ -322,6 +335,9 @@
             },
             fatsensorvalueChanged: function(oldValue, newValue) {
                 newValue = newValue.stored_value;
+                if (newValue == null) {
+                    newValue = 0;
+                }
                 //this.$.fat.getCurrentWeek();
                 this.fatValue = newValue;
                 //this.draw();
