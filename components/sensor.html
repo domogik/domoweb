@@ -85,6 +85,12 @@
                 var to = moment().unix();
                 this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
             },
+            getCurrentWeekBool: function() {
+                this.historyMode = 'week';
+                var from = moment().subtract(1, 'weeks').startOf('day').unix();
+                var to = moment().unix();
+                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour', 'selector': 'min'});
+            },
             getCurrentWeekPerDay: function() {
                 this.historyMode = 'weekPerDay';
                 var from = moment().subtract(1, 'weeks').startOf('day').unix();
