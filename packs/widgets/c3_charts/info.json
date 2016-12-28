@@ -43,6 +43,26 @@
                     "types" : ["DT_Number"],
                     "required": true
                 }
+            },
+        "step": {
+            "name" : "Step chart",
+            "height" : 2,
+            "width" : 4,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                }
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "Sensor",
+                    "description": "A bool sensor",
+                    "types" : ["DT_Bool"],
+                    "required": true
+                }
             }
         }
     }
