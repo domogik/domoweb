@@ -43,7 +43,8 @@
                     "types" : ["DT_Number"],
                     "required": true
                 }
-            },
+            }
+        },
         "step": {
             "name" : "Step chart",
             "height" : 2,
