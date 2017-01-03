@@ -215,7 +215,7 @@ class mqDataLoader:
                 msg.add_data('name', client["name"])
                 msg.add_data('host', client["host"])
                 logger.info(u"MQ: Get devices list for client {0}-{1}.{2}".format("plugin", client["name"], client["host"]))
-                res = cli.request('dbmgr', msg.get(), timeout=10)
+                res = cli.request('admin', msg.get(), timeout=10)
                 if res is not None:
                     _datad = res.get_data()
                 else:
