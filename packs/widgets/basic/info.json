@@ -119,6 +119,12 @@
                     "description": "Bool feedback state",
                     "types" : ["DT_Bool"],
                     "required": false
+                },
+                "availability" : {
+                    "name": "Availability state",
+                    "description": "Bool feedback state",
+                    "types" : ["DT_Bool"],
+                    "required": false
                 }
             },
             "commands" : {

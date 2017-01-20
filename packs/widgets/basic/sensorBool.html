@@ -55,7 +55,6 @@
                 newValue = newValue.stored_value;
                 this.booltext = i18n.t("domoweb:bool." + newValue, { context: this.$.primary.datatype_id });
                 this.$.boolicon.className = '';
-
                 if (newValue == 1) {
                     //this.$.boolicon.className = 'glyphicon glyphicon-ok';
                     this.$.bool.classList.add('true');
@@ -65,7 +64,7 @@
                     this.$.bool.classList.add('false');
                     this.$.bool.classList.remove('true');
                 }
-            }
+	    }
         });
     </script>
 </polymer-element>

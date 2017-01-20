@@ -27,10 +27,12 @@
         </style>
         <dmw-command id="primary" commandkey="primary"></dmw-command>
         <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}"></dmw-sensor>
+	<dmw-sensor id='availability' sensorkey="availability" sensorvalue="{{availvalue}}"></dmw-sensor>
         <shadow></shadow>
         <button id="send" class="btn btn-default">{{sendtext}}</button>
     </template>
     <script>
+	var global_avail = "False";
         Polymer('dmw-basic-commandBool', {
             ready: function() {
                 this.super();
@@ -86,25 +88,27 @@
                 }
             },
             boolstateChanged: function(oldValue, newValue) {
-                this.currentValue = parseInt(newValue.stored_value);
-                if (this.currentValue == 1) {
-                    this.$.send.classList.add('true');
-                    this.$.send.classList.remove('false');
-                } else {
-                    this.$.send.classList.add('false');
-                    this.$.send.classList.remove('true');
-                }
-                if (this.$.primary.isSet) {
-                    if ((this.currentValue == 0) && (this.options['label0'] != undefined) && (this.options['label0'] != "")) {
-                        this.sendtext = this.options['label0'];
+                    this.currentValue = parseInt(newValue.stored_value);
+                    if (this.currentValue == 1) {
+                        this.$.send.classList.add('true');
+                        this.$.send.classList.remove('false');
+			this.$.send.classList.remove('unavail');
+                    } else {
+                        this.$.send.classList.add('false');
+                        this.$.send.classList.remove('true');
+                        this.$.send.classList.remove('unavail');
                     }
-                    else if ((this.currentValue == 1) && (this.options['label1'] != undefined) && (this.options['label1'] != "")) {
-                        this.sendtext = this.options['label1'];
+                    if (this.$.primary.isSet) {
+                        if ((this.currentValue == 0) && (this.options['label0'] != undefined) && (this.options['label0'] != "")) {
+                            this.sendtext = this.options['label0'];
+                        }
+                        else if ((this.currentValue == 1) && (this.options['label1'] != undefined) && (this.options['label1'] != "")) {
+                            this.sendtext = this.options['label1'];
+                        }
+                        else {
+                            this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                        }
                     }
-                    else {
-                        this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
-                    }
-                }
             }
         });
     </script>
