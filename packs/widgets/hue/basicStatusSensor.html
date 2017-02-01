@@ -1,0 +1,90 @@
+<polymer-element name="dmw-hue-basicStatusSensor" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            #bool {
+                position: relative;
+                top: 50%;
+                -webkit-transform: translateY(-50%);
+                -ms-transform: translateY(-50%);
+                transform: translateY(-50%);
+                  text-align: center;
+                font-size: 2em;
+            }
+            .glyphicon {
+                line-height: inherit;
+            }
+            #bool.true {
+                color: #5cb85c;
+            }
+            #bool.false {
+                color: #d9534f;
+            }
+            #bool.unavail {
+                color: #e9e9e9;
+            }
+        </style>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <dmw-sensor id='availability' sensorkey="availability" sensorvalue="{{availvalue}}"></dmw-sensor>
+        <shadow></shadow>
+        <div id='bool'>
+          <span id='boolicon' class='glyphicon glyphicon-question-sign' aria-label='{{booltext}}'>{{booltext}}</span>
+        </div>
+    </template>
+    <script>
+        Polymer('dmw-hue-basicStatusSensor', {
+            ready: function() {
+                this.super();
+		this.global_avail = 0;
+            },
+            optionsUpdated: function() {
+                if (this.options['hideLabels'] == true ) {         
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
+            },
+            sensorsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                }
+            },
+	    availvalueChanged: function(oldValue, newValue) {
+ 		this.global_avail = newValue.stored_value;
+	    },
+
+            sensorvalueChanged: function(oldValue, newValue) {
+                    newValue = newValue.stored_value;
+                    this.$.boolicon.className = '';
+		if (this.global_avail == 1) {
+                    this.booltext = i18n.t("domoweb:bool." + newValue, { context: this.$.primary.datatype_id });
+                    if (newValue == 1) {
+                        //this.$.boolicon.className = 'glyphicon glyphicon-ok';
+                        this.$.bool.classList.remove('false');
+                        this.$.bool.classList.remove('unavail');
+                        this.$.bool.classList.add('true');
+                    } else if (newValue == 0) {
+                        //this.$.boolicon.className = 'glyphicon glyphicon-remove';
+                        this.$.bool.classList.remove('true');
+                        this.$.bool.classList.remove('unavail');
+                        this.$.bool.classList.add('false');
+                    }
+		}
+		else
+		{
+		    this.booltext = "Indispo.";
+		    this.$.bool.classList.add('unavail');
+		    this.$.bool.classList.remove('true');
+		    this.$.bool.classList.remove('false');
+		}
+	    }
+        });
+    </script>
+</polymer-element>

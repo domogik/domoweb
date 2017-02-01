@@ -1,0 +1,164 @@
+{
+	"json_version": 2,
+	"identity": {
+		"type": "dmw_widgetset",
+		"id": "hue",
+		"version": 1,
+		"name": "Hue",
+		"description": "Hue widgets",
+		"author": "OverLoad",
+		"author_email": "y.poilvert@geekinfo.fr"
+	},
+	"widgets": {
+		"basicStatusSensor": {
+			"name": "Basic light status",
+			"height": 1,
+			"width": 1,
+			"options": {
+				"hideLabels": {
+					"name": "Hide the widget labels",
+					"description": "Hide the top and left widget labels",
+					"type": "boolean",
+					"default": "False"
+				}
+			},
+			"sensors": {
+                                "primary": {
+                                        "name": "Bool state",
+                                        "description": "Bool feedback state",
+                                        "types": ["DT_Bool"],
+                                        "required": false
+                                },
+                                "availability": {
+                                        "name": "Availability state",
+                                        "description": "Bool feedback state",
+                                        "types": ["DT_Enable"],
+                                        "required": false
+                                }
+			}
+		},
+		"basicCommand": {
+			"name": "Basic light command",
+			"height": 1,
+			"width": 1,
+			"options": {
+				"hideLabels": {
+					"name": "Hide the widget labels",
+					"description": "Hide the top and left widget labels",
+					"type": "boolean",
+					"default": "False"
+				},
+				"circle": {
+					"name": "Round button",
+					"description": "Display the button as a circle instead of a square",
+					"type": "boolean",
+					"default": "False"
+				},
+				"label0": {
+					"name": "Label for value 0",
+					"description": "Override the default label for the value 0 of the sensor",
+					"type": "string",
+					"default": null,
+					"required": false
+				},
+				"label1": {
+					"name": "Label for value 1",
+					"description": "Override the default label for the value 1 of the sensor",
+					"type": "string",
+					"default": null,
+					"required": false
+				}
+			},
+			"sensors": {
+				"boolstate": {
+					"name": "Bool state",
+					"description": "Bool feedback state",
+					"types": ["DT_Bool"],
+					"required": false
+				},
+				"availability": {
+					"name": "Availability state",
+					"description": "Bool feedback state",
+					"types": ["DT_Enable"],
+					"required": false
+				}
+			},
+			"commands": {
+				"primary": {
+					"name": "Boolean",
+					"types": [
+						["DT_Bool"]
+					],
+					"required": true
+				}
+			}
+		},
+		"basicRangeCommand": {
+			"name": "Command Range",
+			"height": 1,
+			"width": 2,
+			"options": {
+				"hideLabels": {
+					"name": "Hide the widget labels",
+					"description": "Hide the top and left widget labels",
+					"type": "boolean",
+					"default": "False"
+				}
+			},
+			"sensors": {
+				"scalingstate": {
+					"name": "Scaling state",
+					"description": "Scaling feedback state",
+					"types": ["DT_Scaling"],
+					"required": false
+				},
+                                "availability": {
+                                        "name": "Availability state",
+                                        "description": "Bool feedback state",
+                                        "types": ["DT_Enable"],
+                                        "required": false
+                                }
+			},
+			"commands": {
+				"primary": {
+					"name": "Scaling",
+					"types": [
+						["DT_Scaling"]
+					],
+					"required": true
+				}
+			}
+		},
+		"basicColorCommand": {
+			"name": "Color Command",
+			"height": 2,
+                        "width": 2,
+                        "options": {
+                                "hideLabels": {
+                                        "name": "Hide the widget labels",
+                                        "description": "Hide the top and left widget labels",
+                                        "type": "boolean",
+                                        "default": "False"
+                                }
+                        },
+                        "sensors": {
+                                "color": {
+                                        "name": "Current color",
+                                        "description": "Current color",
+                                        "types": ["DT_ColorRGBHexa"],
+                                        "required": false
+                                }
+			},
+                        "commands": {
+                                "primary": {
+                                        "name": "color",
+                                        "types": [
+                                                ["DT_ColorRGBHexa"]
+                                        ],
+                                        "required": true
+                                }
+                        }
+
+		}
+	}
+}
