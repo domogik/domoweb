@@ -1,0 +1,70 @@
+{
+    "json_version" : 2,
+    "identity" : {
+        "type" : "dmw_widgetset",
+        "id" : "basicjs",
+        "version" : 1,
+        "name" : "BasicJS",
+        "description" : "Basic JS widgets for single command",
+        "author" : "OverLoad",
+        "author_email" : "y.poilvert@geekinfo.fr"
+    },
+    "widgets": {
+        "commandRefresh": {
+            "name" : "Command Refresh",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "circle" : {
+                    "name": "Round button",
+                    "description": "Display the button as a circle instead of a square",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "label" : {
+                    "name": "Label for the button",
+                    "description": "Override the default label for the trigger button",
+                    "type": "string",
+                    "default": null,
+                    "required": false
+                }
+            },
+            "commands" : {
+            }
+        },
+        "commandFullScreen": {
+            "name" : "Command Full Screen",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "circle" : {
+                    "name": "Round button",
+                    "description": "Display the button as a circle instead of a square",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "label" : {
+                    "name": "Label for the button",
+                    "description": "Override the default label for the trigger button",
+                    "type": "string",
+                    "default": null,
+                    "required": false
+                }
+            },
+            "commands" : {
+            }
+        }
+    }
+}

@@ -1,0 +1,53 @@
+<polymer-element name="dmw-basicjs-commandFullScreen" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            button#send {
+                display: block;
+                border-style: none;
+                width: 80%;
+                height: 80%;
+                margin: 10%;
+                background: #4671BD;
+                color: #ffffff;
+                cursor: pointer;
+            }
+            button#send.circle {
+                border-radius: 50%;
+            }
+            button#send:active {
+                background: #D73032;
+                color: #ffffff;
+            }
+        </style>
+        <shadow></shadow>
+        <button id="send" class="btn btn-default" onclick="fullScreen(document.documentElement);">Full Screen</button>
+    </template>
+    <script>
+        Polymer('dmw-basicjs-commandFullScreen', {
+            ready: function() {
+                this.super();
+            },
+            commandsUpdated: function() {
+                if (this.options['circle'] == 1) {
+                    this.$.send.classList.add('circle');
+                }
+                if (this.options['circle'] == 0) {
+                    this.$.send.classList.remove('circle');
+                }
+            }
+        });
+	function fullScreen(element) {
+	    if(element.requestFullScreen) {
+		element.requestFullScreen();
+	    } else if(element.webkitRequestFullScreen ) {
+		element.webkitRequestFullScreen();
+	    } else if(element.mozRequestFullScreen) {
+		element.mozRequestFullScreen();
+	    }
+	}
+    </script>
+</polymer-element>
