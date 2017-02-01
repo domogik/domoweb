@@ -11,11 +11,9 @@
                 this._name = [];
                 this._description = [];
                 this._params = [];
-                this.stats = 0;
                 this.$.socket.register('section-details', this.sectionChanged.bind(this), null);
                 this.$.socket.register('section-params', this.sectionReceived.bind(this), null);
                 this.$.socket.register('section-removed', this.sectionRemoved.bind(this), null);
-                this.$.socket.register('device-stats', this.sectionReceivedStats.bind(this), null);
               
                 self = this;
                 setInterval(function() {
@@ -46,9 +44,6 @@
             },
             get params() {
                 return this._params[this.sectionid];
-            },
-            sectionReceivedStats: function(topic, json) {
-                document.getElementById("loading_text").innerHTML = "Loading data...";
             },
             sectionReceived: function(topic, json) {
                 document.getElementById("loading_text").innerHTML = "Loading parameters...";
