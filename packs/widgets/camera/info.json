@@ -41,6 +41,38 @@
                     "required": false
                 }
             }
+        },
+        "video": {
+            "name" : "Video camera",
+            "description" : "Video camera",
+            "height" : 2,
+            "width" : 3,
+            "options" : {
+                "cameraName" : {
+                    "name": "Camera name",
+                    "description": "The camera name to display",
+                    "type": "string",
+                    "default": null,
+                    "required" : false
+                },
+                "cameraUrl" : {
+                    "name": "Camera url",
+                    "description": "If you don't use a camera managed by a plugin, you can set an url here",
+                    "type": "string",
+                    "default": null,
+                    "required" : false
+                }
+            },
+            "commands" : {
+            },
+            "sensors" : {
+                "camera" : {
+                    "name": "Camera (handled by a plugin)",
+                    "description": "Select a camera handler by a plugin",
+                    "types" : ["DT_Video"],
+                    "required": false
+                }
+            }
         }
     }
 }
