@@ -1,5 +1,5 @@
 ===========
-Domoweb 0.5
+Domoweb 0.6
 ===========
 
 What is Domoweb ?

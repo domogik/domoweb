@@ -54,6 +54,7 @@ function sectionChanged(e) {
 			DMW.grid.appendInstance(node, instance);
 		}
 		DMW.grid.adjustPlacement();
+		$("#overlay").fadeOut(200);
 	}
 }
 
@@ -83,7 +84,7 @@ function instanceAdded(topic, json) {
 		i18n.loadNamespace(json.widget.set_id, function() {
 			insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
 			var node = insertWidgetInstance(json.id, json.widget);
-			DMW.grid.appendInstance(node, json);
+	DMW.grid.appendInstance(node, json);
 		});
 	}
 }

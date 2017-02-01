@@ -8,7 +8,8 @@
 		"sections": "Sections",
 		"addSection": "Ajouter",
 		"removeSection": "Supprimer",
-		"finishSections": "Terminé"
+		"finishSections": "Terminé",
+		"logout": "Déconnexion"
   	},
   	"unit": "__value__",
   	"unit_DT_Byte": "o",

@@ -127,10 +127,14 @@ form#formConfig {
         top: 0;
         bottom: 0;
         right: 0;
-        background: #2d2c2f;
+	background: #2c2c2c; /* Old browsers */
+	background: -moz-linear-gradient(top, #2c2c2c 0%, #0e0e0e 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top, #2c2c2c 0%,#0e0e0e 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, #2c2c2c 0%,#0e0e0e 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c2c2c', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
         z-index: 5000;
     }
-    .loading {
+    .loader {
         position: fixed;
         z-index: 999;
         height: 10em;

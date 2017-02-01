@@ -5,7 +5,7 @@
         <web-socket id="socket"></web-socket>
     </template>
     <script>
-	document.getElementById("loading_text").innerHTML = "Initializing..."
+	document.getElementById("loading_text").innerHTML = "Initializing...";
         Polymer("dmw-section", {
             ready: function() {
                 this._name = [];
@@ -15,7 +15,7 @@
                 this.$.socket.register('section-details', this.sectionChanged.bind(this), null);
                 this.$.socket.register('section-params', this.sectionReceived.bind(this), null);
                 this.$.socket.register('section-removed', this.sectionRemoved.bind(this), null);
-                this.$.socket.register('device-stats', this.sectionReceivedStats.bind(this), null); 
+                this.$.socket.register('device-stats', this.sectionReceivedStats.bind(this), null);
               
                 self = this;
                 setInterval(function() {
@@ -49,12 +49,6 @@
             },
             sectionReceivedStats: function(topic, json) {
                 document.getElementById("loading_text").innerHTML = "Loading data...";
-                if(this.stats == 5){
-                    console.log("First device-stats received, dashboard is ready!");
-                    $("#overlay").fadeOut(200);
-                } else {
-                    this.stats = this.stats+1;
-                }
             },
             sectionReceived: function(topic, json) {
                 document.getElementById("loading_text").innerHTML = "Loading parameters...";
@@ -69,8 +63,7 @@
                 this._description[this.sectionid] = json['description'];
                 this._params[this.sectionid] = json['params'];
                 this.fire('section-changed', json);
-                this.stats = 0;
-                $("#overlay").fadeIn(0);
+                //$("#overlay").fadeIn(200);
             },
             sectionRemoved: function(topic, json) {
                 document.getElementById("loading_text").innerHTML = "Loading section...";

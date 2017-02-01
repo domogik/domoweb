@@ -21,8 +21,8 @@ Download Domoweb :
 
     $ cd /opt/dmg
     $ wget --content-disposition https://github.com/domogik/domoweb/archive/0.5.1.tar.gz
-    $ tar xvzf domoweb-0.5.1.tar.gz
-    $ ln -s domoweb-0.5.1 domoweb
+    $ tar xvzf domoweb-0.6.0.tar.gz
+    $ ln -s domoweb-0.6.0 domoweb
     $ cd domoweb
 
 Launch the installation script
@@ -164,7 +164,7 @@ The final test to check the Domoweb installation. ::
     ==>                            http://127.0.0.1:40404/ <==  
     ==> ================================================== <==
 
-If you are a already a Domoweb 0.4 user
+If you are a already a Domoweb 0.6 user
 =======================================
 
 You will need to upgrade your configuration file : **/etc/domoweb.cfg**.
