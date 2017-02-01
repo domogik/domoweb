@@ -59,7 +59,7 @@
         <dmw-sensor id='camera' sensorkey="camera" sensorvalue="{{sensorvalue}}"></dmw-sensor>
         <shadow></shadow>
         <div id="camera" class="camera-normal"  on-click="{{zoom}}">
-	  <video autoplay="autoplay" src="{{url}}" id="motionjpeg" class="mjpeg-normal"></video>
+	  <video controls="controls" autoplay="autoplay" src="{{url}}" id="motionjpeg" class="mjpeg-normal"></video>
         </div>
         <div id="cameralabel"><span>{{label}}</span></div>
     </template>
