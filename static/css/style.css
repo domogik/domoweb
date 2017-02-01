@@ -119,3 +119,40 @@ form#formConfig {
 	background-repeat: no-repeat;
 	background-size: cover;
 }
+
+/* Loading */
+    #overlay {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        background: #2d2c2f;
+        z-index: 5000;
+    }
+    .loading {
+        position: fixed;
+        z-index: 999;
+        height: 10em;
+        width: 10em;
+        overflow: show;
+        margin: auto;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background-image: url(/images/loading.svg);
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    .loading_text {
+        color: white;
+        position: fixed;
+        text-align: center;
+        font-size: 20px;
+        bottom: 40%;
+        left: 0;
+        right: 0;
+        margin: auto;
+    }
+
