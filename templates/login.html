@@ -16,6 +16,8 @@
     body {
         color: #2D2C2F;
         background-color: white;
+	width: 100%;
+	height : 100%
     }
 
     .login {
@@ -48,8 +50,19 @@
   </style>
   <script src="/libraries/jquery-1.11.0/jquery.min.js"></script>
   <script type="text/javascript" src="/libraries/i18next-1.10.1/i18next-1.10.1.min.js"></script>
+  <script>
+    $(document).on("submit", "form", function(event)
+      {
+        var over = '<div id="overlay">' +
+          '<div id="loader" class="loader"></div>' +
+          '<div class="loading_text" id="loading_text">Authenticating...</div>'
+          '</div>';
+        $(over).appendTo('body');
+    });        
+  </script>
 </head>
 <body id="body">
+<content>
   <div class="login center-block">
   <h1>
     <img src="/images/logo_medium.png" alt="">
@@ -68,7 +81,7 @@
     {% end %}
 
   <div class="box">
-    <form action="/login" method="post" class="form-vertical login-form">
+    <form id="login" action="/login" method="post" class="form-vertical login-form">
       <div class="form-title">Please enter username and password</div>
   
       <div class="form-group">
@@ -134,5 +147,6 @@
         });
     });
   </script>
+</content>
   </body>
 </html>

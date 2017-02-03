@@ -5,6 +5,7 @@
         <web-socket id="socket"></web-socket>
     </template>
     <script>
+	document.getElementById("loading_text").innerHTML = "Initializing...";
         Polymer("dmw-section", {
             ready: function() {
                 this._name = [];
@@ -45,18 +46,22 @@
                 return this._params[this.sectionid];
             },
             sectionReceived: function(topic, json) {
+                document.getElementById("loading_text").innerHTML = "Loading parameters...";
                 this._name[this.sectionid] = json['name'];
                 this._description[this.sectionid] = json['description'];
                 this._params[this.sectionid] = json['params'];
                 this.fire('section-updated', json);
             },
             sectionChanged: function(topic, json) {
+                document.getElementById("loading_text").innerHTML = "Loading section...";
                 this._name[this.sectionid] = json['name'];
                 this._description[this.sectionid] = json['description'];
                 this._params[this.sectionid] = json['params'];
                 this.fire('section-changed', json);
+                //$("#overlay").fadeIn(200);
             },
             sectionRemoved: function(topic, json) {
+                document.getElementById("loading_text").innerHTML = "Loading section...";
                 if (this.sectionid == json['id']) {
                     this.sectionid = 1;
                 }

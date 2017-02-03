@@ -1,0 +1,159 @@
+<polymer-element name="dmw-camera-video" extends="dmw-widget">
+    <template>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            #camera {
+            }
+            #cameralabel {
+                position: absolute;
+                bottom: 0px;
+                text-align: center;
+                width: 100%;
+            }
+            #cameralabel span {
+                text-shadow: 0px 0px 4px rgba(0, 0, 0, 1);
+                font-size: 1.4em;
+            }
+            #motionjpeg {
+            }
+            .camera-zoom {
+                object-fit: none;
+                position: fixed;
+                top: 0px;
+                left: 0px;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.9);
+            }
+            .camera-normal {
+                position: absolute;
+                top: 0px;
+                margin-left: 1%;
+                margin-right: 1%;
+                margin-top: 2%;
+                height: 83%; 
+                width: 98%; 
+                object-fit: contain;
+            }
+            .mjpeg-zoom {
+                position: relative;
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                left: 50%;
+                top: 50%;
+
+                object-fit: fill;
+                min-width: 80%;
+                max-width: 95%;
+                max-height: 95%;
+            }
+            .mjpeg-normal {
+                object-fit: contain;
+                height: 100%; 
+                width: 100%; 
+            }
+        </style>
+        <dmw-sensor id='camera' sensorkey="camera" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <shadow></shadow>
+        <div id="camera" class="camera-normal"  on-click="{{zoom}}">
+	  <video controls="controls" src="{{url}}" id="motionjpeg" class="mjpeg-normal"></video>
+        </div>
+        <div id="cameralabel"><span>{{label}}</span></div>
+    </template>
+    <script>
+        Polymer('dmw-camera-video', {
+            ready: function() {
+                this.mode = "normal";
+                this.super();
+                this.urlVisible = "/widget/camera/noname.png";                // real stream url (updated in sensorUpdated with the real value)
+                this.urlHidden = "/widget/camera/noname.png";                 // fake stream url (to be used when camera widget is not displayed to not consume bandwith)
+                this.url = this.urlHidden;
+                this.urlRaw = this.urlHidden;
+
+                this.visible = false;
+
+                // refresh the video stream each 60s to reload automatically if the stream was shut for a while
+                //self = this;
+                //setInterval(function(){
+                //    self.url = self.urlRaw + "?" + +new Date().getTime();
+                //    console.error("Camera url = " + self.url);
+                //},60000);
+
+                // but first, refresh the image 1s after the component is loaded to avoid a broken image in case of 401 error (see comment before the iframe for more informations
+                setTimeout(function(){
+                    self.url = self.urlRaw + "?" + +new Date().getTime();
+                }.bind(this), 5000);
+
+
+                // z-index for the zoom mode
+                initialZIndex = this.style.zIndex;
+
+            },
+            optionsUpdated: function() {
+                if (this.options['cameraName']) {
+                    this.label = this.options['cameraName']
+                }
+                else {
+                    this.label = "Camera";
+                }
+                if (this.options['cameraUrl']) {
+                    //this.url = this.options['cameraUrl']
+                    //this.urlRaw = this.url;
+                    this.urlVisible = this.options['cameraUrl']
+                    this.url = this.urlVisible;                           // options updated, so widget visible!
+                    this.urlRaw = this.url;
+                }
+                else {
+                    // will be set from sensor
+                }
+            },
+            sensorsUpdated: function() {
+            },
+            commandsUpdated: function() {
+            },
+            sensorvalueChanged: function(oldValue, newValue) {
+                this.urlVisible = newValue.stored_value;
+                // change the used url only if widget is displayed
+                if (this.visible == true) {
+                    this.url = this.urlVisible;
+                    this.urlRaw = this.url;
+                }
+            },
+            zoom: function() {
+                if (this.mode == "normal") {
+                    this.mode = "zoom";
+                    this.$.camera.classList.add('camera-zoom');
+                    this.$.camera.classList.remove('camera-normal');
+                    this.$.motionjpeg.classList.add('mjpeg-zoom');
+                    this.$.motionjpeg.classList.remove('mjpeg-normal');
+                    this.$.cameralabel.style.visibility = "hidden";
+                    // z-index for the zoom mode
+                    this.style.zIndex = 5000;
+                }
+                else {
+                    this.mode = "normal";
+                    this.$.camera.classList.add('camera-normal');
+                    this.$.camera.classList.remove('camera-zoom');
+                    this.$.motionjpeg.classList.add('mjpeg-normal');
+                    this.$.motionjpeg.classList.remove('mjpeg-zoom');
+                    this.$.cameralabel.style.visibility = "initial";
+                    // z-index for the zoom mode
+                    this.style.zIndex = initialZIndex;
+                }
+            },
+            attached: function() {
+                console.error(this.localName + '#' + this.id + ' was attached');
+                this.visible = true;
+            },
+            detached: function() {
+                console.error(this.localName + '#' + this.id + ' was detached');
+                this.visible = false;
+                this.url = "/widget/camera/noname.png";
+                this.urlRaw = this.url;
+            }
+        });
+    </script>
+</polymer-element>

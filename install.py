@@ -44,7 +44,7 @@ def main():
     """Main function that is called at the install of Domoweb."""
     from optparse import OptionParser
     p = OptionParser(usage="usage: %prog [options]",
-                          version="Install for Domoweb 0.4")
+                          version="Install for Domoweb 0.6")
 
     p.add_option('--uninstall',
              dest='uninstall',

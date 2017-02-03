@@ -1,0 +1,206 @@
+<polymer-element name="dmw-hue-basicRangeCommand" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css">
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+
+            .slider {
+                position: relative;
+                top: 45%;
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                left: 50%;
+            }
+
+
+input[type='range'] {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  border: none;
+  width: 200px;
+  height: 50px;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  cursor: pointer;
+}
+input[type='range'], input[type='range']::-webkit-slider-runnable-track, input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  border: none;
+  padding: 0;
+  width: 23.5em;
+  height: 2.25em;
+  box-shadow: inset 0 0.25em 0.25em #0e0e0e, inset 0 -1px 0.125em #585858;
+  background: linear-gradient(27deg, #151515 0.125em, rgba(0, 0, 0, 0) 0.125em) 0 0.125em, linear-gradient(207deg, #151515 0.125em, rgba(0, 0, 0, 0) 0.125em) 0.25em 0px, linear-gradient(27deg, #222222 0.125em, rgba(0, 0, 0, 0) 0.125em) 0px 0.25em, linear-gradient(207deg, #222222 0.125em, rgba(0, 0, 0, 0) 0.125em) 0.25em 0.125em, linear-gradient(90deg, #1b1b1b 0.25em, rgba(0, 0, 0, 0) 0.25em), linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 75%, #242424 75%, #242424) #131313;
+  background-size: 0.5em 0.5em;
+}
+input[type='range']::-moz-range-track {
+  border: none;
+  padding: 0;
+  width: 23.5em;
+  height: 2.25em;
+  box-shadow: inset 0 0.25em 0.25em #0e0e0e, inset 0 -1px 0.125em #585858;
+  background: linear-gradient(27deg, #151515 0.125em, rgba(0, 0, 0, 0) 0.125em) 0 0.125em, linear-gradient(207deg, #151515 0.125em, rgba(0, 0, 0, 0) 0.125em) 0.25em 0px, linear-gradient(27deg, #222222 0.125em, rgba(0, 0, 0, 0) 0.125em) 0px 0.25em, linear-gradient(207deg, #222222 0.125em, rgba(0, 0, 0, 0) 0.125em) 0.25em 0.125em, linear-gradient(90deg, #1b1b1b 0.25em, rgba(0, 0, 0, 0) 0.25em), linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 75%, #242424 75%, #242424) #131313;
+  background-size: 0.5em 0.5em;
+}
+input[type='range']::-ms-track {
+  border: none;
+  padding: 0;
+  width: 23.5em;
+  height: 2.25em;
+  box-shadow: inset 0 0.25em 0.25em #0e0e0e, inset 0 -1px 0.125em #585858;
+  background: linear-gradient(27deg, #151515 0.125em, rgba(0, 0, 0, 0) 0.125em) 0 0.125em, linear-gradient(207deg, #151515 0.125em, rgba(0, 0, 0, 0) 0.125em) 0.25em 0px, linear-gradient(27deg, #222222 0.125em, rgba(0, 0, 0, 0) 0.125em) 0px 0.25em, linear-gradient(207deg, #222222 0.125em, rgba(0, 0, 0, 0) 0.125em) 0.25em 0.125em, linear-gradient(90deg, #1b1b1b 0.25em, rgba(0, 0, 0, 0) 0.25em), linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 75%, #242424 75%, #242424) #131313;
+  background-size: 0.5em 0.5em;
+  color: transparent;
+}
+input[type='range']::-ms-fill-lower {
+  height: 2.25em;
+  box-shadow: inset 0 0.25em 0.25em #0e0e0e, inset 0 -1px 0.125em #585858;
+}
+input[type='range']::-ms-fill-upper, input[type='range']::-ms-tooltip {
+  display: none;
+}
+input[type='range']::-webkit-slider-thumb {
+  margin: -0.125em;
+  border: none;
+  padding: 0;
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 50%;
+  box-shadow: 0 .375em .375em #000;
+}
+input[type='range']::-moz-range-thumb {
+  border: none;
+  padding: 0;
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 50%;
+  box-shadow: 0 .375em .375em #000;
+  curso: ew-resize;
+}
+input[type='range']::-ms-thumb {
+  border: none;
+  padding: 0;
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 50%;
+  box-shadow: 0 .375em .375em #000;
+}
+input[type='range'] {
+  top: 25%;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  border-radius: 1.125em;
+}
+input[type='range']::-moz-range-track {
+  border-radius: 1.125em;
+}
+input[type='range']::-ms-track {
+  border-radius: 1.125em;
+}
+input[type='range']::-ms-fill-lower {
+  border-radius: 1.125em;
+  background: linear-gradient(#878787, #131313);
+}
+input[type='range']::-webkit-slider-thumb {
+  background: radial-gradient(#00FF00 56%, #00632a 63%, rgba(0, 252, 107, 0) 71%) 50% 50%, linear-gradient(-45deg, #555555, rgba(85, 85, 85, 0) 65%) 100% 0, linear-gradient(45deg, #555555, rgba(85, 85, 85, 0) 65%), linear-gradient(-135deg, #555555, rgba(85, 85, 85, 0) 65%) 100% 100%, linear-gradient(135deg, #555555, rgba(85, 85, 85, 0) 65%) 0 100%, linear-gradient(-45deg, rgba(85, 85, 85, 0) 35%, #555555) 100% 0, linear-gradient(45deg, rgba(85, 85, 85, 0) 35%, #555555), linear-gradient(-135deg, rgba(85, 85, 85, 0) 35%, #555555) 100% 100%, linear-gradient(135deg, rgba(85, 85, 85, 0) 35%, #555555) 0 100% #ddd;
+  background-repeat: no-repeat;
+  background-size: 50% 50%;
+}
+input[type='range']::-moz-range-thumb {
+  background: radial-gradient(#00FF00 56%, #00632a 63%, rgba(0, 252, 107, 0) 71%) 50% 50%, linear-gradient(-45deg, #555555, rgba(85, 85, 85, 0) 65%) 100% 0, linear-gradient(45deg, #555555, rgba(85, 85, 85, 0) 65%), linear-gradient(-135deg, #555555, rgba(85, 85, 85, 0) 65%) 100% 100%, linear-gradient(135deg, #555555, rgba(85, 85, 85, 0) 65%) 0 100%, linear-gradient(-45deg, rgba(85, 85, 85, 0) 35%, #555555) 100% 0, linear-gradient(45deg, rgba(85, 85, 85, 0) 35%, #555555), linear-gradient(-135deg, rgba(85, 85, 85, 0) 35%, #555555) 100% 100%, linear-gradient(135deg, rgba(85, 85, 85, 0) 35%, #555555) 0 100% #ddd;
+  background-repeat: no-repeat;
+  background-size: 50% 50%;
+}
+input[type='range']::-ms-thumb {
+  background: radial-gradient(#00FF00 56%, #00632a 63%, rgba(0, 252, 107, 0) 71%) 50% 50%, linear-gradient(-45deg, #555555, rgba(85, 85, 85, 0) 65%) 100% 0, linear-gradient(45deg, #555555, rgba(85, 85, 85, 0) 65%), linear-gradient(-135deg, #555555, rgba(85, 85, 85, 0) 65%) 100% 100%, linear-gradient(135deg, #555555, rgba(85, 85, 85, 0) 65%) 0 100%, linear-gradient(-45deg, rgba(85, 85, 85, 0) 35%, #555555) 100% 0, linear-gradient(45deg, rgba(85, 85, 85, 0) 35%, #555555), linear-gradient(-135deg, rgba(85, 85, 85, 0) 35%, #555555) 100% 100%, linear-gradient(135deg, rgba(85, 85, 85, 0) 35%, #555555) 0 100% #ddd;
+  background-repeat: no-repeat;
+  background-size: 50% 50%;
+}
+.js input[type='range']::-webkit-slider-runnable-track {
+  background: linear-gradient(#878787, #131313) no-repeat, linear-gradient(27deg, #151515 0.125em, rgba(0, 0, 0, 0) 0.125em) 0 0.125em, linear-gradient(207deg, #151515 0.125em, rgba(0, 0, 0, 0) 0.125em) 0.25em 0px, linear-gradient(27deg, #222222 0.125em, rgba(0, 0, 0, 0) 0.125em) 0px 0.25em, linear-gradient(207deg, #222222 0.125em, rgba(0, 0, 0, 0) 0.125em) 0.25em 0.125em, linear-gradient(90deg, #1b1b1b 0.25em, rgba(0, 0, 0, 0) 0.25em), linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 75%, #242424 75%, #242424) #131313;
+  background-size: 15% 100%, 0.5em 0.5em, 0.5em 0.5em, 0.5em 0.5em;
+}
+.js input[type='range']::-moz-range-track {
+  background: linear-gradient(#878787, #131313) no-repeat, linear-gradient(27deg, #151515 0.125em, rgba(0, 0, 0, 0) 0.125em) 0 0.125em, linear-gradient(207deg, #151515 0.125em, rgba(0, 0, 0, 0) 0.125em) 0.25em 0px, linear-gradient(27deg, #222222 0.125em, rgba(0, 0, 0, 0) 0.125em) 0px 0.25em, linear-gradient(207deg, #222222 0.125em, rgba(0, 0, 0, 0) 0.125em) 0.25em 0.125em, linear-gradient(90deg, #1b1b1b 0.25em, rgba(0, 0, 0, 0) 0.25em), linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0) 75%, #242424 75%, #242424) #131313;
+  background-size: 15% 100%, 0.5em 0.5em, 0.5em 0.5em, 0.5em 0.5em;
+}
+input[type='range']:focus {
+  outline: none;
+  box-shadow: 0 0 0.125em #00fc6b;
+}
+#value {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 70px);
+  font-size: 16px;
+}
+        </style>
+        <dmw-command id="primary" commandkey="primary"></dmw-command>
+        <dmw-sensor id="availability" sensorkey="availability" sensorvalue="{{availability}}"></dmw-sensor>
+        <dmw-sensor id='scalingstate' sensorkey="scalingstate" sensorvalue="{{scalingstate}}"></dmw-sensor>
+        <shadow></shadow>
+        <div class="slider">
+          <input type="range" id="range" min="0" max="100" step="1" style="background: transparent;">
+        </div>
+	<div id="value">{{current}}%</div>
+    </template>
+    <script>
+        Polymer('dmw-hue-basicRangeCommand', {
+            ready: function() {
+                this.super();
+            },
+            optionsUpdated: function() {
+                if (this.options['hideLabels'] == true ) {         
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
+            },
+            sensorsUpdated: function() {
+                                
+                if (this.$.scalingstate.isSet) {
+                    this.hasFeedback = true;
+                } else {
+                    this.current = 0;
+                    this.$.range.value = 0;
+                }
+            },
+            commandsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                    this.$.range.addEventListener('change', this.onInput.bind(this));
+                }
+            },
+            scalingstateChanged: function(oldValue, newValue) {
+                this.current = Math.round(newValue.stored_value);
+                this.$.range.value = this.current;
+                var val = (this.$.range.value - this.$.range.min) / (this.$.range.max - this.$.range.min);
+            },
+            availabilityChanged: function(oldValue, newValue) {
+                if (newValue.stored_value == 0) {
+                }
+            },
+            onInput: function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("OnInput" + this.$.range.value);
+                var parameters = {};
+                parameters[this.$.primary.parameters[0]['key']] = this.$.range.value;
+                this.$.primary.send(parameters);
+
+                console.error(this.$.range.min);
+                var val = (this.$.range.value - this.$.range.min) / (this.$.range.max - this.$.range.min);
+            }
+        });
+    </script>
+</polymer-element>

@@ -1,0 +1,133 @@
+<polymer-element name="dmw-hue-basicColorCommand" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+        </style>
+    <link href="//cdn.virtuosoft.eu/virtuosoft.eu/resources/prettify/prettify.css" rel="stylesheet" type="text/css" media="all">
+    <link href="bootstrap-colorpickersliders/v3.0.0/bootstrap.colorpickersliders.css" rel="stylesheet" type="text/css" media="all">
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script src="//cdn.virtuosoft.eu/virtuosoft.eu/resources/prettify/prettify.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/0.11.1/tinycolor.min.js"></script>
+    <script src="bootstrap-colorpickersliders/v3.0.0/bootstrap.colorpickersliders.js"></script>
+        <dmw-command id="primary" commandkey="primary"></dmw-command>
+	<dmw-sensor id='color' sensorkey="color" sensorvalue="{{color}}"></dmw-sensor>
+        <shadow></shadow>
+<div id="hsvflat"></div>
+<script>
+            $("#hsvflat").ColorPickerSliders({
+              color: "rgb(36, 170, 242)",
+              flat: true,
+              sliders: false,
+              swatches: false,
+              hsvpanel: true
+            });
+</script>
+    </template>
+    <script>
+        Polymer('dmw-hue-basicColorCommand', {
+            ready: function() {
+                this.super();
+                this.boolstate = null;
+                this.currentValue = 0;
+		this.global_avail = 0;
+
+            },
+            optionsUpdated: function() {
+                if (this.options['hideLabels'] == true ) {         
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
+            },
+            sensorsUpdated: function() {
+                if (this.$.boolstate.isSet) {
+                    this.hasFeedback = true;
+                }
+                if (this.options['circle'] == 1) {
+                    this.$.send.classList.add('circle');
+                }
+                if (this.options['circle'] == 0) {
+                    this.$.send.classList.remove('circle');
+                }
+            },
+            availvalueChanged: function (oldValue, newValue) {
+                if (this.$.availability.isSet) {
+		this.global_avail = newValue.stored_value;
+                    if (newValue.stored_value == 0) {
+			this.sendtext = "Indispo."
+                    }
+		    else
+		    {
+			this.avail = "";
+		    }
+                }
+            },
+            commandsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                    if ((this.currentValue == 0) && (this.options['label0'] != undefined) && (this.options['label0'] != "")) {
+                        this.sendtext = this.options['label0'];
+                    }
+                    else if ((this.currentValue == 1) && (this.options['label1'] != undefined) && (this.options['label1'] != "")) {
+                        this.sendtext = this.options['label1'];
+                    }
+                    else {
+                        this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                    }
+                    this.$.send.addEventListener('click', this.send.bind(this));
+                }
+            },
+            send: function(e) {
+                var parameters = {};
+                var nextValue = (this.currentValue == 1?0:1);
+                parameters[this.$.primary.parameters[0]['key']] = nextValue;
+                this.$.primary.send(parameters);
+                e.preventDefault();
+                e.stopPropagation();
+                if (!this.hasFeedback) { //If no feedback sensor, we assume ok
+                    this.boolstate = nextValue;
+                }
+            },
+            boolstateChanged: function(oldValue, newValue) {
+		if (this.global_avail == 1) {
+                    this.currentValue = parseInt(newValue.stored_value);
+                    if (this.currentValue == 1) {
+                        this.$.send.classList.add('true');
+                        this.$.send.classList.remove('false');
+                        this.$.send.classList.remove('unavail');
+                    } else {
+                        this.$.send.classList.add('false');
+                        this.$.send.classList.remove('true');
+                        this.$.send.classList.remove('unavail');
+                    }
+                    if (this.$.primary.isSet) {
+                        if ((this.currentValue == 0) && (this.options['label0'] != undefined) && (this.options['label0'] != "")) {
+                            this.sendtext = this.options['label0'];
+                        }
+                        else if ((this.currentValue == 1) && (this.options['label1'] != undefined) && (this.options['label1'] != "")) {
+                            this.sendtext = this.options['label1'];
+                        }
+                        else {
+                            this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                        }
+                    }
+		}
+		else
+		{
+		    this.$.send.classList.add('unavail');
+		    this.$.send.classList.remove('true');
+		    this.$.send.classList.remove('false');
+		}
+            }
+        });
+    </script>
+</polymer-element>

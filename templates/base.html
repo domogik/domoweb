@@ -33,6 +33,12 @@
     position: absolute;
     z-index: 1;
   }
+  #logout {
+    position: fixed;
+    z-index: 1000;
+    bottom: 10px;
+    margin-left: 48%;
+  }
   </style>
   <script type="text/javascript">
     var DMW = DMW || {};
@@ -56,6 +62,13 @@
   <link rel="import" href="/components/butler.html">
 </head>
 <body id="body" unresolved>
+  <div id="overlay">
+    <div class="loader" id="loader"></div>
+    <div class="loading_text" id="loading_text"></div>
+  </div>
+  <button type="button" class="btn btn-default btn-sm" id="logout">
+    <span class="glyphicon glyphicon-log-out"></span> Log out
+  </button>
   <dmw-datatypes id="datatypes"></dmw-datatypes>
   <web-socket id="socket"></web-socket>
   <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
@@ -120,6 +133,9 @@
       DMW.main.socket.register('widgetinstance-moved', instanceMoved);
       DMW.main.section.addEventListener('section-updated', sectionUpdated);
       DMW.main.section.addEventListener('section-changed', sectionChanged);
+    });
+    $('#logout').click(function() {
+        window.location = "/logout";
     });
   </script>
   </body>
