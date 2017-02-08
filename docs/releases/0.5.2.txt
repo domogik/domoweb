@@ -1,0 +1,14 @@
+=============
+Release 0.5.2
+=============
+
+Purpose
+=======
+
+The **0.5.2 release** is a minor release which includes some fixes about the 0.5.1 release.
+
+Fixes
+=====
+
+* The **health > body** widget have been fixed.
+* The **service** widgets are now compliant with teleinformation sensors from the generic plugin.

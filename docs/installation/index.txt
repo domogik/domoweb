@@ -20,10 +20,9 @@ Download Domoweb :
 .. code-block:: bash
 
     $ cd /opt/dmg
-    $ wget --content-disposition https://github.com/domogik/domoweb/archive/0.6.0.tar.gz
-    $ tar xvzf domoweb-0.6.0.tar.gz
-    $ ln -s domoweb-0.6.0 domoweb
+    $ git clone https://github.com/domogik/domoweb.git
     $ cd domoweb
+    $ git checkout develop
 
 Launch the installation script
 ==============================
