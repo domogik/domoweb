@@ -8,3 +8,4 @@ Table Of Content
 
     /index
     /installation/index
+    /releases/0.5.2
