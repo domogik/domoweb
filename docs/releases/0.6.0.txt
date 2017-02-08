@@ -1,0 +1,20 @@
+=============
+Release 0.6.0
+=============
+
+Purpose
+=======
+
+TODO
+
+Improvments
+===========
+
+* Add a loader for login/sections
+* New widgets : Hue, StepChart, F5, F11
+
+Fixes
+=====
+
+TODO
+
