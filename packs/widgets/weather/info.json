@@ -169,7 +169,6 @@
             }
         },
         "rainhour2": {
-            "dev" : true,
             "name" : "Rain forecast 2",
             "description" : "Weather rain forecast",
             "height" : 2,
@@ -203,6 +202,28 @@
                     "description": "Weather Vigilance",
                     "types" : ["vigilance"],
                     "required": true                   
+                }
+            }
+        },
+        "vigilance2": {
+            "name" : "Vigilance 2",
+            "description" : "Weather Vigilance by Meteo France",
+            "height" : 1,
+            "width" : 3,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                }
+            },
+            "devices" : {
+                "vigilance" : {
+                    "name": "Vigilance",
+                    "description": "Weather Vigilance",
+                    "types" : ["vigilance"],
+                    "required": true
                 }
             }
         }
