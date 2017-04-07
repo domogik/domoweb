@@ -139,7 +139,6 @@ def main():
     # parse command line for defined options
     args = p.parse_args()
 
-
     # Initial Clean
     if not args.noclean:
         clean()
@@ -165,7 +164,7 @@ def main():
     else:
         info("Checking user")
         if args.user:
-            user = args.options.user
+            user = args.user
         else:
             user = raw_input('Which user will run domogik (default : domoweb)? ')
             if not user:
@@ -190,10 +189,16 @@ def main():
         warning('Not installing Init and /etc files')
     else:
         upgradeOld()
-        installConfig(user)
+        installConfig(user, args.command_line)
         installDefault(user)
         installInit()
         installLogrotate()
+
+    # write config file
+    if args.command_line:
+        info("Update the config file : /etc/domoweb.cfg")
+        write_domoweb_configfile_from_command_line(args)
+
 
     # Update DB
     if args.nodbupdate:
@@ -243,12 +248,15 @@ def upgradeOld():
             shutil.move('/etc/domoweb/domoweb.cfg', '/etc/domoweb.cfg')
         os.rmdir('/etc/domoweb/')
 
-def installConfig(user):
+def installConfig(user, command_line):
     info("Installing /etc/domoweb.cfg")
     uid = pwd.getpwnam(user).pw_uid
     installpath = "%s/examples/config/domoweb.cfg" % os.path.dirname(os.path.abspath(__file__))
     if os.path.isfile('/etc/domoweb.cfg'):
-        keep = raw_input('You already have Domoweb configuration files. Do you want to keep them ? [Y/n] ')
+        if not command_line: 
+            keep = raw_input('You already have Domoweb configuration files. Do you want to keep them ? [Y/n] ')
+        else:
+            keep = 'N'
         if keep == 'N' or keep == 'n':
             shutil.copy(installpath, '/etc/')
             os.chown('/etc/domoweb.cfg', uid, -1)
@@ -489,26 +497,58 @@ def add_arguments_for_config_file(parser, fle):
     # read the sample config file
 
     try:
-        myvars = {}
         with open(fle) as myfile:
             for line in myfile:
-                if not line.startswith("#") and not line.strip():
-                    # TODO : handle empty lines and comments
-                    # TODO : handle empty lines and comments
-                    # TODO : handle empty lines and comments
-                    # TODO : handle empty lines and comments
-                    # TODO : handle empty lines and comments
-                    # TODO : handle empty lines and comments
-                    # TODO : handle empty lines and comments
-                    # TODO : handle empty lines and comments
-                    # TODO : handle empty lines and comments
-                    # TODO : handle empty lines and comments
-                    name, var = line.partition("=")[::2]
+                # handle empty lines and comments
+                if not line.startswith("#") and not line.strip() == "":
+                    name = line.split("=")[0].strip()
                     key = "{0}_{1}".format("domoweb", name)
-                    parser.add_argument("--{0}".format(key),
+                    parser.add_argument("--{0}".format(key), dest=key,
                         help="Update key {0} value".format(key))
     except:
         print(u"Error while reading the sample configuration file : {0}. The error is : {1}".format(fle, traceback.format_exc()))
+
+# usefull ?
+#def is_domoweb_advanced(advanced_mode, key):
+#    advanced_keys = ['sqlite_db', 'port', 'log_file_prefix', 'debug', 'rest_url', 'use_ssl', 'ssl_certificate', 'ssl_key', 'ssl_port']
+#    if advanced_mode:
+#        return True
+#    else:
+#        if key not in advanced_keys:
+#            return True
+#        else:
+#            return False
+
+def write_domoweb_configfile_from_command_line(args):
+    try:
+        config = ""
+        with open("/etc/domoweb.cfg") as myfile:
+            for line in myfile:
+                # handle empty lines and comments
+                if not line.startswith("#") and not line.strip() == "":
+                    name = line.split("=")[0].strip()
+                    value = line.split("=")[1].strip()
+                    try:
+                        new_value = eval("args.{0}_{1}".format("domoweb", name))
+                        if new_value != value and new_value != '' and new_value != None:
+                            print("Set value : {0} = {1}".format(name, new_value))
+                            config += "{0} = {1}\n".format(name, new_value)
+                        else:
+                            print("Keep default value : '{0}' = {1}".format(name, value))
+                            config += "{0} = {1}\n".format(name, value)
+                    except AttributeError:
+                        # no such argument given to the command line : keep the default value
+                        print("Keep default value : '{0}' = {1}".format(name, value))
+                        config += "{0} = {1}\n".format(name, value)
+
+    except:
+        print(u"Error while reading the sample configuration file : {0}. The error is : {1}".format("/etc/domoweb.cfg", traceback.format_exc()))
+
+    # write the config file
+    with open('/etc/domoweb.cfg', 'wb') as configfile:
+        ok("Writing the config file")
+        configfile.write(config)
+
 
 
 
