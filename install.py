@@ -6,6 +6,7 @@ if sys.version_info < (2, 6):
     print "Sorry, requires Python 2.6 or 2.7."
     sys.exit(1)
 
+import traceback
 import os
 import os.path
 euid = os.geteuid()
@@ -18,6 +19,8 @@ try:
 except ImportError:
     print "Please install Domogik MQ first! (https://github.com/domogik/domogik-mq)"
     sys.exit(1)
+#from optparse import OptionParser
+import argparse
 
 import pwd
 import shutil
@@ -31,6 +34,17 @@ WARNING = '\033[93m'
 FAIL = '\033[91m'
 ENDC = '\033[0m'
 
+#class FakeGlobalSectionHead(object):
+#    def __init__(self, fp):
+#        self.fp = fp
+#        self.sechead = '[global]\n'
+#    def readline(self):
+#        if self.sechead:
+#            try: return self.sechead
+#            finally: self.sechead = None
+#        else: return self.fp.readline()
+
+
 def info(msg):
     print "%s [ %s ] %s" % (BLUE,msg,ENDC)
 def ok(msg):
@@ -42,94 +56,101 @@ def fail(msg):
 
 def main():
     """Main function that is called at the install of Domoweb."""
-    from optparse import OptionParser
-    p = OptionParser(usage="usage: %prog [options]",
-                          version="Install for Domoweb 0.6")
-
-    p.add_option('--uninstall',
+    p = argparse.ArgumentParser(description='Domoweb installation.')
+    p.add_argument('--uninstall',
              dest='uninstall',
              action="store_true",
              help="Uninstall Domoweb")
 
-    p.add_option('--simul',
+    p.add_argument('--simul',
              dest='simul',
              action="store_true",
              help="Simulation mode for Uninstall")
 
-    p.add_option('--nodeps',
+    p.add_argument('--nodeps',
              dest='nodeps',
              action="store_true",
              help="Do not install dependencies")
 
-    p.add_option('-u', '--user',
+    p.add_argument('-u', '--user',
              dest='user',
              default=None,
              help="User that will run Domoweb (default: domoweb)")
 
-    p.add_option('--libdir',
+    p.add_argument('--libdir',
              dest='libdir',
              default='/var/lib/domoweb',
              help="Folder for domoweb lib files (default: /var/lib/domoweb)")
 
-    p.add_option('--logdir',
+    p.add_argument('--logdir',
              dest='logdir',
              default='/var/log/domoweb',
              help="Folder for domoweb log files (default: /var/log/domoweb)")
 
-    p.add_option('--piddir',
+    p.add_argument('--piddir',
              dest='piddir',
              default='/var/run/domoweb',
              help="Folder for domoweb pid files (default: /var/run/domoweb)")
 
-    p.add_option('--noconfig',
+    p.add_argument('--noconfig',
              dest='noconfig',
              action="store_true",
              help="Do not install Init and /etc files")
 
-    p.add_option('--nodbupdate',
+    p.add_argument('--nodbupdate',
              dest='nodbupdate',
              action="store_true",
              help="Do not update the Domoweb DB")
 
-    p.add_option('--notest',
+    p.add_argument('--notest',
              dest='notest',
              action="store_true",
              help="Do not test Domoweb Installation")
 
-    p.add_option('--db',
+    p.add_argument('--db',
              dest='db',
              default='/var/lib/domoweb/db.sqlite',
              help="Force domoweb DB file (default: /var/lib/domoweb/db.sqlite)")
 
-    p.add_option('--noclean',
+    p.add_argument('--noclean',
              dest='noclean',
              action="store_true",
              help="Do not clean old Domoweb install")
 
-    p.add_option('--nousercheck',
+    p.add_argument('--nousercheck',
              dest='nousercheck',
              action="store_true",
              help="Do not check for user account")
 
-    p.add_option('--nofoldercreation',
+    p.add_argument('--nofoldercreation',
              dest='nofoldercreation',
              action="store_true",
              help="Do not create folders")
     
+    # generate dynamically all arguments for the various config files
+    # notice that we MUST NOT have the same sections in the different files!
+    p.add_argument('--command-line', dest='command_line', \
+            action="store_true", default=False, \
+            help='Configure the configuration files from the command line only')
+    add_arguments_for_config_file(p, \
+            "examples/config/domoweb.cfg")
+
+
     # parse command line for defined options
-    options, args = p.parse_args()
+    args = p.parse_args()
+
 
     # Initial Clean
-    if not options.noclean:
+    if not args.noclean:
         clean()
 
     # Uninstall
-    if options.uninstall:
-        uninstall(options.simul)
+    if args.uninstall:
+        uninstall(args.simul)
         sys.exit(0)
 
     # Dependencies
-    if options.nodeps:
+    if args.nodeps:
         warning('Not installing dependencies')
     else:
         info("Installing setuptools...")
@@ -139,12 +160,12 @@ def main():
         install_dependencies()
 
     # Domoweb User
-    if options.nousercheck:
+    if args.nousercheck:
         warning('Not checking user')
     else:
         info("Checking user")
-        if options.user:
-            user = options.user
+        if args.user:
+            user = args.options.user
         else:
             user = raw_input('Which user will run domogik (default : domoweb)? ')
             if not user:
@@ -152,20 +173,20 @@ def main():
         test_user(user)
 
     # Domoweb folders creation
-    if options.nofoldercreation:
+    if args.nofoldercreation:
         warning('Not creating folders')
     else:
-        info("Checking %s folder" % options.libdir)
-        createFolder(options.libdir, user)
-        info("Checking %s folder" % options.logdir)
-        createFolder(options.logdir, user)
-        info("Checking %s folder" % options.piddir)
-        createFolder(options.piddir, user)
+        info("Checking %s folder" % args.libdir)
+        createFolder(args.libdir, user)
+        info("Checking %s folder" % args.logdir)
+        createFolder(args.logdir, user)
+        info("Checking %s folder" % args.piddir)
+        createFolder(args.piddir, user)
         info("Copying default files")
-        installFiles(options.libdir, user)
+        installFiles(args.libdir, user)
 
     # Config files
-    if options.noconfig:
+    if args.noconfig:
         warning('Not installing Init and /etc files')
     else:
         upgradeOld()
@@ -175,11 +196,11 @@ def main():
         installLogrotate()
 
     # Update DB
-    if options.nodbupdate:
+    if args.nodbupdate:
         warning('Not updating Domoweb DB')
     else:
         info("Updating Domoweb DB...")
-        updateDb(user, options.db)
+        updateDb(user, args.db)
 
     # Adding module path to PYTHONPATH
     if sitepackages:
@@ -193,7 +214,7 @@ def main():
         fail('site-packages not found')
 
     # Test installation
-    if options.notest:
+    if args.notest:
         warning('Not testing Domoweb Installation')
     else:
         ok("Everything seems to be good, DomoWeb should be installed correctly.")
@@ -463,6 +484,33 @@ def getTornadoUrl():
     options.parse_config_file(SERVER_CONFIG)
 
     return "http://%s:%s/" % (ip, options.port)
+
+def add_arguments_for_config_file(parser, fle):
+    # read the sample config file
+
+    try:
+        myvars = {}
+        with open(fle) as myfile:
+            for line in myfile:
+                if not line.startswith("#") and not line.strip():
+                    # TODO : handle empty lines and comments
+                    # TODO : handle empty lines and comments
+                    # TODO : handle empty lines and comments
+                    # TODO : handle empty lines and comments
+                    # TODO : handle empty lines and comments
+                    # TODO : handle empty lines and comments
+                    # TODO : handle empty lines and comments
+                    # TODO : handle empty lines and comments
+                    # TODO : handle empty lines and comments
+                    # TODO : handle empty lines and comments
+                    name, var = line.partition("=")[::2]
+                    key = "{0}_{1}".format("domoweb", name)
+                    parser.add_argument("--{0}".format(key),
+                        help="Update key {0} value".format(key))
+    except:
+        print(u"Error while reading the sample configuration file : {0}. The error is : {1}".format(fle, traceback.format_exc()))
+
+
 
 def clean():
     import commands
