@@ -121,7 +121,7 @@ form#formConfig {
 }
 
 /* Loading */
-    #overlay {
+    #loading {
         position: absolute;
         left: 0;
         top: 0;
@@ -134,29 +134,28 @@ form#formConfig {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c2c2c', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
         z-index: 50000;
     }
-    .loader {
+    #loading .box {
         position: fixed;
-        z-index: 999;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+    #loading .loader {
+        position: relative;
         height: 10em;
         width: 10em;
         overflow: show;
         margin: auto;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
         background-image: url(/images/loading.svg);
         background-repeat: no-repeat;
         background-position: center;
     }
-    .loading_text {
+    #loading .text {
         color: white;
-        position: fixed;
-        text-align: center;
+        position: relative;
         font-size: 20px;
-        bottom: 40%;
-        left: 0;
-        right: 0;
-        margin: auto;
     }
 

@@ -53,10 +53,10 @@
   <script>
     $(document).on("submit", "form", function(event)
       {
-        var over = '<div id="overlay">' +
-          '<div id="loader" class="loader"></div>' +
-          '<div class="loading_text" id="loading_text">Authenticating...</div>'
-          '</div>';
+        var over = '<div id="loading"><div class="box">' +
+          '<div class="loader"></div>' +
+          '<div class="text">Authenticating...</div>'
+          '</div></div>';
         $(over).appendTo('body');
     });        
   </script>

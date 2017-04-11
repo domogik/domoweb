@@ -54,7 +54,7 @@ function sectionChanged(e) {
 			DMW.grid.appendInstance(node, instance);
 		}
 		DMW.grid.adjustPlacement();
-		$("#overlay").fadeOut(200);
+		$("#loading").fadeOut(200);
 	}
 }
 
