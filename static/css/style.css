@@ -149,7 +149,7 @@ form#formConfig {
         width: 10em;
         overflow: show;
         margin: auto;
-        background-image: url(/images/loading.svg);
+        background-image: url(/images/grid.svg);
         background-repeat: no-repeat;
         background-position: center;
     }
