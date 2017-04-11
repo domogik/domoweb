@@ -33,12 +33,6 @@
     position: absolute;
     z-index: 1;
   }
-  #logout {
-    position: fixed;
-    z-index: 1000;
-    bottom: 10px;
-    margin-left: 48%;
-  }
   </style>
   <script type="text/javascript">
     var DMW = DMW || {};
@@ -66,16 +60,15 @@
     <div class="loader" id="loader"></div>
     <div class="loading_text" id="loading_text"></div>
   </div>
-  <button type="button" class="btn btn-default btn-sm" id="logout">
-    <span class="glyphicon glyphicon-log-out"></span> Log out
-  </button>
   <dmw-datatypes id="datatypes"></dmw-datatypes>
   <web-socket id="socket"></web-socket>
   <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
   <dmw-section id='currentsection' sectionid="{{ section.id }}"></dmw-section>
-	<main role="main">
+
+  <main role="main">
     <div id='grid-layout'></div>
-	</main>
+  </main>
+
   <div id='main-menu'>
     <button class="cnbutton" id="cnbutton"><span class='sr-only' data-i18n="menu.open"></span></button>
     <nav id="cnwrapper" role="navigation">
@@ -83,13 +76,21 @@
       </nav>
       <div id="emptyoverlay" class="overlay"></div>
   </div>
+
   <div id="sections-tree">
     <button id="toggle-radial"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></button>
       {{ display_tree(sections, 0) }}
   </div>
+
   <div id="butler">
-    <button id="toggle-radial-top-right">
+    <button id="toggle-radial-top-left">
       <i class="fa fa-microphone"></i>
+    </button>
+  </div>
+
+  <div id="logout">
+    <button id="toggle-radial-top-right">
+      <i class="fa fa-sign-out"></i>
     </button>
   </div>
   <div id="modal-overlay" class="overlay"></div>

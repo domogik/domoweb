@@ -40,7 +40,7 @@ h3 {
 
 /* Configuration overlay */
 #ui_notifIt {
-	z-index: 10000;
+	z-index: 100000;
 }
 
 #modal-overlay .col-nav {
@@ -68,7 +68,7 @@ h3 {
 	-webkit-transition: all .3s ease;
 	-moz-transition: all .3s ease;
 	transition: all .3s ease;
-	z-index: 3000;   /* previsous value was 1000. Fritz - 20161020 */
+	z-index: 30000;   /* previsous value was 1000. Fritz - 20161020 */
 	overflow-y:auto;
 }
 
@@ -132,7 +132,7 @@ form#formConfig {
 	background: -webkit-linear-gradient(top, #2c2c2c 0%,#0e0e0e 100%); /* Chrome10-25,Safari5.1-6 */
 	background: linear-gradient(to bottom, #2c2c2c 0%,#0e0e0e 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c2c2c', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
-        z-index: 5000;
+        z-index: 50000;
     }
     .loader {
         position: fixed;

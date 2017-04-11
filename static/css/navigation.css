@@ -9,7 +9,22 @@
 }
 
 #butler {
-        z-index: 2000;
+        z-index: 20000;
+	font-size: 0.8em;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+
+#logout .active { 
+	background-color: #2D2C2F !important; 
+	color: #ffffff !important; 
+	z-index: 15; 
+}
+
+#logout {
+        z-index: 20000;
 	font-size: 0.8em;
 	position: fixed;
 	top: 0;
@@ -24,7 +39,7 @@
 }
 
 #sections-tree {
-        z-index: 2000;
+        z-index: 20000;
 	font-size: 0.8em;
 	position: fixed;
 	bottom: 0;
@@ -69,6 +84,28 @@
 	margin: 0 0 0.5em 0.5em;
 }
 #toggle-radial-top-right:hover, #toggle-radial-top-right:active, #toggle-radial-top-right.active {
+	background: #ffffff;
+	color: #2D2C2F;
+}
+
+#toggle-radial-top-left {
+	width: 6em;
+	height: 6em;
+	border-radius: 0 0 6em 0;
+	border: 0;
+	background: #2D2C2F;
+	color: #ffffff;
+	outline: none;
+}
+#toggle-radial-top-left span {
+	font-size: 2em;
+	margin: 0 0.5em 0.5em 0;
+}
+#toggle-radial-top-left i {
+	font-size: 2em;
+	margin: 0 0.5em 0.5em 0;
+}
+#toggle-radial-top-left:hover, #toggle-radial-top-left:active, #toggle-radial-top-left.active {
 	background: #ffffff;
 	color: #2D2C2F;
 }
