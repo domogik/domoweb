@@ -242,3 +242,31 @@ class mqDataLoader:
 
         session.commit()
         session.flush()
+
+    @classmethod
+    def loadPersons(cls, develop):
+        logger.info(u"MQ: Loading Persons info")
+        msg = MQMessage()
+        msg.set_action('person.get')
+        res = cli.request('admin', msg.get(), timeout=10)
+        if res is not None:
+            persons = res.get_data()["persons"]
+        else:
+            persons = []
+        session = Session()
+        for person in persons:
+            logger.info(u"- person '{0} {1}'".format(person['first_name'], person['last_name']))
+            if person["location_sensor"] != None:
+                # TODO : grab from MQ or complete the person MQ result to include the sensor informations
+                s = Sensor(id=person["location_sensor"], 
+                           name="{0} {1} location".format(person['first_name'], person['last_name']), 
+                           device_id=0,
+                           reference="",
+                           datatype_id=0,
+                           last_value=0,
+                           last_received=0,
+                           timeout=0)
+                session.add(s)
+
+        session.commit()
+        session.flush()

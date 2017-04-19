@@ -123,6 +123,7 @@ if __name__ == '__main__':
 
     mqDataLoader.loadDatatypes(options.develop)
     mqDataLoader.loadDevices(options.develop)
+    mqDataLoader.loadPersons(options.develop)
 
     logger.info("Starting tornado web server")
     # https

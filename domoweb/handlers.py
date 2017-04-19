@@ -466,6 +466,7 @@ class MQHandler(MQAsyncSub):
                 content["stored_value"] = content["stored_value"][0]
                 logger.error(u"MQ: PATCH for issue #1976")
 
+            logger.info(u"id={0}, timestamp={1}, value='{2}'".format(content["sensor_id"], content["timestamp"], content["stored_value"]))
             Sensor.update(content["sensor_id"], content["timestamp"], content["stored_value"])
             WSHandler.sendAllMessage([msgid, content])
 
