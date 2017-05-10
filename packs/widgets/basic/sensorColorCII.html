@@ -1,0 +1,81 @@
+<polymer-element name="dmw-basic-sensorColorCII" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            .levelD {
+                margin: 5% 5% 5% 5%;
+                width: 90%;
+                opacity: 0.1;
+            }
+            .levelE {
+                margin: 5% 5% 5% 5%;
+                width: 90%;
+                opacity: 1.2;
+            }
+            #container {
+                width: 100%;
+                height: 100%;
+            }
+
+        </style>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <shadow></shadow>
+        <div id="container">
+        </div>
+
+    </template>
+    <script>
+        Polymer('dmw-basic-sensorColorCII', {
+            ready: function() {
+                this.super();
+                // "W": "White", "O": "Orange", "R": "Red", "Y": "Yellow", "B": "Blue", "G": "Green", "Bk": "Black", "Br": "Brown"
+                this.colorValue = {W: "#FFFFFF", O: "#ff8000", R: "#FF0000", Y: "#FFFF00", B: "#0080ff", G: "#00FF00", Bk: "#000000", Br: "#996633"} ;
+                this.colorHeightValue = [90, 42, 26, 19, 14, 11, 8, 7] ; 
+            },
+            optionsUpdated: function() {
+                if (this.options['hideLabels'] == true ) {         
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
+                console.error(this.options['colorslist']);
+                if (this.options['colorslist']) {
+                    this.colorlist = this.options['colorslist'].split(",") ;
+                    this.nbColor = this.colorlist.length ;     
+                    this.colorHeight = this.colorHeightValue[this.nbColor - 1] ; ;
+                    console.error(this.colorlist) ; 
+                }
+            },
+            
+            sensorsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                }        
+            },
+            
+            sensorvalueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                console.error('newValue = ' + newValue);
+                console.error('colorValue = ' + this.colorValue[newValue]);
+                
+                var colorlevel = "" ;
+                for (var i = this.nbColor - 1; i >= 0; i--) {
+                    if (this.colorlist[i] == newValue) {
+                        colorlevel += "<div class='levelE' style='height:" + this.colorHeight + "%;background:" + this.colorValue[this.colorlist[i]] + ";'></div>" ;
+                    }
+                    else {
+                        colorlevel += "<div class='levelD' style='height:" + this.colorHeight + "%;background:" + this.colorValue[this.colorlist[i]] + ";'></div>" ;
+                    }
+                }
+                this.$.container.innerHTML = colorlevel ;
+            },
+        });
+    </script>
+</polymer-element>

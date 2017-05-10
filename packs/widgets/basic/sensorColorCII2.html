@@ -1,0 +1,75 @@
+<polymer-element name="dmw-basic-sensorColorCII2" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            :host {
+                height: 100%;
+            }
+            #level {
+                display: block;
+                border-style: none;
+                width: 80%;
+                height: 80%;
+                margin: 10%;
+                background: lightgrey ;
+            }
+        </style>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <shadow></shadow>
+        <div id="level" ></div>
+    </template>
+    <script>
+        Polymer('dmw-basic-sensorColorCII2', {
+            ready: function() {
+                this.super();
+            },
+            optionsUpdated: function() {
+                if (this.options['hideLabels'] == true ) {         
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
+            },
+            sensorsUpdated: function() {
+                if (this.$.primary.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                }        
+            },
+            sensorvalueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                switch(newValue) {  // "W": "White", "O": "Orange", "R": "Red", "Y": "Yellow", "B": "Blue", "G": "Green", "Bk": "Black", "Br": "Brown"
+                    case 'W': 
+                        this.$.level.style.background = "#FFFFFF" ;
+                        break;
+                    case 'G': 
+                        this.$.level.style.background = "#00FF00" ;
+                        break;
+                    case 'B': 
+                        this.$.level.style.background = "#0080ff" ;
+                        break;
+                    case 'Y': 
+                        this.$.level.style.background = "#FFFF00" ;
+                        break;
+                    case 'O':
+                        this.$.level.style.background = "#FFC400" ;
+                        break;
+                    case 'R':
+                        this.$.level.style.background = "#FF0000" ;
+                        break;
+                    case 'Br':
+                        this.$.level.style.background = "#996633" ;
+                        break;
+                    case 'Bk':
+                        this.$.level.style.background = "#000000" ;
+                        break;
+                    default: 
+                        this.$.level.style.background = "#E0E0D1" ;
+                }             
+            },
+        });
+    </script>
+</polymer-element>
