@@ -58,6 +58,55 @@
                 }
             }
         },
+        "sensorColorCII": {
+            "name" : "Sensor ColorCII",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "colorslist" : {
+                    "name": "Color list",
+                    "description": "Colors list to be displayed",
+                    "type": "string",
+                    "default": "W,G,B,Y,O,R,Br,Bk",
+                    "required": false
+                }
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "ColorCII sensor",
+                    "description": "ColorCII sensor",
+                    "types" : ["DT_ColorCII"],
+                    "required": true                   
+                }
+            }
+        },
+        "sensorColorCII2": {
+            "name" : "Sensor ColorCII 2",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                }
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "ColorCII sensor",
+                    "description": "ColorCII sensor",
+                    "types" : ["DT_ColorCII"],
+                    "required": true                   
+                }
+            }
+        },
         "commandString": {
             "dev" : true,
             "name" : "Command String",
