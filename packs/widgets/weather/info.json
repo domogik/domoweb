@@ -183,6 +183,21 @@
                 }
             }
         },
+        "rainhour3": {
+            "name" : "Rain forecast 3",
+            "description" : "Weather rain forecast",
+            "height" : 1,
+            "width" : 3,
+            "options" : {},
+            "devices" : {
+                "forecast" : {
+                    "name": "Rain",
+                    "description": "Forecast rain",
+                    "types" : ["rainhour.forecast"],
+                    "required": true                   
+                }
+            }
+        },
         "vigilance": {
             "name" : "Vigilance",
             "description" : "Weather Vigilance by Meteo France",
