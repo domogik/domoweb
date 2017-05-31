@@ -1,4 +1,4 @@
-<polymer-element name="dmw-basic-sensorChart" extends="dmw-widget">
+<polymer-element name="dmw-basic-sensorChart2" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -10,73 +10,74 @@
                 height: 100%;
             }
             #chart {
-                float: left;
-                width: 35%;
-                height: 100%;
-
-            }
-            #values {
-                float: left;
-                width: 65%;
-                height: 100%;
-            }
-            #number {
-                position: relative;
-                top: 43%;
-                -webkit-transform: translate(-50%, -50%);
-                -ms-transform: translate(-50%, -50%);
-                transform: translate(-50%, -50%);
-                left: 50%;
-                text-align: center;
+                position: absolute;
+                bottom: 2%;
+                left: 2%;
+                width: 96%;
+                height: 38%;
                 overflow: hidden;
+            }
+            #thedevicename {
+                position: relative;
+                white-space: nowrap;
+                top: 5%;
+                left: 5%;
+                overflow: hidden;
+                width: 93%;
+                font-size: 1.8em;
+            }
+            #container {
+                position: absolute;
+                top: 18%;
+                left: 5%;
+                height: 25%;
+                width: 94%;
+            }
+            #adjusted {
+                position: relative;
                 display: inline-block;
-                padding: 10px;
+            }
+            #adjusted .unit {
+                font-size: 0.8em;
+                vertical-align: top;
+                height: 100%;
             }
             #minmax {
-                position: relative;
-                top: -20%;
-                -webkit-transform: translate(-50%, -50%);
-                -ms-transform: translate(-50%, -50%);
-                transform: translate(-50%, -50%);
-                left: 50%;
-                text-align: center;
+                position: absolute;
+                top: 47%;
+                left: 5%;
                 overflow: hidden;
                 display: inline-block;
-                width: 100%;
+                width: 94%;
             }
             #minvalue {
             }
             #maxvalue {
             }
-            #unit {
-                position: absolute;
-                top:5px;
-                right: 5px;
-                font-size: 1em;
-            }
         </style>
         <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
         <shadow></shadow>
+        <div id='thedevicename'>{{ devicename }}</div>
+        <div id='container'>
+          <div id='adjusted'>
+              {{number}} <span class="unit">{{unit}}</div>
+          </div>
+        </div>
+        <div id='minmax'>
+          <span id='minvalue'>{{min}}</span>&nbsp;<sup><em>min</em></sup>&nbsp;/&nbsp;
+          <span id='maxvalue'>{{max}}</span>&nbsp;<sup><em>max</em></sup>
+        </div>
         <div id='chart'>
           <div id="spark" class="inlinesparkline">{{spark}}</div>
         </div>
-        <div id='values'>
-          <div id='number'>
-          {{number}}
-          </div>
-          <div id='minmax'>
-            <span id='minvalue'>{{min}}</span>&nbsp;<sup><em>min</em></sup>&nbsp;/&nbsp;
-            <span id='maxvalue'>{{max}}</span>&nbsp;<sup><em>max</em></sup>
-          </div>
-        </div>
-        <div id='unit'>{{unit}}</div>
     </template>
     <script src="/widget/basic/js/jquery.sparkline.min.js"></script>
     <script>
-        Polymer('dmw-basic-sensorChart', {
+        Polymer('dmw-basic-sensorChart2', {
             ready: function() {
                 this.super();
-                this.number = "--";
+                this.devicename = "";
+                this.number = "";
                 this.unit = "";
                 this.currentHistoryValue = [];
             },
@@ -93,6 +94,7 @@
             },
             sensorsUpdated: function() {
                 if (this.$.primary.isSet) {
+                    this.devicename = this.$.primary.device['name'];
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
@@ -104,17 +106,17 @@
                        var k = 1000;
                        var sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
                        var i = Math.floor(Math.log(newValue) / Math.log(k));
-                    this.$.number.innerHTML = (newValue / Math.pow(k, i)).toPrecision(3);
+                    this.number = (newValue / Math.pow(k, i)).toPrecision(3);
                     if (unit) {
                         this.unit = sizes[i] + i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
                     }
                 } else {
-                    this.$.number.innerHTML = newValue;
+                    this.number = newValue;
                     if (unit) {
                         this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
                     }
                 }
-                this.adjustText(this, this.$.number);
+                this.adjustText(this.$.container, this.$.adjusted);
                 this.$.primary.getCurrentDayPerHour();
 
             },
@@ -145,7 +147,7 @@
                 maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
  
                 // as the graph history is an average, the current value could be lower or bigger than the min/max average value. So we adjust
-                current = this.$.number.innerHTML;
+                current = this.number;
                 if (current > maxvalue) {
                     this.max = current;
                 }
@@ -158,9 +160,11 @@
                 else {
                     this.min = minvalue;
                 }
+                //console.log("color:" + this.options['chartColor']);
+                //console.log("colornew:" + this.hexToRgbA(this.options['chartColor']));
                 $(this.$.spark).sparkline(chartValues, {type: 'line',
                                                         lineColor: this.options['chartColor'],
-                                                        fillColor: this.options['chartColor'],
+                                                        fillColor: this.hexToRgbA(this.options['chartColor']),
                                                         spotColor: "",
                                                         minSpotColor: "",
                                                         maxSpotColor: "",
@@ -172,25 +176,42 @@
             adjustText: function(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
                 var i = fontsize.substr(0,2);
-                //alert("cw = " + parent.clientWidth + ", cw = " + parent.clientHeight);
+                //console.log("adjust - " + this.devicename + " / cw = " + parent.clientWidth + ", ch = " + parent.clientHeight);
                 if (parent.clientWidth == 0 || parent.clientHeight == 0) {
                     setTimeout(function(){
                         this.adjustText(parent, element);
                         }.bind(this), 1000);
                 }
                 else {
+                    //console.log("adjust - " + this.devicename + " / ew = " + element.clientWidth + ", eh = " + element.clientHeight);
                     if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
-                        while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
+                        while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 50){
+                            //console.log("adjust - " + this.devicename + " / ew = " + element.clientWidth + ", eh = " + element.clientHeight);
                             element.style.fontSize = i+"px";
                             i++;
                         }
                     } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
                         while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
+                            //console.log("adjust - " + this.devicename + " / ew = " + element.clientWidth + ", eh = " + element.clientHeight);
                             element.style.fontSize = i+"px";
                             i--;
                         }
                     }
                 }
+            },
+            hexToRgbA: function(hex){
+                // From : https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
+                // Add opacity
+                var c;
+                if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+                    c= hex.substring(1).split('');
+                    if(c.length== 3){
+                        c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+                    }
+                    c= '0x'+c.join('');
+                    return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',0.3)';
+                }
+                throw new Error('Bad Hex');
             }
         });
  

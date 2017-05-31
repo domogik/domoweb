@@ -422,6 +422,53 @@
                 }
             }
         },
+        "sensorChart2": {
+            "name" : "Chart for numeric sensor (alternate)",
+            "height" : 2,
+            "width" : 2,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "autoconvert" : {
+                    "name": "Automatic conversion",
+                    "description": "Automatically convert big value to K(x) / M(x) / G(x) / T(x)",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "chartColor" : {
+                    "name": "Chart color",
+                    "description": "Set the chart color in hexadecimal format (mandatory!)",
+                    "type": "string",
+                    "default": "#ffffff"
+                },
+                "chartMinValue" : {
+                    "name": "Chart minimun value",
+                    "description": "Set the chart minimum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                },
+                "chartMaxValue" : {
+                    "name": "Chart maximum value",
+                    "description": "Set the chart maximum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                }
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "Number",
+                    "description": "Number sensor",
+                    "types" : ["DT_Number"],
+                    "required": true
+                }
+            }
+        },
         "sensorChartMulti": {
             "name" : "Chart for several numeric sensors",
             "height" : 2,
