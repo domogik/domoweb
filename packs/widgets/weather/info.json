@@ -173,7 +173,14 @@
             "description" : "Weather rain forecast",
             "height" : 2,
             "width" : 3,
-            "options" : {},
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                }
+            },
             "devices" : {
                 "forecast" : {
                     "name": "Rain",
@@ -188,7 +195,14 @@
             "description" : "Weather rain forecast",
             "height" : 1,
             "width" : 3,
-            "options" : {},
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                }
+            },
             "devices" : {
                 "forecast" : {
                     "name": "Rain",
