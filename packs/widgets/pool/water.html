@@ -61,10 +61,15 @@
 				width: 50px;
 				opacity: 0.2;
 			}
-			.phlevel.current,
-			.cllevel.current {
+                        /*
+			.phlevel .current,
+			.cllevel .current {
 				opacity: 1;
 			}
+                        */
+                        .current {
+                            opacity: 1;
+                        }
 			#phlevel1 { background: #DEC87F; } /* 6.8 */
 			#phlevel2 { background: #EBB08D; border: 1px solid #ffffff; } /* 7.2 */
 			#phlevel3 { background: #E47B6D; border: 1px solid #ffffff; } /* 7.4 */
@@ -100,7 +105,7 @@
 			</g>
 			</svg>{{pumpStatus}}
 		</div>
-		<div id="phdisplay" class="inactive">
+		<div id="phdisplay">
 			<div>pH</div>
 			<div class="phlevel" id="phlevel6"></div>
 			<div class="phlevel" id="phlevel5"></div>
@@ -109,7 +114,7 @@
 			<div class="phlevel" id="phlevel2"></div>
 			<div class="phlevel" id="phlevel1"></div>
 		</div>
-		<div id="cldisplay" class="inactive">
+		<div id="cldisplay">
 			<div>Cl</div>
 			<div class="cllevel" id="cllevel6"></div>
 			<div class="cllevel" id="cllevel5"></div>
@@ -240,6 +245,7 @@
 				    return sum / d + horizon;
 				}
 
+
 				(function animloop(){
 				  requestAnimFrame(animloop);
 				  loop();
@@ -256,6 +262,7 @@
 				} else {
 					this.$.propeller.classList.add('inactive');
 				}
+                                /*
 				if (this.$.ph.isSet) {
 					this.$.phdisplay.classList.remove('inactive');
 				} else {
@@ -266,6 +273,7 @@
 				} else {
 					this.$.cldisplay.classList.add('inactive');
 				}
+                                */
 			},
 			optionsUpdated: function() {
 				this.$.canvas.style.borderRadius = this.options['WidgetBorderRadius'];				
@@ -274,7 +282,7 @@
 			pumpvalueChanged: function(oldValue, newValue) {
 				newValue = newValue.stored_value;
 				this.pumpStatus = i18n.t("domoweb:bool." + newValue, { context: 'DT_State' });
-				if (value == 1) {
+				if (newValue == 1) {
 					this.$.propeller.classList.add('running');
 				} else {
 					this.$.propeller.classList.remove('running');
@@ -287,6 +295,7 @@
 			},
 			phvalueChanged: function(oldValue, newValue) {
 				newValue = newValue.stored_value;
+                                console.error(newValue);
 				var levels = this.shadowRoot.querySelectorAll(".phlevel");
 				for (var i = levels.length - 1; i >= 0; i--) {
 					levels[i].classList.remove('current');

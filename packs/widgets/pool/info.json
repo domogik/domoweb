@@ -35,13 +35,13 @@
                     "types" : ["DT_Bool"],
                     "required": false
                 },
-                "pH" : {
+                "ph" : {
                     "name": "pH",
                     "description": "pH sensor",
                     "types" : ["DT_pH"],
                     "required": false
                 },
-                "Chlorine" : {
+                "chlorine" : {
                     "name": "Chlorine",
                     "description": "Chlorine sensor",
                     "types" : ["DT_Chlorine"],
