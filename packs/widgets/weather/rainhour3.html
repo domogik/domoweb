@@ -1,19 +1,40 @@
+<style>
+@font-face {
+  font-family: 'weathericons';
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot');
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');  
+  font-weight: normal;
+  font-style: normal;
+}     
+</style>
+
 <polymer-element name="dmw-weather-rainhour3" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
+            @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
             :host {
                 height: 100%;
                 display: block;
             }
+            #title {
+                position: absolute;
+                width: 100%;
+                height: 20%;
+                font-size: 1.2em;
+                margin-left: 4px;
+             }
+            #rainicon {
+                margin-left: 10px;
+            }
             .level {
                 display: inline-block;
-                height: 50%;
+                height: 30%;
                 margin: 1px 1px 1px, 1px;
                 width: 24px;
                 opacity: 1;
             }
-            #level0  { margin-left: 3px; background: #E0E0D1; }
+            #level0  { margin-top: 20px; margin-left: 3px; background: #E0E0D1; }
             #level5  { background: #E0E0D1; }
             #level10 { background: #E0E0D1; }
             #level15 { background: #E0E0D1; }
@@ -37,32 +58,32 @@
             #heure5  { 
               position: absolute;
               left: 14px;
-              top: 4px;
+              top: 24px;
             }
             #heure15  { 
               position: absolute;
               left: 70px;
-              top: 4px;
+              top: 24px;
             }
             #heure25  { 
               position: absolute;
               left: 126px;
-              top: 4px;
+              top: 24px;
             }
             #heure35  { 
               position: absolute;
               left: 182px;
-              top: 4px;
+              top: 24px;
             }
             #heure45  { 
               position: absolute;
               left: 238px;
-              top: 4px;
+              top: 24px;
             }
             #heure55  { 
               position: absolute;
               left: 294px;
-              top: 4px;
+              top: 24px;
             }
             .legendicon {
                 display: inline-block;
@@ -114,6 +135,7 @@
 
         <shadow></shadow>
         
+        <div id="title"><span>{{ title }}</span><span id='rainicon'><i class="wi wi-showers"></i></span></div>
         <div id="container">
             <div class="heure" id="heure5">{{rainForecastHeure5}}</div>
             <div class="heure" id="heure15">{{rainForecastHeure15}}</div>
@@ -123,6 +145,7 @@
             <div class="heure" id="heure55">{{rainForecastHeure55}}</div>
             <div class="heure" id="heure60"></div>
         </div>
+        
         <div class="level" id="level0"></div>
         <div class="level" id="level5"></div>
         <div class="level" id="level10"></div>
@@ -133,14 +156,14 @@
         <div class="level" id="level35"></div>
         <div class="level" id="level40"></div>
         <div class="level" id="level45"></div>
-        <div class="level" id="level50""></div>
+        <div class="level" id="level50"></div>
         <div class="level" id="level55"></div>
-        </div>
-            <div class="legendicon" id="icon4"></div><div id="legend">forte</div>
-            <div class="legendicon" id="icon3"></div><div id="legend">modérée</div>
-            <div class="legendicon" id="icon2"></div><div id="legend">faible</div>
-            <div class="legendicon" id="icon1"></div><div id="legend">nulle</div>
-            <div class="legendicon" id="icon0"></div><div id="legend">n/a</div>
+        
+        <div class="legendicon" id="icon4"></div><div id="legend">forte</div>
+        <div class="legendicon" id="icon3"></div><div id="legend">modérée</div>
+        <div class="legendicon" id="icon2"></div><div id="legend">faible</div>
+        <div class="legendicon" id="icon1"></div><div id="legend">nulle</div>
+        <div class="legendicon" id="icon0"></div><div id="legend">n/a</div>
     </template>
     
     
@@ -148,25 +171,13 @@
         Polymer('dmw-weather-rainhour3', {
             ready: function() {
                 this.super();
-                this.labelsecondary = i18n.t("weather:Rain Forecast") ;
+                this.title = "";
                 this.rainColorValue = ["#E0E0D1", "#FFFFFF", "#AAE8FF", "#48BFEA", "#0094CE"] ;
             },
 
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
-                    this.$.labelprimary.style.visibility = "hidden";
-                    this.$.labelsecondary.style.visibility = "hidden";
-                }
-                else {
-                    this.$.labelprimary.style.visibility = "visible";
-                    this.$.labelsecondary.style.visibility = "visible";
-                }
-            },
-  
             rainForecastLocation_valueChanged: function (oldValue, newValue) {
                 newValue = newValue.stored_value ;
-                //this.rainForecastLocationName = newValue ;
-                this.labelprimary = newValue ;
+                this.title = newValue ;
             },
             
             rainForecastDate_valueChanged: function (oldValue, newValue) {

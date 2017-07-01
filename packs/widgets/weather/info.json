@@ -173,14 +173,7 @@
             "description" : "Weather rain forecast",
             "height" : 2,
             "width" : 3,
-            "options" : {
-                "hideLabels" : {
-                    "name": "Hide the widget labels",
-                    "description": "Hide the top and left widget labels",
-                    "type": "boolean",
-                    "default": "False"
-                }
-            },
+            "options" : {},
             "devices" : {
                 "forecast" : {
                     "name": "Rain",
@@ -195,14 +188,7 @@
             "description" : "Weather rain forecast",
             "height" : 1,
             "width" : 3,
-            "options" : {
-                "hideLabels" : {
-                    "name": "Hide the widget labels",
-                    "description": "Hide the top and left widget labels",
-                    "type": "boolean",
-                    "default": "False"
-                }
-            },
+            "options" : {},
             "devices" : {
                 "forecast" : {
                     "name": "Rain",
@@ -247,6 +233,21 @@
                     "default": "False"
                 }
             },
+            "devices" : {
+                "vigilance" : {
+                    "name": "Vigilance",
+                    "description": "Weather Vigilance",
+                    "types" : ["vigilance"],
+                    "required": true
+                }
+            }
+        },
+        "vigilance3": {
+            "name" : "Vigilance 3",
+            "description" : "Weather Vigilance by Meteo France",
+            "height" : 1,
+            "width" : 3,
+            "options" : {},
             "devices" : {
                 "vigilance" : {
                     "name": "Vigilance",

@@ -98,6 +98,21 @@
                     "required": true
                 }
             }
+        },
+        "vigipollens": {
+            "name" : "Pollens vigilance",
+            "description" : "Pollens vigilance",
+            "height" : 4,
+            "width" : 2,
+            "options" : {},
+            "devices" : {
+                "vigipollens" : {
+                    "name": "Pollens",
+                    "description": "Allergen vigilance",
+                    "types" : ["vigipollens"],
+                    "required": true                   
+                }
+            }
         }
     }
 }
