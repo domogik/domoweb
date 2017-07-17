@@ -1,0 +1,309 @@
+<polymer-element name="dmw-health-vigipollens" extends="dmw-widget">
+    <template>
+        <!-- ln -s /var/lib/domogik/domogik_packages/plugin_vigipollens/domoweb/packs/widgets/pollens  /opt/dmg/domoweb/packs/widgets/pollens -->
+
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            #title {
+                position: absolute;
+                color: white;
+                width: 100%;
+                font-size: 1.1em;
+                font-weight: bold;
+                text-align: center;
+            }
+            #container {
+                margin-top: 10px;
+                margin-left: 50px;
+                width: 100%;
+            }
+            .alergenlevel {
+                display: inline-block;
+                height: 12px;
+                width: 12px;
+                margin-right: 4px;
+                border-style: solid;
+                border-width: 1px;
+            }
+            #alergenname {
+                display: inline-block;
+                font-size: 14px;
+                margin-left: 3px;
+            }
+            #alergencolor1  { 
+                background: #E0E0D1;
+            }
+            #alergencolor2  { 
+                background: #E0E0D1;
+            }
+            #alergencolor3  { 
+                background: #E0E0D1;
+            }
+            #alergencolor4  { 
+                background: #E0E0D1;
+            }
+            #alergencolor5  { 
+                background: #E0E0D1;
+            }
+            #alergencolor6  { 
+                background: #E0E0D1;
+            }
+            #alergencolor7  { 
+                background: #E0E0D1;
+            }
+            #alergencolor8  { 
+                background: #E0E0D1;
+            }
+            #alergencolor9  { 
+                background: #E0E0D1;
+            }
+            #alergencolor10  { 
+                background: #E0E0D1;
+            }
+            #alergencolor11  { 
+                background: #E0E0D1;
+            }
+            #alergencolor12  { 
+                background: #E0E0D1;
+            }
+            #alergencolor13  { 
+                background: #E0E0D1;
+            }
+            #alergencolor14  { 
+                background: #E0E0D1;
+            }
+            #alergencolor15  { 
+                background: #E0E0D1;
+            }
+            #alergencolor16  { 
+                background: #E0E0D1;
+            }
+            #alergencolor17  { 
+                background: #E0E0D1;
+            }
+            #alergencolor18  { 
+                background: #E0E0D1;
+            }
+            #alergencolor19  { 
+                background: #E0E0D1;
+            }
+
+            .legendicon {
+                display: inline-block;
+                height: 10px;
+                width: 10px;
+                opacity: 1;
+                margin-top: 8px;
+                border-style: solid;
+                border-width: 1px;
+            }
+            #icon5  {
+                background: red;
+            }
+            #icon4  { 
+                background: orange;
+            }
+            #icon3  { 
+                background: yellow;
+            }
+            #icon2  { 
+                background: blue;
+            }
+            #icon1  { 
+                background: #31B404;
+            }
+            #icon0  { 
+                background: white;
+            }
+            #legend {
+                display: inline-block;
+                font-size: 12px;
+                margin-left: 3px;
+            }
+            #legendpos1 {
+                position: absolute;
+                left: 10px;
+            }
+            #legendpos2 {
+                position: absolute;
+                left: 80px;
+            }
+            #legendpos3 {
+                position: absolute;
+                left: 150px;
+            }
+        </style>
+        <shadow></shadow>
+
+        <dmw-sensor id='vigilanceDepartement' sensorkey='vigilanceDepartement' sensorvalue='{{vigilanceDepartement_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorDepartement' sensorkey='vigilanceColorDepartement' sensorvalue='{{vigilanceColorDepartement_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorCupressaceae' sensorkey='vigilanceColorCupressaceae' sensorvalue='{{vigilanceColorCupressaceae_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorHazel' sensorkey='vigilanceColorHazel' sensorvalue='{{vigilanceColorHazel_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorAlder' sensorkey='vigilanceColorAlder' sensorvalue='{{vigilanceColorAlder_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorPoplar' sensorkey='vigilanceColorPoplar' sensorvalue='{{vigilanceColorPoplar_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorWillow' sensorkey='vigilanceColorWillow' sensorvalue='{{vigilanceColorWillow_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorAsh' sensorkey='vigilanceColorAsh' sensorvalue='{{vigilanceColorAsh_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorHomebeam' sensorkey='vigilanceColorHomebeam' sensorvalue='{{vigilanceColorHomebeam_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorBirsh' sensorkey='vigilanceColorBirsh' sensorvalue='{{vigilanceColorBirsh_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorPlane' sensorkey='vigilanceColorPlane' sensorvalue='{{vigilanceColorPlane_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorOak' sensorkey='vigilanceColorOak' sensorvalue='{{vigilanceColorOak_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorOlive' sensorkey='vigilanceColorOlive' sensorvalue='{{vigilanceColorOlive_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorLinden' sensorkey='vigilanceColorLinden' sensorvalue='{{vigilanceColorLinden_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorChestnut' sensorkey='vigilanceColorChestnut' sensorvalue='{{vigilanceColorChestnut_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorSorrel' sensorkey='vigilanceColorSorrel' sensorvalue='{{vigilanceColorSorrel_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorGrasses' sensorkey='vigilanceColorGrasses' sensorvalue='{{vigilanceColorGrasses_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorPlantain' sensorkey='vigilanceColorPlantain' sensorvalue='{{vigilanceColorPlantain_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorNettles' sensorkey='vigilanceColorNettles' sensorvalue='{{vigilanceColorNettles_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorMugwort' sensorkey='vigilanceColorMugwort' sensorvalue='{{vigilanceColorMugwort_value}}'></dmw-sensor>
+        <dmw-sensor id='vigilanceColorRagweed' sensorkey='vigilanceColorRagweed' sensorvalue='{{vigilanceColorRagweed_value}}'></dmw-sensor>
+
+        <shadow></shadow>
+        
+        <div id="title">{{ title }}</div><br>
+        <div id="container">
+            <div class="alergenlevel" id="alergencolor1"></div><div id="alergenname">Cupressacees</div><br>
+            <div class="alergenlevel" id="alergencolor2"></div><div id="alergenname">Noisetiers</div><br>
+            <div class="alergenlevel" id="alergencolor3"></div><div id="alergenname">Aulnes</div><br>
+            <div class="alergenlevel" id="alergencolor4"></div><div id="alergenname">Peupliers</div><br>
+            <div class="alergenlevel" id="alergencolor5"></div><div id="alergenname">Saule</div><br>
+            <div class="alergenlevel" id="alergencolor6"></div><div id="alergenname">Frenes</div><br>
+            <div class="alergenlevel" id="alergencolor7"></div><div id="alergenname">Charmes</div><br>
+            <div class="alergenlevel" id="alergencolor8"></div><div id="alergenname">Bouleaux</div><br>
+            <div class="alergenlevel" id="alergencolor9"></div><div id="alergenname">Platanes</div><br>
+            <div class="alergenlevel" id="alergencolor10"></div><div id="alergenname">Chenes</div><br>
+            <div class="alergenlevel" id="alergencolor11"></div><div id="alergenname">Olivier</div><br>
+            <div class="alergenlevel" id="alergencolor12"></div><div id="alergenname">Tilleuls</div><br>
+            <div class="alergenlevel" id="alergencolor13"></div><div id="alergenname">Chataigniers</div><br>
+            <div class="alergenlevel" id="alergencolor14"></div><div id="alergenname">Rumex</div><br>
+            <div class="alergenlevel" id="alergencolor15"></div><div id="alergenname">Graminees</div><br>
+            <div class="alergenlevel" id="alergencolor16"></div><div id="alergenname">Plantains</div><br>
+            <div class="alergenlevel" id="alergencolor17"></div><div id="alergenname">Urticacees</div><br>
+            <div class="alergenlevel" id="alergencolor18"></div><div id="alergenname">Armoises</div><br>
+            <div class="alergenlevel" id="alergencolor19"></div><div id="alergenname">Ambroisies</div><br>
+        </div>
+        <div id="legendpos1"><div class="legendicon" id="icon0"></div><div id="legend">nul</div></div>
+        <div id="legendpos2"><div class="legendicon" id="icon1"></div><div id="legend">faible</div></div>
+        <div id="legendpos3"><div class="legendicon" id="icon2"></div><div id="legend">modéré</div></div><br>
+        <div id="legendpos1"><div class="legendicon" id="icon3"></div><div id="legend">moyen</div></div>
+        <div id="legendpos2"><div class="legendicon" id="icon4"></div><div id="legend">élévé</div></div>
+        <div id="legendpos3"><div class="legendicon" id="icon5"></div><div id="legend">fort</div></div>
+        
+    </template>
+    
+    
+    <script>
+        Polymer('dmw-health-vigipollens', {
+            ready: function() {
+                this.super();
+            },
+
+            vigilanceDepartement_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.title = "Risques allergiques (" + newValue + ")" 
+            },
+            
+            vigilanceColorDepartement_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.title.style.color = getVigipollenColor(newValue) ;
+            },
+            
+            vigilanceColorCupressaceae_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor1.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorHazel_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor2.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorAlder_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor3.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorPoplar_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor4.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorWillow_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor5.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorAsh_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor6.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorHomebeam_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor7.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorBirsh_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor8.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorPlane_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor9.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorOak_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor10.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorOlive_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor11.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorLinden_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor12.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorChestnut_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor13.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorSorrel_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor14.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorGrasses_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor15.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorPlantain_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor16.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorNettles_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor17.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorMugwort_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor18.style.background = getVigipollenColor(newValue) ;
+            },
+            vigilanceColorRagweed_valueChanged: function (oldValue, newValue) {
+                newValue = newValue.stored_value ;
+                this.$.alergencolor19.style.background = getVigipollenColor(newValue) ;
+            },
+
+        });        
+        
+        function getVigipollenColor(color) {
+                switch(color) {         // "white", "green", "blue", "yellow", "orange", "red"
+                    case 'W': 
+                        return "white" ;
+                    case 'G': 
+                        return "#31B404" ;
+                    case 'B': 
+                        return "blue" ;
+                    case 'Y': 
+                        return "yellow" ;
+                    case 'O':
+                        return "orange" ;
+                    case 'R':
+                        return "red" ;
+                    default: 
+                        return "white" ;
+                }             
+            }
+        
+    </script>
+</polymer-element>

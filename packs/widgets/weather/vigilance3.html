@@ -1,0 +1,282 @@
+<style>
+@font-face {
+  font-family: 'weathericons';
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot');
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');  
+  font-weight: normal;
+  font-style: normal;
+}     
+</style>
+<polymer-element name="dmw-weather-vigilance3" extends="dmw-widget">
+    <template>
+        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <style type="text/css">
+            @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
+            :host {
+                height: 100%;
+                display: block;
+            }
+            #container {
+                height: 70px;
+                width: 333px;
+                position: relative;
+                margin-top: 4px; 
+                margin-left: 2px;
+                background: #1a1a00 ;
+            }
+            #piccontainer {
+                margin-left: 2px;
+            }
+            #image {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 70px;
+              height: 70px;
+            }
+            #image2 {
+                left: 263;
+                top: 0;
+                float: right;
+                width: 70px;
+                height: 70px;
+            }
+            #date {
+              z-index: 100;
+              position: absolute;
+              color: white;
+              font-size: 6px;
+              left: 72px;
+              top: 2px;
+            }
+            #title {
+                position: absolute;
+                color: white;
+                /*background-color: #D8D8D8;*/
+                background-color: #323639;
+                left: 73px;
+                width: 188px;
+                font-size: 1em;
+                font-weight: bold;
+                text-align: center;
+             }
+            #text {
+              z-index: 5;
+              position: absolute;
+              color: black;
+              font-size: 10px;
+              font-weight: bold;
+              left: 80px;
+              top: 20px;
+            }
+
+            #pictoM {
+                float: left;
+                width: 37px;
+                background: #1a1a00 ;         
+                height: auto;
+                color: white ;
+            }
+            #pictoM .tooltiptext {
+                visibility: hidden;
+                background-color: white;
+                color: black;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px 20px;
+                margin-left: -80px;
+                margin-top: -30px;
+                position: absolute;
+                z-index: 999;
+            }
+            #pictoM:active .tooltiptext {
+                visibility: visible;
+            }
+            #info {
+                background-color: #808080;
+                position: absolute;
+                display: none;
+                top: 0px;
+                left: 0px;
+                min-height: 100%;
+                width: 100%;
+                padding: 0;
+                z-index: 1000;
+            }
+            #infotext {
+                margin-left: 5px;
+                font-size: 10px;
+            }
+
+        </style>
+        
+        <shadow></shadow>
+        
+        <dmw-sensor id='vigilanceDep' sensorkey="vigilanceDep" sensorvalue="{{vigilanceDep_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceColor' sensorkey="vigilanceColor" sensorvalue="{{vigilanceColor_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceColorWind' sensorkey="vigilanceColorWind" sensorvalue="{{vigilanceColorWind_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceColorRain' sensorkey="vigilanceColorRain" sensorvalue="{{vigilanceColorRain_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceColorThunderstorms' sensorkey="vigilanceColorThunderstorms" sensorvalue="{{vigilanceColorThunderstorms_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceColorFlood' sensorkey="vigilanceColorFlood" sensorvalue="{{vigilanceColorFlood_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceColorSnow' sensorkey="vigilanceColorSnow" sensorvalue="{{vigilanceColorSnow_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceColorHeat' sensorkey="vigilanceColorHeat" sensorvalue="{{vigilanceColorHeat_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceColorCold' sensorkey="vigilanceColorCold" sensorvalue="{{vigilanceColorCold_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceColorAvalanches' sensorkey="vigilanceColorAvalanches" sensorvalue="{{vigilanceColorAvalanches_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceColorSubmersion' sensorkey="vigilanceColorSubmersion" sensorvalue="{{vigilanceColorSubmersion_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceRisk' sensorkey="vigilanceRisk" sensorvalue="{{vigilanceRisk_value}}"></dmw-sensor>
+        <dmw-sensor id='vigilanceInfo' sensorkey="vigilanceInfo" sensorvalue="{{vigilanceInfo_value}}"></dmw-sensor>
+        
+        <div id="container" on-click="{{displayInfo}}">
+            <!-- <img id="image" src="{{urlVigiFrance}}" on-click="{{displayInfo}}/> -->
+            <img id="image" src="{{urlVigiFrance}}" />
+            <!-- <span id="date">{{ date }}</span> -->
+            <div id="title">{{ title }}</div>
+            <span id="text">{{ risk }}</span>
+            <img id="image2" src="images/vigilance/logo.png" />
+        </div>
+        <div id="piccontainer">
+        <div id="pictoM"><div id="riskWind"><i class="wi wi-strong-wind"></i></div><span class="tooltiptext">{{ tooltipWind }}</span></div>
+        <div id="pictoM"><div id="riskRain"><i class="wi wi-rain"></i></div><span class="tooltiptext">{{ tooltipRain }}</span></div>
+        <div id="pictoM"><div id="riskThunderstorms"><i class="wi wi-lightning"></i></div><span class="tooltiptext">{{ tooltipThunderstorms }}</span></div>
+        <div id="pictoM"><div id="riskFlood"><i class="wi wi-flood"></i></div><span class="tooltiptext">{{ tooltipFlood }}</span></div>
+        <div id="pictoM"><div id="riskSnow"><i class="wi wi-snow"></i></div><span class="tooltiptext">{{ tooltipSnow }}</span></div>
+        <div id="pictoM"><div id="riskHeat"><i class="wi wi-day-sunny"></i></div><span class="tooltiptext">{{ tooltipHeat }}</span></div>
+        <div id="pictoM"><div id="riskCold"><i class="wi wi-snowflake-cold"></i></div><span class="tooltiptext">{{ tooltipCold }}</span></div>
+        <div id="pictoM"><div id="riskAvalanches"><i class="wi wi-volcano"></i></div><span class="tooltiptext">{{ tooltipAvalanches }}</span></div>
+        <div id="pictoM"><div id="riskSubmersion"><i class="wi wi-tsunami"></i></div><span class="tooltiptext">{{ tooltipSubmersion }}</span></div>
+        </div>
+        <div id="info" on-click="{{hideInfo}}"><pre id=infotext>{{ vigiInfo }}</pre>
+        </div>
+
+    </template>
+    
+    <script>
+        Polymer('dmw-weather-vigilance3', {
+            ready: function() {
+                this.super();
+                
+                this.tooltipWind = i18n.t("weather:Wind") ;
+                this.tooltipRain = i18n.t("weather:Rain") ;
+                this.tooltipThunderstorms = i18n.t("weather:Thunderstorms") ;
+                this.tooltipFlood= i18n.t("weather:Flood") ;
+                this.tooltipSnow = i18n.t("weather:Snow/ice") ;
+                this.tooltipHeat = i18n.t("weather:Heat wave") ;
+                this.tooltipCold = i18n.t("weather:Intense cold") ;
+                this.tooltipAvalanches = i18n.t("weather:Avalanches") ;
+                this.tooltipSubmersion = i18n.t("weather:Submersion wave") ;     
+            },
+            
+            vigilanceDep_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.title = "Département " + newValue ;
+                this.urlVigiFrance = "http://vigilance.meteofrance.com/data/QGFR08_LFPW_.gif?" + new Date().getTime();
+            },
+            
+            vigilanceInfo_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.vigiInfo = newValue ;
+                var vigiInfoLines = this.vigiInfo.split("\n") ;
+                this.date = vigiInfoLines[1] ;
+                
+            },
+            
+            vigilanceColor_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.text.style.color = getColor(newValue) ;
+            },
+            
+            vigilanceColorWind_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.riskWind.style.color = getColor(newValue) ;
+            },
+            
+            vigilanceColorRain_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.riskRain.style.color = getColor(newValue) ;
+            },
+            
+            vigilanceColorThunderstorms_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.riskThunderstorms.style.color = getColor(newValue) ;
+            },
+            
+            vigilanceColorFlood_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.riskFlood.style.color = getColor(newValue) ;
+            },
+            
+            vigilanceColorSnow_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.riskSnow.style.color = getColor(newValue) ;
+            },
+            
+            vigilanceColorHeat_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.riskHeat.style.color = getColor(newValue) ;
+            },
+            
+            vigilanceColorCold_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.riskCold.style.color = getColor(newValue) ;
+            },
+            
+            vigilanceColorAvalanches_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.riskAvalanches.style.color = getColor(newValue) ;
+            },
+            
+            vigilanceColorSubmersion_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                this.$.riskSubmersion.style.color = getColor(newValue) ;
+            },
+            
+            
+            vigilanceRisk_valueChanged: function(oldValue, newValue) {
+                newValue = newValue.stored_value;
+                
+                if (newValue) {
+                    var riskslist = newValue.split(",") ;
+                    var riskslistlen = riskslist.length ;
+                    var risktext = "" ;
+                    for (i = 0; i < riskslistlen; i++) { 
+                        risktext = risktext + i18n.t("weather:" + riskslist[i]) + "<br \>" ; 
+                    }
+                    //var risksFont = ((6 - riskslistlen) * 4).toString() + "px" ;
+                    var risksFont = ((5 - riskslistlen) * 4).toString() + "px" ;
+                    this.$.text.innerHTML = risktext;
+                    this.$.text.style.fontSize = risksFont ;                   // 1line = 20, 2lines=16, 3lines=12, 4lines=8, ...
+                    //console.error("vigilanceRisks = " + risktext);
+                }
+            },
+            
+            displayInfo: function() {
+                console.error("displayInfo = " + this.vigiInfo);
+                this.$.info.style.display = "block";
+            },
+
+            hideInfo: function() {
+                console.error("hideInfo");
+                this.$.info.style.display = "none";
+            }
+            
+        });
+        
+        function getColor(color) {
+                switch(color) {         // "white", "green", "yellow", "orange", "red"
+                    case 'W': 
+                        return "white" ;
+                    case 'G': 
+                        return "#31B404" ;
+                    case 'Y': 
+                        return "yellow" ;
+                    case 'O':
+                        return "orange" ;
+                    case 'R':
+                        return "red" ;
+                    default: 
+                        return "white" ;
+                }             
+            }
+
+    </script>
+</polymer-element>
