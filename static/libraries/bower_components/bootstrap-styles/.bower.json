@@ -1,0 +1,45 @@
+{
+  "name": "bootstrap-styles",
+  "authors": [
+    "Alberto Fernandez <albertofdzm@gmail.com> (http://onlythepixel.com)"
+  ],
+  "description": "Web Component made with Polymer for bootstrap shared styles",
+  "keywords": [
+    "bootstrap",
+    "styles",
+    "polymer",
+    "web component",
+    "shared styles"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/AlbertoFdzM/bootstrap-styles",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "main": "bootstrap-styles.html",
+  "dependencies": {
+    "polymer": "^1.7.1"
+  },
+  "devDependencies": {
+    "bootstrap": "^3.3.7",
+    "iron-component-page": "PolymerElements/iron-component-page#^1.1.7",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.2.5",
+    "web-component-tester": "^5.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.23"
+  },
+  "version": "1.0.2",
+  "_release": "1.0.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.0.2",
+    "commit": "b653737b40f333b6f89d61f71111b199fda7a00f"
+  },
+  "_source": "https://github.com/AlbertoFdzM/bootstrap-styles.git",
+  "_target": "^1.0.2",
+  "_originalSource": "bootstrap-styles",
+  "_direct": true
+}

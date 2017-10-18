@@ -1,4 +1,4 @@
-<polymer-element name="dmw-tank-water2" extends="dmw-widget">
+<dom-module id="dmw-tank-water2" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -47,9 +47,10 @@
         </div>
     </template>
     <script>
-        Polymer('dmw-tank-water2', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-tank-water2',
+            connectedCallback() {
+                super.connectedCallback();
                 /**
                  *    Wave oscillators by Ken Fyrstenberg Nilsen
                  *    http://abdiassoftware.com/
@@ -89,7 +90,7 @@
             },
 
 
-                loop: function() {
+                loop() {
                     this.theCanvas = this.$.canvas;
                     this.ctx = this.theCanvas.getContext('2d');
 
@@ -130,7 +131,7 @@
 
 
 
-                mixer: function() {
+                mixer() {
 
                     var d = arguments.length,
                         i = d,
@@ -143,7 +144,7 @@
                     return sum / d + this.horizon;
                 },
 
-            optionsUpdated: function() {
+            optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {         
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
@@ -154,13 +155,13 @@
                 }
                 this.changeStyle();
             },
-            sensorsUpdated: function() {
+            sensorsUpdated() {
                 if (this.$.level.isSet) {
                     this.labelprimary = this.$.level.device['name'];
                     this.labelsecondary = this.$.level.name;
                 }
             },
-            changeStyle: function() {
+            changeStyle() {
                 if (this.options['WidgetBorderRadius'] == undefined) {
                     this.$.canvas.style.borderRadius = "5px";
                 }
@@ -176,14 +177,15 @@
                     this.ctx.fillStyle = this.options['waterColor'];
                 }
             },
-            levelvalueChanged: function(oldValue, newValue) {
+            levelvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.theValue = newValue ;
                 
                 if (newValue > 96) { newValue = 96; }
                 this.horizon = this.$.canvas.height*(1-newValue/100);
             },
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
 
 
                 /// oscillator object
@@ -229,4 +231,4 @@
                   };
         })();
     </script>
-</polymer-element>
+</dom-module>

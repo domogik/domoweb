@@ -1,4 +1,4 @@
-<polymer-element name="dmw-navigation-sectionTitle" extends="dmw-widget">
+<dom-module id="dmw-navigation-sectionTitle" extends="dmw-widget">
     <template>
         <style type="text/css">
             :host {
@@ -24,22 +24,23 @@
         <shadow></shadow>
     </template>
     <script>
-        Polymer('dmw-navigation-sectionTitle', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-navigation-sectionTitle',
+            connectedCallback() {
+                super.connectedCallback();
                 this.section = document.getElementById('currentsection');
             },
-            loadingDone: function() {
+            loadingDone() {
                 this.setSection();
             },
-            optionsUpdated: function() {
+            optionsUpdated() {
                 this.setSection();
             },
             setSection: function () {
                 this.section.addEventListener('section-updated', this.sectionUpdated.bind(this));
                 this.sectionUpdated();
             },
-            sectionUpdated: function() {
+            sectionUpdated() {
                 if (this.options['overrideLabel']) {
                     this.$.labelprimary.innerHTML = this.options['overrideLabel'];
                 } else {
@@ -52,7 +53,7 @@
                 }
                 this.adjustText(this, this.$.labelprimary);
             },
-            adjustText: function(parent, element) {
+            adjustText(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
                 var i = fontsize.substr(0,2);
                 //alert("cw = " + parent.clientWidth + ", cw = " + parent.clientHeight);
@@ -76,6 +77,7 @@
                     }
                 }
             }
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
     </script>
-</polymer-element>
+</dom-module>

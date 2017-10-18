@@ -1,4 +1,4 @@
-<polymer-element name="dmw-hue-basicColorCommand" extends="dmw-widget">
+<dom-module id="dmw-hue-basicColorCommand" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -25,19 +25,21 @@
               sliders: false,
               swatches: false,
               hsvpanel: true
-            });
+    	    };
+    customElements.define(Dmw.is, Dmw);
 </script>
     </template>
     <script>
-        Polymer('dmw-hue-basicColorCommand', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-hue-basicColorCommand',
+            connectedCallback() {
+                super.connectedCallback();
                 this.boolstate = null;
                 this.currentValue = 0;
 		this.global_avail = 0;
 
             },
-            optionsUpdated: function() {
+            optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {         
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
@@ -47,7 +49,7 @@
                     this.$.labelsecondary.style.visibility = "visible";
                 }
             },
-            sensorsUpdated: function() {
+            sensorsUpdated() {
                 if (this.$.boolstate.isSet) {
                     this.hasFeedback = true;
                 }
@@ -58,7 +60,7 @@
                     this.$.send.classList.remove('circle');
                 }
             },
-            availvalueChanged: function (oldValue, newValue) {
+            availvalueChanged: function (newValue, oldValue) {
                 if (this.$.availability.isSet) {
 		this.global_avail = newValue.stored_value;
                     if (newValue.stored_value == 0) {
@@ -70,7 +72,7 @@
 		    }
                 }
             },
-            commandsUpdated: function() {
+            commandsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
@@ -86,7 +88,7 @@
                     this.$.send.addEventListener('click', this.send.bind(this));
                 }
             },
-            send: function(e) {
+            send(e) {
                 var parameters = {};
                 var nextValue = (this.currentValue == 1?0:1);
                 parameters[this.$.primary.parameters[0]['key']] = nextValue;
@@ -97,7 +99,7 @@
                     this.boolstate = nextValue;
                 }
             },
-            boolstateChanged: function(oldValue, newValue) {
+            boolstateChanged(newValue, oldValue) {
 		if (this.global_avail == 1) {
                     this.currentValue = parseInt(newValue.stored_value);
                     if (this.currentValue == 1) {
@@ -128,6 +130,7 @@
 		    this.$.send.classList.remove('false');
 		}
             }
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
     </script>
-</polymer-element>
+</dom-module>

@@ -1,6 +1,7 @@
-<polymer-element name="dmw-basic-commandBool" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<link rel="import" href="/widget/basic/css/labelstyles.html">
+<dom-module id="dmw-basic-commandbool">
+    <template id="extended-styles">
+        <style include="dmw-widget-label-styles"></style>
         <style type="text/css">
             :host {
                 height: 100%;
@@ -12,7 +13,7 @@
                 height: 80%;
                 margin: 10%;
                 color: #000000;
-		cursor: pointer;
+                cursor: pointer;
                 white-space: normal;
             }
             button#send.circle {
@@ -27,20 +28,47 @@
                 color: #ffffff;
             }
         </style>
-        <dmw-command id="primary" commandkey="primary"></dmw-command>
-        <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}"></dmw-sensor>
+        <dmw-command id="primary" commandkey="primary" commandnotified="send"></dmw-command>
+        <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue={{boolstate}} sensornotified="send"></dmw-sensor>
         <shadow></shadow>
-        <button id="send" class="btn btn-default">{{sendtext}}</button>
+        <button id="send" class="btn btn-default">[[sendtext]]</button>
     </template>
     <script>
-        Polymer('dmw-basic-commandBool', {
-            ready: function() {
-                this.super();
+     (function () {
+        let memoizedTemplate;
+
+        class DmwBasicCommandBool extends DmwWidget {
+            static get is () { return 'dmw-basic-commandbool'; }
+            static get properties() {
+                return {
+                    boolstate: {
+                        notify: true,
+                        observer: 'boolstateChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 this.boolstate = null;
                 this.currentValue = 0;
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -48,8 +76,8 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.boolstate.isSet) {
                     this.hasFeedback = true;
                 }
@@ -59,8 +87,8 @@
                 if (this.options['circle'] == 0) {
                     this.$.send.classList.remove('circle');
                 }
-            },
-            commandsUpdated: function() {
+            }
+            commandsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
@@ -75,8 +103,8 @@
                     }
                     this.$.send.addEventListener('click', this.send.bind(this));
                 }
-            },
-            send: function(e) {
+            }
+            send(e) {
                 var parameters = {};
                 var nextValue = (this.currentValue == 1?0:1);
                 parameters[this.$.primary.parameters[0]['key']] = nextValue;
@@ -86,28 +114,32 @@
                 if (!this.hasFeedback) { //If no feedback sensor, we assume ok
                     this.boolstate = nextValue;
                 }
-            },
-            boolstateChanged: function(oldValue, newValue) {
-                this.currentValue = parseInt(newValue.stored_value);
-                if (this.currentValue == 1) {
-                    this.$.send.classList.add('true');
-                    this.$.send.classList.remove('false');
-                } else {
-                    this.$.send.classList.add('false');
-                    this.$.send.classList.remove('true');
-                }
-                if (this.$.primary.isSet) {
-                    if ((this.currentValue == 0) && (this.options['label0'] != undefined) && (this.options['label0'] != "")) {
-                        this.sendtext = this.options['label0'];
+            }
+            boolstateChanged(newValue, oldValue) {
+                if (newValue) {
+                    this.currentValue = parseInt(newValue.stored_value);
+                    if (this.currentValue == 1) {
+                        this.$.send.classList.add('true');
+                        this.$.send.classList.remove('false');
+                    } else {
+                        this.$.send.classList.add('false');
+                        this.$.send.classList.remove('true');
                     }
-                    else if ((this.currentValue == 1) && (this.options['label1'] != undefined) && (this.options['label1'] != "")) {
-                        this.sendtext = this.options['label1'];
-                    }
-                    else {
-                        this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                    if (this.$.primary.isSet) {
+                        if ((this.currentValue == 0) && (this.options['label0'] != undefined) && (this.options['label0'] != "")) {
+                            this.sendtext = this.options['label0'];
+                        }
+                        else if ((this.currentValue == 1) && (this.options['label1'] != undefined) && (this.options['label1'] != "")) {
+                            this.sendtext = this.options['label1'];
+                        }
+                        else {
+                            this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                        }
                     }
                 }
             }
-        });
+    };
+    customElements.define(DmwBasicCommandBool.is, DmwBasicCommandBool);
+    })();
     </script>
-</polymer-element>
+</dom-module>

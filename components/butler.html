@@ -8,15 +8,15 @@
 }
 </style>
 
-<link rel="import" href="/libraries/polymer/polymer.html">
+<link rel="import" href="/libraries/bower_components/polymer/polymer.html">
 <link rel="import" href="/components/websockets.html">
+<link rel="import" href="/libraries/bower_components/bootstrap-styles/bootstrap-styles.html">
+<link rel="import" href="/libraries/bower_components/slate-font-awesome/slate-font-awesome.html">
 
-<polymer-element name="dmw-butler">
+<dom-module id="dmw-butler">
     <template>
-        <style>
-              @import '/libraries/bootstrap-3.3.5/css/bootstrap.min.css';
-        </style>
-        <link rel="stylesheet" href="/libraries/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow>
+        <style include="bootstrap-styles"></style>
+        <style include="slate-font-awesome"></style>
         <style type="text/css">
             #background {
                 /* background-color: blue; */
@@ -149,7 +149,7 @@
             	-ms-animation: pulse1 2s linear infinite;
             	animation: pulse1 2s linear infinite;
             }
-            
+
             @keyframes "pulse1" {
              0% {
                 background-color: rgba(255,0,0,1.0);
@@ -160,7 +160,7 @@
              100% {
                 background-color: rgba(255,0,0,1.0);
              }
-            
+
             }
             @-moz-keyframes pulse1 {
              0% {
@@ -172,9 +172,9 @@
              100% {
                background-color: rgba(255,0,0,1.0);
              }
-            
+
             }
-            
+
             @-webkit-keyframes "pulse1" {
              0% {
                background-color: rgba(255,0,0,1.0);
@@ -185,9 +185,9 @@
              100% {
                background-color: rgba(255,0,0,1.0);
              }
-            
+
             }
-            
+
             @-ms-keyframes "pulse1" {
              0% {
                background-color: rgba(255,0,0,1.0);
@@ -198,7 +198,7 @@
              100% {
                background-color: rgba(255,0,0,1.0);
              }
-            
+
             }
         </style>
         <web-socket id="socket"></web-socket>
@@ -226,7 +226,7 @@
               <!-- <button id="closeModal" type="button" class="btn btn-default">Close</button> -->
 
               <div id="speakButton" on-click="{{startVoiceRecog}}">
-                <span class="center"><i class="fa {{icon}} fa-3x"></i></span> 
+                <span class="center"><i class="fa {{icon}} fa-3x"></i></span>
                 <!-- <span>SPEAK</span> -->
               </div>
 
@@ -236,7 +236,7 @@
               </ul>
 
             </div>
-          </div>       
+          </div>
         </div>
         <div id="informations">
           <span id="browserLocale">Browser locale : {{browserLocale}}</span>
@@ -253,14 +253,19 @@
         </div>
     </template>
     <script>
-        Polymer("dmw-butler", {
-            ready:function(){
+        class DmwButler extends Polymer.Element {
+            static get is () { return 'dmw-butler'; }
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 // Find the browser locale
                 this.browserLocale = window.navigator.languages[0] || "fr-FR"; // why fr as default... because... because ;)
 
 
                 // Current status of the page
-                /* Values : 
+                /* Values :
                         WAITING : do nothing, wait for the user to clic on the icon
                         STT     : voice recognition
                         CALLING_BUTLER : call the butler and wait for the response
@@ -275,7 +280,7 @@
                            |            |                                |
                            |            |                                |
                            |            |                                |
-                        WAITING -----> STT -----> CALLING_BUTLER -----> TTS 
+                        WAITING -----> STT -----> CALLING_BUTLER -----> TTS
                            |            |   ok            |        ok
                            |            |                 |
                            |            |                 |
@@ -317,7 +322,7 @@
 
                 // display warning if no voices are available (this is the case of Chomium browser)
                 // Voices are loaded async so we wait the onvoiceschanges to be triggered to check
-                self = this;
+                var self = this;
                 if (window.hasOwnProperty('speechSynthesis')) {
                     window.speechSynthesis.onvoiceschanged = function() {
                         setTimeout(function() {
@@ -334,8 +339,8 @@
                 if (doSTT == true) {
                     this.startVoiceRecog();
                 }
-            },
-            close: function(e) {
+            }
+            close(e) {
                 this.recognition.stop();
 
                 // Redisplay the corner buttons
@@ -345,17 +350,17 @@
                 var modalOverlay = document.getElementById('modal-overlay');
                 modalOverlay.classList.remove('on');
                 this.remove();
-            },
-            cleanError: function() {
+            }
+            cleanError() {
                 this.$.error.style.visibility = "hidden";
                 this.error = "";
-            },
-            showError: function(e) {
+            }
+            showError(e) {
                 this.$.error.style.visibility = "visible";
                 console.error(e);
                 this.error = e;
-            },
-            startVoiceRecog: function(e) {
+            }
+            startVoiceRecog(e) {
                 this.cleanError();
                 if (window.hasOwnProperty('webkitSpeechRecognition')) {
                     // first, check if voice recnognition is already in process or not.
@@ -459,20 +464,20 @@
 
                     this.recognition.start();
                 }
-            },
-            displayRequest: function(requestText) {
+            }
+            displayRequest(requestText) {
                 this.request = requestText;
                 // clean the previous butler response
                 this.butlerResponse = "";
-            },
-            displayResponse: function(text) {
+            }
+            displayResponse(text) {
                 this.butlerResponse = text;
-            },
-            tts: function(topic, json) {
+            }
+            tts(topic, json) {
                 // Google speech synthetesis is bugged with long texts...
                 // - http://stackoverflow.com/questions/21947730/chrome-speech-synthesis-with-longer-texts
                 // So we spllit the text if it is too long to handle this.
- 
+
                 this.status = "TTS";
                 this.icon = "fa-commenting-o";
                 this.$.speakButton.classList.remove('pulse1');
@@ -499,7 +504,7 @@
                 }
                 var u = []
                 for (idx in arr) {
-                    
+
                     u[idx] = new SpeechSynthesisUtterance();
                     u[idx].text = arr[idx];
                     u[idx].lang = self.browserLocale;
@@ -525,17 +530,17 @@
                     speechSynthesis.speak(u[idx]);
                 }
 
-            },
-            afterTts: function() {
+            }
+            afterTts() {
                 this.startVoiceRecog(undefined);
-            },
-            help: function() {
+            }
+            help() {
                 this.$.helpModal.style.visibility = "visible";
-            },
-            helpEnd: function() {
+            }
+            helpEnd() {
                 this.$.helpModal.style.visibility = "hidden";
             }
-
-        });
+        };
+        customElements.define(DmwButler.is, DmwButler);
     </script>
-</polymer-element>
+</dom-module>

@@ -1,4 +1,4 @@
-<polymer-element name="dmw-basic-commandString" extends="dmw-widget">
+<dom-module id="dmw-basic-commandstring">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -21,13 +21,14 @@
         <button id="send" class="btn btn-primary btn-xs"></button>
     </template>
     <script>
-        Polymer('dmw-basic-commandString', {
-            ready: function() {
-                this.super();
+        class DmwBasicCommandString extends DmwWidget {
+            static get is () { return 'dmw-basic-commandstring'; }
+            connectedCallback() {
+                super.connectedCallback();
                 this.$.send.innerHTML = i18n.t("basic:send");
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -35,15 +36,15 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                     this.$.send.addEventListener('click', this.send.bind(this));
                 }
-            },
-            send: function(e) {
+            }
+            send(e) {
                 var parameters = {};
                 parameters[this.$.primary.parameters[0]['key']] = this.$.text.value;
                 this.$.primary.send(parameters);
@@ -51,6 +52,7 @@
                 e.preventDefault();
                 e.stopPropagation();
             }
-        });
+	    };
+    customElements.define(DmwBasicCommandString.is, DmwBasicCommandString);
     </script>
-</polymer-element>
+</dom-module>

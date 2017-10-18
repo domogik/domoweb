@@ -1,121 +1,62 @@
-<polymer-element name="dmw-basic-commandRange" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css">
+<link rel="import" href="/widget/basic/css/labelstyles.html">
+<link rel="import" href="/libraries/bower_components/paper-slider/paper-slider.html">
+
+<dom-module id="dmw-basic-commandrange">
+    <template id="extended-styles">
+        <style include="dmw-widget-label-styles"></style>
         <style type="text/css">
             :host {
                 height: 100%;
                 padding: 1%;
             }
-
-            .slider {
+            #range {
+                --paper-slider-height : 15px;
+                --paper-slider-knob-size: 30px;
+                --paper-slider-knob-start-color: var(--paper-grey-400);
+                --paper-slider-knob-start-border-color: var(--paper-grey-200);
                 position: relative;
-                top: 45%;
-                -webkit-transform: translate(-50%, -50%);
-                -ms-transform: translate(-50%, -50%);
-                transform: translate(-50%, -50%);
-                left: 50%;
-            }
-
-
-            input[type=range] {
-              -webkit-appearance: none;
-              width: 98%;
-              background-color: transparent;
-            }
-            input[type=range]:focus {
-              outline: none;
-            }
-            input[type=range]::-webkit-slider-runnable-track {
-              width: 100%;
-              height: 4px;
-              cursor: pointer;
-              background-color: transparent;
-              border-radius: 5.4px;
-              border: none;
-            }
-            input[type=range]::-webkit-slider-thumb {
-              height: 50px;
-              width: 50px;
-              border-radius: 50px;
-              background: #ffffff;
-              cursor: pointer;
-              -webkit-appearance: none;
-              margin-top: -23px;
-            }
-            input[type=range]:focus::-webkit-slider-runnable-track {
-              background: transparent;
-            }
-            input[type=range]::-moz-range-track {
-              width: 100%;
-              height: 4px;
-              cursor: pointer;
-              background: transparent;
-              border-radius: 5.4px;
-              border: none;
-            }
-            input[type=range]::-moz-range-thumb {
-              height: 50px;
-              width: 50px;
-              border-radius: 50px;
-              background: #ffffff;
-              cursor: pointer;
-            }
-            input[type=range]::-ms-track {
-              width: 100%;
-              height: 4px;
-              cursor: pointer;
-              background: transparent;
-              border-color: transparent;
-              color: transparent;
-            }
-            input[type=range]::-ms-fill-lower {
-              background: transparent;
-              border: none;
-              border-radius: 10.8px;
-            }
-            input[type=range]::-ms-fill-upper {
-              background: transparent;
-              border: none;
-              border-radius: 10.8px;
-            }
-            input[type=range]::-ms-thumb {
-              height: 50px;
-              width: 50px;
-              border-radius: 50px;
-              background: #ffffff;
-              cursor: pointer;
-            }
-
-
-
-
-            #current {
-                font-size: 3.5em;
-                float: left;
-            }
-            #prevalue {
-                float: right;
-                font-size: 1.6em;
-            }
-        </style>
-        <dmw-command id="primary" commandkey="primary"></dmw-command>
-        <dmw-sensor id='scalingstate' sensorkey="scalingstate" sensorvalue="{{scalingstate}}"></dmw-sensor>
-        <shadow></shadow>
-        <div class="slider">
-          <input type="range" id="range" min="0" max="100" step="5">
-        </div>
-        <!--
-        <div id="current">{{current}}{{unit}}</div>
-        <div id="prevalue">{{prevalue}}</div>
-        -->
+                height: 100%;
+                width: 100%;
+           }
+           </style>
+        <dmw-command id="primary" commandkey="primary" commandnotified="range"></dmw-command>
+        <dmw-sensor id='scalingstate' sensorkey="scalingstate" sensorvalue={{scalingstate}} sensornotified="range"></dmw-sensor>
+        <paper-slider id="range" pin min=[[rangeMinValue]] max=[[rangeMaxValue]]></paper-slider>
     </template>
     <script>
-        Polymer('dmw-basic-commandRange', {
-            ready: function() {
-                this.super();
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+     (function () {
+        let memoizedTemplate;
+
+        class DmwBasicCommandRange extends DmwWidget {
+            static get is () { return 'dmw-basic-commandrange'; }
+            static get properties() {
+                return {
+                    scalingstate: {
+                        notify: true,
+                        observer: 'scalingstateChanged'
+                    }
+                }
+            }            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
+
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -123,53 +64,54 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
-                                
+                if (this.options['rangeMinValue']) {
+                    this.$.range.min = this.options['rangeMinValue'];
+                }
+                if (this.options['rangeMaxValue']) {
+                    this.$.range.max = this.options['rangeMaxValue'];
+                }
+                this.$.range.min =  parseFloat(this.$.range.min);
+                this.$.range.max = parseFloat(this.$.range.max);
+            }
+            sensorsUpdated() {
                 if (this.$.scalingstate.isSet) {
                     this.hasFeedback = true;
                 } else {
                     this.current = 0;
                     this.$.range.value = 0;
                 }
-            },
-            commandsUpdated: function() {
+            }
+            commandsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                     this.$.range.addEventListener('change', this.onInput.bind(this));
                 }
-            },
-            scalingstateChanged: function(oldValue, newValue) {
-                this.current = newValue.stored_value;
-                this.$.range.value = this.current;
+            }
+            scalingstateChanged(newValue, oldValue) {
+                this.current = parseFloat(newValue.stored_value);
                 var val = (this.$.range.value - this.$.range.min) / (this.$.range.max - this.$.range.min);
-                this.$.range.style.backgroundImage =
-                    '-webkit-gradient(linear, left top, right top, '
-                    + 'color-stop(' + val + ', rgba(255,255,255,0.8)), '
-                    + 'color-stop(' + val + ', rgba(255,255,255,0.2))'
-                    + ')';
-            },
-            onInput: function(e) {
+                this.updateStyles({
+                    '--paper-slider-active-color': 'blue'
+                    });
+                this.$.range.value = this.current;
+            }
+            onInput(e) {
                 e.preventDefault();
--               e.stopPropagation();
-                console.log("OnInput" + this.$.range.value);
+                e.stopPropagation();
+                console.log("OnInput : " + this.$.range.value);
                 this.prevalue = this.$.range.value;
                 var parameters = {};
                 parameters[this.$.primary.parameters[0]['key']] = this.$.range.value;
                 this.$.primary.send(parameters);
                 this.prevalue = "";
-
-                console.error(this.$.range.min);
                 var val = (this.$.range.value - this.$.range.min) / (this.$.range.max - this.$.range.min);
-                this.$.range.style.backgroundImage =
-                    '-webkit-gradient(linear, left top, right top, '
-                    + 'color-stop(' + val + ', rgba(255,0,0,0.8)), '
-                    + 'color-stop(' + val + ', rgba(255,255,255,0.2))'
-                    + ')';
-
-
+                this.updateStyles({
+                    '--paper-slider-active-color': 'red'
+                    });
             }
-        });
+        };
+        customElements.define(DmwBasicCommandRange.is, DmwBasicCommandRange);
+    })();
     </script>
-</polymer-element>
+</dom-module>

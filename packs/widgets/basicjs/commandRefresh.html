@@ -1,4 +1,4 @@
-<polymer-element name="dmw-basicjs-commandRefresh" extends="dmw-widget">
+<dom-module id="dmw-basicjs-commandrefresh">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -27,11 +27,12 @@
         <button id="send" class="btn btn-default" onclick="location.reload();">Refresh</button>
     </template>
     <script>
-        Polymer('dmw-basicjs-commandRefresh', {
-            ready: function() {
-                this.super();
-            },
-            commandsUpdated: function() {
+        class DmwBasicjsCommandRefresh extends DmwWidget {
+            static get is () { return 'dmw-basicjs-commandrefresh'; }
+            connectedCallback() {
+                super.connectedCallback();
+            }
+            commandsUpdated() {
                 if (this.options['circle'] == 1) {
                     this.$.send.classList.add('circle');
                 }
@@ -39,6 +40,7 @@
                     this.$.send.classList.remove('circle');
                 }
             }
-        });
+	    };
+        customElements.define(DmwBasicjsCommandRefresh.is, DmwBasicjsCommandRefresh);
     </script>
-</polymer-element>
+</dom-module>

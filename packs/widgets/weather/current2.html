@@ -8,7 +8,7 @@
 }     
 
 </style>
-<polymer-element name="dmw-weather-current2" extends="dmw-widget">
+<dom-module id="dmw-weather-current2" extends="dmw-widget">
     <template>
         <style type="text/css">
             @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
@@ -67,21 +67,22 @@
         <shadow></shadow>
     </template>
     <script>
-        Polymer('dmw-weather-current2', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-weather-current2',
+            connectedCallback() {
+                super.connectedCallback();
                 this.unit = "";
             },
-            current_codeChanged: function(oldValue, newValue) {
+            current_codeChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.current_code.innerHTML = setWeatherIcon(newValue);
                 //this.$.current_code.innerHTML = '<i class="wi wi-day-fog"></i>';
             },
-            current_stationChanged: function(oldValue, newValue) {
+            current_stationChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.location = newValue;
             },
-            current_temperatureChanged: function(oldValue, newValue) {
+            current_temperatureChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.temperature = newValue;
                 var unit = this.datatypes[this.$.current_temperature.datatype_id]['unit'];
@@ -89,11 +90,12 @@
                     this.unit = i18n.t("domoweb:unit", { context: this.$.current_temperature.datatype_id, value: unit });
                 }
             },
-            current_textChanged: function(oldValue, newValue) {
+            current_textChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.condition = newValue; // Add i18n ("Fair/Windy")
             },
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
 
 
         function setWeatherIcon(condid) {
@@ -205,4 +207,4 @@
          
         } 
     </script>
-</polymer-element>
+</dom-module>

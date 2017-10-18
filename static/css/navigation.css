@@ -1,15 +1,35 @@
 @charset "UTF-8";
 
+/*------------- Handle touch device only ---------------*/
+
+#acces-menu {
+	position: fixed;
+	top: 0px;
+	left: 50%;
+    z-index: 20000;
+}
+
+#acces-menu.btn {
+    padding-top: 1px;
+    padding-right: 4px;
+    padding-bottom: 1px;
+    padding-left: 5px;
+}
+
+.no-touch #acces-menu{
+    visibility : hidden;
+}
+
 /*--------------  SAFELY CUSTOMIZABLE - Visual styling for menu elements -------------------*/
 
-#butler .active { 
-	background-color: #2D2C2F !important; 
-	color: #ffffff !important; 
-	z-index: 15; 
+#butler .active {
+	background-color: #2D2C2F !important;
+	color: #ffffff !important;
+	z-index: 15;
 }
 
 #butler {
-        z-index: 20000;
+    z-index: 20000;
 	font-size: 0.8em;
 	position: fixed;
 	top: 0;
@@ -17,14 +37,14 @@
 }
 
 
-#logout .active { 
-	background-color: #2D2C2F !important; 
-	color: #ffffff !important; 
-	z-index: 15; 
+#logout .active {
+	background-color: #2D2C2F !important;
+	color: #ffffff !important;
+	z-index: 15;
 }
 
 #logout {
-        z-index: 20000;
+    z-index: 20000;
 	font-size: 0.8em;
 	position: fixed;
 	top: 0;
@@ -32,18 +52,30 @@
 }
 
 
-#sections-tree .active { 
-	background-color: #2D2C2F !important; 
-	color: #ffffff !important; 
-	z-index: 15; 
+#sections-tree .active {
+	background-color: #2D2C2F !important;
+	color: #ffffff !important;
+	z-index: 15;
 }
 
 #sections-tree {
-        z-index: 20000;
+    z-index: 20000;
 	font-size: 0.8em;
 	position: fixed;
 	bottom: 0;
 	left: 0;
+}
+
+.menu-corners .menu-item .menu-button:not(.active),
+.menu-corners .menu-cnitem .menu-button:not(.active) {
+    visibility: hidden;
+    opacity:0;
+    transition:visibility 0.8s linear,opacity 0.8s linear;
+}
+.menu-corners .menu-item:hover .menu-button,
+.menu-corners .menu-cnitem:hover .menu-button  {
+    visibility: visible;
+    opacity:1;
 }
 
 /*--------------  Toggle Button -------------- */
@@ -112,8 +144,8 @@
 
 /* -------------- Menu Levels general styling -------------- */
 
-#sections-tree ul.level-1 { 
-	font-size: 1.2em; 
+#sections-tree ul.level-1 {
+	font-size: 1.2em;
 }
 
 /* -------------- Menu Items -------------- */
@@ -125,46 +157,46 @@
 }
 
 #sections-tree > ul li.level-main {
-	color: #2D2C2F; 
+	color: #2D2C2F;
 	background-color: #B13822;
 }
 
-#sections-tree > ul li:hover { 
-	background-color: #2D2C2F; 
+#sections-tree > ul li:hover {
+	background-color: #2D2C2F;
 }
-#sections-tree ul li.have-subs { 
-	border: 2px solid #B13822; 
+#sections-tree ul li.have-subs {
+	border: 2px solid #B13822;
 }
 
 /* -------------- Menu Items - Links -------------- */
-#sections-tree ul li a { 
-	text-decoration: none; 
+#sections-tree ul li a {
+	text-decoration: none;
 	color: #ffffff;
 	outline: none;
 }
 #sections-tree ul li.have-subs > a {
- 	background: url("../images/multi-level-arrow.png") no-repeat right bottom; 
+ 	background: url("../images/multi-level-arrow.png") no-repeat right bottom;
 }
-#sections-tree ul li.active > a { 
-	color: #ffffff; 
+#sections-tree ul li.active > a {
+	color: #ffffff;
 }
 #sections-tree ul li > a:hover, nav.square ul li > a:active {
-	color: #ffffff; 
+	color: #ffffff;
 }
 
 
 /*--------------------------- RESTRICTED - Should not be modified ---------------------------*/
-	
-#sections-tree .hide { 
-	display: none !important; 
+
+#sections-tree .hide {
+	display: none !important;
 }
-#sections-tree .show { 
-	display: inherit !important; 
+#sections-tree .show {
+	display: inherit !important;
 }
 /*
-.disable {  
-	opacity: 0.2; 
-} 
+.disable {
+	opacity: 0.2;
+}
 */
 
 #sections-tree #toggle-radial {
@@ -181,7 +213,7 @@
 }
 
 #sections-tree > ul li {
-	display: block;			
+	display: block;
 	position: absolute;
 }
 
@@ -190,19 +222,19 @@
 	margin: 0;
 	position: absolute;
 }
-	
-#sections-tree ul li a {	
+
+#sections-tree ul li a {
 	display: table-cell;
 	vertical-align: middle;
 	text-align: center;
-	/* Styling for unwrapped item labels (Experimental) 
+	/* Styling for unwrapped item labels (Experimental)
 	display: block;
 	line-height: 55px;
 	margin-left: -50%;
 	white-space: nowrap;
 	*/
 }
-	
+
 /*Styling for unwrapped item labels (Experimental)
 .radial-label {
 	display: inline-block;

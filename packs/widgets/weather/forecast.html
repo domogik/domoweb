@@ -16,15 +16,16 @@
 @font-face {
   font-family: 'weathericons';
   src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot');
-  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');  
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');
   font-weight: normal;
   font-style: normal;
-}     
+}
 
 </style>
-<polymer-element name="dmw-weather-forecast" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/weather/weather-icons-master-1.3/css/weather-icons.css" shim-domshadow> 
+<dom-module id="dmw-weather-forecast">
+    <template id="extended-styles">
+        <link rel="stylesheet" href="/widget/weather/weather-icons-master-1.3/css/weather-icons.css">
+        <style include="dmw-widget-label-styles"></style>
         <style type="text/css">
             @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
             :host {
@@ -83,7 +84,7 @@
         <dmw-sensor id='forecast_0_temperature_high' sensorkey="forecast_0_temperature_high" sensorvalue="{{forecast_0_temperature_high_value}}"></dmw-sensor>
         <dmw-sensor id='forecast_0_temperature_low' sensorkey="forecast_0_temperature_low" sensorvalue="{{forecast_0_temperature_low_value}}"></dmw-sensor>
 
-        <dmw-sensor id='forecast_1_day' sensorkey="forecast_1_day" sensorvalue="{{forecast_1_day_value}}"></dmw-sensor>
+        <dmw-sensor id='forecast_1_day' sensorkey="forecast_1_day" sensorvalue="{{forecast_1_day_value}}" sensornotified="day_1"></dmw-sensor>
         <dmw-sensor id='forecast_1_condition_code' sensorkey="forecast_1_condition_code" sensorvalue="{{forecast_1_condition_code_value}}"></dmw-sensor>
         <dmw-sensor id='forecast_1_temperature_high' sensorkey="forecast_1_temperature_high" sensorvalue="{{forecast_1_temperature_high_value}}"></dmw-sensor>
         <dmw-sensor id='forecast_1_temperature_low' sensorkey="forecast_1_temperature_low" sensorvalue="{{forecast_1_temperature_low_value}}"></dmw-sensor>
@@ -111,11 +112,11 @@
           <div class="temperatures">
             <i class="wi wi-thermometer"></i>
             <div class="temperature">
-              {{ high }} : 
+              {{ high }} :
               <span id="forecast_0_temperature_high">{{forecast_0_temperature_high}}</span>
             </div>
             <div class="temperature">
-              {{ low }} : 
+              {{ low }} :
               <span id="forecast_0_temperature_low">{{forecast_0_temperature_low}}</span>
             </div>
           </div>
@@ -126,7 +127,7 @@
           <div class="condition" id="forecast_1_condition_code">{{forecast_1_condition_code}}</div>
           <div class="temperature">
             <span id="forecast_1_temperature_high">{{forecast_1_temperature_high}}</span>
-            | 
+            |
             <span id="forecast_1_temperature_low">{{forecast_1_temperature_low}}</span>
           </div>
         </div>
@@ -136,7 +137,7 @@
           <div class="condition" id="forecast_2_condition_code">{{forecast_2_condition_code}}</div>
           <div class="temperature">
             <span id="forecast_2_temperature_high">{{forecast_2_temperature_high}}</span>
-            | 
+            |
             <span id="forecast_2_temperature_low">{{forecast_2_temperature_low}}</span>
           </div>
         </div>
@@ -146,7 +147,7 @@
           <div class="condition" id="forecast_3_condition_code">{{forecast_3_condition_code}}</div>
           <div class="temperature">
             <span id="forecast_3_temperature_high">{{forecast_3_temperature_high}}</span>
-            | 
+            |
             <span id="forecast_3_temperature_low">{{forecast_3_temperature_low}}</span>
           </div>
         </div>
@@ -156,25 +157,121 @@
           <div class="condition" id="forecast_4_condition_code">{{forecast_4_condition_code}}</div>
           <div class="temperature">
             <span id="forecast_4_temperature_high">{{forecast_4_temperature_high}}</span>
-            | 
+            |
             <span id="forecast_4_temperature_low">{{forecast_4_temperature_low}}</span>
           </div>
         </div>
 
     </template>
     <script>
-        Polymer('dmw-weather-forecast', {
-            ready: function() {
-                this.super();
+     (function () {
+        let memoizedTemplate;
+
+        class DmwWeatherForecast extends DmwWidget {
+            static get is () { return 'dmw-weather-forecast' ;}
+            static get properties() {
+                return {
+                    forecast_0_condition_code_value: {
+                        notify: true,
+                        observer: 'forecast_0_condition_code_valueChanged'
+                    },
+                    forecast_0_temperature_high_value: {
+                        notify: true,
+                        observer: 'forecast_0_temperature_high_valueChanged'
+                    },
+                    forecast_0_temperature_low_value: {
+                        notify: true,
+                        observer: 'forecast_0_temperature_low_valueChanged'
+                    },
+                    forecast_1_day_value: {
+                        notify: true,
+                        observer: 'forecast_1_day_valueChanged'
+                    },
+                    forecast_1_condition_code_value: {
+                        notify: true,
+                        observer: 'forecast_1_condition_code_valueChanged'
+                    },
+                    forecast_1_temperature_high_value: {
+                        notify: true,
+                        observer: 'forecast_1_temperature_high_valueChanged'
+                    },
+                    forecast_1_temperature_low_value: {
+                        notify: true,
+                        observer: 'forecast_1_temperature_low_valueChanged'
+                    },
+                    forecast_2_day_value: {
+                        notify: true,
+                        observer: 'forecast_2_day_valueChanged'
+                    },
+                    forecast_2_condition_code_value: {
+                        notify: true,
+                        observer: 'forecast_2_condition_code_valueChanged'
+                    },
+                    forecast_2_temperature_high_value: {
+                        notify: true,
+                        observer: 'forecast_2_temperature_high_valueChanged'
+                    },
+                    forecast_2_temperature_low_value: {
+                        notify: true,
+                        observer: 'forecast_2_temperature_low_valueChanged'
+                    },
+                    forecast_3_day_value: {
+                        notify: true,
+                        observer: 'forecast_3_day_valueChanged'
+                    },
+                    forecast_3_condition_code_value: {
+                        notify: true,
+                        observer: 'forecast_3_condition_code_valueChanged'
+                    },
+                    forecast_3_temperature_high_value: {
+                        notify: true,
+                        observer: 'forecast_3_temperature_high_valueChanged'
+                    },
+                    forecast_3_temperature_low_value: {
+                        notify: true,
+                        observer: 'forecast_3_temperature_low_valueChanged'
+                    },
+                    forecast_4_day_value: {
+                        notify: true,
+                        observer: 'forecast_4_day_valueChanged'
+                    },
+                    forecast_4_condition_code_value: {
+                        notify: true,
+                        observer: 'forecast_4_condition_code_valueChanged'
+                    },
+                    forecast_4_temperature_high_value: {
+                        notify: true,
+                        observer: 'forecast_4_temperature_high_valueChanged'
+                    },
+                    forecast_4_temperature_low_value: {
+                        notify: true,
+                        observer: 'forecast_4_temperature_low_valueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 this.easterEggDay = new Date().getFullYear() + "-04-01";
                 this.today = i18n.t("weather:Today", "Today");
                 this.high = i18n.t("weather:High", "High");
                 this.low = i18n.t("weather:Low", "Low");
-            },
+            }
 
-            forecast_0_condition_code_valueChanged: function (oldValue, newValue) {
+            forecast_0_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                /* easter egg inside ;) 
+                /* easter egg inside ;)
                    on each 1st april : ufo alert */
 
                 if (moment().isSame(this.easterEggDay, 'day')) {
@@ -183,89 +280,88 @@
                 else {
                     this.$.forecast_0_condition_code.innerHTML = setWeatherIcon(newValue);
                 }
-            },
-            forecast_0_temperature_high_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_0_temperature_high_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_0_temperature_high = newValue
-            },
-            forecast_0_temperature_low_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_0_temperature_low_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_0_temperature_low = newValue
-            },
+            }
 
-            forecast_1_day_valueChanged: function (oldValue, newValue) {
+            forecast_1_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_1_day = i18n.t("weather:" + newValue, newValue);
-            },
-            forecast_1_condition_code_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_1_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.forecast_1_condition_code.innerHTML = setWeatherIcon(newValue)
-            },
-            forecast_1_temperature_high_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_1_temperature_high_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_1_temperature_high = newValue
-            },
-            forecast_1_temperature_low_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_1_temperature_low_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_1_temperature_low = newValue
-            },
+            }
 
-            forecast_2_day_valueChanged: function (oldValue, newValue) {
+            forecast_2_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_2_day = i18n.t("weather:" + newValue, newValue);
-            },
-            forecast_2_condition_code_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_2_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.forecast_2_condition_code.innerHTML = setWeatherIcon(newValue)
-            },
-            forecast_2_temperature_high_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_2_temperature_high_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_2_temperature_high = newValue
-            },
-            forecast_2_temperature_low_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_2_temperature_low_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_2_temperature_low = newValue
-            },
+            }
 
-            forecast_3_day_valueChanged: function (oldValue, newValue) {
+            forecast_3_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_3_day = i18n.t("weather:" + newValue, newValue);
-            },
-            forecast_3_condition_code_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_3_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.forecast_3_condition_code.innerHTML = setWeatherIcon(newValue)
-            },
-            forecast_3_temperature_high_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_3_temperature_high_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_3_temperature_high = newValue
-            },
-            forecast_3_temperature_low_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_3_temperature_low_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_3_temperature_low = newValue
-            },
+            }
 
-            forecast_4_day_valueChanged: function (oldValue, newValue) {
+            forecast_4_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_4_day = i18n.t("weather:" + newValue, newValue);
-            },
-            forecast_4_condition_code_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_4_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.forecast_4_condition_code.innerHTML = setWeatherIcon(newValue)
-            },
-            forecast_4_temperature_high_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_4_temperature_high_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_4_temperature_high = newValue
-            },
-            forecast_4_temperature_low_valueChanged: function (oldValue, newValue) {
+            }
+            forecast_4_temperature_low_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.forecast_4_temperature_low = newValue
             }
 
-        });        
-
+	    };
 
         function setWeatherIcon(condid) {
-         
+
             switch(condid) {
                 case '0': var icon = '<i class="wi wi-tornado"></i>';
                 break;
@@ -368,9 +464,10 @@
                 default: var icon = '<i class="wi wi-cloud"></i>';
                 break;
             }
-             
+
             return icon;
-         
-        } 
+        }
+        customElements.define(DmwWeatherForecast.is, DmwWeatherForecast);
+    })();
     </script>
-</polymer-element>
+</dom-module>

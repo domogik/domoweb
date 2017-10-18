@@ -82,7 +82,7 @@
                     "name": "ColorCII sensor",
                     "description": "ColorCII sensor",
                     "types" : ["DT_ColorCII"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
@@ -103,7 +103,7 @@
                     "name": "ColorCII sensor",
                     "description": "ColorCII sensor",
                     "types" : ["DT_ColorCII"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
@@ -231,13 +231,27 @@
                     "description": "Hide the top and left widget labels",
                     "type": "boolean",
                     "default": "False"
+                },
+                "rangeMinValue" : {
+                    "name": "Range minimun value",
+                    "description": "Set the range minimum value",
+                    "type": "number",
+                    "default": 0,
+                    "required": false
+                },
+                "rangeMaxValue" : {
+                    "name": "Range maximum value",
+                    "description": "Set the range maximum value",
+                    "type": "number",
+                    "default": 100,
+                    "required": false
                 }
             },
             "sensors" : {
                 "scalingstate" : {
                     "name": "Scaling state",
                     "description": "Scaling feedback state",
-                    "types" : ["DT_Scaling"],
+                    "types" : ["DT_Scaling", "DT_Number"],
                     "required": false
                 }
             },
@@ -397,6 +411,12 @@
                     "description": "Set the chart color",
                     "type": "string",
                     "default": "#ffffff"
+                },
+                "precision" : {
+                    "name": "Number precision",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
                 },
                 "chartMinValue" : {
                     "name": "Chart minimun value",

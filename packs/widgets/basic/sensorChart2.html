@@ -1,4 +1,4 @@
-<polymer-element name="dmw-basic-sensorChart2" extends="dmw-widget">
+<dom-module id="dmw-basic-sensorchart2">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -73,16 +73,17 @@
     </template>
     <script src="/widget/basic/js/jquery.sparkline.min.js"></script>
     <script>
-        Polymer('dmw-basic-sensorChart2', {
-            ready: function() {
-                this.super();
+        class DmwBasicSensorChart2 extends DmwWidget {
+            static get is () { return 'dmw-basic-sensorchart2'; }
+            connectedCallback() {
+                super.connectedCallback();
                 this.devicename = "";
                 this.number = "";
                 this.unit = "";
                 this.currentHistoryValue = [];
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -91,15 +92,15 @@
                     this.$.labelsecondary.style.visibility = "visible";
                 }
                 this.draw(this.currentHistoryValue);
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.devicename = this.$.primary.device['name'];
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
                 if (this.options['autoconvert']==1 && newValue > 0) {
@@ -119,19 +120,19 @@
                 this.adjustText(this.$.container, this.$.adjusted);
                 this.$.primary.getCurrentDayPerHour();
 
-            },
-            historyChanged: function(oldValue, newValue) { 
+            }
+            historyChanged(newValue, oldValue) {
                 // in case the page is not yet nicely loaded...
                 if (this.$.spark.clientWidth == 0 || this.$.spark.clientHeight == 0) {
                     setTimeout(function(){
-                        this.historyChanged(oldValue, newValue);
+                        this.historyChanged(newValue, oldValue);
                         }.bind(this), 1000);
                 }
                 else {
                     this.draw(newValue);
                 }
-            },
-            draw: function(newValue) {
+            }
+            draw(newValue) {
                 // to allow redraw when options changed
                 this.currentHistoryValue = newValue;
 
@@ -145,7 +146,7 @@
                 // display the chart
                 minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
                 maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
- 
+
                 // as the graph history is an average, the current value could be lower or bigger than the min/max average value. So we adjust
                 current = this.number;
                 if (current > maxvalue) {
@@ -172,8 +173,8 @@
                                                         chartRangeMax: parseFloat(this.options['chartMaxValue']),
                                                         height: '100%', width: '100%' });
                 $.sparkline_display_visible();
-            },
-            adjustText: function(parent, element) {
+            }
+            adjustText(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
                 var i = fontsize.substr(0,2);
                 //console.log("adjust - " + this.devicename + " / cw = " + parent.clientWidth + ", ch = " + parent.clientHeight);
@@ -198,8 +199,8 @@
                         }
                     }
                 }
-            },
-            hexToRgbA: function(hex){
+            }
+            hexToRgbA(hex){
                 // From : https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
                 // Add opacity
                 var c;
@@ -213,7 +214,7 @@
                 }
                 throw new Error('Bad Hex');
             }
-        });
- 
+	    };
+        customElements.define(DmwBasicSensorChart2.is, DmwBasicSensorChart2);
     </script>
-</polymer-element>
+</dom-module>

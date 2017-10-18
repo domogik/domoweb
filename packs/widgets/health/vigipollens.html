@@ -1,4 +1,4 @@
-<polymer-element name="dmw-health-vigipollens" extends="dmw-widget">
+<dom-module id="dmw-health-vigipollens" extends="dmw-widget">
     <template>
         <!-- ln -s /var/lib/domogik/domogik_packages/plugin_vigipollens/domoweb/packs/widgets/pollens  /opt/dmg/domoweb/packs/widgets/pollens -->
 
@@ -192,99 +192,101 @@
     
     
     <script>
-        Polymer('dmw-health-vigipollens', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-health-vigipollens',
+            connectedCallback() {
+                super.connectedCallback();
             },
 
-            vigilanceDepartement_valueChanged: function (oldValue, newValue) {
+            vigilanceDepartement_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.title = "Risques allergiques (" + newValue + ")" 
             },
             
-            vigilanceColorDepartement_valueChanged: function (oldValue, newValue) {
+            vigilanceColorDepartement_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.title.style.color = getVigipollenColor(newValue) ;
             },
             
-            vigilanceColorCupressaceae_valueChanged: function (oldValue, newValue) {
+            vigilanceColorCupressaceae_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor1.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorHazel_valueChanged: function (oldValue, newValue) {
+            vigilanceColorHazel_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor2.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorAlder_valueChanged: function (oldValue, newValue) {
+            vigilanceColorAlder_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor3.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorPoplar_valueChanged: function (oldValue, newValue) {
+            vigilanceColorPoplar_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor4.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorWillow_valueChanged: function (oldValue, newValue) {
+            vigilanceColorWillow_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor5.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorAsh_valueChanged: function (oldValue, newValue) {
+            vigilanceColorAsh_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor6.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorHomebeam_valueChanged: function (oldValue, newValue) {
+            vigilanceColorHomebeam_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor7.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorBirsh_valueChanged: function (oldValue, newValue) {
+            vigilanceColorBirsh_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor8.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorPlane_valueChanged: function (oldValue, newValue) {
+            vigilanceColorPlane_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor9.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorOak_valueChanged: function (oldValue, newValue) {
+            vigilanceColorOak_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor10.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorOlive_valueChanged: function (oldValue, newValue) {
+            vigilanceColorOlive_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor11.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorLinden_valueChanged: function (oldValue, newValue) {
+            vigilanceColorLinden_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor12.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorChestnut_valueChanged: function (oldValue, newValue) {
+            vigilanceColorChestnut_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor13.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorSorrel_valueChanged: function (oldValue, newValue) {
+            vigilanceColorSorrel_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor14.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorGrasses_valueChanged: function (oldValue, newValue) {
+            vigilanceColorGrasses_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor15.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorPlantain_valueChanged: function (oldValue, newValue) {
+            vigilanceColorPlantain_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor16.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorNettles_valueChanged: function (oldValue, newValue) {
+            vigilanceColorNettles_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor17.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorMugwort_valueChanged: function (oldValue, newValue) {
+            vigilanceColorMugwort_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor18.style.background = getVigipollenColor(newValue) ;
             },
-            vigilanceColorRagweed_valueChanged: function (oldValue, newValue) {
+            vigilanceColorRagweed_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.$.alergencolor19.style.background = getVigipollenColor(newValue) ;
             },
 
-        });        
+	    };
+    customElements.define(Dmw.is, Dmw);        
         
         function getVigipollenColor(color) {
                 switch(color) {         // "white", "green", "blue", "yellow", "orange", "red"
@@ -306,4 +308,4 @@
             }
         
     </script>
-</polymer-element>
+</dom-module>

@@ -1,4 +1,4 @@
-<polymer-element name="dmw-service-teleinfoWeeklyConsumption" extends="dmw-widget">
+<dom-module id="dmw-service-teleinfoWeeklyConsumption" extends="dmw-widget">
     <template>
         <style type="text/css">
             :host {
@@ -229,9 +229,10 @@
         <shadow></shadow>
     </template>
     <script>
-        Polymer('dmw-service-teleinfoWeeklyConsumption', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-service-teleinfoWeeklyConsumption',
+            connectedCallback() {
+                super.connectedCallback();
                 this.title = i18n.t("service:teleinfo_weekly_hphc");
                 this.hchcHist = [];
                 this.hchcMax = 0;
@@ -240,21 +241,21 @@
                 //this.day0 = 0;
                 //this.day1 = 1;
             },
-            //loadingDone: function() {
+            //loadingDone() {
             //    //this.setGraph();
             //},
             /******
-            iinstvalueChanged: function (oldValue, newValue) {
+            iinstvalueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.iinst = parseInt(newValue);
             },
             *****/
-            hchcvalueChanged: function (oldValue, newValue) {
+            hchcvalueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.hchc = parseInt(newValue);
                 this.$.hchc.getCurrentWeekPerDayWithSelectorMax();
             },
-            hchchistoryChanged: function(oldValue, newValue) { 
+            hchchistoryChanged(newValue, oldValue) { 
                 for (i=1; i < newValue.length; i++) {
                     this.hchcHist[i-1] = newValue[i][4] - newValue[i-1][4];
                     if (this.hchcHist[i-1] > this.hchcMax) {
@@ -264,12 +265,12 @@
                 this.drawHC();
                 this.drawDays();
             },
-            hphcvalueChanged: function (oldValue, newValue) {
+            hphcvalueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.hphc = parseInt(newValue);
                 this.$.hphc.getCurrentWeekPerDayWithSelectorMax();
             },
-            hphchistoryChanged: function(oldValue, newValue) { 
+            hphchistoryChanged(newValue, oldValue) { 
                 for (i=1; i < newValue.length; i++) {
                     this.hphcHist[i-1] = newValue[i][4] - newValue[i-1][4];
                     if (this.hphcHist[i-1] > this.hphcMax) {
@@ -279,7 +280,7 @@
                 this.drawHP();
                 this.drawDays();
             },
-            drawDays: function() {
+            drawDays() {
                 idx = 0;
                 for (idx=0; idx<this.hphcHist.length; idx++) {
                     idx2 = this.hphcHist.length - 1 - idx;
@@ -294,7 +295,7 @@
             
                 }
             },
-            drawHP: function() {
+            drawHP() {
                 hpRatio = 100 / this.hphcMax;
                 for (i=0;i<this.hphcHist.length;i++) {
                     if (i == 0) { 
@@ -334,7 +335,7 @@
                     }
                 }
             },
-            drawHC: function() {
+            drawHC() {
                 hcRatio = 100 / this.hchcMax;
                 for (i=0;i<this.hchcHist.length;i++) {
                     if (i == 0) { 
@@ -374,6 +375,7 @@
                     }
                 }
             }
-        });        
+	    };
+    customElements.define(Dmw.is, Dmw);        
     </script>
-</polymer-element>
+</dom-module>

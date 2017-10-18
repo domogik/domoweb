@@ -24,7 +24,7 @@ DMW.navigation.init = function() {
 	$('<style type="text/css">' +
 		'.radial-menu-items { height:'+ DMW.navigation.circleRadius +'px; width:'+ DMW.navigation.circleRadius +'px; border-radius: '+ DMW.navigation.circleRadius +'px }'+
 		'.radial-first-items { top: -'+ ($('#toggle-radial').outerHeight() + 2) +'px; left: -2px }'+
-		'.radial-upper-items { top: -2px; left: -1px; }'+ 
+		'.radial-upper-items { top: -2px; left: -1px; }'+
 		'.radial-menu-links { height:'+ DMW.navigation.circleRadius +'px; width:'+ DMW.navigation.circleRadius +'px; border-radius: '+ DMW.navigation.circleRadius +'px; }' +
 	'</style>').appendTo('head');
 	$('#sections-tree #toggle-radial').click(DMW.navigation.RadLevelOneToggle);
@@ -133,7 +133,7 @@ DMW.navigation.RadLevelOneToggle = function() {
 		$(this).addClass('active');
 
 		var $level1 = $('ul.level-1');
-		DMW.navigation.toggleMenuItems(this, $level1);
+		DMW.navigation.toggleMenuItems(this.parentNode, $level1);
 
 		$('#sections-tree ul.level-1').removeClass('hide');
 		$('#sections-tree ul.level-1').addClass('show');
@@ -163,11 +163,11 @@ DMW.navigation.RadLevelOneToggle = function() {
 				$('#sections-tree ul.level-3').addClass('hide');
 				DMW.navigation.radLevelThreeShown = false;
 			}
-		});	
+		});
 	}
 }
 
-/* ------------ Radial toggle button related behavior: Toggling level-2 Menu ------------*/	
+/* ------------ Radial toggle button related behavior: Toggling level-2 Menu ------------*/
 DMW.navigation.RadLevelTwoToggle = function() {
 	DMW.navigation.$radFirstLevel = $(this).parent().siblings();
 	DMW.navigation.$radLevelOneItems = $(this).parent().siblings('.have-subs').children('a');
@@ -188,9 +188,9 @@ DMW.navigation.RadLevelTwoToggle = function() {
 		$(this).parent().removeClass('active');
 		DMW.navigation.$radFirstLevel.fadeTo(200, 1);
 		DMW.navigation.$radLevelOneItems.bind('click', DMW.navigation.RadLevelTwoToggle);
-		$('#sections-tree ul.level-2 > li').animate({ top: DMW.navigation.positionOne.top, left: DMW.navigation.positionOne.left }, 200);		
-		$('#sections-tree ul.level-2').fadeOut(200, function(){	
-			$('#sections-tree ul.level-2 > li.have-subs').removeClass('active');	
+		$('#sections-tree ul.level-2 > li').animate({ top: DMW.navigation.positionOne.top, left: DMW.navigation.positionOne.left }, 200);
+		$('#sections-tree ul.level-2').fadeOut(200, function(){
+			$('#sections-tree ul.level-2 > li.have-subs').removeClass('active');
 			$('#sections-tree ul.level-2').removeClass('show');
 			$('#sections-tree ul.level-2').addClass('hide');
 			if(DMW.navigation.radLevelThreeShown){
@@ -201,7 +201,7 @@ DMW.navigation.RadLevelTwoToggle = function() {
 				$('#sections-tree ul.level-3').addClass('hide');
 				DMW.navigation.radLevelThreeShown = false;
 			}
-		});	
+		});
 	}
 }
 
@@ -214,7 +214,7 @@ DMW.navigation.RadLevelThreeToggle = function() {
 		$(this).parent().addClass('active');
 		DMW.navigation.$radSecondLevel.fadeTo(200, 0.1);
 		DMW.navigation.$radLevelTwoItems.unbind('click');
-		
+
 		var $level3 = ('ul.level-3');
 		DMW.navigation.toggleMenuItems(this, $level3);
 
@@ -222,23 +222,23 @@ DMW.navigation.RadLevelThreeToggle = function() {
 		$(this).parent().children('ul.level-3').addClass('show');
 		DMW.navigation.radLevelThreeShown = true;
 	} else {
-		DMW.navigation.radLevelThreeShown = false;	
+		DMW.navigation.radLevelThreeShown = false;
 		$(this).parent().removeClass('active');
 		DMW.navigation.$radSecondLevel.fadeTo(200, 1);
 		DMW.navigation.$radLevelTwoItems.bind('click', DMW.navigation.RadLevelThreeToggle);
-		$('#sections-tree ul.level-3 > li').animate({ top: DMW.navigation.positionTwo.top, left: DMW.navigation.positionTwo.left }, 200);		
-		$('#sections-tree ul.level-3').fadeOut(200, function(){				
+		$('#sections-tree ul.level-3 > li').animate({ top: DMW.navigation.positionTwo.top, left: DMW.navigation.positionTwo.left }, 200);
+		$('#sections-tree ul.level-3').fadeOut(200, function(){
 			$('#sections-tree ul.level-3').removeClass('show');
 			$('#sections-tree ul.level-3').addClass('hide');
-		});	
+		});
 	}
 }
 
 DMW.navigation.toggleMenuItems = function(node, selectParent) {
-	var yPositionAdjust, xPositionAdjust;
-		
+	var yPositionAdjust, xPositionAdjust, xCoord, yCoord;
+
 	yPositionAdjust = (DMW.navigation.circleRadius - $(node).outerHeight())/2;
-	xPositionAdjust = (DMW.navigation.circleRadius - $(node).outerHeight())/2;			
+	xPositionAdjust = (DMW.navigation.circleRadius - $(node).outerHeight())/2;
 
 	var angleDegree = 0;
 
@@ -249,39 +249,39 @@ DMW.navigation.toggleMenuItems = function(node, selectParent) {
 	var middleAngleIncrease = 90/(DMW.navigation.middleRing_items-1);
 	var innerAngleIncrease = 90/(DMW.navigation.innerRing_items-1);
 
-	/* ------------ Looping for INNER Ring - Sub-Menu level toggle and animation ------------*/		
+	/* ------------ Looping for INNER Ring - Sub-Menu level toggle and animation ------------*/
 	for( var index = 0; index < DMW.navigation.innerRing_items; index++ ){
 	    angleRad = angleDegree * toRadians;
 		xCoord = DMW.navigation.innerRing_radius * Math.cos( angleRad );
-		yCoord = DMW.navigation.innerRing_radius * Math.sin( angleRad );	
+		yCoord = DMW.navigation.innerRing_radius * Math.sin( angleRad );
 		$(node).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust , top: yCoord*yPosMod-yPositionAdjust}, 200);
 		angleDegree += innerAngleIncrease;
 	}
 
 	angleDegree = 0;
 
-	/* ------------ Looping for MIDDLE Ring - Sub-Menu level toggle and animation ------------*/	
+	/* ------------ Looping for MIDDLE Ring - Sub-Menu level toggle and animation ------------*/
 
 	for( var index = DMW.navigation.innerRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.middleRing_items; index++ ){
 		angleRad = angleDegree * toRadians;
 		xCoord = DMW.navigation.middleRing_radius * Math.cos( angleRad );
-		yCoord = DMW.navigation.middleRing_radius * Math.sin( angleRad );			
+		yCoord = DMW.navigation.middleRing_radius * Math.sin( angleRad );
 		$(node).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust, top: yCoord*yPosMod-yPositionAdjust }, 200);
 		angleDegree += middleAngleIncrease;
 	}
-	/* ------------ Looping for OUTER Ring - Sub-Menu level toggle and animation ------------*/	
+	/* ------------ Looping for OUTER Ring - Sub-Menu level toggle and animation ------------*/
 
 	angleDegree = 0;
 
 	for( var index = DMW.navigation.innerRing_items + DMW.navigation.middleRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.middleRing_items + DMW.navigation.outerRing_items; index++ ){
 		angleRad = angleDegree * toRadians;
 		xCoord = DMW.navigation.outerRing_radius * Math.cos( angleRad );
-		yCoord = DMW.navigation.outerRing_radius * Math.sin( angleRad );			
+		yCoord = DMW.navigation.outerRing_radius * Math.sin( angleRad );
 		$(node).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust, top: yCoord*yPosMod-yPositionAdjust }, 200);
 		angleDegree += outerAngleIncrease;
 	}
 /*
 	for( var index = DMW.navigation.innerRing_items; index < DMW.navigation.innerRing_items + DMW.navigation.outerRing_items; index++ ){
-		$(node).parent().children(selectParent).children('li:nth-child('+ (index+1) +')').removeClass('hide');		    				
+		$(node).parent().children(selectParent).children('li:nth-child('+ (index+1) +')').removeClass('hide');
 	}*/
 }

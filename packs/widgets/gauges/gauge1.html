@@ -1,7 +1,10 @@
 <script src="/widget/gauges/js/gauge-fix-fritz.js"></script>
-<polymer-element name="dmw-gauges-gauge1" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/gauges/css/common.css" shim-domshadow>
+<link rel="import" href="/widget/gauges/css/labelstyles.html">
+<link rel="import" href="/libraries/bower_components/slate-font-awesome/slate-font-awesome.html">
+<dom-module id="dmw-gauges-gauge1">
+    <template id="extended-styles">
+        <style include="dmw-widget-label-styles"></style>
+        <style include="slate-font-awesome"></style>
         <style type="text/css">
             :host {
                 height: 100%;
@@ -42,23 +45,50 @@
                 font-size: 1em;
             }
         </style>
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue={{sensorvalue}} sensornotified="number"></dmw-sensor>
         <shadow></shadow>
         <div id="content">
-        <canvas id="gauge"></canvas>
-        <div id='number'>{{number}}</div>
-        <div id='unit'>{{unit}}</div>
+            <canvas id="gauge"></canvas>
+            <div id='number'>[[number]]</div>
+            <div id='unit'>[[unit]]}</div>
         </div>
     </template>
     <script>
-        Polymer('dmw-gauges-gauge1', {
-            ready: function() {
-                this.super();
+     (function () {
+        let memoizedTemplate;
+
+        class DmwGaugesGauge1 extends DmwWidget {
+            static get is () { return 'dmw-gauges-gauge1'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 this.number = "--";
                 this.unit = "";
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -66,14 +96,14 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
                 if (this.options['autoconvert']==1 && newValue > 0) {
@@ -85,7 +115,12 @@
                         this.unit = sizes[i] + i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
                     }
                 } else {
-                    this.$.number.innerHTML = newValue;
+                    if (newValue) {
+                        this.$.number.innerHTML = newValue;
+                    } else {
+                        this.$.number.innerHTML = "<i class='fa fa-exclamation-triangle' aria-hidden='true' style='color:red;'></i>";
+                        newValue = 0;
+                    }
                     if (unit) {
                         this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
                     }
@@ -95,10 +130,10 @@
 
 
                 if (this.options['colorProfile'] == "temperature") {
-                    colorProfile = [[0.0, "#1424fd" ], [0.25, "#e9ecff"], [0.5, "#f8fe9a"], [0.75, "#f9aa4b"], [1.0, "#fc2008"]];
+                    var colorProfile = [[0.0, "#1424fd" ], [0.25, "#e9ecff"], [0.5, "#f8fe9a"], [0.75, "#f9aa4b"], [1.0, "#fc2008"]];
                 }
                 else {  // include the "classic" value
-                    colorProfile = [[0.0, "#a9d70b" ], [0.50, "#f9c802"], [1.0, "#ff0000"]];
+                    var colorProfile = [[0.0, "#a9d70b" ], [0.50, "#f9c802"], [1.0, "#ff0000"]];
                 }
                 var opts = {
                   lines: 12,
@@ -109,7 +144,7 @@
                     strokeWidth: 0.035,
                     color: '#000000'
                   },
-                  limitMax: 'false', 
+                  limitMax: 'false',
                   //percentColors: [[0.0, "#a9d70b" ], [0.50, "#f9c802"], [1.0, "#ff0000"]], // !!!!
                   percentColors: colorProfile,
                   strokeColor: '#E0E0E0',
@@ -133,8 +168,8 @@
                     this.gauge.set(newValue);
                 }
 
-            },
-            adjustText: function(parent, element) {
+            }
+            adjustText(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
                 var i = fontsize.substr(0,2);
                 //alert("cw = " + parent.clientWidth + ", cw = " + parent.clientHeight);
@@ -158,6 +193,8 @@
                     }
                 }
             }
-        });
+        };
+    customElements.define(DmwGaugesGauge1.is, DmwGaugesGauge1);
+    })();
     </script>
-</polymer-element>
+</dom-module>

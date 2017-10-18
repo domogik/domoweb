@@ -1,4 +1,4 @@
-<polymer-element name="dmw-weather-sun" extends="dmw-widget">
+<dom-module id="dmw-weather-sun" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/weather/weather-icons-master-1.3/css/weather-icons.css" shim-domshadow>
         <style type="text/css">
@@ -42,18 +42,20 @@
         <shadow></shadow>
     </template>
     <script>
-        Polymer('dmw-weather-sun', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-weather-sun',
+            connectedCallback() {
+                super.connectedCallback();
             },
-            current_sunriseChanged: function(oldValue, newValue) {
+            current_sunriseChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.sunrise = newValue;
             },
-            current_sunsetChanged: function(oldValue, newValue) {
+            current_sunsetChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.sunset = newValue;
             },
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
     </script>
-</polymer-element>
+</dom-module>

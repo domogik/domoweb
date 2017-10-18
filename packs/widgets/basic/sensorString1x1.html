@@ -1,4 +1,4 @@
-<polymer-element name="dmw-basic-sensorString1x1" extends="dmw-widget">
+<dom-module id="dmw-basic-sensorstring1x1">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -26,13 +26,14 @@
         </div>
     </template>
     <script>
-        Polymer('dmw-basic-sensorString1x1', {
-            ready: function() {
-                this.super();
+        class DmwBasicSensorString1x1 extends DmwWidget {
+            static get is () { return 'dmw-basic-sensorstring1x1'; }
+            connectedCallback() {
+                super.connectedCallback();
                 this.text = "--";
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -40,16 +41,17 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 this.text = newValue.stored_value;
             }
-        });
+	    };
+        customElements.define(DmwBasicSensorString1x1.is, DmwBasicSensorString1x1);
     </script>
-</polymer-element>
+</dom-module>

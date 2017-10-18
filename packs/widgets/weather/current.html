@@ -1,4 +1,4 @@
-<polymer-element name="dmw-weather-current" extends="dmw-widget">
+<dom-module id="dmw-weather-current" extends="dmw-widget">
     <template>
         <style type="text/css">
             :host {
@@ -56,11 +56,12 @@
         <shadow></shadow>
     </template>
     <script>
-        Polymer('dmw-weather-current', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-weather-current',
+            connectedCallback() {
+                super.connectedCallback();
             },
-            current_codeChanged: function(oldValue, newValue) {
+            current_codeChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.code = newValue;
                 // needed only the first time :)
@@ -74,19 +75,20 @@
                     this.style.backgroundImage = "url('/widget/weather/images/weather/" + newValue + ".png')";
                 }
             },
-            current_stationChanged: function(oldValue, newValue) {
+            current_stationChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.labelprimary = newValue;
             },
-            current_temperatureChanged: function(oldValue, newValue) {
+            current_temperatureChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.temperature = newValue; 
             },
-            current_textChanged: function(oldValue, newValue) {
+            current_textChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 //this.condition = newValue; // Add i18n ("Fair/Windy")
                 this.condition = i18n.t("weather:" + this.code, newValue);
             },
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
     </script>
-</polymer-element>
+</dom-module>

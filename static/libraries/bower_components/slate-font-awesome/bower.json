@@ -1,0 +1,31 @@
+{
+  "name": "slate-font-awesome",
+  "authors": [
+    "Jean-François Le Foll <jeff.lefoll@outlook.fr>"
+  ],
+  "description": "Wrapping of Font Awesome CSS as a Polymer Web Component ",
+  "keywords": [
+    "web-component",
+    "web-components",
+    "polymer",
+    "font",
+    "awesome",
+    "font-awesome"
+  ],
+  "main": "slate-font-awesome-min.html",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/JeffLeFoll/slate-font-awesome",
+  "ignore": [],
+  "dependencies": {},
+  "devDependencies": {
+    "font-awesome": "^4.7.0",
+    "iron-component-page": "PolymerElements/iron-component-page#2.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#2.0.0",
+    "paper-styles": "PolymerElements/paper-styles#2.0.0",
+    "test-fixture": "PolymerElements/test-fixture#^3.0.0",
+    "web-component-tester": "^6.0.0"
+  },
+  "demos": {
+    "Demo": "demo/index.html"
+  }
+}

@@ -1,4 +1,4 @@
-<polymer-element name="dmw-hue-basicStatusSensor" extends="dmw-widget">
+<dom-module id="dmw-hue-basicStatusSensor" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -35,12 +35,13 @@
         </div>
     </template>
     <script>
-        Polymer('dmw-hue-basicStatusSensor', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-hue-basicStatusSensor',
+            connectedCallback() {
+                super.connectedCallback();
 		this.global_avail = 0;
             },
-            optionsUpdated: function() {
+            optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {         
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
@@ -50,17 +51,17 @@
                     this.$.labelsecondary.style.visibility = "visible";
                 }
             },
-            sensorsUpdated: function() {
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
             },
-	    availvalueChanged: function(oldValue, newValue) {
+	    availvalueChanged(newValue, oldValue) {
  		this.global_avail = newValue.stored_value;
 	    },
 
-            sensorvalueChanged: function(oldValue, newValue) {
+            sensorvalueChanged(newValue, oldValue) {
                     newValue = newValue.stored_value;
                     this.$.boolicon.className = '';
 		if (this.global_avail == 1) {
@@ -85,6 +86,7 @@
 		    this.$.bool.classList.remove('false');
 		}
 	    }
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
     </script>
-</polymer-element>
+</dom-module>

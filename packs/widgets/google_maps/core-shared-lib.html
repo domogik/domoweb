@@ -6,7 +6,7 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
-<link rel="import" href="/libraries/polymer/polymer.html">
+<link rel="import" href="/libraries/bower_components/polymer/polymer.html">
 
 <!--
 Supports sharing a JSONP-based JavaScript library.
@@ -30,29 +30,29 @@ lib.html:
 @group Polymer Core Elements
 @element core-shared-lib
 -->
-<polymer-element name="core-shared-lib" attributes="url notifyEvent callbackName">
+<dom-module id="core-shared-lib" attributes="url notifyEvent callbackName">
 <script>
 (function() {
   
-  Polymer({
+  Polymer({is:{
     
     notifyEvent: 'core-shared-lib-load',
     
-    ready: function() {
+    connectedCallback() {
       if (!this.url && this.defaultUrl) {
         this.url = this.defaultUrl;
       }
     },
     
-    urlChanged: function() {
+    urlChanged() {
       require(this.url, this, this.callbackName);
     },
     
-    provide: function() {
+    provide() {
       this.async('notify');
     },
     
-    notify: function() {
+    notify() {
       this.fire(this.notifyEvent, arguments);
     }
     
@@ -100,7 +100,7 @@ lib.html:
     callbackMacro: '%%callback%%',
     loaded: false,
     
-    addScript: function(src) {
+    addScript(src) {
       var script = document.createElement('script');
       script.src = src;
       script.onerror = this.error.bind(this);
@@ -109,18 +109,18 @@ lib.html:
       this.script = script;
     },
     
-    removeScript: function() {
+    removeScript() {
       if (this.script.parentNode) {
         this.script.parentNode.removeChild(this.script);
       }
       this.script = null;
     },
     
-    error: function() {
+    error() {
       this.cleanup();
     },
     
-    success: function() {
+    success() {
       this.loaded = true;
       this.cleanup();
       this.result = Array.prototype.slice.call(arguments);
@@ -128,15 +128,15 @@ lib.html:
       this.instances = null;
     },
     
-    cleanup: function() {
+    cleanup() {
       delete window[this.callbackName];
     },
 
-    provide: function(instance) {
+    provide(instance) {
       instance.notify(instance, this.result);
     },
     
-    requestNotify: function(instance) {
+    requestNotify(instance) {
       if (this.loaded) {
         this.provide(instance);
       } else {
@@ -148,4 +148,4 @@ lib.html:
   
 })();
 </script>
-</polymer-element>
+</dom-module>

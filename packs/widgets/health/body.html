@@ -7,7 +7,7 @@
   font-style: normal;
 }
 </style>
-<polymer-element name="dmw-health-body" extends="dmw-widget">
+<dom-module id="dmw-health-body" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/health/css/common.css" shim-domshadow>
         <link rel="stylesheet" href="/widget/health/css/c3.min.css" shim-domshadow>
@@ -179,9 +179,10 @@
     <script src="/widget/health/js/c3.min.js"></script>
 
     <script>
-        Polymer('dmw-health-body', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-health-body',
+            connectedCallback() {
+                super.connectedCallback();
                 this.weightValue = 0;
                 this.boneValue = 1;
                 this.muscleValue = 1;
@@ -203,7 +204,7 @@
                     }.bind(this), 5000);
 
             },
-            draw: function() {
+            draw() {
                 
                 if (this.chartToUpdate == false) {
                     return;
@@ -256,10 +257,11 @@
                     tooltip: {
                         show: false
                     }
-                });
+        	    };
+    customElements.define(Dmw.is, Dmw);
                 this.chart.show(['Fat', 'Muscle', 'Water', 'Bone']);
             },
-            optionsUpdated: function() {
+            optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {         
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
@@ -277,7 +279,7 @@
                     this.icon = "female";
                 }
             },
-            sensorsUpdated: function() {
+            sensorsUpdated() {
                 if (this.$.weight.isSet) {
                     this.labelprimary = this.$.weight.device['name'];
                     this.labelsecondary = this.$.weight.name;
@@ -295,7 +297,7 @@
                     this.icon = "female";
                 }
             },
-            weightsensorvalueChanged: function(oldValue, newValue) {
+            weightsensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (newValue == null) {
                     newValue = 0;
@@ -303,7 +305,7 @@
                 //this.$.weight.getCurrentWeek();
                 this.weightValue = newValue;
             },
-            bonesensorvalueChanged: function(oldValue, newValue) {
+            bonesensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (newValue == null) {
                     newValue = 0;
@@ -313,7 +315,7 @@
                 //this.draw();
                 this.chartToUpdate = true;
             },
-            watersensorvalueChanged: function(oldValue, newValue) {
+            watersensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (newValue == null) {
                     newValue = 0;
@@ -323,7 +325,7 @@
                 //this.draw();
                 this.chartToUpdate = true;
             },
-            musclesensorvalueChanged: function(oldValue, newValue) {
+            musclesensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (newValue == null) {
                     newValue = 0;
@@ -333,7 +335,7 @@
                 //this.draw();
                 this.chartToUpdate = true;
             },
-            fatsensorvalueChanged: function(oldValue, newValue) {
+            fatsensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (newValue == null) {
                     newValue = 0;
@@ -343,12 +345,12 @@
                 //this.draw();
                 this.chartToUpdate = true;
             },
-            weighthistoryChanged: function(oldValue, newValue) { 
+            weighthistoryChanged(newValue, oldValue) { 
             },
-            bonehistoryChanged: function(oldValue, newValue) { 
+            bonehistoryChanged(newValue, oldValue) { 
             },
             // ...
-            switchMode: function() {
+            switchMode() {
                 if (this.mode == "ratioChart") {
                     // we go in inputForm mode !!!
 
@@ -371,37 +373,37 @@
                     this.mode = "ratioChart";
                 }
             },
-            lessWeight: function() {
+            lessWeight() {
                 this.newWeight = (this.newWeight - 0.1).toFixed(1);
             },
-            lessMuscle: function() {
+            lessMuscle() {
                 this.newMuscle = (this.newMuscle - 0.1).toFixed(1);
             },
-            lessFat: function() {
+            lessFat() {
                 this.newFat = (this.newFat - 0.1).toFixed(1);
             },
-            lessWater: function() {
+            lessWater() {
                 this.newWater = (this.newWater - 0.1).toFixed(1);
             },
-            lessBone: function() {
+            lessBone() {
                 this.newBone = (this.newBone - 0.1).toFixed(1);
             },
-            moreWeight: function() {
+            moreWeight() {
                 this.newWeight = (parseFloat(this.newWeight) + 0.1).toFixed(1);
             },
-            moreMuscle: function() {
+            moreMuscle() {
                 this.newMuscle = (parseFloat(this.newMuscle) + 0.1).toFixed(1);
             },
-            moreFat: function() {
+            moreFat() {
                 this.newFat = (parseFloat(this.newFat) + 0.1).toFixed(1);
             },
-            moreWater: function() {
+            moreWater() {
                 this.newWater = (parseFloat(this.newWater) + 0.1).toFixed(1);
             },
-            moreBone: function() {
+            moreBone() {
                 this.newBone = (parseFloat(this.newBone) + 0.1).toFixed(1);
             },
-            save: function() {
+            save() {
                 // weight
                 var parameters = {};
                 parameters[this.$.set_weight.parameters[0]['key']] = this.newWeight;
@@ -440,7 +442,8 @@
                     }.bind(this), 500);
 
             }
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
  
     </script>
-</polymer-element>
+</dom-module>

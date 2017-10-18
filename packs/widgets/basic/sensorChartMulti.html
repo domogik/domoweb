@@ -2,13 +2,13 @@
 @font-face {
   font-family: 'weathericons';
   src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot');
-  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');  
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');
   font-weight: normal;
   font-style: normal;
-}     
+}
 
 </style>
-<polymer-element name="dmw-basic-sensorChartMulti" extends="dmw-widget">
+<dom-module id="dmw-basic-sensorchartmulti">
     <template>
         <style type="text/css">
             @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
@@ -123,17 +123,18 @@
     </template>
     <script src="/widget/basic/js/jquery.sparkline.min.js"></script>
     <script>
-        Polymer('dmw-basic-sensorChartMulti', {
-            ready: function() {
-                this.super();
+        class DmwBasicSensorChartMulti extends DmwWidget {
+            static get is () { return 'dmw-basic-sensorchartmulti'; }
+            connectedCallback() {
+                super.connectedCallback();
                 this.historyPrimary = [];
                 this.historySecondary = [];
                 this.historyThird = [];
                 this.historyFourth = [];
                 this.historyFifth = [];
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -146,8 +147,8 @@
                 this.generic_historyChanged(undefined, this.historyThird, this.$.third_spark, this.the_third_value, this.$.the_third_max, this.$.the_third_min, "third");
                 this.generic_historyChanged(undefined, this.historyFourth, this.$.fourth_spark, this.the_fourth_value, this.$.the_fourth_max, this.$.the_fourth_min, "fourth");
                 this.generic_historyChanged(undefined, this.historyFifth, this.$.fifth_spark, this.the_fifth_value, this.$.the_fifth_max, this.$.the_fifth_min, "fifth");
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.the_primary_name = this.$.primary.device['name'];
                     this.$.primary_type.innerHTML = setTypeIcon(this.$.primary.datatype_id);
@@ -158,9 +159,9 @@
                     this.$.primary.getCurrentDayPerHour();
                 }
                 else {
-                    this.the_primary_name = "";  
-                    this.the_primary_type = "";  
-                    this.the_primary_unit = "";  
+                    this.the_primary_name = "";
+                    this.the_primary_type = "";
+                    this.the_primary_unit = "";
                 }
 
                 if (this.$.secondary.isSet) {
@@ -173,9 +174,9 @@
                     this.$.secondary.getCurrentDayPerHour();
                 }
                 else {
-                    this.the_secondary_name = "";  
-                    this.the_secondary_type = "";  
-                    this.the_secondary_unit = "";  
+                    this.the_secondary_name = "";
+                    this.the_secondary_type = "";
+                    this.the_secondary_unit = "";
                 }
 
                 if (this.$.third.isSet) {
@@ -188,9 +189,9 @@
                     this.$.third.getCurrentDayPerHour();
                 }
                 else {
-                    this.the_third_name = "";  
-                    this.the_third_type = "";  
-                    this.the_third_unit = "";  
+                    this.the_third_name = "";
+                    this.the_third_type = "";
+                    this.the_third_unit = "";
                 }
 
                 if (this.$.fourth.isSet) {
@@ -203,9 +204,9 @@
                     this.$.fourth.getCurrentDayPerHour();
                 }
                 else {
-                    this.the_fourth_name = "";  
-                    this.the_fourth_type = "";  
-                    this.the_fourth_unit = "";  
+                    this.the_fourth_name = "";
+                    this.the_fourth_type = "";
+                    this.the_fourth_unit = "";
                 }
 
                 if (this.$.fifth.isSet) {
@@ -218,56 +219,56 @@
                     this.$.fifth.getCurrentDayPerHour();
                 }
                 else {
-                    this.the_fifth_name = "";  
-                    this.the_fifth_type = "";  
-                    this.the_fifth_unit = "";  
+                    this.the_fifth_name = "";
+                    this.the_fifth_type = "";
+                    this.the_fifth_unit = "";
                 }
-            },
-            primary_valueChanged: function (oldValue, newValue) {
+            }
+            primary_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.the_primary_value = newValue;
-            },
-            secondary_valueChanged: function (oldValue, newValue) {
+            }
+            secondary_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.the_secondary_value = newValue;
-            },
-            third_valueChanged: function (oldValue, newValue) {
+            }
+            third_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.the_third_value = newValue;
-            },
-            fourth_valueChanged: function (oldValue, newValue) {
+            }
+            fourth_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.the_fourth_value = newValue;
-            },
-            fifth_valueChanged: function (oldValue, newValue) {
+            }
+            fifth_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.the_fifth_value = newValue;
-            },
-            primary_historyChanged: function(oldValue, newValue) { 
+            }
+            primary_historyChanged(newValue, oldValue) {
                 this.historyPrimary = newValue;
-                this.generic_historyChanged(oldValue, newValue, this.$.primary_spark, this.the_primary_value, this.$.the_primary_max, this.$.the_primary_min, "primary");
-            },
-            secondary_historyChanged: function(oldValue, newValue) { 
+                this.generic_historyChanged(newValue, oldValue, this.$.primary_spark, this.the_primary_value, this.$.the_primary_max, this.$.the_primary_min, "primary");
+            }
+            secondary_historyChanged(newValue, oldValue) {
                 this.historySecondary = newValue;
-                this.generic_historyChanged(oldValue, newValue, this.$.secondary_spark, this.the_secondary_value, this.$.the_secondary_max, this.$.the_secondary_min, "secondary");
-            },
-            third_historyChanged: function(oldValue, newValue) { 
+                this.generic_historyChanged(newValue, oldValue, this.$.secondary_spark, this.the_secondary_value, this.$.the_secondary_max, this.$.the_secondary_min, "secondary");
+            }
+            third_historyChanged(newValue, oldValue) {
                 this.historyThird = newValue;
-                this.generic_historyChanged(oldValue, newValue, this.$.third_spark, this.the_third_value, this.$.the_third_max, this.$.the_third_min, "third");
-            },
-            fourth_historyChanged: function(oldValue, newValue) { 
+                this.generic_historyChanged(newValue, oldValue, this.$.third_spark, this.the_third_value, this.$.the_third_max, this.$.the_third_min, "third");
+            }
+            fourth_historyChanged(newValue, oldValue) {
                 this.historyFourth = newValue;
-                this.generic_historyChanged(oldValue, newValue, this.$.fourth_spark, this.the_fourth_value, this.$.the_fourth_max, this.$.the_fourth_min, "fourth");
-            },
-            fifth_historyChanged: function(oldValue, newValue) { 
+                this.generic_historyChanged(newValue, oldValue, this.$.fourth_spark, this.the_fourth_value, this.$.the_fourth_max, this.$.the_fourth_min, "fourth");
+            }
+            fifth_historyChanged(newValue, oldValue) {
                 this.historyFifth = newValue;
-                this.generic_historyChanged(oldValue, newValue, this.$.fifth_spark, this.the_fifth_value, this.$.the_fifth_max, this.$.the_fifth_min, "fifth");
-            },
-            generic_historyChanged: function(oldValue, newValue, generic_spark, generic_value, generic_max, generic_min, name) { 
+                this.generic_historyChanged(newValue, oldValue, this.$.fifth_spark, this.the_fifth_value, this.$.the_fifth_max, this.$.the_fifth_min, "fifth");
+            }
+            generic_historyChanged(newValue, oldValue, generic_spark, generic_value, generic_max, generic_min, name) {
                 // in case the page is not yet nicely loaded...
                 if (generic_spark.clientWidth == 0 || generic_spark.clientHeight == 0) {
                     setTimeout(function(){
-                        this.generic_historyChanged(oldValue, newValue, generic_spark, generic_value, generic_max, generic_min, name);
+                        this.generic_historyChanged(newValue, oldValue, generic_spark, generic_value, generic_max, generic_min, name);
                         }.bind(this), 1000);
                 }
                 else {
@@ -286,7 +287,7 @@
                     if (maxvalue == "-Infinity") {
                         maxvalue = "";
                     }
- 
+
                     // as the graph history is an average, the current value could be lower or bigger than the min/max average value. So we adjust
                     current = generic_value;
                     if (current > maxvalue) {
@@ -314,10 +315,10 @@
                 }
             }
 
-        });        
+        };
 
         function setTypeIcon(type) {
-         
+
             switch(type) {
                 case 'DT_Temp': var icon = '<i class="wi wi-thermometer"></i>';
                 break;
@@ -334,10 +335,10 @@
                 default: var icon = '<i class="wi wi-na"></i>';
                 break;
             }
-             
-            return icon;
-         
-        } 
 
+            return icon;
+
+        };
+        customElements.define(DmwBasicSensorChartMulti.is, DmwBasicSensorChartMulti);
     </script>
-</polymer-element>
+</dom-module>

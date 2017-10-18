@@ -1,4 +1,4 @@
-<polymer-element name="dmw-basic-sensorNumber" extends="dmw-widget">
+<dom-module id="dmw-basic-sensornumber">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -31,14 +31,15 @@
         <div id='unit'>{{unit}}</div>
     </template>
     <script>
-        Polymer('dmw-basic-sensorNumber', {
-            ready: function() {
-                this.super();
+        class DmwBasicSensorNumber extends DmwWidget {
+            static get is () { return 'dmw-basic-sensornumber'; }
+            connectedCallback() {
+                super.connectedCallback();
                 this.number = "--";
                 this.unit = "";
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -46,14 +47,14 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
                 if (this.options['autoconvert']==1 && newValue > 0) {
@@ -71,8 +72,8 @@
                     }
                 }
                 this.adjustText(this, this.$.number);
-            },
-            adjustText: function(parent, element) {
+            }
+            adjustText(parent, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
                 var i = fontsize.substr(0,2);
                 //alert("cw = " + parent.clientWidth + ", cw = " + parent.clientHeight);
@@ -96,6 +97,7 @@
                     }
                 }
             }
-        });
+	    };
+        customElements.define(DmwBasicSensorNumber.is, DmwBasicSensorNumber);
     </script>
-</polymer-element>
+</dom-module>

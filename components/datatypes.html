@@ -1,19 +1,25 @@
-<link rel="import" href="/libraries/polymer/polymer.html">
+<link rel="import" href="/libraries/bower_components/polymer/polymer.html">
 
-<polymer-element name="dmw-datatypes">
+<dom-module id="dmw-datatypes">
 	<template>
 	    <web-socket id="socket"></web-socket>
 	</template>
 	<script>
-		Polymer("dmw-datatypes", {
-			ready:function(){
-		    	this.$.socket.register('datatype-list', this.datatypesReceived.bind(this), null);
-		    	this.$.socket.send("datatype-getall");					
-			},
-			datatypesReceived: function(topic, json) {
-	        	this.list=json;
-	        	this.fire('datatype-received');
-	    	}
-	    });
+        class DmwDataTypes extends Polymer.Element {
+            static get is () { return 'dmw-datatypes'; }
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                this.$.socket.register('datatype-list', this.datatypesReceived.bind(this), null);
+                this.$.socket.send("datatype-getall");
+            }
+            datatypesReceived(topic, json) {
+                this.list=json;
+             this.dispatchEvent(new CustomEvent('datatype-received'));
+            }
+	    };
+    customElements.define(DmwDataTypes.is, DmwDataTypes);
 	</script>
-</polymer-element>
+</dom-module>
