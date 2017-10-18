@@ -1,4 +1,4 @@
-<polymer-element name="dmw-pool-water" extends="dmw-widget">
+<dom-module id="dmw-pool-water" extends="dmw-widget">
 	<template>
 		<style type="text/css">
 		    :host { * { display: block; } }
@@ -125,9 +125,10 @@
 		</div>
 	</template>
 	<script>
-		Polymer('dmw-pool-water', {
-			ready: function() {
-				this.super();
+		        class Dmw extends DmwWidget {
+            static get is () { return 'dmw-pool-water',
+			connectedCallback() {
+				super.connectedCallback();
 				/**
 				 *    Wave oscillators by Ken Fyrstenberg Nilsen
 				 *    http://abdiassoftware.com/
@@ -251,7 +252,7 @@
 				  loop();
 				})();
 			},
-			sensorsUpdated: function() {
+			sensorsUpdated() {
 				if (this.$.temperature.isSet) {
 					this.$.tempdisplay.classList.remove('inactive');
 				} else {
@@ -275,11 +276,11 @@
 				}
                                 */
 			},
-			optionsUpdated: function() {
+			optionsUpdated() {
 				this.$.canvas.style.borderRadius = this.options['WidgetBorderRadius'];				
 				this.labelprimary = this.options['title'];
 			},
-			pumpvalueChanged: function(oldValue, newValue) {
+			pumpvalueChanged(newValue, oldValue) {
 				newValue = newValue.stored_value;
 				this.pumpStatus = i18n.t("domoweb:bool." + newValue, { context: 'DT_State' });
 				if (newValue == 1) {
@@ -288,12 +289,12 @@
 					this.$.propeller.classList.remove('running');
 				}
 			},
-			temperaturevalueChanged: function(oldValue, newValue) {
+			temperaturevalueChanged(newValue, oldValue) {
 				newValue = newValue.stored_value;
 				this.unit = i18n.t("domoweb:unit", { context: this.$.temperature.datatype_id, value: this.datatypes[this.$.temperature.datatype_id]['unit'] });
 				this.temperature = newValue;
 			},
-			phvalueChanged: function(oldValue, newValue) {
+			phvalueChanged(newValue, oldValue) {
 				newValue = newValue.stored_value;
                                 console.error(newValue);
 				var levels = this.shadowRoot.querySelectorAll(".phlevel");
@@ -321,7 +322,7 @@
 					this.$.phlevel1.innerHTML = newValue;
 				}
 			},
-			chlorinevalueChanged: function(oldValue, newValue) {
+			chlorinevalueChanged(newValue, oldValue) {
 				newValue = newValue.stored_value;
 				var levels = this.shadowRoot.querySelectorAll(".cllevel");
 				for (var i = levels.length - 1; i >= 0; i--) {
@@ -359,4 +360,4 @@
 		          };
 		})();
 	</script>
-</polymer-element>
+</dom-module>

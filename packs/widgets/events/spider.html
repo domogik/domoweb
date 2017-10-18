@@ -1,4 +1,4 @@
-<polymer-element name="dmw-events-spider" extends="dmw-widget">
+<dom-module id="dmw-events-spider" extends="dmw-widget">
     <template>
         <style type="text/css">
             :host {
@@ -151,10 +151,12 @@ body {
 </div>
     </template>
     <script>
-        Polymer('dmw-events-spider', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-events-spider',
+            connectedCallback() {
+                super.connectedCallback();
             }
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
     </script>
-</polymer-element>
+</dom-module>

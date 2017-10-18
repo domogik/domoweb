@@ -133,17 +133,24 @@ DMW.grid.setCSSstyle = function () {
 /**
  * adjustPlacement - Adjust grid and widgets positions to match browser size
  * This method is called on browser resize event
- * 
+ *
  */
 DMW.grid.adjustPlacement = function() {
-	if (DMW.grid.mode == 1) {
-		DMW.grid.adjustMode1();
-	} else if (DMW.grid.mode == 2) {
-		DMW.grid.adjustMode2();
-	} else if (DMW.grid.mode == 3) {
-		DMW.grid.adjustMode3();
-	}
-};
+    try {
+        if (DMW.grid.mode == 1) {
+            DMW.grid.adjustMode1();
+        } else if (DMW.grid.mode == 2) {
+            DMW.grid.adjustMode2();
+        } else if (DMW.grid.mode == 3) {
+            DMW.grid.adjustMode3();
+        }
+    } catch (e) {
+        console.error("Failing place widgets on grid :", e)
+        document.getElementById("loading_text").innerHTML = "Failing place widgets on grid :<br> "+
+                "Mode : "+DMW.grid.mode+"<br> "+
+                "Widgets base size : "+DMW.grid.widgetSize+" px (spacing : "+DMW.grid.widgetSpace+" px)<br>";
+    }
+}
 
 DMW.grid.adjustMode1 = function() {
 	// Adjust spaces between elements
@@ -424,13 +431,14 @@ function findEmptyPositionMatrix(matrix, w, h) {
 }
 
 function findEmptyPositionMatrix2(matrix, columns, rows, w, h) {
+    var isAvailable, i, j;
 	for(var y=0; y<rows; y++) {
 		for(var x=0; x<columns; x++) {
 			// Find the first empty space, that matches the widget size
-			var isAvailable = true;
-			var i = 0;
+			isAvailable = true;
+			i = 0;
 			while (isAvailable && i <= (h-1)) {
-				var j = 0;
+				j = 0;
 				while (isAvailable && j <= (w-1)) {
 					if (matrix[y+i][x+j] != null) {
 						isAvailable = false;
@@ -474,10 +482,18 @@ function adjustMatrix(list, matrix, columns, rows) {
 				// Is outside the new matrix, and needs to be moved
 				removeMatrix(placement, id);
 				var newPos = findEmptyPositionMatrix2(placement, columns, rows, list[id]['width'], list[id]['height']);
-				insertMatrix(placement, id, newPos[0], newPos[1], list[id]['width'], list[id]['height']);
-				list[id]['status'] = 'moved';
-				list[id]['x'] = newPos[0];
-				list[id]['y'] = newPos[1];
+                if (!newPos) {
+                    // No placement find in matrix
+                    // Was previously moved, but need to be moved back
+                    list[id]['status'] = 'moved';
+                    list[id]['x'] = list[id]['originalX'];
+                    list[id]['y'] = list[id]['originalY'];
+                } else {
+                    insertMatrix(placement, id, newPos[0], newPos[1], list[id]['width'], list[id]['height']);
+                    list[id]['status'] = 'moved';
+                    list[id]['x'] = newPos[0];
+                    list[id]['y'] = newPos[1];
+                }
 			} else if (list[id]['x'] != list[id]['originalX'] || list[id]['y'] != list[id]['originalY']) {
 				// Was previously moved, but need to be moved back
 				list[id]['status'] = 'moved';

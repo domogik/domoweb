@@ -1,4 +1,4 @@
-<polymer-element name="dmw-iconsbasic-svgSensorBool" extends="dmw-widget">
+<dom-module id="dmw-iconsbasic-svgSensorBool" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/iconsbasic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -46,9 +46,10 @@
 
     </template>
     <script>
-        Polymer('dmw-iconsbasic-svgSensorBool', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-iconsbasic-svgSensorBool',
+            connectedCallback() {
+                super.connectedCallback();
 
                 // COLORS                     
                 this.colorSets = { 'green' : ["#9bb528", "#bdcb2f", "#b9c248", "#cdda93"],
@@ -59,7 +60,7 @@
                 //this.redrawSVG();
             },
             
-            optionsUpdated: function() {
+            optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {         
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
@@ -86,7 +87,7 @@
                 this.colorSet = this.options['colorset'] ;
             },
             
-            sensorsUpdated: function() {
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
@@ -94,7 +95,7 @@
                 }
             },
             
-            sensorvalueChanged: function(oldValue, newValue) {
+            sensorvalueChanged(newValue, oldValue) {
                 var dataType = this.$.primary.datatype_id ;                 // => Ex.: DT_OpenClose ...
                 newValue = newValue.stored_value;
 
@@ -174,6 +175,7 @@
             
                 }, 'xml');
              }
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
     </script>
-</polymer-element>
+</dom-module>

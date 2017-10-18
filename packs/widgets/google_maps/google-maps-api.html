@@ -35,7 +35,7 @@ Fired when the Maps API library is loaded and ready.
 @event api-load
 -->
 
-<polymer-element name="google-maps-api" extends="core-shared-lib" attributes="version apiKey clientId libraries">
+<dom-module id="google-maps-api" extends="core-shared-lib" attributes="version apiKey clientId libraries">
 <script>
 
   /* 
@@ -49,7 +49,7 @@ Fired when the Maps API library is loaded and ready.
 
        /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\
   */
-  Polymer({
+  Polymer({is:{
 
     defaultUrl: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDyLLfDg0z-QrPrOsa1lvJZ-qjLPosHq_M&callback=%%callback%%',
 
@@ -91,7 +91,7 @@ Fired when the Maps API library is loaded and ready.
 
     notifyEvent: 'api-load',
 
-    ready: function() {
+    connectedCallback() {
       var url = this.defaultUrl + '&v=' + this.version;
       url += "&libraries=" + this.libraries;
       if (this.apiKey && !this.clientId) {
@@ -114,4 +114,4 @@ Fired when the Maps API library is loaded and ready.
     }
   });
 </script>
-</polymer-element>
+</dom-module>

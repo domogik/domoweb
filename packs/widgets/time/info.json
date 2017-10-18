@@ -30,6 +30,12 @@
             "height" : 1,
             "width" : 3,
             "options" : {
+                "12hr" : {
+                    "name": "Display in 12hr mode",
+                    "type": "boolean",
+                    "default": "False",
+                    "required": false
+                },
                 "dark" : {
                     "name": "Dark theme",
                     "type": "boolean",

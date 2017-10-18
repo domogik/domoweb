@@ -7,11 +7,14 @@
   font-style: normal;
 }
 </style>
+<link rel="import" href="/widget/basic/css/labelstyles.html">
+<link rel="import" href="/libraries/bower_components/slate-font-awesome/slate-font-awesome.html">
 
-<polymer-element name="dmw-basic-commandRollingShutter" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
-        <link rel="stylesheet" href="/widget/basic/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow>
+<dom-module id="dmw-basic-commandrollingshutter">
+    <template id="extended-styles">
+        <style include="dmw-widget-label-styles"></style>
+        <style include="slate-font-awesome"></style>
+     <!--   <link rel="stylesheet" href="/widget/basic/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow> -->
         <style type="text/css">
             :host {
                 height: 100%;
@@ -37,8 +40,8 @@
                 background-color: transparent;
             }
         </style>
-        <dmw-command id="primary" commandkey="primary"></dmw-command>
-        <!-- 
+        <dmw-command id="primary" commandkey="primary" commandnotified="open: 0; close:1;"></dmw-command>
+        <!--
         <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}"></dmw-sensor>
         -->
         <shadow></shadow>
@@ -46,13 +49,29 @@
         <button id="close" class=""><i class="fa fa-angle-double-down fa-4x"></i></button>
     </template>
     <script>
-        Polymer('dmw-basic-commandRollingShutter', {
-            ready: function() {
-                this.super();
+     (function () {
+        let memoizedTemplate;
+
+        class DmwBasicCommandRollingShutter extends DmwWidget {
+            static get is () { return 'dmw-basic-commandrollingshutter'; }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 //this.boolstate = null;
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -60,8 +79,8 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.options['WidgetTextColor'] == undefined) {
                     this.$.open.style.color = "#ffffff";
                 }
@@ -74,29 +93,31 @@
                 else {
                     this.$.close.style.color = this.options['WidgetTextColor'];
                 }
-            },
-            commandsUpdated: function() {
+            }
+            commandsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                     this.$.open.addEventListener('click', this.open.bind(this));
                     this.$.close.addEventListener('click', this.close.bind(this));
                 }
-            },
-            open: function(e) {
+            }
+            open(e) {
                 var parameters = {};
                 parameters[this.$.primary.parameters[0]['key']] = 0;
                 this.$.primary.send(parameters);
                 e.preventDefault();
                 e.stopPropagation();
-            },
-            close: function(e) {
+            }
+            close(e) {
                 var parameters = {};
                 parameters[this.$.primary.parameters[0]['key']] = 1;
                 this.$.primary.send(parameters);
                 e.preventDefault();
                 e.stopPropagation();
             }
-        });
+	    };
+        customElements.define(DmwBasicCommandRollingShutter.is, DmwBasicCommandRollingShutter);
+    })();
     </script>
-</polymer-element>
+</dom-module>

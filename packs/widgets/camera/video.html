@@ -1,4 +1,4 @@
-<polymer-element name="dmw-camera-video" extends="dmw-widget">
+<dom-module id="dmw-camera-video" extends="dmw-widget">
     <template>
         <style type="text/css">
             :host {
@@ -64,10 +64,11 @@
         <div id="cameralabel"><span>{{label}}</span></div>
     </template>
     <script>
-        Polymer('dmw-camera-video', {
-            ready: function() {
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-camera-video',
+            connectedCallback() {
                 this.mode = "normal";
-                this.super();
+                super.connectedCallback();
                 this.urlVisible = "/widget/camera/noname.png";                // real stream url (updated in sensorUpdated with the real value)
                 this.urlHidden = "/widget/camera/noname.png";                 // fake stream url (to be used when camera widget is not displayed to not consume bandwith)
                 this.url = this.urlHidden;
@@ -92,7 +93,7 @@
                 initialZIndex = this.style.zIndex;
 
             },
-            optionsUpdated: function() {
+            optionsUpdated() {
                 if (this.options['cameraName']) {
                     this.label = this.options['cameraName']
                 }
@@ -110,11 +111,11 @@
                     // will be set from sensor
                 }
             },
-            sensorsUpdated: function() {
+            sensorsUpdated() {
             },
-            commandsUpdated: function() {
+            commandsUpdated() {
             },
-            sensorvalueChanged: function(oldValue, newValue) {
+            sensorvalueChanged(newValue, oldValue) {
                 this.urlVisible = newValue.stored_value;
                 // change the used url only if widget is displayed
                 if (this.visible == true) {
@@ -122,7 +123,7 @@
                     this.urlRaw = this.url;
                 }
             },
-            zoom: function() {
+            zoom() {
                 if (this.mode == "normal") {
                     this.mode = "zoom";
                     this.$.camera.classList.add('camera-zoom');
@@ -144,16 +145,17 @@
                     this.style.zIndex = initialZIndex;
                 }
             },
-            attached: function() {
+            attached() {
                 console.error(this.localName + '#' + this.id + ' was attached');
                 this.visible = true;
             },
-            detached: function() {
+            detached() {
                 console.error(this.localName + '#' + this.id + ' was detached');
                 this.visible = false;
                 this.url = "/widget/camera/noname.png";
                 this.urlRaw = this.url;
             }
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
     </script>
-</polymer-element>
+</dom-module>

@@ -7,7 +7,7 @@
   font-style: normal;
 }     
 </style>
-<polymer-element name="dmw-weather-vigilance2" extends="dmw-widget">
+<dom-module id="dmw-weather-vigilance2" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -149,9 +149,10 @@
     </template>
     
     <script>
-        Polymer('dmw-weather-vigilance2', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-weather-vigilance2',
+            connectedCallback() {
+                super.connectedCallback();
                 this.labelsecondary = i18n.t("weather:Vigilance") ;
                 
                 this.tooltipWind = i18n.t("weather:Wind") ;
@@ -166,7 +167,7 @@
             },
             
             
-            optionsUpdated: function() {
+            optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {         
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
@@ -177,7 +178,7 @@
                 }
             },
                           
-            vigilanceDep_valueChanged: function(oldValue, newValue) {
+            vigilanceDep_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.labelprimary = "Departement " + newValue ;
                 this.urlVigiFrance = "http://vigilance.meteofrance.com/data/QGFR08_LFPW_.gif?" + new Date().getTime();
@@ -185,7 +186,7 @@
                 //console.error("urlVigiFrance  = " + this.urlVigiFrance);
             },
             
-            vigilanceInfo_valueChanged: function(oldValue, newValue) {
+            vigilanceInfo_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.vigiInfo = newValue ;
                 var vigiInfoLines = this.vigiInfo.split("\n") ;
@@ -193,58 +194,58 @@
                 
             },
             
-            vigilanceColor_valueChanged: function(oldValue, newValue) {
+            vigilanceColor_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.text.style.color = getColor(newValue) ;
             },
             
-            vigilanceColorWind_valueChanged: function(oldValue, newValue) {
+            vigilanceColorWind_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskWind.style.color = getColor(newValue) ;
             },
             
-            vigilanceColorRain_valueChanged: function(oldValue, newValue) {
+            vigilanceColorRain_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskRain.style.color = getColor(newValue) ;
             },
             
-            vigilanceColorThunderstorms_valueChanged: function(oldValue, newValue) {
+            vigilanceColorThunderstorms_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskThunderstorms.style.color = getColor(newValue) ;
             },
             
-            vigilanceColorFlood_valueChanged: function(oldValue, newValue) {
+            vigilanceColorFlood_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskFlood.style.color = getColor(newValue) ;
             },
             
-            vigilanceColorSnow_valueChanged: function(oldValue, newValue) {
+            vigilanceColorSnow_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskSnow.style.color = getColor(newValue) ;
             },
             
-            vigilanceColorHeat_valueChanged: function(oldValue, newValue) {
+            vigilanceColorHeat_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskHeat.style.color = getColor(newValue) ;
             },
             
-            vigilanceColorCold_valueChanged: function(oldValue, newValue) {
+            vigilanceColorCold_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskCold.style.color = getColor(newValue) ;
             },
             
-            vigilanceColorAvalanches_valueChanged: function(oldValue, newValue) {
+            vigilanceColorAvalanches_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskAvalanches.style.color = getColor(newValue) ;
             },
             
-            vigilanceColorSubmersion_valueChanged: function(oldValue, newValue) {
+            vigilanceColorSubmersion_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskSubmersion.style.color = getColor(newValue) ;
             },
             
             
-            vigilanceRisk_valueChanged: function(oldValue, newValue) {
+            vigilanceRisk_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 
                 if (newValue) {
@@ -261,17 +262,18 @@
                 }
             },
             
-            displayInfo: function() {
+            displayInfo() {
                 console.error("displayInfo = " + this.vigiInfo);
                 this.$.info.style.display = "block";
             },
 
-            hideInfo: function() {
+            hideInfo() {
                 console.error("hideInfo");
                 this.$.info.style.display = "none";
             }
             
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
         
         function getColor(color) {
                 switch(color) {         // "white", "green", "yellow", "orange", "red"
@@ -291,4 +293,4 @@
             }
 
     </script>
-</polymer-element>
+</dom-module>

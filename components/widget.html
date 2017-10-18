@@ -1,10 +1,13 @@
-<link rel="import" href="/libraries/polymer/polymer.html">
+<link rel="import" href="/libraries/bower_components/polymer/polymer.html">
 <link rel="import" href="/components/sensor.html">
 <link rel="import" href="/components/command.html">
+<link rel="import" href="/libraries/bower_components/bootstrap-styles/bootstrap-styles.html">
+<link rel="import" href="/libraries/bower_components/slate-font-awesome/slate-font-awesome.html">
 
-<polymer-element name="dmw-widget" attributes="instanceid edit debug default_style">
+<dom-module id="dmw-widget">
 	<template>
-		<link rel="stylesheet" href="/libraries/bootstrap-3.3.5/css/bootstrap.min.css">
+        <style include="bootstrap-styles"></style>
+        <style include="slate-font-awesome"></style>
 		<style type="text/css">
 		:host {
 			height: 100%;
@@ -17,6 +20,8 @@
 			-moz-user-select: none;
 			-ms-user-select: none;
 			user-select: none;
+            --sensor-notify-color-rgb: 51,255,51;
+            --command-notify-color-rgb: 255,51,204;
 		}
 		#editOverlay {
 			color: #f0f0F0;
@@ -41,11 +46,12 @@
 		    justify-content: center;
 		    align-items: center;
 			background: #000000;
+            color: #f0f0F0;
 			display: block;
 			width: 2em;
 			height: 2em;
 			border: 1px solid #f0f0F0;
-			margin: 1em auto 1em auto;
+			margin: 1em -0.4em 1em auto;
 			-moz-border-radius: 1em;
 			-webkit-border-radius: 1em;
 			border-radius: 1em;
@@ -86,268 +92,338 @@
 			line-height: 1.4em;
 			margin-top:-1.4em;
 		}
-		</style>
+
+        .pulse-sensor {
+              border: none;
+              box-shadow: 0 0 0 0 rgba(var(--sensor-notify-color-rgb),0.7);
+              -webkit-animation: sensorpulse 1.25s infinite cubic-bezier(0.66, 0, 0, 1);
+              -moz-animation: sensorpulse 1.25s infinite cubic-bezier(0.66, 0, 0, 1);
+              -ms-animation: sensorpulse 1.25s infinite cubic-bezier(0.66, 0, 0, 1);
+              animation: sensorpulse 1.25s infinite cubic-bezier(0.66, 0, 0, 1);
+            }
+        @-webkit-keyframes sensorpulse {from {box-shadow: 0 0 0 30px rgba(var(--sensor-notify-color-rgb),0);}}
+        @-moz-keyframes sensorpulse {from {box-shadow: 0 0 0 30px rgba(var(--sensor-notify-color-rgb),0);}}
+        @-ms-keyframes sensorpulse {from {box-shadow: 0 0 0 30px rgba(var(--sensor-notify-color-rgb),0);}}
+        @keyframes sensorpulse {from {box-shadow: 0 0 0 30px rgba(var(--sensor-notify-color-rgb),0);}}
+
+        .pulse-cmd {
+              border: none;
+              box-shadow: 0 0 0 0 rgba(var(--command-notify-color-rgb),0.7);
+              -webkit-animation: cmdpulse 1.25s infinite cubic-bezier(0.66, 0, 0, 1);
+              -moz-animation: cmdpulse 1.25s infinite cubic-bezier(0.66, 0, 0, 1);
+              -ms-animation: cmdpulse 1.25s infinite cubic-bezier(0.66, 0, 0, 1);
+              animation: cmdpulse 1.25s infinite cubic-bezier(0.66, 0, 0, 1);
+            }
+        @-webkit-keyframes cmdpulse {from {box-shadow: 0 0 0 30px rgba(var(--command-notify-color-rgb),0);}}
+        @-moz-keyframes cmdpulse {from {box-shadow: 0 0 0 30px rgba(var(--command-notify-color-rgb),0);}}
+        @-ms-keyframes cmdpulse {from {box-shadow: 0 0 0 30px rgba(var(--command-notify-color-rgb),0);}}
+        @keyframes cmdpulse {from {box-shadow: 0 0 0 30px rgba(var(--command-notify-color-rgb),0);}}		</style>
 		<web-socket id="socket"></web-socket>
 		<polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
-		<div id='labelprimary'>{{labelprimary}}</div>
-		<div id='labelsecondary'>{{labelsecondary}}</div>
+		<div id='labelprimary'>[[labelprimary]]</div>
+		<div id='labelsecondary'>[[labelsecondary]]</div>
 		<div id="editOverlay">
-			<div class="moveWidget" id="handle"><span class="glyphicon glyphicon-move" aria-hidden="true"></span></div>
+			<div class="moveWidget" id="handle"><i class="fa fa-arrows" aria-hidden="true"></i></div>
 			<div class="buttons">
-				<button class="editWidget" on-click="{{editWidget}}" aria-label="Edit"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></button>
-				<button class="removeWidget" on-click="{{removeWidget}}" aria-label="Remove"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <button class="editWidget" on-click="editWidget" aria-label="Edit"><i class="fa fa-cog" aria-hidden="true"></i></button>
+				<button class="removeWidget" on-click="removeWidget" aria-label="Remove"><i class="fa fa-times" aria-hidden="true"></i></button>
 			</div>
 		</div>
 		<div id="timeoutOverlay"></div>
 	</template>
 	<script>
-		Polymer("dmw-widget", {
-			ready: function() {
-				this.sensorlost = null;
-				this.sensorsReady = false;
-				this.commandsReady = false;
-				this.devicesReady = false;
-				this.loaded = false;
-				this.draggie = null;
-				if (this.datatypes === null || this.datatypes === undefined) {
-					document.querySelector("dmw-datatypes").addEventListener("datatype-received", this.datatypesReceived.bind(this), false);
-				}
-			},
-			removeWidget: function(e) {
-		    	this.$.socket.send("widgetinstance-remove", {'instance_id':this.instanceid});
-			},
-			editWidget: function(e) {
-				var self = this;
-				var modalOverlay = document.getElementById('modal-overlay');
-				this.$.ajax.setAttribute('handleAs', 'text');
-				this.$.ajax.addEventListener("polymer-response",
-        			function(e) {
-						var response = e.detail.response;
-						if (response == '{success:true}') {
-   							modalOverlay.classList.remove('on');
-							modalOverlay.innerHTML = '';
-						} else {
-							modalOverlay.innerHTML = response;
-							var saveConfig = modalOverlay.querySelector('#saveConfig');
-							var cancelConfig = modalOverlay.querySelector('#cancelConfig');
-							var formConfig = modalOverlay.querySelector('#formConfig');
-							saveConfig.addEventListener("click",
-								function(e) {
-									self.$.ajax.setAttribute('body', $(formConfig).serialize());
-									self.$.ajax.setAttribute('method', 'POST');
-									self.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + self.instanceid + '"}');
-									self.$.ajax.go();
-									e.preventDefault();
-									e.stopPropagation();
-									return false;
-								});
-							cancelConfig.addEventListener("click",
-								function(e) {
-   									modalOverlay.classList.remove('on');
-									modalOverlay.innerHTML = '';
-									e.preventDefault();
-									e.stopPropagation();
-									return false;
-								});
-							modalOverlay.classList.add('on');
+        class DmwWidget extends Polymer.Element {
+            static get is () { return 'dmw-widget'; }
+            static get properties() {
+                return {
+                    instanceid: {
+                        type: Number,
+                        notify: true,
+                        observer: '_instanceidChanged'
+                    },
+                    edit: {
+                        notify: true,
+                        observer: '_editChanged',
+                        reflectToAttribute: true
+                    },
+                    debug: {
+                        notify: true
+                    },
+                    default_style: {
+                        notify: true
+                    }
+                }
+            }
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                this.sensorlost = null;
+                this.historylost = null;
+                this.sensorsReady = false;
+                this.commandsReady = false;
+                this.devicesReady = false;
+                this.loaded = false;
+                this.draggie = null;
+                if (this.datatypes === null || this.datatypes === undefined) {
+                    document.querySelector("dmw-datatypes").addEventListener("datatype-received", this.datatypesReceived.bind(this), false);
+                }
+            }
+            removeWidget(e) {
+                this.$.socket.send("widgetinstance-remove", {'instance_id':this.instanceid});
+            }
+            editWidget(e) {
+                var self = this;
+                var modalOverlay = document.getElementById('modal-overlay');
+                this.$.ajax.setAttribute('handleAs', 'text');
+                this.$.ajax.addEventListener("polymer-response",
+                    function(e) {
+                        var response = e.detail.response;
+                        if (response == '{success:true}') {
+                            modalOverlay.classList.remove('on');
+                            modalOverlay.innerHTML = '';
+                        } else {
+                            modalOverlay.innerHTML = response;
+                            var saveConfig = modalOverlay.querySelector('#saveConfig');
+                            var cancelConfig = modalOverlay.querySelector('#cancelConfig');
+                            var formConfig = modalOverlay.querySelector('#formConfig');
+                            saveConfig.addEventListener("click",
+                                function(e) {
+                                    self.$.ajax.setAttribute('body', $(formConfig).serialize());
+                                    self.$.ajax.setAttribute('method', 'POST');
+                                    self.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + self.instanceid + '"}');
+                                    self.$.ajax.go();
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    return false;
+                                });
+                            cancelConfig.addEventListener("click",
+                                function(e) {
+                                    modalOverlay.classList.remove('on');
+                                    modalOverlay.innerHTML = '';
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    return false;
+                                });
+                            modalOverlay.classList.add('on');
 
-							$("fieldset[data-toggle=fieldset]").each(function() {
-							    var $this = $(this);
+                            $("fieldset[data-toggle=fieldset]").each(function() {
+                                var $this = $(this);
 
-						        //Add new entry
-							    $this.find("button[data-toggle=fieldset-add-row]").click(function() {
-							        var target = $($(this).data("target"))
-							        var oldrow = target.find("div[data-toggle=fieldset-entry]:last");
-							        var row = oldrow.clone(true, true);
-							        var elem_id = row.find(":input")[0].id;
-							        var reg = /.*-(\d{1,2})/m;
-							        var elem_num = parseInt(reg.exec(elem_id)[1]) + 1;
-							        row.attr('data-id', elem_num);
-							        row.find(":input").each(function() {
-							            var id = $(this).attr('id').replace('-' + (elem_num - 1), '-' + (elem_num));
-							            $(this).attr('name', id).attr('id', id).val('').removeAttr("checked");
-							        });
-							        row.find("label").each(function() {
-							            var idfor = $(this).attr('for').replace('-' + (elem_num - 1), '-' + (elem_num));
-							            $(this).attr('for', idfor);
-							        	$(this).text("#"+(elem_num+1));
-							        });
-							        oldrow.after(row);
-							        var length = target.find("div[data-toggle=fieldset-entry]").length;
-							        if (length == $this.data("maxgroup")) {
-										$this.find("button[data-toggle=fieldset-add-row]").attr('disabled', 'disabled');
-							        }
-							        if (length > $this.data("mingroup")) {
-										$this.find("button[data-toggle=fieldset-remove-row]").removeAttr('disabled');
-							        }
-							    }); //End add new entry
+                                //Add new entry
+                                $this.find("button[data-toggle=fieldset-add-row]").click(function() {
+                                    var target = $($(this).data("target"))
+                                    var oldrow = target.find("div[data-toggle=fieldset-entry]:last");
+                                    var row = oldrow.clone(true, true);
+                                    var elem_id = row.find(":input")[0].id;
+                                    var reg = /.*-(\d{1,2})/m;
+                                    var elem_num = parseInt(reg.exec(elem_id)[1]) + 1;
+                                    row.attr('data-id', elem_num);
+                                    row.find(":input").each(function() {
+                                        var id = $(this).attr('id').replace('-' + (elem_num - 1), '-' + (elem_num));
+                                        $(this).attr('name', id).attr('id', id).val('').removeAttr("checked");
+                                    });
+                                    row.find("label").each(function() {
+                                        var idfor = $(this).attr('for').replace('-' + (elem_num - 1), '-' + (elem_num));
+                                        $(this).attr('for', idfor);
+                                        $(this).text("#"+(elem_num+1));
+                                    });
+                                    oldrow.after(row);
+                                    var length = target.find("div[data-toggle=fieldset-entry]").length;
+                                    if (length == $this.data("maxgroup")) {
+                                        $this.find("button[data-toggle=fieldset-add-row]").attr('disabled', 'disabled');
+                                    }
+                                    if (length > $this.data("mingroup")) {
+                                        $this.find("button[data-toggle=fieldset-remove-row]").removeAttr('disabled');
+                                    }
+                                }); //End add new entry
 
-					            //Remove row
-							    $this.find("button[data-toggle=fieldset-remove-row]").click(function() {
-							        var target = $($(this).data("target"))
-							        var row = target.find("div[data-toggle=fieldset-entry]:last");
-							        row.remove();
-							        var length = target.find("div[data-toggle=fieldset-entry]").length;
-							        if (length == $this.data("mingroup")) {
-										$this.find("button[data-toggle=fieldset-remove-row]").attr('disabled', 'disabled');
-							        }
-							        if (length < $this.data("maxgroup")) {
-										$this.find("button[data-toggle=fieldset-add-row]").removeAttr('disabled');
-							        }
-							    }); //End remove row
-							});
-						}
-        			});
-				this.$.ajax.setAttribute('method', 'GET');
-				this.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + this.instanceid + '"}');
-				self.$.ajax.go();
-			},
-			instanceidChanged: function(oldValue, newValue) {
-		    	this.$.socket.register('widgetinstance-options', this.optionsReceived.bind(this), {'instance_id': newValue});
-		    	this.$.socket.send("widgetinstance-getoptions", {'instance_id': newValue});
-			},
-			datatypesReceived: function() {
-				if (!this.loaded && this.options) this.initialStepReady();
-			},
-			optionsReceived: function(topic, json) {
-				this.options = json['options'];
-				if (this.default_style!=null) {
-			      this.style.color=this.options['WidgetTextColor'];
-			      this.style.backgroundColor=this.options['WidgetBackgroundColor'];
-			      this.style.borderColor=this.options['WidgetBorderColor'];
-			      this.style.borderRadius=this.options['WidgetBorderRadius'];
-			      this.style.boxShadow=this.options['WidgetBoxShadow'];
-				}
-				this.optionsUpdated();
-				if (!this.loaded && this.datatypes) this.initialStepReady();
-			},
-			initialStepReady: function() {
-		    	this.$.socket.register('widgetinstance-sensors', this.sensorsReceived.bind(this), {'instance_id': this.instanceid});
-		    	this.$.socket.send("widgetinstance-getsensors", {'instance_id': this.instanceid});
-		    	this.$.socket.register('widgetinstance-commands', this.commandsReceived.bind(this), {'instance_id': this.instanceid});
-		    	this.$.socket.send("widgetinstance-getcommands", {'instance_id': this.instanceid});
-		    	this.$.socket.register('widgetinstance-devices', this.devicesReceived.bind(this), {'instance_id': this.instanceid});
-		    	this.$.socket.send("widgetinstance-getdevices", {'instance_id': this.instanceid});
-			},
-			sensorsReceived: function(topic, json) {
-				for (var key in json['sensors']) {
-					var sensor = json['sensors'][key];
-					var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
-					if (dmwsensor) {
-						if (this.options['WidgetSensorTimeout'] == 1) {
-							dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
-							dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
-						}
-						dmwsensor.init(sensor);
-					}
-				}
-				this.sensorsUpdated();
-				if (!this.loaded) { // First loading
-					this.sensorsReady = true;
-					if (this.commandsReady && this.devicesReady) this.loadingReady();
-				}
-			},
-			commandsReceived: function(topic, json) {
-				for (var key in json['commands']) {
-					var command = json['commands'][key];
-					var dmwcommand = this.shadowRoot.querySelector('dmw-command[commandkey="' + key + '"]');
-					if (dmwcommand) {
-						dmwcommand.init(command);
-					}
-				}
-				this.commandsUpdated();
-				if (!this.loaded) { // First loading
-					this.commandsReady = true;
-					if (this.sensorsReady && this.devicesReady) this.loadingReady();
-				}
-			},
-			devicesReceived: function(topic, json) {
-				for (var key in json['devices']) {
-					var device = json['devices'][key];
-					if ('sensors' in device) {
-						for (var key in device['sensors']) {
-							var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
-							if (dmwsensor) {
-								dmwsensor.init(device['sensors'][key]);
-								if (this.options['WidgetSensorTimeout'] == 1) {
-									dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
-									dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
-								}
-							}
-						}
-					}
-					if ('commands' in device) {
-						for (var key in device['commands']) {
-							var dmwcommand = this.shadowRoot.querySelector('dmw-command[commandkey="' + key + '"]');
-							if (dmwcommand) {
-								dmwcommand.init(device['commands'][key]);
-							}
-						}
-					}
-				}
-				this.devicesUpdated();
-				if (!this.loaded) { // First loading
-					this.devicesReady = true;
-					if (this.commandsReady && this.sensorsReady) this.loadingReady();
-				}
-			},
-			get datatypes() {
-				var datatypes = document.querySelector("dmw-datatypes");
-				return datatypes.list;
-			},
-			loadingReady: function() {
-				this.classList.remove('loading');
-				this.loaded = true;
-				this.loadingDone();
-			},
-			loadingDone: function() {},
-			sensorsUpdated: function() {},
-			commandsUpdated: function() {},
-			devicesUpdated: function() {},
-			optionsUpdated: function() {},
-			timeoutDetected: function(e) {
-				this.sensorlost = e.target;
-				var text = "Sensor lost";
-				if (e.detail.minutes) {
-					text += "<br/>" + e.detail.minutes;
-				}
-				this.$.timeoutOverlay.innerHTML = text;
-				this.$.timeoutOverlay.style.display = 'block';
-			},
-			timeoutFinished: function(e) {
-				if (this.sensorlost && e.target.id == this.sensorlost.id) {
-					this.sensorlost = null;
-					this.$.timeoutOverlay.style.display = 'none';
-				}
-			},
-			editChanged: function(oldValue, newValue) {
-				var self = this;
-				var editOverlay = this.$.editOverlay;
-				if (newValue != null) {
-					// Show config overlay
-					editOverlay.classList.add('visible');
-					// Make widget draggable
-					this.draggie = new Draggable( this, {
-						draggabilly : { containment: document.body, handle: this.$.handle },
-						onStart : function(instance) {
-							self.fire('drag-start');
-						},
-						onEnd : function(wasDropped) {
-							self.fire('drag-end');
-						},
-						testChanged: function(droppableEl, draggableEl) {
-							return (draggableEl.dataset.x != droppableEl.dataset.x || draggableEl.dataset.y != droppableEl.dataset.y);
-						}
-					} );
-				} else {
-					// Remove widget draggability
-					this.draggie.destroy();
-					this.draggie = null;
-					// Hide config overlay
-					editOverlay.classList.remove('visible');
-				}
-			}
-		});
+                                //Remove row
+                                $this.find("button[data-toggle=fieldset-remove-row]").click(function() {
+                                    var target = $($(this).data("target"))
+                                    var row = target.find("div[data-toggle=fieldset-entry]:last");
+                                    row.remove();
+                                    var length = target.find("div[data-toggle=fieldset-entry]").length;
+                                    if (length == $this.data("mingroup")) {
+                                        $this.find("button[data-toggle=fieldset-remove-row]").attr('disabled', 'disabled');
+                                    }
+                                    if (length < $this.data("maxgroup")) {
+                                        $this.find("button[data-toggle=fieldset-add-row]").removeAttr('disabled');
+                                    }
+                                }); //End remove row
+                            });
+                        }
+                    });
+                this.$.ajax.setAttribute('method', 'GET');
+                this.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + this.instanceid + '"}');
+                self.$.ajax.go();
+            }
+            _instanceidChanged(newValue, oldValue) {
+                this.$.socket.register('widgetinstance-options', this.optionsReceived.bind(this), {'instance_id': newValue});
+                this.$.socket.send("widgetinstance-getoptions", {'instance_id': newValue});
+            }
+            datatypesReceived() {
+                if (!this.loaded && this.options) this.initialStepReady();
+            }
+            optionsReceived(topic, json) {
+                this.options = json['options'];
+                if (this.default_style!=null) {
+                  this.style.color=this.options['WidgetTextColor'];
+                  this.style.backgroundColor=this.options['WidgetBackgroundColor'];
+                  this.style.borderColor=this.options['WidgetBorderColor'];
+                  this.style.borderRadius=this.options['WidgetBorderRadius'];
+                  this.style.boxShadow=this.options['WidgetBoxShadow'];
+                }
+                this.optionsUpdated();
+                if (!this.loaded && this.datatypes) this.initialStepReady();
+            }
+            initialStepReady() {
+                this.$.socket.register('widgetinstance-sensors', this.sensorsReceived.bind(this), {'instance_id': this.instanceid});
+                this.$.socket.send("widgetinstance-getsensors", {'instance_id': this.instanceid});
+                this.$.socket.register('widgetinstance-commands', this.commandsReceived.bind(this), {'instance_id': this.instanceid});
+                this.$.socket.send("widgetinstance-getcommands", {'instance_id': this.instanceid});
+                this.$.socket.register('widgetinstance-devices', this.devicesReceived.bind(this), {'instance_id': this.instanceid});
+                this.$.socket.send("widgetinstance-getdevices", {'instance_id': this.instanceid});
+            }
+            sensorsReceived(topic, json) {
+                for (var key in json['sensors']) {
+                    var sensor = json['sensors'][key];
+                    var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
+                    if (dmwsensor) {
+                        if (this.options['WidgetSensorTimeout'] == 1) {
+                            dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
+                            dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
+                      dmwsensor.addEventListener("sensor-history-timeout", this.timeoutHistoryDetected.bind(this));
+                      dmwsensor.addEventListener("sensor-history-timeoutend", this.timeoutHistoryFinished.bind(this));
+                        }
+                        dmwsensor.init(sensor);
+                    }
+                }
+                this.sensorsUpdated();
+                if (!this.loaded) { // First loading
+                    this.sensorsReady = true;
+                    if (this.commandsReady && this.devicesReady) this.loadingReady();
+                }
+            }
+            commandsReceived(topic, json) {
+                for (var key in json['commands']) {
+                    var command = json['commands'][key];
+                    var dmwcommand = this.shadowRoot.querySelector('dmw-command[commandkey="' + key + '"]');
+                    if (dmwcommand) {
+                        dmwcommand.init(command);
+                    }
+                }
+                this.commandsUpdated();
+                if (!this.loaded) { // First loading
+                    this.commandsReady = true;
+                    if (this.sensorsReady && this.devicesReady) this.loadingReady();
+                }
+            }
+            devicesReceived(topic, json) {
+                for (var key in json['devices']) {
+                    var device = json['devices'][key];
+                    if ('sensors' in device) {
+                        for (var key in device['sensors']) {
+                            var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
+                            if (dmwsensor) {
+                                dmwsensor.init(device['sensors'][key]);
+                                if (this.options['WidgetSensorTimeout'] == 1) {
+                                    dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
+                                    dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
+                                    dmwsensor.addEventListener("sensor-history-timeout", this.timeoutHistoryDetected.bind(this));
+                                    dmwsensor.addEventListener("sensor-history-timeoutend", this.timeoutHistoryFinished.bind(this));
+                                }
+                            }
+                        }
+                    }
+                    if ('commands' in device) {
+                        for (var key in device['commands']) {
+                            var dmwcommand = this.shadowRoot.querySelector('dmw-command[commandkey="' + key + '"]');
+                            if (dmwcommand) {
+                                dmwcommand.init(device['commands'][key]);
+                            }
+                        }
+                    }
+                }
+                this.devicesUpdated();
+                if (!this.loaded) { // First loading
+                    this.devicesReady = true;
+                    if (this.commandsReady && this.sensorsReady) this.loadingReady();
+                }
+            }
+            get datatypes() {
+                var datatypes = document.querySelector("dmw-datatypes");
+                return datatypes.list;
+            }
+            loadingReady() {
+                this.classList.remove('loading');
+                this.loaded = true;
+                this.loadingDone();
+            }
+            loadingDone() {}
+            sensorsUpdated() {}
+            commandsUpdated() {}
+            devicesUpdated() {}
+            optionsUpdated() {}
+            timeoutDetected(e) {
+                this.sensorlost = e.target;
+                var text = "Sensor lost";
+                if (e.detail.minutes) {
+                    text += "<br/>" + e.detail.minutes;
+                }
+                this.$.timeoutOverlay.innerHTML = text;
+                this.$.timeoutOverlay.style.display = 'block';
+            }
+            timeoutFinished(e) {
+                if (this.sensorlost && e.target.id == this.sensorlost.id) {
+                    this.sensorlost = null;
+                    this.$.timeoutOverlay.style.display = 'none';
+                }
+            }
+            timeoutHistoryDetected(e) {
+                this.historylost = e.target;
+                var text = "History request timeout";
+                if (e.detail.comment) {
+                    text += "<br/>" + e.detail.comment;
+                }
+                this.$.timeoutOverlay.innerHTML = text;
+                this.$.timeoutOverlay.style.display = 'block';
+            }
+            timeoutHistoryFinished(e) {
+                if (this.historylost && e.target.id == this.historylost.id) {
+                    this.historylost = null;
+                    this.$.timeoutOverlay.style.display = 'none';
+                }
+            }
+            _editChanged(newValue, oldValue) {
+                var self = this;
+                var editOverlay = this.$.editOverlay;
+                if (newValue != null) {
+                    // Show config overlay
+                    editOverlay.classList.add('visible');
+                    // Make widget draggable
+                    this.draggie = new Draggable( this, {
+                        draggabilly : { containment: document.body, handle: this.$.handle },
+                        onStart : function(instance) {
+                            self.dispatchEvent(new CustomEvent('drag-start', {}));
+                        },
+                        onEnd : function(wasDropped) {
+                            self.dispatchEvent(new CustomEvent('drag-end', {}));
+                        },
+                        testChanged: function(droppableEl, draggableEl) {
+                            return (draggableEl.dataset.x != droppableEl.dataset.x || draggableEl.dataset.y != droppableEl.dataset.y);
+                        }
+                    } );
+                } else {
+                    // Remove widget draggability
+                    this.draggie.destroy();
+                    this.draggie = null;
+                    // Hide config overlay
+                    editOverlay.classList.remove('visible');
+                }
+            }
+        };
 	function createStyle(id, css) {
 		var existingstyle = document.querySelector('style#style-instance-'+id);
 		if (existingstyle) existingstyle.remove();
@@ -362,7 +438,8 @@
 		}
 		document.head.appendChild(style);
 		return style;
-	}
-	</script>
-</polymer-element>
+    };
+    customElements.define(DmwWidget.is, DmwWidget);
+    </script>
+</dom-module>
 

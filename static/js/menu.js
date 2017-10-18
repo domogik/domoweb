@@ -40,11 +40,13 @@ DMW.menu.openNav = function(){
 	DMW.menu.open = true;
     DMW.menu.cnbutton.innerHTML = "<span class='sr-only'>Close Menu</span>";
     DMW.menu.cnwrapper.classList.add('opened-nav');
+    DMW.menu.cnbutton.parentElement.classList.add('active');
 };
 DMW.menu.closeNav = function(){
 	DMW.menu.open = false;
 	DMW.menu.cnbutton.innerHTML = "<span class='sr-only'>Open Menu</span>";
     DMW.menu.cnwrapper.classList.remove('opened-nav');
+    DMW.menu.cnbutton.parentElement.classList.remove('active');
 };
 DMW.menu.handler = function(e){
 	if (!e) var e = window.event;
@@ -96,15 +98,15 @@ DMW.menu.findItem = function (treeNodes, searchID){
     for (var nodeIdx = 0; nodeIdx <= treeNodes.length-1; nodeIdx++) {
         var currentNode = treeNodes[nodeIdx],
             currentId = currentNode.id;
-        if (currentId == searchID) {    
+        if (currentId == searchID) {
             return currentNode;
         }
         else {
         	if (currentNode.childs) {
-	            var foundDescendant = DMW.menu.findItem(currentNode.childs, searchID); 
+	            var foundDescendant = DMW.menu.findItem(currentNode.childs, searchID);
 	            if (foundDescendant) {
 	                return foundDescendant;
-	            }        		
+	            }
         	}
         }
     }
@@ -118,7 +120,7 @@ DMW.menu.displayItems = function(parent) {
 	} else {
 		root = parent.childs;
 	}
-	
+
 	// Clean the menu
 	while (DMW.menu.root.firstChild) {
   		DMW.menu.root.removeChild(DMW.menu.root.firstChild);
@@ -150,7 +152,7 @@ DMW.menu.appendMenu = function(item) {
 	} else {
 		var button = document.createElement('div');
 		button.setAttribute('class', 'menuitem');
-		li.appendChild(button);		
+		li.appendChild(button);
 	}
 	DMW.menu.root.appendChild(li);
 };

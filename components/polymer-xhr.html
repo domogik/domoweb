@@ -9,7 +9,7 @@ license that can be found in the LICENSE file.
  */
 /**
  * polymer-xhr can be used to perform XMLHttpRequests.
- 
+
  * Example:
  *
  *     <polymer-xhr id="xhr"></polymer-xhr>
@@ -19,9 +19,9 @@ license that can be found in the LICENSE file.
  * @class polymer-xhr
  */
 -->
-<link rel="import" href="/libraries/polymer/polymer.html">
+<link rel="import" href="/libraries/bower_components/polymer/polymer.html">
 
-<polymer-element name="polymer-xhr">
+<dom-module id="polymer-xhr">
   <template>
     <style>
       :host {
@@ -30,22 +30,24 @@ license that can be found in the LICENSE file.
     </style>
   </template>
   <script>
-    Polymer('polymer-xhr', {
-      makeReadyStateHandler: function(xhr, callback) {
+    class PolymerXhr extends Polymer.Element {
+      static get is () { return 'polymer-xhr'; }
+
+      makeReadyStateHandler(xhr, callback) {
         xhr.onreadystatechange = function() {
           if (xhr.readyState == 4) {
             callback && callback.call(null, xhr.response, xhr);
           }
         };
-      },
-      setRequestHeaders: function(xhr, headers) {
+      }
+      setRequestHeaders(xhr, headers) {
         if (headers) {
           for (var name in headers) {
             xhr.setRequestHeader(name, headers[name]);
           }
         }
-      },
-      toQueryString: function(params) {
+      }
+      toQueryString(params) {
         var r = [];
         for (var n in params) {
           var v = params[n];
@@ -53,7 +55,7 @@ license that can be found in the LICENSE file.
           r.push(v == null ? n : (n + '=' + encodeURIComponent(v)));
         }
         return r.join('&');
-      },
+      }
       /**
        * Sends a HTTP request to the server and returns the XHR object.
        *
@@ -70,7 +72,7 @@ license that can be found in the LICENSE file.
        *    @param {Object} inOptions.callback Called when request is completed.
        * @returns {Object} XHR object.
        */
-      request: function(options) {
+      request(options) {
         var xhr = new XMLHttpRequest();
         var url = options.url;
         var method = options.method || 'GET';
@@ -91,6 +93,7 @@ license that can be found in the LICENSE file.
         }
         return xhr;
       }
-    });
+    }
+    customElements.define(PolymerXhr.is, PolymerXhr);
   </script>
-</polymer-element>
+</dom-module>

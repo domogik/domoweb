@@ -8,7 +8,7 @@
 }     
 
 </style>
-<polymer-element name="dmw-weather-rainhour2" extends="dmw-widget">
+<dom-module id="dmw-weather-rainhour2" extends="dmw-widget">
     <template>
         <style type="text/css">
             @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
@@ -57,19 +57,20 @@
     
     
     <script>
-        Polymer('dmw-weather-rainhour2', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-weather-rainhour2',
+            connectedCallback() {
+                super.connectedCallback();
                 this.$.title.innerHTML = i18n.t("weather:Rain Forecast") ;
             },
 
-            rainForecastLocation_valueChanged: function (oldValue, newValue) {
+            rainForecastLocation_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 //console.error(newValue) ;
                 this.rainForecastLocationName = newValue ;
             },            
             
-            rainForecastTxt_valueChanged: function (oldValue, newValue) {
+            rainForecastTxt_valueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 //console.error(newValue);
                 var rainDateLevelList = newValue.split(',') ;
@@ -110,7 +111,8 @@
                 
             }            
             
-        });        
+	    };
+    customElements.define(Dmw.is, Dmw);        
 
 
         function setRainIcon(condid) {   // wi-na / wi-cloud / wi-rain-mix / wi-showers / wi-rain   
@@ -134,4 +136,4 @@
         
        
     </script>
-</polymer-element>
+</dom-module>

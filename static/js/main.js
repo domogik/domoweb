@@ -1,12 +1,12 @@
-DMW.main.menuConfigure = document.getElementById('menuConfigure'),
-DMW.main.menuWidgets = document.getElementById('menuWidgets'),
-DMW.main.panelConfigure = document.getElementById('panelConfigure'),
-DMW.main.main = document.querySelector('main'),
+DMW.main.menuConfigure = document.getElementById('menuConfigure');
+DMW.main.menuWidgets = document.getElementById('menuWidgets');
+DMW.main.panelConfigure = document.getElementById('panelConfigure');
+DMW.main.main = document.querySelector('main');
 DMW.main.section = document.getElementById('currentsection');
-DMW.main.socket = document.getElementById('socket'),
-DMW.main.layout = document.getElementById('grid-layout'),
-DMW.main.modalOverlay = document.getElementById('modal-overlay'),
-DMW.main.ajax = document.getElementById('ajax'),
+DMW.main.socket = document.getElementById('socket');
+DMW.main.layout = document.getElementById('grid-layout');
+DMW.main.modalOverlay = document.getElementById('modal-overlay');
+DMW.main.ajax = document.getElementById('ajax');
 DMW.main.menu = document.getElementById('main-menu');
 DMW.main.navigation = document.getElementById('sections-tree');
 
@@ -31,7 +31,6 @@ function sectionUpdated(e) {
 /* When Section changed (navigation) */
 function sectionChanged(e) {
 	var details = e.detail;
-
 	setSectionStyle();
 
 	/* Remove current widgets */
@@ -54,7 +53,8 @@ function sectionChanged(e) {
 			DMW.grid.appendInstance(node, instance);
 		}
 		DMW.grid.adjustPlacement();
-		$("#loading").fadeOut(200);
+        activateCornerMenu();
+        $("#loading").fadeOut(200);
 	}
 }
 
@@ -332,7 +332,7 @@ function widgetsFinishHandler() {
 }
 
 function addWidgetHandler() {
-	selector = document.createElement('dmw-widgets-selector');
+	var selector = document.createElement('dmw-widgets-selector');
 	DMW.main.modalOverlay.appendChild(selector);
 	DMW.main.modalOverlay.classList.add('on');
 }
@@ -522,7 +522,7 @@ function onWidgetStyleChange(e) {
 }
 var websocketConnection = null;
 function websocketConnected(e) {
-	if (websocketConnection === false) {
+	if (websocketConnection === null || websocketConnection === false) {
 		notif({
 		  type: "success",
 		  msg: "Connection restored",
@@ -534,7 +534,7 @@ function websocketConnected(e) {
 	websocketConnection = true;
 }
 function websocketClosed(e) {
-	if (websocketConnection === true) {
+	if (websocketConnection === null || websocketConnection === true) {
 		notif({
 		  type: "error",
 		  msg: "Connection lost with Domoweb",
@@ -546,4 +546,3 @@ function websocketClosed(e) {
 	}
 	websocketConnection = false;
 }
-

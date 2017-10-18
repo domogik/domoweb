@@ -1,4 +1,4 @@
-<polymer-element name="dmw-c3_charts-step" extends="dmw-widget">
+<dom-module id="dmw-c3_charts-step">
     <template>
         <link rel="stylesheet" href="/widget/c3_charts/css/common.css" shim-domshadow>
         <link rel="stylesheet" href="/widget/c3_charts/css/c3.min.css" shim-domshadow>
@@ -75,14 +75,15 @@
     <script src="/widget/c3_charts/js/c3.min.js"></script>
 
     <script>
-        Polymer('dmw-c3_charts-step', {
-            ready: function() {
-                this.super();
+        class DmwC3ChartsStep extends DmwWidget {
+            static get is () { return 'dmw-c3_charts-step'; }
+            connectedCallback() {
+                super.connectedCallback();
                 this.x = [];
                 this.xlines = [];
                 this.data1 = [];
-            },
-            draw: function() {
+            }
+            draw() {
                 // color
                 if (this.options['WidgetTextColor']  == undefined) {
                     the_color = "#ffffff";
@@ -151,9 +152,8 @@
                     }
                 });
                 this.chart.show(['data1']);
-
-            },
-            optionsUpdated: function() {
+            }
+            optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
@@ -163,8 +163,8 @@
                     this.$.labelsecondary.style.visibility = "visible";
                 }
                 //this.draw();
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
@@ -173,13 +173,13 @@
                 else {
                     this.legend = "--";
                 }
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.primary.getCurrentWeekBool();
 
-            },
-            historyChanged: function(oldValue, newValue) {
+            }
+            historyChanged(newValue, oldValue) {
                 // in case the page is not yet nicely loaded...
                 this.x = ['x'];
                 this.data1 = ['data1'];
@@ -198,7 +198,7 @@
                 }
                 this.draw();
             }
-        });
-
+        };
+        customElements.define(DmwC3ChartsStep.is, DmwC3ChartsStep);
     </script>
-</polymer-element>
+</dom-module>

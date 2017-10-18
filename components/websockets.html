@@ -1,149 +1,163 @@
-<link rel="import" href="/libraries/polymer/polymer.html">
+<link rel="import" href="/libraries/bower_components/polymer/polymer.html">
 
-<polymer-element name="web-socket" attributes="register">
-	<script>
-	(function() {
-		var _handler = null;
+<dom-module id="web-socket">
+    <script>
+    (function() {
+        var _handler = null;
 
-		function WebsocketHandler() {
-			this.listeners = [];
-			this._isConnected = false;
-			this._waiting = [];
-			this.connect();
-		}
+        function WebsocketHandler() {
+            this.listeners = [];
+            this._isConnected = false;
+            this._waiting = [];
+            this.connect();
+        }
 
-		WebsocketHandler.prototype.connect = function() {
-                        if (window.location.protocol == "http:") 
+        WebsocketHandler.prototype.connect = function() {
+                        if (window.location.protocol == "http:")
                             protocol = "ws:"
                         else
                             protocol = "wss:"
-			this._socket = new WebSocket(protocol + "//" + window.location.hostname + ":" + window.location.port + "/ws/");
-			this._socket.onmessage = this.onMessage.bind(this);
-			this._socket.onerror = this.onError.bind(this);
-			this._socket.onopen = this.onOpen.bind(this);
-			this._socket.onclose = this.onClose.bind(this);
-			window.onbeforeunload = this.beforeUnload.bind(this);
-		}
+            this._socket = new WebSocket(protocol + "//" + window.location.hostname + ":" + window.location.port + "/ws/");
+            this._socket.onmessage = this.onMessage.bind(this);
+            this._socket.onerror = this.onError.bind(this);
+            this._socket.onopen = this.onOpen.bind(this);
+            this._socket.onclose = this.onClose.bind(this);
+            window.onbeforeunload = this.beforeUnload.bind(this);
+        }
 
-		WebsocketHandler.prototype.onMessage = function(msg) {
-			console.info("WS: message received", msg.data);
-			json = JSON.parse(msg.data);
-			for ( var i=0; i < this.listeners.length; i++ ) {
-				listener = this.listeners[i];
-				if (listener[3] != null) {
-					if (json[0] == listener[1]) {
-						match = true;
-						for (var k in listener[3]){
-							if (listener[3].hasOwnProperty(k)) {
-								if (json[1][k] != listener[3][k]) {
-									match = false;
-								}
-							}
-						}
-						if (match) {
-							listener[2](json[0], json[1]);
-						}
-					}
-				} else {
-					if (json[0] == listener[1]) {
-						listener[2](json[0], json[1]);
-					}
-				}
-			}
-		};
-
-		WebsocketHandler.prototype.beforeUnload = function() {
-	       	this._socket.onclose = function () {}; // disable onclose handler first
-    	    this._socket.close();
-		};
-
-		WebsocketHandler.prototype.subscribe = function(comp, name, func, filters) {
-			this.listeners.push([comp, name, func, filters]);
-		};
-
-		WebsocketHandler.prototype.send = function(aTuple) {
-                        // aTuple[0] : message id
-                        // aTuple[1] : message json data
-
-                        // For REST authentication, add the local information of the user session to each message
-                        // Notice that for now we send user+clear password which is NOT FINE !!!!!
-                        // TODO
-                        // This should be improved in 0.6 release!!!
-                        if (aTuple[1] == undefined) {
-                            aTuple[1] = {};
+        WebsocketHandler.prototype.onMessage = function(msg) {
+            console.info("WS: message received", msg.data);
+            var json = JSON.parse(msg.data),
+            listener,
+            match;
+            for ( var i=0; i < this.listeners.length; i++ ) {
+                listener = this.listeners[i];
+                if (listener[3] != null) {
+                    if (json[0] == listener[1]) {
+                        match = true;
+                        for (var k in listener[3]){
+                            if (listener[3].hasOwnProperty(k)) {
+                                if (json[1][k] != listener[3][k]) {
+                                    match = false;
+                                }
+                            }
                         }
-                        aTuple[1]['rest_auth'] = {};
-                        aTuple[1]['rest_auth']['username'] = localStorage.getItem("username");
-                        aTuple[1]['rest_auth']['password'] = localStorage.getItem("password");
+                        if (match) {
+                            listener[2](json[0], json[1]);
+                        }
+                    }
+                } else {
+                    if (json[0] == listener[1]) {
+                        listener[2](json[0], json[1]);
+                    }
+                }
+            }
+        };
 
-                        // Send the message
-			var data = JSON.stringify(aTuple);
-			if (this._isConnected) {
-				try {
-					console.info("WS: sending message " + data);
-					this._socket.send(data);
-				} catch(error) {
-					console.error("cannot send message: error: " + error);
-				}
-			} else {
-					console.info("WS: added on waiting queue: " + data);
-				// If not connect add on waiting queue
-				this._waiting.push(data);
-			}
-		};
+        WebsocketHandler.prototype.beforeUnload = function() {
+            this._socket.onclose = function () {}; // disable onclose handler first
+            this._socket.close();
+        };
 
-		WebsocketHandler.prototype.onOpen = function(e) {
-			this._isConnected = true;
-	    	console.info('WS: Connection open');
-			for ( var i=0; i < this.listeners.length; i++ ) {
-				this.listeners[i][0].onOpen();
-			}
-		    // clear waiting queue
-		    for (var i = this._waiting.length - 1; i >= 0; i--) {
-				console.info("WS: sending waiting message " + this._waiting[i]);
-				this._socket.send(this._waiting[i]);
-		    }
-		}
+        WebsocketHandler.prototype.subscribe = function(comp, name, func, filters) {
+            this.listeners.push([comp, name, func, filters]);
+        };
 
-		WebsocketHandler.prototype.onError = function(error) {
-			console.error('There was an un-identified Web Socket error', error);
-		}
+        WebsocketHandler.prototype.send = function(aTuple) {
+            // aTuple[0] : message id
+            // aTuple[1] : message json data
 
-		WebsocketHandler.prototype.onClose = function(e) {
+            // For REST authentication, add the local information of the user session to each message
+            // Notice that for now we send user+clear password which is NOT FINE !!!!!
+            // TODO
+            // This should be improved in 0.6 release!!!
+            if (aTuple[1] == undefined) {
+                aTuple[1] = {};
+            }
+            aTuple[1]['rest_auth'] = {};
+            aTuple[1]['rest_auth']['username'] = localStorage.getItem("username");
+            aTuple[1]['rest_auth']['password'] = localStorage.getItem("password");
 
-			this._isConnected = false;
-			console.info('WS: Connection closed, reconnecting attempt...');
-			for ( var i=0; i < this.listeners.length; i++ ) {
-				this.listeners[i][0].onClose();
-			}
-			window.setTimeout(this.connect.bind(this), 5*1000);
-		}
+            // Send the message
+            var data = JSON.stringify(aTuple);
+            if (this._isConnected) {
+                try {
+                    console.info("WS: sending message " + data);
+                    this._socket.send(data);
+                } catch(error) {
+                    console.error("cannot send message: error: " + error);
+                }
+            } else {
+                    console.info("WS: added on waiting queue: " + data);
+                // If not connect add on waiting queue
+                this._waiting.push(data);
+            }
+        };
 
-		Polymer("web-socket", {
-			ready:function(){
-				//window.addEventListener('beforeunload', this.beforeUnload.bind(this));//buggy in chrome
-				// Cleanly close websocket when unload window
-				if (window.WebSocket) {
-					if (_handler == null) {
-						_handler = new WebsocketHandler;
-					}
-				}
-			},
-			
-			send: function(id, json) {
-				_handler.send([id, json]);
-			},
-			register: function(name, func, filters) {
-				_handler.subscribe(this, name, func, filters);
-			},
-			onOpen: function() {
-				this.fire('websocket-connected');
-			},
-			onClose: function() {
-				this.fire('websocket-closed');
-			}
-		});
+        WebsocketHandler.prototype.onOpen = function(e) {
+            this._isConnected = true;
+            console.info('WS: Connection open');
+            for ( var i=0; i < this.listeners.length; i++ ) {
+                this.listeners[i][0].onOpen();
+            }
+            // clear waiting queue
+            for (var i = this._waiting.length - 1; i >= 0; i--) {
+                console.info("WS: sending waiting message " + this._waiting[i]);
+                this._socket.send(this._waiting[i]);
+            }
+        }
+
+        WebsocketHandler.prototype.onError = function(error) {
+            console.error('There was an un-identified Web Socket error', error);
+        }
+
+        WebsocketHandler.prototype.onClose = function(e) {
+
+            this._isConnected = false;
+            console.info('WS: Connection closed, reconnecting attempt...');
+            for ( var i=0; i < this.listeners.length; i++ ) {
+                this.listeners[i][0].onClose();
+            }
+            window.setTimeout(this.connect.bind(this), 5*1000);
+        }
+
+        class DmwWebSocket extends Polymer.Element {
+            static get is () { return 'web-socket'; }
+            static get properties() {
+                return {
+                    register: {
+                        notify: true
+                    }
+                }
+            }
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                //window.addEventListener('beforeunload', this.beforeUnload.bind(this));//buggy in chrome
+                // Cleanly close websocket when unload window
+                if (window.WebSocket) {
+                    if (_handler == null) {
+                        _handler = new WebsocketHandler;
+                    }
+                }
+            }
+            send(id, json) {
+                _handler.send([id, json]);
+            }
+            register(name, func, filters) {
+                _handler.subscribe(this, name, func, filters);
+            }
+            onOpen() {
+            this.dispatchEvent(new CustomEvent('websocket-connected', {}));
+            }
+            onClose() {
+            this.dispatchEvent(new CustomEvent('websocket-closed', {}));
+            }
+       };
+        customElements.define(DmwWebSocket.is, DmwWebSocket);
 	})();
 	</script>
-</polymer-element>
+</dom-module>
 

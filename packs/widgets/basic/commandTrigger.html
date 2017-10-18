@@ -1,4 +1,4 @@
-<polymer-element name="dmw-basic-commandTrigger" extends="dmw-widget">
+<dom-module id="dmw-basic-commandtrigger">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -29,12 +29,13 @@
         <button id="send" class="btn btn-default">{{sendtext}}</button>
     </template>
     <script>
-        Polymer('dmw-basic-commandTrigger', {
-            ready: function() {
-                this.super();
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+        class DmwBasicCommandTrigger extends DmwWidget {
+            static get is () { return 'dmw-basic-commandtrigger'; =
+            connectedCallback() {
+                super.connectedCallback();
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -42,8 +43,8 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            commandsUpdated: function() {
+            }
+            commandsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
@@ -61,14 +62,15 @@
                 if (this.options['circle'] == 0) {
                     this.$.send.classList.remove('circle');
                 }
-            },
-            send: function(e) {
+            }
+            send(e) {
                 var parameters = {};
                 parameters[this.$.primary.parameters[0]['key']] = 1;
                 this.$.primary.send(parameters);
                 e.preventDefault();
                 e.stopPropagation();
             }
-        });
+	    };
+        customElements.define(DmwBasicCommandTrigger.is, DmwBasicCommandTrigger);
     </script>
-</polymer-element>
+</dom-module>

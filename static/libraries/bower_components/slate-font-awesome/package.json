@@ -1,0 +1,19 @@
+{
+  "name": "slate-font-awesome",
+  "authors": [
+    "Jean-François Le Foll <jeff.lefoll@outlook.fr>"
+  ],
+  "description": "Polymer wrap for Font Awesome CSS",
+  "version": "4.7.1",
+  "repository": "JeffLeFoll/slate-font-awesome",
+  "main": "slate-font-awesome-generator.js",
+  "author": "",
+  "scripts": {
+    "generate": "node tools/slate-font-awesome-generator.js"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "fs-extra": "^2.1.2",
+    "klaw": "^1.3.1"
+  }
+}

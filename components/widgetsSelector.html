@@ -1,13 +1,12 @@
-<link rel="import" href="/libraries/polymer/polymer.html">
+<link rel="import" href="/libraries/bower_components/polymer/polymer.html">
 <link rel="import" href="/components/websockets.html">
 <link rel="import" href="/components/sensor.html">
+<link rel="import" href="/libraries/bower_components/bootstrap-styles/bootstrap-styles.html">
 
-<polymer-element name="dmw-widgets-selector">
+<dom-module id="dmw-widgets-selector">
     <script src="/libraries/isotope-2.2.2/dist/isotope.pkgd.min.js"></script>
     <template>
-        <style>
-              @import '/libraries/bootstrap-3.3.5/css/bootstrap.min.css';
-        </style>
+        <style include="bootstrap-styles"></style>
         <style type="text/css">
         button {
             margin-top: 3px;
@@ -82,32 +81,41 @@
                 <div class="col-md-10 col-md-offset-1">
                     <h1>Select Widget</h1>
                     <button id="closeModal" type="button" class="btn btn-default">Close</button>
-                    <div id="filters" class="button-group"> 
-                      <button class="btn btn-info" data-filter="*">show all</button>
-                      <template repeat="{{s in sets}}">
-                        <button class="btn btn-default" data-filter=".{{s.id}}">{{s.name}}</button> 
+                    <div id="filters" class="button-group">
+                      <button class="btn btn-info" data-filter$="*">show all</button>
+                      <template is="dom-repeat" items="[[sets]]" mutable-data>
+                        <button class="btn btn-default" data-filter$=".[[item.id]]">[[item.name]]</button>
                       </template>
                     </div>
 
                     <div id="widgetslist">
-                      <template repeat="{{w in widgets}}">
-                        <article class="{{ w.set_id }}">
-                           <h2>{{ w.name }}</h2>
+                      <template is="dom-repeat" items="[[widgets]]" mutable-data>
+                        <article class$="[[item.set_id]]">
+                           <h2>[[ item.name ]]</h2>
                            <div class="body">
-                              <img src='/widget/{{ w.set_id }}/{{ w.set_ref }}.png'/>
-                              <div class="btnoverlay"><button class="add-widget btn btn-success" on-click="{{addWidget}}" data-widget-id="{{ w.id }}" data-widget-width="{{ w.width }}" data-widget-height="{{ w.height }}">Add</button><button class="add-widget btn btn-success" on-click="{{addWidgetClose}}" data-widget-id="{{ w.id }}" data-widget-width="{{ w.width }}" data-widget-height="{{ w.height }}">Add and Close</button></div>
+                              <img src='/widget/[[item.set_id]]/[[item.set_ref]].png'/>
+                              <div class="btnoverlay">
+                                <button class="add-widget btn btn-success" on-click="addWidget" data-widget-id$="[[item.id]]" data-widget-width$="[[item.width]]" data-widget-height$="[[item.height]]">Add</button>
+                                <button class="add-widget btn btn-success" on-click="addWidgetClose" data-widget-id$="[[item.id]]" data-widget-width$="[[item.width]]" data-widget-height$="[[item.height]]">Add and Close</button>
+                            </div>
                           </div>
-                          <div class="footer">{{ w.set_name }}</div>
+                          <div class="footer">[[item.set_name]]</div>
                         </article>
                       </template>
                     </div>
                 </div>
-            </div>       
+            </div>
            </div>
     </template>
     <script>
-        Polymer("dmw-widgets-selector", {
-            ready:function(){
+        class DmwWidgetsSelector extends Polymer.Element {
+            static get is () { return 'dmw-widgets-selector'; }
+
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 this.$.socket.register('widget-list', this.messageReceived.bind(this), null);
                 this.$.socket.send("widget-getall", null);
                 this.iso = new Isotope( this.$.widgetslist, {
@@ -120,22 +128,22 @@
                     modalOverlay.classList.remove('on');
                     self.remove();
                 });
-            },
-            messageReceived: function(topic, json) {
+            }
+            messageReceived(topic, json) {
                 var sets = [];
                 this.sets = [];
-                for (w in json) {
+                for (var w in json) {
                     if (sets.indexOf(json[w].set_id)==-1) {
                         sets.push(json[w].set_id);
                         this.sets.push({'id':json[w].set_id, 'name':json[w].set_name, 'width':json[w].width, 'height':json[w].height});
                     }
                 }
-                console.error(json);
+                console.log(json);
                 this.widgets = json;
                 var self = this;
-                this.async(
+                Polymer.Async.microTask.run(
                       // `async` lets the main loop resume and perform tasks, like DOM updates,
-                      // then it calls your callback 
+                      // then it calls your callback
                       function() {
                         var buttons = self.$.filters.querySelectorAll('button');
                         for (var i = buttons.length - 1; i >= 0; i--) {
@@ -150,21 +158,22 @@
                         self.iso.arrange();
                       }
                 );
-            },
-            addWidget: function(e) {
+            }
+            addWidget(e) {
                 var widget_id = e.target.dataset.widgetId;
                 var widget_width = e.target.dataset.widgetWidth;
                 var widget_height = e.target.dataset.widgetHeight;
                 var section = document.getElementById('currentsection');
                 var coord = DMW.grid.firstEmptyPosition(widget_width, widget_height);
                 this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':section.sectionid, 'x':coord[0], 'y':coord[1]});
-            },
-            addWidgetClose: function(e) {
+            }
+            addWidgetClose(e) {
                 this.addWidget(e);
                 var modalOverlay = document.getElementById('modal-overlay');
                 modalOverlay.classList.remove('on');
                 this.remove();
             }
-        });
+        }
+        customElements.define(DmwWidgetsSelector.is, DmwWidgetsSelector);
     </script>
-</polymer-element>
+</dom-module>

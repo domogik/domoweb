@@ -85,7 +85,7 @@
     </template>
     <script>
         Polymer('dmw-google_maps-map_square', {
-            ready: function() {
+            connectedCallback() {
                 this.mode = "normal";
                 // define gradient colors for the polyline (path on the map)
                 this.Colors = [
@@ -102,7 +102,7 @@
                 ];
 
                 var self = this;
-                this.super();
+                super.connectedCallback();
                 //this.map;
                 this.markers = [];
                 var self = this;
@@ -126,25 +126,26 @@
                     self.resize_callback = google.maps.event.trigger;
 
 
-                });
+        	    };
+    customElements.define(Dmw.is, Dmw);
 
                 // z-index for the zoom mode
                 initialZIndex = this.style.zIndex;
 
             },
-            sensorsUpdated: function() {
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                     this.$.primary.getLast(100);
                 }        
             },
-            sensorvalueChanged: function(oldValue, newValue) {
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.deleteMarkers();
                 this.addMarker(newValue);
             },
-            historyChanged: function(oldValue, newValue) {
+            historyChanged(newValue, oldValue) {
                 console.log(newValue);
                 var pathCoordinates = [];
                 for (idx=0; idx<newValue.length; idx++) {
@@ -159,12 +160,13 @@
                         strokeOpacity: 1.0,
                         strokeWeight: 3,
                         map: this.map
-                    });
+            	    };
+    customElements.define(Dmw.is, Dmw);
                 }
             },
 
             // Add a marker to the map and push to the array.
-            addMarker: function(location) {
+            addMarker(location) {
                 coords = location.split(",");
                 gmap_location = new google.maps.LatLng(coords[0], coords[1]);
                 this.current_location = gmap_location;   // for the zoom function
@@ -174,29 +176,30 @@
                     map: this.map,
                     title: this.$.primary.device['name'],
                     label: this.$.primary.device['name']
-                });
+        	    };
+    customElements.define(Dmw.is, Dmw);
                 this.markers.push(marker);
             },
 
             // Sets the map on all markers in the array.
-            setAllMap: function(map) {
+            setAllMap(map) {
                 for (var i = 0; i < this.markers.length; i++) {
                     this.markers[i].setMap(map);
                 }
             },
 
             // Removes the markers from the map, but keeps them in the array.
-            clearMarkers: function() {
+            clearMarkers() {
                 this.setAllMap(null);
             },
 
             // Delete all the markers on the map
-            deleteMarkers: function() {
+            deleteMarkers() {
                 this.clearMarkers();
                 this.markers = [];
             },
             // map in fullscreen or not mode
-            zoom: function() {
+            zoom() {
                 if (this.mode == "normal") {
                     this.mode = "zoom";
                     this.$.themap.classList.add('themap-zoom');
@@ -219,6 +222,7 @@
                 this.resize_callback(this.map, "resize");
                 this.map.setCenter(this.current_location);
             }
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
     </script>
 </polymer-element>

@@ -8,7 +8,7 @@
 }
 </style>
 
-<polymer-element name="dmw-navigation-simpleNavigation" extends="dmw-widget">
+<dom-module id="dmw-navigation-simpleNavigation" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/navigation/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow>
         <style type="text/css">
@@ -30,12 +30,13 @@
         <button id="goto" class=""><i class="fa fa-{{ icon }} fa-4x"></i></button>
     </template>
     <script>
-        Polymer('dmw-navigation-simpleNavigation', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-navigation-simpleNavigation',
+            connectedCallback() {
+                super.connectedCallback();
                 this.$.goto.addEventListener('click', this.goto.bind(this));
             },
-            optionsUpdated: function() {
+            optionsUpdated() {
                 if (this.options['WidgetTextColor'] == undefined) {
                     this.$.goto.style.color = "#ffffff";
                 } 
@@ -44,11 +45,12 @@
                 }
                 this.icon = this.options['faIcon'];
             },
-            goto: function(e) {
+            goto(e) {
                 DMW.main.section.setAttribute('sectionid', this.options['targetSection']);
                 e.preventDefault();
                 e.stopPropagation();
             }
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
     </script>
-</polymer-element>
+</dom-module>

@@ -1,8 +1,8 @@
 <script src="/widget/highcharts/Highcharts-4.1.8/js/highcharts.js"></script>
-<polymer-element name="dmw-highcharts-lineChart" extends="dmw-widget">
+<dom-module id="dmw-highcharts-lineChart" extends="dmw-widget">
 	<template>
   		<style>
-  			@import '/libraries/bootstrap-3.3.5/css/bootstrap.min.css';
+  			@import '/libraries/bootstrap-3.3.7/css/bootstrap.min.css';
   		</style>
 
 		<style type="text/css">
@@ -27,9 +27,10 @@
 		<div id="chart" style=""></div>
 	</template>
 	<script>
-		Polymer('dmw-highcharts-lineChart', {
-			ready: function() {
-				this.super();
+		        class Dmw extends DmwWidget {
+            static get is () { return 'dmw-highcharts-lineChart',
+			connectedCallback() {
+				super.connectedCallback();
 				this.$.chart.style.width = this.clientWidth;
 				this.$.chart.style.height = this.clientHeight;
 			    Highcharts.setOptions({
@@ -38,7 +39,7 @@
 			        }
 			    });
 			},
-			optionsUpdated: function() {
+			optionsUpdated() {
 				var options = {
 			        chart: {
 			            type: 'spline'
@@ -81,7 +82,7 @@
 				$(this.$.chart).highcharts(options);
 			    this.chart = $(this.$.chart).highcharts();
 			},
-			sensorsUpdated: function() {
+			sensorsUpdated() {
 				for (var i = this.chart.series.length - 1; i >= 0; i--) {
 					this.chart.series[i].remove();
 				};
@@ -91,12 +92,12 @@
 				if (this.$.series3.isSet) { this.$.series3.getCurrentDay();}
 				if (this.$.series4.isSet) { this.$.series4.getCurrentDay();}
 			},
-			sensorvalue0Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 0)},
-			sensorvalue1Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 1)},
-			sensorvalue2Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 2)},
-			sensorvalue3Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 3)},
-			sensorvalue4Changed: function(oldValue, newValue) { this.sensorvalueUpdate(oldValue, newValue, 4)},
-			sensorvalueUpdate: function(oldValue, newValue, series_num) {
+			sensorvalue0Changed(newValue, oldValue) { this.sensorvalueUpdate(newValue, oldValue, 0)},
+			sensorvalue1Changed(newValue, oldValue) { this.sensorvalueUpdate(newValue, oldValue, 1)},
+			sensorvalue2Changed(newValue, oldValue) { this.sensorvalueUpdate(newValue, oldValue, 2)},
+			sensorvalue3Changed(newValue, oldValue) { this.sensorvalueUpdate(newValue, oldValue, 3)},
+			sensorvalue4Changed(newValue, oldValue) { this.sensorvalueUpdate(newValue, oldValue, 4)},
+			sensorvalueUpdate(newValue, oldValue, series_num) {
                                 newValue = newValue.stored_value;
 				var date = moment().valueOf();
 				if (this.chart.series[series_num]) {
@@ -104,12 +105,12 @@
 			    }
 			},
 
-			history0Changed: function(oldValue, newValue) { this.historyUpdate(oldValue, newValue, this.$.series0); },
-			history1Changed: function(oldValue, newValue) { this.historyUpdate(oldValue, newValue, this.$.series1); },
-			history2Changed: function(oldValue, newValue) { this.historyUpdate(oldValue, newValue, this.$.series2); },
-			history3Changed: function(oldValue, newValue) { this.historyUpdate(oldValue, newValue, this.$.series3); },
-			history4Changed: function(oldValue, newValue) { this.historyUpdate(oldValue, newValue, this.$.series4); },
-			historyUpdate: function(oldValue, newValue, serie) {
+			history0Changed(newValue, oldValue) { this.historyUpdate(newValue, oldValue, this.$.series0); },
+			history1Changed(newValue, oldValue) { this.historyUpdate(newValue, oldValue, this.$.series1); },
+			history2Changed(newValue, oldValue) { this.historyUpdate(newValue, oldValue, this.$.series2); },
+			history3Changed(newValue, oldValue) { this.historyUpdate(newValue, oldValue, this.$.series3); },
+			history4Changed(newValue, oldValue) { this.historyUpdate(newValue, oldValue, this.$.series4); },
+			historyUpdate(newValue, oldValue, serie) {
 				var pointInterval = null;
 				switch(serie.historyMode) {
 					case 'day':
@@ -127,9 +128,10 @@
 		            name: serie.device["name"],
 		            pointInterval: pointInterval,
 		            data: convert(newValue)
-		        });
+			    };
+    customElements.define(Dmw.is, Dmw);
 			},
-			selectDay: function() {
+			selectDay() {
 				for (var i = this.chart.series.length - 1; i >= 0; i--) {
 					this.chart.series[i].remove();
 				};
@@ -139,7 +141,7 @@
 				if (this.$.series3.isSet) { this.$.series3.getCurrentDay();}
 				if (this.$.series4.isSet) { this.$.series4.getCurrentDay();}
 			},
-			selectWeek: function() {
+			selectWeek() {
 				for (var i = this.chart.series.length - 1; i >= 0; i--) {
 					this.chart.series[i].remove();
 				};
@@ -149,7 +151,7 @@
 				if (this.$.series3.isSet) { this.$.series3.getCurrentWeek();}
 				if (this.$.series4.isSet) { this.$.series4.getCurrentWeek();}
 			},
-			selectMonth: function() {
+			selectMonth() {
 				for (var i = this.chart.series.length - 1; i >= 0; i--) {
 					this.chart.series[i].remove();
 				};
@@ -159,7 +161,7 @@
 				if (this.$.series3.isSet) { this.$.series3.getCurrentMonth();}
 				if (this.$.series4.isSet) { this.$.series4.getCurrentMonth();}
 			},
-			selectYear: function() {
+			selectYear() {
 				for (var i = this.chart.series.length - 1; i >= 0; i--) {
 					this.chart.series[i].remove();
 				};
@@ -200,4 +202,4 @@
 		return serie;
 	}
 	</script>
-</polymer-element>
+</dom-module>

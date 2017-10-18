@@ -1,4 +1,4 @@
-<polymer-element name="dmw-tank-water1" extends="dmw-widget">
+<dom-module id="dmw-tank-water1" extends="dmw-widget">
     <template>
         <style type="text/css">
             :host { * { display: block; } }
@@ -47,9 +47,10 @@
         </div>
     </template>
     <script>
-        Polymer('dmw-tank-water1', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-tank-water1',
+            connectedCallback() {
+                super.connectedCallback();
                 /**
                  *    Wave oscillators by Ken Fyrstenberg Nilsen
                  *    http://abdiassoftware.com/
@@ -108,7 +109,7 @@
             },
 
 
-                loop: function() {
+                loop() {
                     this.theCanvas = this.$.canvas;
                     this.ctx = this.theCanvas.getContext('2d');
 
@@ -149,7 +150,7 @@
 
 
 
-                mixer: function() {
+                mixer() {
 
                     var d = arguments.length,
                         i = d,
@@ -163,7 +164,7 @@
                 },
 
 
-            sensorsUpdated: function() {
+            sensorsUpdated() {
                 if (this.$.level.isSet) {
                     this.labelprimary = this.$.level.device['name'];
                 } else {
@@ -171,7 +172,7 @@
                 }
                 this.changeStyle();
             },
-            changeStyle: function() {
+            changeStyle() {
                 if (this.options['WidgetBorderRadius'] == undefined) {
                     this.$.canvas.style.borderRadius = "5px";
                 }
@@ -187,10 +188,10 @@
                     this.ctx.fillStyle = this.options['waterColor'];
                 }
             },
-            optionsUpdated: function() {
+            optionsUpdated() {
                 this.changeStyle();
             },
-            levelvalueChanged: function(oldValue, newValue) {
+            levelvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 // to let the visual wave effect even if the tank is full : easier to understand ;)
                 if (newValue > 95) {
@@ -200,7 +201,8 @@
                 this.horizon = this.$.canvas.height*(1-newValue/100);
                 this.theValue = newValue + "%";
             },
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
 
 
                 /// oscillator object
@@ -246,4 +248,4 @@
                   };
         })();
     </script>
-</polymer-element>
+</dom-module>

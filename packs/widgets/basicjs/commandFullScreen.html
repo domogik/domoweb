@@ -1,4 +1,4 @@
-<polymer-element name="dmw-basicjs-commandFullScreen" extends="dmw-widget">
+<dom-module id="dmw-basicjs-commandfullscreen">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -27,11 +27,12 @@
         <button id="send" class="btn btn-default" onclick="fullScreen(document.documentElement);">Full Screen</button>
     </template>
     <script>
-        Polymer('dmw-basicjs-commandFullScreen', {
-            ready: function() {
-                this.super();
+        class DmwBasicjsCommandFullScreen extends DmwWidget {
+            static get is () { return 'dmw-basicjs-commandfullscreen'; }
+            connectedCallback() {
+                super.connectedCallback();
             },
-            commandsUpdated: function() {
+            commandsUpdated() {
                 if (this.options['circle'] == 1) {
                     this.$.send.classList.add('circle');
                 }
@@ -39,15 +40,16 @@
                     this.$.send.classList.remove('circle');
                 }
             }
-        });
-	function fullScreen(element) {
-	    if(element.requestFullScreen) {
-		element.requestFullScreen();
-	    } else if(element.webkitRequestFullScreen ) {
-		element.webkitRequestFullScreen();
-	    } else if(element.mozRequestFullScreen) {
-		element.mozRequestFullScreen();
-	    }
-	}
+        };
+        function fullScreen(element) {
+            if(element.requestFullScreen) {
+            element.requestFullScreen();
+            } else if(element.webkitRequestFullScreen ) {
+            element.webkitRequestFullScreen();
+            } else if(element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+            }
+        };
+        customElements.define(DmwBasicjsCommandFullScreen.is, DmwBasicjsCommandFullScreen);
     </script>
-</polymer-element>
+</dom-module>

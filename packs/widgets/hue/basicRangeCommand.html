@@ -1,4 +1,4 @@
-<polymer-element name="dmw-hue-basicRangeCommand" extends="dmw-widget">
+<dom-module id="dmw-hue-basicRangeCommand" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css">
         <style type="text/css">
@@ -151,11 +151,12 @@ input[type='range']:focus {
 	<div id="value">{{current}}%</div>
     </template>
     <script>
-        Polymer('dmw-hue-basicRangeCommand', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-hue-basicRangeCommand',
+            connectedCallback() {
+                super.connectedCallback();
             },
-            optionsUpdated: function() {
+            optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {         
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
@@ -165,7 +166,7 @@ input[type='range']:focus {
                     this.$.labelsecondary.style.visibility = "visible";
                 }
             },
-            sensorsUpdated: function() {
+            sensorsUpdated() {
                                 
                 if (this.$.scalingstate.isSet) {
                     this.hasFeedback = true;
@@ -174,23 +175,23 @@ input[type='range']:focus {
                     this.$.range.value = 0;
                 }
             },
-            commandsUpdated: function() {
+            commandsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                     this.$.range.addEventListener('change', this.onInput.bind(this));
                 }
             },
-            scalingstateChanged: function(oldValue, newValue) {
+            scalingstateChanged(newValue, oldValue) {
                 this.current = Math.round(newValue.stored_value);
                 this.$.range.value = this.current;
                 var val = (this.$.range.value - this.$.range.min) / (this.$.range.max - this.$.range.min);
             },
-            availabilityChanged: function(oldValue, newValue) {
+            availabilityChanged(newValue, oldValue) {
                 if (newValue.stored_value == 0) {
                 }
             },
-            onInput: function(e) {
+            onInput(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log("OnInput" + this.$.range.value);
@@ -201,6 +202,7 @@ input[type='range']:focus {
                 console.error(this.$.range.min);
                 var val = (this.$.range.value - this.$.range.min) / (this.$.range.max - this.$.range.min);
             }
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
     </script>
-</polymer-element>
+</dom-module>

@@ -10,14 +10,14 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="-1" />
   <title>Domoweb</title>
-  <link rel="stylesheet" href="/libraries/bootstrap-3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/libraries/bootstrap-3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/libraries/notifIt-1.1/notifIt/css/notifIt.css">
   <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/libraries/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow>
+  <link rel="stylesheet" href="/libraries/font-awesome-4.7.0/css/font-awesome.min.css">
   <link rel="manifest" href="/manifests/manifest.json">
   <style type="text/css" id="gridstyle"></style>
-  <style type="text/css" id="sectionstyle" shim-shadowdom>
-  body /deep/ .widget.style-general {
+  <style type="text/css" id="sectionstyle">
+  body .widget.style-general {
     border: 1px solid {{ params['WidgetBorderColor'] }};
     background-color: {{ params['WidgetBackgroundColor'] }};
     border-radius: {{ params['WidgetBorderRadius'] }};
@@ -39,13 +39,18 @@
     DMW.main = DMW.main || {};
     DMW.main.edit = false;
     window.onload = function(){
-      window.addEventListener('resize', DMW.grid.hasResized);
-      DMW.menu.init();
-      DMW.navigation.init();
+        if ("ontouchstart" in document.documentElement) {
+        document.documentElement.classList.add("touch");
+        } else {
+        document.documentElement.classList.add("no-touch");
+        }
+        window.addEventListener('resize', DMW.grid.hasResized);
+        DMW.menu.init();
+        DMW.navigation.init();
     };
   </script>
-  <script src="/libraries/webcomponentsjs-0.7.12/webcomponents.min.js"></script>
-  <script src="/libraries/jquery-1.11.0/jquery.min.js"></script>
+  <script src="/libraries/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="/libraries/jquery-2.1.0/jquery.min.js"></script>
   <script type="text/javascript" src="/libraries/i18next-1.10.1/i18next-1.10.1.min.js"></script>
   <link rel="import" href="/components/polymer-ajax.html">
   <link rel="import" href="/components/websockets.html">
@@ -71,32 +76,46 @@
     <div id='grid-layout'></div>
   </main>
 
-  <div id='main-menu'>
-    <button class="cnbutton" id="cnbutton"><span class='sr-only' data-i18n="menu.open"></span></button>
-    <nav id="cnwrapper" role="navigation">
-      <ul id='main-menu-root'></ul>
-      </nav>
-      <div id="emptyoverlay" class="overlay"></div>
+  <div id='main-menu-touch'>
+    <button id="acces-menu" onclick="activateCornerMenu();" class="btn btn-default"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></button>
   </div>
 
-  <div id="sections-tree">
-    <button id="toggle-radial"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></button>
-      {{ display_tree(sections, 0) }}
+  <div id='main-menu' class="">
+      <div class="menu-cnitem">
+      <div class="menu-button">
+          <button class="cnbutton" id="cnbutton"><span class='sr-only' data-i18n="menu.open"></span></button>
+          <nav id="cnwrapper" role="navigation">
+          <ul id='main-menu-root'></ul>
+          </nav>
+          <div id="emptyoverlay" class="overlay"></div>
+      </div>
+      </div>
   </div>
 
-  <div id="butler">
-    <button id="toggle-radial-top-left">
-      <i class="fa fa-microphone"></i>
-    </button>
+  <div id="sections-tree" class="">
+        <div class="menu-item">
+            <button id="toggle-radial" class="menu-button"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></button>
+        </div>
+          {{ display_tree(sections, 0) }}
   </div>
 
-  <div id="logout">
-    <button id="toggle-radial-top-right">
-      <i class="fa fa-sign-out"></i>
-    </button>
+  <div id="butler" class="">
+      <div class="menu-item">
+        <button id="toggle-radial-top-left" class="menu-button">
+            <i class="fa fa-microphone"></i>
+        </button>
+      </div>
+  </div>
+
+  <div id="logout" class="">
+      <div class="menu-item">
+        <button id="toggle-radial-top-right" class="menu-button">
+            <i class="fa fa-sign-out"></i>
+        </button>
+      </div>
   </div>
   <div id="modal-overlay" class="overlay"></div>
-  <script src="/libraries/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/libraries/bootstrap-3.3.7/js/bootstrap.min.js"></script>
   <script src="/libraries/d3-3.5.6/d3.min.js"></script>
   <script src="/libraries/moment-2.10.6/min/moment.min.js"></script>
   <script type="text/javascript" src="/libraries/notifIt-1.1/notifIt/js/notifIt.min.js"></script>
@@ -112,23 +131,40 @@
   <script src="/js/background.js"></script>
 
   <script type="text/javascript">
-          i18n.init({
+    i18n.init({
       getAsync: false,
       load: 'current',
       //        lng: "en-US",
       fallbackLng: 'en-US',
       resGetPath: 'locales/__ns__/__lng__/translation.json',
       ns: {
-        namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}], 
+        namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}],
         defaultNs: 'domoweb'
       }
     });
+
+    function activateCornerMenu() {
+        DMW.main.menu.classList.remove('menu-corners');
+        DMW.main.navigation.classList.remove('menu-corners');
+        document.getElementById('butler').classList.remove('menu-corners');
+        document.getElementById('logout').classList.remove('menu-corners');;
+
+        setTimeout(function() {
+            DMW.main.menu.classList.add('menu-corners');
+            DMW.main.navigation.classList.add('menu-corners');
+            if (!DMW.main.navigation.getElementsByClassName('show')[0]) {
+                DMW.main.navigation.getElementsByClassName('menu-button')[0].classList.remove('active');
+            }
+            document.getElementById('butler').classList.add('menu-corners');
+            document.getElementById('logout').classList.add('menu-corners');;
+            }, 10000)
+    };
 
     $('#butler').click(function() {
         addButlerHandler();
     });
 
-    window.addEventListener('polymer-ready', function(){
+    window.addEventListener('WebComponentsReady', function(){
       DMW.main.socket.addEventListener('websocket-connected', websocketConnected);
       DMW.main.socket.addEventListener('websocket-closed', websocketClosed);
       DMW.main.socket.register('widgetinstance-added', instanceAdded);

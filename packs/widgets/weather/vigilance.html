@@ -1,4 +1,4 @@
-<polymer-element name="dmw-weather-vigilance" extends="dmw-widget">
+<dom-module id="dmw-weather-vigilance" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -114,9 +114,10 @@
     </template>
     
     <script>
-        Polymer('dmw-weather-vigilance', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-weather-vigilance',
+            connectedCallback() {
+                super.connectedCallback();
                 this.labelsecondary = i18n.t("weather:Vigilance") ;
                 
                 this.tooltipWind = i18n.t("weather:Wind") ;
@@ -141,7 +142,7 @@
             },
             
             
-            optionsUpdated: function() {
+            optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {         
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
@@ -152,7 +153,7 @@
                 }
             },
                           
-            vigilanceDep_valueChanged: function(oldValue, newValue) {
+            vigilanceDep_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.labelprimary = "Departement " + newValue ;
                 this.urlVigiFrance = "http://vigilance.meteofrance.com/data/QGFR08_LFPW_.gif?" + new Date().getTime();
@@ -160,12 +161,12 @@
                 //console.error("urlVigiFrance  = " + this.urlVigiFrance);
             },
             
-            vigilanceInfo_valueChanged: function(oldValue, newValue) {
+            vigilanceInfo_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.vigiInfo = newValue ;
             },
             
-            vigilanceColor_valueChanged: function(oldValue, newValue) {
+            vigilanceColor_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 switch(newValue) {         // "white", "green", "yellow", "orange", "red"
                     case 'W': 
@@ -188,53 +189,53 @@
                 }             
             },
             
-            vigilanceColorWind_valueChanged: function(oldValue, newValue) {
+            vigilanceColorWind_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.urlWind = "/widget/weather/images/vigilance/pictoM_vent" + getColorFile(newValue) + ".gif" ;
             },
             
-            vigilanceColorRain_valueChanged: function(oldValue, newValue) {
+            vigilanceColorRain_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.urlRain = "/widget/weather/images/vigilance/pictoM_innond" + getColorFile(newValue) + ".gif" ;
             },
             
-            vigilanceColorThunderstorms_valueChanged: function(oldValue, newValue) {
+            vigilanceColorThunderstorms_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.urlThunderstorms = "/widget/weather/images/vigilance/pictoM_orage" + getColorFile(newValue) + ".gif" ;
             },
             
-            vigilanceColorFlood_valueChanged: function(oldValue, newValue) {
+            vigilanceColorFlood_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.urlFlood = "/widget/weather/images/vigilance/pictoM_crue" + getColorFile(newValue) + ".gif" ;
             },
             
-            vigilanceColorSnow_valueChanged: function(oldValue, newValue) {
+            vigilanceColorSnow_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.urlSnow = "/widget/weather/images/vigilance/pictoM_neige" + getColorFile(newValue) + ".gif" ;
             },
             
-            vigilanceColorHeat_valueChanged: function(oldValue, newValue) {
+            vigilanceColorHeat_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.urlHeat = "/widget/weather/images/vigilance/pictoM_chaud" + getColorFile(newValue) + ".gif" ;
             },
             
-            vigilanceColorCold_valueChanged: function(oldValue, newValue) {
+            vigilanceColorCold_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.urlCold = "/widget/weather/images/vigilance/pictoM_froid" + getColorFile(newValue) + ".gif" ;
             },
             
-            vigilanceColorAvalanches_valueChanged: function(oldValue, newValue) {
+            vigilanceColorAvalanches_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.urlAvalanche = "/widget/weather/images/vigilance/pictoM_avalanche" + getColorFile(newValue) + ".gif" ;
             },
             
-            vigilanceColorSubmersion_valueChanged: function(oldValue, newValue) {
+            vigilanceColorSubmersion_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.urlSubmersion = "/widget/weather/images/vigilance/pictoM_vague" + getColorFile(newValue) + ".gif" ;
             },
             
             
-            vigilanceRisk_valueChanged: function(oldValue, newValue) {
+            vigilanceRisk_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 
                 if (newValue) {
@@ -251,18 +252,19 @@
                 }
             },
             
-            displayInfo: function() {
+            displayInfo() {
                 console.error("displayInfo = " + this.vigiInfo);
                 this.$.info.style.display = "block";
             },
 
-            hideInfo: function() {
+            hideInfo() {
                 console.error("hideInfo");
                 this.$.info.style.display = "none";
             }
 
             
-        });
+	    };
+    customElements.define(Dmw.is, Dmw);
 
         function getColorFile(color) {
                 switch(color) {         // "white", "green", "yellow", "orange", "red"
@@ -281,4 +283,4 @@
                 }             
             }
     </script>
-</polymer-element>
+</dom-module>

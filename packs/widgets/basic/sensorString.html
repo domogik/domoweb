@@ -1,4 +1,4 @@
-<polymer-element name="dmw-basic-sensorString" extends="dmw-widget">
+<dom-module id="dmw-basic-sensorstring">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
@@ -28,7 +28,7 @@
                 box-sizing: border-box;
                 animation: marquee 10s linear infinite;
             }
-            
+
             @keyframes marquee {
                 0%   { text-indent: 3em }
                 100% { text-indent: -3em }
@@ -43,13 +43,14 @@
         </div>
     </template>
     <script>
-        Polymer('dmw-basic-sensorString', {
-            ready: function() {
-                this.super();
+        class DmwBasicSensorString extends DmwWidget {
+            static get is () { return 'dmw-basic-sensorstring'; }
+            connectedCallback() {
+                super.connectedCallback();
                 this.text = "--";
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -57,16 +58,17 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 this.text = newValue.stored_value;
             }
-        });
+	    };
+        customElements.define(DmwBasicSensorString.is, DmwBasicSensorString);
     </script>
-</polymer-element>
+</dom-module>
