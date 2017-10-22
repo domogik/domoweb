@@ -109,6 +109,13 @@
                 var to = moment().unix();
                 this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day'});
             },
+            // Add month values per hour average
+            getCurrentMonthPerHour: function() {
+                this.historyMode = 'month';
+                var from = moment().subtract(1, 'months').unix();
+                var to = moment().unix();
+                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
+            },
             timeoutHandler: function() {
                 var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
                 this.fire('sensor-timeout', {'minutes': diff.humanize()});
