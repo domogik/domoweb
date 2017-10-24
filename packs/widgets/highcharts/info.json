@@ -80,6 +80,39 @@
                     "required": true
                 }
             }
-        }    
+        },
+        "sensorBoolChart": {
+            "name" : "Bool highchart",
+            "height" : 1,
+            "width" : 1,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": true
+                },
+                "color" : {
+                    "name": "HighStock line graph color",
+                    "description": "HighStock line graph color",
+                    "type": "string",
+                    "default": "#848484"
+                },
+                "theme" : {
+                    "name": "HighStock Theme",
+                    "description": "HighStock Theme (not used yet)",
+                    "type": "string",
+                    "default": "sunset"
+                }
+            },
+            "sensors" : {
+                "primary" : {
+                    "name": "Sensor",
+                    "description": "A bool sensor",
+                    "types" : ["DT_Bool"],
+                    "required": true
+                }
+            }
+        }       
     }
 }
