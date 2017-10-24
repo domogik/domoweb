@@ -67,6 +67,11 @@
                 this.historyMode = 'last';
                 this.$.socket.send("sensor-getlast", {'caller': this.callback, 'id': this.sensorid, 'count': num});
             },
+            // Add function: Retrieve the history from a certain timestamp
+            getLastFrom: function(from) {
+                this.historyMode = 'last';
+                this.$.socket.send("sensor-getlast", {'caller': this.callback, 'id': this.sensorid, 'from': from});
+            },
             getCurrentDay: function() {
                 this.historyMode = 'day';
                 var from = moment().subtract(1, 'days').unix();
