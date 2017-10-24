@@ -8,6 +8,11 @@
 }
 </style>
 
+<script src="/widget/highcharts/Highstock-5.0.14/code/highstock.js"></script>
+<script src="/widget/highcharts/Highstock-5.0.14/code/modules/exporting.js"></script>
+<!-- <script src="/widget/highcharts/Highstock-5.0.14/code/js/themes/sunset.js"></script> -->
+<!-- avocado.js dark-blue.js dark-green.js dark-unica.js gray.js grid-light.js grid.js sand-signika.js skies.js sunset.js -->
+
 <polymer-element name="dmw-highcharts-sensorNumberChart" extends="dmw-widget">
     <template>
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
@@ -73,11 +78,6 @@
 
         
     </template>
-
-    <script src="/widget/highcharts/Highstock-5.0.14/code/highstock.js"></script>
-    <script src="/widget/highcharts/Highstock-5.0.14/code/modules/exporting.js"></script>
-    <!-- <script src="/widget/highcharts/Highstock-5.0.14/code/js/themes/sunset.js"></script> -->
-    <!-- avocado.js dark-blue.js dark-green.js dark-unica.js gray.js grid-light.js grid.js sand-signika.js skies.js sunset.js -->
     
     <script>    
         Polymer('dmw-highcharts-sensorNumberChart', {
@@ -108,7 +108,7 @@
                     this.$.labelsecondary.style.visibility = "visible";
                 }
                 this.color = this.options['color'] ;
-                console.error("theme: " + this.options['theme']) ;
+                //console.error("theme: " + this.options['theme']) ;
             },
             
             // ------------------------------------------------------------------------------------
@@ -246,6 +246,7 @@
                     },                        
                     xAxis: {
                         gridLineWidth: 1,
+                        ordinal: false,
                         events: {
                             setExtremes: function(e) {
                                 if(typeof(e.rangeSelectorButton) !== 'undefined')
