@@ -1,7 +1,7 @@
 <link rel="import" href="/libraries/bower_components/polymer/polymer.html">
 <link rel="import" href="/libraries/bower_components/polymer/lib/utils/async.html">
 
-<dom-module id="dmw-section" attributes='sectionid'>
+<dom-module id="dmw-section">
     <template>
         <web-socket id="socket"></web-socket>
     </template>
@@ -74,14 +74,10 @@
                 this._description[this.sectionid] = json['description'];
                 this._params[this.sectionid] = json['params'];
                 var self = this;
-                setTimeout(function() {
-                    self.dispatchEvent(new CustomEvent('section-changed', {detail: json}));
-                },1000);
-              /**  Polymer.Async.timeOut.after(500).run( function(){
+                Polymer.Async.timeOut.after(500).run( function(){
                     // Wait full addEventListener from WebComponentsReady
                     self.dispatchEvent(new CustomEvent('section-changed', {detail: json}));
-                }); **/
-                //$("#overlay").fadeIn(200);
+                });
             }
             sectionRemoved (topic, json) {
                 document.getElementById("loading_text").innerHTML = "Loading section ...";

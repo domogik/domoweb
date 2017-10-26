@@ -30,6 +30,9 @@
             var json = JSON.parse(msg.data),
             listener,
             match;
+            if (json[0] == 'sensor-history') {
+                console.log('break');
+                }
             for ( var i=0; i < this.listeners.length; i++ ) {
                 listener = this.listeners[i];
                 if (listener[3] != null) {

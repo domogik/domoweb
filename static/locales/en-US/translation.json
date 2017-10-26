@@ -1,4 +1,4 @@
-{ 
+{
 	"menu": {
 		"open": "Open Menu",
 		"configuration": "Config",
@@ -10,26 +10,39 @@
 		"removeSection": "Remove",
 		"finishSections": "Finish"
 	},
-	"unit": "__value__",
-	"unit_DT_Byte": "b",
-	"bool": {
-		"0_DT_Bool": "False",
-		"1_DT_Bool": "True",
-		"0_DT_Switch": "Off",
-		"1_DT_Switch": "On",
-		"0_DT_Enable": "Disable",
-		"1_DT_Enable": "Enable",
-		"0_DT_Binary": "Low",
-		"1_DT_Binary": "High",
-		"0_DT_Step": "Decrease",
-		"1_DT_Step": "Increase",
-		"0_DT_UpDown": "Up",
-		"1_DT_UpDown": "Down",
-		"0_DT_OpenClose": "Open",
-		"1_DT_OpenClose": "Close",
-		"0_DT_Start": "Stop",
-		"1_DT_Start": "Start",
-		"0_DT_State": "Inactive",
-		"1_DT_State": "Active"
-	}
+  	"domoweb": {
+        "unit": "__value__",
+        "unit_DT_Byte": "b",
+        "bool": {
+            "0_DT_Bool": "False",
+            "1_DT_Bool": "True",
+            "0_DT_Switch": "Off",
+            "1_DT_Switch": "On",
+            "0_DT_Enable": "Disable",
+            "1_DT_Enable": "Enable",
+            "0_DT_Binary": "Low",
+            "1_DT_Binary": "High",
+            "0_DT_Step": "Decrease",
+            "1_DT_Step": "Increase",
+            "0_DT_UpDown": "Up",
+            "1_DT_UpDown": "Down",
+            "0_DT_OpenClose": "Open",
+            "1_DT_OpenClose": "Close",
+            "0_DT_Start": "Stop",
+            "1_DT_Start": "Start",
+            "0_DT_State": "Inactive",
+            "1_DT_State": "Active"
+        }
+	},
+    "widget": {
+        "sensorLost": "Sensor lost",
+        "historyRequestTimeout": "History request timeout",
+        "last": "Last day",
+        "dayPerHour": "Day per hour",
+        "day": "Day",
+        "week": "Week",
+        "weekPerDay": "Week per day",
+        "weekPerDayWithSelectorMax": "Week per day (max)",
+        "fromToDay": "Between 2 day"
+    }
 }

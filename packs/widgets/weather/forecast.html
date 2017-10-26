@@ -25,7 +25,6 @@
 <dom-module id="dmw-weather-forecast">
     <template id="extended-styles">
         <link rel="stylesheet" href="/widget/weather/weather-icons-master-1.3/css/weather-icons.css">
-        <style include="dmw-widget-label-styles"></style>
         <style type="text/css">
             @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
             :host {
@@ -80,11 +79,11 @@
             </style>
         <shadow></shadow>
         <dmw-sensor id='forecast_0_day' sensorkey="forecast_0_day" sensorvalue="{{forecast_0_day_value}}"></dmw-sensor>
-        <dmw-sensor id='forecast_0_condition_code' sensorkey="forecast_0_condition_code" sensorvalue="{{forecast_0_condition_code_value}}"></dmw-sensor>
+        <dmw-sensor id='forecast_0_condition_code' sensorkey="forecast_0_condition_code" sensorvalue="{{forecast_0_condition_code_value}}" sensornotified="day_0"></dmw-sensor>
         <dmw-sensor id='forecast_0_temperature_high' sensorkey="forecast_0_temperature_high" sensorvalue="{{forecast_0_temperature_high_value}}"></dmw-sensor>
         <dmw-sensor id='forecast_0_temperature_low' sensorkey="forecast_0_temperature_low" sensorvalue="{{forecast_0_temperature_low_value}}"></dmw-sensor>
 
-        <dmw-sensor id='forecast_1_day' sensorkey="forecast_1_day" sensorvalue="{{forecast_1_day_value}}" sensornotified="day_1"></dmw-sensor>
+        <dmw-sensor id='forecast_1_day' sensorkey="forecast_1_day" sensorvalue="{{forecast_1_day_value}}"></dmw-sensor>
         <dmw-sensor id='forecast_1_condition_code' sensorkey="forecast_1_condition_code" sensorvalue="{{forecast_1_condition_code_value}}"></dmw-sensor>
         <dmw-sensor id='forecast_1_temperature_high' sensorkey="forecast_1_temperature_high" sensorvalue="{{forecast_1_temperature_high_value}}"></dmw-sensor>
         <dmw-sensor id='forecast_1_temperature_low' sensorkey="forecast_1_temperature_low" sensorvalue="{{forecast_1_temperature_low_value}}"></dmw-sensor>
@@ -263,12 +262,14 @@
             }
             connectedCallback() {
                 super.connectedCallback();
-                this.easterEggDay = new Date().getFullYear() + "-04-01";
-                this.today = i18n.t("weather:Today", "Today");
-                this.high = i18n.t("weather:High", "High");
-                this.low = i18n.t("weather:Low", "Low");
             }
 
+            languageLoaded() {
+                this.easterEggDay = new Date().getFullYear() + "-04-01";
+                this.today = this.localize("weather:Today");// "Today");
+                this.high = this.localize("weather:High"); //, "High");
+                this.low = this.localize("weather:Low"); //, "Low");
+            }
             forecast_0_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 /* easter egg inside ;)
@@ -292,7 +293,7 @@
 
             forecast_1_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_1_day = i18n.t("weather:" + newValue, newValue);
+                this.forecast_1_day = this.localize("weather:" + newValue);//, newValue);
             }
             forecast_1_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
@@ -309,7 +310,7 @@
 
             forecast_2_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_2_day = i18n.t("weather:" + newValue, newValue);
+                this.forecast_2_day = this.localize("weather:" + newValue);//, newValue);
             }
             forecast_2_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
@@ -326,7 +327,7 @@
 
             forecast_3_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_3_day = i18n.t("weather:" + newValue, newValue);
+                this.forecast_3_day = this.localize("weather:" + newValue); //, newValue);
             }
             forecast_3_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
@@ -343,7 +344,7 @@
 
             forecast_4_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_4_day = i18n.t("weather:" + newValue, newValue);
+                this.forecast_4_day = this.localize("weather:" + newValue); //, newValue);
             }
             forecast_4_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;

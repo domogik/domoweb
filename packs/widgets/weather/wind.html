@@ -12,7 +12,6 @@
 <dom-module id="dmw-weather-wind">
     <template id="extended-styles">
         <link rel="stylesheet" href="/widget/weather/weather-icons-master-1.3/css/weather-icons.css">
-        <style include="dmw-widget-label-styles"></style>
         <style type="text/css">
             .inactive {
                 display: none;
@@ -57,7 +56,7 @@
                 font-size: 1.1em;
             }
         </style>
-        <dmw-sensor id='direction' sensorkey="direction" sensorvalue="{{directionvalue}}"></dmw-sensor>
+        <dmw-sensor id='direction' sensorkey="direction" sensorvalue="{{directionvalue}}" sensornotified="compass"></dmw-sensor>
         <dmw-sensor id='speed' sensorkey="speed" sensorvalue="{{speedvalue}}"></dmw-sensor>
         <dmw-sensor id='gust' sensorkey="gust" sensorvalue="{{gustvalue}}"></dmw-sensor>
         <shadow></shadow>
@@ -163,13 +162,13 @@
                         this.$.arrow.classList.add('inactive');
                     }
                     if (this.$.speed.isSet) {
-                        this.$.speeddisplay.setAttribute('aria-label', i18n.t('weather:speed'));
+                        this.$.speeddisplay.setAttribute('aria-label', this.localize('weather:speed'));
                         this.$.speeddisplay.classList.remove('inactive');
                     } else {
                         this.$.speeddisplay.classList.add('inactive');
                     }
                     if (this.$.gust.isSet) {
-                        this.$.gustdisplay.setAttribute('aria-label', i18n.t('weather:gust'));
+                        this.$.gustdisplay.setAttribute('aria-label', this.localize('weather:gust'));
                         this.$.gustdisplay.classList.remove('inactive');
                     } else {
                         this.$.gustdisplay.classList.add('inactive');
@@ -185,12 +184,12 @@
             }
             speedvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.speedunit = i18n.t("domoweb:unit", { context: this.$.speed.datatype_id, value: this.datatypes[this.$.speed.datatype_id]['unit'] });
+                this.speedunit = this.localize("domoweb:unit", "value", this.datatypes[this.$.speed.datatype_id]['unit'] );
                 this.speed = newValue;
             }
             gustvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.gustunit = i18n.t("domoweb:unit", { context: this.$.gust.datatype_id, value: this.datatypes[this.$.gust.datatype_id]['unit'] });
+                this.gustunit = this.localize("domoweb:unit", "value", this.datatypes[this.$.gust.datatype_id]['unit'] );
                 this.gust = newValue;
             }
 	    };

@@ -11,7 +11,6 @@
 <dom-module id="dmw-weather-forecast2">
     <template id="extended-styles">
         <link rel="stylesheet" href="/widget/weather/weather-icons-master-1.3/css/weather-icons.css">
-        <style include="dmw-widget-label-styles"></style>
         <style type="text/css">
             @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
             :host {
@@ -38,7 +37,7 @@
             </style>
         <shadow></shadow>
         <dmw-sensor id='forecast_0_day' sensorkey="forecast_0_day" sensorvalue="{{forecast_0_day_value}}"></dmw-sensor>
-        <dmw-sensor id='forecast_0_condition_code' sensorkey="forecast_0_condition_code" sensorvalue="{{forecast_0_condition_code_value}}"></dmw-sensor>
+        <dmw-sensor id='forecast_0_condition_code' sensorkey="forecast_0_condition_code" sensorvalue="{{forecast_0_condition_code_value}}" sensornotified="days"></dmw-sensor>
         <dmw-sensor id='forecast_0_temperature_high' sensorkey="forecast_0_temperature_high" sensorvalue="{{forecast_0_temperature_high_value}}"></dmw-sensor>
         <dmw-sensor id='forecast_0_temperature_low' sensorkey="forecast_0_temperature_low" sensorvalue="{{forecast_0_temperature_low_value}}"></dmw-sensor>
 
@@ -65,7 +64,7 @@
         <shadow></shadow>
 
         <table>
-          <tbody>
+          <tbody id="days">
             <tr>
               <td class="day" id="forecast_0_day">{{ today }}</td>
               <td class="condition" id="forecast_0_condition_code">{{forecast_0_condition_code}}</td>
@@ -221,12 +220,12 @@
             connectedCallback() {
                 super.connectedCallback();
                 this.unit = "";  // we assume that all the temprature sensors use the same unit. It will be managed by the low day 0 temperature
-
+            }
+            languageLoaded() {
                 // some fun
                 this.easterEggDay = new Date().getFullYear() + "-04-01";
-                this.today = i18n.t("weather:Today", "Today");
+                this.today = this.localize("weather:Today");
             }
-
             forecast_0_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 /* easter egg inside ;)
@@ -248,13 +247,13 @@
                 this.forecast_0_temperature_low = newValue;
                 var unit = this.datatypes[this.$.forecast_0_temperature_low.datatype_id]['unit'];
                 if (unit) {
-                    this.unit = i18n.t("domoweb:unit", { context: this.$.forecast_0_temperature_low.datatype_id, value: unit });
+                    this.unit = this.localize("domoweb:unit", "value", unit);
                 }
             }
 
             forecast_1_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_1_day = i18n.t("weather:" + newValue, newValue);
+                this.forecast_1_day = this.localize("weather:" + newValue);
             }
             forecast_1_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
@@ -271,7 +270,7 @@
 
             forecast_2_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_2_day = i18n.t("weather:" + newValue, newValue);
+                this.forecast_2_day = this.localize("weather:" + newValue);
             }
             forecast_2_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
@@ -288,7 +287,7 @@
 
             forecast_3_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_3_day = i18n.t("weather:" + newValue, newValue);
+                this.forecast_3_day = this.localize("weather:" + newValue);
             }
             forecast_3_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
@@ -305,7 +304,7 @@
 
             forecast_4_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_4_day = i18n.t("weather:" + newValue, newValue);
+                this.forecast_4_day = this.localize("weather:" + newValue);
             }
             forecast_4_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;

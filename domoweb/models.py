@@ -3,6 +3,8 @@ from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, Unicode, UnicodeText, Boolean, ForeignKey, String, Text
 from sqlalchemy.orm import backref, relationship, sessionmaker, joinedload
 import logging
+import inspect
+
 logger = logging.getLogger('domoweb')
 
 # alembic revision --autogenerate -m "xxxx"
@@ -36,7 +38,7 @@ class Widget(Base):
     width = Column(Integer(), default=1)
     default_style = Column(Boolean(), default=1)
     style = Column(UnicodeText())
-    
+
     @classmethod
     def getAll(cls):
         s = session.query(cls).all()
@@ -46,7 +48,7 @@ class Widget(Base):
     def get(cls, id):
         s = session.query(cls).get(id)
         return s
-        
+
     @classmethod
     def getSection(cls, section_id):
         s = session.query(cls).join(cls.instances).distinct().all()
@@ -209,7 +211,7 @@ class Section(Base):
             session.commit()
             session.flush()
         else:
-            logger.info("Section Add: Parent not found")
+            logger.info(u"Section Add: Parent not found")
         return s
 
     @classmethod
@@ -227,14 +229,14 @@ class Section(Base):
             session.commit()
             session.flush()
         else:
-            logger.info("Section Remove: Section not found")        
+            logger.info(u"Section Remove: Section not found")
         return s
 
     @classmethod
     def getAll(cls):
         s = session.query(cls).order_by('left').all()
         return s
-        
+
     @classmethod
     def get(cls, id):
         is_id = True
@@ -245,17 +247,15 @@ class Section(Base):
         except TypeError:
             is_id = False
         if not is_id:
-            print("NOT AN ID")
+            logger.info(u"Section get : NOT AN ID : {0}".format(id))
             s_list = session.query(cls).\
             options(joinedload('theme')).\
             all()
             for a_s in s_list:
-                 print(a_s.name)
                  s = a_s
                  if id.strip() == a_s.name.strip():
                      return s
             # if not found, return one page...
-            print(s)
             return s
         else:
             s = session.query(cls).\
@@ -343,7 +343,7 @@ class Section(Base):
     def _get_max_level(self):
         return self._max_level
     max_level = property(_get_max_level)
-    
+
 class DataType(Base):
     __tablename__ = 'dataType'
     id = Column(String(50), primary_key=True)
@@ -358,7 +358,7 @@ class DataType(Base):
     def getChilds(cls, id):
         s = session.query(cls).get(id)
         if s:
-            c = json.loads(s.parameters)        
+            c = json.loads(s.parameters)
             return c['childs']
         else:
             return None
@@ -370,7 +370,7 @@ class Device(Base):
     description = Column(Unicode(255), nullable=True)
     reference = Column(Unicode(255), nullable=True)
     type = Column(String(50), nullable=True)
-    
+
     @classmethod
     def clean(cls):
         session.query(cls).delete()
@@ -413,7 +413,7 @@ class CommandParam(Base):
     key = Column(String(50))
     datatype_id = Column(String(50), ForeignKey('dataType.id'))
     datatype = relationship("DataType")
-    
+
     @classmethod
     def getCommand(cls, command_id):
         s = session.query(cls).filter_by(command_id = command_id).all()
@@ -551,7 +551,7 @@ class WidgetInstanceOption(Base):
     instance = relationship("WidgetInstance")
     key = Column(String(50), primary_key=True)
     value = Column(Unicode(50))
-    
+
     @classmethod
     def getKey(cls, instance_id, key):
         s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
@@ -596,7 +596,7 @@ class WidgetInstanceSensor(Base):
     key = Column(String(50), primary_key=True)
     sensor_id = Column(Integer(), ForeignKey('sensor.id'))
     sensor = relationship("Sensor")
-    
+
     @classmethod
     def getKey(cls, instance_id, key):
         s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
@@ -651,7 +651,7 @@ class WidgetInstanceCommand(Base):
     key = Column(String(50), primary_key=True)
     command_id = Column(Integer(), ForeignKey('command.id'))
     command = relationship("Command")
-    
+
     @classmethod
     def getKey(cls, instance_id, key):
         s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
@@ -672,7 +672,7 @@ class WidgetInstanceCommand(Base):
                 d[o.key] = to_json(o.command)
                 parameters = CommandParam.getCommand(command_id=o.command_id)
                 d[o.key]['parameters'] = to_json(parameters)
-                d[o.key]['device'] = to_json(o.command.device)            
+                d[o.key]['device'] = to_json(o.command.device)
         return d
 
     @classmethod
@@ -693,7 +693,7 @@ class WidgetInstanceDevice(Base):
     key = Column(String(50), primary_key=True)
     device_id = Column(Integer(), ForeignKey('device.id'))
     device = relationship("Device")
-    
+
     @classmethod
     def getKey(cls, instance_id, key):
         s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
@@ -739,7 +739,7 @@ def to_json(model):
         for m in model:
             jsonm.append(to_json(m))
     else:
-        jsonm = {} 
+        jsonm = {}
         for col in model._sa_class_manager.mapper.mapped_table.columns:
             jsonm[col.name] = getattr(model, col.name)
 

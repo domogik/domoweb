@@ -1,4 +1,5 @@
 <link rel="import" href="/widget/time/css/digitalClockStyle.html">
+
 <dom-module id="dmw-time-digitalclock">
 	<template id="extended-styles">
         <style include="dmw-digitalclock-styles"></style>
@@ -88,14 +89,22 @@
                         digit_holder.append(pos);
                     }
                 });
-                // Add the weekday names
-                var weekday_names = 'MON TUE WED THU FRI SAT SUN'.split(' '),
-                    weekday_holder = clock.find('.weekdays');
-                jQuery.each(weekday_names, function(){
-                    weekday_holder.append('<span>' + i18n.t("time:weekday_short." + this) + '</span>');
-                });
                 this.weekdays = clock.find('.weekdays span');
-				this.update_time();
+                this.update_time();
+            }
+            languageLoaded(e, d) {
+                if (this.localize('weekday_short:MON') != 'weekday_short:MON') {
+                    // Add the weekday names
+                    var clock = $(this.$.clock);
+                    var weekday_names = 'MON TUE WED THU FRI SAT SUN'.split(' '),
+                        weekday_holder = clock.find('.weekdays');
+                    weekday_holder.remove('.weekdays span');
+                    var self = this;
+                    jQuery.each(weekday_names, function(){
+                        weekday_holder.append('<span>' + self.localize('weekday_short:' + this) + '</span>');
+                    });
+                    this.weekdays = clock.find('.weekdays span');
+                }
             }
             optionsUpdated() {
                 if ('dark' in this.options && this.options['dark'] == 1) {

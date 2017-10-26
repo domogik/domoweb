@@ -33,7 +33,7 @@
                 this.timedout = false;
                 this.historyMode = null;
                 this.historydelay = 120000; // two minute
-
+                this.callback = Math.floor(Math.random() * 10000);
             }
             statReceived(topic, json) {
                 // Fritz
@@ -88,7 +88,6 @@
                 sensor['stored_value'] = sensor['last_value'];
                 this.sensorid = sensor['id'];
                 this.sensorreqhistory = false;
-                this.callback = Math.floor(Math.random() * 10000);
                 this.isSet = true;
                 this.sensorvalue = sensor
                 if (this.checkdelay > 0) {

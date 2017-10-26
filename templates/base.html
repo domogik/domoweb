@@ -17,6 +17,7 @@
   <link rel="manifest" href="/manifests/manifest.json">
   <style type="text/css" id="gridstyle"></style>
   <style type="text/css" id="sectionstyle">
+
   body .widget.style-general {
     border: 1px solid {{ params['WidgetBorderColor'] }};
     background-color: {{ params['WidgetBackgroundColor'] }};
@@ -40,9 +41,9 @@
     DMW.main.edit = false;
     window.onload = function(){
         if ("ontouchstart" in document.documentElement) {
-        document.documentElement.classList.add("touch");
+            document.documentElement.classList.add("touch");
         } else {
-        document.documentElement.classList.add("no-touch");
+            document.documentElement.classList.add("no-touch");
         }
         window.addEventListener('resize', DMW.grid.hasResized);
         DMW.menu.init();
@@ -52,6 +53,7 @@
   <script src="/libraries/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <script src="/libraries/jquery-2.1.0/jquery.min.js"></script>
   <script type="text/javascript" src="/libraries/i18next-1.10.1/i18next-1.10.1.min.js"></script>
+
   <link rel="import" href="/components/polymer-ajax.html">
   <link rel="import" href="/components/websockets.html">
   <link rel="import" href="/components/widget.html">
@@ -82,13 +84,13 @@
 
   <div id='main-menu' class="">
       <div class="menu-cnitem">
-      <div class="menu-button">
-          <button class="cnbutton" id="cnbutton"><span class='sr-only' data-i18n="menu.open"></span></button>
-          <nav id="cnwrapper" role="navigation">
-          <ul id='main-menu-root'></ul>
-          </nav>
-          <div id="emptyoverlay" class="overlay"></div>
-      </div>
+          <div class="menu-button">
+              <button class="cnbutton" id="cnbutton"><span class='sr-only' data-i18n="menu.open"></span></button>
+              <nav id="cnwrapper" role="navigation">
+              <ul id='main-menu-root'></ul>
+              </nav>
+              <div id="emptyoverlay" class="overlay"></div>
+          </div>
       </div>
   </div>
 
@@ -132,13 +134,13 @@
 
   <script type="text/javascript">
     i18n.init({
-      getAsync: false,
       load: 'current',
       //        lng: "en-US",
       fallbackLng: 'en-US',
       resGetPath: 'locales/__ns__/__lng__/translation.json',
       ns: {
-        namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}],
+    //    namespaces: ['domoweb', {% for pack in packs %}'{{pack[0]}}', {% end %}],
+        namespaces: ['domoweb'],
         defaultNs: 'domoweb'
       }
     });

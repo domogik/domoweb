@@ -1,5 +1,5 @@
-<dom-module id="dmw-weather-current" extends="dmw-widget">
-    <template>
+<dom-module id="dmw-weather-current">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -48,21 +48,57 @@
         <shadow></shadow>
         <dmw-sensor id='current_station' sensorkey="current_station" sensorvalue="{{current_station}}"></dmw-sensor>
         <dmw-sensor id='current_code' sensorkey="current_code" sensorvalue="{{current_code}}"></dmw-sensor>
-        <dmw-sensor id='current_text' sensorkey="current_text" sensorvalue="{{current_text}}"></dmw-sensor>
-        <dmw-sensor id='current_temperature' sensorkey="current_temperature" sensorvalue="{{current_temperature}}"></dmw-sensor>
+        <dmw-sensor id='current_text' sensorkey="current_text" sensorvalue="{{current_text}}" sensornotified="text"></dmw-sensor>
+        <dmw-sensor id='current_temperature' sensorkey="current_temperature" sensorvalue="{{current_temperature}}" sensornotified="temperature"></dmw-sensor>
         <div id='text'>{{ condition }}</div>
         <div id='temperature'>{{ temperature }}</div>
         <div id='unit'>&deg;C</div>
         <shadow></shadow>
     </template>
     <script>
-                class Dmw extends DmwWidget {
-            static get is () { return 'dmw-weather-current',
+     (function () {
+        let memoizedTemplate;
+
+        class DmwWeatherCurrent extends DmwWidget {
+            static get is () { return 'dmw-weather-current'; }
+            static get properties() {
+                return {
+                    current_station: {
+                        notify: true,
+                        observer: 'current_stationChanged'
+                    },
+                    current_text: {
+                        notify: true,
+                        observer: 'current_textChanged'
+                    },
+                    current_code: {
+                        notify: true,
+                        observer: 'current_codeChanged'
+                    },
+                    current_temperature: {
+                        notify: true,
+                        observer: 'current_temperatureChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
             connectedCallback() {
                 super.connectedCallback();
-            },
+            }
             current_codeChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
+                if (this.code == undefined) {this.condition = this.localize("weather:" + newValue)} //, ''); }
                 this.code = newValue;
                 // needed only the first time :)
                 // strangely it does not work in sensorUpdated()... : this.options == undefined
@@ -72,23 +108,25 @@
                     this.$.unit.classList.add('withshadow');
                 }
                 if (this.options['displayBackground'] == 1) {
+                    this.style.backgroundSize = "contain";
                     this.style.backgroundImage = "url('/widget/weather/images/weather/" + newValue + ".png')";
                 }
-            },
+            }
             current_stationChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.labelprimary = newValue;
-            },
+            }
             current_temperatureChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.temperature = newValue; 
-            },
+                this.temperature = newValue;
+            }
             current_textChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 //this.condition = newValue; // Add i18n ("Fair/Windy")
-                this.condition = i18n.t("weather:" + this.code, newValue);
-            },
+                this.condition = this.localize("weather:" + this.code); //, newValue);
+            }
 	    };
-    customElements.define(Dmw.is, Dmw);
+        customElements.define(DmwWeatherCurrent.is, DmwWeatherCurrent);
+    })();
     </script>
 </dom-module>

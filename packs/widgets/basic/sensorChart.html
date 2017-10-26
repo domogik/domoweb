@@ -1,7 +1,5 @@
-<link rel="import" href="/widget/basic/css/labelstyles.html">
 <dom-module id="dmw-basic-sensorchart">
     <template id="extended-styles">
-        <style include="dmw-widget-label-styles"></style>
         <style type="text/css">
             :host {
                 height: 100%;
@@ -66,8 +64,8 @@
           [[number]]
           </div>
           <div id='minmax'>
-            <span id='minvalue'>[[min]]</span>&nbsp;<sup><em>min</em></sup>&nbsp;/&nbsp;
-            <span id='maxvalue'>[[max]]</span>&nbsp;<sup><em>max</em></sup>
+            <span id='minvalue'>[[min]]</span>&nbsp;<sup><em>{{localize('min')}}</em></sup>&nbsp;/&nbsp;
+            <span id='maxvalue'>[[max]]</span>&nbsp;<sup><em>{{localize('max')}}</em></sup>
           </div>
         </div>
         <div id='unit'>[[unit]]</div>
@@ -87,7 +85,7 @@
                     },
                     history: {
                         notify: true,
-                        observer: 'historyChanged'
+                        observer: 'historyChanged',
                     }
                 }
             }
@@ -105,7 +103,6 @@
             }
             constructor() {
                 super();
- //               this.attachShadow({mode: 'open', delegatesFocus: true});
             }
             connectedCallback() {
                 super.connectedCallback();
@@ -136,13 +133,14 @@
                     newValue = parseFloat(newValue).toFixed(this.options['precision']);
                 }
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
+                this.resources;
                 if (this.options['autoconvert']==1 && newValue > 0) {
                        var k = 1000;
                        var sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
                        var i = Math.floor(Math.log(newValue) / Math.log(k));
                     this.$.number.innerHTML = (newValue / Math.pow(k, i)).toPrecision(3);
                     if (unit) {
-                        this.unit = sizes[i] + i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                        this.unit = sizes[i] + this.localize("domoweb:unit", 'value', unit);
                     }
                 } else {
                     if (newValue) {
@@ -150,7 +148,7 @@
                     } else {this.$.number.innerHTML = '?';
                     }
                     if (unit) {
-                        this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                        this.unit = this.localize("domoweb:unit", 'value', unit);
                     }
                 }
                 this.adjustText(this, this.$.number);
@@ -181,11 +179,11 @@
                         chartValues.push(newValue[i][5]);
                     }
                     // display the chart
-                    minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
-                    maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
+                    var minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
+                    var maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
 
                     // as the graph history is an average, the current value could be lower or bigger than the min/max average value. So we adjust
-                    current = this.$.number.innerHTML;
+                    var current = this.$.number.innerHTML;
                     if (current > maxvalue) {
                         this.max = current;
                     }

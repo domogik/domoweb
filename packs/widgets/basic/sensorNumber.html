@@ -63,12 +63,12 @@
                        var i = Math.floor(Math.log(newValue) / Math.log(k));
                     this.$.number.innerHTML = (newValue / Math.pow(k, i)).toPrecision(3);
                     if (unit) {
-                        this.unit = sizes[i] + i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                        this.unit = sizes[i] + this.localize("domoweb:unit", "value", unit );
                     }
                 } else {
                     this.$.number.innerHTML = newValue;
                     if (unit) {
-                        this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                        this.unit = this.localize("domoweb:unit", "value", unit );
                     }
                 }
                 this.adjustText(this, this.$.number);
