@@ -1,6 +1,5 @@
 <dom-module id="dmw-basic-sensorstring">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -36,15 +35,37 @@
             */
 
         </style>
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
-        <shadow></shadow>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensornotified="text"></dmw-sensor>
         <div id='text' class="marquee">
           {{text}}
         </div>
     </template>
     <script>
+     (function () {
+        let memoizedTemplate;
+
         class DmwBasicSensorString extends DmwWidget {
             static get is () { return 'dmw-basic-sensorstring'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
             connectedCallback() {
                 super.connectedCallback();
                 this.text = "--";
@@ -70,5 +91,6 @@
             }
 	    };
         customElements.define(DmwBasicSensorString.is, DmwBasicSensorString);
+    })();
     </script>
 </dom-module>

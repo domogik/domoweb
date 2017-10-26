@@ -1,162 +1,178 @@
-<dom-module id="dmw-events-spider" extends="dmw-widget">
-    <template>
+<dom-module id="dmw-events-spider">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
                 display: block;
+                background-repeat: no-repeat;
+                background-position: 50% 50%;
+            }
+            html,
+            body {
+              height: 100%;
+              overflow: hidden;
             }
 
+            .container {
+              position: absolute;
+              top: 0;
+              left: 50%;
+              margin-left: -20px;
+              animation: inicio 5s ease-in-out forwards;
+            }
 
+            .container::after {
+              background: rgba(0,0,0,0.5);
+              content:"";
+              position: absolute;
+              top: -1000px;
+              margin-left: 9px;
+              width: 1px;
+              height: 1000px;
+            }
 
-html,
-body {
-  height: 100%;
-  overflow: hidden; 
-}
+            .container::before {
+              background: rgba(0,0,0,1);
+              border-radius: 100%;
+              color: #fff;
+              font-size: 1.3em;
+              content:". .";
+              text-align: center;
+              position: absolute;
+              margin-top: -5px;
+              margin-left: -2px;
+              width: 25px;
+              height: 25px;
+            }
 
-.container {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  margin-left: -20px;
-  animation: inicio 5s ease-in-out forwards;
-}
+            .left {
+              position: absolute;
+            }
 
-.container::after {
-  background: rgba(0,0,0,0.5);
-  content:"";
-  position: absolute;
-  top: -1000px;
-  left: 50%;
-  margin-left: 9px;
-  width: 1px;
-  height: 1000px;
-}
+            .right {
+              position: absolute;
+              transform: rotateY(180deg);
+            }
 
-.container::before {
-  background: rgba(0,0,0,1);
-  border-radius: 100%;
-  color: #fff;
-  font-size: 1.3em;
-  content:". .";
-  text-align: center;
-  position: absolute;
-  margin-top: -5px;
-  margin-left: -2px;
-  width: 25px;
-  height: 25px;
-}
+            .uno,
+            .dos,
+            .tres,
+            .cuatro {
+              background: rgba(0,0,0,0.5);
+              position: relative;
+              width: 20px;
+              height: 3px;
+            }
 
-.left {
-  position: absolute;
-}
+            .uno > .uno,
+            .dos > .dos,
+            .tres > .tres,
+            .cuatro > .cuatro {
+              transform-origin: 20px top;
+              transform: rotate(-80deg) translateX(20px);
+              animation: seg 2.5s ease infinite;
+            }
 
-.right {
-  position: absolute;
-  transform: rotateY(180deg);
-}
+            .uno > .uno > .uno,
+            .dos > .dos > .dos,
+            .tres > .tres > .tres,
+            .cuatro > .cuatro > .cuatro {
+              transform-origin: 20px top;
+              transform: rotate(10deg) translateX(20px);
+              animation: seg 1.5s ease infinite;
+            }
 
-.uno,
-.dos,
-.tres,
-.cuatro {
-  background: rgba(0,0,0,0.5);
-  position: relative;
-  width: 20px;
-  height: 3px;
-}
+            .right > .dos > .dos {
+              animation-delay: 200ms;
+            }
 
-.uno > .uno,
-.dos > .dos,
-.tres > .tres,
-.cuatro > .cuatro {
-  transform-origin: 20px top;
-  transform: rotate(-80deg) translateX(20px);
-  animation: seg 2.5s ease infinite;
-}
+            .dos > .dos {
+              animation-delay: 400ms;
+            }
 
-.uno > .uno > .uno,
-.dos > .dos > .dos,
-.tres > .tres > .tres,
-.cuatro > .cuatro > .cuatro {
-  transform-origin: 20px top;
-  transform: rotate(10deg) translateX(20px);
-  animation: seg 1.5s ease infinite;
-}
+            .dos > .dos > .dos {
+              animation-delay: 200ms;
+            }
 
-.right > .dos > .dos {
-  animation-delay: 200ms;
-}
+            .right >.tres > .tres {
+              animation-delay: 400ms;
+            }
 
-.dos > .dos {
-  animation-delay: 400ms;
-}
+            .tres > .tres {
+              animation-delay: 600ms;
+            }
 
-.dos > .dos > .dos {
-  animation-delay: 200ms;
-}
+            .tres > .tres > .tres {
+              animation-delay: 300ms;
+            }
 
-.right >.tres > .tres {
-  animation-delay: 400ms;
-}
+            .right > .cuatro > .cuatro {
+              animation-delay: 100ms;
+            }
 
-.tres > .tres {
-  animation-delay: 600ms;
-}
+            .cuatro > .cuatro {
+              animation-delay: 800ms;
+            }
 
-.tres > .tres > .tres {
-  animation-delay: 300ms;
-}
+            .cuatro > .cuatro > .cuatro {
+              animation-delay: 400ms;
+            }
 
-.right > .cuatro > .cuatro {
-  animation-delay: 100ms;
-}
+            @keyframes seg {
+              50% {
+                transform: rotate(55deg) translateX(20px);
+              }
+            }
 
-.cuatro > .cuatro {
-  animation-delay: 800ms;
-}
-
-.cuatro > .cuatro > .cuatro {
-  animation-delay: 400ms;
-}
-
-@keyframes seg {
-  50% {
-    transform: rotate(55deg) translateX(20px);
-  }
-}
-
-@keyframes inicio {
-  100% {
-    top: 50%;
-  }
-}
-
+            @keyframes inicio {
+              100% {
+                top: 50%;
+              }
+            }
 
         </style>
-        <shadow></shadow>
-<div class="container">
-  <div class="left">
-    <div class="uno"><div class="uno"><div class="uno"><div class="uno"></div></div></div></div>
-    <div class="dos"><div class="dos"><div class="dos"><div class="dos"></div></div></div></div>
-    <div class="tres"><div class="tres"><div class="tres"><div class="tres"></div></div></div></div>
-    <div class="cuatro"><div class="cuatro"><div class="cuatro"><div class="cuatro"></div></div></div></div>
-  </div>
-  <div class="right">
-    <div class="uno"><div class="uno"><div class="uno"><div class="uno"></div></div></div></div>
-    <div class="dos"><div class="dos"><div class="dos"><div class="dos"></div></div></div></div>
-    <div class="tres"><div class="tres"><div class="tres"><div class="tres"></div></div></div></div>
-    <div class="cuatro"><div class="cuatro"><div class="cuatro"><div class="cuatro"></div></div></div></div>
-  </div>
-</div>
+        <div id="spider" class="container">
+          <div class="left">
+            <div class="uno"><div class="uno"><div class="uno"><div class="uno"></div></div></div></div>
+            <div class="dos"><div class="dos"><div class="dos"><div class="dos"></div></div></div></div>
+            <div class="tres"><div class="tres"><div class="tres"><div class="tres"></div></div></div></div>
+            <div class="cuatro"><div class="cuatro"><div class="cuatro"><div class="cuatro"></div></div></div></div>
+          </div>
+          <div class="right">
+            <div class="uno"><div class="uno"><div class="uno"><div class="uno"></div></div></div></div>
+            <div class="dos"><div class="dos"><div class="dos"><div class="dos"></div></div></div></div>
+            <div class="tres"><div class="tres"><div class="tres"><div class="tres"></div></div></div></div>
+            <div class="cuatro"><div class="cuatro"><div class="cuatro"><div class="cuatro"></div></div></div></div>
+          </div>
+        </div>
     </template>
     <script>
-                class Dmw extends DmwWidget {
-            static get is () { return 'dmw-events-spider',
+     (function () {
+        let memoizedTemplate;
+        class DmwEventSpider extends DmwWidget {
+            static get is () { return 'dmw-events-spider'; }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
             connectedCallback() {
                 super.connectedCallback();
+                this.$.spider.style.top = "-"+this.style.top;
+                this.style.backgroundSize = "contain";
+                this.style.backgroundAttachment = "local";
+                this.style.backgroundImage = "url('/widget/events/images/spiderweb.png')";
+
             }
-	    };
-    customElements.define(Dmw.is, Dmw);
+        }
+        customElements.define(DmwEventSpider.is, DmwEventSpider);
+    })();
     </script>
 </dom-module>

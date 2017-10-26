@@ -133,12 +133,11 @@
                     newValue = parseFloat(newValue).toFixed(this.options['precision']);
                 }
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
-                this.resources;
                 if (this.options['autoconvert']==1 && newValue > 0) {
                        var k = 1000;
                        var sizes = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
                        var i = Math.floor(Math.log(newValue) / Math.log(k));
-                    this.$.number.innerHTML = (newValue / Math.pow(k, i)).toPrecision(3);
+                    this.$.number.innerHTML = (newValue / Math.pow(k, i)).toPrecision(this.options['precision']);
                     if (unit) {
                         this.unit = sizes[i] + this.localize("domoweb:unit", 'value', unit);
                     }
@@ -151,7 +150,7 @@
                         this.unit = this.localize("domoweb:unit", 'value', unit);
                     }
                 }
-                this.adjustText(this, this.$.number);
+                this.adjustText(this.clientWidth-this.$.chart.clientWidth+15, this.clientHeight, this.$.number);
                 this.$.primary.getCurrentDayPerHour();
 
             }
@@ -208,31 +207,30 @@
                     $.sparkline_display_visible();
                 }
             }
-            adjustText(parent, element) {
+            adjustText(maxWidth, maxHeight, element) {
                 var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
                 var i = fontsize.substr(0,2);
-                //alert("cw = " + parent.clientWidth + ", cw = " + parent.clientHeight);
-                if (parent.clientWidth == 0 || parent.clientHeight == 0) {
+                if (maxWidth == 0 || maxHeight == 0) {
                     setTimeout(function(){
-                        this.adjustText(parent, element);
+                        this.adjustText(maxWidth, maxHeight, element);
                         }.bind(this), 1000);
                 }
                 else {
-                    if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
-                        while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
+                    if (maxWidth > element.clientWidth && maxHeight > element.clientHeight) {
+                        while ( maxWidth > element.clientWidth && maxHeight > element.clientHeight && i < 100){
                             element.style.fontSize = i+"px";
                             i++;
                         }
-                    } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
-                        while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
+                    } else if (maxWidth < element.clientWidth || maxHeight < element.clientHeight) { // If text is bigger than widget
+                        while (maxWidth < element.clientWidth || maxHeight < element.clientHeight){
                             element.style.fontSize = i+"px";
                             i--;
                         }
                     }
                 }
             }
-    };
-    customElements.define(DmwBasicSensorChart.is, DmwBasicSensorChart);
+        };
+        customElements.define(DmwBasicSensorChart.is, DmwBasicSensorChart);
     })();
     </script>
 </dom-module>

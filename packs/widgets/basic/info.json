@@ -465,6 +465,12 @@
                     "type": "string",
                     "default": "#ffffff"
                 },
+                "precision" : {
+                    "name": "Number precision",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
+                },
                 "chartMinValue" : {
                     "name": "Chart minimun value",
                     "description": "Set the chart minimum value",
@@ -512,6 +518,12 @@
                     "type": "string",
                     "default": "#ffffff"
                 },
+                "precision_primary" : {
+                    "name": "Number precision for sensor 1",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
+                },
                 "chartMinValue_primary" : {
                     "name": "Chart minimun value for sensor 1",
                     "description": "Set the chart minimum value",
@@ -525,6 +537,12 @@
                     "type": "number",
                     "default": null,
                     "required": false
+                },
+                "precision_secondary" : {
+                    "name": "Number precision for sensor 2",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
                 },
                 "chartMinValue_secondary" : {
                     "name": "Chart minimun value for sensor 2",
@@ -540,6 +558,12 @@
                     "default": null,
                     "required": false
                 },
+                "precision_third" : {
+                    "name": "Number precision for sensor 3",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
+                },
                 "chartMinValue_third" : {
                     "name": "Chart minimun value for sensor 3",
                     "description": "Set the chart minimum value",
@@ -554,6 +578,12 @@
                     "default": null,
                     "required": false
                 },
+                "precision_fourth" : {
+                    "name": "Number precision for sensor 3",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
+                },
                 "chartMinValue_fourth" : {
                     "name": "Chart minimun value for sensor 4",
                     "description": "Set the chart minimum value",
@@ -567,6 +597,12 @@
                     "type": "number",
                     "default": null,
                     "required": false
+                },
+                "precision_fifth" : {
+                    "name": "Number precision for sensor 5",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
                 },
                 "chartMinValue_fifth" : {
                     "name": "Chart minimun value for sensor 5",
