@@ -102,6 +102,10 @@
                 this.historyMode = 'last';
                 this.$.socket.send("sensor-getlast", {'caller': this.callback, 'id': this.sensorid, 'count': num});
             }
+            getLastFrom(from) {
+                this.historyMode = 'last';
+                this.$.socket.send("sensor-getlast", {'caller': this.callback, 'id': this.sensorid, 'from': from});
+            }
             getCurrentDay() {
                 if (!this.sensorreqhistory) {
                     this.historyMode = 'day';
@@ -163,6 +167,14 @@
                     var to = moment().unix();
                     this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day'});
                     this.historyReqHandler();
+                };
+            }
+            getCurrentMonthPerHour() {
+                if (!this.sensorreqhistory) {
+                    this.historyMode = 'month';
+                    var from = moment().subtract(1, 'months').unix();
+                    var to = moment().unix();
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
                 };
             }
             getFromToDay(fromD, toD, interval, selector) {

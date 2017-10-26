@@ -386,7 +386,12 @@ class WSHandler(websocket.WebSocketHandler):
 
     @gen.coroutine
     def WSSensorGetLast(self, data):
-        url = '{0}/sensorhistory/id/{1}/last/{2}'.format(options.rest_url, data['id'],data['count']).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
+        if 'count' in data:
+            # REST: /rest/sensorhistory/id/<id>/last/<num> Retrieve the last x number of stored value for a sensor
+            url = '{0}/sensorhistory/id/{1}/last/{2}'.format(options.rest_url, data['id'],data['count']).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
+        else:
+            # REST: /rest/sensorhistory/id/<id>/from/<tstamp> Retrieve the history from a certain timestamp
+            url = '{0}/sensorhistory/id/{1}/from/{2}'.format(options.rest_url, data['id'],data['from']).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
         logger.info("REST Call : %s" % url)
         http = AsyncHTTPClient()
         request = HTTPRequest(url=url, validate_cert=False)

@@ -242,8 +242,8 @@
                     for (i = 0; i < riskslistlen; i++) { 
                         risktext = risktext + i18n.t("weather:" + riskslist[i]) + "<br \>" ; 
                     }
-                    //var risksFont = ((6 - riskslistlen) * 4).toString() + "px" ;
-                    var risksFont = ((5 - riskslistlen) * 4).toString() + "px" ;
+                    var risksFont = ((6 - riskslistlen) * 4).toString() + "px" ;
+                    //var risksFont = ((5 - riskslistlen) * 4).toString() + "px" ;
                     this.$.text.innerHTML = risktext;
                     this.$.text.style.fontSize = risksFont ;                   // 1line = 20, 2lines=16, 3lines=12, 4lines=8, ...
                     //console.error("vigilanceRisks = " + risktext);
