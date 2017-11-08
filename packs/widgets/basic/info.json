@@ -12,8 +12,12 @@
     "widgets": {
         "sensorNumber": {
             "name" : "Sensor Number",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -39,8 +43,12 @@
         },
         "sensorBool": {
             "name" : "Sensor Bool",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -60,8 +68,12 @@
         },
         "sensorColorCII": {
             "name" : "Sensor ColorCII",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -88,8 +100,12 @@
         },
         "sensorColorCII2": {
             "name" : "Sensor ColorCII 2",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -110,8 +126,12 @@
         "commandString": {
             "dev" : true,
             "name" : "Command String",
-            "height" : 1,
-            "width" : 2,
+            "height" : 2,
+            "width" : 4,
+            "min_height" : 1,
+            "min_width" : 2,
+            "max_height" : 4,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -132,8 +152,12 @@
         },
         "commandBool": {
             "name" : "Command Boolean",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -188,8 +212,12 @@
         },
         "commandTrigger": {
             "name" : "Command Trigger",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -224,7 +252,11 @@
         "commandRange": {
             "name" : "Command Range",
             "height" : 1,
-            "width" : 2,
+            "width" : 3,
+            "min_height" : 1,
+            "min_width" : 2,
+            "max_height" : 2,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -267,8 +299,12 @@
         },
         "commandColorRGB": {
             "name" : "Control RGB colors",
-            "height" : 2,
-            "width" : 2,
+            "height" : 3,
+            "width" : 3,
+            "min_height" : 2,
+            "min_width" : 2,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -327,6 +363,10 @@
             "name" : "Command Rolling Shutter",
             "height" : 2,
             "width" : 1,
+            "min_height" : 2,
+            "min_width" : 1,
+            "max_height" : 8,
+            "max_width" : 2,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -351,6 +391,10 @@
             "name" : "Sensor String",
             "height" : 1,
             "width" : 3,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 3,
+            "max_width" : 8,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -372,6 +416,10 @@
             "name" : "Sensor String",
             "height" : 1,
             "width" : 1,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 2,
+            "max_width" : 2,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -391,8 +439,12 @@
         },
         "sensorChart": {
             "name" : "Chart for numeric sensor",
-            "height" : 1,
-            "width" : 2,
+            "height" : 2,
+            "width" : 3,
+            "min_height" : 2,
+            "min_width" : 2,
+            "max_height" : 6,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -444,8 +496,12 @@
         },
         "sensorChart2": {
             "name" : "Chart for numeric sensor (alternate)",
-            "height" : 2,
-            "width" : 2,
+            "height" : 3,
+            "width" : 3,
+            "min_height" : 2,
+            "min_width" : 2,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -497,8 +553,12 @@
         },
         "sensorChartMulti": {
             "name" : "Chart for several numeric sensors",
-            "height" : 2,
-            "width" : 3,
+            "height" : 3,
+            "width" : 4,
+            "min_height" : 3,
+            "min_width" : 3,
+            "max_height" : 6,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",

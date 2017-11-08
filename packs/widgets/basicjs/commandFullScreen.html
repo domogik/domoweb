@@ -1,6 +1,5 @@
 <dom-module id="dmw-basicjs-commandfullscreen">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -14,6 +13,7 @@
                 background: #4671BD;
                 color: #ffffff;
                 cursor: pointer;
+                white-space:normal;
             }
             button#send.circle {
                 border-radius: 50%;
@@ -23,15 +23,29 @@
                 color: #ffffff;
             }
         </style>
-        <shadow></shadow>
-        <button id="send" class="btn btn-default" onclick="fullScreen(document.documentElement);">Full Screen</button>
+        <button id="send" class="btn btn-default" onclick="fullScreen(document.documentElement);">{{localize('fullScreen')}}</button>
     </template>
     <script>
+     (function () {
+        let memoizedTemplate;
+
         class DmwBasicjsCommandFullScreen extends DmwWidget {
             static get is () { return 'dmw-basicjs-commandfullscreen'; }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
             connectedCallback() {
                 super.connectedCallback();
-            },
+            }
             commandsUpdated() {
                 if (this.options['circle'] == 1) {
                     this.$.send.classList.add('circle');
@@ -40,16 +54,17 @@
                     this.$.send.classList.remove('circle');
                 }
             }
-        };
-        function fullScreen(element) {
-            if(element.requestFullScreen) {
-            element.requestFullScreen();
-            } else if(element.webkitRequestFullScreen ) {
-            element.webkitRequestFullScreen();
-            } else if(element.mozRequestFullScreen) {
-            element.mozRequestFullScreen();
-            }
-        };
+        }
         customElements.define(DmwBasicjsCommandFullScreen.is, DmwBasicjsCommandFullScreen);
+    })();
+    function fullScreen(element) {
+        if(element.requestFullScreen) {
+        element.requestFullScreen();
+        } else if(element.webkitRequestFullScreen ) {
+        element.webkitRequestFullScreen();
+        } else if(element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+        }
+    }
     </script>
 </dom-module>

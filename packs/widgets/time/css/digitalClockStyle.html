@@ -3,17 +3,31 @@
     <style>
         .display {
             text-align:center;
-            padding: 30px 20px 5px 20px;
-            border-radius:6px;
-            margin: 5px;
+            padding: calc(25px*var(--wscale-h)) calc(20px*var(--wscale-w)) calc(5px*var(--wscale-h)) 0px;
+            border-radius: calc(6px*var(--wscale-w));
+            margin: 1%;
+            height: 92%;
+        }
+        #digitsnumbers {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: calc(25px*var(--wscale-w));
+        }
+        .digits {
+            transform: scale(var(--wscale-w), var(--wscale-h));
+            transform-origin: top left;
+            position: absolute;
+            display: inline-flex;
         }
         .digits div{
             text-align:left;
             position:relative;
-            width: 28px;
-            height:50px;
+            width: 41px;
+            height: 78px;
             display:inline-block;
-            margin:0 4px;
+            margin:0 6px;
+            top: 5px;
         }
         .digits div span{
             opacity:0;
@@ -23,42 +37,43 @@
             -moz-transition:0.25s;
             transition:0.25s;
         }
+
         .digits div span:before,
         .digits div span:after{
             content:'';
             position:absolute;
             width:0;
             height:0;
-            border:5px solid transparent;
+            border:7px solid transparent;
         }
 
-        .digits .d1{			height:5px;width:16px;top:0;left:6px;}
-        .digits .d1:before{	border-width:0 5px 5px 0;border-right-color:inherit;left:-5px;}
-        .digits .d1:after{	border-width:0 0 5px 5px;border-left-color:inherit;right:-5px;}
+        .digits .d1{			height:7px;width:25px;top:0;left:8px;}
+        .digits .d1::before{	border-width:0 7px 7px 0;border-right-color:inherit;left:-7px;}
+        .digits .d1::after{	border-width:0 0 7px 7px;border-left-color:inherit;right:-7px;}
 
-        .digits .d2{			height:5px;width:16px;top:24px;left:6px;}
-        .digits .d2:before{	border-width:3px 4px 2px;border-right-color:inherit;left:-8px;}
-        .digits .d2:after{	border-width:3px 4px 2px;border-left-color:inherit;right:-8px;}
+        .digits .d2{			height:7px;width:25px;top:35px;left:8px;}
+        .digits .d2::before{	border-width:3.5px 5px 3.5px;border-right-color:inherit;left:-10px;}
+        .digits .d2::after{	border-width:3.5px 5px 3.5px;border-left-color:inherit;right:-10px;}
 
-        .digits .d3{			height:5px;width:16px;top:48px;left:6px;}
-        .digits .d3:before{	border-width:5px 5px 0 0;border-right-color:inherit;left:-5px;}
-        .digits .d3:after{	border-width:5px 0 0 5px;border-left-color:inherit;right:-5px;}
+        .digits .d3{			height:7px;width:25px;top:70px;left:8px;}
+        .digits .d3::before{	border-width:7px 7px 0 0;border-right-color:inherit;left:-7px;}
+        .digits .d3::after{	border-width:7px 0 0 7px;border-left-color:inherit;right:-7px;}
 
-        .digits .d4{			width:5px;height:14px;top:7px;left:0;}
-        .digits .d4:before{	border-width:0 5px 5px 0;border-bottom-color:inherit;top:-5px;}
-        .digits .d4:after{	border-width:0 0 5px 5px;border-left-color:inherit;bottom:-5px;}
+        .digits .d4{			width:7px;height:24px;top:8px;left:0;}
+        .digits .d4::before{	border-width:0 7px 7px 0;border-bottom-color:inherit;top:-7px;}
+        .digits .d4::after{	border-width:0 0 7px 7px;border-left-color:inherit;bottom:-7px;}
 
-        .digits .d5{			width:5px;height:14px;top:7px;right:0;}
-        .digits .d5:before{	border-width:0 0 5px 5px;border-bottom-color:inherit;top:-5px;}
-        .digits .d5:after{	border-width:5px 0 0 5px;border-top-color:inherit;bottom:-5px;}
+        .digits .d5{			width:7px;height:24px;top:8px;right:0;}
+        .digits .d5::before{	border-width:0 0 7px 7px;border-bottom-color:inherit;top:-7px;}
+        .digits .d5::after{	border-width:7px 0 0 7px;border-top-color:inherit;bottom:-7px;}
 
-        .digits .d6{			width:5px;height:14px;top:32px;left:0;}
-        .digits .d6:before{	border-width:0 5px 5px 0;border-bottom-color:inherit;top:-5px;}
-        .digits .d6:after{	border-width:0 0 5px 5px;border-left-color:inherit;bottom:-5px;}
+        .digits .d6{			width:7px;height:24px;top:45px;left:0;}
+        .digits .d6::before{	border-width:0 7px 7px 0;border-bottom-color:inherit;top:-7px;}
+        .digits .d6::after{	border-width:0 0 7px 7px;border-left-color:inherit;bottom:-7px;}
 
-        .digits .d7{			width:5px;height:14px;top:32px;right:0;}
-        .digits .d7:before{	border-width:0 0 5px 5px;border-bottom-color:inherit;top:-5px;}
-        .digits .d7:after{	border-width:5px 0 0 5px;border-top-color:inherit;bottom:-5px;}
+        .digits .d7{			width:7px;height:24px;top:45px;right:0;}
+        .digits .d7::before{	border-width:0 0 7px 7px;border-bottom-color:inherit;top:-7px;}
+        .digits .d7::after{	border-width:7px 0 0 7px;border-top-color:inherit;bottom:-7px;}
 
         .digits div.one .d5,
         .digits div.one .d7{
@@ -140,41 +155,41 @@
         }
 
         .digits div.dots{
-            width:5px;
+            width:7px;
         }
         .digits div.dots:before,
         .digits div.dots:after{
-            width:5px;
-            height:5px;
+            width:7px;
+            height:7px;
             content:'';
             position:absolute;
             left:0;
-            top:14px;
+            top:24px;
         }
         .digits div.dots:after{
-            top:34px;
+            top:46px;
         }
 
         .weekdays{
-            font-size:12px;
+            font-size: calc(12px*var(--wscale-w));
             position:absolute;
             width:100%;
-            top:10px;
+            top: calc(10px*var(--wscale-h));
             left:0;
             text-align:center;
         }
         .weekdays span{
             opacity:0.2;
-            padding:0 10px;
+            padding:0 calc(10px*var(--wscale-w));
         }
         .weekdays span.active{
             opacity:1;
         }
         .ampm{
             position:absolute;
-            bottom:20px;
-            right:20px;
-            font-size:12px;
+            bottom:calc(12px*var(--wscale-h));
+            right:calc(12px*var(--wscale-w));
+            font-size:calc(12px*var(--wscale-w));
         }
     </style>
   </template>

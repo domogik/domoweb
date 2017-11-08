@@ -1,11 +1,8 @@
-<link rel="import" href="/libraries/bower_components/bootstrap-styles/bootstrap-styles.html">
-
-<dom-module id="dmw-c3-charts-lines">
-    <template>
+<dom-module id="dmw-c3_charts-lines">
+    <template id="extended-styles">
         <link rel="import" href="/libraries/polymer/paper-dialog.html">
         <link rel="stylesheet" href="/widget/c3_charts/css/common.css" shim-domshadow>
         <link rel="stylesheet" href="/widget/c3_charts/css/c3.min.css" shim-domshadow>
-        <style include="bootstrap-styles"></style>
         <style type="text/css" is="dmw-c3-charts-lines">
             :host {
                 height: 100%;
@@ -152,8 +149,67 @@
     <script src="/widget/c3_charts/js/c3.min.js"></script>
 
     <script>
+     (function () {
+        let memoizedTemplate;
+
         class DmwC3ChartsLines extends DmwWidget {
-            static get is () { return 'dmw-c3-charts-lines'; }
+            static get is () { return 'dmw-c3_charts-lines'; }
+            static get properties() {
+                return {
+                    sensorvalue0: {
+                        notify: true,
+                        observer: 'sensorvalue0Changed'
+                    },
+                    history0: {
+                        notify: true,
+                        observer: 'history0Changed',
+                    },
+                    sensorvalue1: {
+                        notify: true,
+                        observer: 'sensorvalue1Changed'
+                    },
+                    history1: {
+                        notify: true,
+                        observer: 'history1Changed',
+                    },
+                    sensorvalue2: {
+                        notify: true,
+                        observer: 'sensorvalue2Changed'
+                    },
+                    history2: {
+                        notify: true,
+                        observer: 'history2Changed',
+                    },
+                    sensorvalue3: {
+                        notify: true,
+                        observer: 'sensorvalue3Changed'
+                    },
+                    history3: {
+                        notify: true,
+                        observer: 'history3Changed',
+                    },
+                    sensorvalue4: {
+                        notify: true,
+                        observer: 'sensorvalue4Changed'
+                    },
+                    history4: {
+                        notify: true,
+                        observer: 'history4Changed',
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
             constructor() {
                 super();
             }
@@ -168,21 +224,19 @@
             }
             draw() {
                 // color
-                if (this.options['WidgetTextColor']  == undefined) {
-                    the_color = "#ffffff";
-                }
-                else {
+                var the_color = "#ffffff";
+                if (this.options['WidgetTextColor']  != undefined) {
                     the_color = this.options['WidgetTextColor'];
                 };
 
                 var loaded = true;
-                i = 1;
-                for (s in this.series) {
+                var i = 1;
+                for (var s in this.series) {
                     if (this.series[s] != false) {
                         this.names[s] = this.series[s].device['name'] + " : " + this.series[s].name;
                     };
                 };
-                for (n in  this.names) {
+                for (var n in  this.names) {
                     if (this.names[n] != "" && this.data[i].length == 0) {
                         loaded = false;
                         break;
@@ -448,11 +502,11 @@
                 this.$.loadingData.style.visibility = "visible";
                 this.data = {1:[],2:[],3:[],4:[],5:[]};
                 this.x = [];
-                var duration = moment.duration(moment(this.range.end).diff(this.range.start));
-                var days = duration.asDays();
-                var weeks = duration.asWeeks();
-                var months = duration.asMonths();
-                var years = duration.asYears();
+                var duration = moment.duration(moment(this.range.end).diff(this.range.start)),
+                    days = duration.asDays(),
+                    weeks = duration.asWeeks(),
+                    months = duration.asMonths(),
+                    years = duration.asYears();
                 if (days <= 3) {this.range.interval = 'minute';
                 } else if (days <= 30) {this.range.interval = 'hour';
                 } else if (months <= 3) {this.range.interval = 'day';
@@ -463,9 +517,9 @@
             }
         };
         function convert(history, range, series_num, interval) {
-            var serie = ['data'+(series_num+1)];
-            xAxis = ['x'];
-            ii = 1;
+            var serie = ['data'+(series_num+1)],
+                xAxis = ['x'],
+                ii = 1;
             switch (interval) {
                 case "second" : // 30 second interval
                     for (var i=0; i<history.length; i++) {
@@ -535,5 +589,6 @@
             return {"serie":serie, "xAxis":xAxis};
         };
         customElements.define(DmwC3ChartsLines.is, DmwC3ChartsLines);
+    })();
     </script>
 </dom-module>

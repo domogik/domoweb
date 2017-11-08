@@ -164,8 +164,8 @@
                 var widget_width = e.target.dataset.widgetWidth;
                 var widget_height = e.target.dataset.widgetHeight;
                 var section = document.getElementById('currentsection');
-                var coord = DMW.grid.firstEmptyPosition(widget_width, widget_height);
-                this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':section.sectionid, 'x':coord[0], 'y':coord[1]});
+                var coord = DMW.main.layout.findFirstEmptyPosition(widget_width, widget_height);
+                this.$.socket.send("widgetinstance-add", {'widget_id':widget_id, 'section_id':section.sectionid, 'x':coord.col, 'y':coord.row, 'width': widget_width, 'height': widget_height});
             }
             addWidgetClose(e) {
                 this.addWidget(e);

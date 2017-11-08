@@ -5,6 +5,7 @@
     	"widgets": "Widgets",
 		"finishWidgets": "Terminé",
 		"addWidget": "Ajouter",
+		"gridWidget": "Nouvelle grille",
 		"sections": "Sections",
 		"addSection": "Ajouter",
 		"removeSection": "Supprimer",
@@ -44,6 +45,8 @@
         "week": "Semaine",
         "weekPerDay": "Semaine par jour",
         "weekPerDayWithSelectorMax": "Semaine par jour (max)",
-        "fromToDay": "Entre 2 jours"
+        "fromToDay": "Entre 2 jours",
+        "min": "min",
+        "max": "max"
     }
 }

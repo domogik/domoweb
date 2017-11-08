@@ -13,8 +13,12 @@
         "gauge1": {
             "name" : "Gauge",
             "description" : "A simple gauge",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",

@@ -1,6 +1,5 @@
 <dom-module id="dmw-basicjs-commandrefresh">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -14,6 +13,7 @@
                 background: #4671BD;
                 color: #ffffff;
                 cursor: pointer;
+                white-space:normal;
             }
             button#send.circle {
                 border-radius: 50%;
@@ -24,11 +24,26 @@
             }
         </style>
         <shadow></shadow>
-        <button id="send" class="btn btn-default" onclick="location.reload();">Refresh</button>
+        <button id="send" class="btn btn-default" onclick="location.reload();">{{localize('refresh')}}</button>
     </template>
     <script>
+     (function () {
+        let memoizedTemplate;
+
         class DmwBasicjsCommandRefresh extends DmwWidget {
             static get is () { return 'dmw-basicjs-commandrefresh'; }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
             connectedCallback() {
                 super.connectedCallback();
             }
@@ -40,7 +55,8 @@
                     this.$.send.classList.remove('circle');
                 }
             }
-	    };
+	    }
         customElements.define(DmwBasicjsCommandRefresh.is, DmwBasicjsCommandRefresh);
+    })();
     </script>
 </dom-module>

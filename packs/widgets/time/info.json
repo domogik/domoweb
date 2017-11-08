@@ -13,8 +13,12 @@
         "flipClock": {
             "name" : "FlipClock",
             "description" : "Based on flipclockjs.com library",
-            "height" : 1,
-            "width" : 4,
+            "height" : 2,
+            "width" : 8,
+            "min_height" : 1,
+            "min_width" : 4,
+            "max_height" : 4,
+            "max_width" : 16,
             "options" : {
                 "12hr" : {
                     "name": "Display in 12hr mode",
@@ -27,8 +31,12 @@
         "digitalClock": {
             "name" : "Digital Clock",
             "description" : "Based on http://tutorialzine.com/2013/06/digital-clock/",
-            "height" : 1,
-            "width" : 3,
+            "height" : 2,
+            "width" : 6,
+            "min_height" : 1,
+            "min_width" : 3,
+            "max_height" : 4,
+            "max_width" : 12,
             "options" : {
                 "12hr" : {
                     "name": "Display in 12hr mode",

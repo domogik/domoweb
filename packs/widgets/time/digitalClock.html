@@ -16,7 +16,7 @@
 				color: var(--textColor, black);
 				background: var(--backgroundColor, white);
 			}
-			 :host .loading {
+            :host .loading {
 				opacity: 0;
 			}
 
@@ -35,8 +35,10 @@
             <div id="clock" class="display">
 		        <div class="weekdays"></div>
 		        <div class="ampm"></div>
-		        <div class="digits"></div>
 		    </div>
+            <div id="digitsnumbers">
+                <div class="digits"></div>
+            </div>
 		</div>
 	</template>
 	<script>
@@ -61,6 +63,7 @@
                 super.connectedCallback();
                 // Cache some selectors
                 var clock = $(this.$.clock);
+                var digits = $(this.$.digitsnumbers);
                 this.ampm = clock.find('.ampm');
                 // Map digits to their names (this will be an array)
                 this.digit_to_name = 'zero one two three four five six seven eight nine'.split(' ');
@@ -72,7 +75,7 @@
                 ];
                 // Generate the digits with the needed markup,
                 // and add them to the clock
-                var digit_holder = clock.find('.digits');
+                var digit_holder = digits.find('.digits');
                 self = this;
                 jQuery.each(positions, function(){
                     if(this == ':'){
@@ -105,6 +108,9 @@
                     });
                     this.weekdays = clock.find('.weekdays span');
                 }
+            }
+            resized(){
+                super.resized();
             }
             optionsUpdated() {
                 if ('dark' in this.options && this.options['dark'] == 1) {

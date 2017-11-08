@@ -26,7 +26,10 @@ body {
 	overflow: auto;
 }
 
-
+#grid-layout{
+	top: 25px;
+    left: 25px;
+}
 
 
 h2 {

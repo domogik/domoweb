@@ -1,25 +1,5 @@
 @charset "UTF-8";
 
-/*------------- Handle touch device only ---------------*/
-
-#acces-menu {
-	position: fixed;
-	top: 0px;
-	left: 50%;
-    z-index: 20000;
-}
-
-#acces-menu.btn {
-    padding-top: 1px;
-    padding-right: 4px;
-    padding-bottom: 1px;
-    padding-left: 5px;
-}
-
-.no-touch #acces-menu{
-    visibility : hidden;
-}
-
 /*--------------  SAFELY CUSTOMIZABLE - Visual styling for menu elements -------------------*/
 
 #butler .active {

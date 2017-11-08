@@ -206,11 +206,11 @@ class WSHandler(websocket.WebSocketHandler):
         logger.info("WS: Received message %s" % message)
         jsonmessage = json.loads(message)
 
-        if (jsonmessage[0] == 'sensor-gethistory'): 
+        if (jsonmessage[0] == 'sensor-gethistory'):
             data = yield self.WSSensorGetHistory(jsonmessage[1])
-        elif(jsonmessage[0] == 'sensor-getlast'): 
+        elif(jsonmessage[0] == 'sensor-getlast'):
             data = yield self.WSSensorGetLast(jsonmessage[1])
-        elif(jsonmessage[0] == 'butler-dodiscuss'): 
+        elif(jsonmessage[0] == 'butler-dodiscuss'):
             data = yield self.WSButlerDiscuss(jsonmessage[1])
         else:
             data = {
@@ -259,7 +259,7 @@ class WSHandler(websocket.WebSocketHandler):
 
     def WSSectionGetall(self, data):
         root = Section.getAll()
-        j = to_json(sections)
+        j = to_json(root)
         return ['section-list', j]
 
     def WSSectionGettree(self, data):
@@ -289,7 +289,7 @@ class WSHandler(websocket.WebSocketHandler):
         return ['widget-list', to_json(widgets)]
 
     def WSWidgetInstanceAdd(self, data):
-        i = WidgetInstance.add(section_id=data['section_id'], widget_id=data['widget_id'], x=data['x'], y=data['y'])
+        i = WidgetInstance.add(section_id=data['section_id'], widget_id=data['widget_id'], x=data['x'], y=data['y'], width=data['width'], height=data['height'])
         json = to_json(i)
         json["widget"] = to_json(i.widget)
         return ['widgetinstance-added', json];
@@ -301,7 +301,7 @@ class WSHandler(websocket.WebSocketHandler):
         return ['widgetinstance-removed', json];
 
     def WSWidgetInstanceLocation(self, data):
-        i = WidgetInstance.updateLocation(id=data['instance_id'], x=data['x'], y=data['y'])
+        i = WidgetInstance.updateLocation(id=data['instance_id'], x=data['x'], y=data['y'], width=data['width'], height=data['height'])
         json = to_json(i)
         json["widget"] = to_json(i.widget)
         return ['widgetinstance-moved', json];
@@ -361,7 +361,7 @@ class WSHandler(websocket.WebSocketHandler):
         # and we make sure to remove auth informations
         del data['rest_auth']
 
-        logging.info("Publish : 'metrics.browser' > '{0}'".format(data)) 
+        logging.info("Publish : 'metrics.browser' > '{0}'".format(data))
         pub.send_event('metrics.browser', data)
         logging.info("Publish : 'metrics.browser' done")
 
@@ -417,13 +417,13 @@ class WSHandler(websocket.WebSocketHandler):
         url = '{0}/butler/discuss'.format(options.rest_url).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
         logger.info("REST Call : %s" % url)
         http = AsyncHTTPClient()
-        
+
         discuss_data = {"text" : data["data"]["text"], "source" : data["data"]["source"]}
-        #body = urllib.urlencode(data) 
+        #body = urllib.urlencode(data)
         body = json.dumps(discuss_data)
         headers = {'Content-Type': 'application/json'}
         logger.info("BEFORE")
-        #response = yield http.fetch(url, handle_request, method='POST', headers=headers, body=body) 
+        #response = yield http.fetch(url, handle_request, method='POST', headers=headers, body=body)
         request = HTTPRequest(url, method='POST', headers=headers, body=body, validate_cert=False)
         try:
             response = yield http.fetch(request)
@@ -432,7 +432,7 @@ class WSHandler(websocket.WebSocketHandler):
         except HTTPError as e:
             # Handle HTTP errors
             logger.warning("REST error : {0}".format(str(e)))
-            
+
             if e.code == 599:
                 j = {"text" : "Timeout while requesting the butler over REST (Error 599)"}
             else:

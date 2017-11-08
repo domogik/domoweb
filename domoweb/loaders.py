@@ -45,10 +45,19 @@ class packLoader:
                             widgetset_widgets = widgetset_json["widgets"]
                             for wid, widget in widgetset_widgets.items():
                                 if develop or (not develop and not 'dev' in widget):
+                                    # Handle json without size limits
+                                    if not 'min_height' in widget : widget['min_height'] = widget['height']
+                                    if not 'min_width' in widget : widget['min_width'] = widget['width']
+                                    if not 'max_height' in widget : widget['max_height'] = widget['height']
+                                    if not 'max_width' in widget : widget['max_width'] = widget['width']
                                     widget_id = "%s-%s" %(widgetset_id, wid)
-                                    w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), set_ref=wid, version=widgetset_version, name=unicode(widget['name']), height=widget['height'], width=widget['width'])
+                                    w = Widget(id=widget_id, set_id=widgetset_id, set_name=unicode(widgetset_name), set_ref=wid, version=widgetset_version,
+                                                name=unicode(widget['name']), height=widget['height'], width=widget['width'],
+                                                min_height = widget['min_height'],
+                                                min_width = widget['min_width'],
+                                                max_height = widget['max_height'],
+                                                max_width = widget['max_width'])
                                     session.add(w)
-
                                     if 'default_style' in widget:
                                         w.default_style = (widget['default_style'] == True)
                                     else:
@@ -206,7 +215,7 @@ class mqDataLoader:
         else:
             _datac = {}
         session = Session()
-        for client in _datac.itervalues(): 
+        for client in _datac.itervalues():
             # for each plugin client, we request the list of devices
             if client["type"] == "plugin":
                 msg = MQMessage()
@@ -258,8 +267,8 @@ class mqDataLoader:
             logger.info(u"- person '{0} {1}'".format(person['first_name'], person['last_name']))
             if person["location_sensor"] != None:
                 # TODO : grab from MQ or complete the person MQ result to include the sensor informations
-                s = Sensor(id=person["location_sensor"], 
-                           name="{0} {1} location".format(person['first_name'], person['last_name']), 
+                s = Sensor(id=person["location_sensor"],
+                           name="{0} {1} location".format(person['first_name'], person['last_name']),
                            device_id=0,
                            reference="",
                            datatype_id=0,

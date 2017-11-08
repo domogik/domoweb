@@ -36,6 +36,10 @@ class Widget(Base):
     name = Column(Unicode(50))
     height = Column(Integer(), default=1)
     width = Column(Integer(), default=1)
+    min_height = Column(Integer(), default=1)
+    min_width = Column(Integer(), default=1)
+    max_height = Column(Integer(), default=1)
+    max_width = Column(Integer(), default=1)
     default_style = Column(Boolean(), default=1)
     style = Column(UnicodeText())
 
@@ -457,6 +461,8 @@ class WidgetInstance(Base):
     section = relationship("Section")
     x = Column(Integer())
     y = Column(Integer())
+    height = Column(Integer())
+    width = Column(Integer())
     widget_id = Column(String(50), ForeignKey('widget.id'))
     widget = relationship("Widget", foreign_keys='WidgetInstance.widget_id', lazy='joined', backref='instances')
     options = relationship("WidgetInstanceOption", cascade="all, delete-orphan")
@@ -470,8 +476,8 @@ class WidgetInstance(Base):
         return s
 
     @classmethod
-    def add(cls, section_id, widget_id, x, y):
-        s = cls(section_id=section_id, widget_id=widget_id, x=x, y=y)
+    def add(cls, section_id, widget_id, x, y, width, height):
+        s = cls(section_id=section_id, widget_id=widget_id, x=x, y=y, height=height, width=width)
         session.add(s)
         session.commit()
         return s
@@ -537,10 +543,12 @@ class WidgetInstance(Base):
         return s
 
     @classmethod
-    def updateLocation(cls, id, x, y):
+    def updateLocation(cls, id, x, y, width, height):
         s = session.query(cls).get(id)
         s.x = x
         s.y = y
+        s.width = width
+        s.height = height
         session.add(s)
         session.commit()
         return s

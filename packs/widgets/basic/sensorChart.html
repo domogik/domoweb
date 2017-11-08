@@ -32,16 +32,12 @@
                 padding: 10px;
             }
             #minmax {
-                position: relative;
-                top: -20%;
-                -webkit-transform: translate(-50%, -50%);
-                -ms-transform: translate(-50%, -50%);
-                transform: translate(-50%, -50%);
-                left: 50%;
+                position: absolute;
+                bottom: 0.5em;
                 text-align: center;
                 overflow: hidden;
                 display: inline-block;
-                width: 100%;
+                right: 0.5em;
             }
             #minvalue {
             }
@@ -127,6 +123,12 @@
                     this.labelsecondary = this.$.primary.name;
                 }
             }
+            resized() {
+                super.resized()
+                if (this.currentHistoryValue) {
+                    this.draw(this.currentHistoryValue);
+                }
+            }
             sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (!Number.isInteger(newValue)) {
@@ -167,7 +169,7 @@
             }
             draw(newValue) {
                 if (newValue.length != 0) {
-                    // to allow redraw when options changed
+                    // to allow redraw when options or size changed
                     this.currentHistoryValue = newValue;
 
                     // draw

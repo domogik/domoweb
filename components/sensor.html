@@ -93,7 +93,7 @@
                 if (this.checkdelay > 0) {
                     var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
                     if (diff > this.checkdelay) { // If the sensor already timed out
-                        this.dispatchEvent(new CustomEvent('sensor-timeout', {'minutes': diff.humanize()}));
+                        this.dispatchEvent(new CustomEvent('sensor-timeout', {detail: {'minutes': diff.humanize()}}));
                         this.intervalid = window.setInterval(this.intervalHandler.bind(this), this.recheckdelay); // adjust time every 1 minute
                     }
                 }
@@ -190,7 +190,7 @@
             }
             timeoutHandler() {
                 var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
-                this.dispatchEvent(new CustomEvent('sensor-timeout', {'minutes': diff.humanize()}));
+                this.dispatchEvent(new CustomEvent('sensor-timeout',  {detail: {'minutes': diff.humanize()}}));
                 if (this.timeoutid) { //Remove the timeout check...
                     window.clearTimeout(this.timeoutid);
                     delete this.timeoutid;
@@ -200,7 +200,7 @@
             }
             intervalHandler() {
                 var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
-                this.dispatchEvent(new CustomEvent('sensor-timeout', {'minutes': diff.humanize()}));
+                this.dispatchEvent(new CustomEvent('sensor-timeout',  {detail: {'minutes': diff.humanize()}}));
             }
             historyReqHandler() {
                 this.sensorreqhistory = true;

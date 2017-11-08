@@ -74,10 +74,16 @@
                 this._description[this.sectionid] = json['description'];
                 this._params[this.sectionid] = json['params'];
                 var self = this;
-                Polymer.Async.timeOut.after(500).run( function(){
-                    // Wait full addEventListener from WebComponentsReady
-                    self.dispatchEvent(new CustomEvent('section-changed', {detail: json}));
-                });
+                // Wait full addEventListener from WebComponentsReady
+                Polymer.Async.timeOut.after(100).run(self.sectionReady(json));
+            }
+            sectionReady(json) {
+                if (DMW.main.sectionReady) {
+                    this.dispatchEvent(new CustomEvent('section-changed', {detail: json}));
+                } else {
+                    var self = this;
+                    Polymer.Async.timeOut.after(300).run(self.sectionReady(json));
+                }
             }
             sectionRemoved (topic, json) {
                 document.getElementById("loading_text").innerHTML = "Loading section ...";

@@ -13,14 +13,18 @@
     "widgets": {
         "uv": {
             "name" : "U.V. Index",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 4,
+            "max_width" : 4,
             "sensors" : {
                 "primary" : {
                     "name": "UV meter",
                     "description": "UV meter sensor",
                     "types" : ["DT_Number"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
@@ -28,32 +32,40 @@
             "name" : "Wind Speed and direction",
             "height" : 2,
             "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 4,
+            "max_width" : 4,
             "sensors" : {
                 "direction" : {
                     "name": "Direction",
                     "description": "Direction in degree",
                     "types" : ["DT_Angle"],
-                    "required": true                   
+                    "required": true
                 },
                 "speed" : {
                     "name": "Speed",
                     "description": "Speed m/s (or km/h)",
                     "types" : ["DT_Speed", "DT_kmhSpeed"],
-                    "required": false                   
+                    "required": false
                 },
                 "gust" : {
                     "name": "Gust",
                     "description": "Gust m/s (or km/h)",
                     "types" : ["DT_Speed", "DT_kmhSpeed"],
-                    "required": false                   
+                    "required": false
                 }
             }
-        },        
+        },
         "current": {
             "name" : "Current Condition",
             "description" : "Weather current condition, with temperature",
-            "height" : 1,
-            "width" : 3,
+            "height" : 2,
+            "width" : 5,
+            "min_height" : 1,
+            "min_width" : 2,
+            "max_height" : 4,
+            "max_width" : 8,
             "options" : {
                 "displayBackground" : {
                     "name": "Display a dynamic background",
@@ -67,22 +79,26 @@
                     "name": "Location",
                     "description": "Weather location",
                     "types" : ["weather.weather"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
         "forecast": {
             "name" : "Forecast",
             "description" : "Weather forecast",
-            "height" : 2,
-            "width" : 3,
+            "height" : 3,
+            "width" : 6,
+            "min_height" : 3,
+            "min_width" : 5,
+            "max_height" : 4,
+            "max_width" : 10,
             "options" : {},
             "devices" : {
                 "forecast" : {
                     "name": "Location",
                     "description": "Forecast location",
                     "types" : ["weather.weather"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
@@ -97,60 +113,76 @@
                     "name": "Location",
                     "description": "Weather location",
                     "types" : ["weather.weather"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
         "current2": {
             "name" : "Current condition - 2",
             "description" : "Weather current condition, with temperature",
-            "height" : 1,
-            "width" : 2,
+            "height" : 2,
+            "width" : 3,
+            "min_height" : 1,
+            "min_width" : 2,
+            "max_height" : 4,
+            "max_width" : 8,
             "options" : {},
             "devices" : {
                 "forecast" : {
                     "name": "Location",
                     "description": "Weather location",
                     "types" : ["weather.weather"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
         "current3": {
             "name" : "Current condition - 3",
             "description" : "Weather current condition, without temperature",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 4,
+            "max_width" : 4,
             "options" : {},
             "devices" : {
                 "forecast" : {
                     "name": "Location",
                     "description": "Weather location",
                     "types" : ["weather.weather"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
         "forecast2": {
             "name" : "Forecast - 2",
             "description" : "Weather forecast",
-            "height" : 2,
-            "width" : 2,
+            "height" : 4,
+            "width" : 4,
+            "min_height" : 2,
+            "min_width" : 2,
+            "max_height" : 8,
+            "max_width" : 8,
             "options" : {},
             "devices" : {
                 "forecast" : {
                     "name": "Location",
                     "description": "Forecast location",
                     "types" : ["weather.weather"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
         "rainhour": {
             "name" : "Rain forecast",
             "description" : "Weather rain forecast",
-            "height" : 2,
+            "height" : 4,
             "width" : 2,
+            "min_height" : 2,
+            "min_width" : 2,
+            "max_height" : 8,
+            "max_width" : 4,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -164,7 +196,7 @@
                     "name": "Rain",
                     "description": "Forecast rain",
                     "types" : ["rainhour.forecast"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
@@ -172,37 +204,49 @@
             "name" : "Rain forecast 2",
             "description" : "Weather rain forecast",
             "height" : 2,
-            "width" : 3,
+            "width" : 4,
+            "min_height" : 2,
+            "min_width" : 3,
+            "max_height" : 5,
+            "max_width" : 6,
             "options" : {},
             "devices" : {
                 "forecast" : {
                     "name": "Rain",
                     "description": "Forecast rain",
                     "types" : ["rainhour.forecast"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
         "rainhour3": {
             "name" : "Rain forecast 3",
             "description" : "Weather rain forecast",
-            "height" : 1,
-            "width" : 3,
+            "height" : 2,
+            "width" : 4,
+            "min_height" : 1,
+            "min_width" : 3,
+            "max_height" : 4,
+            "max_width" : 8,
             "options" : {},
             "devices" : {
                 "forecast" : {
                     "name": "Rain",
                     "description": "Forecast rain",
                     "types" : ["rainhour.forecast"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
         "vigilance": {
             "name" : "Vigilance",
             "description" : "Weather Vigilance by Meteo France",
-            "height" : 1,
-            "width" : 3,
+            "height" : 2,
+            "width" : 4,
+            "min_height" : 1,
+            "min_width" : 3,
+            "max_height" : 4,
+            "max_width" : 8,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -216,15 +260,19 @@
                     "name": "Vigilance",
                     "description": "Weather Vigilance",
                     "types" : ["vigilance"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
         "vigilance2": {
             "name" : "Vigilance 2",
             "description" : "Weather Vigilance by Meteo France",
-            "height" : 1,
-            "width" : 3,
+            "height" : 2,
+            "width" : 4,
+            "min_height" : 1,
+            "min_width" : 3,
+            "max_height" : 4,
+            "max_width" : 8,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -245,8 +293,12 @@
         "vigilance3": {
             "name" : "Vigilance 3",
             "description" : "Weather Vigilance by Meteo France",
-            "height" : 1,
-            "width" : 3,
+            "height" : 2,
+            "width" : 4,
+            "min_height" : 1,
+            "min_width" : 3,
+            "max_height" : 4,
+            "max_width" : 8,
             "options" : {},
             "devices" : {
                 "vigilance" : {

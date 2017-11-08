@@ -12,8 +12,12 @@
     "widgets": {
         "spline": {
             "name" : "Spline chart",
-            "height" : 2,
+            "height" : 3,
             "width" : 4,
+            "min_height" : 2,
+            "min_width" : 4,
+            "max_height" : 6,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -47,8 +51,12 @@
         },
         "lines": {
             "name" : "Lines chart",
-            "height" : 2,
+            "height" : 3,
             "width" : 4,
+            "min_height" : 2,
+            "min_width" : 4,
+            "max_height" : 6,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -84,8 +92,12 @@
         },
         "step": {
             "name" : "Step chart",
-            "height" : 2,
+            "height" : 3,
             "width" : 4,
+            "min_height" : 2,
+            "min_width" : 4,
+            "max_height" : 6,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",

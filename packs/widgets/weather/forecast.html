@@ -35,31 +35,29 @@
                 height: 48%;
             }
             .today .day {
-                font-size: 2em;
-                margin-left: 0.2em;
-                margin-top: 0.2em;
+                font-size: calc(1.8em*var(--wscale-h));
+                margin-left: calc(0.2em*var(--wscale-w));
+                margin-top: calc(0.2em*var(--wscale-h));
             }
             .today .condition {
                 float: right;
-                font-size: 4.5em;
-                /*font-weight: 100;*/
-                margin-right: 0.2em;
-                /* margin-top: -0.2em; */
+                font-size: calc(4.5em*var(--wscale-h));
+                margin-right: calc(0.2em*var(--wscale-w));
                 margin-top: 0em;
             }
             .today .condition .ufo {
-                font-size: 0.2em;
-                margin-top: -1em;
+                font-size: calc(0.2em*var(--wscale-h));
+                margin-top: calc(-1em*var(--wscale-h));
             }
             .today .temperatures i {
                 float: left;
-                font-size: 4em;
-                margin-left: 0.3em;
-                margin-right: 0.3em;
+                font-size: calc(3.8em*var(--wscale-h));
+                margin-left: calc(0.3em*var(--wscale-w));
+                margin-right: calc(0.3em*var(--wscale-w));
             }
             .today .temperature {
-                margin-left: 1em;
-                font-size: 1.3em;
+                margin-left: calc(1em*var(--wscale-w));
+                font-size: calc(1.3em*var(--wscale-h));
             }
             .forecast {
                 text-align: center;
@@ -68,13 +66,15 @@
                 border: 1ps solid red;
             }
             .forecast .condition {
-                font-size: 2.5em;
+                font-size: calc(2.5em*var(--wscale-h));
             }
             .forecast .day {
-                font-size: 1.3em;
+                font-size: calc(1.3em*var(--wscale-h));
             }
             .forecast .temperature {
-                font-size: 1.3em;
+                font-size: calc(1.3em*var(--wscale-h));
+                position: relative;
+                bottom: calc(0.5em*var(--wscale-h));
             }
             </style>
         <shadow></shadow>
@@ -269,6 +269,10 @@
                 this.today = this.localize("weather:Today");// "Today");
                 this.high = this.localize("weather:High"); //, "High");
                 this.low = this.localize("weather:Low"); //, "Low");
+                this.forecast_1_day = this.localize("weather:" + this.forecast_1_day)
+                this.forecast_2_day = this.localize("weather:" + this.forecast_2_day)
+                this.forecast_3_day = this.localize("weather:" + this.forecast_3_day)
+                this.forecast_4_day = this.localize("weather:" + this.forecast_4_day)
             }
             forecast_0_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
@@ -293,7 +297,7 @@
 
             forecast_1_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_1_day = this.localize("weather:" + newValue);//, newValue);
+                this.forecast_1_day = this.localize("weather:" + newValue) || newValue;
             }
             forecast_1_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
@@ -310,7 +314,7 @@
 
             forecast_2_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_2_day = this.localize("weather:" + newValue);//, newValue);
+                this.forecast_2_day = this.localize("weather:" + newValue) || newValue;
             }
             forecast_2_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
@@ -327,7 +331,7 @@
 
             forecast_3_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_3_day = this.localize("weather:" + newValue); //, newValue);
+                this.forecast_3_day = this.localize("weather:" + newValue) || newValue;
             }
             forecast_3_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
@@ -344,7 +348,7 @@
 
             forecast_4_day_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.forecast_4_day = this.localize("weather:" + newValue); //, newValue);
+                this.forecast_4_day = this.localize("weather:" + newValue) || newValue;
             }
             forecast_4_condition_code_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;

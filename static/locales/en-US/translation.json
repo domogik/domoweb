@@ -5,6 +5,7 @@
 		"widgets": "Widgets",
 		"finishWidgets": "Finish",
 		"addWidget": "Add",
+		"gridWidget": "New grid",
 		"sections": "Sections",
 		"addSection": "Add",
 		"removeSection": "Remove",
@@ -43,6 +44,8 @@
         "week": "Week",
         "weekPerDay": "Week per day",
         "weekPerDayWithSelectorMax": "Week per day (max)",
-        "fromToDay": "Between 2 day"
+        "fromToDay": "Between 2 day",
+        "min": "min",
+        "max": "max"
     }
 }

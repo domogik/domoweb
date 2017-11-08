@@ -16,8 +16,8 @@
   <link rel="stylesheet" href="/libraries/font-awesome-4.7.0/css/font-awesome.min.css">
   <link rel="manifest" href="/manifests/manifest.json">
   <style type="text/css" id="gridstyle"></style>
-  <style type="text/css" id="sectionstyle">
 
+  <style type="text/css" id="sectionstyle">
   body .widget.style-general {
     border: 1px solid {{ params['WidgetBorderColor'] }};
     background-color: {{ params['WidgetBackgroundColor'] }};
@@ -25,6 +25,14 @@
     color: {{ params['WidgetTextColor'] }};
     box-shadow: {{ params['WidgetBoxShadow'] }};
   }
+  :root {
+    --WidgetBorderColor: {{ params['WidgetBorderColor'] }};
+    --WidgetBackgroundColor: {{ params['WidgetBackgroundColor'] }};
+    --WidgetBorderRadius: {{ params['WidgetBorderRadius'] }};
+    --WidgetTextColor: {{ params['WidgetTextColor'] }};
+    --WidgetBoxShadow: {{ params['WidgetBoxShadow'] }};
+  }
+
   body::after {
     content: "";
     top: 0;
@@ -35,17 +43,20 @@
     z-index: 1;
   }
   </style>
+
   <script type="text/javascript">
     var DMW = DMW || {};
     DMW.main = DMW.main || {};
     DMW.main.edit = false;
+    DMW.main.sectionReady = false;
     window.onload = function(){
         if ("ontouchstart" in document.documentElement) {
             document.documentElement.classList.add("touch");
         } else {
             document.documentElement.classList.add("no-touch");
         }
-        window.addEventListener('resize', DMW.grid.hasResized);
+   //     window.addEventListener('resize', DMW.grid.hasResized);
+   //     DMW.grid = document.getElementById('grid-layout');
         DMW.menu.init();
         DMW.navigation.init();
     };
@@ -53,6 +64,8 @@
   <script src="/libraries/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <script src="/libraries/jquery-2.1.0/jquery.min.js"></script>
   <script type="text/javascript" src="/libraries/i18next-1.10.1/i18next-1.10.1.min.js"></script>
+
+  <link rel="import" href="/components/grid-wrapper.html">
 
   <link rel="import" href="/components/polymer-ajax.html">
   <link rel="import" href="/components/websockets.html">
@@ -75,11 +88,13 @@
   <dmw-section id='currentsection' sectionid="{{ section.id }}"></dmw-section>
 
   <main role="main">
-    <div id='grid-layout'></div>
+    <grid-wrapper id='grid-layout'></grid-wrapper>
   </main>
 
   <div id='main-menu-touch'>
-    <button id="acces-menu" onclick="activateCornerMenu();" class="btn btn-default"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></button>
+      <div class="menu-item">
+        <button id="acces-menu" onclick="activateCornerMenu();" class="acmbt"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></button>
+    </div>
   </div>
 
   <div id='main-menu' class="">
@@ -117,16 +132,14 @@
       </div>
   </div>
   <div id="modal-overlay" class="overlay"></div>
+
   <script type="text/javascript" src="/libraries/bootstrap-3.3.7/js/bootstrap.min.js"></script>
   <script src="/libraries/d3-3.5.6/d3.min.js"></script>
   <script src="/libraries/moment-2.10.6/min/moment.min.js"></script>
   <script type="text/javascript" src="/libraries/notifIt-1.1/notifIt/js/notifIt.min.js"></script>
   <script src="/js/main.js"></script>
-  <script src="/libraries/draggabilly-1.1.2-modified/dist/draggabilly.pkgd.js"></script>
-  <script src="/js/dragdrop.js"></script>
   <script src="/js/menu.js"></script>
   <link rel="stylesheet" href="/css/menu.css">
-  <script src="/js/grid-layout.js"></script>
   <script src="/js/navigation.js"></script>
   <link rel="stylesheet" href="/css/navigation.css">
   <script src="/libraries/colorful-background-css-generator/dist/colorful-background-css-generator.min.js"></script>
@@ -174,6 +187,7 @@
       DMW.main.socket.register('widgetinstance-moved', instanceMoved);
       DMW.main.section.addEventListener('section-updated', sectionUpdated);
       DMW.main.section.addEventListener('section-changed', sectionChanged);
+      DMW.main.sectionReady = true;
     });
     $('#logout').click(function() {
         window.location = "/logout";

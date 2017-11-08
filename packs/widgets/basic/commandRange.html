@@ -5,17 +5,20 @@
         <style type="text/css">
             :host {
                 height: 100%;
-                padding: 1%;
+                width: 100%;
             }
             #range {
                 --paper-slider-height : 15px;
-                --paper-slider-knob-size: 30px;
+                --paper-slider-knob-size: 20px;
                 --paper-slider-knob-start-color: var(--paper-grey-400);
                 --paper-slider-knob-start-border-color: var(--paper-grey-200);
                 position: relative;
                 height: 100%;
                 width: 100%;
            }
+           #range.slider-knob-inner {
+                cursor: pointer;
+            }
            </style>
         <dmw-command id="primary" commandkey="primary" commandnotified="range"></dmw-command>
         <dmw-sensor id='scalingstate' sensorkey="scalingstate" sensorvalue={{scalingstate}} sensornotified="range"></dmw-sensor>

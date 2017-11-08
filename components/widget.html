@@ -1,9 +1,10 @@
 <link rel="import" href="/libraries/bower_components/polymer/polymer.html">
 <link rel="import" href="/components/sensor.html">
 <link rel="import" href="/components/command.html">
+<link rel="import" href="/libraries/bower_components/app-localize-behavior/app-localize-behavior.html">
 <link rel="import" href="/libraries/bower_components/bootstrap-styles/bootstrap-styles.html">
 <link rel="import" href="/libraries/bower_components/slate-font-awesome/slate-font-awesome.html">
-<link rel="import" href="/libraries/bower_components/app-localize-behavior/app-localize-behavior.html">
+<link rel="import" href="/libraries/bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="/widget/basic/css/labelstyles.html">
 
 <dom-module id="dmw-widget">
@@ -17,6 +18,8 @@
 			width: 100%;
 			display: block;
 			max-width:100%;
+            --wscale-w: 1;
+            --wscale-h: 1;
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
 			-khtml-user-select: none;
@@ -38,6 +41,7 @@
 			display: none;
 		    justify-content: center;
 		    align-items: center;
+            cursor:move;
 		}
 
 		#editOverlay.visible {
@@ -54,34 +58,104 @@
 			width: 2em;
 			height: 2em;
 			border: 1px solid #f0f0F0;
-			margin: 1em -0.4em 1em auto;
 			-moz-border-radius: 1em;
 			-webkit-border-radius: 1em;
 			border-radius: 1em;
+            z-index: 15;
 		}
 
-		#editOverlay .moveWidget {
-			display: flex;
-		    justify-content: center;
-		    align-items: center;
-			cursor:move;
-			position: absolute;
-			top: 0;
-			right: 0;
-			width: 2em;
-			height: 2em;
-			border: 1px solid #f0f0F0;
-			background: #000000;
-			-moz-border-radius: 0 0 0 1em;
-			-webkit-border-radius: 0 0 0 1em;
-			border-radius: 0 0 0 1em;
-		}
+        #editOverlay > span:not([resize]) {
+            flex: 1;
+            text-align: center;
+            font-size: 2em;
+        }
+        #editOverlay [resize] {
+            position: absolute;
+        }
+
+        #editOverlay [resize="bottom-right"] {
+            bottom: 0;
+            right: 0;
+            cursor: nwse-resize;
+        }
+
+        #editOverlay [resize="bottom-left"] {
+            bottom: 0;
+            left: 0;
+            cursor: nesw-resize;
+        }
+
+        #editOverlay [resize="top-right"] {
+            top: 0;
+            right: 0;
+            cursor: nesw-resize;
+        }
+
+        #editOverlay [resize="top-left"] {
+            top: 0;
+            left: 0;
+            cursor: nwse-resize;
+        }
+
+        #editOverlay [resize="left"] {
+            top: 50%;
+            left: 0;
+            cursor: ew-resize;
+            margin-top: -10px;
+        }
+
+        #editOverlay [resize="top"] {
+            top: 0%;
+            width: 100%;
+            text-align: center;
+            cursor: ns-resize;
+        }
+
+        #editOverlay [resize="right"] {
+            top: 50%;
+            right: 0;
+            cursor: ew-resize;
+            margin-top: -10px;
+        }
+
+        #editOverlay [resize="bottom"] {
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            cursor: ns-resize;
+        }
 
 		#editOverlay button:hover,
 		#editOverlay button:focus {
 			background: #f0f0F0;
 			color: #000000;
 		}
+		#editOverlay .editWidget {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+        }
+		#editOverlay .removeWidget {
+            position: absolute;
+            bottom: 5%;
+            right: 5%;
+        }
+        #editOverlay .tipsize {
+            --paper-tooltip-background: transparent;
+            --paper-tooltip-opacity: 0.6;
+            width: 100px;
+        }
+        #editOverlay .info{
+            display: inline-grid;
+            background-color: black;
+            padding: 6px;
+			-moz-border-radius: 1em;
+			-webkit-border-radius: 1em;
+            border-radius: 1em;
+        }
+        #editOverlay .info span{
+            padding: 2px;
+        }
 		#timeoutOverlay {
 			position: absolute;
 			top:50%;
@@ -126,17 +200,21 @@
 		<div id='labelprimary'>[[labelprimary]]</div>
 		<div id='labelsecondary'>[[labelsecondary]]</div>
 		<div id="editOverlay">
-			<div class="moveWidget" id="handle"><i class="fa fa-arrows" aria-hidden="true"></i></div>
-			<div class="buttons">
-                <button class="editWidget" on-click="editWidget" aria-label="Edit"><i class="fa fa-cog" aria-hidden="true"></i></button>
-				<button class="removeWidget" on-click="removeWidget" aria-label="Remove"><i class="fa fa-times" aria-hidden="true"></i></button>
-			</div>
+            <div class="buttons">
+                <button id="editWidget" on-click="editWidget" class="editWidget" aria-label="Edit"><i class="fa fa-cog" aria-hidden="true"></i></button>
+                <button id="removeWidget" on-click="removeWidget" class="removeWidget" aria-label="Remove"><i class="fa fa-times" aria-hidden="true"></i></button>
+            </div>
+            <paper-tooltip for="editOverlay" class="tipsize" offset="-50">
+                <div class="info">
+                    <span>{{localize("widget:min")}} : <span id="minSize"></span></span>
+                    <span>{{localize("widget:max")}} : <span id="maxSize"></span></span>
+                </div>
+            </paper-tooltip>
 		</div>
 		<div id="timeoutOverlay"></div>
 	</template>
 	<script>
-       // class DmwWidget extends Polymer.mixinBehaviors([Polymer.CarbonI18nBehavior], Polymer.Element) {
-        class DmwWidget extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+        class DmwWidget extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.GestureEventListeners(Polymer.Element)) {
             static get is () { return 'dmw-widget'; }
             static get properties() {
                 return {
@@ -175,32 +253,49 @@
             }
             connectedCallback() {
                 super.connectedCallback();
+                this._setRezizer();
+                this.resized()
                 this.sensorlost = null;
                 this.historylost = null;
                 this.sensorsReady = false;
                 this.commandsReady = false;
                 this.devicesReady = false;
                 this.loaded = false;
-                this.draggie = null;
+                this.savedStyle ='';
                 if (this.datatypes === null || this.datatypes === undefined) {
                     document.querySelector("dmw-datatypes").addEventListener("datatype-received", this.datatypesReceived.bind(this), false);
                 }
             }
-         /**   attached() {
-                this.loadResources(this.resolveUrl('/locales/domoweb/'+this.language+'/translation.json'),this.language);
-                this.resources;
-                this.loadResources(this.resolveUrl('locales/'+this.language+'/translation.json'), this.language, true);
-                this.resources;
-            }
-            get dmwI18n() {
-                this.localize('trigger');
-         //       return Polymer.CarbonI18nBehaviorLocales.get('dmw-widget', this.locale);
-            }**/
             _handleLangLoad(event) {
                 this._languageLoaded++;
                 if (this._languageLoaded == 0) {
                     this.languageLoaded();
                 }
+            }
+            _setRezizer() {
+                var minWidth = parseInt(this.getAttribute('min-width')),
+                    maxWidth = parseInt(this.getAttribute('max-width')),
+                    minHeight = parseInt(this.getAttribute('min-height')),
+                    maxHeight = parseInt(this.getAttribute('max-height'));
+                var resizeW = minWidth < maxWidth ? true : false;
+                var resizeH = minHeight < maxHeight ? true : false;
+                var newResizers = [];
+                if (resizeW) { newResizers.push('<span resize="left">│</span>' , '<span resize="right">│</span>'); };
+                if (resizeH) { newResizers.push('<span resize="top">─</span>', '<span resize="bottom">─</span>'); };
+                if (resizeW && resizeH) { newResizers.push('<span resize="top-right">┐</span>' ,
+                                                        '<span resize="top-left">┌</span>',
+                                                        '<span resize="bottom-right">┘</span>',
+                                                        '<span resize="bottom-left">└</span>'); }
+                var resizers = this.getResizers();
+                while (resizers.length != 0) {
+                    this.$.editOverlay.removeChild(resizers[0]);
+                }
+                for (var i=0; i<newResizers.length; i++) {
+                    $(this.$.editOverlay).append(newResizers[i]);
+                }
+            }
+            getResizers(){
+                return this.$.editOverlay.querySelectorAll('[resize]') || [];
             }
             removeWidget(e) {
                 this.$.socket.send("widgetinstance-remove", {'instance_id':this.instanceid});
@@ -317,6 +412,10 @@
                 this.$.socket.send("widgetinstance-getcommands", {'instance_id': this.instanceid});
                 this.$.socket.register('widgetinstance-devices', this.devicesReceived.bind(this), {'instance_id': this.instanceid});
                 this.$.socket.send("widgetinstance-getdevices", {'instance_id': this.instanceid});
+                this.savedStyle = this.getAttribute('style');
+                DMW.main.layout.refreshEventResizer(this, false)
+                this.$.minSize.innerHTML = this.getAttribute('min-width') + " x " + this.getAttribute('min-height');
+                this.$.maxSize.innerHTML = this.getAttribute('max-width') + " x " + this.getAttribute('max-height');
             }
             sensorsReceived(topic, json) {
                 for (var key in json['sensors']) {
@@ -399,6 +498,17 @@
             devicesUpdated() {}
             optionsUpdated() {}
             languageLoaded() {}
+            resized() {
+                let cellHeight = this.parentNode.getAttribute('cell-height');
+                let cellWidth = this.parentNode.getAttribute('cell-width');
+                let cellMargin = this.parentNode.getAttribute('cell-margin');
+                let height = this.getAttribute('height') * cellHeight + ((this.getAttribute('height') - 1) * cellMargin);
+                let width = this.getAttribute('width') * cellWidth + ((this.getAttribute('width') - 1) * cellMargin);
+                let orgHeight = this.getAttribute('org-height') * cellHeight + ((this.getAttribute('org-height') - 1) * cellMargin);
+                let orgWidth = this.getAttribute('org-width') * cellWidth + ((this.getAttribute('org-width') - 1) * cellMargin);
+                this.style.setProperty("--wscale-h", height / orgHeight);
+                this.style.setProperty("--wscale-w", width / orgWidth);
+            }
             timeoutDetected(e) {
                 this.sensorlost = e.target;
                 var text = this.localize("widget:sensorLost");
@@ -431,30 +541,30 @@
                 }
             }
             _editChanged(newValue, oldValue) {
-                var self = this;
                 var editOverlay = this.$.editOverlay;
                 if (newValue != null) {
                     // Show config overlay
                     editOverlay.classList.add('visible');
-                    // Make widget draggable
-                    this.draggie = new Draggable( this, {
-                        draggabilly : { containment: document.body, handle: this.$.handle },
-                        onStart : function(instance) {
-                            self.dispatchEvent(new CustomEvent('drag-start', {}));
-                        },
-                        onEnd : function(wasDropped) {
-                            self.dispatchEvent(new CustomEvent('drag-end', {}));
-                        },
-                        testChanged: function(droppableEl, draggableEl) {
-                            return (draggableEl.dataset.x != droppableEl.dataset.x || draggableEl.dataset.y != droppableEl.dataset.y);
-                        }
-                    } );
                 } else {
-                    // Remove widget draggability
-                    this.draggie.destroy();
-                    this.draggie = null;
                     // Hide config overlay
                     editOverlay.classList.remove('visible');
+                    // restore widget style lost when moved/sized by the grid !
+                    let scaleW = this.style.getPropertyValue("--wscale-w");
+                    let scaleH = this.style.getPropertyValue("--wscale-h");
+                    if (this.savedStyle.indexOf("--wscale-w") != -1) {
+                        let styles = this.savedStyle.split(";");
+                        for (let i=0; i<styles.length; i++) {
+                            if (styles[i].indexOf("--wscale-w") >= 0 ){
+                                styles[i] = " --wscale-w:"+scaleW;
+                            } else if (styles[i].indexOf("--wscale-h") >= 0 ){
+                                styles[i] = " --wscale-h:"+scaleH;
+                            }
+                        }
+                        this.savedStyle = styles.join(";");
+                    } else {
+                        this.savedStyle += " --wscale-w:"+scaleW+"; --wscale-h:"+scaleH+";";
+                    }
+                    this.setAttribute("style", this.savedStyle);
                 }
             }
         };
