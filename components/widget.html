@@ -217,7 +217,7 @@
         class DmwWidget extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.GestureEventListeners(Polymer.Element)) {
             static get is () { return 'dmw-widget'; }
             static get properties() {
-                return {
+            return {
                     /* Overriden from AppLocalizeBehavior */
                     language: {
                         value: navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage,
@@ -261,7 +261,9 @@
                 this.commandsReady = false;
                 this.devicesReady = false;
                 this.loaded = false;
-                this.savedStyle ='';
+                 // Memorize style attribute modified by the-grid
+                this.MemZindex = this.style.zIndex;
+                this.MemTransition = this.style.transition;
                 if (this.datatypes === null || this.datatypes === undefined) {
                     document.querySelector("dmw-datatypes").addEventListener("datatype-received", this.datatypesReceived.bind(this), false);
                 }
@@ -412,7 +414,6 @@
                 this.$.socket.send("widgetinstance-getcommands", {'instance_id': this.instanceid});
                 this.$.socket.register('widgetinstance-devices', this.devicesReceived.bind(this), {'instance_id': this.instanceid});
                 this.$.socket.send("widgetinstance-getdevices", {'instance_id': this.instanceid});
-                this.savedStyle = this.getAttribute('style');
                 DMW.main.layout.refreshEventResizer(this, false)
                 this.$.minSize.innerHTML = this.getAttribute('min-width') + " x " + this.getAttribute('min-height');
                 this.$.maxSize.innerHTML = this.getAttribute('max-width') + " x " + this.getAttribute('max-height');
@@ -509,6 +510,30 @@
                 this.style.setProperty("--wscale-h", height / orgHeight);
                 this.style.setProperty("--wscale-w", width / orgWidth);
             }
+            adjustText(parent, element, margin = {width :0, height:0}) {
+                if (parent.clientWidth == 0 || parent.clientHeight == 0 || element.offsetWidth == 0) {
+                    // in case the page is not yet nicely loaded...
+                    setTimeout(function(){
+                        this.adjustText(parent, element, margin);
+                        }.bind(this), 1000);
+                } else {
+                    const fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
+                    let i = fontsize.substr(0,2);
+                    const maxWith = parent.clientWidth - margin.width;
+                    const maxHeight = parent.clientHeight - margin.height;
+                    if (maxWith > element.offsetWidth && maxHeight > element.offsetHeight) {
+                        while ( maxWith > element.offsetWidth && maxHeight > element.offsetHeight && i < 100){
+                            element.style.fontSize = i+"px";
+                            i++;
+                        }
+                    } else if (element.offsetWidth > maxWith || element.offsetHeight > maxHeight ) { // If text is bigger than widget
+                        while ((element.offsetWidth > maxWith || element.offsetHeight > maxHeight) && i > 5){
+                            element.style.fontSize = i+"px";
+                            i--;
+                        }
+                    }
+                }
+            }
             timeoutDetected(e) {
                 this.sensorlost = e.target;
                 var text = this.localize("widget:sensorLost");
@@ -541,30 +566,20 @@
                 }
             }
             _editChanged(newValue, oldValue) {
-                var editOverlay = this.$.editOverlay;
+                const editOverlay = this.$.editOverlay;
+
                 if (newValue != null) {
+                    // Memorize style attribute modified by the-grid
+                    this.MemZindex = this.style.zIndex;
+                    this.MemTransition = this.style.transition;
                     // Show config overlay
                     editOverlay.classList.add('visible');
                 } else {
                     // Hide config overlay
                     editOverlay.classList.remove('visible');
-                    // restore widget style lost when moved/sized by the grid !
-                    let scaleW = this.style.getPropertyValue("--wscale-w");
-                    let scaleH = this.style.getPropertyValue("--wscale-h");
-                    if (this.savedStyle.indexOf("--wscale-w") != -1) {
-                        let styles = this.savedStyle.split(";");
-                        for (let i=0; i<styles.length; i++) {
-                            if (styles[i].indexOf("--wscale-w") >= 0 ){
-                                styles[i] = " --wscale-w:"+scaleW;
-                            } else if (styles[i].indexOf("--wscale-h") >= 0 ){
-                                styles[i] = " --wscale-h:"+scaleH;
-                            }
-                        }
-                        this.savedStyle = styles.join(";");
-                    } else {
-                        this.savedStyle += " --wscale-w:"+scaleW+"; --wscale-h:"+scaleH+";";
-                    }
-                    this.setAttribute("style", this.savedStyle);
+                    // Restore style attribute modified by the-grid
+                    this.style.zIndex = this.MemZindex;
+                    this.style.transition = this.MemTransition;
                 }
             }
         };
