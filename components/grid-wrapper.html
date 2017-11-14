@@ -116,8 +116,21 @@
                 }
                 this.$.debugGrid.style.display = 'none';
                 this.addEventListener("move", this.widgetMoved);
-                this.addEventListener("resize", this.widgetResized);
-
+                const self = this;
+                // Resize event must wait terminated transition
+                this.addEventListener("resize", function(e) {
+                    let event = e;
+                    setTimeout(function() {
+                        self.widgetResized(event);
+                        }, 550);
+                    // Other way from end transistion event, but don't work at each !! ???? to explore.....
+             /**    let eReg = $._data(e.detail.tile,'events');
+                    if (eReg == undefined || !(eReg.transitionend || eReg.webkitTransitionEnd || eReg.oTransitionEnd || eReg.MSTransitionEnd)) {
+                        $(e.detail.tile).on("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
+                            self.widgetResized(event);
+                            });
+                    }; **/
+                    });
             }
             init(mode, columns, rows, widgetSize, widgetSpace) {
                 this.setParams(mode, columns, rows, widgetSize, widgetSpace);
