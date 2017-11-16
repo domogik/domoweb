@@ -20,6 +20,7 @@
 			max-width:100%;
             --wscale-w: 1;
             --wscale-h: 1;
+            --wscale-r: 1;
 			-webkit-touch-callout: none;
 			-webkit-user-select: none;
 			-khtml-user-select: none;
@@ -217,7 +218,7 @@
         class DmwWidget extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.GestureEventListeners(Polymer.Element)) {
             static get is () { return 'dmw-widget'; }
             static get properties() {
-            return {
+                return {
                     /* Overriden from AppLocalizeBehavior */
                     language: {
                         value: navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage,
@@ -248,12 +249,13 @@
                 this.loadResources(this.resolveUrl('/locales/domoweb/'+this.language+'/translation.json'),this.language);
                 this.loadResources(this.resolveUrl('locales/'+this.language+'/translation.json'), this.language, true);
                 this._languageLoaded = -2;
+                this.ratioConstraint = ""; // used "" for no constraint, "width" to constraint witdh, "height" to constraint height
                 this.addEventListener("app-localize-resources-loaded", this._handleLangLoad.bind(this));
                 this.addEventListener("app-localize-resources-error", this._handleLangLoad.bind(this));
             }
             connectedCallback() {
                 super.connectedCallback();
-                this._setRezizer();
+                this._setResizer();
                 this.resized()
                 this.sensorlost = null;
                 this.historylost = null;
@@ -261,6 +263,7 @@
                 this.commandsReady = false;
                 this.devicesReady = false;
                 this.loaded = false;
+                this.scales = this._computeScale();
                  // Memorize style attribute modified by the-grid
                 this.MemZindex = this.style.zIndex;
                 this.MemTransition = this.style.transition;
@@ -268,13 +271,45 @@
                     document.querySelector("dmw-datatypes").addEventListener("datatype-received", this.datatypesReceived.bind(this), false);
                 }
             }
+            _computeScale() {
+                const cellHeight = this.parentNode.getAttribute('cell-height'),
+                    cellWidth = this.parentNode.getAttribute('cell-width'),
+                    cellMargin = this.parentNode.getAttribute('cell-margin'),
+                    heightCell = this.getAttribute('height'),
+                    widthCell = this.getAttribute('width'),
+                    orgHeightCell = this.getAttribute('org-height'),
+                    orgWidthCell = this.getAttribute('org-width');
+                const height = heightCell * cellHeight + ((heightCell - 1) * cellMargin),
+                    width = widthCell * cellWidth + ((widthCell - 1) * cellMargin),
+                    orgHeight = orgHeightCell * cellHeight + ((orgHeightCell - 1) * cellMargin),
+                    orgWidth = orgWidthCell * cellWidth + ((orgWidthCell - 1) * cellMargin);
+                const wscaleH = height / orgHeight,
+                    wscaleW = width / orgWidth,
+                    orgRatio = orgWidth /orgHeight,
+                    ratio = width /height;
+                let ratioScale;
+                switch (this.ratioConstraint) {
+                    case 'width':
+                        ratioScale = ratio < orgRatio ? ratio/orgRatio : 1;
+                        break;
+                    case 'height':
+                        ratioScale = ratio > orgRatio ? ratio/orgRatio : 1;
+                        break;
+                    default:
+                        ratioScale = ratio/orgRatio;
+                }
+                this.scales = {'width': wscaleW, 'height': wscaleH, 'currentRatio': ratio, 'orginalRatio': orgRatio, 'constraintRatio': ratioScale};
+                this.style.setProperty("--wscale-h", wscaleH);
+                this.style.setProperty("--wscale-w", wscaleW);
+                this.style.setProperty("--wscale-r", ratioScale);
+            }
             _handleLangLoad(event) {
                 this._languageLoaded++;
                 if (this._languageLoaded == 0) {
                     this.languageLoaded();
                 }
             }
-            _setRezizer() {
+            _setResizer() {
                 var minWidth = parseInt(this.getAttribute('min-width')),
                     maxWidth = parseInt(this.getAttribute('max-width')),
                     minHeight = parseInt(this.getAttribute('min-height')),
@@ -499,17 +534,7 @@
             devicesUpdated() {}
             optionsUpdated() {}
             languageLoaded() {}
-            resized() {
-                let cellHeight = this.parentNode.getAttribute('cell-height');
-                let cellWidth = this.parentNode.getAttribute('cell-width');
-                let cellMargin = this.parentNode.getAttribute('cell-margin');
-                let height = this.getAttribute('height') * cellHeight + ((this.getAttribute('height') - 1) * cellMargin);
-                let width = this.getAttribute('width') * cellWidth + ((this.getAttribute('width') - 1) * cellMargin);
-                let orgHeight = this.getAttribute('org-height') * cellHeight + ((this.getAttribute('org-height') - 1) * cellMargin);
-                let orgWidth = this.getAttribute('org-width') * cellWidth + ((this.getAttribute('org-width') - 1) * cellMargin);
-                this.style.setProperty("--wscale-h", height / orgHeight);
-                this.style.setProperty("--wscale-w", width / orgWidth);
-            }
+            resized() {}
             adjustText(parent, element, margin = {width :0, height:0}) {
                 if (parent.clientWidth == 0 || parent.clientHeight == 0 || element.offsetWidth == 0) {
                     // in case the page is not yet nicely loaded...
