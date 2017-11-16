@@ -1,3 +1,4 @@
+<link rel="import" href="/libraries/bower_components/textfit-div/textfit-div.html">
 <dom-module id="dmw-basicjs-commandrefresh">
     <template id="extended-styles">
         <style type="text/css">
@@ -7,13 +8,13 @@
             button#send {
                 display: block;
                 border-style: none;
-                width: 80%;
-                height: 80%;
-                margin: 10%;
+                width: calc(40px*var(--wscale-w));
+                height: calc(40px*var(--wscale-h));
+                margin: calc(5px*var(--wscale-h)) calc(5px*var(--wscale-w));
                 background: #4671BD;
                 color: #ffffff;
                 cursor: pointer;
-                white-space:normal;
+                padding:0;
             }
             button#send.circle {
                 border-radius: 50%;
@@ -22,9 +23,13 @@
                 background: #D73032;
                 color: #ffffff;
             }
+            .info {
+                width: 95%;
+            }
         </style>
-        <shadow></shadow>
-        <button id="send" class="btn btn-default" onclick="location.reload();">{{localize('refresh')}}</button>
+        <button id="send" class="btn btn-default" onclick="location.reload();">
+            <textfit-div id="info" class="info fullHeight flex" horizontal-center vertical-center multi-line text="{{localize('refresh')}}"></textfit-div>
+        </button>
     </template>
     <script>
      (function () {
@@ -46,6 +51,10 @@
             }
             connectedCallback() {
                 super.connectedCallback();
+            }
+            resized() {
+                super.resized();
+                this.$.info.doFitMe();
             }
             commandsUpdated() {
                 if (this.options['circle'] == 1) {

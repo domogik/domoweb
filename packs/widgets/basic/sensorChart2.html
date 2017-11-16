@@ -202,32 +202,6 @@
                                                         height: '100%', width: '100%' });
                 $.sparkline_display_visible();
             }
-            adjustText(parent, element) {
-                var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
-                var i = fontsize.substr(0,2);
-                //console.log("adjust - " + this.devicename + " / cw = " + parent.clientWidth + ", ch = " + parent.clientHeight);
-                if (parent.clientWidth == 0 || parent.clientHeight == 0) {
-                    setTimeout(function(){
-                        this.adjustText(parent, element);
-                        }.bind(this), 1000);
-                }
-                else {
-                    //console.log("adjust - " + this.devicename + " / ew = " + element.clientWidth + ", eh = " + element.clientHeight);
-                    if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
-                        while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 50){
-                            //console.log("adjust - " + this.devicename + " / ew = " + element.clientWidth + ", eh = " + element.clientHeight);
-                            element.style.fontSize = i+"px";
-                            i++;
-                        }
-                    } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
-                        while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
-                            //console.log("adjust - " + this.devicename + " / ew = " + element.clientWidth + ", eh = " + element.clientHeight);
-                            element.style.fontSize = i+"px";
-                            i--;
-                        }
-                    }
-                }
-            }
             hexToRgbA(hex){
                 // From : https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
                 // Add opacity

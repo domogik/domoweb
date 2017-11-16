@@ -14,11 +14,11 @@
             "name" : "FlipClock",
             "description" : "Based on flipclockjs.com library",
             "height" : 2,
-            "width" : 8,
+            "width" : 7,
             "min_height" : 1,
             "min_width" : 4,
             "max_height" : 4,
-            "max_width" : 16,
+            "max_width" : 14,
             "options" : {
                 "12hr" : {
                     "name": "Display in 12hr mode",

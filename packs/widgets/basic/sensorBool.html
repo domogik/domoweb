@@ -91,6 +91,11 @@
                     this.$.bool.classList.add('false');
                     this.$.bool.classList.remove('true');
                 }
+                this.adjustText(this.$.bool, this.$.boolicon, {width: 3, height:3});
+            }
+            resized() {
+                super.resized();
+                this.adjustText(this.$.bool, this.$.boolicon, {width: 3, height:3});
             }
         }
         customElements.define(DmwBasicSensorBool.is, DmwBasicSensorBool);

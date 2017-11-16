@@ -32,7 +32,9 @@
             "0_DT_Start": "Stop",
             "1_DT_Start": "Start",
             "0_DT_State": "Inactive",
-            "1_DT_State": "Active"
+            "1_DT_State": "Active",
+            "0_DT_Motion": "No motion",
+            "1_DT_Motion": "Motion"
         }
 	},
     "widget": {

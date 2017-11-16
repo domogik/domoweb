@@ -47,11 +47,11 @@ function sectionChanged(e) {
 		for (var i = 0; i < details.instances.length; i++) {
 			instance = details.instances[i];
 			var node = insertWidgetInstance(instance.id, instance.widget);
+            // preserve from old widget definition
             if (!instance.height) {instance.height = instance.widget.height; }
             if (!instance.width) {instance.width = instance.widget.width; }
 			DMW.main.layout.appendInstance(node, instance);
 		}
-	//	DMW.grid.adjustPlacement();  TO REMOVE : the-grip must handle it
         activateCornerMenu();
         $("#loading").fadeOut(200);
 	}
@@ -80,11 +80,9 @@ function setSectionStyle() {
 
 function instanceAdded(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
-		i18n.loadNamespace(json.widget.set_id, function() {
-			insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
-			var node = insertWidgetInstance(json.id, json.widget);
+        insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
+        var node = insertWidgetInstance(json.id, json.widget);
         DMW.main.layout.appendInstance(node, json);
-		});
 	}
 }
 

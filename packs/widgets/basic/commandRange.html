@@ -8,17 +8,14 @@
                 width: 100%;
             }
             #range {
-                --paper-slider-height : 15px;
-                --paper-slider-knob-size: 20px;
+                --paper-slider-height : calc(15px*var(--wscale-h));
+                --paper-slider-knob-size: calc(20px*var(--wscale-h));
                 --paper-slider-knob-start-color: var(--paper-grey-400);
                 --paper-slider-knob-start-border-color: var(--paper-grey-200);
                 position: relative;
                 height: 100%;
                 width: 100%;
            }
-           #range.slider-knob-inner {
-                cursor: pointer;
-            }
            </style>
         <dmw-command id="primary" commandkey="primary" commandnotified="range"></dmw-command>
         <dmw-sensor id='scalingstate' sensorkey="scalingstate" sensorvalue={{scalingstate}} sensornotified="range"></dmw-sensor>
@@ -87,6 +84,7 @@
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                     this.$.range.addEventListener('change', this.onInput.bind(this));
+                    this.$.range.$.sliderKnob.style.cursor = 'pointer';
                 }
             }
             scalingstateChanged(newValue, oldValue) {

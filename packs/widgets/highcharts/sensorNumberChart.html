@@ -13,8 +13,8 @@
 <!-- <script src="/widget/highcharts/Highstock-5.0.14/code/js/themes/sunset.js"></script> -->
 <!-- avocado.js dark-blue.js dark-green.js dark-unica.js gray.js grid-light.js grid.js sand-signika.js skies.js sunset.js -->
 
-<polymer-element name="dmw-highcharts-sensorNumberChart" extends="dmw-widget">
-    <template>
+<dom-module id="dmw-highcharts-sensornumberchart">
+	<template id="extended-styles">
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <link rel="stylesheet" href="/widget/basic/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow>
         <style type="text/css">
@@ -59,47 +59,76 @@
                 min-height: 400px;
                 background-color: rgba(50, 50, 50, 0.5);
                 border: 6px solid rgba(50, 50, 50, 0.5) ;
-                margin: auto;              
+                margin: auto;
                 z-index: 10;
-            }          
+            }
         </style>
-        
+
         <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
-        
+
         <shadow></shadow>
-        
+
         <div id='number'>{{number}}</div>
         <div id='unit'>{{unit}}</div>
-        
-        <div id="icongraph" on-click="{{displayGraph}}">
+
+        <div id="icongraph">
             <a id="icongraphlink" href="#"><i class="fa fa-area-chart"></i></a>
         </div>
-        <div id="graph" on-dblclick="{{hideGraph}}"><i class="fa fa-spinner fa-pulse"></i>  Loading Graph ...</div>
+        <div id="graph"><i class="fa fa-spinner fa-pulse"></i>  Loading Graph ...</div>
 
-        
+
     </template>
-    
-    <script>    
-        Polymer('dmw-highcharts-sensorNumberChart', {
-            // ------------------------------------------------------------------------------------
-            ready: function() {
+
+    <script>
+     (function () {
+        let memoizedTemplate;
+
+        class DmwHighchartsSensorNumberChart extends DmwWidget {
+            static get is () { return 'dmw-highcharts-sensornumberchart'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    },
+                    history: {
+                        notify: true,
+                        observer: 'historyChanged',
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 this.number = "--";
                 this.unit = "";
-                this.super();
-                
+
                 Highcharts.setOptions({
-                    global: { 
-                        useUTC: false 
-                    }  
+                    global: {
+                        useUTC: false
+                    }
                 });
-                
+
                 this.periode = "day" ;
-                initialZIndex = this.style.zIndex;      // z-index for the zoom mode
-            },
+                this.initialZIndex = this.style.zIndex;      // z-index for the zoom mode
+                this.$.icongraph.addEventListener('click', this.displayGraph.bind(this));
+                this.$.graph.addEventListener('dblclick', this.hideGraph.bind(this));
+            }
 
             // ------------------------------------------------------------------------------------
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -109,18 +138,18 @@
                 }
                 this.color = this.options['color'] ;
                 //console.error("theme: " + this.options['theme']) ;
-            },
-            
+            }
+
             // ------------------------------------------------------------------------------------
-            sensorsUpdated: function() {
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'] ;
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-            
+            }
+
             // ------------------------------------------------------------------------------------
-            sensorvalueChanged: function(oldValue, newValue) {
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
                 if (this.options['autoconvert']==1 && newValue > 0) {
@@ -129,65 +158,40 @@
                        var i = Math.floor(Math.log(newValue) / Math.log(k));
                     this.$.number.innerHTML = (newValue / Math.pow(k, i)).toPrecision(3);
                     if (unit) {
-                        this.unit = sizes[i] + i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                        this.unit = sizes[i] + this.localize("domoweb:unit", 'value', unit);
                     }
                 } else {
                     this.$.number.innerHTML = newValue;
                     if (unit) {
-                        this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                        this.unit = this.localize("domoweb:unit", 'value', unit);
                     }
                 }
                 this.adjustText(this, this.$.number);
-            },
+            }
 
             // ------------------------------------------------------------------------------------
-            adjustText: function(parent, element) {
-                var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
-                var i = fontsize.substr(0,2);
-                // in case the page is not yet nicely loaded...
-                if (parent.clientWidth == 0 || parent.clientHeight == 0) {
-                    setTimeout(function(){
-                        this.adjustText(parent, element);
-                        }.bind(this), 1000);
-                }
-                else {
-                    if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
-                        while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
-                            element.style.fontSize = i+"px";
-                            i++;
-                        }
-                    } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
-                        while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
-                            element.style.fontSize = i+"px";
-                            i--;
-                        }
-                    }
-                }
-            },
-
-            // ------------------------------------------------------------------------------------
-            historyChanged: function(oldValue, newValue) { 
+            historyChanged(newValue, oldValue) {
                 //console.error("historyChanged: " + newValue);
-                /* historyChanged: 
+                /* historyChanged:
                  Day:
                  2017,10,42,18,20,55,15.7,
                  2017,10,42,18,20,56,15.7,
                  2017,10,42,18,20,57,15.6,
                  ...
                  2017,10,42,18,21,45,14.55
-                 
+
                  Week:
                  2017,10,42,18,20,15.666666666666666,
                  2017,10,42,18,21,14.973076923076926,
                  2017,10,42,18,22,14.237499999999999
                  ...
                  2017,10,42,19,10,16.173333333333336
-                 
+
                  Month per days:
                  2017,10,42,18,14.454098360655738,
                  2017,10,42,19,15.720973154362433,
                  2017,10,42,20,14.859459459459458
-                 
+
                  Month per hours:
                  2017,10,42,18,20,15.666666666666666,
                  2017,10,42,18,21,14.973076923076926,
@@ -196,9 +200,9 @@
                  2017,10,42,19,3,12.669696969696968
                 */
                 this.data = [] ;
-                for (i = 0; i < newValue.length; i++) {
-                    value = [] ;
-                    
+                for (var i = 0; i < newValue.length; i++) {
+                    let value = [] ;
+
                     switch(this.periode) {
                         case "day":         //  year            month           day             hour            minute        s  ms
                             var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], newValue[i][5], 0, 0) ;
@@ -206,7 +210,7 @@
                             break;
                         case "week":
                         case "month":   // Month Per hours
-                            var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], 0, 0, 0) ;  
+                            var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], 0, 0, 0) ;
                             value[1] = newValue[i][5] ;
                             break;
                         /*case "month":
@@ -243,7 +247,7 @@
                     },
                     subtitle: {
                         text: '<i>(Current ' + this.periode + ')</i>'
-                    },                        
+                    },
                     xAxis: {
                         gridLineWidth: 1,
                         ordinal: false,
@@ -251,20 +255,19 @@
                             setExtremes: function(e) {
                                 if(typeof(e.rangeSelectorButton) !== 'undefined')
                                 {
-                                    console.error("Button " + e.rangeSelectorButton.text + " pressed");
                                     self.periode = e.rangeSelectorButton.text.toLowerCase();
                                     switch(self.periode) {
                                         case "day":
                                             self.$.primary.getCurrentDay() ;        // 'interval': 'minute'
                                             break;
                                         case "week":
-                                            self.$.primary.getCurrentWeek() ;       // 'interval': 'hour'         
+                                            self.$.primary.getCurrentWeek() ;       // 'interval': 'hour'
                                             break;
                                         case "month":
-                                            //self.$.primary.getCurrentMonth() ;      // 'interval': 'day'       
+                                            //self.$.primary.getCurrentMonth() ;      // 'interval': 'day'
                                             self.$.primary.getCurrentMonthPerHour() ; // 'interval': 'hour'
                                             break;
-                                    } 
+                                    }
                                 }
                             }
                         }
@@ -289,26 +292,27 @@
                             valueSuffix: this.unit
                         }
                     }]
-                }); 
-                
-            },
-            
+                });
+
+            }
+
             // ------------------------------------------------------------------------------------
-            displayGraph: function() {
+            displayGraph() {
                 this.$.graph.style.display = "block";
                 //this.$.graph.style.zIndex = 5000;
                 this.style.zIndex = 5000;
                 this.$.primary.getCurrentDay() ;        // 'interval': 'minute'
                 this.periode = "day" ;
-            },
-            
+            }
+
             // ------------------------------------------------------------------------------------
-            hideGraph: function() {
+            hideGraph() {
                 this.$.graph.style.display = "none";
                 //this.$.graph.style.zIndex = 10;
-                this.style.zIndex = initialZIndex;
-            },
-        });
-        
+                this.style.zIndex = this.initialZIndex;
+            }
+        };
+        customElements.define(DmwHighchartsSensorNumberChart.is, DmwHighchartsSensorNumberChart);
+     })();
     </script>
 </polymer-element>

@@ -12,10 +12,16 @@
             width: 100%;
             height: 100%;
             position: absolute;
-            top: calc(25px*var(--wscale-w));
+            top: calc(25px*var(--wscale-h));
         }
         .digits {
+            -webkit-transform: scale(var(--wscale-w), var(--wscale-h));
+            -moz-transform: scale(var(--wscale-w), var(--wscale-h));
+            -o-transform: scale(var(--wscale-w), var(--wscale-h));
             transform: scale(var(--wscale-w), var(--wscale-h));
+            -webkit-transform-origin: top left;
+            -moz-transform-origin: top left;
+            -o-transform-origin: top left;
             transform-origin: top left;
             position: absolute;
             display: inline-flex;

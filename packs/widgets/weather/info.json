@@ -105,8 +105,12 @@
         "sun": {
             "name" : "Sunrise and sunset",
             "description" : "Sunrise and sunset informations",
-            "height" : 1,
-            "width" : 2,
+            "height" : 2,
+            "width" : 3,
+            "min_height" : 1,
+            "min_width" : 2,
+            "max_height" : 4,
+            "max_width" : 8,
             "options" : {},
             "devices" : {
                 "weather" : {

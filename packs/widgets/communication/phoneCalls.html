@@ -51,7 +51,7 @@
             }
             #last_details {
                 position: absolute;
-                bottom: 5px; 
+                bottom: 5px;
                 right: 0.3em;
                 font-size: 1.5em;
             }
@@ -134,7 +134,7 @@
         <div id="icon_phone" on-click="{{displayHistory}}">
           <i class="fa fa-phone fa-4x"></i>
         </div>
-        <table id="list" class="hide"  on-click="{{hideHistory}}"> 
+        <table id="list" class="hide"  on-click="{{hideHistory}}">
           <template repeat="{{ call,idx in calls }}">
             <tr>
               <td class="number">
@@ -151,7 +151,7 @@
               </td>
               <td class="ban">
                 <template bind if="{{!call.blacklisted && blacklistCommand}}">
-                  <a on-click="{{doBlacklist}}" data-number="{{ call.number }}"><i class="fa fa-ban"></i></a> 
+                  <a on-click="{{doBlacklist}}" data-number="{{ call.number }}"><i class="fa fa-ban"></i></a>
                 </template>
               </td>
             </tr>
@@ -177,7 +177,7 @@
               <i class="fa fa-phone fa-4x"></i>
             </div>
             <div class="who col-md-8">
-         
+
               <div class="">
                 {{ inboundCallNumber }}
               </div>
@@ -223,13 +223,13 @@
             },
             commandsUpdated() {
                 if (this.$.doblacklist.isSet) {
-                    // to allow the ban button 
+                    // to allow the ban button
                     this.blacklistCommand = true;
                 }
             },
             callerid_valueChanged(newValue, oldValue) {
                 // In this widget we don't process the newvalue from this function :
-                // we need (currently) to manually find if the 'name' sensor last value correponds to the 
+                // we need (currently) to manually find if the 'name' sensor last value correponds to the
                 // 'callerid' sensor last value. In this function we got ONLY the last value and not the timestamp
                 //this.addCall(newValue['value_str'], moment(newValue['date']).format("H:mm (DD/MM)"));
                 //this.adjustText(this, this.$.last_number);
@@ -250,7 +250,7 @@
             callerid_historyChanged(newValue, oldValue) {
                 this.calls = [];
                 this.last_call = null;
-                
+
                 for(i=newValue.length-1;i>=0;i--) {
 
                     //this.addCall(newValue[i]['value_str'], moment(newValue[i]['timestamp']).format("H:mm (DD/MM)"));
@@ -283,7 +283,7 @@
                     if (timestamp == this.calls[idx]["timestamp"]) {
                         if (name != "") {
                             this.calls[idx]["who"] = name;
-                            if (idx == 0) { 
+                            if (idx == 0) {
                                 this.inboundCallName = name;
                             }
                         }
@@ -348,29 +348,6 @@
                 }
                 e.preventDefault();
                 e.stopPropagation();
-            },
-            adjustText(parent, element) {
-                var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
-                var i = fontsize.substr(0,2);
-                // in case the page is not yet nicely loaded...
-                if (parent.clientWidth == 0 || parent.clientHeight == 0 || element.clientWidth == 0 || element.clientHeight == 0) {
-                    setTimeout(function(){
-                        this.adjustText(parent, element);
-                        }.bind(this), 1000);
-                }
-                else {
-                    if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
-                        while ( parent.clientWidth >= element.clientWidth && parent.clientHeight >= element.clientHeight && i < 100){
-                            element.style.fontSize = i+"px";
-                            i++;
-                        }
-                    } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
-                        while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
-                            element.style.fontSize = i+"px";
-                            i--;
-                        }
-                    }
-                }
             },
             putColorOnLinks() {
                 var links = this.shadowRoot.querySelectorAll('a');

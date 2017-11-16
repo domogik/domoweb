@@ -13,8 +13,12 @@
         "mjpeg": {
             "name" : "Mjpeg camera",
             "description" : "Mjpeg camera",
-            "height" : 2,
-            "width" : 3,
+            "height" : 3,
+            "width" : 5,
+            "min_height" : 2,
+            "min_width" : 3,
+            "max_height" : 6,
+            "max_width" : 10,
             "options" : {
                 "cameraName" : {
                     "name": "Camera name",
@@ -45,8 +49,12 @@
         "video": {
             "name" : "Video camera",
             "description" : "Video camera",
-            "height" : 2,
-            "width" : 3,
+            "height" : 3,
+            "width" : 5,
+            "min_height" : 2,
+            "min_width" : 3,
+            "max_height" : 6,
+            "max_width" : 10,
             "options" : {
                 "cameraName" : {
                     "name": "Camera name",

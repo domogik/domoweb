@@ -50,7 +50,7 @@
         .flip-clock-wrapper {
           text-align: center;
           position: relative;
-          width: 100%;
+          width: max-content;
         }
 
         :host .flip-clock-wrapper:before,
@@ -66,8 +66,8 @@
           position: relative;
           float: left;
           margin: 5px;
-          width: 60px;
-          height: 90px;
+          width: 62px;
+          height: 108px;
           font-size: 80px;
           font-weight: bold;
           line-height: 87px;
@@ -126,7 +126,7 @@
         :host .flip-clock-wrapper ul li a div.up:after {
           content: "";
           position: absolute;
-          top: 44px;
+          top: 51px;
           left: 0;
           z-index: 5;
           width: 100%;
@@ -156,7 +156,9 @@
           text-align: center;
           background-color: #333;
           border-radius: 6px;
-          font-size: 70px; }
+          font-size: 105px;
+          padding-top: 10px;
+        }
 
         :host .flip-clock-wrapper ul li a div.up div.inn {
           top: 0; }
@@ -179,8 +181,8 @@
           float: left;
           display: inline-block;
           position: relative;
-          width: 4%;
-          height: 100px;
+          width: 20px;
+          height: 120px;
         }
 
         :host .flip-clock-divider:first-child {
@@ -210,10 +212,10 @@
           right: -91px; }
 
         :host .flip-clock-dot.top {
-          top: 30px; }
+          top: 35px; }
 
         :host .flip-clock-dot.bottom {
-          bottom: 30px; }
+          bottom: 35px; }
 
         @-webkit-keyframes asd {
           0% {

@@ -1,6 +1,5 @@
-<dom-module id="dmw-hue-basicStatusSensor" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<dom-module id="dmw-hue-basicstatussensor">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -11,38 +10,66 @@
                 -webkit-transform: translateY(-50%);
                 -ms-transform: translateY(-50%);
                 transform: translateY(-50%);
-                  text-align: center;
+                text-align: center;
                 font-size: 2em;
+                display: inline-flex;
             }
             .glyphicon {
                 line-height: inherit;
             }
             #bool.true {
-                color: #5cb85c;
+                color: var(--paper-light-green-a700, #5cb85c);
             }
             #bool.false {
-                color: #d9534f;
+                color: var(--paper-red-a400, #d9534f);
             }
             #bool.unavail {
-                color: #e9e9e9;
+                color: var(--paper-red-600, #a41c1c);
+                background-color: var(--google-yellow-500, #efc426);
             }
         </style>
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensornotified="boolicon"></dmw-sensor>
         <dmw-sensor id='availability' sensorkey="availability" sensorvalue="{{availvalue}}"></dmw-sensor>
-        <shadow></shadow>
         <div id='bool'>
           <span id='boolicon' class='glyphicon glyphicon-question-sign' aria-label='{{booltext}}'>{{booltext}}</span>
         </div>
     </template>
     <script>
-                class Dmw extends DmwWidget {
-            static get is () { return 'dmw-hue-basicStatusSensor',
+     (function () {
+        let memoizedTemplate;
+
+        class DmwHueBasicStatusSensor extends DmwWidget {
+            static get is () { return 'dmw-hue-basicstatussensor'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    },
+                    availvalue: {
+                        notify: true,
+                        observer: 'availvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
             connectedCallback() {
                 super.connectedCallback();
-		this.global_avail = 0;
-            },
+                this.global_avail = 0;
+            }
             optionsUpdated() {
-                if (this.options['hideLabels'] == true ) {         
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -50,22 +77,21 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
+            }
             sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-	    availvalueChanged(newValue, oldValue) {
- 		this.global_avail = newValue.stored_value;
-	    },
-
+            }
+            availvalueChanged(newValue, oldValue) {
+                this.global_avail = newValue.stored_value;
+            }
             sensorvalueChanged(newValue, oldValue) {
-                    newValue = newValue.stored_value;
-                    this.$.boolicon.className = '';
-		if (this.global_avail == 1) {
-                    this.booltext = i18n.t("domoweb:bool." + newValue, { context: this.$.primary.datatype_id });
+                newValue = newValue.stored_value;
+                this.$.boolicon.className = '';
+                if (this.global_avail == 1) {
+                    this.booltext = this.localize("domoweb:bool:" + newValue + "_" + this.$.primary.datatype_id);
                     if (newValue == 1) {
                         //this.$.boolicon.className = 'glyphicon glyphicon-ok';
                         this.$.bool.classList.remove('false');
@@ -77,16 +103,16 @@
                         this.$.bool.classList.remove('unavail');
                         this.$.bool.classList.add('false');
                     }
-		}
-		else
-		{
-		    this.booltext = "Indispo.";
-		    this.$.bool.classList.add('unavail');
-		    this.$.bool.classList.remove('true');
-		    this.$.bool.classList.remove('false');
-		}
-	    }
+                } else {
+                    this.booltext = this.localize("widget:sensorLost");
+                    this.$.bool.classList.add('unavail');
+                    this.$.bool.classList.remove('true');
+                    this.$.bool.classList.remove('false');
+                }
+                this.adjustText(this, this.$.boolicon);
+            }
 	    };
-    customElements.define(Dmw.is, Dmw);
+    customElements.define(DmwHueBasicStatusSensor.is, DmwHueBasicStatusSensor);
+    })();
     </script>
 </dom-module>

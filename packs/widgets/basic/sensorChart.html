@@ -124,7 +124,6 @@
                 }
             }
             resized() {
-                super.resized()
                 if (this.currentHistoryValue) {
                     this.draw(this.currentHistoryValue);
                 }
@@ -152,7 +151,7 @@
                         this.unit = this.localize("domoweb:unit", 'value', unit);
                     }
                 }
-                this.adjustText(this.clientWidth-this.$.chart.clientWidth+15, this.clientHeight, this.$.number);
+                this.adjustText(this, this.$.number, {width: this.$.chart.clientWidth-15, height:0});
                 this.$.primary.getCurrentDayPerHour();
 
             }
@@ -207,28 +206,6 @@
                                                             chartRangeMax: parseFloat(this.options['chartMaxValue']),
                                                             height: '100%', width: '100%' });
                     $.sparkline_display_visible();
-                }
-            }
-            adjustText(maxWidth, maxHeight, element) {
-                var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
-                var i = fontsize.substr(0,2);
-                if (maxWidth == 0 || maxHeight == 0) {
-                    setTimeout(function(){
-                        this.adjustText(maxWidth, maxHeight, element);
-                        }.bind(this), 1000);
-                }
-                else {
-                    if (maxWidth > element.clientWidth && maxHeight > element.clientHeight) {
-                        while ( maxWidth > element.clientWidth && maxHeight > element.clientHeight && i < 100){
-                            element.style.fontSize = i+"px";
-                            i++;
-                        }
-                    } else if (maxWidth < element.clientWidth || maxHeight < element.clientHeight) { // If text is bigger than widget
-                        while (maxWidth < element.clientWidth || maxHeight < element.clientHeight){
-                            element.style.fontSize = i+"px";
-                            i--;
-                        }
-                    }
                 }
             }
         };

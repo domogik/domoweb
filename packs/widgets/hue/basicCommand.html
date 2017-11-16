@@ -1,6 +1,5 @@
-<dom-module id="dmw-hue-basicCommand" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<dom-module id="dmw-hue-basiccommand">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -12,7 +11,7 @@
                 height: 80%;
                 margin: 10%;
                 color: #000000;
-		cursor: pointer;
+                cursor: pointer;
             }
             button#send.circle {
                 border-radius: 50%;
@@ -30,24 +29,50 @@
                 color: #ffffff;
             }
         </style>
-        <dmw-command id="primary" commandkey="primary"></dmw-command>
-        <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}"></dmw-sensor>
-	<dmw-sensor id='availability' sensorkey="availability" sensorvalue="{{availvalue}}"></dmw-sensor>
-        <shadow></shadow>
+        <dmw-command id="primary" commandkey="primary"  commandnotified="send"></dmw-command>
+        <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}" sensornotified="send"></dmw-sensor>
+        <dmw-sensor id='availability' sensorkey="availability" sensorvalue="{{availvalue}}"></dmw-sensor>
         <button id="send" class="btn btn-default">{{sendtext}}</button>
     </template>
     <script>
-                class Dmw extends DmwWidget {
-            static get is () { return 'dmw-hue-basicCommand',
+     (function () {
+        let memoizedTemplate;
+
+        class DmwHueBasicCommand extends DmwWidget {
+            static get is () { return 'dmw-hue-basiccommand'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    },
+                    availvalue: {
+                        notify: true,
+                        observer: 'availvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
             connectedCallback() {
                 super.connectedCallback();
                 this.boolstate = null;
                 this.currentValue = 0;
-		this.global_avail = 0;
+                this.global_avail = 0;
 
-            },
+            }
             optionsUpdated() {
-                if (this.options['hideLabels'] == true ) {         
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -55,7 +80,7 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
+            }
             sensorsUpdated() {
                 if (this.$.boolstate.isSet) {
                     this.hasFeedback = true;
@@ -66,19 +91,17 @@
                 if (this.options['circle'] == 0) {
                     this.$.send.classList.remove('circle');
                 }
-            },
-            availvalueChanged: function (newValue, oldValue) {
+            }
+            availvalueChanged(newValue, oldValue) {
                 if (this.$.availability.isSet) {
-		this.global_avail = newValue.stored_value;
+                    this.global_avail = newValue.stored_value;
                     if (newValue.stored_value == 0) {
-			this.sendtext = "Indispo."
+                        this.sendtext = this.localize("widget:sensorLost");
+                    } else {
+                        this.avail = "";
                     }
-		    else
-		    {
-			this.avail = "";
-		    }
                 }
-            },
+            }
             commandsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
@@ -90,11 +113,11 @@
                         this.sendtext = this.options['label1'];
                     }
                     else {
-                        this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                        this.sendtext = this.localize("domoweb:bool:" + this.currentValue + "_" + this.$.primary.datatype_id);
                     }
                     this.$.send.addEventListener('click', this.send.bind(this));
                 }
-            },
+            }
             send(e) {
                 var parameters = {};
                 var nextValue = (this.currentValue == 1?0:1);
@@ -105,9 +128,9 @@
                 if (!this.hasFeedback) { //If no feedback sensor, we assume ok
                     this.boolstate = nextValue;
                 }
-            },
+            }
             boolstateChanged(newValue, oldValue) {
-		if (this.global_avail == 1) {
+                if (this.global_avail == 1) {
                     this.currentValue = parseInt(newValue.stored_value);
                     if (this.currentValue == 1) {
                         this.$.send.classList.add('true');
@@ -126,18 +149,17 @@
                             this.sendtext = this.options['label1'];
                         }
                         else {
-                            this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
+                            this.sendtext = this.localize("domoweb:bool:" + this.currentValue + "_" + this.$.primary.datatype_id);
                         }
                     }
-		}
-		else
-		{
-		    this.$.send.classList.add('unavail');
-		    this.$.send.classList.remove('true');
-		    this.$.send.classList.remove('false');
-		}
+                } else {
+                    this.$.send.classList.add('unavail');
+                    this.$.send.classList.remove('true');
+                    this.$.send.classList.remove('false');
+                }
             }
 	    };
-    customElements.define(Dmw.is, Dmw);
+    customElements.define(DmwHueBasicCommand.is, DmwHueBasicCommand);
+    })();
     </script>
 </dom-module>

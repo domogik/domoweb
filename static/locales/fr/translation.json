@@ -33,7 +33,9 @@
             "0_DT_Start": "Arrété",
             "1_DT_Start": "Demarré",
             "0_DT_State": "Inactif",
-            "1_DT_State": "Actif"
+            "1_DT_State": "Actif",
+            "0_DT_Motion": "Pas de mouvement",
+            "1_DT_Motion": "Mouvement"
         }
     },
     "widget": {
