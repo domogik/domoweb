@@ -303,6 +303,13 @@
                 this.style.setProperty("--wscale-w", wscaleW);
                 this.style.setProperty("--wscale-r", ratioScale);
             }
+            loadLanguage(file, path) {
+                if(file ==  undefined) file = 'translation.json';
+                if (path == undefined) path = 'locales/'+this.language;
+                path+='/'
+                this.loadResources(this.resolveUrl(path+file), this.language, true);
+                this._languageLoaded --;
+            }
             _handleLangLoad(event) {
                 this._languageLoaded++;
                 if (this._languageLoaded == 0) {
