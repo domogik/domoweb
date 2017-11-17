@@ -256,17 +256,17 @@
             connectedCallback() {
                 super.connectedCallback();
                 this._setResizer();
-                this.resized()
                 this.sensorlost = null;
                 this.historylost = null;
                 this.sensorsReady = false;
                 this.commandsReady = false;
                 this.devicesReady = false;
                 this.loaded = false;
-                this.scales = this._computeScale();
+                this._computeScale();
                  // Memorize style attribute modified by the-grid
                 this.MemZindex = this.style.zIndex;
                 this.MemTransition = this.style.transition;
+                this.resized()
                 if (this.datatypes === null || this.datatypes === undefined) {
                     document.querySelector("dmw-datatypes").addEventListener("datatype-received", this.datatypesReceived.bind(this), false);
                 }
