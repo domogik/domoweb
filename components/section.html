@@ -77,12 +77,18 @@
                 // Wait full addEventListener from WebComponentsReady
                 Polymer.Async.timeOut.after(100).run(self.sectionReady(json));
             }
-            sectionReady(json) {
+            sectionReady(json, timeout = 200) {
                 if (DMW.main.sectionReady) {
                     this.dispatchEvent(new CustomEvent('section-changed', {detail: json}));
                 } else {
                     var self = this;
-                    Polymer.Async.timeOut.after(300).run(self.sectionReady(json));
+                    timeout += 50;
+                    console.warn("Section not ready, timeout : " + timeout +"ms")
+                    if (timeout < 1005) {
+                        Polymer.Async.timeOut.after(timeout).run(self.sectionReady(json, timeout));
+                    } else {
+                        document.getElementById("loading_text").innerHTML = "Fail to Load widgets.<br>Please reload page and stay on tab";
+                    }
                 }
             }
             sectionRemoved (topic, json) {
