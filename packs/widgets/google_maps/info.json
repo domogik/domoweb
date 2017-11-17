@@ -12,8 +12,12 @@
     "widgets": {
         "map_square": {
             "name" : "Map (square)",
-            "height" : 2,
-            "width" : 2,
+            "height" : 4,
+            "width" : 5,
+            "min_height" : 2,
+            "min_width" : 3,
+            "max_height" : 8,
+            "max_width" : 10,
             "options" : {
             },
             "sensors" : {
@@ -21,7 +25,7 @@
                     "name": "Position",
                     "description": "Position sensor",
                     "types" : ["DT_CoordD"],
-                    "required": true                   
+                    "required": true
                 }
             }
         }

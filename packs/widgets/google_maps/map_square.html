@@ -10,10 +10,9 @@
 
 <link rel="import" href="/widget/google_maps/google-maps-api.html">
 
-<polymer-element name="dmw-google_maps-map_square" extends="dmw-widget">
-    <template>
+<dom-module id="dmw-google_maps-map_square">
+    <template id="extended-styles">
         <google-maps-api id="mapsapi" version="3.exp"></google-maps-api>
-        <link rel="stylesheet" href="/widget/google_maps/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow>
         <link rel="stylesheet" href="/widget/google_maps/css/common.css" shim-domshadow>
         <style type="text/css">
             :host {
@@ -33,19 +32,18 @@
                 position: absolute;
                 top: 5%;
                 right: 5%;
-                border-radius: 50%;
-                background-color: rgba(0,0,0,0.3);
-                width: 3em;
-                height: 3em;
+                background-color: white;
+                width: 1.5em;
+                height: 1.5em;
+            }
+            #zoomBtn :hover{
+                cursor: pointer;
             }
             #zoomBtn i {
-                color: rgba(0,0,0,0.3);
+                color: rgba(0,0,0,0.6);
                 position: relative;
-                top: 50%;
-                -webkit-transform: translate(-50%, -50%);
-                -ms-transform: translate(-50%, -50%);
-                transform: translate(-50%, -50%);
-                left: 50%;
+                top: 5%;
+                left: 20%;
                 text-align: center;
             }
 
@@ -72,37 +70,67 @@
             }
             .map-normal {
             }
-           
+
         </style>
         <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
-        <shadow></shadow>
         <div id="themap" class="themap-normal">
           <div id='map' class="map-normal"></div>
-          <div id='zoomBtn' on-click="{{zoom}}">
-            <i class="fa fa-arrows-alt fa-2x"></i>
+          <div id='zoomBtn' on-click="zoom">
+            <i class="fa fa-arrows-alt"></i>
           </div>
         </div>
     </template>
     <script>
-        Polymer('dmw-google_maps-map_square', {
+     (function () {
+        let memoizedTemplate;
+
+        class DmwGoogleMapsMapSquare extends DmwWidget {
+            static get is () { return 'dmw-google_maps-map_square'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    },
+                    history: {
+                        notify: true,
+                        observer: 'historyChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+            }
             connectedCallback() {
+                super.connectedCallback();
                 this.mode = "normal";
                 // define gradient colors for the polyline (path on the map)
                 this.Colors = [
-                    "#0C00BF", 
-                    "#2319C6", 
-                    "#3B32CD", 
-                    "#524BD4", 
-                    "#6A64DB", 
-                    "#817EE2", 
-                    "#9997E9", 
+                    "#0C00BF",
+                    "#2319C6",
+                    "#3B32CD",
+                    "#524BD4",
+                    "#6A64DB",
+                    "#817EE2",
+                    "#9997E9",
                     "#B0B0F0",
-                    "#C8C9F7", 
+                    "#C8C9F7",
                     "#E0E3FF"
                 ];
 
                 var self = this;
-                super.connectedCallback();
                 //this.map;
                 this.markers = [];
                 var self = this;
@@ -118,6 +146,7 @@
                     //};
                     var mapOptions = {
                         zoom: 11,
+                        fullscreenControl: false,
                         center: new this.api.LatLng(48.67, -3.89)
                     };
                     self.map = new this.api.Map(self.$.map,
@@ -125,26 +154,24 @@
                     // for resize events
                     self.resize_callback = google.maps.event.trigger;
 
-
-        	    };
-    customElements.define(Dmw.is, Dmw);
+                });
 
                 // z-index for the zoom mode
-                initialZIndex = this.style.zIndex;
+                this.initialZIndex = this.style.zIndex;
 
-            },
+            }
             sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                     this.$.primary.getLast(100);
-                }        
-            },
+                }
+            }
             sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.deleteMarkers();
                 this.addMarker(newValue);
-            },
+            }
             historyChanged(newValue, oldValue) {
                 console.log(newValue);
                 var pathCoordinates = [];
@@ -160,10 +187,9 @@
                         strokeOpacity: 1.0,
                         strokeWeight: 3,
                         map: this.map
-            	    };
-    customElements.define(Dmw.is, Dmw);
+                    });
                 }
-            },
+            }
 
             // Add a marker to the map and push to the array.
             addMarker(location) {
@@ -176,28 +202,27 @@
                     map: this.map,
                     title: this.$.primary.device['name'],
                     label: this.$.primary.device['name']
-        	    };
-    customElements.define(Dmw.is, Dmw);
+                });
                 this.markers.push(marker);
-            },
+            }
 
             // Sets the map on all markers in the array.
             setAllMap(map) {
                 for (var i = 0; i < this.markers.length; i++) {
                     this.markers[i].setMap(map);
                 }
-            },
+            }
 
             // Removes the markers from the map, but keeps them in the array.
             clearMarkers() {
                 this.setAllMap(null);
-            },
+            }
 
             // Delete all the markers on the map
             deleteMarkers() {
                 this.clearMarkers();
                 this.markers = [];
-            },
+            }
             // map in fullscreen or not mode
             zoom() {
                 if (this.mode == "normal") {
@@ -216,13 +241,14 @@
                     this.$.map.classList.add('map-normal');
                     this.$.map.classList.remove('map-zoom');
                     // z-index for the zoom mode
-                    this.style.zIndex = initialZIndex;
+                    this.style.zIndex = this.initialZIndex;
                 }
                 // resize google map and recenter on last value
                 this.resize_callback(this.map, "resize");
                 this.map.setCenter(this.current_location);
             }
-	    };
-    customElements.define(Dmw.is, Dmw);
+        };
+        customElements.define(DmwGoogleMapsMapSquare.is, DmwGoogleMapsMapSquare);
+    })();
     </script>
-</polymer-element>
+</dom-module>

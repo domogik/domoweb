@@ -35,83 +35,107 @@ Fired when the Maps API library is loaded and ready.
 @event api-load
 -->
 
-<dom-module id="google-maps-api" extends="core-shared-lib" attributes="version apiKey clientId libraries">
+<dom-module id="google-maps-api">
 <script>
 
-  /* 
-  
+  /*
+
        /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\
 
-        The API key is currently (15 sept 2016) created and managed by Fritz SMH
+        The API key is currently (16 nov 2017) created and managed by Fritz SMH modify by Nico0084
 
-        One day we should remove the hardcoded key and let each user set the key 
+        One day we should remove the hardcoded key and let each user set the key
         himself in the widget configuration (or domoweb configuration ?)
 
        /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\
   */
-  Polymer({is:{
+    class GoogleMapsApi extends CoreSharedLib {
+        static get is () { return 'google-maps-api'; }
+        static get properties() {
+            return {
+                version: {
+                    /**
+                     * Version of the Maps API to use.
+                     *
+                     * @attribute version
+                     * @type string
+                     * @default '3.exp'
+                     */
+                    value: '3.exp',
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                apiKey: {
+                    /**
+                     * A Maps API key. To obtain an API key, see developers.google.com/maps/documentation/javascript/tutorial#api_key.
+                     *
+                     * @attribute apiKey
+                     * @type string
+                     */
+                    value: null,
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                clientId: {
+                   /**
+                     * A Maps API for Business Client ID. To obtain a Maps API for Business Client ID, see developers.google.com/maps/documentation/business/.
+                     * If set, a Client ID will take precedence over an API Key.
+                     *
+                     * @attribute clientId
+                     * @type string
+                     */
+                    value: null,
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+                libraries: {
+                    /**
+                     * The libraries to load with this map. Defaults to "places". For more information
+                     * see https://developers.google.com/maps/documentation/javascript/libraries.
+                     *
+                     * @attribute libraries
+                     * @type string
+                     * @default "places"
+                     */
+                    value: "places",
+                    type: String,
+                    notify: true,
+                    reflectToAttribute: true
+                }
+            }
+        }
 
-    defaultUrl: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDyLLfDg0z-QrPrOsa1lvJZ-qjLPosHq_M&callback=%%callback%%',
+        constructor() {
+            super();
+            this.defaultUrl = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDyLLfDg0z-QrPrOsa1lvJZ-qjLPosHq_M&callback=%%callback%%';
+            this.notifyEvent = 'api-load';
+        }
 
-    /**
-     * A Maps API key. To obtain an API key, see developers.google.com/maps/documentation/javascript/tutorial#api_key.
-     *
-     * @attribute apiKey
-     * @type string
-     */
-    apiKey: null,
+        connectedCallback() {
+            var url = this.defaultUrl + '&v=' + this.version;
+            url += "&libraries=" + this.libraries;
+            if (this.apiKey && !this.clientId) {
+                url += '&key=' + this.apiKey;
+            }
+            if (this.clientId) {
+                url += '&client=' + this.clientId;
+            }
+            this.url = url;
+        }
 
-   /**
-     * A Maps API for Business Client ID. To obtain a Maps API for Business Client ID, see developers.google.com/maps/documentation/business/.
-     * If set, a Client ID will take precedence over an API Key.
-     *
-     * @attribute clientId
-     * @type string
-     */
-    clientId: null,
-
-    /**
-     * The libraries to load with this map. Defaults to "places". For more information
-     * see https://developers.google.com/maps/documentation/javascript/libraries.
-     *
-     * @attribute libraries
-     * @type string
-     * @default "places"
-     */
-    libraries: "places",
-
-    /**
-     * Version of the Maps API to use.
-     *
-     * @attribute version
-     * @type string
-     * @default '3.exp'
-     */
-    version: '3.exp',
-
-    notifyEvent: 'api-load',
-
-    connectedCallback() {
-      var url = this.defaultUrl + '&v=' + this.version;
-      url += "&libraries=" + this.libraries;
-      if (this.apiKey && !this.clientId) {
-        url += '&key=' + this.apiKey;
-      }
-      if (this.clientId) {
-        url += '&client=' + this.clientId;
-      }
-      this.url = url;
-    },
-
-    /**
-     * Provides the google.maps JS API namespace.
-     *
-     * @property api
-     * @type google.maps
-     */
-    get api() {
-      return google.maps;
-    }
-  });
+        /**
+         * Provides the google.maps JS API namespace.
+         *
+         * @property api
+         * @type google.maps
+         */
+        get api() {
+          return google.maps;
+        }
+    };
+    customElements.define(GoogleMapsApi.is, GoogleMapsApi);
 </script>
 </dom-module>
