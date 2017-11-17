@@ -159,19 +159,24 @@ You can use this sample to build your own widget by deleting stuff not used.
             connectedCallback() {                                // Optional overwrite connectedCallback, callback until after first render, so elements could measure themselves or their children.
                 super.connectedCallback();                      // Required call super at first.
                 // your code, eg: add some event listener
-                this.addEventListener('specialEvent', this._myEvent);
+                this.addEventListener('anEvent', this._myEvent);
+                windows.addEventListener('specialEvent', this._specialEvent);
             }
 
             disconnectedCallback () {                            // Optional overwrite disconnectedCallback, Called after the element is detached from the document
                 super.connectedCallback();                      // Required call super at first.
                 // your code, eg: remove event listener
-                this.removeEventListener('specialEvent', this._myEvent); // P2R: Add and remove listeners imperatively
+                windows.removeEventListener('specialEvent', this._specialEvent);  // P2R: for events on something other than the custom element or its descendants,
+                                                                                            //Add and remove listeners imperatively.
             }
 
             this._myEvent(e)   {                                // If needed handle your event
                 // your code, eg : handle something...
             }
 
+            this._specialEvent(e)   {                                // If needed handle your event
+                // your code, eg : handle something...
+            }
             loadingDone() {                                     // Optional Callback when widget have finish first sensors/commands loading
                 // your code, eg : handle fixed canvas drawing
             }
