@@ -1,9 +1,10 @@
-<dom-module id="dmw-pool-water" extends="dmw-widget">
-	<template>
+<dom-module id="dmw-pool-water">
+	<template id="extended-styles">
 		<style type="text/css">
 		    :host { * { display: block; } }
 			:host {
 				height: 100%;
+                --cell-level : 18px;
 			}
 			.inactive {
 				display: none;
@@ -16,7 +17,7 @@
 			}
 			#tempdisplay {
 				position: absolute;
-				bottom: 80px;
+				bottom: 45%;
 				left: 10px;
 				font-size: 1.2em;
 			}
@@ -43,22 +44,22 @@
 
 			#phdisplay {
 				position: absolute;
-				top:10px;
+				top:5px;
 				right: 10px;
 				text-align: center;
 			}
 			#cldisplay {
 				position: absolute;
-				top:10px;
-				right: 70px;
+				top:5px;
+				right: calc(70px*var(--wscale-w));
 				text-align: center;
 			}
 			.phlevel,
 			.cllevel {
-				height: 1.4em;
-				line-height: 1.4em;
-				margin: 5px;
-				width: 50px;
+				height: var(--cell-level);
+				line-height: calc(1.4em*var(--wscale-h));
+				margin: 4px;
+				width: calc(50px*var(--wscale-w));
 				opacity: 0.2;
 			}
                         /*
@@ -85,11 +86,10 @@
 			#cllevel6 { background: #DB5673; } /* 5.0 */
 
 		</style>
-	    <dmw-sensor id='pump' sensorkey="pump" sensorvalue="{{pumpvalue}}"></dmw-sensor>
-	    <dmw-sensor id='temperature' sensorkey="temperature" sensorvalue="{{temperaturevalue}}"></dmw-sensor>
-	    <dmw-sensor id='ph' sensorkey="ph" sensorvalue="{{phvalue}}"></dmw-sensor>
-	    <dmw-sensor id='chlorine' sensorkey="chlorine" sensorvalue="{{chlorinevalue}}"></dmw-sensor>
-		<shadow></shadow>
+	    <dmw-sensor id='pump' sensorkey="pump" sensorvalue="{{pumpvalue}}" sensornotified="propeller"></dmw-sensor>
+	    <dmw-sensor id='temperature' sensorkey="temperature" sensorvalue="{{temperaturevalue}}" sensornotified="tempdisplay"></dmw-sensor>
+	    <dmw-sensor id='ph' sensorkey="ph" sensorvalue="{{phvalue}}" sensornotified="phdisplay"></dmw-sensor>
+	    <dmw-sensor id='chlorine' sensorkey="chlorine" sensorvalue="{{chlorinevalue}}" sensornotified="cldisplay"></dmw-sensor>
 		<canvas height="100%" width="100%" id="canvas"></canvas>
 		<div id="tempdisplay" class="inactive">{{temperature}}{{unit}}</div>
 		<div id="propeller" class="inactive">
@@ -125,239 +125,287 @@
 		</div>
 	</template>
 	<script>
-		        class Dmw extends DmwWidget {
-            static get is () { return 'dmw-pool-water',
-			connectedCallback() {
-				super.connectedCallback();
-				/**
-				 *    Wave oscillators by Ken Fyrstenberg Nilsen
-				 *    http://abdiassoftware.com/
-				 *
-				 *    CC-Attribute 3.0 License
-				*/
-				var canvas = this.$.canvas;
-				var ctx = canvas.getContext('2d'),
-				    w, h;
+     (function () {
+        let memoizedTemplate;
 
-				canvas.width = w = 338;
-				canvas.height = h = 218;
+        class DmwPoolWater extends DmwWidget {
+            static get is () { return 'dmw-pool-water'; }
+            static get properties() {
+                return {
+                    pumpvalue: {
+                        notify: true,
+                        observer: 'pumpvalueChanged'
+                    },
+                    temperaturevalue: {
+                        notify: true,
+                        observer: 'temperaturevalueChanged'
+                    },
+                    phvalue: {
+                        notify: true,
+                        observer: 'phvalueChanged'
+                    },
+                    chlorinevalue: {
+                        notify: true,
+                        observer: 'chlorinevalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
+            connectedCallback() {
+                super.connectedCallback();
+              //  this.resized();
+            }
+            resized() {
+                this.style.setProperty("--cell-level", `${(this.clientHeight - 60) / 6}px`);
+                let size =  `${(this.scales.width*this.scales.height) * 40}px`;
+                this.$.Capa_1.setAttribute("width", size);
+                this.$.Capa_1.setAttribute("height", size);
+                /**
+                 *    Wave oscillators by Ken Fyrstenberg Nilsen
+                 *    http://abdiassoftware.com/
+                 *
+                 *    CC-Attribute 3.0 License
+                */
+                var canvas = this.$.canvas;
+                var ctx = canvas.getContext('2d'),
+                    w, h;
 
-				var osc1 = new osc(),
-				    osc2 = new osc(),
-				    osc3 = new osc(),
-				    horizon = h * 0.5;
-				    count = 40,
-				    step = Math.ceil(w / count),
-				    //points = new Array(count);
-				    buffer = new ArrayBuffer(count * 4),
-				    points = new Float32Array(buffer);
+                canvas.width = w = (260 * this.scales.width)-2;
+                canvas.height = h = (190 * this.scales.height)-2;
 
-				osc1.max = 15;//h * 0.7;
+                var osc1 = new osc(),
+                    osc2 = new osc(),
+                    osc3 = new osc(),
+                    horizon = h * 0.5,
+                    count = 40,
+                    step = Math.ceil(w / count),
+                    //points = new Array(count),
+                    buffer = new ArrayBuffer(count * 4),
+                    points = new Float32Array(buffer);
 
-				osc2.max = 5;
-				osc2.speed = 0.003;
+                osc1.max = 15;//h * 0.7;
 
-				osc2.max = 5;
-				osc2.speed = 0.005;
+                osc2.max = 5;
+                osc2.speed = 0.003;
 
-				function fill() {
-				    for(var i = 0; i < count; i++) {
-				        points[i] = mixer(osc1, osc2, osc3);
-				    }
-				}
-				fill();
+                osc2.max = 5;
+                osc2.speed = 0.005;
 
-				ctx.lineWidth = 20;
-				ctx.strokeStyle = '#1d96d3';
-				ctx.fillStyle = '#1d96d3';
+                function fill() {
+                    for(var i = 0; i < count; i++) {
+                        points[i] = mixer(osc1, osc2, osc3);
+                    }
+                }
+                fill();
 
-				function loop() {
+                ctx.lineWidth = 20;
+                ctx.strokeStyle = '#1d96d3';
+                ctx.fillStyle = '#1d96d3';
 
-				    var i;
+                function loop() {
 
-				    /// move points to the left
-				    for(i = 0; i < count - 1; i++) {
-				        points[i] = points[i + 1];
-				    }
+                    var i;
 
-				    /// get a new point
-				    points[count - 1] = mixer(osc1, osc2, osc3);
+                    /// move points to the left
+                    for(i = 0; i < count - 1; i++) {
+                        points[i] = points[i + 1];
+                    }
 
-				    ctx.clearRect(0, 0, w, h);
-				    //ctx.fillRect(0, 0, w, h);
+                    /// get a new point
+                    points[count - 1] = mixer(osc1, osc2, osc3);
 
-				    /// render wave
-				    ctx.beginPath();
-				    ctx.moveTo(-5, points[0]);
+                    ctx.clearRect(0, 0, w, h);
+                    //ctx.fillRect(0, 0, w, h);
 
-				    for(i = 1; i < count; i++) {
-				        ctx.lineTo(i * step, points[i]);
-				    }
+                    /// render wave
+                    ctx.beginPath();
+                    ctx.moveTo(-5, points[0]);
 
-				    ctx.lineTo(w, h);
-				    ctx.lineTo(-5, h);
-				    ctx.lineTo(-5, points[1]);
+                    for(i = 1; i < count; i++) {
+                        ctx.lineTo(i * step, points[i]);
+                    }
 
-				    ctx.stroke();
-				    ctx.fill();
-				}
+                    ctx.lineTo(w, h);
+                    ctx.lineTo(-5, h);
+                    ctx.lineTo(-5, points[1]);
 
-				/// oscillator object
-				function osc() {
+                    ctx.stroke();
+                    ctx.fill();
+                }
 
-				    this.variation = 1;
-				    this.max = 10;
-				    this.speed = 0.02;
+                /// oscillator object
+                function osc() {
 
-				    var me = this,
-				        a = 0,
-				        max = getMax();
+                    this.variation = 1;
+                    this.max = 10;
+                    this.speed = 0.02;
 
-				    this.getAmp = function() {
+                    var me = this,
+                        a = 0,
+                        max = getMax();
 
-				        a += this.speed;
+                    this.getAmp = function() {
 
-				        if (a >= 2.0) {
-				            a = 0;
-				            max = getMax();
-				        }
+                        a += this.speed;
 
-				        return max * Math.sin(a * Math.PI);
-				    }
+                        if (a >= 2.0) {
+                            a = 0;
+                            max = getMax();
+                        }
 
-				    function getMax() {
-				        return Math.random() * me.max * me.variation +
-				            me.max * (1 - me.variation);
-				    }
+                        return max * Math.sin(a * Math.PI);
+                    }
 
-				    return this;
-				}
+                    function getMax() {
+                        return Math.random() * me.max * me.variation +
+                            me.max * (1 - me.variation);
+                    }
 
-				function mixer() {
+                    return this;
+                }
 
-				    var d = arguments.length,
-				        i = d,
-				        sum = 0;
+                function mixer() {
 
-				    if (d < 1) return 0;
+                    var d = arguments.length,
+                        i = d,
+                        sum = 0;
 
-				    while(i--) sum += arguments[i].getAmp();
+                    if (d < 1) return 0;
 
-				    return sum / d + horizon;
-				}
+                    while(i--) sum += arguments[i].getAmp();
+
+                    return sum / d + horizon;
+                }
 
 
-				(function animloop(){
-				  requestAnimFrame(animloop);
-				  loop();
-				})();
-			},
-			sensorsUpdated() {
-				if (this.$.temperature.isSet) {
-					this.$.tempdisplay.classList.remove('inactive');
-				} else {
-					this.$.tempdisplay.classList.add('inactive');
-				}
-				if (this.$.pump.isSet) {
-					this.$.propeller.classList.remove('inactive');
-				} else {
-					this.$.propeller.classList.add('inactive');
-				}
+                (function animloop(){
+                  requestAnimFrame(animloop);
+                  loop();
+                })();
+            }
+            sensorsUpdated() {
+                if (this.$.temperature.isSet) {
+                    this.$.tempdisplay.classList.remove('inactive');
+                } else {
+                    this.$.tempdisplay.classList.add('inactive');
+                }
+                if (this.$.pump.isSet) {
+                    this.$.propeller.classList.remove('inactive');
+                } else {
+                    this.$.propeller.classList.add('inactive');
+                }
                                 /*
-				if (this.$.ph.isSet) {
-					this.$.phdisplay.classList.remove('inactive');
-				} else {
-					this.$.phdisplay.classList.add('inactive');
-				}
-				if (this.$.chlorine.isSet) {
-					this.$.cldisplay.classList.remove('inactive');
-				} else {
-					this.$.cldisplay.classList.add('inactive');
-				}
+                if (this.$.ph.isSet) {
+                    this.$.phdisplay.classList.remove('inactive');
+                } else {
+                    this.$.phdisplay.classList.add('inactive');
+                }
+                if (this.$.chlorine.isSet) {
+                    this.$.cldisplay.classList.remove('inactive');
+                } else {
+                    this.$.cldisplay.classList.add('inactive');
+                }
                                 */
-			},
-			optionsUpdated() {
-				this.$.canvas.style.borderRadius = this.options['WidgetBorderRadius'];				
-				this.labelprimary = this.options['title'];
-			},
-			pumpvalueChanged(newValue, oldValue) {
-				newValue = newValue.stored_value;
-				this.pumpStatus = i18n.t("domoweb:bool." + newValue, { context: 'DT_State' });
-				if (newValue == 1) {
-					this.$.propeller.classList.add('running');
-				} else {
-					this.$.propeller.classList.remove('running');
-				}
-			},
-			temperaturevalueChanged(newValue, oldValue) {
-				newValue = newValue.stored_value;
-				this.unit = i18n.t("domoweb:unit", { context: this.$.temperature.datatype_id, value: this.datatypes[this.$.temperature.datatype_id]['unit'] });
-				this.temperature = newValue;
-			},
-			phvalueChanged(newValue, oldValue) {
-				newValue = newValue.stored_value;
+            }
+            optionsUpdated() {
+                this.$.canvas.style.borderRadius = this.options['WidgetBorderRadius'];
+                this.labelprimary = this.options['title'];
+            }
+            pumpvalueChanged(newValue, oldValue) {
+                newValue = newValue.stored_value;
+                this.pumpStatus = this.localize("domoweb:bool:" + newValue + "_" + 'DT_State');
+                if (newValue == 1) {
+                    this.$.propeller.classList.add('running');
+                } else {
+                    this.$.propeller.classList.remove('running');
+                }
+            }
+            temperaturevalueChanged(newValue, oldValue) {
+                newValue = newValue.stored_value;
+                this.unit = this.localize("domoweb:unit", 'value', this.datatypes[this.$.temperature.datatype_id]['unit']);
+                this.temperature = newValue;
+            }
+            phvalueChanged(newValue, oldValue) {
+                newValue = newValue.stored_value;
                                 console.error(newValue);
-				var levels = this.shadowRoot.querySelectorAll(".phlevel");
-				for (var i = levels.length - 1; i >= 0; i--) {
-					levels[i].classList.remove('current');
-					levels[i].innerHTML = "";
-				};
-				if (newValue >= 8.2) {
-					this.$.phlevel6.classList.add('current')
-					this.$.phlevel6.innerHTML = newValue;
-				} else if (newValue >= 7.8) {
-					this.$.phlevel5.classList.add('current')
-					this.$.phlevel5.innerHTML = newValue;
-				} else if (newValue >= 7.6) {
-					this.$.phlevel4.classList.add('current')
-					this.$.phlevel4.innerHTML = newValue;
-				} else if (newValue >= 7.4) {
-					this.$.phlevel3.classList.add('current')
-					this.$.phlevel3.innerHTML = newValue;
-				} else if (newValue >= 7.2) {
-					this.$.phlevel2.classList.add('current')
-					this.$.phlevel2.innerHTML = newValue;
-				} else if (newValue >= 6.8) {
-					this.$.phlevel1.classList.add('current')
-					this.$.phlevel1.innerHTML = newValue;
-				}
-			},
-			chlorinevalueChanged(newValue, oldValue) {
-				newValue = newValue.stored_value;
-				var levels = this.shadowRoot.querySelectorAll(".cllevel");
-				for (var i = levels.length - 1; i >= 0; i--) {
-					levels[i].classList.remove('current');
-					levels[i].innerHTML = "";
-				};
-				if (newValue >= 5.0) {
-					this.$.cllevel6.classList.add('current')
-					this.$.cllevel6.innerHTML = newValue;
-				} else if (newValue >= 3.0) {
-					this.$.cllevel5.classList.add('current')
-					this.$.cllevel5.innerHTML = newValue;
-				} else if (newValue >= 2.0) {
-					this.$.cllevel4.classList.add('current')
-					this.$.cllevel4.innerHTML = newValue;
-				} else if (newValue >= 1.0) {
-					this.$.cllevel3.classList.add('current')
-					this.$.cllevel3.innerHTML = newValue;
-				} else if (newValue >= 1.5) {
-					this.$.cllevel2.classList.add('current')
-					this.$.cllevel2.innerHTML = newValue;
-				} else if (newValue >= 0.5) {
-					this.$.cllevel1.classList.add('current')
-					this.$.cllevel1.innerHTML = newValue;
-				}
-			}
-		});
-		// shim layer with setTimeout fallback
-		window.requestAnimFrame = (function(){
-		  return  window.requestAnimationFrame       ||
-		          window.webkitRequestAnimationFrame ||
-		          window.mozRequestAnimationFrame    ||
-		          function( callback ){
-		            window.setTimeout(callback, 1000 / 60);
-		          };
-		})();
+                var levels = this.shadowRoot.querySelectorAll(".phlevel");
+                for (var i = levels.length - 1; i >= 0; i--) {
+                    levels[i].classList.remove('current');
+                    levels[i].innerHTML = "";
+                };
+                if (newValue >= 8.2) {
+                    this.$.phlevel6.classList.add('current')
+                    this.$.phlevel6.innerHTML = newValue;
+                } else if (newValue >= 7.8) {
+                    this.$.phlevel5.classList.add('current')
+                    this.$.phlevel5.innerHTML = newValue;
+                } else if (newValue >= 7.6) {
+                    this.$.phlevel4.classList.add('current')
+                    this.$.phlevel4.innerHTML = newValue;
+                } else if (newValue >= 7.4) {
+                    this.$.phlevel3.classList.add('current')
+                    this.$.phlevel3.innerHTML = newValue;
+                } else if (newValue >= 7.2) {
+                    this.$.phlevel2.classList.add('current')
+                    this.$.phlevel2.innerHTML = newValue;
+                } else if (newValue >= 6.8) {
+                    this.$.phlevel1.classList.add('current')
+                    this.$.phlevel1.innerHTML = newValue;
+                }
+            }
+            chlorinevalueChanged(newValue, oldValue) {
+                newValue = newValue.stored_value;
+                var levels = this.shadowRoot.querySelectorAll(".cllevel");
+                for (var i = levels.length - 1; i >= 0; i--) {
+                    levels[i].classList.remove('current');
+                    levels[i].innerHTML = "";
+                };
+                if (newValue >= 5.0) {
+                    this.$.cllevel6.classList.add('current')
+                    this.$.cllevel6.innerHTML = newValue;
+                } else if (newValue >= 3.0) {
+                    this.$.cllevel5.classList.add('current')
+                    this.$.cllevel5.innerHTML = newValue;
+                } else if (newValue >= 2.0) {
+                    this.$.cllevel4.classList.add('current')
+                    this.$.cllevel4.innerHTML = newValue;
+                } else if (newValue >= 1.0) {
+                    this.$.cllevel3.classList.add('current')
+                    this.$.cllevel3.innerHTML = newValue;
+                } else if (newValue >= 1.5) {
+                    this.$.cllevel2.classList.add('current')
+                    this.$.cllevel2.innerHTML = newValue;
+                } else if (newValue >= 0.5) {
+                    this.$.cllevel1.classList.add('current')
+                    this.$.cllevel1.innerHTML = newValue;
+                }
+            }
+        };
+        // shim layer with setTimeout fallback
+        window.requestAnimFrame = (function(){
+          return  window.requestAnimationFrame       ||
+                  window.webkitRequestAnimationFrame ||
+                  window.mozRequestAnimationFrame    ||
+                  function( callback ){
+                    window.setTimeout(callback, 1000 / 60);
+                  };
+        })();
+        customElements.define(DmwPoolWater.is, DmwPoolWater);
+    })();
 	</script>
 </dom-module>

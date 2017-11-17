@@ -12,8 +12,12 @@
     "widgets": {
         "water": {
             "name" : "Water",
-            "height" : 2,
-            "width" : 3,
+            "height" : 3,
+            "width" : 4,
+            "min_height" : 2,
+            "min_width" : 3,
+            "max_height" : 5,
+            "max_width" : 8,
             "options" : {
                 "title" : {
                     "name": "Widget Title",
