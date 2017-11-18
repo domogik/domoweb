@@ -1,16 +1,5 @@
-<style>
-@font-face {
-  font-family: 'FontAwesome';
-  src: url('/widget/communication/font-awesome-4.7.0/fonts/fontawesome-webfont.eot?v=4.7.0');
-  src: url('/widget/communication/font-awesome-4.7.0/fonts/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'), url('/widget/communication/font-awesome-4.7.0/fonts/fontawesome-webfont.woff2?v=4.7.0') format('woff2'), url('/widget/communication/font-awesome-4.7.0/fonts/fontawesome-webfont.woff?v=4.7.0') format('woff'), url('/widget/communication/font-awesome-4.7.0/fonts/fontawesome-webfont.ttf?v=4.7.0') format('truetype'), url('/widget/communication/font-awesome-4.7.0/fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
-</style>
-<dom-module id="dmw-communication-phoneCalls" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/libraries/bootstrap-3.3.7/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/widget/communication/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow>
+<dom-module id="dmw-communication-phonecalls">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -23,6 +12,7 @@
                 float: left;
                 width: 24%;
                 height: 100%;
+                cursor: pointer;
             }
             #icon_phone i {
                 position: relative;
@@ -126,12 +116,12 @@
                 font-size: 5em;
             }
         </style>
-        <dmw-command id="doblacklist" commandkey="doblacklist"></dmw-command>
-        <dmw-sensor id='callerid' sensorkey="callerid" sensorvalue="{{callerid_value}}" sensorhistory="{{callerid_history}}">></dmw-sensor>
+        <dmw-command id="doblacklist" commandkey="doblacklist" commandnotified="number"></dmw-command>
+        <dmw-sensor id='callerid' sensorkey="callerid" sensorvalue="{{callerid_value}}" sensorhistory="{{callerid_history}}" sensornotified="number">></dmw-sensor>
         <dmw-sensor id='name' sensorkey="name" sensorvalue="{{name_value}}" sensorhistory="{{name_history}}">></dmw-sensor>
         <dmw-sensor id='blacklisted' sensorkey="blacklisted" sensorvalue="{{blacklisted_value}}" sensorhistory="{{blacklisted_history}}">></dmw-sensor>
         <shadow></shadow>
-        <div id="icon_phone" on-click="{{displayHistory}}">
+        <div id="icon_phone" on-click="displayHistory">
           <i class="fa fa-phone fa-4x"></i>
         </div>
         <table id="list" class="hide"  on-click="{{hideHistory}}">
@@ -157,7 +147,7 @@
             </tr>
           </template>
         </table>
-        <div id="last" on-click="{{displayHistory}}">
+        <div id="last" on-click="displayHistory">
           <div id="last_number">
             <template if="{{last_call.blacklisted}}">
               <del>{{last_call.who}}</del>
@@ -190,8 +180,39 @@
 
     </template>
     <script>
-                class Dmw extends DmwWidget {
-            static get is () { return 'dmw-communication-phoneCalls',
+     (function () {
+        let memoizedTemplate;
+
+        class DmwCommunicationPhoneCalls extends DmwWidget {
+            static get is () { return 'dmw-communication-phonecalls'; }
+            static get properties() {
+                return {
+                    callerid_value: {
+                        notify: true,
+                        observer: 'callerid_valueChanged'
+                    },
+                    name_history: {
+                        notify: true,
+                        observer: 'name_historyChanged'
+                    },
+                    name_history: {
+                        notify: true,
+                        observer: 'name_historyChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
             connectedCallback() {
                 super.connectedCallback();
                 this.first = true;     // to avoid display the notification on widget first display
@@ -199,8 +220,8 @@
                 this.last_call = null;
                 this.blacklistCommand = false;
                 // z-index for the zoom mode
-                initialZIndex = this.style.zIndex;
-            },
+                this.initialZIndex = this.style.zIndex;
+            }
             sensorsUpdated() {
                 if (this.$.callerid.isSet) {
                     this.labelprimary = this.$.callerid.device['name'];
@@ -220,13 +241,13 @@
                 setTimeout(function(){
                     this.putColorOnLinks();
                     }.bind(this), 1000);
-            },
+            }
             commandsUpdated() {
                 if (this.$.doblacklist.isSet) {
                     // to allow the ban button
                     this.blacklistCommand = true;
                 }
-            },
+            }
             callerid_valueChanged(newValue, oldValue) {
                 // In this widget we don't process the newvalue from this function :
                 // we need (currently) to manually find if the 'name' sensor last value correponds to the
@@ -244,29 +265,27 @@
                 if (this.$.blacklisted.isSet) {
                     this.$.blacklisted.getLast(10);
                 }
-
-
-            },
+            }
             callerid_historyChanged(newValue, oldValue) {
                 this.calls = [];
                 this.last_call = null;
 
-                for(i=newValue.length-1;i>=0;i--) {
+                for(var i=newValue.length-1;i>=0;i--) {
 
                     //this.addCall(newValue[i]['value_str'], moment(newValue[i]['timestamp']).format("H:mm (DD/MM)"));
                     this.addCall(newValue[i]['value_str'], newValue[i]['timestamp']);
                 }
-            },
+            }
             name_historyChanged(newValue, oldValue) {
-                for(i=newValue.length-1;i>=0;i--) {
+                for(var i=newValue.length-1;i>=0;i--) {
                     this.completeCallsByNames(newValue[i]['value_str'], newValue[i]['timestamp']);
                 }
-            },
+            }
             blacklisted_historyChanged(newValue, oldValue) {
-                for(i=newValue.length-1;i>=0;i--) {
+                for(var i=newValue.length-1;i>=0;i--) {
                     this.completeCallsByBlacklisted(newValue[i]['value_str'], newValue[i]['timestamp']);
                 }
-            },
+            }
             addCall(number, timestamp) {
                 this.last_call = {
                         "who": number,
@@ -277,9 +296,9 @@
                         "count" : 1
                     };
                 this.calls.unshift(this.last_call);
-            },
+            }
             completeCallsByNames(name, timestamp) {
-                for(idx in this.calls) {
+                for(var idx in this.calls) {
                     if (timestamp == this.calls[idx]["timestamp"]) {
                         if (name != "") {
                             this.calls[idx]["who"] = name;
@@ -289,10 +308,10 @@
                         }
                     }
                 }
-            },
+            }
             completeCallsByBlacklisted(bl, timestamp) {
                 if (bl == true) {
-                    for(idx in this.calls) {
+                    for(var idx in this.calls) {
                         if (timestamp == this.last_call["timestamp"]) {
                             this.last_call["blacklisted"] = true;
                         }
@@ -301,13 +320,13 @@
                         }
                     }
                 }
-            },
+            }
             isBlacklisted(status) {
                 return status;
-            },
+            }
             isNotBlacklisted(status) {
                 return !status;
-            },
+            }
             displayInboundCall(callerNumber) {
                 this.inboundCallNumber = callerNumber;
                 this.inboundCallName = "";
@@ -321,25 +340,25 @@
                 setTimeout(function(){
                     this.hideInboundCall();
                     }.bind(this), 10000);
-            },
+            }
             hideInboundCall() {
                 this.$.inboundcall.classList.add('hide');
                 this.$.inboundcall.classList.remove('show');
                 // z-index for the zoom mode
-                this.style.zIndex = initialZIndex;
-            },
+                this.style.zIndex = this.initialZIndex;
+            }
             displayHistory() {
                 this.$.list.classList.add('showtable');
                 this.$.list.classList.remove('hide');
                 // z-index for the zoom mode
                 this.style.zIndex = 5000;
-            },
+            }
             hideHistory() {
                 this.$.list.classList.add('hide');
                 this.$.list.classList.remove('showtable');
                 // z-index for the zoom mode
-                this.style.zIndex = initialZIndex;
-            },
+                this.style.zIndex = this.initialZIndex;
+            }
             doBlacklist(e, detail, target) {
                 if (window.confirm(i18n.t("Blacklist the number ") + target.dataset["number"] + " ?")) {
                     var parameters = {};
@@ -348,7 +367,7 @@
                 }
                 e.preventDefault();
                 e.stopPropagation();
-            },
+            }
             putColorOnLinks() {
                 var links = this.shadowRoot.querySelectorAll('a');
                 for (var i = 0; i < links.length; i++) {
@@ -356,6 +375,7 @@
                 }
             }
 	    };
-    customElements.define(Dmw.is, Dmw);
+    customElements.define(DmwCommunicationPhoneCalls.is, DmwCommunicationPhoneCalls);
+    })();
     </script>
 </dom-module>
