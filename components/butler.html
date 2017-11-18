@@ -202,10 +202,10 @@
             }
         </style>
         <web-socket id="socket"></web-socket>
-        <div id="help" on-click="{{help}}">
+        <div id="help" on-click="help">
           <span class="center"><i class="fa fa-question fa-2x"></i></span>
         </div>
-        <div id="helpModal" on-click="{{helpEnd}}">
+        <div id="helpModal" on-click="helpEnd">
           <h1>Help</h1>
           <div class="body">
             <h2>Purpose</h2>
@@ -225,7 +225,7 @@
             <div class="box col-md-12">
               <!-- <button id="closeModal" type="button" class="btn btn-default">Close</button> -->
 
-              <div id="speakButton" on-click="{{startVoiceRecog}}">
+              <div id="speakButton" on-click="startVoiceRecog">
                 <span class="center"><i class="fa {{icon}} fa-3x"></i></span>
                 <!-- <span>SPEAK</span> -->
               </div>
@@ -249,7 +249,7 @@
         </div>
 
         <!-- big clicking zone to close the page when we click somewhere on it -->
-        <div id="background" on-click="{{close}}">
+        <div id="background" on-click="close">
         </div>
     </template>
     <script>
@@ -307,7 +307,7 @@
                 document.getElementById('sections-tree').style.visibility = "hidden";
 
 
-                doSTT = true;
+                var doSTT = true;
                 // display warning if no STT support :(
                 if (!(window.hasOwnProperty('webkitSpeechRecognition'))) {
                     this.$.speech_errors.style.visibility = "visible";
@@ -503,7 +503,7 @@
                     txt = txt.substring(arr[arr.length - 1].length);
                 }
                 var u = []
-                for (idx in arr) {
+                for (var idx in arr) {
 
                     u[idx] = new SpeechSynthesisUtterance();
                     u[idx].text = arr[idx];
