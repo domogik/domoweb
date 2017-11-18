@@ -124,6 +124,7 @@
                 }
             }
             resized() {
+                this.adjustText(this, this.$.number, {width: this.$.chart.clientWidth-15, height:0});
                 if (this.currentHistoryValue) {
                     this.draw(this.currentHistoryValue);
                 }

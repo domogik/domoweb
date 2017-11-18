@@ -23,7 +23,7 @@
                 left: 5%;
                 overflow: hidden;
                 width: 93%;
-                font-size: 1.8em;
+                font-size: calc(1.8em*var(--wscale-h)*var(--wscale-r));
             }
             #container {
                 position: absolute;
@@ -100,12 +100,22 @@
               }
               return memoizedTemplate;
             }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
             connectedCallback() {
                 super.connectedCallback();
                 this.devicename = "";
                 this.number = "";
                 this.unit = "";
                 this.currentHistoryValue = [];
+            }
+            resized() {
+                this.adjustText(this.$.container, this.$.adjusted);
+                if (this.currentHistoryValue) {
+                    this.draw(this.currentHistoryValue);
+                }
             }
             optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {

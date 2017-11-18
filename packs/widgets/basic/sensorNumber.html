@@ -21,7 +21,7 @@
                 position: absolute;
                 top:5px;
                 right: 5px;
-                font-size: 1em;
+                font-size: calc(1em*var(--wscale-h)*var(--wscale-r));
             }
         </style>
         <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensornotified="number"></dmw-sensor>
@@ -54,10 +54,17 @@
               }
               return memoizedTemplate;
             }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
             connectedCallback() {
                 super.connectedCallback();
                 this.number = "--";
                 this.unit = "";
+            }
+            resized () {
+                this.adjustText(this, this.$.number);
             }
             optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {
