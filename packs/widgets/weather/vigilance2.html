@@ -1,45 +1,47 @@
-<style>
+/* NEW 2.0 */
 @font-face {
   font-family: 'weathericons';
   src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot');
-  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');  
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');
   font-weight: normal;
   font-style: normal;
-}     
+}
 </style>
-<dom-module id="dmw-weather-vigilance2" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<dom-module id="dmw-weather-vigilance2">
+    <template id="extended-styles">
+        <link rel="stylesheet" href="/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css">
         <style type="text/css">
-            @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
             :host {
                 height: 100%;
                 display: block;
+                --map-size : 92px;
+                --picto-width: 36px;
+                --picto-height: 20px;
+            }
+            #maincontainer {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                border-radius: var(--WidgetBorderRadius, 15px);
             }
             #container {
-                height: 70px;
-                width: 333px;
+                height: var(--map-size);
                 position: relative;
-                margin-top: 4px; 
-                margin-left: 2px;
                 background: #1a1a00 ;
-            }
-            #piccontainer {
-                margin-left: 2px;
             }
             #image {
               position: absolute;
               left: 0;
               top: 0;
-              width: 70px;
-              height: 70px;
+              width: var(--map-size);
+              height: var(--map-size);
             }
             #image2 {
                 left: 263;
                 top: 0;
                 float: right;
-                width: 70px;
-                height: 70px;
+                width: calc(45px*var(--wscale-h));
+                height: calc(45px*var(--wscale-h));
             }
             #date {
               z-index: 100;
@@ -52,26 +54,37 @@
             #text {
               z-index: 5;
               position: absolute;
-              color: black;
-              font-size: 10px;
-              /* font-size: 4vw;  If the viewport is 40cm wide, 1vw == 0.4cm.  */
+              width: calc(100% - var(--map-size) - (45px*var(--wscale-h)));
+              color: white;
+              font-size: calc(24px*var(--wscale-h)*var(--wscale-r));
               font-weight: bold;
-              left: 80px;
+              left: calc(5px + var(--map-size));
               top: 4px;
             }
 
             #pictoM {
                 float: left;
-                width: 37px;
-                background: #1a1a00 ;         
-                height: auto;
-                color: white ;
+                width: var(--picto-width);
+                height: var(--picto-height);
+                font-size: calc(20px*var(--wscale-h)*var(--wscale-r));
+                background: #1a1a00;
+                color: white;
+                text-align : center;
+                line-height: var(--picto-height);
+            }
+            #pictoM :hover{
+                cursor: pointer;
+            }
+            #pictoM img{
+                vertical-align: top;
+                border: 0;
             }
             #pictoM .tooltiptext {
                 visibility: hidden;
                 background-color: white;
                 color: black;
                 text-align: center;
+                font-size: 14px;
                 border-radius: 6px;
                 padding: 5px 20px;
                 margin-left: -80px;
@@ -100,75 +113,163 @@
                 min-height: 100%;
                 width: 100%;
                 padding: 0;
-                z-index: 1000;
+                z-index: 5;
             }
             #infotext {
-                margin-left: 5px;
-                font-size: 10px;
+                position: absolute;
+                width: 96%;
+                height: 92%;
+                margin: 2%;
+                font-size: calc(20px*var(--wscale-h)*var(--wscale-r));
+                text-align: center;
             }
 
         </style>
-        
-        <shadow></shadow>
-        
-        <dmw-sensor id='vigilanceDep' sensorkey="vigilanceDep" sensorvalue="{{vigilanceDep_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceColor' sensorkey="vigilanceColor" sensorvalue="{{vigilanceColor_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceColorWind' sensorkey="vigilanceColorWind" sensorvalue="{{vigilanceColorWind_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceColorRain' sensorkey="vigilanceColorRain" sensorvalue="{{vigilanceColorRain_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceColorThunderstorms' sensorkey="vigilanceColorThunderstorms" sensorvalue="{{vigilanceColorThunderstorms_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceColorFlood' sensorkey="vigilanceColorFlood" sensorvalue="{{vigilanceColorFlood_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceColorSnow' sensorkey="vigilanceColorSnow" sensorvalue="{{vigilanceColorSnow_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceColorHeat' sensorkey="vigilanceColorHeat" sensorvalue="{{vigilanceColorHeat_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceColorCold' sensorkey="vigilanceColorCold" sensorvalue="{{vigilanceColorCold_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceColorAvalanches' sensorkey="vigilanceColorAvalanches" sensorvalue="{{vigilanceColorAvalanches_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceColorSubmersion' sensorkey="vigilanceColorSubmersion" sensorvalue="{{vigilanceColorSubmersion_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceRisk' sensorkey="vigilanceRisk" sensorvalue="{{vigilanceRisk_value}}"></dmw-sensor>
-        <dmw-sensor id='vigilanceInfo' sensorkey="vigilanceInfo" sensorvalue="{{vigilanceInfo_value}}"></dmw-sensor>
-        
-        <div id="container" on-click="{{displayInfo}}">
-            <!-- <img id="image" src="{{urlVigiFrance}}" on-click="{{displayInfo}}/> -->
-            <img id="image" src="{{urlVigiFrance}}" />
-            <!-- <span id="date">{{ date }}</span> -->
-            <span id="text">{{ risk }}</span>
-            <img id="image2" src="images/vigilance/logo.png" />
-        </div>
-        <div id="piccontainer">
-        <div id="pictoM"><div id="riskWind"><i class="wi wi-strong-wind"></i></div><span class="tooltiptext">{{ tooltipWind }}</span></div>
-        <div id="pictoM"><div id="riskRain"><i class="wi wi-rain"></i></div><span class="tooltiptext">{{ tooltipRain }}</span></div>
-        <div id="pictoM"><div id="riskThunderstorms"><i class="wi wi-lightning"></i></div><span class="tooltiptext">{{ tooltipThunderstorms }}</span></div>
-        <div id="pictoM"><div id="riskFlood"><i class="wi wi-flood"></i></div><span class="tooltiptext">{{ tooltipFlood }}</span></div>
-        <div id="pictoM"><div id="riskSnow"><i class="wi wi-snow"></i></div><span class="tooltiptext">{{ tooltipSnow }}</span></div>
-        <div id="pictoM"><div id="riskHeat"><i class="wi wi-day-sunny"></i></div><span class="tooltiptext">{{ tooltipHeat }}</span></div>
-        <div id="pictoM"><div id="riskCold"><i class="wi wi-snowflake-cold"></i></div><span class="tooltiptext">{{ tooltipCold }}</span></div>
-        <div id="pictoM"><div id="riskAvalanches"><i class="wi wi-volcano"></i></div><span class="tooltiptext">{{ tooltipAvalanches }}</span></div>
-        <div id="pictoM"><div id="riskSubmersion"><i class="wi wi-tsunami"></i></div><span class="tooltiptext">{{ tooltipSubmersion }}</span></div>
-        </div>
-        <div id="info" on-click="{{hideInfo}}"><pre id=infotext>{{ vigiInfo }}</pre>
+
+        <slot>
+            <dmw-sensor id='vigilanceDep' sensorkey="vigilanceDep" sensorvalue="{{vigilanceDep_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceColor' sensorkey="vigilanceColor" sensorvalue="{{vigilanceColor_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceColorWind' sensorkey="vigilanceColorWind" sensorvalue="{{vigilanceColorWind_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceColorRain' sensorkey="vigilanceColorRain" sensorvalue="{{vigilanceColorRain_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceColorThunderstorms' sensorkey="vigilanceColorThunderstorms" sensorvalue="{{vigilanceColorThunderstorms_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceColorFlood' sensorkey="vigilanceColorFlood" sensorvalue="{{vigilanceColorFlood_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceColorSnow' sensorkey="vigilanceColorSnow" sensorvalue="{{vigilanceColorSnow_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceColorHeat' sensorkey="vigilanceColorHeat" sensorvalue="{{vigilanceColorHeat_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceColorCold' sensorkey="vigilanceColorCold" sensorvalue="{{vigilanceColorCold_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceColorAvalanches' sensorkey="vigilanceColorAvalanches" sensorvalue="{{vigilanceColorAvalanches_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceColorSubmersion' sensorkey="vigilanceColorSubmersion" sensorvalue="{{vigilanceColorSubmersion_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceRisk' sensorkey="vigilanceRisk" sensorvalue="{{vigilanceRisk_value}}"></dmw-sensor>
+            <dmw-sensor id='vigilanceInfo' sensorkey="vigilanceInfo" sensorvalue="{{vigilanceInfo_value}}"></dmw-sensor>
+        </slot>
+
+        <div id="maincontainer">
+            <div id="container" on-click="displayInfo">
+                <!-- <img id="image" src="{{urlVigiFrance}}" on-click="{{displayInfo}}/> -->
+                <img id="image" src="{{urlVigiFrance}}" />
+                <!-- <span id="date">{{ date }}</span> -->
+                <span id="text">{{ risk }}</span>
+                <img id="image2" src="/widget/weather/images/vigilance/logo.png" />
+            </div>
+            <div id="piccontainer">
+                <div id="pictoM"><div id="riskWind"><i class="wi wi-strong-wind"></i></div><span class="tooltiptext">{{ tooltipWind }}</span></div>
+                <div id="pictoM"><div id="riskRain"><i class="wi wi-rain"></i></div><span class="tooltiptext">{{ tooltipRain }}</span></div>
+                <div id="pictoM"><div id="riskThunderstorms"><i class="wi wi-lightning"></i></div><span class="tooltiptext">{{ tooltipThunderstorms }}</span></div>
+                <div id="pictoM"><div id="riskFlood"><i class="wi wi-flood"></i></div><span class="tooltiptext">{{ tooltipFlood }}</span></div>
+                <div id="pictoM"><div id="riskSnow"><i class="wi wi-snow"></i></div><span class="tooltiptext">{{ tooltipSnow }}</span></div>
+                <div id="pictoM"><div id="riskHeat"><i class="wi wi-day-sunny"></i></div><span class="tooltiptext">{{ tooltipHeat }}</span></div>
+                <div id="pictoM"><div id="riskCold"><i class="wi wi-snowflake-cold"></i></div><span class="tooltiptext">{{ tooltipCold }}</span></div>
+                <div id="pictoM"><div id="riskAvalanches"><i class="wi wi-volcano"></i></div><span class="tooltiptext">{{ tooltipAvalanches }}</span></div>
+                <div id="pictoM"><div id="riskSubmersion"><i class="wi wi-tsunami"></i></div><span class="tooltiptext">{{ tooltipSubmersion }}</span></div>
+            </div>
+            <div id="info" on-click="hideInfo"><pre id=infotext>{{ vigiInfo }}</pre>
+            </div>
         </div>
 
     </template>
-    
+
     <script>
-                class Dmw extends DmwWidget {
-            static get is () { return 'dmw-weather-vigilance2',
-            connectedCallback() {
-                super.connectedCallback();
-                this.labelsecondary = i18n.t("weather:Vigilance") ;
-                
-                this.tooltipWind = i18n.t("weather:Wind") ;
-                this.tooltipRain = i18n.t("weather:Rain") ;
-                this.tooltipThunderstorms = i18n.t("weather:Thunderstorms") ;
-                this.tooltipFlood= i18n.t("weather:Flood") ;
-                this.tooltipSnow = i18n.t("weather:Snow/ice") ;
-                this.tooltipHeat = i18n.t("weather:Heat wave") ;
-                this.tooltipCold = i18n.t("weather:Intense cold") ;
-                this.tooltipAvalanches = i18n.t("weather:Avalanches") ;
-                this.tooltipSubmersion = i18n.t("weather:Submersion wave") ;     
-            },
-            
-            
+     (function () {
+        let memoizedTemplate;
+
+        class DmwWeatherVigilance2 extends DmwWidget {
+            static get is () { return 'dmw-weather-vigilance2'; }
+            static get properties() {
+                return {
+                    vigilanceDep_value: {
+                        notify: true,
+                        observer: 'vigilanceDep_valueChanged'
+                    },
+                    vigilanceColor_value: {
+                        notify: true,
+                        observer: 'vigilanceColor_valueChanged',
+                    },
+                    vigilanceColorWind_value: {
+                        notify: true,
+                        observer: 'vigilanceColorWind_valueChanged',
+                    },
+                    vigilanceColorRain_value: {
+                        notify: true,
+                        observer: 'vigilanceColorRain_valueChanged',
+                    },
+                    vigilanceColorThunderstorms_value: {
+                        notify: true,
+                        observer: 'vigilanceColorThunderstorms_valueChanged',
+                    },
+                    vigilanceColorFlood_value: {
+                        notify: true,
+                        observer: 'vigilanceColorFlood_valueChanged',
+                    },
+                    vigilanceColorSnow_value: {
+                        notify: true,
+                        observer: 'vigilanceColorSnow_valueChanged',
+                    },
+                    vigilanceColorHeat_value: {
+                        notify: true,
+                        observer: 'vigilanceColorHeat_valueChanged',
+                    },
+                    vigilanceColorCold_value: {
+                        notify: true,
+                        observer: 'vigilanceColorCold_valueChanged',
+                    },
+                    vigilanceColorAvalanches_value: {
+                        notify: true,
+                        observer: 'vigilanceColorAvalanches_valueChanged',
+                    },
+                    vigilanceColorSubmersion_value: {
+                        notify: true,
+                        observer: 'vigilanceColorSubmersion_valueChanged',
+                    },
+                    vigilanceRisk_value: {
+                        notify: true,
+                        observer: 'vigilanceRisk_valueChanged',
+                    },
+                    vigilanceInfo_value: {
+                        notify: true,
+                        observer: 'vigilanceInfo_valueChanged',
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
+            languageLoaded() {
+                this.labelsecondary = this.localize("weather:Vigilance") ;
+                this.tooltipWind = this.localize("weather:Wind") ;
+                this.tooltipRain = this.localize("weather:Rain") ;
+                this.tooltipThunderstorms = this.localize("weather:Thunderstorms") ;
+                this.tooltipFlood= this.localize("weather:Flood") ;
+                this.tooltipSnow = this.localize("weather:Snow/ice") ;
+                this.tooltipHeat = this.localize("weather:Heat wave") ;
+                this.tooltipCold = this.localize("weather:Intense cold") ;
+                this.tooltipAvalanches = this.localize("weather:Avalanches") ;
+                this.tooltipSubmersion = this.localize("weather:Submersion wave") ;
+            }
+            resized() {
+                const pictoW = this.clientWidth / 9;
+                const pictoH = pictoW * (20/29);
+                const mapSize = this.clientHeight - pictoH;
+                this.updateStyles({
+                    "--map-size": mapSize+"px",
+                    "--picto-width": pictoW+"px",
+                    "--picto-height": pictoH+"px",
+                    });
+                this._computeFontInfo();
+            }
             optionsUpdated() {
-                if (this.options['hideLabels'] == true ) {         
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -176,121 +277,108 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-                          
+            }
             vigilanceDep_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.labelprimary = "Departement " + newValue ;
                 this.urlVigiFrance = "http://vigilance.meteofrance.com/data/QGFR08_LFPW_.gif?" + new Date().getTime();
                 //this.urlVigiFrance = "/widget/weather/images/vigilance/QGFR08_LFPW_.gif" ;
                 //console.error("urlVigiFrance  = " + this.urlVigiFrance);
-            },
-            
+            }
             vigilanceInfo_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.vigiInfo = newValue ;
                 var vigiInfoLines = this.vigiInfo.split("\n") ;
                 this.date = vigiInfoLines[1] ;
-                
-            },
-            
+            }
             vigilanceColor_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.text.style.color = getColor(newValue) ;
-            },
-            
+            }
             vigilanceColorWind_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskWind.style.color = getColor(newValue) ;
-            },
-            
+            }
             vigilanceColorRain_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskRain.style.color = getColor(newValue) ;
-            },
-            
+            }
             vigilanceColorThunderstorms_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskThunderstorms.style.color = getColor(newValue) ;
-            },
-            
+            }
             vigilanceColorFlood_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskFlood.style.color = getColor(newValue) ;
-            },
-            
+            }
             vigilanceColorSnow_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskSnow.style.color = getColor(newValue) ;
-            },
-            
+            }
             vigilanceColorHeat_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskHeat.style.color = getColor(newValue) ;
-            },
-            
+            }
             vigilanceColorCold_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskCold.style.color = getColor(newValue) ;
-            },
-            
+            }
             vigilanceColorAvalanches_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskAvalanches.style.color = getColor(newValue) ;
-            },
-            
+            }
             vigilanceColorSubmersion_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.riskSubmersion.style.color = getColor(newValue) ;
-            },
-            
-            
+            }
             vigilanceRisk_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                
+
                 if (newValue) {
                     var riskslist = newValue.split(",") ;
                     var riskslistlen = riskslist.length ;
                     var risktext = "" ;
-                    for (i = 0; i < riskslistlen; i++) { 
-                        risktext = risktext + i18n.t("weather:" + riskslist[i]) + "<br \>" ; 
+                    for (var i = 0; i < riskslistlen; i++) {
+                        risktext = risktext + this.localize("weather:" + riskslist[i]) + "<br>" ;
                     }
-                    var risksFont = ((6 - riskslistlen) * 4).toString() + "px"
                     this.$.text.innerHTML = risktext;
-                    this.$.text.style.fontSize = risksFont ;                   // 1line = 20, 2lines=16, 3lines=12, 4lines=8, ...
-                    //console.error("vigilanceRisks = " + risktext);
+                    this._computeFontInfo();
                 }
-            },
-            
+            }
+            _computeFontInfo() {
+                const risktext = this.$.text.innerHTML;
+                if (risktext) {
+                    const riskslistlen = risktext.split("<br>").length;
+                    this.$.text.style.fontSize = parseInt(((7 - riskslistlen) * 4) * this.scales.height * this.scales.constraintRatio) + "px";
+                }
+            }
             displayInfo() {
                 console.error("displayInfo = " + this.vigiInfo);
                 this.$.info.style.display = "block";
-            },
-
+            }
             hideInfo() {
                 console.error("hideInfo");
                 this.$.info.style.display = "none";
             }
-            
 	    };
-    customElements.define(Dmw.is, Dmw);
-        
-        function getColor(color) {
-                switch(color) {         // "white", "green", "yellow", "orange", "red"
-                    case 'W': 
-                        return "white" ;
-                    case 'G': 
-                        return "green" ;
-                    case 'Y': 
-                        return "yellow" ;
-                    case 'O':
-                        return "orange" ;
-                    case 'R':
-                        return "red" ;
-                    default: 
-                        return "white" ;
-                }             
-            }
 
+        function getColor(color) {
+            switch(color) {         // "white", "green", "yellow", "orange", "red"
+                case 'W':
+                    return "white" ;
+                case 'G':
+                    return "green" ;
+                case 'Y':
+                    return "yellow" ;
+                case 'O':
+                    return "orange" ;
+                case 'R':
+                    return "red" ;
+                default:
+                    return "white" ;
+            }
+        }
+        customElements.define(DmwWeatherVigilance2.is, DmwWeatherVigilance2);
+    })();
     </script>
 </dom-module>

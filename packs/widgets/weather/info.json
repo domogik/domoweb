@@ -250,7 +250,7 @@
             "min_height" : 1,
             "min_width" : 3,
             "max_height" : 4,
-            "max_width" : 8,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -276,7 +276,7 @@
             "min_height" : 1,
             "min_width" : 3,
             "max_height" : 4,
-            "max_width" : 8,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -302,7 +302,7 @@
             "min_height" : 1,
             "min_width" : 3,
             "max_height" : 4,
-            "max_width" : 8,
+            "max_width" : 10,
             "options" : {},
             "devices" : {
                 "vigilance" : {
