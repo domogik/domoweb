@@ -1,17 +1,7 @@
-<style>
-@font-face {
-  font-family: 'FontAwesome';
-  src: url('/widget/health/font-awesome-4.7.0/fonts/fontawesome-webfont.eot?v=4.7.0');
-  src: url('/widget/health/font-awesome-4.7.0/fonts/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'), url('/widget/health/font-awesome-4.7.0/fonts/fontawesome-webfont.woff2?v=4.7.0') format('woff2'), url('/widget/health/font-awesome-4.7.0/fonts/fontawesome-webfont.woff?v=4.7.0') format('woff'), url('/widget/health/font-awesome-4.7.0/fonts/fontawesome-webfont.ttf?v=4.7.0') format('truetype'), url('/widget/health/font-awesome-4.7.0/fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
 </style>
 <dom-module id="dmw-health-body" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/health/css/common.css" shim-domshadow>
+    <template id="extended-styles">
         <link rel="stylesheet" href="/widget/health/css/c3.min.css" shim-domshadow>
-        <link rel="stylesheet" href="/widget/navigation/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow>
         <style type="text/css" is="dmw-c3-charts-body">
             :host {
                 height: 100%;
@@ -25,7 +15,7 @@
                 position: absolute;
                 bottom: 0px;
                 width: 100%;
-                font-size: 1.3em;
+                font-size: calc(1.3em*var(--wscale-h)*var(--wscale-r));
                 text-align: center;
             }
             #icon {
@@ -35,7 +25,13 @@
                 left: 1%;
                 height: 88%;
                 width: 27%;
-                font-size: 2em;
+                font-size: calc(2em*var(--wscale-h)*var(--wscale-r));
+            }
+            #icon :hover {
+                cursor: pointer;
+            }
+            #icon i {
+                font-size: calc(2em*var(--wscale-h)*var(--wscale-r));
             }
             #icon .weight {
                 margin-top: 0.6em;
@@ -54,13 +50,16 @@
                 height: 88%;
                 width: 65%;
                 top: 3%;
-                font-size: 1.4em;
+                font-size: calc(1em*var(--wscale-h)*var(--wscale-r));
             }
             #inputForm table {
                 width: 100%;
             }
             #inputForm table .value {
                 text-align: center;
+            }
+            #inputForm button {
+                color: black;
             }
             #inputForm .submit {
                 position: absolute;
@@ -73,7 +72,7 @@
 .c3-legend-item text {
 /* TODO : dynamic update !!!! */
     fill: white;
-    font-size: 12px;
+    font-size: calc(12px*var(--wscale-h)*var(--wscale-r));;
 }
 .c3-axis-x text {
 /* TODO : dynamic update !!!! */
@@ -123,49 +122,48 @@
         <dmw-command id="set_muscle" commandkey="set_muscle"></dmw-command>
         <dmw-command id="set_water" commandkey="set_water"></dmw-command>
         <dmw-command id="set_bone" commandkey="set_bone"></dmw-command>
-        <shadow></shadow>
         <div id='container'>
           <div id='inputForm'>
             <table>
               <tbody>
                 <tr class='input'>
                   <td class="label">Weight</td>
-                  <td><button on-click="{{ lessWeight }}">-</button></td>
+                  <td><button on-click="lessWeight">-</button></td>
                   <td class="value">{{ newWeight }} kg</td>
-                  <td><button on-click="{{ moreWeight }}">+</button></td>
+                  <td><button on-click="moreWeight">+</button></td>
                 </tr>
                 <tr class='input'>
                   <td class="label">Fat</td>
-                  <td><button on-click="{{ lessFat }}">-</button></td>
+                  <td><button on-click="lessFat">-</button></td>
                   <td class="value">{{ newFat }} %</td>
-                  <td><button on-click="{{ moreFat }}">+</button></td>
+                  <td><button on-click="moreFat">+</button></td>
                 </tr>
                 <tr class='input'>
                   <td class="label">Muscle</td>
-                  <td><button on-click="{{ lessMuscle }}">-</button></td>
+                  <td><button on-click="lessMuscle">-</button></td>
                   <td class="value">{{ newMuscle }} %</td>
-                  <td><button on-click="{{ moreMuscle }}">+</button></td>
+                  <td><button on-click="moreMuscle">+</button></td>
                 </tr>
                 <tr class='input'>
                   <td class="label">Water</td>
-                  <td><button on-click="{{ lessWater }}">-</button></td>
+                  <td><button on-click="lessWater">-</button></td>
                   <td class="value">{{ newWater }} %</td>
-                  <td><button on-click="{{ moreWater }}">+</button></td>
+                  <td><button on-click="moreWater">+</button></td>
                 </tr>
                 <tr class='input'>
                   <td class="label">Bone</td>
-                  <td><button on-click="{{ lessBone }}">-</button></td>
+                  <td><button on-click="lessBone">-</button></td>
                   <td class="value">{{ newBone }} %</td>
-                  <td><button on-click="{{ moreBone }}">+</button></td>
+                  <td><button on-click="moreBone">+</button></td>
                 </tr>
               </tbody>
             </table>
-            <button class='submit' on-click="{{ save }}">Save</button>
+            <button class='submit' on-click="save">Save</button>
           </div>
           <div id='ratioChart'>
           </div>
-          <div id='icon' on-tap="{{ switchMode }}">
-            <i class="fa fa-{{ icon }} fa-4x"></i>
+          <div id='icon' on-tap="switchMode">
+            <i id='iconsex' class="fa fa-refresh"></i>
             <div class="weight">
               {{ weightValue }} kg
             </div>
@@ -179,8 +177,59 @@
     <script src="/widget/health/js/c3.min.js"></script>
 
     <script>
-                class Dmw extends DmwWidget {
-            static get is () { return 'dmw-health-body',
+     (function () {
+        let memoizedTemplate;
+
+        class DmwHealthBody extends DmwWidget {
+            static get is () { return 'dmw-health-body'; }
+            static get properties() {
+                return {
+                    weightsensorvalue: {
+                        notify: true,
+                        observer: 'weightsensorvalueChanged'
+                    },
+                    weighthistory: {
+                        notify: true,
+                        observer: 'weighthistoryChanged',
+                    },
+                    fatsensorvalue: {
+                        notify: true,
+                        observer: 'fatsensorvalueChanged',
+                    },
+                    musclesensorvalue: {
+                        notify: true,
+                        observer: 'musclesensorvalueChanged',
+                    },
+                    watersensorvalue: {
+                        notify: true,
+                        observer: 'watersensorvalueChanged',
+                    },
+                    bonesensorvalue: {
+                        notify: true,
+                        observer: 'bonesensorvalueChanged',
+                    },
+                    bonehistory: {
+                        notify: true,
+                        observer: 'bonehistoryChanged',
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
             connectedCallback() {
                 super.connectedCallback();
                 this.weightValue = 0;
@@ -203,14 +252,19 @@
                     this.draw();
                     }.bind(this), 5000);
 
-            },
+            }
+            resized() {
+                if (this.loaded) {
+                    this.chartToUpdate = true;
+                    this.draw();
+                }
+            }
             draw() {
-                
+
                 if (this.chartToUpdate == false) {
                     return;
                 }
                 this.chartToUpdate = false;
-
                 // a security in case the div is not yet displayed in the appropriate size
                 if (this.$.ratioChart.clientWidth == 0 || this.$.ratioChart.clientHeight == 0) {
                     //setTimeout(function(){
@@ -218,7 +272,6 @@
                     //    }.bind(this), 1000);
                     return;
                 }
-
 
                 // color
                 //if (this.options['WidgetTextColor']  == undefined) {
@@ -229,40 +282,52 @@
                 //}
 
                 // draw the weight chart
-                //if (this.chart != undefined) {
-                //    this.chart.destroy();
-                //}
-                this.chart = c3.generate({
-                    bindto: this.$.ratioChart,
-                    data: {
+                if (this.chart != undefined) {
+                    this.$.ratioChart.style.maxHeight = "none";  // fixe to recaculate max-height
+                    this.chart.load({
+                   //     donut: {
+                   //         width: ????, Desactivate curiously doesn't work fine. Auto mode seems better.
+                  //     },
                         columns: [
-                            ['Fat', this.fatValue],
-                            ['Muscle', this.muscleValue],
-                            ['Water', this.waterValue],
-                            ['Bone', this.boneValue],
-                        ],
-                        type : 'donut',
-                    },
-                    donut: {
-                        title: "",
-                        width: 40,
-                        label: {
-                            format: function (value) { return ""; }   // not working :(
+                                ['Fat', this.fatValue],
+                                ['Muscle', this.muscleValue],
+                                ['Water', this.waterValue],
+                                ['Bone', this.boneValue],
+                            ],
+                    });
+                    this.chart.flush();
+                } else {
+                    this.chart = c3.generate({
+                        bindto: this.$.ratioChart,
+                        data: {
+                            columns: [
+                                ['Fat', this.fatValue],
+                                ['Muscle', this.muscleValue],
+                                ['Water', this.waterValue],
+                                ['Bone', this.boneValue],
+                            ],
+                            type : 'donut',
+                        },
+                        donut: {
+                            title: "",
+                      //      width: ????, Desactivate curiously doesn't work fine. Auto mode seems better.
+                            label: {
+                                format: function (value) { return ""; }   // not working :(
+                            }
+                        },
+                        color: {
+                            //pattern: [rgba(230, 220, 70), rgba(192, 104, 88), rgba(170, 250, 250), rgba(241, 214, 145)]
+                            pattern: ["#e6dc46", "#c06858", "#aafafa", "#f1d691"]
+                        },
+                        tooltip: {
+                            show: false
                         }
-                    },
-                    color: {
-                        //pattern: [rgba(230, 220, 70), rgba(192, 104, 88), rgba(170, 250, 250), rgba(241, 214, 145)]
-                        pattern: ["#e6dc46", "#c06858", "#aafafa", "#f1d691"]
-                    },
-                    tooltip: {
-                        show: false
-                    }
-        	    };
-    customElements.define(Dmw.is, Dmw);
+                    });
                 this.chart.show(['Fat', 'Muscle', 'Water', 'Bone']);
-            },
+                }
+            }
             optionsUpdated() {
-                if (this.options['hideLabels'] == true ) {         
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -278,7 +343,7 @@
                 else {
                     this.icon = "female";
                 }
-            },
+            }
             sensorsUpdated() {
                 if (this.$.weight.isSet) {
                     this.labelprimary = this.$.weight.device['name'];
@@ -296,7 +361,8 @@
                 else {
                     this.icon = "female";
                 }
-            },
+                this.$.iconsex.classList = "fa fa-"+this.icon;
+            }
             weightsensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (newValue == null) {
@@ -304,7 +370,7 @@
                 }
                 //this.$.weight.getCurrentWeek();
                 this.weightValue = newValue;
-            },
+            }
             bonesensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (newValue == null) {
@@ -314,7 +380,7 @@
                 this.boneValue = newValue;
                 //this.draw();
                 this.chartToUpdate = true;
-            },
+            }
             watersensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (newValue == null) {
@@ -324,7 +390,7 @@
                 this.waterValue = newValue;
                 //this.draw();
                 this.chartToUpdate = true;
-            },
+            }
             musclesensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (newValue == null) {
@@ -334,7 +400,7 @@
                 this.muscleValue = newValue;
                 //this.draw();
                 this.chartToUpdate = true;
-            },
+            }
             fatsensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (newValue == null) {
@@ -344,11 +410,11 @@
                 this.fatValue = newValue;
                 //this.draw();
                 this.chartToUpdate = true;
-            },
-            weighthistoryChanged(newValue, oldValue) { 
-            },
-            bonehistoryChanged(newValue, oldValue) { 
-            },
+            }
+            weighthistoryChanged(newValue, oldValue) {
+            }
+            bonehistoryChanged(newValue, oldValue) {
+            }
             // ...
             switchMode() {
                 if (this.mode == "ratioChart") {
@@ -371,38 +437,41 @@
                     this.$.ratioChart.style.display = "block";
                     this.$.inputForm.style.display = "none";
                     this.mode = "ratioChart";
+                    // force redraw if user change size
+                    this.chartToUpdate = true;
+                    this.draw();
                 }
-            },
+            }
             lessWeight() {
                 this.newWeight = (this.newWeight - 0.1).toFixed(1);
-            },
+            }
             lessMuscle() {
                 this.newMuscle = (this.newMuscle - 0.1).toFixed(1);
-            },
+            }
             lessFat() {
                 this.newFat = (this.newFat - 0.1).toFixed(1);
-            },
+            }
             lessWater() {
                 this.newWater = (this.newWater - 0.1).toFixed(1);
-            },
+            }
             lessBone() {
                 this.newBone = (this.newBone - 0.1).toFixed(1);
-            },
+            }
             moreWeight() {
                 this.newWeight = (parseFloat(this.newWeight) + 0.1).toFixed(1);
-            },
+            }
             moreMuscle() {
                 this.newMuscle = (parseFloat(this.newMuscle) + 0.1).toFixed(1);
-            },
+            }
             moreFat() {
                 this.newFat = (parseFloat(this.newFat) + 0.1).toFixed(1);
-            },
+            }
             moreWater() {
                 this.newWater = (parseFloat(this.newWater) + 0.1).toFixed(1);
-            },
+            }
             moreBone() {
                 this.newBone = (parseFloat(this.newBone) + 0.1).toFixed(1);
-            },
+            }
             save() {
                 // weight
                 var parameters = {};
@@ -442,8 +511,8 @@
                     }.bind(this), 500);
 
             }
-	    };
-    customElements.define(Dmw.is, Dmw);
- 
+	     };
+        customElements.define(DmwHealthBody.is, DmwHealthBody);
+    })();
     </script>
 </dom-module>
