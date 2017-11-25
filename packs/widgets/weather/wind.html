@@ -11,8 +11,11 @@
 </style>
 <dom-module id="dmw-weather-wind">
     <template id="extended-styles">
-        <link rel="stylesheet" href="/widget/weather/weather-icons-master-1.3/css/weather-icons.css">
+        <link rel="stylesheet" href="/widget/weather/weather-icons-master-2.0/css/weather-icons.css">
         <style type="text/css">
+            :host {
+                --arrow-w: 50px;
+            }
             .inactive {
                 display: none;
             }
@@ -24,7 +27,7 @@
             }
             #center {
                 position: absolute;
-                top: 50%;
+                top: 45%;
                 left: 50%;
                 width: 10px;
                 height: 10px;
@@ -35,8 +38,8 @@
             #arrow {
                 position: absolute;
                 left: 50%;
-                top: 50%;
-                margin: -50px 0 0 -15px;
+                top: 45%;
+                margin: calc(-30px*var(--wscale-w)) 0 0 -15px;
                 transform-origin: center center;
                 transition: all 1s ease;
             }
@@ -45,25 +48,26 @@
             }
             #speeddisplay {
                 position: absolute;
-                bottom: 5px;
+                bottom: 2px;
                 right: 5px;
-                font-size: 1.1em;
+                font-size: calc(0.7em*var(--wscale-h)*var(--wscale-r));
             }
             #gustdisplay {
                 position: absolute;
-                bottom: 5px;
+                bottom: 2px;
                 left: 5px;
-                font-size: 1.1em;
+                font-size: calc(0.7em*var(--wscale-h)*var(--wscale-r));
             }
         </style>
-        <dmw-sensor id='direction' sensorkey="direction" sensorvalue="{{directionvalue}}" sensornotified="compass"></dmw-sensor>
-        <dmw-sensor id='speed' sensorkey="speed" sensorvalue="{{speedvalue}}"></dmw-sensor>
-        <dmw-sensor id='gust' sensorkey="gust" sensorvalue="{{gustvalue}}"></dmw-sensor>
-        <shadow></shadow>
-        <canvas id="compass" width="238" height="238"></canvas>
+        <slot>
+            <dmw-sensor id='direction' sensorkey="direction" sensorvalue="{{directionvalue}}" sensornotified="compass"></dmw-sensor>
+            <dmw-sensor id='speed' sensorkey="speed" sensorvalue="{{speedvalue}}"></dmw-sensor>
+            <dmw-sensor id='gust' sensorkey="gust" sensorvalue="{{gustvalue}}"></dmw-sensor>
+        </slot>
+        <canvas id="compass" width="{{sizew}}" height="{{sizeh}}"></canvas>
         <div id="center" class="center"></div>
         <svg class="inactive" version="1.1" id="arrow" xmlns:svg="http://www.w3.org/2000/svg"
-             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="100px"
+             xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="30px" height="50px"
              viewBox="167.9 396.6 30 100" style="enable-background:new 167.9 396.6 30 100;" xml:space="preserve">
         <g id="Ebene_1" transform="matrix(0,-2.4390522,2.4390522,0,7.7693439,1270.6714)">
             <polygon id="path2050" points="317.3,70.5 347.7,70.5 347.7,65.7 358.4,71.9 347.7,78 347.7,73.2 317.3,73.2     "/>
@@ -110,11 +114,49 @@
               }
               return memoizedTemplate;
             }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+                this.direction = 90;
+            }
             connectedCallback() {
                 super.connectedCallback();
             }
+            resized(){
+                const context = this.$.compass.getContext('2d');
+                context.clearRect(0, 0, this.sizew, this.sizeh);
+                this.sizew = this.clientWidth;
+                this.sizeh = this.clientHeight;
+                this.centerX = this.sizew/2;
+                this.centerY = (this.sizeh/2) - 10;
+                const radius = (this.sizew/2) - (15 * this.scales.width);
+                let color =  "#ffffff";
+                if (this.options) {
+                    color = (this.options['WidgetTextColor'] == undefined) ? "#ffffff" : this.options['WidgetTextColor'];
+                }
+                context.lineWidth = 2;
+                context.strokeStyle = color;
+                context.fillStyle = color;
+                context.beginPath();
+                context.arc(this.centerX, this.centerY, radius, 0.1*Math.PI, 0.4*Math.PI);
+                context.stroke();
+                context.beginPath();
+                context.arc(this.centerX, this.centerY, radius, 0.6*Math.PI, 0.9*Math.PI);
+                context.stroke();
+                context.beginPath();
+                context.arc(this.centerX, this.centerY, radius, 1.1*Math.PI, 1.4*Math.PI);
+                context.stroke();
+                context.beginPath();
+                context.arc(this.centerX, this.centerY, radius, 1.6*Math.PI, 1.9*Math.PI);
+                context.stroke();
+                context.font = (10 * this.scales.width) + 'pt Verdana';
+                context.fillText('O', this.centerX - 5 - radius, this.centerY + 6);
+                context.fillText('E', this.centerX - 5 + radius, this.centerY + 6);
+                context.fillText('S', this.centerX - 5,  this.centerY + radius + 6);
+                context.fillText('N', this.centerX - 5, this.centerY- radius + 6);
+                this.$.arrow.setAttribute('height', `${60*this.scales.width}px`);
+            }
             sensorsUpdated() {
-
                 this.$.compass.width = this.clientWidth;
                 this.$.compass.height = this.clientHeight;
                 if (this.$.compass.width == 0 || this.$.compass.height == 0) {
@@ -123,37 +165,6 @@
                         }.bind(this), 1000);
                 }
                 else {
-                    if (this.options['WidgetTextColor'] == undefined) {
-                        var color = "#ffffff";
-                    }
-                    else {
-                        var color = this.options['WidgetTextColor'];
-                    }
-
-                    var context = this.$.compass.getContext('2d');
-                    var radius = 70;
-                    context.lineWidth = 2;
-                    context.strokeStyle = color;
-                    context.fillStyle = color;
-                    context.beginPath();
-                    context.arc(this.clientWidth/2, this.clientHeight/2, radius, 0.1*Math.PI, 0.4*Math.PI);
-                    context.stroke();
-                    context.beginPath();
-                    context.arc(this.clientWidth/2, this.clientHeight/2, radius, 0.6*Math.PI, 0.9*Math.PI);
-                    context.stroke();
-                    context.beginPath();
-                    context.arc(this.clientWidth/2, this.clientHeight/2, radius, 1.1*Math.PI, 1.4*Math.PI);
-                    context.stroke();
-                    context.beginPath();
-                    context.arc(this.clientWidth/2, this.clientHeight/2, radius, 1.6*Math.PI, 1.9*Math.PI);
-                    context.stroke();
-                    context.font = '12pt Verdana';
-                    context.fillText('O', this.clientWidth/2 - 5 - radius, this.clientHeight/2 + 6);
-                    context.fillText('E', this.clientWidth/2 - 5 + radius, this.clientHeight/2 + 6);
-                    context.fillText('S', this.clientWidth/2 - 5, this.clientHeight/2 + radius + 6);
-                    context.fillText('N', this.clientWidth/2 - 5, this.clientHeight/2 - radius + 6);
-
-
                     if (this.$.direction.isSet) {
                         this.labelprimary = this.$.direction.device['name'];
                         //this.labelsecondary = this.$.direction.name;
@@ -174,6 +185,7 @@
                         this.$.gustdisplay.classList.add('inactive');
                     }
                 }
+                this.resized();
             }
             directionvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
@@ -181,6 +193,7 @@
                 this.$.path2050.style.fill = this.options['WidgetTextColor'];
                 this.$.arrow.style.transform = 'rotate(' + newValue + 'deg)';
                 this.$.arrow.style.webkitTransform = 'rotate(' + newValue + 'deg)';
+                this.direction = newValue;
             }
             speedvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
