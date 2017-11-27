@@ -49,5 +49,25 @@
         "fromToDay": "Between 2 day",
         "min": "min",
         "max": "max"
+    },
+    "location": {
+        "direction" : {
+            "North": "North",
+            "N": "N",
+            "East": "East",
+            "E": "E",
+            "South": "South",
+            "S": "S",
+            "West": "West",
+            "W": "W",
+            "Northeast": "northeast",
+            "NE": "NE",
+            "Northwest": "northwest",
+            "NW": "NW",
+            "Southeast": "southeast",
+            "SE": "SE",
+            "Southwest": "southwest",
+            "SW": "SW"
+        }
     }
 }

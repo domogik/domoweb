@@ -150,10 +150,10 @@
                 context.arc(this.centerX, this.centerY, radius, 1.6*Math.PI, 1.9*Math.PI);
                 context.stroke();
                 context.font = (10 * this.scales.width) + 'pt Verdana';
-                context.fillText('O', this.centerX - 5 - radius, this.centerY + 6);
-                context.fillText('E', this.centerX - 5 + radius, this.centerY + 6);
-                context.fillText('S', this.centerX - 5,  this.centerY + radius + 6);
-                context.fillText('N', this.centerX - 5, this.centerY- radius + 6);
+                context.fillText(this.localize('location:direction:W'), this.centerX - 5 - radius, this.centerY + 6);
+                context.fillText(this.localize('location:direction:E'), this.centerX - 5 + radius, this.centerY + 6);
+                context.fillText(this.localize('location:direction:S'), this.centerX - 5,  this.centerY + radius + 6);
+                context.fillText(this.localize('location:direction:N'), this.centerX - 5, this.centerY- radius + 6);
                 this.$.arrow.setAttribute('height', `${60*this.scales.width}px`);
             }
             sensorsUpdated() {
