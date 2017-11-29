@@ -1,10 +1,10 @@
 <dom-module id="dmw-c3_charts-spline">
     <template id="extended-styles">
-        <link rel="stylesheet" href="/widget/c3_charts/css/common.css">
         <link rel="stylesheet" href="/widget/c3_charts/css/c3.min.css">
         <style type="text/css" is="dmw-c3-charts-spline">
             :host {
                 height: 100%;
+                --grid-font-size: 10px;
             }
             #container {
                 position: absolute;
@@ -15,8 +15,11 @@
                 position: absolute;
                 bottom: 0px;
                 width: 100%;
-                font-size: 1.3em;
+                height: calc(15%/var(--wscale-h));
                 text-align: center;
+            }
+            #legend span {
+                line-height: 100%;
             }
             #chart {
                 height: 98%;
@@ -32,12 +35,12 @@
 #chart .c3-axis-x text {
 /* TODO : dynamic update !!!! */
     fill: white;
-    font-size: 12px;
+    font-size: calc(12px*var(--wscale-w));
 }
 #chart .c3-axis-y text {
 /* TODO : dynamic update !!!! */
     fill: white;
-    font-size: 12px;
+    font-size: calc(12px*var(--wscale-h));
 }
 #chart .c3-axis-x path, .c3 .c3-axis-x line {
 /* TODO : dynamic update !!!! */
@@ -48,6 +51,10 @@
 /* TODO : dynamic update !!!! */
     stroke: white;
     stroke-width: 2px;
+}
+
+#chart .c3-grid text {
+    font-size: var(--grid-font-size);
 }
 
 /* width */
@@ -61,13 +68,14 @@
 }
 
         </style>
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
-        <shadow></shadow>
+        <slot>
+            <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
+        </slot>
         <div id='container'>
           <div id='chart'>
           </div>
           <div id='legend'>
-            {{ legend }}
+            <span>{{ legend }}</span>
           </div>
         </div>
     </template>
@@ -110,6 +118,19 @@
                 this.xlines = [];
                 this.data1 = [];
             }
+            resized() {
+                let fSize = 10 * this.scales.height*this.scales.width;
+                if (fSize < 8) { fSize = 8;
+                } else if (fSize > 18) { fSize = 18; }
+                this.updateStyles({
+                    '--grid-font-size' : `${fSize}px`,
+                });
+                this.adjustText(this.$.legend, this.$.legend.children["0"]);
+                if (this.chart != undefined) {
+                    this.$.chart.style.maxHeight = "none";  // fixe to recaculate max-height
+                    this.chart.flush();
+                }
+            }
             draw() {
                 // color
                 var the_color = "#ffffff";
@@ -124,7 +145,6 @@
                     this.xlines[idx] = { value : moment().subtract(7-idx, 'days').format("YYYY-MM-DD 00:00"),
                                          text : moment().subtract(7-idx+1, 'days').format("DD/MM")};
                 }
-
 
                 // draw the chart
                 this.chart = c3.generate({
