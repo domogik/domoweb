@@ -549,8 +549,8 @@
                         this.adjustText(parent, element, margin);
                         }.bind(this), 1000);
                 } else {
-                    const fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
-                    let i = fontsize.substr(0,2);
+                    let i = 100; // force highSize to recalculate;
+                    element.style.fontSize = i+"px";
                     const maxWith = parent.clientWidth - margin.width;
                     const maxHeight = parent.clientHeight - margin.height;
                     if (maxWith > element.offsetWidth && maxHeight > element.offsetHeight) {
