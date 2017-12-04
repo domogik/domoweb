@@ -262,6 +262,8 @@
                 this.commandsReady = false;
                 this.devicesReady = false;
                 this.loaded = false;
+                this._ajaxEditEvent = false;
+                this._timeoutEvents = [];
                 this._computeScale();
                  // Memorize style attribute modified by the-grid
                 this.MemZindex = this.style.zIndex;
@@ -270,6 +272,10 @@
                 if (this.datatypes === null || this.datatypes === undefined) {
                     document.querySelector("dmw-datatypes").addEventListener("datatype-received", this.datatypesReceived.bind(this), false);
                 }
+            }
+            disconnectedCallback () {
+                super.connectedCallback();
+                this._removeTimeoutEvents();
             }
             _computeScale() {
                 const cellHeight = this.parentNode.getAttribute('cell-height'),
@@ -347,85 +353,88 @@
             editWidget(e) {
                 var self = this;
                 var modalOverlay = document.getElementById('modal-overlay');
-                this.$.ajax.setAttribute('handleAs', 'text');
-                this.$.ajax.addEventListener("polymer-response",
-                    function(e) {
-                        var response = e.detail.response;
-                        if (response == '{success:true}') {
-                            modalOverlay.classList.remove('on');
-                            modalOverlay.innerHTML = '';
-                        } else {
-                            modalOverlay.innerHTML = response;
-                            var saveConfig = modalOverlay.querySelector('#saveConfig');
-                            var cancelConfig = modalOverlay.querySelector('#cancelConfig');
-                            var formConfig = modalOverlay.querySelector('#formConfig');
-                            saveConfig.addEventListener("click",
-                                function(e) {
-                                    self.$.ajax.setAttribute('body', $(formConfig).serialize());
-                                    self.$.ajax.setAttribute('method', 'POST');
-                                    self.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + self.instanceid + '"}');
-                                    self.$.ajax.go();
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    return false;
-                                });
-                            cancelConfig.addEventListener("click",
-                                function(e) {
-                                    modalOverlay.classList.remove('on');
-                                    modalOverlay.innerHTML = '';
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    return false;
-                                });
-                            modalOverlay.classList.add('on');
-
-                            $("fieldset[data-toggle=fieldset]").each(function() {
-                                var $this = $(this);
-
-                                //Add new entry
-                                $this.find("button[data-toggle=fieldset-add-row]").click(function() {
-                                    var target = $($(this).data("target"))
-                                    var oldrow = target.find("div[data-toggle=fieldset-entry]:last");
-                                    var row = oldrow.clone(true, true);
-                                    var elem_id = row.find(":input")[0].id;
-                                    var reg = /.*-(\d{1,2})/m;
-                                    var elem_num = parseInt(reg.exec(elem_id)[1]) + 1;
-                                    row.attr('data-id', elem_num);
-                                    row.find(":input").each(function() {
-                                        var id = $(this).attr('id').replace('-' + (elem_num - 1), '-' + (elem_num));
-                                        $(this).attr('name', id).attr('id', id).val('').removeAttr("checked");
+                if (!this._ajaxEditEvent) {
+                    this._ajaxEditEvent = true;
+                    this.$.ajax.setAttribute('handleAs', 'text');
+                    this.$.ajax.addEventListener("polymer-response",
+                        function(e) {
+                            var response = e.detail.response;
+                            if (response == '{success:true}') {
+                                modalOverlay.classList.remove('on');
+                                modalOverlay.innerHTML = '';
+                            } else {
+                                modalOverlay.innerHTML = response;
+                                var saveConfig = modalOverlay.querySelector('#saveConfig');
+                                var cancelConfig = modalOverlay.querySelector('#cancelConfig');
+                                var formConfig = modalOverlay.querySelector('#formConfig');
+                                saveConfig.addEventListener("click",
+                                    function(e) {
+                                        self.$.ajax.setAttribute('body', $(formConfig).serialize());
+                                        self.$.ajax.setAttribute('method', 'POST');
+                                        self.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + self.instanceid + '"}');
+                                        self.$.ajax.go();
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        return false;
                                     });
-                                    row.find("label").each(function() {
-                                        var idfor = $(this).attr('for').replace('-' + (elem_num - 1), '-' + (elem_num));
-                                        $(this).attr('for', idfor);
-                                        $(this).text("#"+(elem_num+1));
+                                cancelConfig.addEventListener("click",
+                                    function(e) {
+                                        modalOverlay.classList.remove('on');
+                                        modalOverlay.innerHTML = '';
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        return false;
                                     });
-                                    oldrow.after(row);
-                                    var length = target.find("div[data-toggle=fieldset-entry]").length;
-                                    if (length == $this.data("maxgroup")) {
-                                        $this.find("button[data-toggle=fieldset-add-row]").attr('disabled', 'disabled');
-                                    }
-                                    if (length > $this.data("mingroup")) {
-                                        $this.find("button[data-toggle=fieldset-remove-row]").removeAttr('disabled');
-                                    }
-                                }); //End add new entry
+                                modalOverlay.classList.add('on');
 
-                                //Remove row
-                                $this.find("button[data-toggle=fieldset-remove-row]").click(function() {
-                                    var target = $($(this).data("target"))
-                                    var row = target.find("div[data-toggle=fieldset-entry]:last");
-                                    row.remove();
-                                    var length = target.find("div[data-toggle=fieldset-entry]").length;
-                                    if (length == $this.data("mingroup")) {
-                                        $this.find("button[data-toggle=fieldset-remove-row]").attr('disabled', 'disabled');
-                                    }
-                                    if (length < $this.data("maxgroup")) {
-                                        $this.find("button[data-toggle=fieldset-add-row]").removeAttr('disabled');
-                                    }
-                                }); //End remove row
-                            });
-                        }
-                    });
+                                $("fieldset[data-toggle=fieldset]").each(function() {
+                                    var $this = $(this);
+
+                                    //Add new entry
+                                    $this.find("button[data-toggle=fieldset-add-row]").click(function() {
+                                        var target = $($(this).data("target"))
+                                        var oldrow = target.find("div[data-toggle=fieldset-entry]:last");
+                                        var row = oldrow.clone(true, true);
+                                        var elem_id = row.find(":input")[0].id;
+                                        var reg = /.*-(\d{1,2})/m;
+                                        var elem_num = parseInt(reg.exec(elem_id)[1]) + 1;
+                                        row.attr('data-id', elem_num);
+                                        row.find(":input").each(function() {
+                                            var id = $(this).attr('id').replace('-' + (elem_num - 1), '-' + (elem_num));
+                                            $(this).attr('name', id).attr('id', id).val('').removeAttr("checked");
+                                        });
+                                        row.find("label").each(function() {
+                                            var idfor = $(this).attr('for').replace('-' + (elem_num - 1), '-' + (elem_num));
+                                            $(this).attr('for', idfor);
+                                            $(this).text("#"+(elem_num+1));
+                                        });
+                                        oldrow.after(row);
+                                        var length = target.find("div[data-toggle=fieldset-entry]").length;
+                                        if (length == $this.data("maxgroup")) {
+                                            $this.find("button[data-toggle=fieldset-add-row]").attr('disabled', 'disabled');
+                                        }
+                                        if (length > $this.data("mingroup")) {
+                                            $this.find("button[data-toggle=fieldset-remove-row]").removeAttr('disabled');
+                                        }
+                                    }); //End add new entry
+
+                                    //Remove row
+                                    $this.find("button[data-toggle=fieldset-remove-row]").click(function() {
+                                        var target = $($(this).data("target"))
+                                        var row = target.find("div[data-toggle=fieldset-entry]:last");
+                                        row.remove();
+                                        var length = target.find("div[data-toggle=fieldset-entry]").length;
+                                        if (length == $this.data("mingroup")) {
+                                            $this.find("button[data-toggle=fieldset-remove-row]").attr('disabled', 'disabled');
+                                        }
+                                        if (length < $this.data("maxgroup")) {
+                                            $this.find("button[data-toggle=fieldset-add-row]").removeAttr('disabled');
+                                        }
+                                    }); //End remove row
+                                });
+                            }
+                        });
+                }
                 this.$.ajax.setAttribute('method', 'GET');
                 this.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + this.instanceid + '"}');
                 self.$.ajax.go();
@@ -460,17 +469,40 @@
                 this.$.minSize.innerHTML = this.getAttribute('min-width') + " x " + this.getAttribute('min-height');
                 this.$.maxSize.innerHTML = this.getAttribute('max-width') + " x " + this.getAttribute('max-height');
             }
+            _addTimeoutEvent(dmwsensor, event, callback) {
+                let find = false;
+                for (let i=0; i < this._timeoutEvents.length; i++) {
+                    if (this._timeoutEvents[i].dmwsensor == dmwsensor && this._timeoutEvents[i].event == event) {
+                        find = true;
+                        break;
+                    }
+                }
+                if (!find) {
+                    dmwsensor.addEventListener(event, callback);
+                    this._timeoutEvents.push({'dmwsensor': dmwsensor, 'event': event, 'callback': callback});
+                }
+            }
+            _addTimeoutEvents(dmwsensor) {
+                this._addTimeoutEvent(dmwsensor, "sensor-timeout", this.timeoutDetected.bind(this));
+                this._addTimeoutEvent(dmwsensor, "sensor-timeoutend", this.timeoutFinished.bind(this));
+                this._addTimeoutEvent(dmwsensor, "sensor-history-timeout", this.timeoutHistoryDetected.bind(this));
+                this._addTimeoutEvent(dmwsensor, "sensor-history-timeoutend", this.timeoutHistoryFinished.bind(this));
+            }
+            _removeTimeoutEvents() {
+                let e;
+                for (let i=0; i < this._timeoutEvents.length; i++) {
+                    e = this._timeoutEvents[i];
+                    e.dmwsensor.removeEventListener(e.event, e.callback);
+                }
+                this._timeoutEvents = [];
+            }
             sensorsReceived(topic, json) {
+                this._removeTimeoutEvents();
                 for (var key in json['sensors']) {
                     var sensor = json['sensors'][key];
                     var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
                     if (dmwsensor) {
-                        if (this.options['WidgetSensorTimeout'] == 1) {
-                            dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
-                            dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
-                      dmwsensor.addEventListener("sensor-history-timeout", this.timeoutHistoryDetected.bind(this));
-                      dmwsensor.addEventListener("sensor-history-timeoutend", this.timeoutHistoryFinished.bind(this));
-                        }
+                        if (this.options['WidgetSensorTimeout'] == 1) this._addTimeoutEvents(dmwsensor);
                         dmwsensor.init(sensor);
                     }
                 }
@@ -502,12 +534,7 @@
                             var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
                             if (dmwsensor) {
                                 dmwsensor.init(device['sensors'][key]);
-                                if (this.options['WidgetSensorTimeout'] == 1) {
-                                    dmwsensor.addEventListener("sensor-timeout", this.timeoutDetected.bind(this));
-                                    dmwsensor.addEventListener("sensor-timeoutend", this.timeoutFinished.bind(this));
-                                    dmwsensor.addEventListener("sensor-history-timeout", this.timeoutHistoryDetected.bind(this));
-                                    dmwsensor.addEventListener("sensor-history-timeoutend", this.timeoutHistoryFinished.bind(this));
-                                }
+                                if (this.options['WidgetSensorTimeout'] == 1) this._addTimeoutEvents(dmwsensor);
                             }
                         }
                     }
