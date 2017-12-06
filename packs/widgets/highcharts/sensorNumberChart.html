@@ -42,7 +42,7 @@
             }
             #icongraph {
                 position: absolute;
-                bottom: 5px;
+                bottom: 0px;
                 right: 5px;
                 font-size: 1em;
             }
@@ -52,16 +52,25 @@
             }
             #graph {
                 display: none;
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                width: 600px;
-                min-height: 400px;
+                position: fixed;
+                top: 50px;
+                left: 50px;
+                width: 880px;
+                height: 470px;
                 background-color: rgba(50, 50, 50, 0.5);
                 border: 6px solid rgba(50, 50, 50, 0.5) ;
                 margin: auto;              
                 z-index: 10;
-            }          
+            }
+            #loadicon {
+                position:relative;
+                left:420px;
+                top:210px;
+                font-size: 3em;
+                color: black;
+            }
+
+          
         </style>
         
         <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
@@ -74,7 +83,7 @@
         <div id="icongraph" on-click="{{displayGraph}}">
             <a id="icongraphlink" href="#"><i class="fa fa-area-chart"></i></a>
         </div>
-        <div id="graph" on-dblclick="{{hideGraph}}"><i class="fa fa-spinner fa-pulse"></i>  Loading Graph ...</div>
+        <div id="graph" on-dblclick="{{hideGraph}}"><i id="loadicon" class="fa fa-spinner fa-pulse"></i></div>
 
         
     </template>
@@ -168,34 +177,8 @@
             // ------------------------------------------------------------------------------------
             historyChanged: function(oldValue, newValue) { 
                 //console.error("historyChanged: " + newValue);
-                /* historyChanged: 
-                 Day:
-                 2017,10,42,18,20,55,15.7,
-                 2017,10,42,18,20,56,15.7,
-                 2017,10,42,18,20,57,15.6,
-                 ...
-                 2017,10,42,18,21,45,14.55
-                 
-                 Week:
-                 2017,10,42,18,20,15.666666666666666,
-                 2017,10,42,18,21,14.973076923076926,
-                 2017,10,42,18,22,14.237499999999999
-                 ...
-                 2017,10,42,19,10,16.173333333333336
-                 
-                 Month per days:
-                 2017,10,42,18,14.454098360655738,
-                 2017,10,42,19,15.720973154362433,
-                 2017,10,42,20,14.859459459459458
-                 
-                 Month per hours:
-                 2017,10,42,18,20,15.666666666666666,
-                 2017,10,42,18,21,14.973076923076926,
-                 2017,10,42,18,22,14.237499999999999,
-                 ...
-                 2017,10,42,19,3,12.669696969696968
-                */
                 this.data = [] ;
+                
                 for (i = 0; i < newValue.length; i++) {
                     value = [] ;
                     
@@ -209,19 +192,16 @@
                             var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], 0, 0, 0) ;  
                             value[1] = newValue[i][5] ;
                             break;
-                        /*case "month":
-                            var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], 0, 0, 0, 0) ;
-                            value[1] = newValue[i][4] ;
-                            break;*/
                     }
 
                     value[0] = dt.getTime() ;   // Timestamp Unix (ms)
                     this.data.push(value)
                 }
                 //console.error("==> " + this.data) ;
-
+                
                 var self = this;                                // Important for rangeSelector buttons event !
-                $(this.$.graph).highcharts('StockChart', {
+
+                var dataObject = {
                     rangeSelector: {
                         buttons: [{
                             type: '',
@@ -252,6 +232,8 @@
                                 if(typeof(e.rangeSelectorButton) !== 'undefined')
                                 {
                                     console.error("Button " + e.rangeSelectorButton.text + " pressed");
+                                    mychart.setTitle({text: "Loading data ..."});
+                                    mychart.series[0].remove(true);
                                     self.periode = e.rangeSelectorButton.text.toLowerCase();
                                     switch(self.periode) {
                                         case "day":
@@ -261,7 +243,6 @@
                                             self.$.primary.getCurrentWeek() ;       // 'interval': 'hour'         
                                             break;
                                         case "month":
-                                            //self.$.primary.getCurrentMonth() ;      // 'interval': 'day'       
                                             self.$.primary.getCurrentMonthPerHour() ; // 'interval': 'hour'
                                             break;
                                     } 
@@ -288,15 +269,20 @@
                             valueDecimals: 1,
                             valueSuffix: this.unit
                         }
-                    }]
-                }); 
+                    }],
+                    chart: {
+                        renderTo: this.$.graph
+                    }
+                }; 
                 
-            },
+                var mychart = new Highcharts.StockChart(dataObject);
+            },           
+            
+            
             
             // ------------------------------------------------------------------------------------
             displayGraph: function() {
                 this.$.graph.style.display = "block";
-                //this.$.graph.style.zIndex = 5000;
                 this.style.zIndex = 5000;
                 this.$.primary.getCurrentDay() ;        // 'interval': 'minute'
                 this.periode = "day" ;
@@ -305,7 +291,6 @@
             // ------------------------------------------------------------------------------------
             hideGraph: function() {
                 this.$.graph.style.display = "none";
-                //this.$.graph.style.zIndex = 10;
                 this.style.zIndex = initialZIndex;
             },
         });
