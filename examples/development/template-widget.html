@@ -86,23 +86,25 @@ You can use this sample to build your own widget by deleting stuff not used.
                 font-size: calc(30px*var(--wscale-h)*var(--wscale-r));
             }
             </style>
-        <!-- Optional : include WC dmw-sensor for widget who use domogik sensor. Attributes definition :
-                - id: html element id, don't use special characters and '-', '_' to preserve WC bind access like "this.$.mysensor".
-                - sensorkey : the name of your sensor in lowercase
-                - sensorvalue : the same name has sensorkey to bind sensor value.
-                    Double-curly brackets ({{ }}) support both upward and downward data flow.
-                    Double square brackets ([[ ]]) are one-way, and support only downward data flow.
-                - sensornotified : Optional, id of html elements who do plused effect when sensor is updated by domogik.
-        -->
-        <dmw-sensor id="mysensor" sensorkey="my_current_sensor" sensorvalue="{{my_current_sensor}}" sensornotified="sunrise"></dmw-sensor>
-        <!-- Optional : include WC dmw-command for widget who use domogik command. Attributes definition :
-                - id: html element id, don't use special characters and '-', '_' to preserve WC bind access like "this.$.myswitch".
-                - commandkey : the name of your command in lowercase
-                - commandnotified : Optional, id of html elements who do plused effect when command sended. Format definition like css style :
-                        - Simple command like push button or number : "idofhtmlelement",
-                        - Complexe command with multi state like switch : "idx: valueOfState;" eg :"open: 0; close:1;"
-        -->
-        <dmw-command id="myswitch" commandkey="primary" commandnotified="open: 0; close:1;"></dmw-command>
+        <slot>   <!-- Place domogik sensors/commands in <slot> flag for clear code, just a recommendation -->
+            <!-- Optional : include WC dmw-sensor for widget who use domogik sensor. Attributes definition :
+                    - id: html element id, don't use special characters and '-', '_' to preserve WC bind access like "this.$.mysensor".
+                    - sensorkey : the name of your sensor in lowercase
+                    - sensorvalue : the same name has sensorkey to bind sensor value.
+                        Double-curly brackets ({{ }}) support both upward and downward data flow.
+                        Double square brackets ([[ ]]) are one-way, and support only downward data flow.
+                    - sensornotified : Optional, id of html elements who do plused effect when sensor is updated by domogik.
+            -->
+            <dmw-sensor id="mysensor" sensorkey="my_current_sensor" sensorvalue="{{my_current_sensor}}" sensornotified="sunrise"></dmw-sensor>
+            <!-- Optional : include WC dmw-command for widget who use domogik command. Attributes definition :
+                    - id: html element id, don't use special characters and '-', '_' to preserve WC bind access like "this.$.myswitch".
+                    - commandkey : the name of your command in lowercase
+                    - commandnotified : Optional, id of html elements who do plused effect when command sended. Format definition like css style :
+                            - Simple command like push button or number : "idofhtmlelement",
+                            - Complexe command with multi state like switch : "idx: valueOfState;" eg :"open: 0; close:1;"
+            -->
+            <dmw-command id="myswitch" commandkey="primary" commandnotified="open: 0; close:1;"></dmw-command>
+        </slot
 
         <div id='sensor' class='myclass'>
             <i id='icon' class="fa fa-snowflake-o"></i>         <!-- eg: use font-awesome icons allready imported -->
@@ -161,6 +163,7 @@ You can use this sample to build your own widget by deleting stuff not used.
                 // your code, eg: add some event listener
                 this.addEventListener('anEvent', this._myEvent);
                 windows.addEventListener('specialEvent', this._specialEvent);
+                this._eventOpen = undefined;                   // flag to handle no duplicate event, see "commandsUpdated()".
             }
 
             disconnectedCallback () {                            // Optional overwrite disconnectedCallback, Called after the element is detached from the document
@@ -194,7 +197,10 @@ You can use this sample to build your own widget by deleting stuff not used.
                 if (this.$.myswtich.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
-                    this.$.open.addEventListener('click', this.open.bind(this));  // add an event listener anly when command is set.
+                     // add an event listener only when command is set.
+                     if (!this._eventOpen) {                                     // due to possible multi call, please check if event is allready added.
+                        this._eventOpen = this.open.bind(this);                // eg: way to handle no duplicate event.
+                        this.$.open.addEventListener('click', this._eventOpen);
                 }
             }
             devicesUpdated() {                                 // Optional Callback when devices are updated from loading and edit mode.
