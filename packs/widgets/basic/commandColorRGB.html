@@ -202,6 +202,7 @@
             }
             connectedCallback() {
                 super.connectedCallback();
+                this._events = false;
             }
             optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {
@@ -237,12 +238,15 @@
                     else {
                         this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.setcolor.parameters[0]['datatype_id'] });
                     }
-                    this.$.black.addEventListener('click', this.sendBlack.bind(this));
-                    this.$.white.addEventListener('click', this.sendWhite.bind(this));
-                    this.$.color1.addEventListener('click', this.sendColor1.bind(this));
-                    this.$.color2.addEventListener('click', this.sendColor2.bind(this));
-                    this.$.color3.addEventListener('click', this.sendColor3.bind(this));
-                    this.$.color4.addEventListener('click', this.sendColor4.bind(this));
+                    if (!this._events) {
+                        this.$.black.addEventListener('click', this.sendBlack.bind(this));
+                        this.$.white.addEventListener('click', this.sendWhite.bind(this));
+                        this.$.color1.addEventListener('click', this.sendColor1.bind(this));
+                        this.$.color2.addEventListener('click', this.sendColor2.bind(this));
+                        this.$.color3.addEventListener('click', this.sendColor3.bind(this));
+                        this.$.color4.addEventListener('click', this.sendColor4.bind(this));
+                        this._events = true;
+                    }
                 }
             }
             sendBlack(e) {

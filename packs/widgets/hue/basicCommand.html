@@ -4,35 +4,84 @@
             :host {
                 height: 100%;
             }
-            button#send {
+            #send {
                 display: block;
                 border-style: none;
-                width: 80%;
-                height: 80%;
-                margin: 10%;
+                width: 100%;
+                height: 100%;
                 color: #000000;
+                position: relative;
+                text-align: center;
+                white-space: normal;
+                border-radius: calc(6px*var(--wscale-r));
+                background-color: --paper-grey-300;
+            }
+            .lightimg {
+                height: 100%;
+                width: 100%;
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                transition :opacity 3s ease-in-out;
+                z-index: 2;
+            }
+            .lightimg:hover {
                 cursor: pointer;
             }
-            button#send.circle {
+            .lightimg.inactive {
+                opacity: 0;
+            }
+            .lightimg:hover ~ img.glow {
+                opacity:1;
+            }
+            img.glow {
+                width:100%;
+                height:100%;
+                z-index:1;
+                -webkit-transform: scale(calc(1.01*var(--wscale-r)));
+                -ms-transform: scale(calc(1.01*var(--wscale-r)));
+                transform: scale(calc(1.01*var(--wscale-r)));
+                -webkit-filter: brightness(0) invert(1) blur(5px);
+                -ms-filter: brightness(0) invert(1) blur(5px);
+                filter: brightness(0) invert(1) blur(5px);
+                opacity:0;
+            }
+            #textsend {
+                position: absolute;
+                width: 46%;
+                height: 30%;
+                top: 15%;
+                left: 28%;
+                text-align: center;
+                font-size: 2em;
+                white-space: normal;
+                z-index: 2;
+            }
+            #text {
+                position: absolute;
+                top: 0px;
+                -webkit-transform: translateX(-50%);
+                -ms-transform: translateX(-50%);
+                transform: translateX(-50%);
+            }
+            #send.circle {
                 border-radius: 50%;
             }
-            button#send.true {
-                background: #5cb85c;
-                color: #ffffff;
-            }
-            button#send.false {
-                background: #d9534f;
-                color: #ffffff;
-            }
-            button#send.unavail {
-                background: #9e9e9e;
-                color: #ffffff;
-            }
         </style>
-        <dmw-command id="primary" commandkey="primary"  commandnotified="send"></dmw-command>
-        <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}" sensornotified="send"></dmw-sensor>
-        <dmw-sensor id='availability' sensorkey="availability" sensorvalue="{{availvalue}}"></dmw-sensor>
-        <button id="send" class="btn btn-default">{{sendtext}}</button>
+        <slot>
+            <dmw-command id="primary" commandkey="primary"  commandnotified="send"></dmw-command>
+            <dmw-sensor id='boolstate' sensorkey="boolstate" sensorvalue="{{boolstate}}" sensornotified="send"></dmw-sensor>
+            <dmw-sensor id='availability' sensorkey="availability" sensorvalue="{{availvalue}}"></dmw-sensor>
+        </slot>
+        <div id="send" class="">
+            <img id="imgunavail" class="lightimg" src="/widget/hue/images/light-unavail.png">
+            <img id="imgon" class="lightimg inactive" src="/widget/hue/images/light-on.png">
+            <img id="imgoff" class="lightimg inactive" src="/widget/hue/images/light-off.png">
+            <img class="glow" src="/widget/hue/images/light-off.png">
+            <div id="textsend">
+                <span id="text">[[sendtext]]</span>
+            </div>
+        </div>
     </template>
     <script>
      (function () {
@@ -69,7 +118,11 @@
                 this.boolstate = null;
                 this.currentValue = 0;
                 this.global_avail = 0;
+                this._eventSend = undefined;
 
+            }
+            resized (){
+                this.adjustText(this.$.textsend, this.$.text);
             }
             optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {
@@ -100,6 +153,7 @@
                     } else {
                         this.avail = "";
                     }
+                    this.adjustText(this.$.textsend, this.$.text);
                 }
             }
             commandsUpdated() {
@@ -115,7 +169,11 @@
                     else {
                         this.sendtext = this.localize("domoweb:bool:" + this.currentValue + "_" + this.$.primary.datatype_id);
                     }
-                    this.$.send.addEventListener('click', this.send.bind(this));
+                    this.adjustText(this.$.textsend, this.$.text);
+                    if (!this._eventSend) {
+                        this._eventSend = this.send.bind(this);
+                        this.$.send.addEventListener('click', this._eventSend);
+                    }
                 }
             }
             send(e) {
@@ -133,13 +191,13 @@
                 if (this.global_avail == 1) {
                     this.currentValue = parseInt(newValue.stored_value);
                     if (this.currentValue == 1) {
-                        this.$.send.classList.add('true');
-                        this.$.send.classList.remove('false');
-                        this.$.send.classList.remove('unavail');
+                        this.$.imgunavail.classList.add('inactive');
+                        this.$.imgoff.classList.add('inactive');
+                        this.$.imgon.classList.remove('inactive');
                     } else {
-                        this.$.send.classList.add('false');
-                        this.$.send.classList.remove('true');
-                        this.$.send.classList.remove('unavail');
+                        this.$.imgunavail.classList.add('inactive');
+                        this.$.imgoff.classList.remove('inactive');
+                        this.$.imgon.classList.add('inactive');
                     }
                     if (this.$.primary.isSet) {
                         if ((this.currentValue == 0) && (this.options['label0'] != undefined) && (this.options['label0'] != "")) {
@@ -153,10 +211,11 @@
                         }
                     }
                 } else {
-                    this.$.send.classList.add('unavail');
-                    this.$.send.classList.remove('true');
-                    this.$.send.classList.remove('false');
+                    this.$.imgunavail.classList.remove('inactive');
+                    this.$.imgoff.classList.add('inactive');
+                    this.$.imgon.classList.add('inactive');
                 }
+                this.adjustText(this.$.textsend, this.$.text);
             }
 	    };
     customElements.define(DmwHueBasicCommand.is, DmwHueBasicCommand);

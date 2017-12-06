@@ -5,16 +5,18 @@
                 height: 100%;
             }
         </style>
-    <link href="//cdn.virtuosoft.eu/virtuosoft.eu/resources/prettify/prettify.css" rel="stylesheet" type="text/css" media="all">
-    <link href="bootstrap-colorpickersliders/v3.0.0/bootstrap.colorpickersliders.css" rel="stylesheet" type="text/css" media="all">
+        <link href="//cdn.virtuosoft.eu/virtuosoft.eu/resources/prettify/prettify.css" rel="stylesheet" type="text/css" media="all">
+        <link href="bootstrap-colorpickersliders/v3.0.0/bootstrap.colorpickersliders.css" rel="stylesheet" type="text/css" media="all">
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
-    <script src="//cdn.virtuosoft.eu/virtuosoft.eu/resources/prettify/prettify.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/0.11.1/tinycolor.min.js"></script>
-    <script src="bootstrap-colorpickersliders/v3.0.0/bootstrap.colorpickersliders.js"></script>
-    <dmw-command id="primary" commandkey="primary" commandnotified="hsvflat"></dmw-command>
-    <dmw-sensor id='color' sensorkey="color" sensorvalue="{{color}}" sensornotified="hsvflat"></dmw-sensor>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <script src="//cdn.virtuosoft.eu/virtuosoft.eu/resources/prettify/prettify.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/tinycolor/0.11.1/tinycolor.min.js"></script>
+        <script src="bootstrap-colorpickersliders/v3.0.0/bootstrap.colorpickersliders.js"></script>
+        </slot>
+            <dmw-command id="primary" commandkey="primary" commandnotified="hsvflat"></dmw-command>
+            <dmw-sensor id='color' sensorkey="color" sensorvalue="{{color}}" sensornotified="hsvflat"></dmw-sensor>
+        </slot>
     <div id="hsvflat"></div>
 <script>
     $("#hsvflat").ColorPickerSliders({

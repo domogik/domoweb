@@ -19,8 +19,6 @@
               left: 50%;
               margin: 0;
               border: none;
-              width: 200px;
-              height: 50px;
               transform: translate(-50%, -50%);
               font-size: 16px;
               cursor: pointer;
@@ -135,14 +133,15 @@
             #value {
               position: absolute;
               left: 50%;
-              transform: translate(-50%, 70px);
+              transform: translate(-50%, 50%);
               font-size: 16px;
             }
         </style>
-        <dmw-command id="primary" commandkey="primary" commandnotified="range"></dmw-command>
-        <dmw-sensor id="availability" sensorkey="availability" sensorvalue="{{availability}}" sensornotified="value"></dmw-sensor>
-        <dmw-sensor id='scalingstate' sensorkey="scalingstate" sensorvalue="{{scalingstate}}" sensornotified="range"></dmw-sensor>
-        <shadow></shadow>
+        </slot>
+            <dmw-command id="primary" commandkey="primary" commandnotified="range"></dmw-command>
+            <dmw-sensor id="availability" sensorkey="availability" sensorvalue="{{availability}}" sensornotified="value"></dmw-sensor>
+            <dmw-sensor id='scalingstate' sensorkey="scalingstate" sensorvalue="{{scalingstate}}" sensornotified="range"></dmw-sensor>
+        </slot>
         <div class="slider">
           <input type="range" id="range" min="0" max="100" step="1" style="background: transparent;">
         </div>

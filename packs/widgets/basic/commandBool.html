@@ -64,6 +64,7 @@
                 super.connectedCallback();
                 this.boolstate = null;
                 this.currentValue = 0;
+                this._eventSend = undefined;
             }
             optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {
@@ -99,7 +100,10 @@
                     else {
                         this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.primary.parameters[0]['datatype_id'] });
                     }
-                    this.$.send.addEventListener('click', this.send.bind(this));
+                    if (!this._eventSend) {
+                        this._eventSend = this.send.bind(this);
+                        this.$.send.addEventListener('click', this._eventSend);
+                    }
                 }
             }
             send(e) {
