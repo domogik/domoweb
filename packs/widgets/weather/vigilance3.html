@@ -41,18 +41,9 @@
                 width: 70px;
                 height: 70px;
             }
-            #date {
-              z-index: 100;
-              position: absolute;
-              color: white;
-              font-size: 6px;
-              left: 72px;
-              top: 2px;
-            }
-            #title {
+            #vigititle {
                 position: absolute;
                 color: white;
-                /*background-color: #D8D8D8;*/
                 background-color: #323639;
                 left: 73px;
                 width: 188px;
@@ -127,10 +118,8 @@
         <dmw-sensor id='vigilanceInfo' sensorkey="vigilanceInfo" sensorvalue="{{vigilanceInfo_value}}"></dmw-sensor>
         
         <div id="container" on-click="{{displayInfo}}">
-            <!-- <img id="image" src="{{urlVigiFrance}}" on-click="{{displayInfo}}/> -->
             <img id="image" src="{{urlVigiFrance}}" />
-            <!-- <span id="date">{{ date }}</span> -->
-            <div id="title">{{ title }}</div>
+            <div id="vigititle">{{ vigititle }}</div>
             <span id="text">{{ risk }}</span>
             <img id="image2" src="images/vigilance/logo.png" />
         </div>
@@ -168,21 +157,19 @@
             
             vigilanceDep_valueChanged: function(oldValue, newValue) {
                 newValue = newValue.stored_value;
-                this.title = "Département " + newValue ;
+                this.vigititle = "Département " + newValue ;
                 this.urlVigiFrance = "http://vigilance.meteofrance.com/data/QGFR08_LFPW_.gif?" + new Date().getTime();
             },
             
             vigilanceInfo_valueChanged: function(oldValue, newValue) {
                 newValue = newValue.stored_value;
-                this.vigiInfo = newValue ;
-                var vigiInfoLines = this.vigiInfo.split("\n") ;
-                this.date = vigiInfoLines[1] ;
-                
+                this.title = newValue ;
             },
             
             vigilanceColor_valueChanged: function(oldValue, newValue) {
                 newValue = newValue.stored_value;
                 this.$.text.style.color = getColor(newValue) ;
+                this.vigiInfo = "Pas de bulletin"                               // A faire pour vigilance Orange/Rouge
             },
             
             vigilanceColorWind_valueChanged: function(oldValue, newValue) {
