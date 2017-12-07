@@ -17,7 +17,7 @@
                 height: 100%;
                 display: block;
             }
-            #title {
+            #rainhourtitle {
                 position: absolute;
                 width: 100%;
                 height: 20%;
@@ -135,7 +135,7 @@
 
         <shadow></shadow>
         
-        <div id="title"><span>{{ title }}</span><span id='rainicon'><i class="wi wi-showers"></i></span></div>
+        <div id="rainhourtitle"><span>{{ rainhourtitle }}</span><span id='rainicon'><i class="wi wi-showers"></i></span></div>
         <div id="container">
             <div class="heure" id="heure5">{{rainForecastHeure5}}</div>
             <div class="heure" id="heure15">{{rainForecastHeure15}}</div>
@@ -171,13 +171,14 @@
         Polymer('dmw-weather-rainhour3', {
             ready: function() {
                 this.super();
-                this.title = "";
+                this.title = "Pluie dans l'heure";
+                this.rainhourtitle = "";
                 this.rainColorValue = ["#E0E0D1", "#FFFFFF", "#AAE8FF", "#48BFEA", "#0094CE"] ;
             },
 
             rainForecastLocation_valueChanged: function (oldValue, newValue) {
                 newValue = newValue.stored_value ;
-                this.title = newValue ;
+                this.rainhourtitle = newValue ;
             },
             
             rainForecastDate_valueChanged: function (oldValue, newValue) {
