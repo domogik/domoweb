@@ -55,8 +55,8 @@
                 position: fixed;
                 top: 50px;
                 left: 50px;
-                width: 880px;
-                height: 470px;
+                width: 750px;
+                height: 440px;
                 background-color: rgba(50, 50, 50, 0.5);
                 border: 6px solid rgba(50, 50, 50, 0.5) ;
                 margin: auto;              
@@ -67,7 +67,7 @@
                 left:420px;
                 top:210px;
                 font-size: 3em;
-                color: black;
+                color: white;
             }
 
           
@@ -102,7 +102,7 @@
                     }  
                 });
                 
-                this.periode = "day" ;
+                this.periode = i18n.t("highcharts:Day") ;
                 initialZIndex = this.style.zIndex;      // z-index for the zoom mode
             },
 
@@ -183,12 +183,12 @@
                     value = [] ;
                     
                     switch(this.periode) {
-                        case "day":         //  year            month           day             hour            minute        s  ms
+                        case i18n.t("highcharts:Day"):      //  year            month           day             hour            minute        s  ms
                             var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], newValue[i][5], 0, 0) ;
                             value[1] = newValue[i][6] ;
                             break;
-                        case "week":
-                        case "month":   // Month Per hours
+                        case i18n.t("highcharts:Week"):
+                        case i18n.t("highcharts:Month"):   // Month Per hours
                             var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], 0, 0, 0) ;  
                             value[1] = newValue[i][5] ;
                             break;
@@ -200,21 +200,23 @@
                 //console.error("==> " + this.data) ;
                 
                 var self = this;                                // Important for rangeSelector buttons event !
-
                 var dataObject = {
                     rangeSelector: {
+                        buttonTheme: {
+                            width: 70
+                        },
                         buttons: [{
                             type: '',
                             count: 1,
-                            text: 'Day'
+                            text: i18n.t('highcharts:Day')
                           },{
                             type: '',
                             count: 1,
-                            text: 'Week'
+                            text: i18n.t('highcharts:Week')
                           },{
                             type: '',
                             count: 1,
-                            text: 'Month'
+                            text: i18n.t('highcharts:Month')
                           }],
                         inputEnabled: false
                     },
@@ -222,7 +224,7 @@
                         text: this.$.primary.device['name']
                     },
                     subtitle: {
-                        text: '<i>(Current ' + this.periode + ')</i>'
+                        text: '<i>(' + this.periode + ')</i>'
                     },                        
                     xAxis: {
                         gridLineWidth: 1,
@@ -232,17 +234,17 @@
                                 if(typeof(e.rangeSelectorButton) !== 'undefined')
                                 {
                                     console.error("Button " + e.rangeSelectorButton.text + " pressed");
-                                    mychart.setTitle({text: "Loading data ..."});
+                                    mychart.setTitle({text: i18n.t("highcharts:Loading data") + " ..."});
                                     mychart.series[0].remove(true);
-                                    self.periode = e.rangeSelectorButton.text.toLowerCase();
+                                    self.periode = e.rangeSelectorButton.text ;
                                     switch(self.periode) {
-                                        case "day":
+                                        case i18n.t("highcharts:Day"):
                                             self.$.primary.getCurrentDay() ;        // 'interval': 'minute'
                                             break;
-                                        case "week":
-                                            self.$.primary.getCurrentWeek() ;       // 'interval': 'hour'         
+                                        case i18n.t("highcharts:Week"):
+                                             self.$.primary.getCurrentWeek() ;       // 'interval': 'hour'         
                                             break;
-                                        case "month":
+                                        case i18n.t("highcharts:Month"):
                                             self.$.primary.getCurrentMonthPerHour() ; // 'interval': 'hour'
                                             break;
                                     } 
@@ -285,7 +287,7 @@
                 this.$.graph.style.display = "block";
                 this.style.zIndex = 5000;
                 this.$.primary.getCurrentDay() ;        // 'interval': 'minute'
-                this.periode = "day" ;
+                this.periode = i18n.t("highcharts:Day") ;
             },
             
             // ------------------------------------------------------------------------------------
@@ -294,6 +296,15 @@
                 this.style.zIndex = initialZIndex;
             },
         });
+        
+        function sleep(milliseconds) {
+            var start = new Date().getTime();
+            for (var i = 0; i < 1e7; i++) {
+                if ((new Date().getTime() - start) > milliseconds){
+                    break;
+                }
+            }
+        }
         
     </script>
 </polymer-element>
