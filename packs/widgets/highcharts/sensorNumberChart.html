@@ -22,29 +22,32 @@
                 height: 100%;
                 display: block;
             }
-            #number {
+            #numblock {
                 position: relative;
-                top: 50%;
-                -webkit-transform: translate(-50%, -50%);
-                -ms-transform: translate(-50%, -50%);
-                transform: translate(-50%, -50%);
-                left: 50%;
+                top: 35%;
+                height: 70%;
+                -webkit-transform: translateY(-35%);
+                -ms-transform: translateY(-35%);
+                transform: translateY(-35%);
                 text-align: center;
-                overflow: hidden;
+                margin-left: 3px;
+                margin-right: 3px;
+            }
+            #number {
                 display: inline-block;
-                padding: 10px;
             }
             #unit {
                 position: absolute;
                 top:5px;
                 right: 5px;
-                font-size: 1em;
+                font-size: calc(2em*var(--wscale-h));
             }
             #icongraph {
                 position: absolute;
-                bottom: 5px;
+                bottom: 2px;
                 right: 5px;
-                font-size: 1em;
+                font-size: calc(1.3em*var(--wscale-h));
+
             }
             #icongraphlink {
                 text-decoration: none;
@@ -52,30 +55,38 @@
             }
             #graph {
                 display: none;
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                width: 600px;
-                min-height: 400px;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                width: 750px;
+                min-height: 440px;
                 background-color: rgba(50, 50, 50, 0.5);
                 border: 6px solid rgba(50, 50, 50, 0.5) ;
-                margin: auto;
+                margin-top: -220px;
+                margin-left: -375px;
                 z-index: 10;
             }
+            #loadicon {
+                position:relative;
+                left:420px;
+                top:210px;
+                font-size: 3em;
+                color: white;
+            }
         </style>
+        <slot>
+            <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
+        </slot>
 
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
-
-        <shadow></shadow>
-
-        <div id='number'>{{number}}</div>
+        <div id='numblock'>
+            <span id='number'>{{number}}</span>
+        </div>
         <div id='unit'>{{unit}}</div>
 
-        <div id="icongraph">
+        <div id="icongraph" on-click="displayGraph">
             <a id="icongraphlink" href="#"><i class="fa fa-area-chart"></i></a>
         </div>
-        <div id="graph"><i class="fa fa-spinner fa-pulse"></i>  Loading Graph ...</div>
-
+        <div id="graph" on-dblclick="hideGraph"><i id="loadicon" class="fa fa-spinner fa-pulse"><i id="loadicon" class="fa fa-spinner fa-pulse"></i></div>
 
     </template>
 
@@ -120,10 +131,11 @@
                     }
                 });
 
-                this.periode = "day" ;
+                this.periode = this.localize("Day");
                 this.initialZIndex = this.style.zIndex;      // z-index for the zoom mode
-                this.$.icongraph.addEventListener('click', this.displayGraph.bind(this));
-                this.$.graph.addEventListener('dblclick', this.hideGraph.bind(this));
+            }
+            resized() {
+                this.adjustText(this.$.numblock, this.$.number);
             }
 
             // ------------------------------------------------------------------------------------
@@ -166,57 +178,26 @@
                         this.unit = this.localize("domoweb:unit", 'value', unit);
                     }
                 }
-                this.adjustText(this, this.$.number);
+                this.adjustText(this.$.numblock, this.$.number);
             }
 
             // ------------------------------------------------------------------------------------
             historyChanged(newValue, oldValue) {
                 //console.error("historyChanged: " + newValue);
-                /* historyChanged:
-                 Day:
-                 2017,10,42,18,20,55,15.7,
-                 2017,10,42,18,20,56,15.7,
-                 2017,10,42,18,20,57,15.6,
-                 ...
-                 2017,10,42,18,21,45,14.55
-
-                 Week:
-                 2017,10,42,18,20,15.666666666666666,
-                 2017,10,42,18,21,14.973076923076926,
-                 2017,10,42,18,22,14.237499999999999
-                 ...
-                 2017,10,42,19,10,16.173333333333336
-
-                 Month per days:
-                 2017,10,42,18,14.454098360655738,
-                 2017,10,42,19,15.720973154362433,
-                 2017,10,42,20,14.859459459459458
-
-                 Month per hours:
-                 2017,10,42,18,20,15.666666666666666,
-                 2017,10,42,18,21,14.973076923076926,
-                 2017,10,42,18,22,14.237499999999999,
-                 ...
-                 2017,10,42,19,3,12.669696969696968
-                */
                 this.data = [] ;
                 for (var i = 0; i < newValue.length; i++) {
                     let value = [] ;
 
                     switch(this.periode) {
-                        case "day":         //  year            month           day             hour            minute        s  ms
+                        case this.localize('Day'):         //  year            month           day             hour            minute        s  ms
                             var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], newValue[i][5], 0, 0) ;
                             value[1] = newValue[i][6] ;
                             break;
-                        case "week":
-                        case "month":   // Month Per hours
+                        case this.localize('Week'):
+                        case this.localize('Month'):   // Month Per hours
                             var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], 0, 0, 0) ;
                             value[1] = newValue[i][5] ;
                             break;
-                        /*case "month":
-                            var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], 0, 0, 0, 0) ;
-                            value[1] = newValue[i][4] ;
-                            break;*/
                     }
 
                     value[0] = dt.getTime() ;   // Timestamp Unix (ms)
@@ -225,20 +206,20 @@
                 //console.error("==> " + this.data) ;
 
                 var self = this;                                // Important for rangeSelector buttons event !
-                $(this.$.graph).highcharts('StockChart', {
+                var dataObject = {
                     rangeSelector: {
                         buttons: [{
                             type: '',
                             count: 1,
-                            text: 'Day'
+                            text: this.localize('Day')
                           },{
                             type: '',
                             count: 1,
-                            text: 'Week'
+                            text: this.localize('Week')
                           },{
                             type: '',
                             count: 1,
-                            text: 'Month'
+                            text: this.localize('Month')
                           }],
                         inputEnabled: false
                     },
@@ -246,24 +227,25 @@
                         text: this.$.primary.device['name']
                     },
                     subtitle: {
-                        text: '<i>(Current ' + this.periode + ')</i>'
+                        text: '<i>(' + this.periode + ')</i>'
                     },
                     xAxis: {
                         gridLineWidth: 1,
                         ordinal: false,
                         events: {
                             setExtremes: function(e) {
-                                if(typeof(e.rangeSelectorButton) !== 'undefined')
-                                {
-                                    self.periode = e.rangeSelectorButton.text.toLowerCase();
+                                if(typeof(e.rangeSelectorButton) !== 'undefined') {
+                                    mychart.setTitle({text: self.localize("Loading data") + "..."});
+                                    mychart.series[0].remove(true);
+                                    self.periode = e.rangeSelectorButton.text;
                                     switch(self.periode) {
-                                        case "day":
+                                        case self.localize('Day'):
                                             self.$.primary.getCurrentDay() ;        // 'interval': 'minute'
                                             break;
-                                        case "week":
+                                        case self.localize('Week'):
                                             self.$.primary.getCurrentWeek() ;       // 'interval': 'hour'
                                             break;
-                                        case "month":
+                                        case self.localize('Month'):
                                             //self.$.primary.getCurrentMonth() ;      // 'interval': 'day'
                                             self.$.primary.getCurrentMonthPerHour() ; // 'interval': 'hour'
                                             break;
@@ -291,8 +273,12 @@
                             valueDecimals: 1,
                             valueSuffix: this.unit
                         }
-                    }]
-                });
+                    }],
+                    chart: {
+                        renderTo: this.$.graph
+                    }
+                };
+                var mychart = new Highcharts.StockChart(dataObject);
 
             }
 
@@ -302,7 +288,7 @@
                 //this.$.graph.style.zIndex = 5000;
                 this.style.zIndex = 5000;
                 this.$.primary.getCurrentDay() ;        // 'interval': 'minute'
-                this.periode = "day" ;
+                this.periode = this.localize("Day");
             }
 
             // ------------------------------------------------------------------------------------

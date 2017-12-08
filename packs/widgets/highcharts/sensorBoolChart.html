@@ -23,13 +23,16 @@
             }
             #bool {
                 position: relative;
-                top: 50%;
-                -webkit-transform: translateY(-50%);
-                -ms-transform: translateY(-50%);
-                transform: translateY(-50%);
-                  text-align: center;
+                top: 35%;
+                height: 70%;
+                -webkit-transform: translateY(-35%);
+                -ms-transform: translateY(-35%);
+                transform: translateY(-35%);
+                text-align: center;
                 font-size: 2em;
                 white-space: normal;
+                margin-left: 3px;
+                margin-right: 3px;
             }
             .glyphicon {
                 line-height: inherit;
@@ -45,9 +48,9 @@
             }
             #icongraph {
                 position: absolute;
-                bottom: 5px;
+                bottom: 2px;
                 right: 5px;
-                font-size: 1em;
+                font-size: calc(1.3em*var(--wscale-h));
             }
             #icongraphlink {
                 text-decoration: none;
@@ -55,28 +58,36 @@
             }
             #graph {
                 display: none;
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                width: 600px;
-                min-height: 400px;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                width: 750px;
+                min-height: 440px;
                 background-color: rgba(50, 50, 50, 0.5);
                 border: 6px solid rgba(50, 50, 50, 0.5) ;
-                margin: auto;
+                margin-top: -220px;
+                margin-left: -375px;
                 z-index: 10;
             }
+            #loadicon {
+                position:relative;
+                left:420px;
+                top:210px;
+                font-size: 3em;
+                color: white;
+            }
         </style>
-
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
-        <shadow></shadow>
+        <slot>
+            <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
+        </slot>
         <div id='bool'>
           <span id='boolicon' class='glyphicon glyphicon-question-sign' aria-label='{{booltext}}'>{{booltext}}</span>
         </div>
 
-        <div id="icongraph">
+        <div id="icongraph" on-click="displayGraph">
             <a id="icongraphlink" href="#"><i class="fa fa-area-chart"></i></a>
         </div>
-        <div id="graph"><i class="fa fa-spinner fa-pulse"></i>  Loading Graph ...</div>
+        <div id="graph" on-dblclick="hideGraph"><i id="loadicon" class="fa fa-spinner fa-pulse"></i></div>
 
     </template>
 
@@ -119,13 +130,14 @@
                     }
                 });
 
-                this.periode = "day" ;
+                this.periode = this.localize("Day");
                 this.initialZIndex = this.style.zIndex;      // z-index for the zoom mode
-                this.$.icongraph.addEventListener('click', this.displayGraph.bind(this));
-                this.$.graph.addEventListener('dblclick', this.hideGraph.bind(this));
 
             }
 
+            resized() {
+                this.adjustText(this.$.bool, this.$.boolicon);
+            }
             // ------------------------------------------------------------------------------------
             optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {
@@ -162,23 +174,12 @@
                     this.$.bool.classList.add('false');
                     this.$.bool.classList.remove('true');
                 }
-                this.adjustText(this, this.$.boolicon, {width: 3, height:3});
-            }
-            resized() {
-                super.resized();
-                this.adjustText(this, this.$.boolicon, {width: 3, height:3});
+                this.adjustText(this.$.bool, this.$.boolicon);
             }
 
             // ------------------------------------------------------------------------------------
             historyChanged(newValue, oldValue) {
                 //console.error("### historyChanged: " + newValue);
-                /* historyChanged:
-                [{"timestamp": 1508768994.0, "value_str": "14", "value_num": 14.0},
-                 {"timestamp": 1508768721.0, "value_str": "14", "value_num": 14.0},
-                 {"timestamp": 1508768682.0, "value_str": "14.1", "value_num": 14.1},
-                 ...
-                 {"timestamp": 1508766809.0, "value_str": "14.2", "value_num": 14.2}]}]
-                */
                 this.data = [] ;
                 for (let i = 0; i < newValue.length; i++) {
                     var value = [] ;
@@ -189,20 +190,20 @@
                 }
 
                 var self = this;                                // Important for rangeSelector buttons event !
-                $(this.$.graph).highcharts('StockChart', {
+                var dataObject = {
                     rangeSelector: {
                         buttons: [{
                             type: '',
                             count: 1,
-                            text: 'Day'
+                            text: this.localize('Day')
                           },{
                             type: '',
                             count: 1,
-                            text: 'Week'
+                            text: this.localize('Week')
                           },{
                             type: '',
                             count: 1,
-                            text: 'Month'
+                            text: this.localize('Month')
                           }],
                         inputEnabled: false
                     },
@@ -210,19 +211,30 @@
                         text: this.$.primary.device['name']
                     },
                     subtitle: {
-                        text: '<i>(Current ' + this.periode + ')</i>'
+                        text: '<i>(' + this.periode + ')</i>'
                     },
                     xAxis: {
                         gridLineWidth: 1,
                         ordinal: false,
                         events: {
                             setExtremes: function(e) {
-                                if(typeof(e.rangeSelectorButton) !== 'undefined')
-                                {
-                                    self.periode = e.rangeSelectorButton.text.toLowerCase();
-                                    var from = moment().subtract(1, self.periode + "s").unix();
-                                    console.error("### timestamp - 1 " + self.periode + ": " + from);
-                                    self.$.primary.getLastFrom(from) ;
+                                if(typeof(e.rangeSelectorButton) !== 'undefined') {
+                                    mychart.setTitle({text: self.localize("Loading data") + "..."});
+                                    mychart.series[0].remove(true);
+                                    self.periode = e.rangeSelectorButton.text;
+                                    switch(self.periode) {
+                                        case self.localize('Day'):
+                                            var from = moment().subtract(1, "days").unix();
+                                            break;
+                                        case self.localize('Week'):
+                                            var from = moment().subtract(1, "weeks").unix();
+                                            break;
+                                        case self.localize('Month'):
+                                            var from = moment().subtract(1, "months").unix();
+                                            break;
+                                    }
+                                    console.log("### timestamp - 1 " + self.periode + ": " + from);
+                                    self.$.primary.getLastFrom(from);
                                 }
                             }
                         }
@@ -243,19 +255,25 @@
                         color: this.color,
                         lineWidth: 1,
                         tooltip: {
-                            valueDecimals: 0,
+                            valueDecimals: 0
+                        },
+                        dataGrouping: {
+                            enabled: false
                         }
-                    }]
-                });
-
+                    }],
+                    chart: {
+                        renderTo: this.$.graph
+                    }
+                };
+                var mychart = new Highcharts.StockChart(dataObject);
             }
 
             // ------------------------------------------------------------------------------------
             displayGraph() {
                 this.$.graph.style.display = "block";
                 this.style.zIndex = 5000;
-                this.periode = "day";
-                var from = moment().subtract(1, this.periode + "s").unix();
+                this.periode = this.localize("Day");
+                var from = moment().subtract(1, "days").unix();
                 this.$.primary.getLastFrom(from) ;
             }
 
