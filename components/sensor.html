@@ -114,13 +114,35 @@
                 var to = moment().unix();
                 this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day'});
             },
-            // Add month values per hour average
+            // Add function: month average values per hour
             getCurrentMonthPerHour: function() {
-                this.historyMode = 'month';
+                this.historyMode = 'monthPerHour';
                 var from = moment().subtract(1, 'months').unix();
                 var to = moment().unix();
                 this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
             },
+            // Add function: day sum value per hour
+            getCurrentDayPerHourWithSelectorSum: function() {
+                this.historyMode = 'dayPerHourWithSelectorSum';
+                var from = moment().subtract(1, 'days').unix();
+                var to = moment().unix();
+                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour', 'selector': 'sum'});
+            },
+            // Add function: month sum value per day
+            getCurrentMonthPerDayWithSelectorSum: function() {
+                this.historyMode = 'monthPerDayWithSelectorSum';
+                var from = moment().subtract(1, 'months').unix();
+                var to = moment().unix();
+                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day', 'selector': 'sum'});
+            },
+            // Add function: year sum value per month
+            getCurrentYearPerMonthWithSelectorSum: function() {
+                this.historyMode = 'yearPerMonthWithSelectorSum';
+                var from = moment().subtract(1, 'years').unix();
+                var to = moment().unix();
+                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'month', 'selector': 'sum'});
+            },
+
             timeoutHandler: function() {
                 var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
                 this.fire('sensor-timeout', {'minutes': diff.humanize()});
