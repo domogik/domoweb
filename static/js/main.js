@@ -1,12 +1,12 @@
-DMW.main.menuConfigure = document.getElementById('menuConfigure'),
-DMW.main.menuWidgets = document.getElementById('menuWidgets'),
-DMW.main.panelConfigure = document.getElementById('panelConfigure'),
-DMW.main.main = document.querySelector('main'),
+DMW.main.menuConfigure = document.getElementById('menuConfigure');
+DMW.main.menuWidgets = document.getElementById('menuWidgets');
+DMW.main.panelConfigure = document.getElementById('panelConfigure');
+DMW.main.main = document.querySelector('main');
 DMW.main.section = document.getElementById('currentsection');
-DMW.main.socket = document.getElementById('socket'),
-DMW.main.layout = document.getElementById('grid-layout'),
-DMW.main.modalOverlay = document.getElementById('modal-overlay'),
-DMW.main.ajax = document.getElementById('ajax'),
+DMW.main.socket = document.getElementById('socket');
+DMW.main.layout = document.getElementById('grid-layout');
+DMW.main.modalOverlay = document.getElementById('modal-overlay');
+DMW.main.ajax = document.getElementById('ajax');
 DMW.main.menu = document.getElementById('main-menu');
 DMW.main.navigation = document.getElementById('sections-tree');
 
@@ -17,7 +17,7 @@ HTMLCollection.prototype.forEach = Array.prototype.forEach; // Because of https:
 function sectionUpdated(e) {
 	var details = e.detail;
 
-	var removed = DMW.grid.refresh(details.params.GridMode, details.params.GridColumns, details.params.GridRows, details.params.GridWidgetSize, details.params.GridWidgetSpace);
+	var removed = DMW.main.layout.refresh(details.params.GridMode, details.params.GridColumns, details.params.GridRows, details.params.GridWidgetSize, details.params.GridWidgetSpace);
 
 	// Remove widgets outside the grid
 	// Disabled per issue #28, need to figure out a better way
@@ -31,15 +31,10 @@ function sectionUpdated(e) {
 /* When Section changed (navigation) */
 function sectionChanged(e) {
 	var details = e.detail;
-
 	setSectionStyle();
 
-	/* Remove current widgets */
-	while (DMW.main.layout.firstChild) {
-  		DMW.main.layout.removeChild(DMW.main.layout.firstChild);
-	}
-
-	DMW.grid.init(details.params.GridMode, details.params.GridColumns, details.params.GridRows, details.params.GridWidgetSize, details.params.GridWidgetSpace);
+	/* Initialize grid-layout, Removing current widgets */
+	DMW.main.layout.init(details.params.GridMode, details.params.GridColumns, details.params.GridRows, details.params.GridWidgetSize, details.params.GridWidgetSpace);
 
 	if (details.widgets) {
 		for (var i = 0; i < details.widgets.length; i++) {
@@ -48,13 +43,17 @@ function sectionChanged(e) {
 		}
 	}
 	if (details.instances) {
+        var instance;
 		for (var i = 0; i < details.instances.length; i++) {
 			instance = details.instances[i];
 			var node = insertWidgetInstance(instance.id, instance.widget);
-			DMW.grid.appendInstance(node, instance);
+            // preserve from old widget definition
+            if (!instance.height) {instance.height = instance.widget.height; }
+            if (!instance.width) {instance.width = instance.widget.width; }
+			DMW.main.layout.appendInstance(node, instance);
 		}
-		DMW.grid.adjustPlacement();
-		$("#loading").fadeOut(200);
+        activateCornerMenu();
+        $("#loading").fadeOut(200);
 	}
 }
 
@@ -81,26 +80,32 @@ function setSectionStyle() {
 
 function instanceAdded(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
-		i18n.loadNamespace(json.widget.set_id, function() {
-			insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
-			var node = insertWidgetInstance(json.id, json.widget);
-	DMW.grid.appendInstance(node, json);
-		});
+        insertWidgetLink(json.widget_id, json.widget.set_id, json.widget.set_ref);
+        var node = insertWidgetInstance(json.id, json.widget);
+        DMW.main.layout.appendInstance(node, json);
 	}
 }
 
 function instanceRemoved(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
-		var node = document.getElementById('instance-' + json.id);
-		DMW.grid.removeInstance(node, json);
-		node.remove();
+        var widget = DMW.main.layout.getWidget(json.id);
+        DMW.main.layout.removeInstance(widget);
+		notif({
+		  type: "success",
+		  msg: "Widget deleted",
+		  position: "center",
+		  //width: "all",
+		  height: 60,
+		});
 	}
 }
 
 function instanceMoved(topic, json) {
 	if (DMW.main.section.sectionid == json.section_id) {
-		var node = document.getElementById('instance-' + json.id);
-		DMW.grid.moveInstance(node, json);
+        var widget = DMW.main.layout.getWidget(json.id);
+        if (!json.height) {json.height = json.widget.height; }
+        if (!json.width) {json.width = json.widget.width; }
+        DMW.main.layout.setWidgetPosition(widget, json.x, json.y, json.width, json.height);
 	}
 }
 
@@ -136,7 +141,6 @@ function insertWidgetInstance(id, widget) {
 	if (DMW.main.edit == true) {
 		instance.setAttribute('edit', 'true');
 	}
-	DMW.main.layout.appendChild(instance);
 	return instance;
 }
 
@@ -319,20 +323,24 @@ function gradientHandler(generator, id) {
 }
 function widgetsEditHandler() {
 	DMW.main.edit = true;
-	for (var i = 0; i < DMW.main.layout.children.length; i++) {
-		DMW.main.layout.children[i].setAttribute('edit', '');
+    DMW.main.layout.setEdit(true);
+    var list = DMW.main.layout.widgetList()
+	for (var i = 0; i < list.length; i++) {
+		list[i].setAttribute('edit', '');
 	}
 }
 
 function widgetsFinishHandler() {
 	DMW.main.edit = false;
-	for (var i = 0; i < DMW.main.layout.children.length; i++) {
-		DMW.main.layout.children[i].removeAttribute('edit');
+    DMW.main.layout.setEdit(false);
+    var list = DMW.main.layout.widgetList()
+	for (var i = 0; i < list.length; i++) {
+		list[i].removeAttribute('edit');
 	}
 }
 
 function addWidgetHandler() {
-	selector = document.createElement('dmw-widgets-selector');
+	var selector = document.createElement('dmw-widgets-selector');
 	DMW.main.modalOverlay.appendChild(selector);
 	DMW.main.modalOverlay.classList.add('on');
 }
@@ -478,7 +486,7 @@ function gridParametersCheck() {
 	var rows = document.getElementById('GridRows').value;
 	var widgetSize = document.getElementById('GridWidgetSize').value;
 	var widgetSpace = document.getElementById('GridWidgetSpace').value;
-	var message = DMW.grid.checkValues(type, columns, rows, widgetSize, widgetSpace);
+	var message = DMW.main.layout.checkGridValues(type, columns, rows, widgetSize, widgetSpace);
 	document.getElementById('gridMessage').innerHTML = message;
 	if (message.indexOf('Info') === 0) {
 		document.getElementById('gridMessage').className = "info";
@@ -522,7 +530,7 @@ function onWidgetStyleChange(e) {
 }
 var websocketConnection = null;
 function websocketConnected(e) {
-	if (websocketConnection === false) {
+	if (websocketConnection === null || websocketConnection === false) {
 		notif({
 		  type: "success",
 		  msg: "Connection restored",
@@ -534,7 +542,7 @@ function websocketConnected(e) {
 	websocketConnection = true;
 }
 function websocketClosed(e) {
-	if (websocketConnection === true) {
+	if (websocketConnection === null || websocketConnection === true) {
 		notif({
 		  type: "error",
 		  msg: "Connection lost with Domoweb",
@@ -546,4 +554,3 @@ function websocketClosed(e) {
 	}
 	websocketConnection = false;
 }
-

@@ -1,0 +1,47 @@
+{
+  "name": "sc-fitted-text",
+  "version": "1.1.0",
+  "homepage": "https://github.com/SupportClass/sc-fitted-text",
+  "authors": [
+    "Alex Van Camp <email@alexvan.camp>"
+  ],
+  "description": "A Polymer 2 element for horizontally squishing text to stay within a max width.",
+  "main": "sc-fitted-text.html",
+  "moduleType": [],
+  "keywords": [
+    "nodecg",
+    "dashboard",
+    "panel",
+    "polymer",
+    "web-components",
+    "web-component"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0"
+  },
+  "devDependencies": {
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
+    "test-fixture": "PolymerElements/test-fixture#3.0.0-rc.1",
+    "web-component-tester": "Lange/web-component-tester#patch-1",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
+    "iron-component-page": "^3.0.1",
+    "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#^2.0.0",
+    "paper-input": "PolymerElements/paper-input#^2.0.1",
+    "paper-item": "PolymerElements/paper-item#^2.0.0",
+    "paper-listbox": "PolymerElements/paper-listbox#^2.0.0",
+    "paper-slider": "PolymerElements/paper-slider#^2.0.2",
+    "web-animations-js": "web-animations/web-animations-js#^2.3.1"
+  },
+  "resolutions": {
+    "polymer": "^2.0.0",
+    "webcomponentsjs": "^1.0.0"
+  }
+}

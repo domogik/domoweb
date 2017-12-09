@@ -1,36 +1,48 @@
-<polymer-element name="dmw-weather-sun" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/weather/weather-icons-master-1.3/css/weather-icons.css" shim-domshadow>
+/* NEW 2.0 */
+@font-face {
+  font-family: 'weathericons';
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot');
+  src: url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.eot?#iefix') format('embedded-opentype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff2') format('woff2'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.woff') format('woff'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.ttf') format('truetype'), url('/widget/weather/weather-icons-master-2.0/font/weathericons-regular-webfont.svg#weather_iconsregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+<dom-module id="dmw-weather-sun">
+    <template id="extended-styles">
+        <link rel="stylesheet" href="/widget/weather/weather-icons-master-2.0/css/weather-icons.css">
         <style type="text/css">
             :host {
                 height: 100%;
                 display: block;
             }
-            ::content #labelprimary {
+            #labelprimary {
                 margin: 10px;
                 font-size: 1.2em;
                 position: relative;
             }
             #text {
-                font-size: 1.4em;
+                font-size: calc(1.4em*var(--wscale-h))
                 text-align: center;
             }
             .sun {
-                margin-top: 4%;
+                position: absolute;
                 float: left;
                 width: 50%;
                 text-align: center;
+                top: calc(15px*var(--wscale-h)*var(--wscale-r));
+            }
+            #sunset {
+                left: 50%;
             }
             i {
-                font-size: 3em;
+                font-size: calc(60px*var(--wscale-h)*var(--wscale-r));
             }
             .sun .hour {
-                font-size: 1.6em;
+                font-size: calc(30px*var(--wscale-h)*var(--wscale-r));
             }
             </style>
-        <shadow></shadow>
-        <dmw-sensor id='current_sunrise' sensorkey="current_sunrise" sensorvalue="{{current_sunrise}}"></dmw-sensor>
-        <dmw-sensor id='current_sunset' sensorkey="current_sunset" sensorvalue="{{current_sunset}}"></dmw-sensor>
+        <dmw-sensor id="current_sunrise" sensorkey="current_sunrise" sensorvalue="{{current_sunrise}}" sensornotified="sunrise"></dmw-sensor>
+        <dmw-sensor id="current_sunset" sensorkey="current_sunset" sensorvalue="{{current_sunset}}" sensornotified="sunset"></dmw-sensor>
         <div id='sunrise' class='sun'>
           <i class="wi wi-sunrise"></i>
           <div class='hour'>{{ sunrise }}</div>
@@ -39,21 +51,54 @@
           <i class="wi wi-sunset"></i>
           <div class='hour'>{{ sunset }}</div>
         </div>
-        <shadow></shadow>
     </template>
     <script>
-        Polymer('dmw-weather-sun', {
-            ready: function() {
-                this.super();
-            },
-            current_sunriseChanged: function(oldValue, newValue) {
+     (function () {
+        let memoizedTemplate;
+
+        class DmwWeatherSun extends DmwWidget {
+            static get is () { return 'dmw-weather-sun'; }
+            static get properties() {
+                return {
+                    current_sunrise: {
+                        notify: true,
+                        observer: 'current_sunriseChanged'
+                    },
+                    current_sunset: {
+                        notify: true,
+                        observer: 'current_sunsetChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
+            connectedCallback() {
+                super.connectedCallback();
+            }
+            current_sunriseChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.sunrise = newValue;
-            },
-            current_sunsetChanged: function(oldValue, newValue) {
+            }
+            current_sunsetChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.sunset = newValue;
-            },
-        });
+            }
+	    };
+    customElements.define(DmwWeatherSun.is, DmwWeatherSun);
+    })();
     </script>
-</polymer-element>
+</dom-module>

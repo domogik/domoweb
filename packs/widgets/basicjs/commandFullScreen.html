@@ -1,6 +1,6 @@
-<polymer-element name="dmw-basicjs-commandFullScreen" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<link rel="import" href="/libraries/bower_components/textfit-div/textfit-div.html">
+<dom-module id="dmw-basicjs-commandfullscreen">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -8,12 +8,13 @@
             button#send {
                 display: block;
                 border-style: none;
-                width: 80%;
-                height: 80%;
-                margin: 10%;
+                width: calc(40px*var(--wscale-w));
+                height: calc(40px*var(--wscale-h));
+                margin: calc(5px*var(--wscale-h)) calc(5px*var(--wscale-w));
                 background: #4671BD;
                 color: #ffffff;
                 cursor: pointer;
+                padding:0;
             }
             button#send.circle {
                 border-radius: 50%;
@@ -22,16 +23,40 @@
                 background: #D73032;
                 color: #ffffff;
             }
+            .info {
+                width: 95%;
+            }
         </style>
-        <shadow></shadow>
-        <button id="send" class="btn btn-default" onclick="fullScreen(document.documentElement);">Full Screen</button>
+        <button id="send" class="btn btn-default" onclick="fullScreen(document.documentElement);">
+            <textfit-div id="info" class="info fullHeight flex" horizontal-center vertical-center multi-line text="{{localize('fullScreen')}}"></textfit-div>
+        </button>
     </template>
     <script>
-        Polymer('dmw-basicjs-commandFullScreen', {
-            ready: function() {
-                this.super();
-            },
-            commandsUpdated: function() {
+     (function () {
+        let memoizedTemplate;
+
+        class DmwBasicjsCommandFullScreen extends DmwWidget {
+            static get is () { return 'dmw-basicjs-commandfullscreen'; }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
+            }
+            resized() {
+                super.resized();
+                this.$.info.doFitMe();
+            }
+            commandsUpdated() {
                 if (this.options['circle'] == 1) {
                     this.$.send.classList.add('circle');
                 }
@@ -39,15 +64,17 @@
                     this.$.send.classList.remove('circle');
                 }
             }
-        });
-	function fullScreen(element) {
-	    if(element.requestFullScreen) {
-		element.requestFullScreen();
-	    } else if(element.webkitRequestFullScreen ) {
-		element.webkitRequestFullScreen();
-	    } else if(element.mozRequestFullScreen) {
-		element.mozRequestFullScreen();
-	    }
-	}
+        }
+        customElements.define(DmwBasicjsCommandFullScreen.is, DmwBasicjsCommandFullScreen);
+    })();
+    function fullScreen(element) {
+        if(element.requestFullScreen) {
+        element.requestFullScreen();
+        } else if(element.webkitRequestFullScreen ) {
+        element.webkitRequestFullScreen();
+        } else if(element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+        }
+    }
     </script>
-</polymer-element>
+</dom-module>

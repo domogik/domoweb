@@ -1,6 +1,5 @@
-<polymer-element name="dmw-basic-sensorColorCII2" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<dom-module id="dmw-basic-sensorcolorcii2">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -14,17 +13,41 @@
                 background: lightgrey ;
             }
         </style>
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensornotified="container"></dmw-sensor>
         <shadow></shadow>
         <div id="level" ></div>
     </template>
     <script>
-        Polymer('dmw-basic-sensorColorCII2', {
-            ready: function() {
-                this.super();
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+     (function () {
+        let memoizedTemplate;
+
+        class DmwBasicSensorColorCII2 extends DmwWidget {
+            static get is () { return 'dmw-basic-sensorcolorcii2'; }
+            connectedCallback() {
+                super.connectedCallback();
+            }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -32,26 +55,26 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
-                }        
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+                }
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 switch(newValue) {  // "W": "White", "O": "Orange", "R": "Red", "Y": "Yellow", "B": "Blue", "G": "Green", "Bk": "Black", "Br": "Brown"
-                    case 'W': 
+                    case 'W':
                         this.$.level.style.background = "#FFFFFF" ;
                         break;
-                    case 'G': 
+                    case 'G':
                         this.$.level.style.background = "#00FF00" ;
                         break;
-                    case 'B': 
+                    case 'B':
                         this.$.level.style.background = "#0080ff" ;
                         break;
-                    case 'Y': 
+                    case 'Y':
                         this.$.level.style.background = "#FFFF00" ;
                         break;
                     case 'O':
@@ -66,10 +89,12 @@
                     case 'Bk':
                         this.$.level.style.background = "#000000" ;
                         break;
-                    default: 
+                    default:
                         this.$.level.style.background = "#E0E0D1" ;
-                }             
-            },
-        });
+                }
+            }
+	    };
+        customElements.define(DmwBasicSensorColorCII2.is, DmwBasicSensorColorCII2);
+    })();
     </script>
-</polymer-element>
+</dom-module>

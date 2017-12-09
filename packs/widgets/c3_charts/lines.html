@@ -1,0 +1,594 @@
+<dom-module id="dmw-c3_charts-lines">
+    <template id="extended-styles">
+        <link rel="import" href="/libraries/polymer/paper-dialog.html">
+        <link rel="stylesheet" href="/widget/c3_charts/css/common.css" shim-domshadow>
+        <link rel="stylesheet" href="/widget/c3_charts/css/c3.min.css" shim-domshadow>
+        <style type="text/css" is="dmw-c3-charts-lines">
+            :host {
+                height: 100%;
+            }
+            #container {
+                position: absolute;
+                height: 92%;
+                width: 100%;
+            }
+            #legend {
+                position: absolute;
+                bottom: 0px;
+                width: 100%;
+                font-size: 1.3em;
+                text-align: center;
+            }
+            #chart {
+                height: 98%;
+                width: 100%;
+            }
+/* colors */
+#chart .c3-legend-item text {
+/* TODO : dynamic update !!!! */
+    fill: white;
+    font-size: 12px;
+}
+#chart .c3-axis-x text {
+/* TODO : dynamic update !!!! */
+    fill: white;
+    font-size: 12px;
+}
+#chart .c3-axis-y text {
+/* TODO : dynamic update !!!! */
+    fill: white;
+    font-size: 12px;
+}
+#chart .c3-axis-x path, .c3 .c3-axis-x line {
+/* TODO : dynamic update !!!! */
+    stroke: white;
+    stroke-width: 2px;
+}
+#chart .c3-axis-y path, .c3 .c3-axis-y line {
+/* TODO : dynamic update !!!! */
+    stroke: white;
+    stroke-width: 2px;
+}
+
+/* width */
+#chart .c3-line {
+    stroke-width: 2px;
+}
+
+/* hide ticks */
+#chart .c3-axis-x .tick {
+   display: none;
+}
+/* running process */
+.exclusive-process {
+    position: absolute;
+    left: 30%;
+    top: 20%;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    cursor: wait;
+}
+.loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid blue;
+    border-bottom: 16px solid blue;
+    border-right: 16px solid rgba(0, 0, 255, 0.0);
+    border-left: 16px solid rgba(0, 0, 255, 0.0);
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+        </style>
+	    <dmw-sensor id='series0' sensorkey="series-0" sensorvalue="{{sensorvalue0}}" sensorhistory="{{history0}}"></dmw-sensor>
+	    <dmw-sensor id='series1' sensorkey="series-1" sensorvalue="{{sensorvalue1}}" sensorhistory="{{history1}}"></dmw-sensor>
+	    <dmw-sensor id='series2' sensorkey="series-2" sensorvalue="{{sensorvalue2}}" sensorhistory="{{history2}}"></dmw-sensor>
+	    <dmw-sensor id='series3' sensorkey="series-3" sensorvalue="{{sensorvalue3}}" sensorhistory="{{history3}}"></dmw-sensor>
+	    <dmw-sensor id='series4' sensorkey="series-4" sensorvalue="{{sensorvalue4}}" sensorhistory="{{history4}}"></dmw-sensor>
+        <shadow></shadow>
+        <div>
+            <div id="loadingData" class="exclusive-process">
+               <div class="loader"></div>
+            </div>
+            <paper-button raised onclick="configCurves.open()">
+                <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+            </paper-button>
+            <paper-dialog id="configCurves" hidden>
+                <div class='panel panel-default'>
+                    <div class='panel-heading text-center'>
+                        <h3 style='margin-top: 5px'><span class='label label-info' id='cronTabExp'>Titre panel</span></h3>
+                    </div>
+                    <div class='panel-body'>
+                        <p>Do you want to save changes you made to document before closing?</p>
+                        <p class="text-warning"><small>If you don't save, your changes will be lost.</small></p>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a href="#" title="min">min</a></li>
+                                <li><a href="#" title="max">max</a></li>
+                                <li><a href="#" title="avg">avg</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#" title="sum">sum</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary">Close</button>
+                    </div>
+                </div>
+            </paper-dialog>
+            <button class="btn btn-default" id="day" on-click="{{selectDay}}">Day</button>
+            <button class="btn btn-default" id="week" on-click="{{selectWeek}}" style="background:#58ACFA;">Week</button>
+            from <input type="date" id="daystart" style="width: 125px;" on-change="{{selectDayStart}}"> to
+            <input type="date" id="dayend" style="width: 125px;">
+            <div id='container'>
+                <div id='chart'>
+                </div>
+                <div id='legend'>
+                {{ legend }}
+                </div>
+            </div>
+        </div>
+    </template>
+    <script src="/widget/c3_charts/js/d3.v3.min.js" charset="utf-8"></script>
+    <script src="/widget/c3_charts/js/c3.min.js"></script>
+
+    <script>
+     (function () {
+        let memoizedTemplate;
+
+        class DmwC3ChartsLines extends DmwWidget {
+            static get is () { return 'dmw-c3_charts-lines'; }
+            static get properties() {
+                return {
+                    sensorvalue0: {
+                        notify: true,
+                        observer: 'sensorvalue0Changed'
+                    },
+                    history0: {
+                        notify: true,
+                        observer: 'history0Changed',
+                    },
+                    sensorvalue1: {
+                        notify: true,
+                        observer: 'sensorvalue1Changed'
+                    },
+                    history1: {
+                        notify: true,
+                        observer: 'history1Changed',
+                    },
+                    sensorvalue2: {
+                        notify: true,
+                        observer: 'sensorvalue2Changed'
+                    },
+                    history2: {
+                        notify: true,
+                        observer: 'history2Changed',
+                    },
+                    sensorvalue3: {
+                        notify: true,
+                        observer: 'sensorvalue3Changed'
+                    },
+                    history3: {
+                        notify: true,
+                        observer: 'history3Changed',
+                    },
+                    sensorvalue4: {
+                        notify: true,
+                        observer: 'sensorvalue4Changed'
+                    },
+                    history4: {
+                        notify: true,
+                        observer: 'history4Changed',
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                this.x = [];
+                this.xlines = [];
+                this.series =  {0:false,1:false,2:false,3:false,4:false};
+                this.data = {1:[],2:[],3:[],4:[],5:[]};
+                this.names = {0:'',1:'',2:'',3:'',4:''};
+                this.range = {"mode": "lastWeek", "interval": "hour"};
+            }
+            draw() {
+                // color
+                var the_color = "#ffffff";
+                if (this.options['WidgetTextColor']  != undefined) {
+                    the_color = this.options['WidgetTextColor'];
+                };
+
+                var loaded = true;
+                var i = 1;
+                for (var s in this.series) {
+                    if (this.series[s] != false) {
+                        this.names[s] = this.series[s].device['name'] + " : " + this.series[s].name;
+                    };
+                };
+                for (var n in  this.names) {
+                    if (this.names[n] != "" && this.data[i].length == 0) {
+                        loaded = false;
+                        break;
+                    };
+                    i++;
+                };
+                if (loaded) {
+                    this.$.loadingData.style.visibility = "hidden";
+                };
+                // build this.xlines for grid lines on x
+                this.xlines = [];
+                var fx = '%d/%m';
+                var startDate = new Date(this.x[1]);
+                this.$.daystart.value = new Date(this.x[1]).toISOString().split('T')[0];
+                var endDate = new Date(this.x[this.x.length-1]);
+                this.$.dayend.value = new Date(this.x[this.x.length-1]).toISOString().split('T')[0];
+                switch (this.range.mode) {
+                    case "lastDay" :
+                        fx = '%d/%m %H:%M';
+                        moment().format("YYYY-MM-DD HH:00");
+                        for (idx=0;idx<12;idx++) {
+                            this.xlines[idx] = { value : moment().subtract(24-(idx*2), 'hours').format("YYYY-MM-DD HH:00"),
+                                                 text : moment().subtract(24-(idx*2), 'hours').format("DD/MM HH:00")};
+                        };
+                        break;
+                    case "lastFromToDay" :
+                        fx = '%d/%m %H:00';
+                        // calculer la longeur de la période et diviser par jour/semaine/mois
+                        var duration = moment.duration(moment(endDate).diff(startDate));
+                        var hours = duration.asHours();
+                        var days = duration.asDays();
+                        var weeks = duration.asWeeks();
+                        var months = duration.asMonths();
+                        var years = duration.asYears();
+                        if (days < 5) {
+                            fx = '%d/%m %H:%M';
+                            var idx = 0,
+                                offset = Math.round(hours/12+0.5);
+                            for (var idT=0;idT<hours;idT+=offset) {
+                                this.xlines[idx] = { value : moment(endDate).subtract(hours-(idT), 'hours').format("YYYY-MM-DD HH:00"),
+                                                     text : moment(endDate).subtract(hours-(idT), 'hours').format("DD/MM HH:00")};
+                                idx++;
+                            };
+                        } else if (days < 15) {
+                            fx = '%d/%m %H:%M';
+                            var idx = 0,
+                                offset = Math.round(days/14+0.5);
+                            for (var idT=0;idT<days;idT+=offset) {
+                                this.xlines[idx] = { value : moment(endDate).subtract(days-idT, 'days').format("YYYY-MM-DD 00:00"),
+                                                     text : moment(endDate).subtract(days-idT+1, 'days').format("DD/MM")};
+                                idx++;
+                            };
+                        } else if (days < 15) {
+                            fx = '%d/%m %H:%M';
+                            for (idx=0;idx<days;idx++) {
+                                this.xlines[idx] = { value : moment(endDate).subtract(7-(idx*2), 'days').format("YYYY-MM-DD 00:00"),
+                                                     text : moment(endDate).subtract(7-(idx*2), 'days').format("DD/MM")};
+                            };
+                        } else if (weeks < 5){
+                            fx = '%d/%m';
+                            for (idx=0;idx<(days/2);idx++) {
+                                this.xlines[idx] = { value : moment(endDate).subtract(days-(idx*2), 'days').format("YYYY-MM-DD 00:00"),
+                                                     text : moment(endDate).subtract(days-(idx*2), 'days').format("DD/MM")};
+                            };
+                        } else if (months < 3) {
+                            fx = '%d/%m';
+                            for (idx=0;idx<(days/7);idx++) {
+                                this.xlines[idx] = { value : moment(endDate).subtract(days-(idx*7), 'days').format("YYYY-MM-DD 00:00"),
+                                                     text : moment(endDate).subtract(days-(idx*7), 'days').format("DD/MM")};
+                            };
+                        } else if (months < 3) {
+                        } else if (years < 2) {
+                        } else {
+                        };
+                        break;
+                    case "lastWeek" :
+                        fx = '%d/%m %H:00';
+                        for (idx=0;idx<8;idx++) {
+                            this.xlines[idx] = { value : moment().subtract(7-idx, 'days').format("YYYY-MM-DD 00:00"),
+                                                 text : moment().subtract(7-idx+1, 'days').format("DD/MM")};
+                        };
+                        break;
+                };
+                // draw the chart
+                this.chart = c3.generate({
+                    bindto: this.$.chart,
+                    data: {
+                        x: 'x',
+                        xFormat: '%Y-%m-%d %H:%M',
+                        columns: [
+                            this.x,
+                            this.data[1],
+                            this.data[2],
+                            this.data[3],
+                            this.data[4],
+                            this.data[5]
+                        ],
+                        types: {
+                            data1: 'line',
+                            data2: 'line',
+                            data3: 'line',
+                            data4: 'line',
+                            data5: 'line'
+                        },
+                        names: {
+                            data1: this.names[0],
+                            data2: this.names[1],
+                            data3: this.names[2],
+                            data4: this.names[3],
+                            data5: this.names[4]
+                        }
+                    },
+                    colors: {
+                        data1: '#ffffff',
+                        data2: '#0066ff',
+                        data3: '#000066',
+                        data4: '#33cc33',
+                        data5: '#ff3300'
+                    },
+                    tooltip: {
+                        show: true
+                    },
+                    axis: {
+                        x: {
+                            type: 'timeseries',
+                            tick: {
+                                format: fx
+                            },
+                        },
+                        y : {
+                            min: parseInt(this.options['chartMinValue']),
+                            max: parseInt(this.options['chartMaxValue'])
+                        }
+                    },
+                    grid: {
+                        x: {
+                            lines : this.xlines
+                        }
+                    },
+                    point: {
+                        show: false
+                    },
+                    zoom: {
+                        enabled: true
+                    }
+        	    });
+                this.chart.show();
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
+                //this.draw();
+            }
+            sensorsUpdated() {
+                if (this.$.series0.isSet) {this.series[0] = this.$.series0;};
+                if (this.$.series1.isSet) {this.series[1] = this.$.series1;};
+                if (this.$.series2.isSet) {this.series[2] = this.$.series2;};
+                if (this.$.series3.isSet) {this.series[3] = this.$.series3;};
+                if (this.$.series4.isSet) {this.series[4] = this.$.series4;};
+
+                for (var i = this.xlines.length - 1; i >= 0; i--) {
+                    this.xlines[i].remove();
+                };
+                for (var s in this.series) {
+                    if (this.series[s]) {
+                        switch (this.range.mode) {
+                        case "lastWeek":
+                            this.series[s].getCurrentWeek();
+                            break;
+                        case "lastDay":
+                            this.series[s].getCurrentDay();
+                            break;
+                        case "lastFromToDay":
+                            this.series[s].getFromToDay(this.range.start,this.range.end);
+                            break;
+                        default:
+                            this.series[s].getCurrentDay();
+                        };
+                        this.names[s] = this.series[s].device['name'] + " : " + this.series[s].name;
+                    } else { this.names[0] = "";};
+                };
+                this.labelprimary = "last week";
+                this.labelsecondary = "MultiPlots";
+            }
+            sensorvalue0Changed(newValue, oldValue, series_num) { this.sensorvalueChanged(newValue, oldValue, 0)}
+            sensorvalue1Changed(newValue, oldValue, series_num) { this.sensorvalueChanged(newValue, oldValue, 1)}
+            sensorvalue2Changed(newValue, oldValue, series_num) { this.sensorvalueChanged(newValue, oldValue, 2)}
+            sensorvalue3Changed(newValue, oldValue, series_num) { this.sensorvalueChanged(newValue, oldValue, 3)}
+            sensorvalue4Changed(newValue, oldValue, series_num) { this.sensorvalueChanged(newValue, oldValue, 4)}
+            sensorvalueChanged(newValue, oldValue, series_num) {
+                newValue = newValue.stored_value;
+                if (this.xlines[series_num]) {
+                    switch (this.range.mode) {
+                        case "lastWeek":
+                            this.series[series_num].getCurrentWeek();
+                            break;
+                        case "lastDay":
+                            this.series[series_num].getCurrentDay();
+                            break;
+                        case "lastFromToDay":
+                            //this.series[series_num].getFromToDay(this.range.start,this.range.end);
+                            break;
+                    };
+                };
+            }
+
+            history0Changed(newValue, oldValue, series_num) { this.historyChanged(newValue, oldValue, 0); }
+            history1Changed(newValue, oldValue, series_num) { this.historyChanged(newValue, oldValue, 1); }
+            history2Changed(newValue, oldValue, series_num) { this.historyChanged(newValue, oldValue, 2); }
+            history3Changed(newValue, oldValue, series_num) { this.historyChanged(newValue, oldValue, 3); }
+            history4Changed(newValue, oldValue, series_num) { this.historyChanged(newValue, oldValue, 4); }
+            historyChanged(newValue, oldValue, series_num) {
+                var values = convert(newValue, this.range, series_num, this.range.interval);
+                this.x = values.xAxis;
+                this.data[series_num+1] = values.serie;
+                this.draw();
+            }
+            editConfig() {
+                $(this.$.configCurves).modal('show');
+            }
+            selectDay() {
+                if (this.range.mode != "lastDay") {
+                    this.range = {"mode": "lastDay", "interval": "minute"};
+                    this.$.week.style.backgroundColor = "";
+                    this.$.daystart.style.backgroundColor = "";
+                    this.$.dayend.style.backgroundColor = "";
+                    this.$.day.style.backgroundColor = "#58ACFA";
+                    this.$.loadingData.style.visibility = "visible";
+                    this.data = {1:[],2:[],3:[],4:[],5:[]};
+                    this.x = [];
+                    for (var s in this.series) {
+                        if (this.series[s]) { this.series[s].getCurrentDay(); };
+                    };
+                };
+            }
+            selectWeek() {
+                if (this.range.mode != "lastWeek") {
+                    this.range = {"mode": "lastWeek", "interval": "hour"};
+                    this.$.day.style.backgroundColor = "";
+                    this.$.daystart.style.backgroundColor = "";
+                    this.$.dayend.style.backgroundColor = "";
+                    this.$.week.style.backgroundColor = "#58ACFA";
+                    this.$.loadingData.style.visibility = "visible";
+                    this.data = {1:[],2:[],3:[],4:[],5:[]};
+                    this.x = [];
+                    for (var s in this.series) {
+                        if (this.series[s]) { this.series[s].getCurrentWeek(); };
+                    };
+                };
+            }
+            selectDayStart() {
+                this.range = {"mode": "lastFromToDay","start": this.$.daystart.value+" 00:00", "end": this.$.dayend.value+" 23:59", "interval": "hour", "selector": "avg", "factor": 2};
+                this.$.day.style.backgroundColor = "";
+                this.$.week.style.backgroundColor = "";
+                this.$.daystart.style.backgroundColor = "#58ACFA";
+                this.$.dayend.style.backgroundColor = "#58ACFA";
+                this.$.loadingData.style.visibility = "visible";
+                this.data = {1:[],2:[],3:[],4:[],5:[]};
+                this.x = [];
+                var duration = moment.duration(moment(this.range.end).diff(this.range.start)),
+                    days = duration.asDays(),
+                    weeks = duration.asWeeks(),
+                    months = duration.asMonths(),
+                    years = duration.asYears();
+                if (days <= 3) {this.range.interval = 'minute';
+                } else if (days <= 30) {this.range.interval = 'hour';
+                } else if (months <= 3) {this.range.interval = 'day';
+                };
+                for (var s in this.series) {
+                    if (this.series[s]) { this.series[s].getFromToDay(this.range.start,this.range.end, this.range.interval) };
+                };
+            }
+        };
+        function convert(history, range, series_num, interval) {
+            var serie = ['data'+(series_num+1)],
+                xAxis = ['x'],
+                ii = 1;
+            switch (interval) {
+                case "second" : // 30 second interval
+                    for (var i=0; i<history.length; i++) {
+                        newX = history[i][0] + '-' +
+                                history[i][1] + '-' +
+                                ("0" + history[i][3]).slice(-2) + ' ' +
+                                history[i][4] + ':' + (history[i][5])+ ':' + (history[i][6]);
+                        if (newX != xAxis[ii-1]) {
+                            xAxis[ii] = newX;
+                            ii++;
+                            };
+                        serie[i+1] = history[i][7].toFixed(2);
+                    };
+                    break;
+                case "minute" :
+                    for (var i=0; i<history.length; i++) {
+                        newX = history[i][0] + '-' +
+                                history[i][1] + '-' +
+                                ("0" + history[i][3]).slice(-2) + ' ' +
+                                history[i][4] + ':' + (history[i][5]);
+                        if (newX != xAxis[ii-1]) {
+                            xAxis[ii] = newX;
+                            ii++;
+                            };
+                        serie[i+1] = history[i][6].toFixed(2);
+                    };
+                    break;
+                case 7 : // 10 minutes interval
+                    for (var i=0; i<history.length; i++) {
+                        newX = history[i][0] + '-' +
+                                      history[i][1] + '-' +
+                                      ("0" + history[i][3]).slice(-2) + ' ' +
+                                      history[i][4] + ':' + (history[i][5] - (history[i][5]%10));
+                        if (newX != xAxis[ii-1]) {
+                            xAxis[ii] = newX;
+                            ii++;
+                            };
+                        serie[i+1] = history[i][6].toFixed(2);
+                    };
+                    break;
+                case 'hour' : // weeks interval
+                    for (var i=0; i<history.length; i++) {
+                        newX = history[i][0] + '-' +
+                                      history[i][1] + '-' +
+                                      ("0" + history[i][3]).slice(-2) + ' ' +
+                                      history[i][4] + ':00';
+                        if (newX != xAxis[ii-1]) {
+                            xAxis[ii] = newX;
+                            ii++;
+                            };
+                        serie[i+1] = history[i][5].toFixed(2);
+                    };
+                    break;
+                case 'day' : // weeks interval
+                    for (var i=0; i<history.length; i++) {
+                        newX = history[i][0] + '-' +
+                                      history[i][1] + '-' +
+                                      ("0" + history[i][3]).slice(-2)+' 12:00';
+                        if (newX != xAxis[ii-1]) {
+                            xAxis[ii] = newX;
+                            ii++;
+                            };
+                        serie[i+1] = history[i][4].toFixed(2);
+                    };
+                    break;
+            }
+            return {"serie":serie, "xAxis":xAxis};
+        };
+        customElements.define(DmwC3ChartsLines.is, DmwC3ChartsLines);
+    })();
+    </script>
+</dom-module>

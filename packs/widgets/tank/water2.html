@@ -1,6 +1,5 @@
-<polymer-element name="dmw-tank-water2" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<dom-module id="dmw-tank-water2">
+    <template id="extended-styles">
         <style type="text/css">
             :host { * { display: block; } }
             :host {
@@ -15,7 +14,7 @@
                 left: 10%;
                 width: 80%;
                 text-align: center;
-                font-size: 3.5em;
+                font-size: calc(3em*var(--wscale-h)*var(--wscale-r));
                 z-index: 2;
             }
             #unit {
@@ -38,18 +37,45 @@
             }
 
         </style>
-        <dmw-sensor id='level' sensorkey="level" sensorvalue="{{levelvalue}}"></dmw-sensor>
-        <shadow></shadow>
-        <div id="tank"> 
+        <dmw-sensor id='level' sensorkey="level" sensorvalue="{{levelvalue}}" sensornotified="levelValue"></dmw-sensor>
+        <div id="tank">
           <div id="levelValue">{{theValue}}</div>
           <div id='unit'>%</div>
           <canvas height="100%" width="100%" id="canvas"></canvas>
         </div>
     </template>
     <script>
-        Polymer('dmw-tank-water2', {
-            ready: function() {
-                this.super();
+     (function () {
+        let memoizedTemplate;
+
+        class DmwTankWater2 extends DmwWidget {
+            static get is () { return 'dmw-tank-water2' }
+            static get properties() {
+                return {
+                    levelvalue: {
+                        notify: true,
+                        observer: 'levelvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 /**
                  *    Wave oscillators by Ken Fyrstenberg Nilsen
                  *    http://abdiassoftware.com/
@@ -86,65 +112,59 @@
                 this.ctx.fillStyle = '#1d96d3';
 
                 this.loop();
-            },
+            }
+            loop() {
+                this.theCanvas = this.$.canvas;
+                this.ctx = this.theCanvas.getContext('2d');
 
+                var i;
 
-                loop: function() {
-                    this.theCanvas = this.$.canvas;
-                    this.ctx = this.theCanvas.getContext('2d');
+                /// move points to the left
+                for(i = 0; i < this.count - 1; i++) {
+                    this.points[i] = this.points[i + 1];
+                }
 
-                    var i;
+                /// get a new point
+                this.points[this.count - 1] = this.mixer(this.osc1, this.osc2, this.osc3);
 
-                    /// move points to the left
-                    for(i = 0; i < this.count - 1; i++) {
-                        this.points[i] = this.points[i + 1];
-                    }
+                this.ctx.clearRect(0, 0, this.w, this.h);
+                //ctx.fillRect(0, 0, this.w, this.h);
 
-                    /// get a new point
-                    this.points[this.count - 1] = this.mixer(this.osc1, this.osc2, this.osc3);
+                /// render wave
+                this.ctx.beginPath();
+                this.ctx.moveTo(-5, this.points[0]);
 
-                    this.ctx.clearRect(0, 0, this.w, this.h);
-                    //ctx.fillRect(0, 0, this.w, this.h);
+                for(i = 1; i < this.count; i++) {
+                    this.ctx.lineTo(i * this.step, this.points[i]);
+                }
 
-                    /// render wave
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(-5, this.points[0]);
+                this.ctx.lineTo(this.w, this.h);
+                this.ctx.lineTo(-5, this.h);
+                this.ctx.lineTo(-5, this.points[1]);
 
-                    for(i = 1; i < this.count; i++) {
-                        this.ctx.lineTo(i * this.step, this.points[i]);
-                    }
+                this.ctx.stroke();
+                this.ctx.fill();
 
-                    this.ctx.lineTo(this.w, this.h);
-                    this.ctx.lineTo(-5, this.h);
-                    this.ctx.lineTo(-5, this.points[1]);
-
-                    this.ctx.stroke();
-                    this.ctx.fill();
-
-                    //window.requestAnimFrame(this.loop);
-                    //setTimeout(this.loop, 500);
+                //window.requestAnimFrame(this.loop);
+                //setTimeout(this.loop, 500);
                 setTimeout(function(){
                     this.loop();
                     }.bind(this), 1000 / 60);
-                },
+            }
+            mixer() {
 
+                var d = arguments.length,
+                    i = d,
+                    sum = 0;
 
+                if (d < 1) return 0;
 
-                mixer: function() {
+                while(i--) sum += arguments[i].getAmp();
 
-                    var d = arguments.length,
-                        i = d,
-                        sum = 0;
-
-                    if (d < 1) return 0;
-
-                    while(i--) sum += arguments[i].getAmp();
-
-                    return sum / d + this.horizon;
-                },
-
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+                return sum / d + this.horizon;
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -153,19 +173,19 @@
                     this.$.labelsecondary.style.visibility = "visible";
                 }
                 this.changeStyle();
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.level.isSet) {
                     this.labelprimary = this.$.level.device['name'];
                     this.labelsecondary = this.$.level.name;
                 }
-            },
-            changeStyle: function() {
+            }
+            changeStyle() {
                 if (this.options['WidgetBorderRadius'] == undefined) {
                     this.$.canvas.style.borderRadius = "5px";
                 }
                 else {
-                    this.$.canvas.style.borderRadius = this.options['WidgetBorderRadius'];                
+                    this.$.canvas.style.borderRadius = this.options['WidgetBorderRadius'];
                 }
                 if (this.options['waterColor'] == undefined) {
                     this.ctx.strokeStyle = '#1d96d3';
@@ -175,58 +195,57 @@
                     this.ctx.strokeStyle = this.options['waterColor'];
                     this.ctx.fillStyle = this.options['waterColor'];
                 }
-            },
-            levelvalueChanged: function(oldValue, newValue) {
+            }
+            levelvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.theValue = newValue ;
-                
+
                 if (newValue > 96) { newValue = 96; }
                 this.horizon = this.$.canvas.height*(1-newValue/100);
-            },
-        });
+            }
+	    };
+        customElements.define(DmwTankWater2.is, DmwTankWater2);
+    })();
 
+    /// oscillator object
+    function osc() {
 
-                /// oscillator object
-                function osc() {
+        this.variation = 1;
+        this.max = 10;
+        this.speed = 0.02;
 
-                    this.variation = 1;
-                    this.max = 10;
-                    this.speed = 0.02;
+        var me = this,
+            a = 0,
+            max = getMax();
 
-                    var me = this,
-                        a = 0,
-                        max = getMax();
+        this.getAmp = function() {
 
-                    this.getAmp = function() {
+            a += this.speed;
 
-                        a += this.speed;
+            if (a >= 2.0) {
+                a = 0;
+                max = getMax();
+            }
 
-                        if (a >= 2.0) {
-                            a = 0;
-                            max = getMax();
-                        }
+            return max * Math.sin(a * Math.PI);
+        }
 
-                        return max * Math.sin(a * Math.PI);
-                    }
+        function getMax() {
+            return Math.random() * me.max * me.variation +
+                me.max * (1 - me.variation);
+        }
 
-                    function getMax() {
-                        return Math.random() * me.max * me.variation +
-                            me.max * (1 - me.variation);
-                    }
+        return this;
+    }
 
-                    return this;
-                }
-
-
-
-        // shim layer with setTimeout fallback
-        window.requestAnimFrame = (function(){
-          return  window.requestAnimationFrame       ||
-                  window.webkitRequestAnimationFrame ||
-                  window.mozRequestAnimationFrame    ||
-                  function( callback ){
-                    window.setTimeout(callback, 1000 / 60);
-                  };
-        })();
+    // shim layer with setTimeout fallback
+    window.requestAnimFrame = (function(){
+      return  window.requestAnimationFrame       ||
+              window.webkitRequestAnimationFrame ||
+              window.mozRequestAnimationFrame    ||
+              function( callback ){
+                window.setTimeout(callback, 1000 / 60);
+              };
+    })();
     </script>
-</polymer-element>
+</dom-module>

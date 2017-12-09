@@ -13,8 +13,12 @@
         "body": {
             "name" : "Body",
             "description" : "Body metrics : weight, fat ratio, bone ratio, water ratio, muscle ratio.",
-            "height" : 2,
-            "width" : 3,
+            "height" : 3,
+            "width" : 4,
+            "min_height" : 2,
+            "min_width" : 3,
+            "max_height" : 5,
+            "max_width" : 8,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -103,14 +107,18 @@
             "name" : "Pollens vigilance",
             "description" : "Pollens vigilance",
             "height" : 4,
-            "width" : 2,
+            "width" : 3,
+            "min_height" : 3,
+            "min_width" : 2,
+            "max_height" : 8,
+            "max_width" : 7,
             "options" : {},
             "devices" : {
                 "vigipollens" : {
                     "name": "Pollens",
                     "description": "Allergen vigilance",
                     "types" : ["vigipollens"],
-                    "required": true                   
+                    "required": true
                 }
             }
         }

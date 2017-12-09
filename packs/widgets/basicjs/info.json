@@ -14,6 +14,10 @@
             "name" : "Command Refresh",
             "height" : 1,
             "width" : 1,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 3,
+            "max_width" : 3,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -42,6 +46,10 @@
             "name" : "Command Full Screen",
             "height" : 1,
             "width" : 1,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 3,
+            "max_width" : 3,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",

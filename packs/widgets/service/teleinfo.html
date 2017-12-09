@@ -1,4 +1,4 @@
-<polymer-element name="dmw-service-teleinfo" extends="dmw-widget">
+<dom-module id="dmw-service-teleinfo" extends="dmw-widget">
     <template>
         <style type="text/css">
             :host {
@@ -75,17 +75,18 @@
     </p>
     </template>
     <script>
-        Polymer('dmw-service-teleinfo', {
-            ready: function() {
-                this.super();
+                class Dmw extends DmwWidget {
+            static get is () { return 'dmw-service-teleinfo',
+            connectedCallback() {
+                super.connectedCallback();
                 this.data=[];
                 // create an SVG element inside the #graph div that fills 100% of the div
                 this.graph = d3.select(this.$.graph).append("svg:svg").attr("width", "100%").attr("height", "100%");
             },
-            loadingDone: function() {
+            loadingDone() {
                 this.setGraph();
             },
-            setGraph: function() {
+            setGraph() {
                 var self = this;
                 var width = 340;
                 var height = 50;
@@ -139,19 +140,19 @@
                     this.$.papp.getLast(60);
                 }
             },
-            iinstvalueChanged: function (oldValue, newValue) {
+            iinstvalueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.iinst = parseInt(newValue);
             },
-            pappvalueChanged: function (oldValue, newValue) {
+            pappvalueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.papp = parseInt(newValue);
             },
-            ptecvalueChanged: function (oldValue, newValue) {
+            ptecvalueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.ptec = newValue.substr(0, 2);
             },
-            ptecChanged: function (oldValue, newValue) {
+            ptecChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 if (oldValue != undefined) {
                     oldValue = oldValue.stored_value;
@@ -159,33 +160,33 @@
                 this.classList.add(newValue);
                 this.classList.remove(oldValue);
             },
-            pappStatReceived: function(e) { 
+            pappStatReceived(e) { 
                 // Because pappvalue is only triggered when the value changed
                 var value = parseInt(e.detail.stat.stored_value);
                 this.data.shift();
                 this.data.push(value);
                 this.redrawGraph();
             },
-            basevalueChanged: function (oldValue, newValue) {
+            basevalueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.base = ~~(parseInt(newValue) / 1000); // We convert in kW
             },        
-            hchcvalueChanged: function (oldValue, newValue) {
+            hchcvalueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.hchc = ~~(parseInt(newValue) / 1000); // We convert in kW
             },        
-            hchpvalueChanged: function (oldValue, newValue) {
+            hchpvalueChanged: function (newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.hchp = ~~(parseInt(newValue) / 1000); // We convert in kW
             },        
-            papplastChanged: function(oldValue, newValue) {
+            papplastChanged(newValue, oldValue) {
                 for (var i = newValue.length - 1; i >= 0; i--) {
                     this.data.push( parseInt(newValue[i]['value_num']));
                 };
                 // display the line by appending an svg:path element with the data line we created above
                 this.graph.append("svg:path").attr("d", this.line(this.data));
             },
-            redrawGraph: function() {
+            redrawGraph() {
                 var self = this;
                 // update with animation
                 this.graph.selectAll("path")
@@ -197,6 +198,7 @@
                     .duration(1000) // for this demo we want a continual slide so set this to the same as the setInterval amount below
                     .attr("transform", "translate(" + self.x(0) + ")"); // animate a slide to the left back to x(0) pixels to reveal the new value
             }
-        });        
+	    };
+    customElements.define(Dmw.is, Dmw);        
     </script>
-</polymer-element>
+</dom-module>

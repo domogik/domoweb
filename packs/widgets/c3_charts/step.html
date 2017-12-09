@@ -1,10 +1,10 @@
-<polymer-element name="dmw-c3_charts-step" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/c3_charts/css/common.css" shim-domshadow>
-        <link rel="stylesheet" href="/widget/c3_charts/css/c3.min.css" shim-domshadow>
+<dom-module id="dmw-c3_charts-step">
+    <template id="extended-styles">
+        <link rel="stylesheet" href="/widget/c3_charts/css/c3.min.css">
         <style type="text/css" is="dmw-c3-charts-step">
             :host {
                 height: 100%;
+                --grid-font-size: 10px;
             }
             #container {
                 position: absolute;
@@ -15,8 +15,11 @@
                 position: absolute;
                 bottom: 0px;
                 width: 100%;
-                font-size: 1.3em;
+                height: calc(15%/var(--wscale-h));
                 text-align: center;
+            }
+            #legend span {
+                line-height: 100%;
             }
             #chart {
                 height: 98%;
@@ -32,12 +35,12 @@
 #chart .c3-axis-x text {
 /* TODO : dynamic update !!!! */
     fill: white;
-    font-size: 12px;
+    font-size: calc(12px*var(--wscale-w));
 }
 #chart .c3-axis-y text {
 /* TODO : dynamic update !!!! */
     fill: white;
-    font-size: 12px;
+    font-size: calc(12px*var(--wscale-h));
 }
 #chart .c3-axis-x path, .c3 .c3-axis-x line {
 /* TODO : dynamic update !!!! */
@@ -50,6 +53,10 @@
     stroke-width: 2px;
 }
 
+#chart .c3-grid text {
+    font-size: var(--grid-font-size);
+}
+
 /* width */
 #chart .c3-line {
     stroke-width: 2px;
@@ -59,15 +66,15 @@
 #chart .c3-axis-x .tick {
    display: none;
 }
-
         </style>
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
-        <shadow></shadow>
+        <slot>
+            <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
+        </slot>
         <div id='container'>
           <div id='chart'>
           </div>
           <div id='legend'>
-            {{ legend }}
+            <span>{{ legend }}</span>
           </div>
         </div>
     </template>
@@ -75,26 +82,65 @@
     <script src="/widget/c3_charts/js/c3.min.js"></script>
 
     <script>
-        Polymer('dmw-c3_charts-step', {
-            ready: function() {
-                this.super();
+     (function () {
+        let memoizedTemplate;
+
+        class DmwC3ChartsStep extends DmwWidget {
+            static get is () { return 'dmw-c3_charts-step'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    },
+                    history: {
+                        notify: true,
+                        observer: 'historyChanged',
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 this.x = [];
                 this.xlines = [];
                 this.data1 = [];
-            },
-            draw: function() {
-                // color
-                if (this.options['WidgetTextColor']  == undefined) {
-                    the_color = "#ffffff";
+            }
+            resized() {
+                let fSize = 10 * this.scales.height*this.scales.width;
+                if (fSize < 8) { fSize = 8;
+                } else if (fSize > 18) { fSize = 18; }
+                this.updateStyles({
+                    '--grid-font-size' : `${fSize}px`,
+                });
+                this.adjustText(this.$.legend, this.$.legend.children["0"]);
+                if (this.chart != undefined) {
+                    this.$.chart.style.maxHeight = "none";  // fixe to recaculate max-height
+                    this.chart.flush();
                 }
-                else {
+            }
+            draw() {
+                // color
+                var the_color = "#ffffff";
+                if (this.options['WidgetTextColor']  != undefined) {
                     the_color = this.options['WidgetTextColor'];
                 }
 
                 // build this.xlines for grid lines on x
                 this.xlines = [];
                 //var from = moment().subtract(1, 'days').startOf('day').format("%Y-%m-%d");    // copied from ../../../components/sensor.html
-                for (idx=0;idx<8;idx++) {
+                for (var idx=0;idx<8;idx++) {
                     this.xlines[idx] = { value : moment().subtract(7-idx, 'days').format("YYYY-MM-DD 00:00"),
                                          text : moment().subtract(7-idx+1, 'days').format("DD/MM")}
                 }
@@ -151,9 +197,8 @@
                     }
                 });
                 this.chart.show(['data1']);
-
-            },
-            optionsUpdated: function() {
+            }
+            optionsUpdated() {
                 if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
@@ -163,8 +208,8 @@
                     this.$.labelsecondary.style.visibility = "visible";
                 }
                 //this.draw();
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
@@ -173,17 +218,17 @@
                 else {
                     this.legend = "--";
                 }
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.$.primary.getCurrentWeekBool();
 
-            },
-            historyChanged: function(oldValue, newValue) {
+            }
+            historyChanged(newValue, oldValue) {
                 // in case the page is not yet nicely loaded...
                 this.x = ['x'];
                 this.data1 = ['data1'];
-                for (i=0; i<newValue.length; i++) {
+                for (var i=0; i<newValue.length; i++) {
                     this.x[i+1] = newValue[i][0] + '-' +
                                   newValue[i][1] + '-' +
                                   ("0" + newValue[i][3]).slice(-2) + ' ' +
@@ -198,7 +243,8 @@
                 }
                 this.draw();
             }
-        });
-
+        };
+        customElements.define(DmwC3ChartsStep.is, DmwC3ChartsStep);
+    })();
     </script>
-</polymer-element>
+</dom-module>

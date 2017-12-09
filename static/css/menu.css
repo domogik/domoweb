@@ -1,4 +1,39 @@
 /* Based on https://github.com/SaraSoueidan/circular-navigation */
+
+/*------------- Handle touch device only ---------------*/
+
+#acces-menu:hover {
+	background-color: #ffffff !important;
+	color: #2D2C2F !important;
+	z-index: 15;
+}
+#main-menu-touch {
+    z-index: 20000;
+	font-size: 1em;
+	position: fixed;
+	top: -7em;
+	left: calc(50% - 3.5em);
+}
+
+#acces-menu {
+	width: 8em;
+	height: 8em;
+	border-radius: 0 0 3.5em 3.5em;
+	border: 0;
+	background: #2D2C2F;
+	color: #ffffff;
+	outline: none;
+}
+
+#acces-menu span {
+    top: 3.5em;
+}
+
+.no-touch #acces-menu{
+    visibility : hidden;
+}
+
+/*----------------- Main menu ---------------------*/
 #main-menu nav {
 	font-size: 1em;
 	width: 26em;
@@ -40,6 +75,17 @@
 	border-radius: 50%;
 	cursor: pointer;
 	z-index: 20005;
+}
+
+#main-menu .menu-cnitem {
+	outline: none;
+	border: none;
+	height: 10em;
+	width: 10em;
+	position: fixed;
+	right: -5em;
+	bottom: -5em;
+	z-index: 20004;
 }
 
 #main-menu .cnbutton:hover,

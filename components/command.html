@@ -1,30 +1,73 @@
-<polymer-element name="dmw-command" attributes="commandid">
+<dom-module id="dmw-command">
     <template>
         <web-socket id="socket"></web-socket>
     </template>
     <script>
-        Polymer("dmw-command", {
-            ready:function(){
+        class DmwCommand extends Polymer.Element {
+            static get is () { return 'dmw-command'; }
+            static get properties() {
+                return {
+                    commandid: {
+                        notify: true,
+                        observer: 'commandidChanged'
+                    }
+                }
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                this.cmdsnotified = {};
+                if (this.attributes.commandnotified) {
+                    if (this.attributes.commandnotified.value.search(';') == -1) {
+                        this.cmdsnotified[this.attributes.commandnotified.value]="*";
+                    } else {
+                    var elems = this.attributes.commandnotified.value.split(';');
+                        for (var i=0; i<elems.length; i++) {
+                            if (elems[i] != "") {
+                                var cmd = elems[i].split(':');
+                                this.cmdsnotified[cmd[0].trim()] = cmd[1].trim();
+                            }
+                        }
+                    }
+                }
                 this.isSet = false;
-            },
-            commandidChanged: function(oldValue, newValue) {
-            },
-               init: function(command) {
+            }
+            commandidChanged(newValue, oldValue) {
+            }
+            init(command) {
                 this.name = command['name'];
                 this.commandid = command['id'];
                 this.device = command['device'];
                 this.parameters = command['parameters'];
+                this.datatype_id = command['datatypes'];
                 this.isSet = true;
-            },
-            send: function(parameters) {
+            }
+            send(parameters) {
                 // vibrate to ack the user the command will be sent
                 navigator.vibrate(100);
-             
+                if (this.offsetParent && this.cmdsnotified) {
+                    for (var p in parameters) {
+                        for (var cmd in this.cmdsnotified) {
+                            if (this.cmdsnotified[cmd] == "*" || this.cmdsnotified[cmd] == String(parameters[p])) {
+                                var elem = this.offsetParent.shadowRoot.querySelector("#"+cmd);
+                                if (elem) { this.notifyCmdSend(elem); }
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 // Send the command
                 var json = {"command_id":this.commandid, "parameters": parameters};
                 this.$.socket.send("command-send", json);
             }
-        });
+            notifyCmdSend(sensor) {
+                sensor.classList.add('pulse-cmd');
+                Polymer.Async.timeOut.after(2500).run( function(){
+                    sensor.classList.remove('pulse-cmd');
+                });
+            }
+        }
+        customElements.define(DmwCommand.is, DmwCommand);
     </script>
-</polymer-element>
+</dom-module>
 

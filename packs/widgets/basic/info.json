@@ -12,8 +12,12 @@
     "widgets": {
         "sensorNumber": {
             "name" : "Sensor Number",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -39,8 +43,12 @@
         },
         "sensorBool": {
             "name" : "Sensor Bool",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -60,8 +68,12 @@
         },
         "sensorColorCII": {
             "name" : "Sensor ColorCII",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -82,14 +94,18 @@
                     "name": "ColorCII sensor",
                     "description": "ColorCII sensor",
                     "types" : ["DT_ColorCII"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
         "sensorColorCII2": {
             "name" : "Sensor ColorCII 2",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -103,15 +119,19 @@
                     "name": "ColorCII sensor",
                     "description": "ColorCII sensor",
                     "types" : ["DT_ColorCII"],
-                    "required": true                   
+                    "required": true
                 }
             }
         },
         "commandString": {
             "dev" : true,
             "name" : "Command String",
-            "height" : 1,
-            "width" : 2,
+            "height" : 2,
+            "width" : 4,
+            "min_height" : 1,
+            "min_width" : 2,
+            "max_height" : 4,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -132,8 +152,12 @@
         },
         "commandBool": {
             "name" : "Command Boolean",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -188,8 +212,12 @@
         },
         "commandTrigger": {
             "name" : "Command Trigger",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -224,20 +252,38 @@
         "commandRange": {
             "name" : "Command Range",
             "height" : 1,
-            "width" : 2,
+            "width" : 3,
+            "min_height" : 1,
+            "min_width" : 2,
+            "max_height" : 2,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
                     "description": "Hide the top and left widget labels",
                     "type": "boolean",
                     "default": "False"
+                },
+                "rangeMinValue" : {
+                    "name": "Range minimun value",
+                    "description": "Set the range minimum value",
+                    "type": "number",
+                    "default": 0,
+                    "required": false
+                },
+                "rangeMaxValue" : {
+                    "name": "Range maximum value",
+                    "description": "Set the range maximum value",
+                    "type": "number",
+                    "default": 100,
+                    "required": false
                 }
             },
             "sensors" : {
                 "scalingstate" : {
                     "name": "Scaling state",
                     "description": "Scaling feedback state",
-                    "types" : ["DT_Scaling"],
+                    "types" : ["DT_Scaling", "DT_Number"],
                     "required": false
                 }
             },
@@ -253,8 +299,12 @@
         },
         "commandColorRGB": {
             "name" : "Control RGB colors",
-            "height" : 2,
-            "width" : 2,
+            "height" : 3,
+            "width" : 3,
+            "min_height" : 2,
+            "min_width" : 2,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -313,6 +363,10 @@
             "name" : "Command Rolling Shutter",
             "height" : 2,
             "width" : 1,
+            "min_height" : 2,
+            "min_width" : 1,
+            "max_height" : 8,
+            "max_width" : 2,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -337,6 +391,10 @@
             "name" : "Sensor String",
             "height" : 1,
             "width" : 3,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 3,
+            "max_width" : 8,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -358,6 +416,10 @@
             "name" : "Sensor String",
             "height" : 1,
             "width" : 1,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 2,
+            "max_width" : 2,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -377,8 +439,12 @@
         },
         "sensorChart": {
             "name" : "Chart for numeric sensor",
-            "height" : 1,
-            "width" : 2,
+            "height" : 2,
+            "width" : 3,
+            "min_height" : 2,
+            "min_width" : 2,
+            "max_height" : 6,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -397,6 +463,12 @@
                     "description": "Set the chart color",
                     "type": "string",
                     "default": "#ffffff"
+                },
+                "precision" : {
+                    "name": "Number precision",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
                 },
                 "chartMinValue" : {
                     "name": "Chart minimun value",
@@ -424,8 +496,12 @@
         },
         "sensorChart2": {
             "name" : "Chart for numeric sensor (alternate)",
-            "height" : 2,
-            "width" : 2,
+            "height" : 3,
+            "width" : 3,
+            "min_height" : 2,
+            "min_width" : 2,
+            "max_height" : 6,
+            "max_width" : 6,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -444,6 +520,12 @@
                     "description": "Set the chart color in hexadecimal format (mandatory!)",
                     "type": "string",
                     "default": "#ffffff"
+                },
+                "precision" : {
+                    "name": "Number precision",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
                 },
                 "chartMinValue" : {
                     "name": "Chart minimun value",
@@ -471,8 +553,12 @@
         },
         "sensorChartMulti": {
             "name" : "Chart for several numeric sensors",
-            "height" : 2,
-            "width" : 3,
+            "height" : 3,
+            "width" : 4,
+            "min_height" : 3,
+            "min_width" : 3,
+            "max_height" : 6,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -492,6 +578,12 @@
                     "type": "string",
                     "default": "#ffffff"
                 },
+                "precision_primary" : {
+                    "name": "Number precision for sensor 1",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
+                },
                 "chartMinValue_primary" : {
                     "name": "Chart minimun value for sensor 1",
                     "description": "Set the chart minimum value",
@@ -505,6 +597,12 @@
                     "type": "number",
                     "default": null,
                     "required": false
+                },
+                "precision_secondary" : {
+                    "name": "Number precision for sensor 2",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
                 },
                 "chartMinValue_secondary" : {
                     "name": "Chart minimun value for sensor 2",
@@ -520,6 +618,12 @@
                     "default": null,
                     "required": false
                 },
+                "precision_third" : {
+                    "name": "Number precision for sensor 3",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
+                },
                 "chartMinValue_third" : {
                     "name": "Chart minimun value for sensor 3",
                     "description": "Set the chart minimum value",
@@ -534,6 +638,12 @@
                     "default": null,
                     "required": false
                 },
+                "precision_fourth" : {
+                    "name": "Number precision for sensor 3",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
+                },
                 "chartMinValue_fourth" : {
                     "name": "Chart minimun value for sensor 4",
                     "description": "Set the chart minimum value",
@@ -547,6 +657,12 @@
                     "type": "number",
                     "default": null,
                     "required": false
+                },
+                "precision_fifth" : {
+                    "name": "Number precision for sensor 5",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "2"
                 },
                 "chartMinValue_fifth" : {
                     "name": "Chart minimun value for sensor 5",

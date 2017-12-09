@@ -12,8 +12,12 @@
     "widgets": {
         "spline": {
             "name" : "Spline chart",
-            "height" : 2,
+            "height" : 3,
             "width" : 4,
+            "min_height" : 2,
+            "min_width" : 4,
+            "max_height" : 6,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -45,10 +49,55 @@
                 }
             }
         },
+        "lines": {
+            "name" : "Lines chart",
+            "height" : 3,
+            "width" : 4,
+            "min_height" : 2,
+            "min_width" : 4,
+            "max_height" : 6,
+            "max_width" : 10,
+            "options" : {
+                "hideLabels" : {
+                    "name": "Hide the widget labels",
+                    "description": "Hide the top and left widget labels",
+                    "type": "boolean",
+                    "default": "False"
+                },
+                "chartMinValue" : {
+                    "name": "Chart minimun value",
+                    "description": "Set the chart minimum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                },
+                "chartMaxValue" : {
+                    "name": "Chart maximum value",
+                    "description": "Set the chart maximum value",
+                    "type": "number",
+                    "default": null,
+                    "required": false
+                }
+            },
+            "sensors" : {
+                "series" : {
+                    "name": "Data",
+                    "description": "Data series",
+                    "types" : ["DT_Number"],
+                    "group": true,
+                    "groupmin": 1,
+                    "groupmax": 5
+                }
+            }
+        },
         "step": {
             "name" : "Step chart",
-            "height" : 2,
+            "height" : 3,
             "width" : 4,
+            "min_height" : 2,
+            "min_width" : 4,
+            "max_height" : 6,
+            "max_width" : 10,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",

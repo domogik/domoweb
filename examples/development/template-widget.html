@@ -1,0 +1,297 @@
+<!--
+Template sample to create domoweb widget.
+ Acronym definition :
+    - P2R: Polymer2 requirement
+    - WC: WebComponement
+
+Here you will find some basic informations to create a WC for Polymer 2+.
+Read Polymer documentation for high level developpement : https://www.polymer-project.org/2.0/docs/devguide/feature-overview
+Additionnales particularities of domoweb widget and stuff you can use.
+Of course you cloud make a more complex widget. Look at other widgets package to see example and ideas.
+
+Put your widget on path structure :
+packs
+    /widgets         ( here your html file and json file. name of file is defined in info.json. See some existing widgets for example.)
+        /css            ( if needed )
+        /js              ( if needed )
+        /locales
+            /en-US   ( with translation.json file. See some existing widgets for example)
+            /fr          ( with translation.json file. See some existing widgets for example)
+            ....
+
+You can use this sample to build your own widget by deleting stuff not used.
+****************
+@Author : Nico0084
+****************
+-->
+
+<link rel="import" href="/widget/pack/css/myStyles.html"> <!-- import your own css lib, Polymer2+ Styling request -->
+
+<script src="/widget/pack/js/myScript.js"></script>           <!-- import your own or other js lib -->
+
+<!-- WC declaration -->
+<dom-module id="dmw-pack-mywidget">  <!-- id must in lower case, begin with "dmw-" + pack name +"-"+ your wifget name -->
+    <!-- Close your template -->
+    <template id="extended-styles"> <!-- extended-styles for class dmw-widget styles inheritance -->
+        <!-- Included css libraries in inheritance (not javascript part). You don't need to reinclude them:
+                - bootstrap
+                - font-awesome
+                - dmw-widget-label-styles -->
+        <style include="myStyles"></style>                                      <!-- use your imported css styles, Polymer2+ Styling request -->
+        <link rel="stylesheet" href="/widget/pack/css/library.css"> <!-- add some css libraries (work on compatibility but should be depreciate on Polymer 3+  -->
+        <style type="text/css">                                                         <!-- Set internal widget styles -->
+            <!-- General rules to handle widget sizing :
+                    Best way is to design widget for original size defined in json file and handle scale in this code part.
+                    You have 3 way to handle sizing.
+                    * Using resized() callback function, see below
+                    * Using % unit in css definition.
+                    * Using css variables for handling scale. This values are automaticly updated when widget is resized.
+                        All variables depending of original widget dimensions set in json file and grid size.
+                        --wscale-w : the width scale ratio (0 to infinit)
+                        --wscale-h  : the height scale ratio (0 to infinit)
+                        --wscale-r   : constraint widget ratio (0 to infinit)
+                                     Constraint if define on constructor function, see paragraphe below -->
+
+            :host {              <!-- Changing host properties -->
+                height: 100%;
+                display: block;
+                --my-ccs-var: 'blue'; <!--  css declaration variable, you can handle your own css variable for handling dynamic change -->
+            }
+            #labelprimary {            <!-- Changing labelprimary properties -->
+                margin: 10px;
+                font-size: 1.2em;
+                position: relative;
+            }
+            <!-- Build your own properties -->
+            #idhtmlelement {
+                font-size: var(--mytext-size, 2em);    <!-- You can handle your own css variable for handling dynamic change, with a default value -->
+                text-align: center;
+                color: var(--my-ccs-var)
+                top: var(--mytext-top, 10px)             <!-- You can handle your own css variable for handling dynamic change, with a default value -->
+            }
+            .myclass {
+                position: absolute;
+                float: left;
+                width: 50%;
+                text-align: center;
+                top: calc(15px*var(--wscale-h)*var(--wscale-r));  <!-- Calculate size properties with scales variables -->
+            }
+            #otherid {
+                left: 50%;
+            }
+            i {
+                font-size: calc(60px*var(--wscale-h)*var(--wscale-r));
+            }
+            .myclass2 .myclass3 {
+                font-size: calc(30px*var(--wscale-h)*var(--wscale-r));
+            }
+            </style>
+        <slot>   <!-- Place domogik sensors/commands in <slot> flag for clear code, just a recommendation -->
+            <!-- Optional : include WC dmw-sensor for widget who use domogik sensor. Attributes definition :
+                    - id: html element id, don't use special characters and '-', '_' to preserve WC bind access like "this.$.mysensor".
+                    - sensorkey : the name of your sensor in lowercase
+                    - sensorvalue : the same name has sensorkey to bind sensor value.
+                        Double-curly brackets ({{ }}) support both upward and downward data flow.
+                        Double square brackets ([[ ]]) are one-way, and support only downward data flow.
+                    - sensornotified : Optional, id of html elements who do plused effect when sensor is updated by domogik.
+            -->
+            <dmw-sensor id="mysensor" sensorkey="my_current_sensor" sensorvalue="{{my_current_sensor}}" sensornotified="sunrise"></dmw-sensor>
+            <!-- Optional : include WC dmw-command for widget who use domogik command. Attributes definition :
+                    - id: html element id, don't use special characters and '-', '_' to preserve WC bind access like "this.$.myswitch".
+                    - commandkey : the name of your command in lowercase
+                    - commandnotified : Optional, id of html elements who do plused effect when command sended. Format definition like css style :
+                            - Simple command like push button or number : "idofhtmlelement",
+                            - Complexe command with multi state like switch : "idx: valueOfState;" eg :"open: 0; close:1;"
+            -->
+            <dmw-command id="myswitch" commandkey="primary" commandnotified="open: 0; close:1;"></dmw-command>
+        </slot
+
+        <div id='sensor' class='myclass'>
+            <i id='icon' class="fa fa-snowflake-o"></i>         <!-- eg: use font-awesome icons allready imported -->
+            <div class='myclass2'>[[ my_current_sensor ]]
+                <span id='idhtmlelement'> {{localise('word to translate')}}</span>      <!-- Use localize to translate from widget translation file -->
+            </div>
+        </div>
+        <button id="open" class=""><i class="fa fa-angle-double-up fa-2x"></i></button> <!-- you can set event, eg: onclick="myFunction();" -->
+        <button id="close" class="" onclick="close()><i class="fa fa-angle-double-down fa-2x"></i></button>
+    </template>
+    <!-- Close your template -->
+
+    <!-- Script declaration -->
+    <script>
+     (function () {                 // Required line for inheritance
+        let memoizedTemplate;       // Required line for inheritance
+
+        class DmwPackMyWidget extends DmwWidget {         // WC Class declaration extending DmwWidget class (no need to import it, allready do.
+
+            static get is () { return 'dmw-pack-mywidget'; }    // P2R to get class name: the same declared previously "<dom-module id="dmw-pack-mywidget">
+
+            static get properties() {                               // P2R to set/get properties values see Polymer 2 documentation.
+                return {
+                    my_current_sensor: {                             // The sensorvalue give in WC <dmw-sensor>
+                        notify: true,                                   // Required to callback
+                        observer: 'my_current_sensorChanged'      // Callback when property value change.
+                    }
+                }
+            }
+
+            static get template() {                             // Required static funtion to inherit dmw-widget template. Kkeep as as-is
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+
+            }
+            constructor() {                                    // Optional overwrite constructor
+                super();                                        // Required call super at first.
+                this.ratioConstraint = 'width';              // Optional value for constraint widget ratio type (--wscale-r) :
+                                                                 // '' - no constraint (default)
+                                                                 // 'width' - constraint on width dimension, all value < 1 are reported if not 1
+                                                                 // 'height' - constraint on height dimension, all value > 1 are reported if not 1
+                // loading an optionnal language file
+                this.loadLanguage('mytranslation.json', OptionalPath);  // OptionalPath otherwise get it in default path "locales/<bowser language>/translation.json" from widget pack
+            }
+
+            connectedCallback() {                                // Optional overwrite connectedCallback, callback until after first render, so elements could measure themselves or their children.
+                super.connectedCallback();                      // Required call super at first.
+                // your code, eg: add some event listener
+                this.addEventListener('anEvent', this._myEvent);
+                windows.addEventListener('specialEvent', this._specialEvent);
+                this._eventOpen = undefined;                   // flag to handle no duplicate event, see "commandsUpdated()".
+            }
+
+            disconnectedCallback () {                            // Optional overwrite disconnectedCallback, Called after the element is detached from the document
+                super.connectedCallback();                      // Required call super at first.
+                // your code, eg: remove event listener
+                windows.removeEventListener('specialEvent', this._specialEvent);  // P2R: for events on something other than the custom element or its descendants,
+                                                                                            //Add and remove listeners imperatively.
+            }
+
+            this._myEvent(e)   {                                // If needed handle your event
+                // your code, eg : handle something...
+            }
+
+            this._specialEvent(e)   {                                // If needed handle your event
+                // your code, eg : handle something...
+            }
+            loadingDone() {                                     // Optional Callback when widget have finish first sensors/commands loading
+                // your code, eg : handle fixed canvas drawing
+            }
+
+            sensorsUpdated() {                                  // Optional Callback when sensors are updated from loading and edit mode
+                // your code, eg : handle some sensor display depending of domogik device
+                if (this.$.mysensor.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                }
+            }
+
+            commandsUpdated() {                                 // Optional Callback when commands are updated from loading and edit mode.
+                // your code, eg : handle some command display/event depending of domogik device.
+                if (this.$.myswtich.isSet) {
+                    this.labelprimary = this.$.primary.device['name'];
+                    this.labelsecondary = this.$.primary.name;
+                     // add an event listener only when command is set.
+                     if (!this._eventOpen) {                                     // due to possible multi call, please check if event is allready added.
+                        this._eventOpen = this.open.bind(this);                // eg: way to handle no duplicate event.
+                        this.$.open.addEventListener('click', this._eventOpen);
+                }
+            }
+            devicesUpdated() {                                 // Optional Callback when devices are updated from loading and edit mode.
+                // your code, eg : handle some devices properties depending of domogik device
+            }
+
+            optionsUpdated() {                                 // Optional Callback when widget option are loaded or edited
+                // your code, eg: handle widget options.
+                if (this.options['hideLabels'] == true ) {
+                    this.$.labelprimary.style.visibility = "hidden";
+                    this.$.labelsecondary.style.visibility = "hidden";
+                }
+                else {
+                    this.$.labelprimary.style.visibility = "visible";
+                    this.$.labelsecondary.style.visibility = "visible";
+                }
+            }
+
+            languageLoaded() {                                  // Optional Callback when all widget language translation are loaded
+                // your code, eg: handle translation see chapter Polymer.AppLocalizeBehavior below. See some existing widgets for example.
+                this.today = this.localize("weather:Today");
+                this.high = this.localize("weather:High");
+            }
+
+            resized() {                                         // Optional Callback when widget is resized or loaded. See scaling information upper.
+                // your code, eg: handle complexe sizing.
+                this.scales                                                // this js object contain some scale values automaticly updated :
+                                                                            //   .width : width dimension scale ratio, same as --wscale-w css variable  (0 to infinit).
+                                                                            //   .height : height dimension scale ratio, same as --wscale-h css variable  (0 to infinit).
+                                                                            //   .constraintRatio : constraint widget ratio, same as --wscale-h css variable  (0 to infinit).
+                                                                            //   .orginalRatio : widget orignal pixel ratio (0 to infinit).
+                                                                            //   .currentRatio : widget current pixel (0 to infinit).
+                // example of use
+                let size = '12em';                                       // P2R: Always declare variable as const, let, var.
+                if (this.scales.width < 0.5) {                            // Handling text size depending of step of scale.
+                    size = '3em';
+                } else if (this.scales.width < 1)  {
+                    size = '4em';
+                } else if (this.scales.width < 1.5)  {
+                    size = '6em';
+                }
+                const top = `${10*this.scales.currentRatio}px`;     // P2R: Always declare variable as const, let, var.
+                this.style.setProperty("--mytext-size", size);        // Update css proporty will automaticly redraw template
+                this.style.setProperty("--mytext-top", top);
+
+                this.adjustText(this.$.sensor, this.$.icon, {width: 3, height:3});   // Function tools to simply adjust a text size
+                                                                                            // @param parent : the parent element who give max size.
+                                                                                            // @param element : the element who contain text.
+                                                                                            // @param margin : optional in 'px', width and height margin to include on parent size.
+            }
+
+            my_current_sensorChanged(newValue, oldValue) {             // P2R: Callback function for property value change, see "static get properties()" upper
+                // your code, eg: handle display of your widget.
+                newValue = newValue.stored_value;                        // Get the modified valuen (other key possible, see domoweb doc).
+                if (newvalue == 'off') {                                     //  An other way to change css property.
+                    this.updateStyles({
+                        '--my-ccs-var': 'red',
+                    });
+                    this.$.icon.className  = "fa fa-star";                // Change icon of html element.
+
+                } else {
+                    this.updateStyles({
+                        '--my-ccs-var': 'blue',
+                    });
+                    this.$.icon.className  = "fa fa-snowflake-o";
+                }
+            }
+
+            open(e) {                                                              // Your command function defined on event upper to send to domogik
+                var parameters = {};
+                parameters[this.$.myswitch.parameters[0]['key']] = 0;
+                this.$.myswitch.send(parameters);
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            close(e) {                                                              // Your command function defined in template upper to send to domogik
+                var parameters = {};
+                parameters[this.$.myswitch.parameters[0]['key']] = 1;
+                this.$.myswitch.send(parameters);
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+	    };
+    customElements.define(DmwPackMyWidget.is, DmwPackMyWidget);     // P2R for regiter tour WC by Class name declared.
+    })();                                                                           // Close anonymous embedded function.
+
+    // Here you can add some tools external function for your widget.
+
+    </script>
+    <!-- end of script declaration -->
+</dom-module>
+<!-- End of WC declaration -->

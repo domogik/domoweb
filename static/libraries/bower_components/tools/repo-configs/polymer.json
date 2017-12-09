@@ -1,0 +1,17 @@
+[
+  {
+    "dir": "components",
+    "org": "Polymer",
+    "repos": [
+      "NodeBind",
+      "TemplateBinding",
+      "URL",
+      "observe-js",
+      "polymer",
+      "polymer-expressions",
+      "polymer-gestures",
+      "tools",
+      "webcomponentsjs"
+    ]
+  }
+]

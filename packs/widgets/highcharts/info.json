@@ -16,6 +16,10 @@
             "description" : "Simple Line Chart",
             "height" : 4,
             "width" : 6,
+            "min_height" : 4,
+            "min_width" : 6,
+            "max_height" : 8,
+            "max_width" : 12,
             "default_style" : false,
             "options" : {
                 "title" : {
@@ -44,8 +48,12 @@
         },
         "sensorNumberChart": {
             "name" : "Number highchart",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 4,
+            "max_width" : 4,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -83,8 +91,12 @@
         },
         "sensorBoolChart": {
             "name" : "Bool highchart",
-            "height" : 1,
-            "width" : 1,
+            "height" : 2,
+            "width" : 2,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 4,
+            "max_width" : 4,
             "options" : {
                 "hideLabels" : {
                     "name": "Hide the widget labels",
@@ -113,6 +125,6 @@
                     "required": true
                 }
             }
-        }       
+        }
     }
 }

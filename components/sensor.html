@@ -1,26 +1,55 @@
-<polymer-element name="dmw-sensor" attributes="sensorid sensorkey sensorvalue sensorhistory">
+<dom-module id="dmw-sensor">
     <template>
         <web-socket id="socket"></web-socket>
     </template>
     <script>
-        Polymer("dmw-sensor", {
-            ready:function(){
+        class DmwSensor extends Polymer.Element {
+            static get is () { return 'dmw-sensor'; }
+            static get properties() {
+                return {
+                    sensorid: {
+                        notify: true,
+                        observer: 'sensoridChanged'
+                    },
+                    sensorkey: {
+                        notify: true
+                    },
+                    sensorvalue: {
+                        notify: true
+                    },
+                    sensorhistory: {
+                        notify: true
+                    }
+                }
+            }
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 this.isSet = false;
                 this.checkdelay = 0;
                 this.recheckdelay = 60000; // every minute
                 this.timedout = false;
                 this.historyMode = null;
-            },
-            statReceived: function(topic, json) {
+                this.historydelay = 120000; // two minute
+                this.callback = Math.floor(Math.random() * 10000);
+            }
+            statReceived(topic, json) {
                 // Fritz
                 //this.sensorvalue=json.stored_value;
-                this.sensorvalue=json;
                 this.sensorreceived=json.timestamp;
-                this.fire('sensor-statreceived', {stat: json});
+                if (this.offsetParent && this.attributes.sensornotified) {
+                    var elem = this.offsetParent.shadowRoot.querySelector("#"+this.attributes.sensornotified.value);
+                    if (elem) { this.notifySensorUpdate(elem);
+                    }
+                }
+                this.sensorvalue=json;
+                this.dispatchEvent(new CustomEvent('sensor-statreceived', {stat: json}));
                 if (this.checkdelay > 0) {
                     // Remove interval recheck
                     if (this.intervalid) {
-                        this.fire('sensor-timeoutend');
+                        this.dispatchEvent(new CustomEvent('sensor-timeoutend', {}));
                         window.clearInterval(this.intervalid);
                         delete this.intervalid;
                     }
@@ -31,133 +60,182 @@
                     }
                        this.timeoutid = window.setTimeout(this.timeoutHandler.bind(this), this.checkdelay);
                 }
-            },
-            historyReceived: function(topic, json) {
+            }
+            historyReceived(topic, json) {
+                this.sensorreqhistory = false;
+                if (this.historytimeoutid) { //Remove the timeout history check...
+                    window.clearTimeout(this.historytimeoutid);
+                    delete this.historytimeoutid;
+                };
+                this.dispatchEvent(new CustomEvent('sensor-history-timeoutend', {}));
                 this.sensorhistory=json['history'];
-            },
-            sensoridChanged: function(oldValue, newValue) {
+            }
+            sensoridChanged(newValue, oldValue) {
                 this.$.socket.register('device-stats', this.statReceived.bind(this), { 'sensor_id': newValue});
                 this.$.socket.register('sensor-history', this.historyReceived.bind(this), { 'caller':this.callback, 'id': newValue });
                 if (this.checkdelay > 0) {
                     this.timeoutid = window.setTimeout(this.timeoutHandler.bind(this), this.checkdelay);
                 }
-            },
-            init: function(sensor) {
+            }
+            init(sensor) {
                 this.checkdelay = parseInt(sensor['timeout']) * 1000; // Convert in millisec
                 this.name = sensor['name'];
-                // Fritz
-                //this.sensorvalue = sensor['last_value'];
-                this.sensorvalue = sensor;
-                this.sensorvalue['stored_value'] = this.sensorvalue['last_value'];
                 this.sensorreceived = sensor['last_received'];
-                this.sensorid = sensor['id'];
                 this.device = sensor['device'];
                 this.datatype_id = sensor['datatype_id'];
-                this.callback = Math.floor(Math.random() * 10000);
+                // Nico0084
+                // Buffered sensorvalue property for delay sensorvalueChanged callback
+                sensor['stored_value'] = sensor['last_value'];
+                this.sensorid = sensor['id'];
+                this.sensorreqhistory = false;
                 this.isSet = true;
+                this.sensorvalue = sensor
                 if (this.checkdelay > 0) {
                     var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
                     if (diff > this.checkdelay) { // If the sensor already timed out
-                        this.fire('sensor-timeout', {'minutes': diff.humanize()});
+                        this.dispatchEvent(new CustomEvent('sensor-timeout', {detail: {'minutes': diff.humanize()}}));
                         this.intervalid = window.setInterval(this.intervalHandler.bind(this), this.recheckdelay); // adjust time every 1 minute
                     }
                 }
-            },
-            getLast: function(num) {
+            }
+            getLast(num) {
                 this.historyMode = 'last';
                 this.$.socket.send("sensor-getlast", {'caller': this.callback, 'id': this.sensorid, 'count': num});
-            },
-            // Add function: Retrieve the history from a certain timestamp
-            getLastFrom: function(from) {
+            }
+            getLastFrom(from) {
                 this.historyMode = 'last';
                 this.$.socket.send("sensor-getlast", {'caller': this.callback, 'id': this.sensorid, 'from': from});
-            },
-            getCurrentDay: function() {
-                this.historyMode = 'day';
-                var from = moment().subtract(1, 'days').unix();
-                var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'minute'});
-            },
-            getCurrentDayPerHour: function() {
-                this.historyMode = 'dayPerHour';
-                var from = moment().subtract(1, 'days').unix();
-                var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
-            },
-            getCurrentWeek: function() {
-                this.historyMode = 'week';
-                var from = moment().subtract(1, 'weeks').startOf('day').unix();
-                var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
-            },
-            getCurrentWeekBool: function() {
-                this.historyMode = 'week';
-                var from = moment().subtract(1, 'weeks').startOf('day').unix();
-                var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour', 'selector': 'min'});
-            },
-            getCurrentWeekPerDay: function() {
-                this.historyMode = 'weekPerDay';
-                var from = moment().subtract(1, 'weeks').startOf('day').unix();
-                var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day'});
-            },
-            getCurrentWeekPerDayWithSelectorMax: function() {
-                this.historyMode = 'weekPerDayWithSelectorMax';
-                var from = moment().subtract(1, 'weeks').startOf('day').unix();
-                var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day', 'selector': 'max'});
-            },
-            getCurrentMonth: function() {
-                this.historyMode = 'month';
-                var from = moment().subtract(1, 'months').unix();
-                var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day'});
-            },
-            // Add function: month average values per hour
-            getCurrentMonthPerHour: function() {
-                this.historyMode = 'monthPerHour';
-                var from = moment().subtract(1, 'months').unix();
-                var to = moment().unix();
-                this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
-            },
-            // Add function: day sum value per hour
-            getCurrentDayPerHourWithSelectorSum: function() {
+            }
+            getCurrentDay() {
+                if (!this.sensorreqhistory) {
+                    this.historyMode = 'day';
+                    var from = moment().subtract(1, 'days').unix();
+                    var to = moment().unix();
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'minute'});
+                    this.historyReqHandler();
+                };
+            }
+            getCurrentDayPerHour() {
+                if (!this.sensorreqhistory) {
+                    this.historyMode = 'dayPerHour';
+                    var from = moment().subtract(1, 'days').unix();
+                    var to = moment().unix();
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
+                    this.historyReqHandler();
+                };
+            }
+            getCurrentWeek() {
+                if (!this.sensorreqhistory) {
+                    this.historyMode = 'week';
+                    var from = moment().subtract(1, 'weeks').startOf('day').unix();
+                    var to = moment().unix();
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
+                    this.historyReqHandler();
+                };
+            }
+            getCurrentWeekBool() {
+                if (!this.sensorreqhistory) {
+                    this.historyMode = 'week';
+                    var from = moment().subtract(1, 'weeks').startOf('day').unix();
+                    var to = moment().unix();
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour', 'selector': 'min'});
+                    this.historyReqHandler();
+                };
+            }
+            getCurrentWeekPerDay() {
+                if (!this.sensorreqhistory) {
+                    this.historyMode = 'weekPerDay';
+                    var from = moment().subtract(1, 'weeks').startOf('day').unix();
+                    var to = moment().unix();
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day'});
+                    this.historyReqHandler();
+                };
+            }
+            getCurrentWeekPerDayWithSelectorMax() {
+                if (!this.sensorreqhistory) {
+                    this.historyMode = 'weekPerDayWithSelectorMax';
+                    var from = moment().subtract(1, 'weeks').startOf('day').unix();
+                    var to = moment().unix();
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day', 'selector': 'max'});
+                    this.historyReqHandler();
+                };
+            }
+            getCurrentMonth() {
+                if (!this.sensorreqhistory) {
+                    this.historyMode = 'month';
+                    var from = moment().subtract(1, 'months').unix();
+                    var to = moment().unix();
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day'});
+                    this.historyReqHandler();
+                };
+            }
+            getCurrentMonthPerHour() {
+                if (!this.sensorreqhistory) {
+                    this.historyMode = 'month';
+                    var from = moment().subtract(1, 'months').unix();
+                    var to = moment().unix();
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
+                };
+            }
+            getCurrentDayPerHourWithSelectorSum() {
                 this.historyMode = 'dayPerHourWithSelectorSum';
                 var from = moment().subtract(1, 'days').unix();
                 var to = moment().unix();
                 this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour', 'selector': 'sum'});
-            },
-            // Add function: month sum value per day
-            getCurrentMonthPerDayWithSelectorSum: function() {
+            }
+            getCurrentMonthPerDayWithSelectorSum() {
                 this.historyMode = 'monthPerDayWithSelectorSum';
                 var from = moment().subtract(1, 'months').unix();
                 var to = moment().unix();
                 this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'day', 'selector': 'sum'});
-            },
-            // Add function: year sum value per month
-            getCurrentYearPerMonthWithSelectorSum: function() {
+            }
+            getCurrentYearPerMonthWithSelectorSum() {
                 this.historyMode = 'yearPerMonthWithSelectorSum';
                 var from = moment().subtract(1, 'years').unix();
                 var to = moment().unix();
                 this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'month', 'selector': 'sum'});
-            },
-
-            timeoutHandler: function() {
+            }
+            getFromToDay(fromD, toD, interval, selector) {
+                if (!this.sensorreqhistory) {
+                    if (['month', 'week', 'day', 'hour', 'minute', 'second'].indexOf(interval) == -1) { interval = 'hour';};
+                    if (['min', 'max', 'avg', 'sum'].indexOf(selector) == -1) { selector = undefined;};
+                    this.historyMode = 'fromToDay';
+                    var from = moment(fromD).unix();
+                    var to = moment(toD).unix();
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': interval, 'selector': selector});
+                    this.historyReqHandler();
+                };
+            }
+            timeoutHandler() {
                 var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
-                this.fire('sensor-timeout', {'minutes': diff.humanize()});
+                this.dispatchEvent(new CustomEvent('sensor-timeout',  {detail: {'minutes': diff.humanize()}}));
                 if (this.timeoutid) { //Remove the timeout check...
                     window.clearTimeout(this.timeoutid);
                     delete this.timeoutid;
-                }
+                };
                 // and replace it with regular recheck
                 this.intervalid = window.setInterval(this.intervalHandler.bind(this), this.recheckdelay); // adjust time every 1 minute
-            },
-            intervalHandler: function() {
-                var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
-                this.fire('sensor-timeout', {'minutes': diff.humanize()});
             }
-        });
+            intervalHandler() {
+                var diff = moment.duration(moment().diff(moment.unix(this.sensorreceived)));
+                this.dispatchEvent(new CustomEvent('sensor-timeout',  {detail: {'minutes': diff.humanize()}}));
+            }
+            historyReqHandler() {
+                this.sensorreqhistory = true;
+                this.historytimeoutid = window.setTimeout(this.historyTimeoutHandler.bind(this), this.historydelay);
+            }
+            historyTimeoutHandler() {
+                this.sensorreqhistory = false;
+                this.dispatchEvent(new CustomEvent('sensor-history-timeout', {detail: {'comment': this.historyMode}}));
+            }
+            notifySensorUpdate(sensor) {
+                sensor.classList.add('pulse-sensor');
+                Polymer.Async.timeOut.after(2500).run( function(){
+                    sensor.classList.remove('pulse-sensor');
+                });
+            }
+        };
+        customElements.define(DmwSensor.is, DmwSensor);
     </script>
-</polymer-element>
+</dom-module>
 

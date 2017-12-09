@@ -1,139 +1,186 @@
-<polymer-element name="dmw-time-digitalClock" extends="dmw-widget">
-	<template>
-		<link rel="stylesheet" href="/widget/time/css/digitalClock.css">
-		<style>
+<link rel="import" href="/widget/time/css/digitalClockStyle.html">
+
+<dom-module id="dmw-time-digitalclock">
+	<template id="extended-styles">
+        <style include="dmw-digitalclock-styles"></style>
+		<style type="text/css">
+            :host {
+               --textColor: #272e38;
+               --backgroundColor: #f3f3f3;
+               --colorA: #dddddd;
+               --colorB: #fafafa;
+             }
+
 			:host {
 				height: 100%;
-				color: {{ textColor }};
-				background: {{ backgroundColor }};
+				color: var(--textColor, black);
+				background: var(--backgroundColor, white);
 			}
-			:host.loading {
+            :host .loading {
 				opacity: 0;
 			}
 
-		    :host /deep/ .digits div span {
-		    	background-color: {{ textColor }};
-		    	border-color: {{ textColor }};
+            :host .digits div span {
+		    	background-color: var(--textColor, black);
+		    	border-color: var(--textColor, black);
 		    }
-		    :host /deep/ .digits div.dots:before, .digits div.dots:after {
-		    	background-color: {{ textColor }};
+            :host .digits div.dots:before, .digits div.dots:after {
+		    	background-color: var(--textColor, black);
 		    }
-		    :host /deep/ .display{
-		    	background-color: {{ colorA }};
-		    	box-shadow: 0 1px 1px rgba(0,0,0,0.08) inset, 0 1px 1px {{ colorB }};
+		     :host .display{
+		    	background-color: var(--colorA, cyan);
+		    	box-shadow: 0 1px 1px rgba(0,0,0,0.08) inset, 0 1px 1px var(--colorB, yellow);
 		    }
 		</style>
-		<shadow></shadow>
-		<div id="clock" class="display">
+            <div id="clock" class="display">
 		        <div class="weekdays"></div>
 		        <div class="ampm"></div>
-		        <div class="digits"></div>
 		    </div>
+            <div id="digitsnumbers">
+                <div class="digits"></div>
+            </div>
 		</div>
 	</template>
-	<script>  
-		Polymer('dmw-time-digitalClock', {
-			ready: function() {
-				this.super();
-				// Cache some selectors
-				var clock = $(this.$.clock);
-				this.ampm = clock.find('.ampm');
-				// Map digits to their names (this will be an array)
-				this.digit_to_name = 'zero one two three four five six seven eight nine'.split(' ');
-				// This object will hold the digit elements
-				this.digits = {};
-				// Positions for the hours, minutes, and seconds
-				var positions = [
-					'h1', 'h2', ':', 'm1', 'm2', ':', 's1', 's2'
-				];
-				// Generate the digits with the needed markup,
-				// and add them to the clock
-				var digit_holder = clock.find('.digits');
-				self = this;
-				jQuery.each(positions, function(){
-					if(this == ':'){
-						digit_holder.append('<div class="dots">');
-					}
-					else{
-						var pos = $('<div>');
-						for(var i=1; i<8; i++){
-							pos.append('<span class="d' + i + '">');
-						}
-						// Set the digits as key:value pairs in the digits object
-						self.digits[this] = pos;
-						// Add the digit elements to the page
-						digit_holder.append(pos);
-					}
-				});
-				// Add the weekday names
-				var weekday_names = 'MON TUE WED THU FRI SAT SUN'.split(' '),
-					weekday_holder = clock.find('.weekdays');
-				jQuery.each(weekday_names, function(){
-					weekday_holder.append('<span>' + i18n.t("time:weekday_short." + this) + '</span>');
-				});
-				this.weekdays = clock.find('.weekdays span');
-				this.update_time();
-			},
-			optionsUpdated: function() {
-				if ('dark' in this.options && this.options['dark'] == 1) {
-					this.backgroundColor = this.options['WidgetBackgroundColorAlt1'];
-					this.textColor = this.options['WidgetForegroundColorAlt1'];
-					this.colorA = this.options['WidgetBackgroundColorAlt3'];
-					this.colorB = this.options['WidgetForegroundColorAlt3'];			
-				} else {
-					this.backgroundColor = this.options['WidgetBackgroundColor'];
-					this.textColor = this.options['WidgetTextColor'];
-					this.colorA = this.options['WidgetBackgroundColorAlt2'];
-					this.colorB = this.options['WidgetForegroundColorAlt2'];
-				}
-				// https://github.com/Polymer/polymer/issues/270
-				// https://gist.github.com/sorvell/6772909
-				if (window.ShadowDOMPolyfill) { // For Polyfil browsers (FireFox)
-					var css = '#instance-'+this.instanceid+' { color:' + this.textColor + '; background:' + this.backgroundColor + '; }';
-					css += '#instance-'+this.instanceid+' .digits div span{ background-color:' + this.textColor + '; border-color:' + this.textColor + ';}';
-					css += '#instance-'+this.instanceid+' .digits div.dots:before, .digits div.dots:after{ background-color:' + this.textColor + '; }';
-					css += '#instance-'+this.instanceid+' .display{ background-color:' + this.colorA + '; box-shadow:0 1px 1px rgba(0,0,0,0.08) inset, 0 1px 1px ' + this.colorB + '; }';
-					createStyle(this.instanceid, css);
-				}
-			},
-			// Run a timer every second and update the clock
-			update_time: function() {
-				// Use moment.js to utput the current time as a string
-				// hh is for the hours in 12-hour format,
-				// mm - minutes, ss-seconds (all with leading zeroes),
-				// d is for day of week and A is for AM/PM
+	<script>
+     (function () {
+        let memoizedTemplate;
 
-				var now = moment().format("hhmmssdA");
+        class DmwTimeDigitalClock extends DmwWidget {
+            static get is () { return 'dmw-time-digitalclock'; }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                // Cache some selectors
+                var clock = $(this.$.clock);
+                var digits = $(this.$.digitsnumbers);
+                this.ampm = clock.find('.ampm');
+                // Map digits to their names (this will be an array)
+                this.digit_to_name = 'zero one two three four five six seven eight nine'.split(' ');
+                // This object will hold the digit elements
+                this.digits = {};
+                // Positions for the hours, minutes, and seconds
+                var positions = [
+                    'h1', 'h2', ':', 'm1', 'm2', ':', 's1', 's2'
+                ];
+                // Generate the digits with the needed markup,
+                // and add them to the clock
+                var digit_holder = digits.find('.digits');
+                self = this;
+                jQuery.each(positions, function(){
+                    if(this == ':'){
+                        digit_holder.append('<div class="dots">');
+                    }
+                    else{
+                        var pos = $('<div>');
+                        for(var i=1; i<8; i++){
+                            pos.append('<span class="d' + i + '">');
+                        }
+                        // Set the digits as key:value pairs in the digits object
+                        self.digits[this] = pos;
+                        // Add the digit elements to the page
+                        digit_holder.append(pos);
+                    }
+                });
+                this.weekdays = clock.find('.weekdays span');
+                this.update_time();
+            }
+            languageLoaded(e, d) {
+                if (this.localize('weekday_short:MON') != 'weekday_short:MON') {
+                    // Add the weekday names
+                    var clock = $(this.$.clock);
+                    var weekday_names = 'MON TUE WED THU FRI SAT SUN'.split(' '),
+                        weekday_holder = clock.find('.weekdays');
+                    weekday_holder.remove('.weekdays span');
+                    var self = this;
+                    jQuery.each(weekday_names, function(){
+                        weekday_holder.append('<span>' + self.localize('weekday_short:' + this) + '</span>');
+                    });
+                    this.weekdays = clock.find('.weekdays span');
+                }
+            }
+            resized(){
+                super.resized();
+            }
+            optionsUpdated() {
+                if ('dark' in this.options && this.options['dark'] == 1) {
+                    this.updateStyles({
+                        '--backgroundColor': this.options['WidgetBackgroundColorAlt1'],
+                        '--textColor': this.options['WidgetForegroundColorAlt1'],
+                        '--colorA': this.options['WidgetBackgroundColorAlt3'],
+                        '--colorB': this.options['WidgetForegroundColorAlt3']
+                    });
+                } else {
+                    this.updateStyles({
+                        '--backgroundColor': this.options['WidgetBackgroundColor'],
+                        '--textColor': this.options['WidgetTextColor'],
+                        '--colorA': this.options['WidgetBackgroundColorAlt2'],
+                        '--colorB': this.options['WidgetForegroundColorAlt2']
+                    });
+                }
+                // https://github.com/Polymer/polymer/issues/270
+                // https://gist.github.com/sorvell/6772909
+                if (window.ShadowDOMPolyfill) { // For Polyfil browsers (FireFox)
+                    var css = '#instance-'+this.instanceid+' { color:' + this.textColor + '; background:' + this.backgroundColor + '; }';
+                    css += '#instance-'+this.instanceid+' .digits div span{ background-color:' + this.textColor + '; border-color:' + this.textColor + ';}';
+                    css += '#instance-'+this.instanceid+' .digits div.dots:before, .digits div.dots:after{ background-color:' + this.textColor + '; }';
+                    css += '#instance-'+this.instanceid+' .display{ background-color:' + this.colorA + '; box-shadow:0 1px 1px rgba(0,0,0,0.08) inset, 0 1px 1px ' + this.colorB + '; }';
+                    createStyle(this.instanceid, css);
+                }
+            }
+            // Run a timer every second and update the clock
+            update_time() {
+                // Use moment.js to utput the current time as a string
+                // hh is for the hours in 12-hour format,
+                // mm - minutes, ss-seconds (all with leading zeroes),
+                // d is for day of week and A is for AM/PM
 
-				this.digits.h1.attr('class', this.digit_to_name[now[0]]);
-				this.digits.h2.attr('class', this.digit_to_name[now[1]]);
-				this.digits.m1.attr('class', this.digit_to_name[now[2]]);
-				this.digits.m2.attr('class', this.digit_to_name[now[3]]);
-				this.digits.s1.attr('class', this.digit_to_name[now[4]]);
-				this.digits.s2.attr('class', this.digit_to_name[now[5]]);
+                if (this.options && '12hr' in this.options && this.options['12hr'] == 1) {
+                    var now = moment().format("hhmmssdA");
+                    // Set the am/pm text:
+                    this.ampm.text(now[7]+now[8]);
+                } else {
+                    var now = moment().format("HHmmssd");
+                    this.ampm.text('');
+                }
+                this.digits.h1.attr('class', this.digit_to_name[now[0]]);
+                this.digits.h2.attr('class', this.digit_to_name[now[1]]);
+                this.digits.m1.attr('class', this.digit_to_name[now[2]]);
+                this.digits.m2.attr('class', this.digit_to_name[now[3]]);
+                this.digits.s1.attr('class', this.digit_to_name[now[4]]);
+                this.digits.s2.attr('class', this.digit_to_name[now[5]]);
 
-				// The library returns Sunday as the first day of the week.
-				// Stupid, I know. Lets shift all the days one position down, 
-				// and make Sunday last
+                // The library returns Sunday as the first day of the week.
+                // Stupid, I know. Lets shift all the days one position down,
+                // and make Sunday last
 
-				var dow = now[6];
-				dow--;
-				
-				// Sunday!
-				if(dow < 0){
-					// Make it last
-					dow = 6;
-				}
+                var dow = now[6];
+                dow--;
 
-				// Mark the active day of the week
-				this.weekdays.removeClass('active').eq(dow).addClass('active');
+                // Sunday!
+                if(dow < 0){
+                    // Make it last
+                    dow = 6;
+                }
 
-				// Set the am/pm text:
-				this.ampm.text(now[7]+now[8]);
+                // Mark the active day of the week
+                this.weekdays.removeClass('active').eq(dow).addClass('active');
 
-				// Schedule this function to be run again in 1 sec
-				setTimeout(this.update_time.bind(this), 1000);
-			}
-		});
+                // Schedule this function to be run again in 1 sec
+                setTimeout(this.update_time.bind(this), 1000);
+            }
+		}
+        customElements.define(DmwTimeDigitalClock.is, DmwTimeDigitalClock);
+     })();
 	</script>
-</polymer-element>
+</dom-module>

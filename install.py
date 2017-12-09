@@ -126,7 +126,7 @@ def main():
              dest='nofoldercreation',
              action="store_true",
              help="Do not create folders")
-    
+
     # generate dynamically all arguments for the various config files
     # notice that we MUST NOT have the same sections in the different files!
     p.add_argument('--command-line', dest='command_line', \
@@ -253,7 +253,7 @@ def installConfig(user, command_line):
     uid = pwd.getpwnam(user).pw_uid
     installpath = "%s/examples/config/domoweb.cfg" % os.path.dirname(os.path.abspath(__file__))
     if os.path.isfile('/etc/domoweb.cfg'):
-        if not command_line: 
+        if not command_line:
             keep = raw_input('You already have Domoweb configuration files. Do you want to keep them ? [Y/n] ')
         else:
             keep = 'N'
@@ -377,7 +377,7 @@ def updateDb(user, db):
         session = Session()
         s = Section(name=unicode('Root'), description=unicode('Root dashboard'), left=1, right=2)
         session.add(s)
-        p = SectionParam(section_id=1, key='GridWidgetSize', value='100')
+        p = SectionParam(section_id=1, key='GridWidgetSize', value='50')
         session.add(p)
         p = SectionParam(section_id=1, key='GridWidgetSpace', value='20')
         session.add(p)
@@ -392,7 +392,7 @@ def updateDb(user, db):
             p = session.query(SectionParam).filter_by(section_id=s.id).filter(SectionParam.key.in_(['GridWidgetSize', 'GridWidgetSpace', 'GridColumns', 'GridRows'])).count()
             if p == 0:
                 ok("Updating section '%s'" % s.name)
-                p = SectionParam(section_id=s.id, key='GridWidgetSize', value='100')
+                p = SectionParam(section_id=s.id, key='GridWidgetSize', value='50')
                 session.add(p)
                 p = SectionParam(section_id=s.id, key='GridWidgetSpace', value='20')
                 session.add(p)

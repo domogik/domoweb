@@ -1,6 +1,5 @@
-<polymer-element name="dmw-basic-sensorColorCII" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<dom-module id="dmw-basic-sensorcolorcii">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -21,22 +20,44 @@
             }
 
         </style>
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
-        <shadow></shadow>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensornotified="container"></dmw-sensor>
         <div id="container">
         </div>
-
     </template>
     <script>
-        Polymer('dmw-basic-sensorColorCII', {
-            ready: function() {
-                this.super();
+     (function () {
+        let memoizedTemplate;
+
+        class DmwBasicSensorColorCII extends DmwWidget {
+            static get is () { return 'dmw-basic-sensorcolorcii'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 // "W": "White", "O": "Orange", "R": "Red", "Y": "Yellow", "B": "Blue", "G": "Green", "Bk": "Black", "Br": "Brown"
                 this.colorValue = {W: "#FFFFFF", O: "#ff8000", R: "#FF0000", Y: "#FFFF00", B: "#0080ff", G: "#00FF00", Bk: "#000000", Br: "#996633"} ;
-                this.colorHeightValue = [90, 42, 26, 19, 14, 11, 8, 7] ; 
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+                this.colorHeightValue = [90, 42, 26, 19, 14, 11, 8, 7] ;
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -47,24 +68,21 @@
                 console.error(this.options['colorslist']);
                 if (this.options['colorslist']) {
                     this.colorlist = this.options['colorslist'].split(",") ;
-                    this.nbColor = this.colorlist.length ;     
+                    this.nbColor = this.colorlist.length ;
                     this.colorHeight = this.colorHeightValue[this.nbColor - 1] ; ;
-                    console.error(this.colorlist) ; 
+                    console.error(this.colorlist) ;
                 }
-            },
-            
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
-                }        
-            },
-            
-            sensorvalueChanged: function(oldValue, newValue) {
+                }
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 console.error('newValue = ' + newValue);
                 console.error('colorValue = ' + this.colorValue[newValue]);
-                
                 var colorlevel = "" ;
                 for (var i = this.nbColor - 1; i >= 0; i--) {
                     if (this.colorlist[i] == newValue) {
@@ -75,7 +93,9 @@
                     }
                 }
                 this.$.container.innerHTML = colorlevel ;
-            },
-        });
+            }
+	    };
+        customElements.define(DmwBasicSensorColorCII.is, DmwBasicSensorColorCII);
+    })();
     </script>
-</polymer-element>
+</dom-module>

@@ -1,6 +1,5 @@
-<polymer-element name="dmw-basic-sensorString" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<dom-module id="dmw-basic-sensorstring">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -28,7 +27,7 @@
                 box-sizing: border-box;
                 animation: marquee 10s linear infinite;
             }
-            
+
             @keyframes marquee {
                 0%   { text-indent: 3em }
                 100% { text-indent: -3em }
@@ -36,20 +35,43 @@
             */
 
         </style>
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
-        <shadow></shadow>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensornotified="text"></dmw-sensor>
         <div id='text' class="marquee">
           {{text}}
         </div>
     </template>
     <script>
-        Polymer('dmw-basic-sensorString', {
-            ready: function() {
-                this.super();
+     (function () {
+        let memoizedTemplate;
+
+        class DmwBasicSensorString extends DmwWidget {
+            static get is () { return 'dmw-basic-sensorstring'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 this.text = "--";
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -57,16 +79,18 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 this.text = newValue.stored_value;
             }
-        });
+	    };
+        customElements.define(DmwBasicSensorString.is, DmwBasicSensorString);
+    })();
     </script>
-</polymer-element>
+</dom-module>

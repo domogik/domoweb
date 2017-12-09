@@ -1,6 +1,5 @@
-<polymer-element name="dmw-basic-sensorBool" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<dom-module id="dmw-basic-sensorbool">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -25,19 +24,46 @@
                 color: #d9534f;
             }
         </style>
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue={{sensorvalue}} sensornotified="boolicon"></dmw-sensor>
         <shadow></shadow>
         <div id='bool'>
-          <span id='boolicon' class='glyphicon glyphicon-question-sign' aria-label='{{booltext}}'>{{booltext}}</span>
+          <span id='boolicon' class='glyphicon glyphicon-question-sign' aria-label='[[booltext]]'>[[booltext]]</span>
         </div>
     </template>
     <script>
-        Polymer('dmw-basic-sensorBool', {
-            ready: function() {
-                this.super();
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+     (function () {
+        let memoizedTemplate;
+
+        class DmwBasicSensorBool extends DmwWidget {
+            static get is () { return 'dmw-basic-sensorbool'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -45,16 +71,16 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.booltext = i18n.t("domoweb:bool." + newValue, { context: this.$.primary.datatype_id });
+                this.booltext = this.localize("domoweb:bool:" + newValue + "_" + this.$.primary.datatype_id);
                 this.$.boolicon.className = '';
                 if (newValue == 1) {
                     //this.$.boolicon.className = 'glyphicon glyphicon-ok';
@@ -65,7 +91,14 @@
                     this.$.bool.classList.add('false');
                     this.$.bool.classList.remove('true');
                 }
-	    }
-        });
-    </script>
-</polymer-element>
+                this.adjustText(this.$.bool, this.$.boolicon, {width: 3, height:3});
+            }
+            resized() {
+                super.resized();
+                this.adjustText(this.$.bool, this.$.boolicon, {width: 3, height:3});
+            }
+        }
+        customElements.define(DmwBasicSensorBool.is, DmwBasicSensorBool);
+    })();
+</script>
+</dom-module>

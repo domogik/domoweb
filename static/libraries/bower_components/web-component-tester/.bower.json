@@ -1,0 +1,39 @@
+{
+  "name": "web-component-tester",
+  "description": "web-component-tester makes testing your web components a breeze!",
+  "main": [
+    "browser.js",
+    "environment.js"
+  ],
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "ignore": [
+    "*",
+    "!/browser.js",
+    "!/environment.js"
+  ],
+  "keywords": [
+    "browser",
+    "grunt",
+    "gruntplugin",
+    "gulp",
+    "polymer",
+    "test",
+    "testing",
+    "web component",
+    "web"
+  ],
+  "devDependencies": {
+    "webcomponentsjs": "Polymer/webcomponentsjs#^0.5.0"
+  },
+  "homepage": "https://github.com/Polymer/web-component-tester",
+  "version": "1.6.2",
+  "_release": "1.6.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.6.2",
+    "commit": "5db637d495725b46ce72b74ee0751f170bf0a037"
+  },
+  "_source": "https://github.com/Polymer/web-component-tester.git",
+  "_target": "^1.4.2",
+  "_originalSource": "Polymer/web-component-tester"
+}

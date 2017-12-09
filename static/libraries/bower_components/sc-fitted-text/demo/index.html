@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+	<title>sc-fitted-text demo</title>
+
+	<script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+	<link rel="import" href="../../web-animations-js/web-animations-next-lite.min.html">
+
+	<link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+	<link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+	<link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
+	<link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
+	<link rel="import" href="../../paper-input/paper-input.html">
+	<link rel="import" href="../../paper-item/paper-item.html">
+	<link rel="import" href="../../paper-listbox/paper-listbox.html">
+	<link rel="import" href="../../paper-slider/paper-slider.html">
+	<link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+	<link rel="import" href="../sc-fitted-text.html">
+	<custom-style>
+		<style include="demo-pages-shared-styles iron-flex iron-flex-alignment">
+			pre {
+				display: inline;
+			}
+		</style>
+	</custom-style>
+</head>
+<body>
+	<div class="vertical-section-container centered">
+		<h3>Basic sc-fitted-text demo</h3>
+			<demo-snippet id="basicDemo">
+				<template>
+					<dom-bind id="scope">
+						<template is="dom-bind">
+							<style>
+								#fittedText {
+									display: flex;
+									height: 116px;
+									align-items: center;
+								}
+							</style>
+
+							<sc-fitted-text id="fittedText" text="[[text]]" max-width="[[maxWidth]]" align="[[align]]"></sc-fitted-text>
+
+							<paper-input label="Text" value="{{text}}"></paper-input>
+
+							<div class="layout horizontal end">
+								<div>
+									<label for="maxWidth">Max Width (0 to disable)</label>
+									<paper-slider id="maxWidth" min="0" max="500" immediate-value="{{maxWidth}}" pin></paper-slider>
+								</div>
+
+								<div>
+									<label for="fontSize">Font Size (in <pre>px</pre>)</label>
+									<paper-slider id="fontSize" min="0" max="100" pin></paper-slider>
+								</div>
+
+								<paper-dropdown-menu label="Alignment">
+									<paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{align}}">
+										<paper-item value="left">Left</paper-item>
+										<paper-item value="center">Center</paper-item>
+										<paper-item value="right">Right</paper-item>
+									</paper-listbox>
+								</paper-dropdown-menu>
+							</div>
+						</template>
+					</dom-bind>
+				</template>
+			</demo-snippet>
+		<script>
+			const scope = document.getElementById('scope');
+			scope.text = 'Hello world!';
+			scope.maxWidth = 250;
+			scope.align = 'left';
+
+			const fittedText = document.getElementById('fittedText');
+			const fontSize = document.getElementById('fontSize');
+			fontSize.value = 14;
+			fontSize.addEventListener('immediate-value-changed', e => {
+				fittedText.style.fontSize = `${e.detail.value}px`;
+				fittedText.fit();
+			});
+		</script>
+	</div>
+</body>
+</html>

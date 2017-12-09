@@ -13,8 +13,8 @@
 <!-- <script src="/widget/highcharts/Highstock-5.0.14/code/js/themes/sunset.js"></script> -->
 <!-- avocado.js dark-blue.js dark-green.js dark-unica.js gray.js grid-light.js grid.js sand-signika.js skies.js sunset.js -->
 
-<polymer-element name="dmw-highcharts-sensorNumberChart" extends="dmw-widget">
-    <template>
+<dom-module id="dmw-highcharts-sensornumberchart">
+	<template id="extended-styles">
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <link rel="stylesheet" href="/widget/basic/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow>
         <style type="text/css">
@@ -22,29 +22,32 @@
                 height: 100%;
                 display: block;
             }
-            #number {
+            #numblock {
                 position: relative;
-                top: 50%;
-                -webkit-transform: translate(-50%, -50%);
-                -ms-transform: translate(-50%, -50%);
-                transform: translate(-50%, -50%);
-                left: 50%;
+                top: 35%;
+                height: 70%;
+                -webkit-transform: translateY(-35%);
+                -ms-transform: translateY(-35%);
+                transform: translateY(-35%);
                 text-align: center;
-                overflow: hidden;
+                margin-left: 3px;
+                margin-right: 3px;
+            }
+            #number {
                 display: inline-block;
-                padding: 10px;
             }
             #unit {
                 position: absolute;
                 top:5px;
                 right: 5px;
-                font-size: 1em;
+                font-size: calc(2em*var(--wscale-h));
             }
             #icongraph {
                 position: absolute;
                 bottom: 2px;
                 right: 5px;
-                font-size: 1em;
+                font-size: calc(1.3em*var(--wscale-h));
+
             }
             #icongraphlink {
                 text-decoration: none;
@@ -53,13 +56,14 @@
             #graph {
                 display: none;
                 position: fixed;
-                top: 10px;
-                left: 10px;
+                top: 50%;
+                left: 50%;
                 width: 750px;
-                height: 440px;
+                min-height: 440px;
                 background-color: rgba(50, 50, 50, 0.5);
                 border: 6px solid rgba(50, 50, 50, 0.5) ;
-                margin: auto;              
+                margin-top: -220px;
+                margin-left: -375px;
                 z-index: 10;
             }
             #loadicon {
@@ -69,46 +73,74 @@
                 font-size: 3em;
                 color: white;
             }
-
-          
         </style>
-        
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
-        
-        <shadow></shadow>
-        
-        <div id='number'>{{number}}</div>
+        <slot>
+            <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
+        </slot>
+
+        <div id='numblock'>
+            <span id='number'>{{number}}</span>
+        </div>
         <div id='unit'>{{unit}}</div>
-        
-        <div id="icongraph" on-click="{{displayGraph}}">
+
+        <div id="icongraph" on-click="displayGraph">
             <a id="icongraphlink" href="#"><i class="fa fa-area-chart"></i></a>
         </div>
-        <div id="graph" on-dblclick="{{hideGraph}}"><i id="loadicon" class="fa fa-spinner fa-pulse"></i></div>
+        <div id="graph" on-dblclick="hideGraph"><i id="loadicon" class="fa fa-spinner fa-pulse"><i id="loadicon" class="fa fa-spinner fa-pulse"></i></div>
 
-        
     </template>
-    
-    <script>    
-        Polymer('dmw-highcharts-sensorNumberChart', {
-            // ------------------------------------------------------------------------------------
-            ready: function() {
+
+    <script>
+     (function () {
+        let memoizedTemplate;
+
+        class DmwHighchartsSensorNumberChart extends DmwWidget {
+            static get is () { return 'dmw-highcharts-sensornumberchart'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    },
+                    history: {
+                        notify: true,
+                        observer: 'historyChanged',
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 this.number = "--";
                 this.unit = "";
-                this.super();
-                
+
                 Highcharts.setOptions({
-                    global: { 
-                        useUTC: false 
-                    }  
+                    global: {
+                        useUTC: false
+                    }
                 });
-                
-                this.periode = i18n.t("highcharts:Day") ;
-                initialZIndex = this.style.zIndex;      // z-index for the zoom mode
-            },
+
+                this.periode = this.localize("Day");
+                this.initialZIndex = this.style.zIndex;      // z-index for the zoom mode
+            }
+            resized() {
+                this.adjustText(this.$.numblock, this.$.number);
+            }
 
             // ------------------------------------------------------------------------------------
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -118,18 +150,18 @@
                 }
                 this.color = this.options['color'] ;
                 //console.error("theme: " + this.options['theme']) ;
-            },
-            
+            }
+
             // ------------------------------------------------------------------------------------
-            sensorsUpdated: function() {
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'] ;
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-            
+            }
+
             // ------------------------------------------------------------------------------------
-            sensorvalueChanged: function(oldValue, newValue) {
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
                 if (this.options['autoconvert']==1 && newValue > 0) {
@@ -138,58 +170,32 @@
                        var i = Math.floor(Math.log(newValue) / Math.log(k));
                     this.$.number.innerHTML = (newValue / Math.pow(k, i)).toPrecision(3);
                     if (unit) {
-                        this.unit = sizes[i] + i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                        this.unit = sizes[i] + this.localize("domoweb:unit", 'value', unit);
                     }
                 } else {
                     this.$.number.innerHTML = newValue;
                     if (unit) {
-                        this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                        this.unit = this.localize("domoweb:unit", 'value', unit);
                     }
                 }
-                this.adjustText(this, this.$.number);
-            },
+                this.adjustText(this.$.numblock, this.$.number);
+            }
 
             // ------------------------------------------------------------------------------------
-            adjustText: function(parent, element) {
-                var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
-                var i = fontsize.substr(0,2);
-                // in case the page is not yet nicely loaded...
-                if (parent.clientWidth == 0 || parent.clientHeight == 0) {
-                    setTimeout(function(){
-                        this.adjustText(parent, element);
-                        }.bind(this), 1000);
-                }
-                else {
-                    if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
-                        while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
-                            element.style.fontSize = i+"px";
-                            i++;
-                        }
-                    } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
-                        while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
-                            element.style.fontSize = i+"px";
-                            i--;
-                        }
-                    }
-                }
-            },
-
-            // ------------------------------------------------------------------------------------
-            historyChanged: function(oldValue, newValue) { 
+            historyChanged(newValue, oldValue) {
                 //console.error("historyChanged: " + newValue);
                 this.data = [] ;
-                
-                for (i = 0; i < newValue.length; i++) {
-                    value = [] ;
-                    
+                for (var i = 0; i < newValue.length; i++) {
+                    let value = [] ;
+
                     switch(this.periode) {
-                        case i18n.t("highcharts:Day"):      //  year            month           day             hour            minute        s  ms
+                        case this.localize('Day'):         //  year            month           day             hour            minute        s  ms
                             var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], newValue[i][5], 0, 0) ;
                             value[1] = newValue[i][6] ;
                             break;
-                        case i18n.t("highcharts:Week"):
-                        case i18n.t("highcharts:Month"):   // Month Per hours
-                            var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], 0, 0, 0) ;  
+                        case this.localize('Week'):
+                        case this.localize('Month'):   // Month Per hours
+                            var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], 0, 0, 0) ;
                             value[1] = newValue[i][5] ;
                             break;
                     }
@@ -198,25 +204,22 @@
                     this.data.push(value)
                 }
                 //console.error("==> " + this.data) ;
-                
+
                 var self = this;                                // Important for rangeSelector buttons event !
                 var dataObject = {
                     rangeSelector: {
-                        buttonTheme: {
-                            width: 70
-                        },
                         buttons: [{
                             type: '',
                             count: 1,
-                            text: i18n.t('highcharts:Day')
+                            text: this.localize('Day')
                           },{
                             type: '',
                             count: 1,
-                            text: i18n.t('highcharts:Week')
+                            text: this.localize('Week')
                           },{
                             type: '',
                             count: 1,
-                            text: i18n.t('highcharts:Month')
+                            text: this.localize('Month')
                           }],
                         inputEnabled: false
                     },
@@ -225,29 +228,28 @@
                     },
                     subtitle: {
                         text: '<i>(' + this.periode + ')</i>'
-                    },                        
+                    },
                     xAxis: {
                         gridLineWidth: 1,
                         ordinal: false,
                         events: {
                             setExtremes: function(e) {
-                                if(typeof(e.rangeSelectorButton) !== 'undefined')
-                                {
-                                    console.error("Button " + e.rangeSelectorButton.text + " pressed");
-                                    mychart.setTitle({text: i18n.t("highcharts:Loading data") + " ..."});
+                                if(typeof(e.rangeSelectorButton) !== 'undefined') {
+                                    mychart.setTitle({text: self.localize("Loading data") + "..."});
                                     mychart.series[0].remove(true);
-                                    self.periode = e.rangeSelectorButton.text ;
+                                    self.periode = e.rangeSelectorButton.text;
                                     switch(self.periode) {
-                                        case i18n.t("highcharts:Day"):
+                                        case self.localize('Day'):
                                             self.$.primary.getCurrentDay() ;        // 'interval': 'minute'
                                             break;
-                                        case i18n.t("highcharts:Week"):
-                                             self.$.primary.getCurrentWeek() ;       // 'interval': 'hour'         
+                                        case self.localize('Week'):
+                                            self.$.primary.getCurrentWeek() ;       // 'interval': 'hour'
                                             break;
-                                        case i18n.t("highcharts:Month"):
+                                        case self.localize('Month'):
+                                            //self.$.primary.getCurrentMonth() ;      // 'interval': 'day'
                                             self.$.primary.getCurrentMonthPerHour() ; // 'interval': 'hour'
                                             break;
-                                    } 
+                                    }
                                 }
                             }
                         }
@@ -275,36 +277,28 @@
                     chart: {
                         renderTo: this.$.graph
                     }
-                }; 
-                
+                };
                 var mychart = new Highcharts.StockChart(dataObject);
-            },           
-            
-            
-            
+
+            }
+
             // ------------------------------------------------------------------------------------
-            displayGraph: function() {
+            displayGraph() {
                 this.$.graph.style.display = "block";
+                //this.$.graph.style.zIndex = 5000;
                 this.style.zIndex = 5000;
                 this.$.primary.getCurrentDay() ;        // 'interval': 'minute'
-                this.periode = i18n.t("highcharts:Day") ;
-            },
-            
-            // ------------------------------------------------------------------------------------
-            hideGraph: function() {
-                this.$.graph.style.display = "none";
-                this.style.zIndex = initialZIndex;
-            },
-        });
-        
-        function sleep(milliseconds) {
-            var start = new Date().getTime();
-            for (var i = 0; i < 1e7; i++) {
-                if ((new Date().getTime() - start) > milliseconds){
-                    break;
-                }
+                this.periode = this.localize("Day");
             }
-        }
-        
+
+            // ------------------------------------------------------------------------------------
+            hideGraph() {
+                this.$.graph.style.display = "none";
+                //this.$.graph.style.zIndex = 10;
+                this.style.zIndex = this.initialZIndex;
+            }
+        };
+        customElements.define(DmwHighchartsSensorNumberChart.is, DmwHighchartsSensorNumberChart);
+     })();
     </script>
 </polymer-element>

@@ -1,6 +1,5 @@
-<polymer-element name="dmw-basic-commandTrigger" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<dom-module id="dmw-basic-commandtrigger">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -24,17 +23,32 @@
                 color: #ffffff;
             }
         </style>
-        <dmw-command id="primary" commandkey="primary"></dmw-command>
-        <shadow></shadow>
+        <dmw-command id="primary" commandkey="primary" commandnotified="send"></dmw-command>
         <button id="send" class="btn btn-default">{{sendtext}}</button>
     </template>
     <script>
-        Polymer('dmw-basic-commandTrigger', {
-            ready: function() {
-                this.super();
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+     (function () {
+        let memoizedTemplate;
+
+        class DmwBasicCommandTrigger extends DmwWidget {
+            static get is () { return 'dmw-basic-commandtrigger'; }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -42,8 +56,8 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            commandsUpdated: function() {
+            }
+            commandsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
@@ -61,14 +75,16 @@
                 if (this.options['circle'] == 0) {
                     this.$.send.classList.remove('circle');
                 }
-            },
-            send: function(e) {
+            }
+            send(e) {
                 var parameters = {};
                 parameters[this.$.primary.parameters[0]['key']] = 1;
                 this.$.primary.send(parameters);
                 e.preventDefault();
                 e.stopPropagation();
             }
-        });
+	    };
+        customElements.define(DmwBasicCommandTrigger.is, DmwBasicCommandTrigger);
+    })();
     </script>
-</polymer-element>
+</dom-module>

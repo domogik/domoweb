@@ -1,0 +1,202 @@
+<dom-module id="dmw-digitalclock-styles">
+  <template>
+    <style>
+        .display {
+            text-align:center;
+            padding: calc(25px*var(--wscale-h)) calc(20px*var(--wscale-w)) calc(5px*var(--wscale-h)) 0px;
+            border-radius: calc(6px*var(--wscale-w));
+            margin: 1%;
+            height: 92%;
+        }
+        #digitsnumbers {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: calc(25px*var(--wscale-h));
+        }
+        .digits {
+            -webkit-transform: scale(var(--wscale-w), var(--wscale-h));
+            -moz-transform: scale(var(--wscale-w), var(--wscale-h));
+            -o-transform: scale(var(--wscale-w), var(--wscale-h));
+            transform: scale(var(--wscale-w), var(--wscale-h));
+            -webkit-transform-origin: top left;
+            -moz-transform-origin: top left;
+            -o-transform-origin: top left;
+            transform-origin: top left;
+            position: absolute;
+            display: inline-flex;
+        }
+        .digits div{
+            text-align:left;
+            position:relative;
+            width: 41px;
+            height: 78px;
+            display:inline-block;
+            margin:0 6px;
+            top: 5px;
+        }
+        .digits div span{
+            opacity:0;
+            position:absolute;
+
+            -webkit-transition:0.25s;
+            -moz-transition:0.25s;
+            transition:0.25s;
+        }
+
+        .digits div span:before,
+        .digits div span:after{
+            content:'';
+            position:absolute;
+            width:0;
+            height:0;
+            border:7px solid transparent;
+        }
+
+        .digits .d1{			height:7px;width:25px;top:0;left:8px;}
+        .digits .d1::before{	border-width:0 7px 7px 0;border-right-color:inherit;left:-7px;}
+        .digits .d1::after{	border-width:0 0 7px 7px;border-left-color:inherit;right:-7px;}
+
+        .digits .d2{			height:7px;width:25px;top:35px;left:8px;}
+        .digits .d2::before{	border-width:3.5px 5px 3.5px;border-right-color:inherit;left:-10px;}
+        .digits .d2::after{	border-width:3.5px 5px 3.5px;border-left-color:inherit;right:-10px;}
+
+        .digits .d3{			height:7px;width:25px;top:70px;left:8px;}
+        .digits .d3::before{	border-width:7px 7px 0 0;border-right-color:inherit;left:-7px;}
+        .digits .d3::after{	border-width:7px 0 0 7px;border-left-color:inherit;right:-7px;}
+
+        .digits .d4{			width:7px;height:24px;top:8px;left:0;}
+        .digits .d4::before{	border-width:0 7px 7px 0;border-bottom-color:inherit;top:-7px;}
+        .digits .d4::after{	border-width:0 0 7px 7px;border-left-color:inherit;bottom:-7px;}
+
+        .digits .d5{			width:7px;height:24px;top:8px;right:0;}
+        .digits .d5::before{	border-width:0 0 7px 7px;border-bottom-color:inherit;top:-7px;}
+        .digits .d5::after{	border-width:7px 0 0 7px;border-top-color:inherit;bottom:-7px;}
+
+        .digits .d6{			width:7px;height:24px;top:45px;left:0;}
+        .digits .d6::before{	border-width:0 7px 7px 0;border-bottom-color:inherit;top:-7px;}
+        .digits .d6::after{	border-width:0 0 7px 7px;border-left-color:inherit;bottom:-7px;}
+
+        .digits .d7{			width:7px;height:24px;top:45px;right:0;}
+        .digits .d7::before{	border-width:0 0 7px 7px;border-bottom-color:inherit;top:-7px;}
+        .digits .d7::after{	border-width:7px 0 0 7px;border-top-color:inherit;bottom:-7px;}
+
+        .digits div.one .d5,
+        .digits div.one .d7{
+            opacity:1;
+        }
+
+        .digits div.two .d1,
+        .digits div.two .d5,
+        .digits div.two .d2,
+        .digits div.two .d6,
+        .digits div.two .d3{
+            opacity:1;
+        }
+
+        .digits div.three .d1,
+        .digits div.three .d5,
+        .digits div.three .d2,
+        .digits div.three .d7,
+        .digits div.three .d3{
+            opacity:1;
+        }
+
+        .digits div.four .d5,
+        .digits div.four .d2,
+        .digits div.four .d4,
+        .digits div.four .d7{
+            opacity:1;
+        }
+
+        .digits div.five .d1,
+        .digits div.five .d2,
+        .digits div.five .d4,
+        .digits div.five .d3,
+        .digits div.five .d7{
+            opacity:1;
+        }
+
+        .digits div.six .d1,
+        .digits div.six .d2,
+        .digits div.six .d4,
+        .digits div.six .d3,
+        .digits div.six .d6,
+        .digits div.six .d7{
+            opacity:1;
+        }
+
+        .digits div.seven .d1,
+        .digits div.seven .d5,
+        .digits div.seven .d7{
+            opacity:1;
+        }
+
+        .digits div.eight .d1,
+        .digits div.eight .d2,
+        .digits div.eight .d3,
+        .digits div.eight .d4,
+        .digits div.eight .d5,
+        .digits div.eight .d6,
+        .digits div.eight .d7{
+            opacity:1;
+        }
+
+        .digits div.nine .d1,
+        .digits div.nine .d2,
+        .digits div.nine .d3,
+        .digits div.nine .d4,
+        .digits div.nine .d5,
+        .digits div.nine .d7{
+            opacity:1;
+        }
+
+        .digits div.zero .d1,
+        .digits div.zero .d3,
+        .digits div.zero .d4,
+        .digits div.zero .d5,
+        .digits div.zero .d6,
+        .digits div.zero .d7{
+            opacity:1;
+        }
+
+        .digits div.dots{
+            width:7px;
+        }
+        .digits div.dots:before,
+        .digits div.dots:after{
+            width:7px;
+            height:7px;
+            content:'';
+            position:absolute;
+            left:0;
+            top:24px;
+        }
+        .digits div.dots:after{
+            top:46px;
+        }
+
+        .weekdays{
+            font-size: calc(12px*var(--wscale-w));
+            position:absolute;
+            width:100%;
+            top: calc(10px*var(--wscale-h));
+            left:0;
+            text-align:center;
+        }
+        .weekdays span{
+            opacity:0.2;
+            padding:0 calc(10px*var(--wscale-w));
+        }
+        .weekdays span.active{
+            opacity:1;
+        }
+        .ampm{
+            position:absolute;
+            bottom:calc(12px*var(--wscale-h));
+            right:calc(12px*var(--wscale-w));
+            font-size:calc(12px*var(--wscale-w));
+        }
+    </style>
+  </template>
+</dom-module>

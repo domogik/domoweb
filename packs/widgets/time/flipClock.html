@@ -1,41 +1,72 @@
-<script type="text/javascript" src='/widget/time/js/flipclock.min.js'></script>
-<polymer-element name="dmw-time-flipClock" extends="dmw-widget">
-	<template>
-		<link rel="stylesheet" href="/widget/time/css/flipclock.css">
+ <script type="text/javascript" src='/widget/time/js/flipclock.min.js'></script>
+<link rel="import" href="/widget/time/css/filpClockStyle.html">
+
+<dom-module id="dmw-time-flipclock">
+	<template id="extended-styles">
+        <style include="dmw-flipclock-styles"></style>
 		<style type="text/css">
 			:host {
 				height: 100%;
+                background-color: rgba(0, 0, 0, 0.1);
 			}
-			.flip-clock-wrapper {
+            #clock {
+                -webkit-transform: scale(var(--wscale-w), var(--wscale-h));
+                -moz-transform: scale(var(--wscale-w), var(--wscale-h));
+                -o-transform: scale(var(--wscale-w), var(--wscale-h));
+                transform: scale(var(--wscale-w), var(--wscale-h));
+                -webkit-transform-origin: top left;
+                -moz-transform-origin: top left;
+                -o-transform-origin: top left;
+                transform-origin: top left;
+            }
+            .flip-clock-wrapper {
 				margin: 0;
 			}
 			.flip-clock-wrapper ul {
 				border-radius: 0;
-				-webkit-border-radius: 0;
+				-webkit-border-radius: 6px;
 				-moz-border-radius: 0;
 			}
 			.flip-clock-meridium a {
 				color: inherit;
 			}
 		</style>
-		<shadow></shadow>
-		<div id='clock'>{{title}}</div>
+		<div id='clock'>[[title]]</div>
 	</template>
-	<script>  
-		Polymer('dmw-time-flipClock', {
-			ready: function() {
-				this.super();
-			},
-			optionsUpdated: function() {
-				if ('12hr' in this.options && this.options['12hr'] == 1) {
-					clockFace = 'TwelveHourClock';
-				} else { //24h
-					clockFace = 'TwentyFourHourClock';
-				}
-				new FlipClock(this.$.clock, {
-					clockFace: clockFace
-				});
-			}
-		});
+	<script>
+     (function () {
+        let memoizedTemplate;
+
+        class DmwTimeFlipClock extends DmwWidget {
+            static get is () { return 'dmw-time-flipclock'; }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
+            }
+            optionsUpdated() {
+                if ('12hr' in this.options && this.options['12hr'] == 1) {
+                    var clockFace = 'TwelveHourClock';
+                } else { //24h
+                    var clockFace = 'TwentyFourHourClock';
+                }
+              //  this.updateStyles({'--color': 'blue'})
+                new FlipClock(this.$.clock, {
+                    clockFace: clockFace
+                });
+            }
+        }
+        customElements.define(DmwTimeFlipClock.is, DmwTimeFlipClock);
+     })();
 	</script>
-</polymer-element>
+</dom-module>

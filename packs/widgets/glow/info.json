@@ -13,8 +13,12 @@
         "numberLevel": {
             "name" : "Number Level",
             "description" : "Number display, with percentage level",
-            "height" : 3,
-            "width" : 3,
+            "height" : 4,
+            "width" : 4,
+            "min_height" : 2,
+            "min_width" : 2,
+            "max_height" : 8,
+            "max_width" : 8,
             "default_style" : false,
             "options" : {
                 "maximum" : {
@@ -29,7 +33,7 @@
                 "primary" : {
                     "name": "Primary",
                     "types" : ["DT_Number"],
-                    "required": true                   
+                    "required": true
                 }
             },
             "devices" : {

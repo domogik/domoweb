@@ -13,8 +13,8 @@
 <!-- <script src="/widget/highcharts/Highstock-5.0.14/code/js/themes/sunset.js"></script> -->
 <!-- avocado.js dark-blue.js dark-green.js dark-unica.js gray.js grid-light.js grid.js sand-signika.js skies.js sunset.js -->
 
-<polymer-element name="dmw-highcharts-sensorBoolChart" extends="dmw-widget">
-    <template>
+<dom-module id="dmw-highcharts-sensorboolchart">
+	<template id="extended-styles">
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <link rel="stylesheet" href="/widget/basic/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow>
         <style type="text/css">
@@ -23,13 +23,16 @@
             }
             #bool {
                 position: relative;
-                top: 50%;
-                -webkit-transform: translateY(-50%);
-                -ms-transform: translateY(-50%);
-                transform: translateY(-50%);
-                  text-align: center;
+                top: 35%;
+                height: 70%;
+                -webkit-transform: translateY(-35%);
+                -ms-transform: translateY(-35%);
+                transform: translateY(-35%);
+                text-align: center;
                 font-size: 2em;
                 white-space: normal;
+                margin-left: 3px;
+                margin-right: 3px;
             }
             .glyphicon {
                 line-height: inherit;
@@ -40,12 +43,14 @@
             #bool.false {
                 color: #d9534f;
             }
-            
+            #boolicon {
+                display: inline-block;
+            }
             #icongraph {
                 position: absolute;
                 bottom: 2px;
                 right: 5px;
-                font-size: 1em;
+                font-size: calc(1.3em*var(--wscale-h));
             }
             #icongraphlink {
                 text-decoration: none;
@@ -54,13 +59,14 @@
             #graph {
                 display: none;
                 position: fixed;
-                top: 10px;
-                left: 10px;
+                top: 50%;
+                left: 50%;
                 width: 750px;
-                height: 440px;
+                min-height: 440px;
                 background-color: rgba(50, 50, 50, 0.5);
                 border: 6px solid rgba(50, 50, 50, 0.5) ;
-                margin: auto;              
+                margin-top: -220px;
+                margin-left: -375px;
                 z-index: 10;
             }
             #loadicon {
@@ -71,40 +77,70 @@
                 color: white;
             }
         </style>
-
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
-        <shadow></shadow>
+        <slot>
+            <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
+        </slot>
         <div id='bool'>
           <span id='boolicon' class='glyphicon glyphicon-question-sign' aria-label='{{booltext}}'>{{booltext}}</span>
         </div>
-        
-        <div id="icongraph" on-click="{{displayGraph}}">
+
+        <div id="icongraph" on-click="displayGraph">
             <a id="icongraphlink" href="#"><i class="fa fa-area-chart"></i></a>
         </div>
-        <div id="graph" on-dblclick="{{hideGraph}}"><i id="loadicon" class="fa fa-spinner fa-pulse"></i></div>
+        <div id="graph" on-dblclick="hideGraph"><i id="loadicon" class="fa fa-spinner fa-pulse"></i></div>
 
     </template>
 
     <script>
-        // ------------------------------------------------------------------------------------
-        Polymer('dmw-highcharts-sensorBoolChart', {
-            ready: function() {
-                this.super();
- 
-                Highcharts.setOptions({
-                    global: { 
-                        useUTC: false 
-                    }  
-                });
-                
-                this.periode = i18n.t("highcharts:Day") ;
-                initialZIndex = this.style.zIndex;      // z-index for the zoom mode
-                
-            },
+     (function () {
+        let memoizedTemplate;
 
+        class DmwHighchartsSensorBoolChart extends DmwWidget {
+            static get is () { return 'dmw-highcharts-sensorboolchart'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    },
+                    history: {
+                        notify: true,
+                        observer: 'historyChanged',
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
+                super.connectedCallback();
+
+                Highcharts.setOptions({
+                    global: {
+                        useUTC: false
+                    }
+                });
+
+                this.periode = this.localize("Day");
+                this.initialZIndex = this.style.zIndex;      // z-index for the zoom mode
+
+            }
+
+            resized() {
+                this.adjustText(this.$.bool, this.$.boolicon);
+            }
             // ------------------------------------------------------------------------------------
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -114,20 +150,20 @@
                 }
                 this.color = this.options['color'] ;
                 //console.error("theme: " + this.options['theme']) ;
-            },
-            
+            }
+
             // ------------------------------------------------------------------------------------
-            sensorsUpdated: function() {
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-            
+            }
+
             // ------------------------------------------------------------------------------------
-            sensorvalueChanged: function(oldValue, newValue) {
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.booltext = i18n.t("domoweb:bool." + newValue, { context: this.$.primary.datatype_id });
+                this.booltext = this.localize("domoweb:bool:" + newValue +"_" + this.$.primary.datatype_id);
                 this.$.boolicon.className = '';
                 if (newValue == 1) {
                     //this.$.boolicon.className = 'glyphicon glyphicon-ok';
@@ -138,39 +174,36 @@
                     this.$.bool.classList.add('false');
                     this.$.bool.classList.remove('true');
                 }
-            },
+                this.adjustText(this.$.bool, this.$.boolicon);
+            }
 
             // ------------------------------------------------------------------------------------
-            historyChanged: function(oldValue, newValue) { 
+            historyChanged(newValue, oldValue) {
                 //console.error("### historyChanged: " + newValue);
                 this.data = [] ;
-                for (i = 0; i < newValue.length; i++) {
+                for (let i = 0; i < newValue.length; i++) {
                     var value = [] ;
                     value[0] = newValue[i].timestamp * 1000 ;
                     if (this.$.primary.datatype_id !=  "DT_OpenClose")  value[1] = newValue[i].value_num ;
                         else value[1] = newValue[i].value_num == 1 ? 0 : 1 ;
                     this.data.push(value)
                 }
-                //console.error("###  Data: " + this.data) ;
-                
+
                 var self = this;                                // Important for rangeSelector buttons event !
                 var dataObject = {
                     rangeSelector: {
-                        buttonTheme: {
-                            width: 70
-                        },
                         buttons: [{
                             type: '',
                             count: 1,
-                            text: i18n.t('highcharts:Day')
+                            text: this.localize('Day')
                           },{
                             type: '',
                             count: 1,
-                            text: i18n.t('highcharts:Week')
+                            text: this.localize('Week')
                           },{
                             type: '',
                             count: 1,
-                            text: i18n.t('highcharts:Month')
+                            text: this.localize('Month')
                           }],
                         inputEnabled: false
                     },
@@ -178,33 +211,30 @@
                         text: this.$.primary.device['name']
                     },
                     subtitle: {
-                        /* text: '<i>(Current ' + this.periode + ')</i>' */
                         text: '<i>(' + this.periode + ')</i>'
-                    },                        
+                    },
                     xAxis: {
                         gridLineWidth: 1,
                         ordinal: false,
                         events: {
                             setExtremes: function(e) {
-                                if(typeof(e.rangeSelectorButton) !== 'undefined')
-                                {
-                                    console.error("Button " + e.rangeSelectorButton.text + " pressed");
-                                    mychart.setTitle({text: i18n.t("highcharts:Loading data") + "..."});
+                                if(typeof(e.rangeSelectorButton) !== 'undefined') {
+                                    mychart.setTitle({text: self.localize("Loading data") + "..."});
                                     mychart.series[0].remove(true);
                                     self.periode = e.rangeSelectorButton.text;
                                     switch(self.periode) {
-                                        case i18n.t("highcharts:Day"):
+                                        case self.localize('Day'):
                                             var from = moment().subtract(1, "days").unix();
                                             break;
-                                        case i18n.t("highcharts:Week"):
-                                            var from = moment().subtract(1, "weeks").unix(); 
+                                        case self.localize('Week'):
+                                            var from = moment().subtract(1, "weeks").unix();
                                             break;
-                                        case i18n.t("highcharts:Month"):
+                                        case self.localize('Month'):
                                             var from = moment().subtract(1, "months").unix();
                                             break;
-                                    } 
-                                    console.error("### timestamp - 1 " + self.periode + ": " + from);
-                                    self.$.primary.getLastFrom(from) ; 
+                                    }
+                                    console.log("### timestamp - 1 " + self.periode + ": " + from);
+                                    self.$.primary.getLastFrom(from);
                                 }
                             }
                         }
@@ -234,25 +264,26 @@
                     chart: {
                         renderTo: this.$.graph
                     }
-                }; 
-                
-                var mychart = new Highcharts.StockChart(dataObject);                
-            },
-            
+                };
+                var mychart = new Highcharts.StockChart(dataObject);
+            }
+
             // ------------------------------------------------------------------------------------
-            displayGraph: function() {
+            displayGraph() {
                 this.$.graph.style.display = "block";
                 this.style.zIndex = 5000;
-                this.periode = i18n.t("highcharts:Day");
+                this.periode = this.localize("Day");
                 var from = moment().subtract(1, "days").unix();
                 this.$.primary.getLastFrom(from) ;
-            },
-            
+            }
+
             // ------------------------------------------------------------------------------------
-            hideGraph: function() {
+            hideGraph() {
                 this.$.graph.style.display = "none";
-                this.style.zIndex = initialZIndex;
-            },
-        });
+                this.style.zIndex = this.initialZIndex;
+            }
+        };
+        customElements.define(DmwHighchartsSensorBoolChart.is, DmwHighchartsSensorBoolChart);
+     })();
     </script>
 </polymer-element>

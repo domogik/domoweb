@@ -1,5 +1,5 @@
-<polymer-element name="dmw-basic-commandColorRGB" extends="dmw-widget">
-    <template>
+<dom-module id="dmw-basic-commandcolorrgb">
+    <template id="extended-styles">
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
         <style type="text/css">
             :host {
@@ -7,15 +7,15 @@
             }
             #current {
                 border: 1px solid black;
-                width: 20px;
-                height: 20px;
+                width: calc(35px*var(--wscale-h)*var(--wscale-r));
+                height: calc(35px*var(--wscale-h)*var(--wscale-r));
                 border-radius: 50%;
                 position: relative;
-                top: 50%;
+                top: calc(95px*var(--wscale-h)*var(--wscale-r));
+                left: calc(95px*var(--wscale-h)*var(--wscale-r));
                 -webkit-transform: translate(-50%, -50%);
                 -ms-transform: translate(-50%, -50%);
                 transform: translate(-50%, -50%);
-                left: 50%;
                 z-index: 7;
             }
 
@@ -23,81 +23,86 @@
                 width: 100%;
                 height: 100%;
             }
-            
+
             .petal{
                 background                      : lightblue;
-                width                           : 75px;
-                height                          : 75px;
-                position                        : absolute; 
-                display                            : block;
+                width                           : calc(60px*var(--wscale-h)*var(--wscale-r));
+                height                          : calc(60px*var(--wscale-h)*var(--wscale-r));
+                position                        : absolute;
+                display                         : block;
                 overflow                        : hidden;
-            
+
                 border-left: 0px solid transparent;
-            
-                border-radius                   : 50px;
-                -webkit-border-radius           : 50px;
-                -moz-border-radius              : 50px;
-                
+
+                border-radius                   : calc(50px*var(--wscale-h)*var(--wscale-r));
+                -webkit-border-radius           : calc(50px*var(--wscale-h)*var(--wscale-r));
+                -moz-border-radius              : calc(50px*var(--wscale-h)*var(--wscale-r));
+
                 border-top-right-radius         : 0;
                 -webkit-border-top-right-radius : 0;
                 -moz-border-radius-topright     : 0;
-                
+
+                border-bottom-left-radius       : calc(30px*var(--wscale-h)*var(--wscale-r));
+                -webkit-border-bottom-left-radius : calc(30px*var(--wscale-h)*var(--wscale-r));
+                -moz-border-radius-bottomleft   : calc(30px*var(--wscale-h)*var(--wscale-r));
+
+
                 transform                       : rotate(-45deg);
                 -webkit-transform               : rotate(-45deg);
                 -moz-transform                  : rotate(-45deg);
                 -o-transform                    : rotate(-45deg);
                 -ms-transform                   : rotate(-45deg);
-            
-            
+
+
                 transition                      : all 1s;
                 -webkit-transition              : all 1s;
                 -moz-transition                 : all 1s;
                 -o-transition                   : all 1s;
                 -ms-transition                  : all 1s;
             }
-            
+
             /**************
             .petal.sm {
                 width                           : 60px;
                 height                          : 60px;
                 position                        : absolute;
-            
+
                 border-radius                   : 75px;
                 -webkit-border-radius           : 75px;
                 -moz-border-radius              : 75px;
-            
+
                 border-top-right-radius         : 0;
                 -webkit-border-top-right-radius : 0;
                 -moz-border-radius-topright     : 0;
             }
-            
+
             .petal.lg {
                 width                           : 100px;
                 height                          : 100px;
                 position                        : absolute;
-            
+
                 border-radius                   : 125px;
                 -webkit-border-radius           : 125px;
                 -moz-border-radius              : 125px;
-            
+
                 border-top-right-radius         : 0;
                 -webkit-border-top-right-radius : 0;
                 -moz-border-radius-topright     : 0;
             }
             **************/
-            
-            
+
+
             .petal:nth-child(1) {
                 transform                       : rotate(-64deg) skewX(-12deg) skewY(-4deg);
                 -webkit-transform               : rotate(-64deg) skewX(-12deg) skewY(-4deg);
                 -moz-transform                  : rotate(-64deg) skewX(-12deg) skewY(-4deg);
                 -o-transform                    : rotate(-64deg) skewX(-12deg) skewY(-4deg);
                 -ms-transform                   : rotate(-64deg) skewX(-12deg) skewY(-4deg);
-                top                             : 130px;
-                left                            : 87px;
+                top                             : calc(112px*var(--wscale-h)*var(--wscale-r));
+                left                            : calc(77.5px*var(--wscale-h)*var(--wscale-r));
                 z-index: 3;
-            
-                
+
+
             }
             .petal:nth-child(2) {
                 transform                       : rotate(-124deg) skewX(-12deg) skewY(-4deg);
@@ -105,8 +110,8 @@
                 -moz-transform                  : rotate(-124deg) skewX(-12deg) skewY(-4deg);
                 -o-transform                    : rotate(-124deg) skewX(-12deg) skewY(-4deg);
                 -ms-transform                   : rotate(-124deg) skewX(-12deg) skewY(-4deg);
-                top                             : 87px;
-                left                            : 130px;
+                top                             : calc(77.5px*var(--wscale-h)*var(--wscale-r));
+                left                            : calc(112px*var(--wscale-h)*var(--wscale-r));
                 z-index: 2;
             }
             .petal:nth-child(3) {
@@ -115,8 +120,8 @@
                 -moz-transform                  : rotate(-184deg) skewX(-12deg) skewY(-4deg);
                 -o-transform                    : rotate(-184deg) skewX(-12deg) skewY(-4deg);
                 -ms-transform                   : rotate(-184deg) skewX(-12deg) skewY(-4deg);
-                top                             : 28px;
-                left                            : 114px;
+                top                             : calc(30.5px*var(--wscale-h)*var(--wscale-r));
+                left                            : calc(99.5px*var(--wscale-h)*var(--wscale-r));
                 z-index: 3;
             }
             .petal:nth-child(4) {
@@ -125,8 +130,8 @@
                 -moz-transform                  : rotate(-244deg) skewX(-12deg) skewY(-4deg);
                 -o-transform                    : rotate(-244deg) skewX(-12deg) skewY(-4deg);
                 -ms-transform                   : rotate(-244deg) skewX(-12deg) skewY(-4deg);
-                top                             : 12px;
-                left                            : 55px;
+                top                             : calc(17.5px*var(--wscale-h)*var(--wscale-r));
+                left                            : calc(52px*var(--wscale-h)*var(--wscale-r));
                 z-index: 4;
             }
             .petal:nth-child(5) {
@@ -135,8 +140,8 @@
                 -moz-transform                  : rotate(-304deg) skewX(-12deg) skewY(-4deg);
                 -o-transform                    : rotate(-304deg) skewX(-12deg) skewY(-4deg);
                 -ms-transform                   : rotate(-304deg) skewX(-12deg) skewY(-4deg);
-                top                             : 55px;
-                left                            : 12px;
+                top                             : calc(52px*var(--wscale-h)*var(--wscale-r));
+                left                            : calc(17.5px*var(--wscale-h)*var(--wscale-r));
                 z-index: 5;
             }
             .petal:nth-child(6) {
@@ -145,16 +150,16 @@
                 -moz-transform                  : rotate(-4deg) skewX(-12deg) skewY(-4deg);
                 -o-transform                    : rotate(-4deg) skewX(-12deg) skewY(-4deg);
                 -ms-transform                   : rotate(-4deg) skewX(-12deg) skewY(-4deg);
-                top                             : 114px;
-                left                            : 28px;
+                top                             : calc(99.5px*var(--wscale-h)*var(--wscale-r));
+                left                            : calc(30.5px*var(--wscale-h)*var(--wscale-r));
                 z-index: 6;
             }
 
-
         </style>
-        <dmw-command id="setcolor" commandkey="setcolor"></dmw-command>
-        <dmw-sensor id='color' sensorkey="color" sensorvalue="{{colorvalue}}"></dmw-sensor>
-        <shadow></shadow>
+        <slot>
+            <dmw-command id="setcolor" commandkey="setcolor"></dmw-command>
+            <dmw-sensor id='color' sensorkey="color" sensorvalue="{{colorvalue}}" sensornotified="current"></dmw-sensor>
+        </slot>
         <div id="flower">
           <div id="black" class="petal"></div>
           <div id="white" class="petal"></div>
@@ -166,12 +171,41 @@
         </div>
     </template>
     <script>
-        Polymer('dmw-basic-commandColorRGB', {
-            ready: function() {
-                this.super();
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+    (function() {
+      let memoizedTemplate;
+
+      class DmwBasicCommandColorRGB extends DmwWidget {
+            static get is () { return 'dmw-basic-commandcolorrgb'; }
+            static get properties() {
+                return {
+                    colorvalue: {
+                        notify: true,
+                        observer: 'colorvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                this._events = false;
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -179,8 +213,8 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.color.isSet) {
                     // nothing to do
                     this.$.black.style.backgroundColor = "black";
@@ -190,8 +224,8 @@
                     this.$.color3.style.backgroundColor = "#" + this.options['color3'];
                     this.$.color4.style.backgroundColor = "#" + this.options['color4'];
                 }
-            },
-            commandsUpdated: function() {
+            }
+            commandsUpdated() {
                 if (this.$.setcolor.isSet) {
                     this.labelprimary = this.$.setcolor.device['name'];
                     this.labelsecondary = this.$.setcolor.name;
@@ -204,45 +238,48 @@
                     else {
                         this.sendtext = i18n.t("domoweb:bool." + this.currentValue, { context: this.$.setcolor.parameters[0]['datatype_id'] });
                     }
-                    this.$.black.addEventListener('click', this.sendBlack.bind(this));
-                    this.$.white.addEventListener('click', this.sendWhite.bind(this));
-                    this.$.color1.addEventListener('click', this.sendColor1.bind(this));
-                    this.$.color2.addEventListener('click', this.sendColor2.bind(this));
-                    this.$.color3.addEventListener('click', this.sendColor3.bind(this));
-                    this.$.color4.addEventListener('click', this.sendColor4.bind(this));
+                    if (!this._events) {
+                        this.$.black.addEventListener('click', this.sendBlack.bind(this));
+                        this.$.white.addEventListener('click', this.sendWhite.bind(this));
+                        this.$.color1.addEventListener('click', this.sendColor1.bind(this));
+                        this.$.color2.addEventListener('click', this.sendColor2.bind(this));
+                        this.$.color3.addEventListener('click', this.sendColor3.bind(this));
+                        this.$.color4.addEventListener('click', this.sendColor4.bind(this));
+                        this._events = true;
+                    }
                 }
-            },
-            sendBlack: function(e) {
+            }
+            sendBlack(e) {
                 this.sendAColor(e, "000000");
-            },
-            sendWhite: function(e) {
+            }
+            sendWhite(e) {
                 this.sendAColor(e, "ffffff");
-            },
-            sendColor1: function(e) {
+            }
+            sendColor1(e) {
                 this.sendAColor(e, this.colorNameToHex(this.options['color1']));
-            },
-            sendColor2: function(e) {
+            }
+            sendColor2(e) {
                 this.sendAColor(e, this.colorNameToHex(this.options['color2']));
-            },
-            sendColor3: function(e) {
+            }
+            sendColor3(e) {
                 this.sendAColor(e, this.colorNameToHex(this.options['color3']));
-            },
-            sendColor4: function(e) {
+            }
+            sendColor4(e) {
                 this.sendAColor(e, this.colorNameToHex(this.options['color4']));
-            },
-            sendAColor: function(e, color) {
+            }
+            sendAColor(e, color) {
                 var parameters = {};
                 parameters[this.$.setcolor.parameters[0]['key']] = color;
                 this.$.setcolor.send(parameters);
                 e.preventDefault();
                 e.stopPropagation();
-            },
-            colorvalueChanged: function(oldValue, newValue) {
+            }
+            colorvalueChanged(newValue, oldValue) {
                 if (this.$.color.isSet) {
                     this.$.current.style.backgroundColor = "#"+newValue.stored_value;
                 }
-            },
-            colorNameToHex: function(colour) {
+            }
+            colorNameToHex(colour) {
                 var colours = {"aliceblue":"f0f8ff",
                                "antiquewhite":"faebd7",
                                "aqua":"00ffff",
@@ -383,13 +420,15 @@
                                "whitesmoke":"f5f5f5",
                                "yellow":"ffff00",
                                "yellowgreen":"9acd32"};
-            
+
                 if (typeof colours[colour.toLowerCase()] != 'undefined')
                     return colours[colour.toLowerCase()];
-            
+
                 // if no corresponding value, return the raw color
                 return colour;
             }
-        });
+        };
+        customElements.define(DmwBasicCommandColorRGB.is, DmwBasicCommandColorRGB);
+    })();
     </script>
-</polymer-element>
+</dom-module>

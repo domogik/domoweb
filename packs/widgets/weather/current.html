@@ -1,11 +1,12 @@
-<polymer-element name="dmw-weather-current" extends="dmw-widget">
-    <template>
+<dom-module id="dmw-weather-current">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
                 display: block;
-                background-repeat: no-repeat;
                 background-position: 50% 50%;
+                background-repeat: no-repeat;
+                background-size: "cover";
             }
             ::content #labelprimary {
                 margin: 10px;
@@ -20,7 +21,7 @@
                 transform: translate(0, -50%);
                 right: 20px;
                 text-align: right;
-                font-size: 5em;
+                font-size: calc(5em*var(--wscale-h)*var(--wscale-r));
                 /*
                 text-shadow: 0px 0px 2px rgba(0, 0, 0, 1);
                 */
@@ -29,13 +30,13 @@
                 position: absolute;
                 top:5px;
                 right: 5px;
-                font-size: 1em;
+                font-size: calc(1.5em*var(--wscale-h)*var(--wscale-r));
                 /*
                 text-shadow: 0px 0px 2px rgba(0, 0, 0, 1);
                 */
             }
             #text {
-                font-size: 1.4em;
+                font-size: calc(2em*var(--wscale-h)*var(--wscale-r));
                 text-align: center;
                 /*
                 text-shadow: 0px 0px 2px rgba(0, 0, 0, 1);
@@ -44,24 +45,62 @@
             .withshadow {
                 text-shadow: 0px 0px 2px rgba(122, 122, 122, 1);
             }
-            </style>
-        <shadow></shadow>
-        <dmw-sensor id='current_station' sensorkey="current_station" sensorvalue="{{current_station}}"></dmw-sensor>
-        <dmw-sensor id='current_code' sensorkey="current_code" sensorvalue="{{current_code}}"></dmw-sensor>
-        <dmw-sensor id='current_text' sensorkey="current_text" sensorvalue="{{current_text}}"></dmw-sensor>
-        <dmw-sensor id='current_temperature' sensorkey="current_temperature" sensorvalue="{{current_temperature}}"></dmw-sensor>
+        </style>
+        <slot>
+            <dmw-sensor id='current_station' sensorkey="current_station" sensorvalue="{{current_station}}"></dmw-sensor>
+            <dmw-sensor id='current_code' sensorkey="current_code" sensorvalue="{{current_code}}"></dmw-sensor>
+            <dmw-sensor id='current_text' sensorkey="current_text" sensorvalue="{{current_text}}" sensornotified="text"></dmw-sensor>
+            <dmw-sensor id='current_temperature' sensorkey="current_temperature" sensorvalue="{{current_temperature}}" sensornotified="temperature"></dmw-sensor>
+        </slot>
         <div id='text'>{{ condition }}</div>
         <div id='temperature'>{{ temperature }}</div>
         <div id='unit'>&deg;C</div>
-        <shadow></shadow>
     </template>
     <script>
-        Polymer('dmw-weather-current', {
-            ready: function() {
-                this.super();
-            },
-            current_codeChanged: function(oldValue, newValue) {
+     (function () {
+        let memoizedTemplate;
+
+        class DmwWeatherCurrent extends DmwWidget {
+            static get is () { return 'dmw-weather-current'; }
+            static get properties() {
+                return {
+                    current_station: {
+                        notify: true,
+                        observer: 'current_stationChanged'
+                    },
+                    current_text: {
+                        notify: true,
+                        observer: 'current_textChanged'
+                    },
+                    current_code: {
+                        notify: true,
+                        observer: 'current_codeChanged'
+                    },
+                    current_temperature: {
+                        notify: true,
+                        observer: 'current_temperatureChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
+            current_codeChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
+                if (this.code == undefined) {this.condition = this.localize("weather:" + newValue)} //, ''); }
                 this.code = newValue;
                 // needed only the first time :)
                 // strangely it does not work in sensorUpdated()... : this.options == undefined
@@ -71,22 +110,25 @@
                     this.$.unit.classList.add('withshadow');
                 }
                 if (this.options['displayBackground'] == 1) {
+                    this.style.backgroundSize = "cover";
                     this.style.backgroundImage = "url('/widget/weather/images/weather/" + newValue + ".png')";
                 }
-            },
-            current_stationChanged: function(oldValue, newValue) {
+            }
+            current_stationChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 this.labelprimary = newValue;
-            },
-            current_temperatureChanged: function(oldValue, newValue) {
+            }
+            current_temperatureChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.temperature = newValue; 
-            },
-            current_textChanged: function(oldValue, newValue) {
+                this.temperature = newValue;
+            }
+            current_textChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
                 //this.condition = newValue; // Add i18n ("Fair/Windy")
-                this.condition = i18n.t("weather:" + this.code, newValue);
-            },
-        });
+                this.condition = this.localize("weather:" + this.code); //, newValue);
+            }
+	    };
+        customElements.define(DmwWeatherCurrent.is, DmwWeatherCurrent);
+    })();
     </script>
-</polymer-element>
+</dom-module>

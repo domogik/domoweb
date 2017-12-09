@@ -1,0 +1,317 @@
+<link rel="import" href="/libraries/bower_components/polymer/polymer.html">
+<link rel="import" href="/libraries/bower_components/the-grid/the-grid.html"></script>
+<link rel="import" href="/libraries/bower_components/the-grid/debug-grid.html"></script>
+<link rel="import" href="/components/grid-styles.html">
+
+<dom-module id="grid-wrapper">
+
+    <template>
+        <style include="grid-styles">
+            :host {
+                display: block;
+            }
+        </style>
+
+        <div id="container">
+            <debug-grid id="debugGrid" cell-height="{{cellHeight}}" cell-width="{{cellWidth}}" cell-margin="{{cellMargin}}" col-count="{{colCount}}" row-count="{{rowCount}}"></debug-grid>
+            <the-grid id="widgetGrid" cell-height="{{cellHeight}}" cell-width="{{cellWidth}}" cell-margin="{{cellMargin}}" col-count="{{colCount}}" row-count="{{rowCount}}" animated col-autogrow row-autogrow>
+                <div id='placeholder' placeholder style="color: grey;opacity:0.8"></div>
+            </the-grid>
+        </div>
+    </template>
+
+    <script>
+        class GridWrapper extends Polymer.Element {
+
+            static get is() { return 'grid-wrapper'; }
+
+            static get properties() {
+                return {
+                    cellWidth: {
+                        type: Number,
+                        value: 120
+                    },
+                    cellHeight: {
+                        type: Number,
+                        value: 120
+                    },
+                    cellMargin: {
+                        type: Number,
+                        value: 10
+                    },
+                    rowCount: {
+                        type: Number,
+                        value: 30
+                    },
+                    colCount: {
+                        type: Number,
+                        value: 30
+                    }
+                }
+            }
+
+            constructor() {
+                super();
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                // Hack the-grip _toggleEvents for handling [resizer] in #editOverlay
+                this.$.widgetGrid._toggleEvents = function(node, removed) {
+                    const moveHandler = this._handleMoveFn = this._handleMoveFn || this._handleMove.bind(this);
+                    const resizeHandler = this._handleResizeFn = this._handleResizeFn || this._handleResize.bind(this);
+
+                    const addOrRemoveResizeListener = this.resizable && !removed;
+                    const addOrRemoveMoveListener = this.draggable && !removed;
+                    const addOrRemoveNativeListener = !removed;
+
+                    const  isPlaceholder = node.hasAttribute('placeholder');
+                    if (isPlaceholder && !removed) {
+                        this.placeholder = node;
+                    } else {
+                      // Start hack for getting resizer child elements
+                      //  const resizers = node.querySelectorAll('[resize]');
+                        const resizers = node.getResizers ? node.getResizers() : [];
+                      // End hack
+
+                        Array.from(resizers).forEach(resizer => {
+                            if (addOrRemoveResizeListener && !resizer._hasResizeListener) {
+                                Polymer.Gestures.addListener(resizer, 'track', resizeHandler);
+                                resizer._hasResizeListener = true;
+                            } else if (!addOrRemoveResizeListener && resizer._hasResizeListener) {
+                                Polymer.Gestures.removeListener(resizer, 'track', resizeHandler);
+                                resizer._hasResizeListener = false;
+                            }
+                        });
+
+                        if (addOrRemoveMoveListener && !node._hasMoveListener) {
+                            Polymer.Gestures.addListener(node, 'track', moveHandler);
+                            node._hasMoveListener = true;
+                        } else if (!addOrRemoveMoveListener && node._hasMoveListener) {
+                            Polymer.Gestures.removeListener(node, 'track', moveHandler);
+                            node._hasMoveListener = false;
+                        }
+
+                        // We need this dirty prevent default since 'track' gestures
+                        // - let pass some events before triggering the 'start' state.
+                        // - does not allow access to the real source event on touch devices.
+                        if (addOrRemoveNativeListener && !node._hasNativeMoveListener) {
+                            node.addEventListener('touchmove', this._safePreventDefault);
+                            node._hasNativeMoveListener = true;
+                        } else if (!addOrRemoveNativeListener  && node._hasNativeMoveListener) {
+                            node.removeEventListener('touchmove', this._safePreventDefault);
+                            node._hasNativeMoveListener = false;
+                        }
+                    }
+                }
+                //Hack the-grip getResizerHost for handling [resizer] in #editOverlay
+                this.$.widgetGrid.getResizerHost = function(resizer) {
+                    var current = resizer;
+                    // Start hack
+                    while (current.offsetParent.parentNode !== this) {
+                        current = current.offsetParent;
+                    }
+                    if (current.offsetParent.parentNode) {current = current.offsetParent;}
+                    // End Hack
+                    return current !== this && current !== resizer ? current : undefined;
+                }
+                this.$.debugGrid.style.display = 'none';
+                this.addEventListener("move", this.widgetMoved);
+                const self = this;
+                // Resize event must wait terminated transition
+                this.addEventListener("resize", function(e) {
+                    let event = e;
+                    setTimeout(function() {
+                        self.widgetResized(event);
+                        }, 550);
+                    // Other way from end transistion event, but don't work at each !! ???? to explore.....
+             /**    let eReg = $._data(e.detail.tile,'events');
+                    if (eReg == undefined || !(eReg.transitionend || eReg.webkitTransitionEnd || eReg.oTransitionEnd || eReg.MSTransitionEnd)) {
+                        $(e.detail.tile).on("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
+                            self.widgetResized(event);
+                            });
+                    }; **/
+                    });
+            }
+            init(mode, columns, rows, widgetSize, widgetSpace) {
+                this.setParams(mode, columns, rows, widgetSize, widgetSpace);
+                var list = this.widgetList();
+                while (list.length != 0) {
+                    this.$.widgetGrid.removeChild(list[0]);
+                }
+            }
+            widgetList() {
+                return this.$.widgetGrid.getElementsByClassName('widget');
+            }
+            getWidget(instanceId) {
+                var list = this.widgetList();
+                var widget;
+                for (var i=0; i<list.length; i++) {
+                    if (list[i].getAttribute('instanceid') == instanceId) {
+                        widget = list[i];
+                        break;
+                    }
+                }
+                return widget;
+            }
+            refreshEventResizer(node) {
+                this.$.widgetGrid._toggleEvents(node, false);
+            }
+            setParams(mode, columns, rows, widgetSize, widgetSpace) {
+                this.mode = parseInt(mode);
+                switch(this.mode) {
+                    case 1:
+                        this.colCount = parseInt(columns);
+                        this.rowCount = parseInt(rows);
+                        this.cellWidth = parseInt(widgetSize);
+                        this.cellMargin = this.generateWidgetSpace(this.colCount, this.cellWidth);
+                        if (this.cellMargin < 0) this.cellMargin = 0;
+                        break;
+                    case 2:
+                        this.colCount = parseInt(columns);
+                        this.rowCount = parseInt(rows);
+                        this.cellMargin = parseInt(widgetSpace)
+                        this.cellWidth = this.generateWidgetSize(this.colCount, this.cellMargin);
+                        if (this.cellWidth < 50) this.cellWidth = 50;
+                        break;
+                    case 3:
+                        this.cellWidth = parseInt(widgetSize);
+                        this.cellMargin = parseInt(widgetSpace);
+                        this.colCount = this.generateSizeX(this.cellWidth, this.cellMargin);
+                        this.rowCount = this.generateSizeY(this.cellWidth, this.cellMargin);
+                        break;
+                }
+                this.cellHeight = this.cellWidth;
+                this.marginLeft = Math.floor((window.innerWidth - (this.colCount * this.cellWidth) - ((this.colCount-1) * this.cellMargin)) / 2);
+                if (this.marginLeft < 0) this.marginLeft = 0;
+                this.marginTop = Math.floor((window.innerHeight - (this.rowCount * this.cellWidth) - ((this.rowCount-1) * this.cellMargin)) / 2);
+                if (this.marginTop < 0) this.marginTop = 0;
+            }
+            setEdit(state) {
+                if (state) {
+                    this.$.debugGrid.style.display = '';
+                } else {
+                    this.$.debugGrid.style.display = 'none';
+                }
+                this.$.debugGrid.updateStyles();
+                this.$.widgetGrid.draggable = state;
+                this.$.widgetGrid.resizable = state;
+
+            }
+            findFirstEmptyPosition(widget_width, widget_height) {
+                let grid = this.$.widgetGrid;
+                let cols = +widget_width;
+                let rows = +widget_height;
+                for(var y=0; y<grid.rowCount; y++) {
+                    for(var x=0; x<grid.colCount; x++) {
+                        // Find the first empty space, that matches the widget size
+                        if (!grid._isOverlapping(x, y, cols, rows, []) && (x + cols <= grid.colCount)) { // && y + rows <= grid.rowCount)) {
+                            return {col: x, row: y};
+                        }
+                    }
+                }
+                // no place must add new line
+                return {col: 0, row: this.rowCount+1};
+            }
+            generateSizeX(widgetSize, widgetSpace) {
+                return Math.floor((window.innerWidth + widgetSpace) / (widgetSize + widgetSpace));
+            }
+            generateSizeY(widgetSize, widgetSpace) {
+                return Math.floor((window.innerHeight + widgetSpace) / (widgetSize + widgetSpace));
+            }
+            generateWidgetSize(columns, widgetSpace) {
+                return Math.floor((window.innerWidth - ((columns + 1) * widgetSpace)) / columns);
+            }
+            generateWidgetSpace(columns, widgetSize) {
+                return Math.floor((window.innerWidth - (columns * widgetSize)) / (columns + 1));
+            }
+            appendInstance(widget, instance) {
+                // to preserve error on new size limits
+                if (!instance.widget.min_width) { instance.widget.min_width = instance.widget.width;}
+                if (!instance.widget.max_width) { instance.widget.max_width = instance.widget.width;}
+                if (!instance.widget.min_height) { instance.widget.min_height = instance.widget.height;}
+                if (!instance.widget.max_height) { instance.widget.max_height = instance.widget.height;}
+               $(widget).attr({
+                    "col": instance.x,
+                    "row": instance.y,
+                    "width": instance.width,
+                    "height": instance.height,
+                    "org-width":instance.widget.width,
+                    "org-height":instance.widget.height,
+                    "min-width": instance.widget.min_width,
+                    "max-width": instance.widget.max_width,
+                    "min-height": instance.widget.min_height,
+                    "max-height": instance.widget.max_height
+                    });
+                // add capability resize depending widget set
+                this.$.placeholder.parentNode.insertBefore(widget, this.$.placeholder);
+                if (instance.x + instance.width > this.$.widgetGrid.colCount) {
+                    this.$.widgetGrid.colCount = instance.x + instance.width;
+                    this.$.debugGrid.colCount = instance.x + instance.width;
+                }
+                if (instance.y +instance.height > this.$.widgetGrid.rowCount) {
+                    this.$.widgetGrid.rowCount = instance.y +instance.height;
+                    this.$.debugGrid.rowCount = instance.y +instance.height;
+                }
+            }
+            removeInstance(widget) {
+                this.$.widgetGrid.removeChild(widget);
+            }
+            widgetResized(e) {
+                e.detail.tile._computeScale();
+                e.detail.tile.resized();
+                this.widgetMoved(e);
+            }
+            widgetMoved(e){
+                var instanceid = e.detail.tile.getAttribute('instanceid');
+                var x = e.detail.tile.getAttribute('col');
+                var y = e.detail.tile.getAttribute('row');
+                var w = e.detail.tile.getAttribute('width');
+                var h = e.detail.tile.getAttribute('height');
+                DMW.main.socket.send("widgetinstance-location", {'instance_id':instanceid, 'x':x, 'y':y, 'width':w, 'height':h});
+            }
+            setWidgetPosition(widget, x, y ,w, h) {
+                if (widget.getAttribute('col') != x || widget.getAttribute('row') != y || widget.getAttribute('width') != w || widget.getAttribute('height') != h) {
+                    widget.setAttribute('col', x);
+                    widget.setAttribute('row', y);
+                    widget.setAttribute('width', w);
+                    widget.setAttribute('height', h);
+                    widget.resized();
+                }
+            }
+            checkGridValues(type, columns, rows, widgetSize, widgetSpace) {
+                type = parseInt(type);
+                columns = parseInt(columns);
+                rows = parseInt(rows);
+                widgetSize = parseInt(widgetSize);
+                widgetSpace = parseInt(widgetSpace)
+                if (type == 1) {
+                    if (!columns || !rows || !widgetSize) return "Error: Missing or incorrect parameter";
+                    widgetSpace = this.generateWidgetSpace(columns, widgetSize);
+
+                } else if (type == 2) {
+                    if (!columns || !rows || !widgetSpace) return "Error: Missing or incorrect parameter";
+                    widgetSize = this.generateWidgetSize(columns, widgetSpace);
+
+                } else if (type == 3) {
+                    if (!widgetSize || !widgetSpace) return "Error: Missing or incorrect parameter";
+                    columns = this.generateSizeX(widgetSize, widgetSpace);
+                    rows = this.generateSizeY(widgetSize, widgetSpace);
+                } else {
+                    return "Error: Unknown grid type";
+                }
+
+                // Check if it is not bigger than the browser size
+                if (columns == 0 || rows == 0) {
+                    return "Error: Grid too small Width:" + columns + " Height:" + rows;
+                } else if ((columns * widgetSize + (columns - 1) * widgetSpace) > window.innerWidth) {
+                    return "Warning: This combination (" + columns + " col. = " + (columns * widgetSize + (columns - 1) * widgetSpace) + "px) is bigger than the browser width (" + window.innerWidth + "px)";
+                } else if ((rows * widgetSize + (rows - 1) * widgetSpace) > window.innerHeight) {
+                    return "Warning: This combination (" + rows + " rows = " + (rows * widgetSize + (rows - 1) * widgetSpace) + "px) is bigger than the browser height (" + window.innerHeight + "px)";
+                } else {
+                    return "Info: Grid size " + columns + "x" + rows + " - Widgets size " + widgetSize + "px - Widgets space " + widgetSpace + "px";
+                }
+            }
+        }
+        customElements.define(GridWrapper.is, GridWrapper);
+    </script>
+</dom-module>

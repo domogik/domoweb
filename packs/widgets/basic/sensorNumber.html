@@ -1,6 +1,5 @@
-<polymer-element name="dmw-basic-sensorNumber" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+<dom-module id="dmw-basic-sensornumber">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -22,23 +21,53 @@
                 position: absolute;
                 top:5px;
                 right: 5px;
-                font-size: 1em;
+                font-size: calc(1em*var(--wscale-h)*var(--wscale-r));
             }
         </style>
-        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}"></dmw-sensor>
-        <shadow></shadow>
+        <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensornotified="number"></dmw-sensor>
         <div id='number'>{{number}}</div>
         <div id='unit'>{{unit}}</div>
     </template>
     <script>
-        Polymer('dmw-basic-sensorNumber', {
-            ready: function() {
-                this.super();
+     (function () {
+        let memoizedTemplate;
+
+        class DmwBasicSensorNumber extends DmwWidget {
+            static get is () { return 'dmw-basic-sensornumber'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
+            connectedCallback() {
+                super.connectedCallback();
                 this.number = "--";
                 this.unit = "";
-            },
-            optionsUpdated: function() {
-                if (this.options['hideLabels'] == true ) {         
+            }
+            resized () {
+                this.adjustText(this, this.$.number);
+            }
+            optionsUpdated() {
+                if (this.options['hideLabels'] == true ) {
                     this.$.labelprimary.style.visibility = "hidden";
                     this.$.labelsecondary.style.visibility = "hidden";
                 }
@@ -46,15 +75,18 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-            },
-            sensorsUpdated: function() {
+            }
+            sensorsUpdated() {
                 if (this.$.primary.isSet) {
                     this.labelprimary = this.$.primary.device['name'];
                     this.labelsecondary = this.$.primary.name;
                 }
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
+                if (!Number.isInteger(newValue)) {
+                    newValue = parseFloat(newValue).toFixed(this.options['precision']);
+                }
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
                 if (this.options['autoconvert']==1 && newValue > 0) {
                        var k = 1000;
@@ -62,40 +94,18 @@
                        var i = Math.floor(Math.log(newValue) / Math.log(k));
                     this.$.number.innerHTML = (newValue / Math.pow(k, i)).toPrecision(3);
                     if (unit) {
-                        this.unit = sizes[i] + i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                        this.unit = sizes[i] + this.localize("domoweb:unit", "value", unit );
                     }
                 } else {
                     this.$.number.innerHTML = newValue;
                     if (unit) {
-                        this.unit = i18n.t("domoweb:unit", { context: this.$.primary.datatype_id, value: unit });
+                        this.unit = this.localize("domoweb:unit", "value", unit );
                     }
                 }
                 this.adjustText(this, this.$.number);
-            },
-            adjustText: function(parent, element) {
-                var fontsize = window.getComputedStyle(element,null).getPropertyValue("font-size");
-                var i = fontsize.substr(0,2);
-                //alert("cw = " + parent.clientWidth + ", cw = " + parent.clientHeight);
-                // in case the page is not yet nicely loaded...
-                if (parent.clientWidth == 0 || parent.clientHeight == 0) {
-                    setTimeout(function(){
-                        this.adjustText(parent, element);
-                        }.bind(this), 1000);
-                }
-                else {
-                    if (parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight) {
-                        while ( parent.clientWidth > element.clientWidth && parent.clientHeight > element.clientHeight && i < 100){
-                            element.style.fontSize = i+"px";
-                            i++;
-                        }
-                    } else if (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight) { // If text is bigger than widget
-                        while (parent.clientWidth < element.clientWidth || parent.clientHeight < element.clientHeight){
-                            element.style.fontSize = i+"px";
-                            i--;
-                        }
-                    }
-                }
             }
-        });
+	    };
+        customElements.define(DmwBasicSensorNumber.is, DmwBasicSensorNumber);
+    })();
     </script>
-</polymer-element>
+</dom-module>

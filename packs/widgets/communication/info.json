@@ -15,6 +15,10 @@
             "description" : "List of phone calls",
             "height" : 1,
             "width" : 3,
+            "min_height" : 1,
+            "min_width" : 3,
+            "max_height" : 2,
+            "max_width" : 6,
             "options" : {
             },
             "commands" : {

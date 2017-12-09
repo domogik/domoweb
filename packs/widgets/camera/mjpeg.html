@@ -1,5 +1,5 @@
-<polymer-element name="dmw-camera-mjpeg" extends="dmw-widget">
-    <template>
+<dom-module id="dmw-camera-mjpeg">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -33,8 +33,8 @@
                 margin-left: 1%;
                 margin-right: 1%;
                 margin-top: 2%;
-                height: 83%; 
-                width: 98%; 
+                height: 83%;
+                width: 98%;
                 object-fit: contain;
             }
             .mjpeg-zoom {
@@ -52,23 +52,46 @@
             }
             .mjpeg-normal {
                 object-fit: contain;
-                height: 100%; 
-                width: 100%; 
+                height: 100%;
+                width: 100%;
             }
         </style>
         <dmw-sensor id='camera' sensorkey="camera" sensorvalue="{{sensorvalue}}"></dmw-sensor>
-        <shadow></shadow>
-        <div id="camera" class="camera-normal"  on-click="{{zoom}}">
+        <div id="camera" class="camera-normal" on-click="{{zoom}}">
           <img id="motionjpeg" class="mjpeg-normal" src="{{url}}"/>
 
         </div>
         <div id="cameralabel"><span>{{label}}</span></div>
     </template>
     <script>
-        Polymer('dmw-camera-mjpeg', {
-            ready: function() {
+     (function () {
+        let memoizedTemplate;
+
+        class DmwCameraMjpeg extends DmwWidget {
+            static get is () { return 'dmw-camera-mjpeg'; }
+            static get properties() {
+                return {
+                    sensorvalue: {
+                        notify: true,
+                        observer: 'sensorvalueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            connectedCallback() {
                 this.mode = "normal";
-                this.super();
+                super.connectedCallback();
                 this.urlVisible = "/widget/camera/noname.png";                // real stream url (updated in sensorUpdated with the real value)
                 this.urlHidden = "/widget/camera/noname.png";                 // fake stream url (to be used when camera widget is not displayed to not consume bandwith)
                 this.url = this.urlHidden;
@@ -80,7 +103,7 @@
                 self = this;
                 setInterval(function(){
                     self.url = self.urlRaw + "?" + +new Date().getTime();
-                    console.error("Camera url = " + self.url);
+                    console.warn("Camera url = " + self.url);
                 },60000);
 
                 // but first, refresh the image 1s after the component is loaded to avoid a broken image in case of 401 error (see comment before the iframe for more informations
@@ -88,12 +111,10 @@
                     self.url = self.urlRaw + "?" + +new Date().getTime();
                 }.bind(this), 5000);
 
-
                 // z-index for the zoom mode
-                initialZIndex = this.style.zIndex;
-
-            },
-            optionsUpdated: function() {
+                this.initialZIndex = this.style.zIndex;
+            }
+            optionsUpdated() {
                 if (this.options['cameraName']) {
                     this.label = this.options['cameraName']
                 }
@@ -110,20 +131,16 @@
                 else {
                     // will be set from sensor
                 }
-            },
-            sensorsUpdated: function() {
-            },
-            commandsUpdated: function() {
-            },
-            sensorvalueChanged: function(oldValue, newValue) {
+            }
+            sensorvalueChanged(newValue, oldValue) {
                 this.urlVisible = newValue.stored_value;
                 // change the used url only if widget is displayed
                 if (this.visible == true) {
                     this.url = this.urlVisible;
                     this.urlRaw = this.url;
                 }
-            },
-            zoom: function() {
+            }
+            zoom() {
                 if (this.mode == "normal") {
                     this.mode = "zoom";
                     this.$.camera.classList.add('camera-zoom');
@@ -142,19 +159,21 @@
                     this.$.motionjpeg.classList.remove('mjpeg-zoom');
                     this.$.cameralabel.style.visibility = "initial";
                     // z-index for the zoom mode
-                    this.style.zIndex = initialZIndex;
+                    this.style.zIndex = this.initialZIndex;
                 }
-            },
-            attached: function() {
-                console.error(this.localName + '#' + this.id + ' was attached');
+            }
+            attached() {
+                console.warn(this.localName + '#' + this.id + ' was attached');
                 this.visible = true;
-            },
-            detached: function() {
-                console.error(this.localName + '#' + this.id + ' was detached');
+            }
+            detached() {
+                console.warn(this.localName + '#' + this.id + ' was detached');
                 this.visible = false;
                 this.url = "/widget/camera/noname.png";
                 this.urlRaw = this.url;
             }
-        });
+	    };
+        customElements.define(DmwCameraMjpeg.is, DmwCameraMjpeg);
+    })();
     </script>
-</polymer-element>
+</dom-module>

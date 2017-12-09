@@ -1,0 +1,74 @@
+{
+  	"menu": {
+  		"open": "Ouvrir Menu",
+    	"configuration": "Config",
+    	"widgets": "Widgets",
+		"finishWidgets": "Terminé",
+		"addWidget": "Ajouter",
+		"gridWidget": "Nouvelle grille",
+		"sections": "Sections",
+		"addSection": "Ajouter",
+		"removeSection": "Supprimer",
+		"finishSections": "Terminé",
+		"logout": "Déconnexion"
+  	},
+  	"domoweb": {
+        "unit": "{value}",
+        "unit_DT_Byte": "o",
+        "bool": {
+            "0_DT_Bool": "Faux",
+            "1_DT_Bool": "Vrai",
+            "0_DT_Switch": "Eteint",
+            "1_DT_Switch": "Allumé",
+            "0_DT_Enable": "Activé",
+            "1_DT_Enable": "Desactivé",
+            "0_DT_Binary": "Bas",
+            "1_DT_Binary": "Haut",
+            "0_DT_Step": "Diminuer",
+            "1_DT_Step": "Augmenter",
+            "0_DT_UpDown": "Haut",
+            "1_DT_UpDown": "Bas",
+            "0_DT_OpenClose": "Ouvert",
+            "1_DT_OpenClose": "Fermé",
+            "0_DT_Start": "Arrété",
+            "1_DT_Start": "Demarré",
+            "0_DT_State": "Inactif",
+            "1_DT_State": "Actif",
+            "0_DT_Motion": "Pas de mouvement",
+            "1_DT_Motion": "Mouvement"
+        }
+    },
+    "widget": {
+        "sensorLost": "Capteur perdu",
+        "historyRequestTimeout": "Requête historique échouée",
+        "last": "Jour courant",
+        "dayPerHour": "Jour par heure",
+        "day": "Jour",
+        "week": "Semaine",
+        "weekPerDay": "Semaine par jour",
+        "weekPerDayWithSelectorMax": "Semaine par jour (max)",
+        "fromToDay": "Entre 2 jours",
+        "min": "min",
+        "max": "max"
+    },
+    "location": {
+        "direction" : {
+            "North": "Nord",
+            "N": "N",
+            "East": "Est",
+            "E": "E",
+            "South": "Sud",
+            "S": "S",
+            "West": "Ouest",
+            "W": "O",
+            "Northeast": "nord-est",
+            "NE": "NE",
+            "Northwest": "nord-ouest",
+            "NW": "NO",
+            "Southeast": "sud-est",
+            "SE": "SE",
+            "Southwest": "sud-ouest",
+            "SW": "SO"
+        }
+    }
+}

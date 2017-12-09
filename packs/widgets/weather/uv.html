@@ -1,4 +1,4 @@
-<polymer-element name="dmw-weather-uv" extends="dmw-widget">
+<dom-module id="dmw-weather-uv" extends="dmw-widget">
 	<template>
 		<link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
 		<style type="text/css">
@@ -40,17 +40,18 @@
 		<div class="level" id="level1"></div>
 	</template>
 	<script>
-		Polymer('dmw-weather-uv', {
-			ready: function() {
-				this.super();
+		        class Dmw extends DmwWidget {
+            static get is () { return 'dmw-weather-uv',
+			connectedCallback() {
+				super.connectedCallback();
 			},
-			sensorsUpdated: function() {
+			sensorsUpdated() {
 				if (this.$.primary.isSet) {
 					this.labelprimary = this.$.primary.device['name'];
 					this.labelsecondary = this.$.primary.name;
 				}		
 			},
-			sensorvalueChanged: function(oldValue, newValue) {
+			sensorvalueChanged(newValue, oldValue) {
 				newValue = newValue.stored_value;
 				var levels = this.shadowRoot.querySelectorAll(".level");
 				for (var i = levels.length - 1; i >= 0; i--) {
@@ -75,4 +76,4 @@
 			},
 		});
 	</script>
-</polymer-element>
+</dom-module>

@@ -1,0 +1,197 @@
+<!--
+@license
+The MIT License (MIT)
+
+Copyright (c) 2017 Support Class
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/utils/render-status.html">
+<link rel="import" href="../polymer/lib/utils/debounce.html">
+
+<!--
+A Polymer 2 element for horizontally squishing text to stay within a max width.
+
+### Styling
+
+The following mixins are available for styling:
+
+Mixin | Description | Default
+----------------|-------------|----------
+`--sc-fitted-text-content` | Mixin applied to the internal text div | `{}`
+
+@demo demo/index.html
+-->
+
+<dom-module id="sc-fitted-text">
+	<template>
+		<style>
+			:host {
+				display: flex;
+				white-space: nowrap;
+			}
+
+			#fittedContent {
+				visibility: hidden; /* hide until fonts load */
+				@apply --sc-fitted-text-content;
+			}
+		</style>
+
+		<div id="fittedContent"></div>
+	</template>
+
+	<script>
+		/**
+		 * @customElement
+		 * @polymer
+		 * @extends Polymer.Element
+		 */
+		class ScFittedText extends Polymer.Element {
+			static get is() {
+				return 'sc-fitted-text';
+			}
+
+			static get properties() {
+				return {
+					text: {
+						type: String,
+						observer: '_textChanged'
+					},
+					maxWidth: {
+						type: Number,
+						value: 0,
+						observer: '_maxWidthChanged'
+					},
+					align: {
+						type: String,
+						value: 'left',
+						observer: '_alignChanged'
+					}
+				};
+			}
+
+			/**
+			 * Re-fit the text to maxWidth.
+			 * It should rarely be necessary to manually call this, as it will be automatically
+			 * called whenever the `text` or `maxWidth` properties change.
+			 */
+			fit() {
+				this._fitDebouncer = Polymer.Debouncer.debounce(
+					this._fitDebouncer,
+					Polymer.Async.timeOut.after(0),
+					this._fit.bind(this)
+				);
+			}
+
+			/**
+			 * The public `fit` method is actually a debouncer.
+			 * This private method is what does the fitting.
+			 * @private
+			 */
+			_fit() {
+				Polymer.RenderStatus.beforeNextRender(this, () => {
+					this.$.fittedContent.style.transform = 'scaleX(1)';
+
+					const maxWidth = parseInt(this.maxWidth, 10);
+					if (isNaN(maxWidth) || maxWidth <= 0) {
+						return;
+					}
+
+					const scrollWidth = this.$.fittedContent.scrollWidth;
+					if (scrollWidth > maxWidth) {
+						this.$.fittedContent.style.transform = `scaleX(${maxWidth / scrollWidth})`;
+					} else {
+						this.$.fittedContent.style.transform = 'scaleX(1)';
+					}
+				});
+			}
+
+			/**
+			 * When the `text` property changes.
+			 * @param {String} newVal
+			 * @private
+			 */
+			_textChanged(newVal) {
+				this.$.fittedContent.textContent = newVal;
+
+				if (document.readyState !== 'complete') {
+					window.addEventListener('load', () => {
+						this._textChanged(this.text);
+					});
+					return;
+				}
+
+				const font = window.getComputedStyle(this.$.fittedContent).font;
+				if (!font) {
+					this.$.fittedContent.style.visibility = 'visible';
+					this.fit();
+					return;
+				}
+
+				document.fonts.load(font).then(() => {
+					this.$.fittedContent.style.visibility = 'visible';
+					this.fit();
+				}).catch(e => {
+					console.error('Failed to load fonts:', e);
+				});
+			}
+
+			/**
+			 * When the `maxWidth` property changes.
+			 * @param {String} newVal
+			 * @private
+			 */
+			_maxWidthChanged(newVal) {
+				this.style.maxWidth = `${newVal}px`;
+				this.fit();
+			}
+
+			/**
+			 * When the `align` property changes.
+			 * @param {String} newVal
+			 * @private
+			 */
+			_alignChanged(newVal) {
+				switch (newVal) {
+					case 'center':
+						this.style.justifyContent = 'center';
+						this.$.fittedContent.style.transformOrigin = 'center';
+						this.$.fittedContent.style.textAlign = 'center';
+						break;
+					case 'left':
+						this.style.justifyContent = '';
+						this.$.fittedContent.style.transformOrigin = 'left';
+						this.$.fittedContent.style.textAlign = 'left';
+						break;
+					case 'right':
+						this.style.justifyContent = 'flex-end';
+						this.$.fittedContent.style.transformOrigin = 'right';
+						this.$.fittedContent.style.textAlign = 'right';
+						break;
+					default:
+						throw new Error(`Unexpected align value: ${newVal}`);
+				}
+			}
+		}
+
+		customElements.define(ScFittedText.is, ScFittedText);
+	</script>
+</dom-module>
