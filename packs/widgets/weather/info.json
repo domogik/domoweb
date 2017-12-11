@@ -180,6 +180,7 @@
         },
         "rainhour": {
             "name" : "Rain forecast",
+            "dev" : true,
             "description" : "Weather rain forecast",
             "height" : 4,
             "width" : 2,
@@ -206,6 +207,7 @@
         },
         "rainhour2": {
             "name" : "Rain forecast 2",
+            "dev" : true,
             "description" : "Weather rain forecast",
             "height" : 2,
             "width" : 4,
@@ -227,10 +229,10 @@
             "name" : "Rain forecast 3",
             "description" : "Weather rain forecast",
             "height" : 2,
-            "width" : 4,
-            "min_height" : 1,
-            "min_width" : 3,
-            "max_height" : 4,
+            "width" : 7,
+            "min_height" : 2,
+            "min_width" : 6,
+            "max_height" : 2,
             "max_width" : 8,
             "options" : {},
             "devices" : {
@@ -244,6 +246,7 @@
         },
         "vigilance": {
             "name" : "Vigilance",
+            "dev" : true,
             "description" : "Weather Vigilance by Meteo France",
             "height" : 2,
             "width" : 4,
@@ -270,6 +273,7 @@
         },
         "vigilance2": {
             "name" : "Vigilance 2",
+            "dev" : true,
             "description" : "Weather Vigilance by Meteo France",
             "height" : 2,
             "width" : 4,

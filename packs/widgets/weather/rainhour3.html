@@ -8,84 +8,60 @@
 }     
 </style>
 
-<dom-module id="dmw-weather-rainhour3" extends="dmw-widget">
-    <template>
+<dom-module id="dmw-weather-rainhour3">
+    <template id="extended-styles">
         <link rel="stylesheet" href="/widget/basic/css/common.css" shim-domshadow>
+        <link rel="stylesheet" href="/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css">
         <style type="text/css">
-            @import url("/widget/weather/weather-icons-master-2.0/css/weather-icons.min.css");
             :host {
                 height: 100%;
                 display: block;
             }
-            #title {
-                position: absolute;
+
+            #rainwidget {
+                text-align: center;
                 width: 100%;
-                height: 20%;
+            }
+
+            #raintitle {
                 font-size: 1.2em;
-                margin-left: 4px;
-             }
+                margin-top: 5px;
+                margin-left: 10px;
+            }
             #rainicon {
                 margin-left: 10px;
             }
-            .level {
-                display: inline-block;
-                height: 30%;
-                margin: 1px 1px 1px, 1px;
-                width: 24px;
-                opacity: 1;
-            }
-            #level0  { margin-top: 20px; margin-left: 3px; background: #E0E0D1; }
-            #level5  { background: #E0E0D1; }
-            #level10 { background: #E0E0D1; }
-            #level15 { background: #E0E0D1; }
-            #level20 { background: #E0E0D1; }
-            #level25 { background: #E0E0D1; }
-            #level30 { background: #E0E0D1; }
-            #level35 { background: #E0E0D1; }
-            #level40 { background: #E0E0D1; }
-            #level45 { background: #E0E0D1; }
-            #level50 { background: #E0E0D1; }
-            #level55 { background: #E0E0D1; }
-            #container {
-                margin-left: 3px;
-                width: 100%;
-            }
-            .heure {
+            .rainheure {
                 display: inline-block;
                 font-size: 12px;
                 font-weight: bold;
+                margin-top: 5px;
+                width: 7%;
+                text-align: center;
             }
-            #heure5  { 
-              position: absolute;
-              left: 14px;
-              top: 24px;
+
+            .rainlevel {
+                display: inline-block;
+                height: 30px;
+                width: 7%;
+                opacity: 1;
+                color: #E0E0D1;
+                border: 1px solid #E0E0D1;
             }
-            #heure15  { 
-              position: absolute;
-              left: 70px;
-              top: 24px;
-            }
-            #heure25  { 
-              position: absolute;
-              left: 126px;
-              top: 24px;
-            }
-            #heure35  { 
-              position: absolute;
-              left: 182px;
-              top: 24px;
-            }
-            #heure45  { 
-              position: absolute;
-              left: 238px;
-              top: 24px;
-            }
-            #heure55  { 
-              position: absolute;
-              left: 294px;
-              top: 24px;
-            }
-            .legendicon {
+            #rainlevel0  { background: #E0E0D1; }
+            #rainlevel5  { background: #E0E0D1; }
+            #rainlevel10 { background: #E0E0D1; }
+            #rainlevel15 { background: #E0E0D1; }
+            #rainlevel20 { background: #E0E0D1; }
+            #rainlevel25 { background: #E0E0D1; }
+            #rainlevel30 { background: #E0E0D1; }
+            #rainlevel35 { background: #E0E0D1; }
+            #rainlevel40 { background: #E0E0D1; }
+            #rainlevel45 { background: #E0E0D1; }
+            #rainlevel50 { background: #E0E0D1; }
+            #rainlevel55 { background: #E0E0D1; }
+
+            .rainlegendicon {
                 display: inline-block;
                 height: 10px;
                 width: 10px;
@@ -93,172 +69,262 @@
                 opacity: 1;
                 margin-left: 18px;
             }
-            #legend {
+            #rainlegend {
                 display: inline-block;
                 font-size: 12px;
                 margin-left: 3px;
             }
-            #icon4  { 
+            #raincolor4  {
+                background: #0020C2;
+            }
+            #raincolor3  {
                 background: #0094CE;
             }
-            #icon3  { 
-                background: #48BFEA;
-            }
-            #icon2  { 
+            #raincolor2  {
                 background: #AAE8FF;
             }
-            #icon1  { 
+            #raincolor1  {
                 background: #FFFFFF;
             }
-            #icon0  { 
-                background: #E0E0D1;
+            #raincolor0  {
+                background: #A4A4A4;
             }
-
         </style>
-        <shadow></shadow>
 
-        <dmw-sensor id='rainForecastLocation' sensorkey="rainForecastLocation" sensorvalue="{{rainForecastLocation_value}}"></dmw-sensor>
-        <dmw-sensor id='rainForecastDate' sensorkey="rainForecastDate" sensorvalue="{{rainForecastDate_value}}"></dmw-sensor>
+        <slot>
+            <dmw-sensor id='rainForecastLocation' sensorkey="rainForecastLocation" sensorvalue="{{rainForecastLocation_value}}"></dmw-sensor>
+            <dmw-sensor id='rainForecastDate' sensorkey="rainForecastDate" sensorvalue="{{rainForecastDate_value}}"></dmw-sensor>
+            <dmw-sensor id='rainForecastTxt' sensorkey="rainForecastTxt" sensorvalue="{{rainForecastTxt_value}}"></dmw-sensor>
         
-        <dmw-sensor id='rainLevel0mn' sensorkey="rainLevel0mn" sensorvalue="{{rainLevel0mn_value}}"></dmw-sensor>
-        <dmw-sensor id='rainLevel5mn' sensorkey="rainLevel5mn" sensorvalue="{{rainLevel5mn_value}}"></dmw-sensor>
-        <dmw-sensor id='rainLevel10mn' sensorkey="rainLevel10mn" sensorvalue="{{rainLevel10mn_value}}"></dmw-sensor>
-        <dmw-sensor id='rainLevel15mn' sensorkey="rainLevel15mn" sensorvalue="{{rainLevel15mn_value}}"></dmw-sensor>
-        <dmw-sensor id='rainLevel20mn' sensorkey="rainLevel20mn" sensorvalue="{{rainLevel20mn_value}}"></dmw-sensor>
-        <dmw-sensor id='rainLevel25mn' sensorkey="rainLevel25mn" sensorvalue="{{rainLevel25mn_value}}"></dmw-sensor>
-        <dmw-sensor id='rainLevel30mn' sensorkey="rainLevel30mn" sensorvalue="{{rainLevel30mn_value}}"></dmw-sensor>
-        <dmw-sensor id='rainLevel35mn' sensorkey="rainLevel35mn" sensorvalue="{{rainLevel35mn_value}}"></dmw-sensor>
-        <dmw-sensor id='rainLevel40mn' sensorkey="rainLevel40mn" sensorvalue="{{rainLevel40mn_value}}"></dmw-sensor>
-        <dmw-sensor id='rainLevel45mn' sensorkey="rainLevel45mn" sensorvalue="{{rainLevel45mn_value}}"></dmw-sensor>
-        <dmw-sensor id='rainLevel50mn' sensorkey="rainLevel50mn" sensorvalue="{{rainLevel50mn_value}}"></dmw-sensor>
-        <dmw-sensor id='rainLevel55mn' sensorkey="rainLevel55mn" sensorvalue="{{rainLevel55mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel0mn' sensorkey="rainLevel0mn" sensorvalue="{{rainLevel0mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel5mn' sensorkey="rainLevel5mn" sensorvalue="{{rainLevel5mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel10mn' sensorkey="rainLevel10mn" sensorvalue="{{rainLevel10mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel15mn' sensorkey="rainLevel15mn" sensorvalue="{{rainLevel15mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel20mn' sensorkey="rainLevel20mn" sensorvalue="{{rainLevel20mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel25mn' sensorkey="rainLevel25mn" sensorvalue="{{rainLevel25mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel30mn' sensorkey="rainLevel30mn" sensorvalue="{{rainLevel30mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel35mn' sensorkey="rainLevel35mn" sensorvalue="{{rainLevel35mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel40mn' sensorkey="rainLevel40mn" sensorvalue="{{rainLevel40mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel45mn' sensorkey="rainLevel45mn" sensorvalue="{{rainLevel45mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel50mn' sensorkey="rainLevel50mn" sensorvalue="{{rainLevel50mn_value}}"></dmw-sensor>
+            <dmw-sensor id='rainLevel55mn' sensorkey="rainLevel55mn" sensorvalue="{{rainLevel55mn_value}}"></dmw-sensor>
+        </slot>
 
-        <shadow></shadow>
-        
-        <div id="title"><span>{{ title }}</span><span id='rainicon'><i class="wi wi-showers"></i></span></div>
-        <div id="container">
-            <div class="heure" id="heure5">{{rainForecastHeure5}}</div>
-            <div class="heure" id="heure15">{{rainForecastHeure15}}</div>
-            <div class="heure" id="heure25">{{rainForecastHeure25}}</div>
-            <div class="heure" id="heure35">{{rainForecastHeure35}}</div>
-            <div class="heure" id="heure45">{{rainForecastHeure45}}</div>
-            <div class="heure" id="heure55">{{rainForecastHeure55}}</div>
-            <div class="heure" id="heure60"></div>
+        <div id="rainwidget">
+        <div id="raintitle"><span>{{ title }}</span><span id='rainicon'><i class="wi wi-showers"></i></span></div>
+        <div id="raincontainer">
+            <div class="rainheure" id="rainheure0">{{rainForecastHeure0}}</div>
+            <div class="rainheure" id="rainheure5"></div>
+            <div class="rainheure" id="rainheure10">{{rainForecastHeure10}}</div>
+            <div class="rainheure" id="rainheure15"></div>
+            <div class="rainheure" id="rainheure20">{{rainForecastHeure20}}</div>
+            <div class="rainheure" id="rainheure25"></div>
+            <div class="rainheure" id="rainheure30">{{rainForecastHeure30}}</div>
+            <div class="rainheure" id="rainheure35"></div>
+            <div class="rainheure" id="rainheure40">{{rainForecastHeure40}}</div>
+            <div class="rainheure" id="rainheure45"></div>
+            <div class="rainheure" id="rainheure50">{{rainForecastHeure50}}</div>
+            <div class="rainheure" id="rainheure55"></div>
         </div>
         
-        <div class="level" id="level0"></div>
-        <div class="level" id="level5"></div>
-        <div class="level" id="level10"></div>
-        <div class="level" id="level15"></div>
-        <div class="level" id="level20"></div>
-        <div class="level" id="level25"></div>
-        <div class="level" id="level30"></div>
-        <div class="level" id="level35"></div>
-        <div class="level" id="level40"></div>
-        <div class="level" id="level45"></div>
-        <div class="level" id="level50"></div>
-        <div class="level" id="level55"></div>
+        <div id="raincontainer">
+        <div class="rainlevel" id="rainlevel0"></div>
+        <div class="rainlevel" id="rainlevel5"></div>
+        <div class="rainlevel" id="rainlevel10"></div>
+        <div class="rainlevel" id="rainlevel15"></div>
+        <div class="rainlevel" id="rainlevel20"></div>
+        <div class="rainlevel" id="rainlevel25"></div>
+        <div class="rainlevel" id="rainlevel30"></div>
+        <div class="rainlevel" id="rainlevel35"></div>
+        <div class="rainlevel" id="rainlevel40"></div>
+        <div class="rainlevel" id="rainlevel45"></div>
+        <div class="rainlevel" id="rainlevel50"></div>
+        <div class="rainlevel" id="rainlevel55"></div>
+        </div>
         
-        <div class="legendicon" id="icon4"></div><div id="legend">forte</div>
-        <div class="legendicon" id="icon3"></div><div id="legend">modérée</div>
-        <div class="legendicon" id="icon2"></div><div id="legend">faible</div>
-        <div class="legendicon" id="icon1"></div><div id="legend">nulle</div>
-        <div class="legendicon" id="icon0"></div><div id="legend">n/a</div>
+        <div id="raincontainer">
+        <div class="rainlegendicon" id="raincolor4"></div><div id="rainlegend">forte</div>
+        <div class="rainlegendicon" id="raincolor3"></div><div id="rainlegend">modérée</div>
+        <div class="rainlegendicon" id="raincolor2"></div><div id="rainlegend">faible</div>
+        <div class="rainlegendicon" id="raincolor1"></div><div id="rainlegend">nulle</div>
+        <div class="rainlegendicon" id="raincolor0"></div><div id="rainlegend">n/a</div>
+        </div>
+
+        </div>
     </template>
     
     
     <script>
-                class Dmw extends DmwWidget {
-            static get is () { return 'dmw-weather-rainhour3',
+     (function () {
+        let memoizedTemplate;
+
+        class DmwWeatherRainhour3 extends DmwWidget {
+            static get is () { return 'dmw-weather-rainhour3';}
+            static get properties() {
+                return {
+                    rainForecastLocation_value: {
+                        notify: true,
+                        observer: 'rainForecastLocation_valueChanged'
+                    },
+                    rainForecastDate_value: {
+                        notify: true,
+                        observer: 'rainForecastDate_valueChanged'
+                    },
+                    rainLevel0mn_value: {
+                        notify: true,
+                        observer: 'rainLevel0mn_valueChanged'
+                    },
+                    rainLevel5mn_value: {
+                        notify: true,
+                        observer: 'rainLevel5mn_valueChanged'
+                    },
+                    rainLevel10mn_value: {
+                        notify: true,
+                        observer: 'rainLevel10mn_valueChanged'
+                    },
+                    rainLevel15mn_value: {
+                        notify: true,
+                        observer: 'rainLevel15mn_valueChanged'
+                    },
+                    rainLevel20mn_value: {
+                        notify: true,
+                        observer: 'rainLevel20mn_valueChanged'
+                    },
+                    rainLevel25mn_value: {
+                        notify: true,
+                        observer: 'rainLevel25mn_valueChanged'
+                    },
+                    rainLevel30mn_value: {
+                        notify: true,
+                        observer: 'rainLevel30mn_valueChanged'
+                    },
+                    rainLevel35mn_value: {
+                        notify: true,
+                        observer: 'rainLevel35mn_valueChanged'
+                    },
+                    rainLevel40mn_value: {
+                        notify: true,
+                        observer: 'rainLevel40mn_valueChanged'
+                    },
+                    rainLevel45mn_value: {
+                        notify: true,
+                        observer: 'rainLevel45mn_valueChanged'
+                    },
+                    rainLevel50mn_value: {
+                        notify: true,
+                        observer: 'rainLevel50mn_valueChanged'
+                    },
+                    rainLevel55mn_value: {
+                        notify: true,
+                        observer: 'rainLevel55mn_valueChanged'
+                    }
+                }
+            }
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
+
             connectedCallback() {
                 super.connectedCallback();
                 this.title = "";
-                this.rainColorValue = ["#E0E0D1", "#FFFFFF", "#AAE8FF", "#48BFEA", "#0094CE"] ;
-            },
+                this.rainColorValue = ["#A4A4A4", "#FFFFFF", "#AAE8FF", "#0094CE", "#0020C2"] ;
+            }
 
-            rainForecastLocation_valueChanged: function (newValue, oldValue) {
+            rainForecastLocation_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value ;
                 this.title = newValue ;
-            },
-            
-            rainForecastDate_valueChanged: function (newValue, oldValue) {
+            }
+
+            rainForecastDate_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value + ":00Z" ;             // Date is locale , but force date to UTC format: "2016-10-04T18:00:00Z"
-                dt = new Date(newValue);                                // to be compatible both with Firefox/Chrome !
-                tzo = dt.getTimezoneOffset() * 60000 ;                  // Timezone offset will be add after (negative value)
+                var dt = new Date(newValue);                            // to be compatible both with Firefox/Chrome !
+                var tzo = dt.getTimezoneOffset() * 60000 ;              // Timezone offset will be add after (negative value)
                 //console.error(newValue + " , " + dt + " , " + tzo);
                 //console.error("date+5: " + nextRainHour(dt,  5, tzo));
 
-                this.rainForecastHeure5  = nextRainHour(dt,  5, tzo) ; 
-                this.rainForecastHeure15 = nextRainHour(dt, 15, tzo) ; 
-                this.rainForecastHeure25 = nextRainHour(dt, 25, tzo) ; 
-                this.rainForecastHeure35 = nextRainHour(dt, 35, tzo) ; 
-                this.rainForecastHeure45 = nextRainHour(dt, 45, tzo) ; 
-                this.rainForecastHeure55 = nextRainHour(dt, 55, tzo) ; 
-            },
+                this.rainForecastHeure0  = nextRainHour(dt,  0, tzo) ;
+                this.rainForecastHeure10 = nextRainHour(dt, 10, tzo) ;
+                this.rainForecastHeure20 = nextRainHour(dt, 20, tzo) ;
+                this.rainForecastHeure30 = nextRainHour(dt, 30, tzo) ;
+                this.rainForecastHeure40 = nextRainHour(dt, 40, tzo) ;
+                this.rainForecastHeure50 = nextRainHour(dt, 50, tzo) ;
+            }
                 
-            rainLevel0mn_valueChanged: function (newValue, oldValue) {
+            rainLevel0mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level0.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel0.style.background = this.rainColorValue[newValue] ;
+            }
             
-            rainLevel5mn_valueChanged: function (newValue, oldValue) {
+            rainLevel5mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level5.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel5.style.background = this.rainColorValue[newValue] ;
+            }
 
-            rainLevel10mn_valueChanged: function (newValue, oldValue) {
+            rainLevel10mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level10.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel10.style.background = this.rainColorValue[newValue] ;
+            }
 
-            rainLevel15mn_valueChanged: function (newValue, oldValue) {
+            rainLevel15mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level15.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel15.style.background = this.rainColorValue[newValue] ;
+            }
 
-            rainLevel20mn_valueChanged: function (newValue, oldValue) {
+            rainLevel20mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level20.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel20.style.background = this.rainColorValue[newValue] ;
+            }
 
-            rainLevel25mn_valueChanged: function (newValue, oldValue) {
+            rainLevel25mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level25.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel25.style.background = this.rainColorValue[newValue] ;
+            }
 
-            rainLevel30mn_valueChanged: function (newValue, oldValue) {
+            rainLevel30mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level30.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel30.style.background = this.rainColorValue[newValue] ;
+            }
 
-            rainLevel35mn_valueChanged: function (newValue, oldValue) {
+            rainLevel35mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level35.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel35.style.background = this.rainColorValue[newValue] ;
+            }
 
-            rainLevel40mn_valueChanged: function (newValue, oldValue) {
+            rainLevel40mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level40.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel40.style.background = this.rainColorValue[newValue] ;
+            }
 
-            rainLevel45mn_valueChanged: function (newValue, oldValue) {
+            rainLevel45mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level45.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel45.style.background = this.rainColorValue[newValue] ;
+            }
 
-            rainLevel50mn_valueChanged: function (newValue, oldValue) {
+            rainLevel50mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level50.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel50.style.background = this.rainColorValue[newValue] ;
+            }
 
-            rainLevel55mn_valueChanged: function (newValue, oldValue) {
+            rainLevel55mn_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
-                this.$.level55.style.background = this.rainColorValue[newValue] ;
-            },
+                this.$.rainlevel55.style.background = this.rainColorValue[newValue] ;
+            }
 
-	    };
-    customElements.define(Dmw.is, Dmw);        
-
+        };
+        customElements.define(DmwWeatherRainhour3.is, DmwWeatherRainhour3);
         
         function nextRainHour(dt, mn, tzo) {
             nextdt = new Date(dt.getTime() + tzo + mn*60000) ;
@@ -269,6 +335,7 @@
         function padRainTimeStr(i) {
             return (i < 10) ? "0" + i : "" + i;
         }
+    })();
         
     </script>
 </dom-module>
