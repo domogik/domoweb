@@ -30,6 +30,12 @@
                     "description": "Automatically convert big value to K(x) / M(x) / G(x) / T(x)",
                     "type": "boolean",
                     "default": "False"
+                },
+                "precision" : {
+                    "name": "Number precision",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "1"
                 }
             },
             "sensors" : {
