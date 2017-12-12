@@ -67,6 +67,12 @@
                     "type": "boolean",
                     "default": "False"
                 },
+                "precision" : {
+                    "name": "Number precision",
+                    "description": "Set the numeric precision",
+                    "type": "number",
+                    "default": "1"
+                },
                 "color" : {
                     "name": "HighStock line graph color",
                     "description": "HighStock line graph color",

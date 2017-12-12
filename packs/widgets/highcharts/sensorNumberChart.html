@@ -40,13 +40,15 @@
                 position: absolute;
                 top:5px;
                 right: 5px;
-                font-size: calc(2em*var(--wscale-h));
+                /* font-size: calc(2em*var(--wscale-h)); */
+                font-size: calc(1em*var(--wscale-h)*var(--wscale-r));
             }
             #icongraph {
                 position: absolute;
                 bottom: 2px;
                 right: 5px;
-                font-size: calc(1.3em*var(--wscale-h));
+                /* font-size: calc(1.3em*var(--wscale-h)); */
+                font-size: calc(1em*var(--wscale-h)*var(--wscale-r));
 
             }
             #icongraphlink {
@@ -56,20 +58,20 @@
             #graph {
                 display: none;
                 position: fixed;
-                top: 50%;
-                left: 50%;
+                top: 10px;
+                left: 10px;
                 width: 750px;
                 min-height: 440px;
                 background-color: rgba(50, 50, 50, 0.5);
                 border: 6px solid rgba(50, 50, 50, 0.5) ;
-                margin-top: -220px;
-                margin-left: -375px;
+                /* margin-top: -220px; */
+                /* margin-left: -375px; */
                 z-index: 10;
             }
             #loadicon {
                 position:relative;
-                left:420px;
-                top:210px;
+                left:370px;
+                top:190px;
                 font-size: 3em;
                 color: white;
             }
@@ -86,7 +88,7 @@
         <div id="icongraph" on-click="displayGraph">
             <a id="icongraphlink" href="#"><i class="fa fa-area-chart"></i></a>
         </div>
-        <div id="graph" on-dblclick="hideGraph"><i id="loadicon" class="fa fa-spinner fa-pulse"><i id="loadicon" class="fa fa-spinner fa-pulse"></i></div>
+        <div id="graph" on-dblclick="hideGraph"><i id="loadicon" class="fa fa-spinner fa-pulse"></i></div>
 
     </template>
 
@@ -163,6 +165,9 @@
             // ------------------------------------------------------------------------------------
             sensorvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
+                if (!Number.isInteger(newValue)) {
+                    newValue = parseFloat(newValue).toFixed(this.options['precision']);
+                }
                 var unit = this.datatypes[this.$.primary.datatype_id]['unit'];
                 if (this.options['autoconvert']==1 && newValue > 0) {
                        var k = 1000;
@@ -185,17 +190,17 @@
             historyChanged(newValue, oldValue) {
                 //console.error("historyChanged: " + newValue);
                 this.data = [] ;
+                
                 for (var i = 0; i < newValue.length; i++) {
-                    let value = [] ;
-
+                    var value = [] ;                    
                     switch(this.periode) {
-                        case this.localize('Day'):         //  year            month           day             hour            minute        s  ms
+                        case this.localize("Day"):      //  year            month           day             hour            minute        s  ms
                             var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], newValue[i][5], 0, 0) ;
                             value[1] = newValue[i][6] ;
                             break;
-                        case this.localize('Week'):
-                        case this.localize('Month'):   // Month Per hours
-                            var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], 0, 0, 0) ;
+                        case this.localize("Week"):
+                        case this.localize("Month"):   // Month Per hours
+                            var dt = new Date(newValue[i][0], newValue[i][1] - 1, newValue[i][3], newValue[i][4], 0, 0, 0) ;  
                             value[1] = newValue[i][5] ;
                             break;
                     }
@@ -204,10 +209,13 @@
                     this.data.push(value)
                 }
                 //console.error("==> " + this.data) ;
-
+                
                 var self = this;                                // Important for rangeSelector buttons event !
                 var dataObject = {
                     rangeSelector: {
+                        buttonTheme: {
+                            width: 70
+                        },
                         buttons: [{
                             type: '',
                             count: 1,
@@ -228,28 +236,29 @@
                     },
                     subtitle: {
                         text: '<i>(' + this.periode + ')</i>'
-                    },
+                    },                        
                     xAxis: {
                         gridLineWidth: 1,
                         ordinal: false,
                         events: {
                             setExtremes: function(e) {
-                                if(typeof(e.rangeSelectorButton) !== 'undefined') {
-                                    mychart.setTitle({text: self.localize("Loading data") + "..."});
+                                if(typeof(e.rangeSelectorButton) !== 'undefined')
+                                {
+                                    console.error("Button " + e.rangeSelectorButton.text + " pressed");
+                                    mychart.setTitle({text: self.localize("Loading data") + " ..."});
                                     mychart.series[0].remove(true);
-                                    self.periode = e.rangeSelectorButton.text;
+                                    self.periode = e.rangeSelectorButton.text ;
                                     switch(self.periode) {
-                                        case self.localize('Day'):
+                                        case self.localize("Day"):
                                             self.$.primary.getCurrentDay() ;        // 'interval': 'minute'
                                             break;
-                                        case self.localize('Week'):
-                                            self.$.primary.getCurrentWeek() ;       // 'interval': 'hour'
+                                        case self.localize("Week"):
+                                             self.$.primary.getCurrentWeek() ;       // 'interval': 'hour'         
                                             break;
-                                        case self.localize('Month'):
-                                            //self.$.primary.getCurrentMonth() ;      // 'interval': 'day'
+                                        case self.localize("Month"):
                                             self.$.primary.getCurrentMonthPerHour() ; // 'interval': 'hour'
                                             break;
-                                    }
+                                    } 
                                 }
                             }
                         }
@@ -277,10 +286,10 @@
                     chart: {
                         renderTo: this.$.graph
                     }
-                };
+                }; 
+                
                 var mychart = new Highcharts.StockChart(dataObject);
-
-            }
+            }           
 
             // ------------------------------------------------------------------------------------
             displayGraph() {
