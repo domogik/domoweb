@@ -57,7 +57,7 @@
             }
         </style>
         <dmw-sensor id='camera' sensorkey="camera" sensorvalue="{{sensorvalue}}"></dmw-sensor>
-        <div id="camera" class="camera-normal"  on-click="{{zoom}}">
+        <div id="camera" class="camera-normal">
         <video controls="controls" src="{{url}}" id="motionjpeg" class="mjpeg-normal"></video>
         </div>
         <div id="cameralabel"><span>{{label}}</span></div>
@@ -114,6 +114,9 @@
                 // z-index for the zoom mode
                 this.initialZIndex = this.style.zIndex;
 
+
+                // bind
+                this.$.camera.addEventListener('click', this.zoom.bind(this));
             }
             optionsUpdated() {
                 if (this.options['cameraName']) {
