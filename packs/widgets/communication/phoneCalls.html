@@ -1,3 +1,4 @@
+<link rel="import" href="../../../static/libraries/bower_components/polymer/lib/elements/dom-repeat.html">
 <dom-module id="dmw-communication-phonecalls">
     <template id="extended-styles">
         <style type="text/css">
@@ -124,24 +125,24 @@
         <div id="icon_phone" on-click="displayHistory">
           <i class="fa fa-phone fa-4x"></i>
         </div>
-        <table id="list" class="hide"  on-click="{{hideHistory}}">
-          <template repeat="{{ call,idx in calls }}">
+        <table id="list" class="hide"  on-click="hideHistory">
+          <template is="dom-repeat" items="{{ calls }}">
             <tr>
               <td class="number">
-                <template bind if="{{call.blacklisted}}">
-                  <del>{{ call.who }}</del>
+                <template bind is="dom-if" if="{{item.blacklisted}}">
+                  <del>{{ item.who }}</del>
                 </template>
-                <template bind if="{{!call.blacklisted}}">
-                  <!-- <a class="callto" href="tel:{{call.number}}">{{ call.who }}</a> -->
-                  {{ call.who }}
+                <template bind is="dom-if" if="{{!item.blacklisted}}">
+                  <!-- <a class="callto" href="tel:{{item.number}}">{{ item.who }}</a> -->
+                  {{ item.who }}
                 </template>
               </td>
               <td class="details">
-                <span>{{call.date}}<span>
+                <span>{{item.date}}<span>
               </td>
               <td class="ban">
-                <template bind if="{{!call.blacklisted && blacklistCommand}}">
-                  <a on-click="{{doBlacklist}}" data-number="{{ call.number }}"><i class="fa fa-ban"></i></a>
+                <template bind is="dom-if" if="{{!item.blacklisted && blacklistCommand}}">
+                  <a on-click="{{doBlacklist}}" data-number="{{ item.number }}"><i class="fa fa-ban"></i></a>
                 </template>
               </td>
             </tr>
@@ -149,10 +150,10 @@
         </table>
         <div id="last" on-click="displayHistory">
           <div id="last_number">
-            <template if="{{last_call.blacklisted}}">
+            <template is="dom-if" if="{{last_call.blacklisted}}">
               <del>{{last_call.who}}</del>
             </template>
-            <template if="{{!last_call.blacklisted}}">
+            <template is="dom-if" if="{{!last_call.blacklisted}}">
               <!-- <a class="callto" href="tel:{{last_call.number}}">{{last_call.who}}</a> -->
               {{last_call.who}}
             </template>
@@ -260,8 +261,9 @@
                     this.blacklistCommand = true;
                 }
             }
+            name_valueChanged(newValue, oldValue) {
+            }
             callerid_valueChanged(newValue, oldValue) {
-                console.error("callerid_valueChanged");
                 // In this widget we don't process the newvalue from this function :
                 // we need (currently) to manually find if the 'name' sensor last value correponds to the
                 // 'callerid' sensor last value. In this function we got ONLY the last value and not the timestamp
@@ -273,7 +275,6 @@
                 this.first = false;
                 this.$.callerid.getLast(10);
                 if (this.$.name.isSet) {
-                    console.error("if (this.$.name.isSet)");
                     this.$.name.getLast(10);
                 }
                 if (this.$.blacklisted.isSet) {
@@ -281,7 +282,6 @@
                 }
             }
             callerid_historyChanged(newValue, oldValue) {
-                console.error("callerid_historyChanged");
                 this.calls = [];
                 this.last_call = null;
 
@@ -302,7 +302,6 @@
                 }
             }
             addCall(number, timestamp) {
-                console.error("addCall");
                 this.last_call = {
                         "who": number,
                         "number": number,

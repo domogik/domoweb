@@ -1,4 +1,5 @@
 <link rel="import" href="/libraries/bower_components/polymer/polymer.html">
+<link rel="import" href="/libraries/bower_components/polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="/components/sensor.html">
 <link rel="import" href="/components/command.html">
 <link rel="import" href="/libraries/bower_components/app-localize-behavior/app-localize-behavior.html">
@@ -8,62 +9,65 @@
 <link rel="import" href="/widget/basic/css/labelstyles.html">
 
 <dom-module id="dmw-widget">
-	<template>
+    <template>
         <style include="bootstrap-styles"></style>
         <style include="slate-font-awesome"></style>
         <style include="dmw-widget-label-styles"></style>
-		<style type="text/css">
-		:host {
-			height: 100%;
-			width: 100%;
-			display: block;
-			max-width:100%;
+        <style type="text/css">
+        :host(:focus) {
+            outline: 0px solid transparent;
+        }
+        :host {
+            height: 100%;
+            width: 100%;
+            display: block;
+            max-width:100%;
             --wscale-w: 1;
             --wscale-h: 1;
             --wscale-r: 1;
-			-webkit-touch-callout: none;
-			-webkit-user-select: none;
-			-khtml-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
             --sensor-notify-color-rgb: 51,255,51;
             --command-notify-color-rgb: 255,51,204;
-		}
-		#editOverlay {
-			color: #f0f0F0;
-			position: absolute;
-			background-color: rgba(0,0,0,0.6);
-			top: -1px;
-			left: -1px;
-			bottom: -1px;
-			right: -1px;
-			z-index: 9;
-			display: none;
-		    justify-content: center;
-		    align-items: center;
-            cursor:move;
-		}
-
-		#editOverlay.visible {
-			display: flex
-		}
-
-		#editOverlay button {
-			display: flex;
-		    justify-content: center;
-		    align-items: center;
-			background: #000000;
+        }
+        #editOverlay {
             color: #f0f0F0;
-			display: block;
-			width: 2em;
-			height: 2em;
-			border: 1px solid #f0f0F0;
-			-moz-border-radius: 1em;
-			-webkit-border-radius: 1em;
-			border-radius: 1em;
+            position: absolute;
+            background-color: rgba(0,0,0,0.6);
+            top: -1px;
+            left: -1px;
+            bottom: -1px;
+            right: -1px;
+            z-index: 9;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            cursor:move;
+        }
+
+        #editOverlay.visible {
+            display: flex
+        }
+
+        #editOverlay button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000000;
+            color: #f0f0F0;
+            display: block;
+            width: 2em;
+            height: 2em;
+            border: 1px solid #f0f0F0;
+            -moz-border-radius: 1em;
+            -webkit-border-radius: 1em;
+            border-radius: 1em;
             z-index: 15;
-		}
+        }
 
         #editOverlay > span:not([resize]) {
             flex: 1;
@@ -126,17 +130,17 @@
             cursor: ns-resize;
         }
 
-		#editOverlay button:hover,
-		#editOverlay button:focus {
-			background: #f0f0F0;
-			color: #000000;
-		}
-		#editOverlay .editWidget {
+        #editOverlay button:hover,
+        #editOverlay button:focus {
+            background: #f0f0F0;
+            color: #000000;
+        }
+        #editOverlay .editWidget {
             position: absolute;
             top: 5%;
             left: 5%;
         }
-		#editOverlay .removeWidget {
+        #editOverlay .removeWidget {
             position: absolute;
             bottom: 5%;
             right: 5%;
@@ -150,26 +154,26 @@
             display: inline-grid;
             background-color: black;
             padding: 6px;
-			-moz-border-radius: 1em;
-			-webkit-border-radius: 1em;
+            -moz-border-radius: 1em;
+            -webkit-border-radius: 1em;
             border-radius: 1em;
         }
         #editOverlay .info span{
             padding: 2px;
         }
-		#timeoutOverlay {
-			position: absolute;
-			top:50%;
-			display: none;
-			/*background: #99312C;*/
-			background-color: rgba(153, 49, 44, 0.85);
-			color: #ffffff;
-			z-index: 8;
-			width: 100%;
-			text-align: center;
-			line-height: 1.4em;
-			margin-top:-1.4em;
-		}
+        #timeoutOverlay {
+            position: absolute;
+            top:50%;
+            display: none;
+            /*background: #99312C;*/
+            background-color: rgba(153, 49, 44, 0.85);
+            color: #ffffff;
+            z-index: 8;
+            width: 100%;
+            text-align: center;
+            line-height: 1.4em;
+            margin-top:-1.4em;
+        }
 
         .pulse-sensor {
               border: none;
@@ -195,12 +199,12 @@
         @-webkit-keyframes cmdpulse {from {box-shadow: 0 0 0 30px rgba(var(--command-notify-color-rgb),0);}}
         @-moz-keyframes cmdpulse {from {box-shadow: 0 0 0 30px rgba(var(--command-notify-color-rgb),0);}}
         @-ms-keyframes cmdpulse {from {box-shadow: 0 0 0 30px rgba(var(--command-notify-color-rgb),0);}}
-        @keyframes cmdpulse {from {box-shadow: 0 0 0 30px rgba(var(--command-notify-color-rgb),0);}}		</style>
-		<web-socket id="socket"></web-socket>
-		<polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
-		<div id='labelprimary'>[[labelprimary]]</div>
-		<div id='labelsecondary'>[[labelsecondary]]</div>
-		<div id="editOverlay">
+        @keyframes cmdpulse {from {box-shadow: 0 0 0 30px rgba(var(--command-notify-color-rgb),0);}}        </style>
+        <web-socket id="socket"></web-socket>
+        <polymer-ajax id="ajax" method="POST" url="/configuration"></polymer-ajax>
+        <div id='labelprimary'>[[labelprimary]]</div>
+        <div id='labelsecondary'>[[labelsecondary]]</div>
+        <div id="editOverlay">
             <div class="buttons">
                 <button id="editWidget" on-click="editWidget" class="editWidget" aria-label="Edit"><i class="fa fa-cog" aria-hidden="true"></i></button>
                 <button id="removeWidget" on-click="removeWidget" class="removeWidget" aria-label="Remove"><i class="fa fa-times" aria-hidden="true"></i></button>
@@ -211,10 +215,10 @@
                     <span>{{localize("widget:max")}} : <span id="maxSize"></span></span>
                 </div>
             </paper-tooltip>
-		</div>
-		<div id="timeoutOverlay"></div>
-	</template>
-	<script>
+        </div>
+        <div id="timeoutOverlay"></div>
+    </template>
+    <script>
         class DmwWidget extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.GestureEventListeners(Polymer.Element)) {
             static get is () { return 'dmw-widget'; }
             static get properties() {
@@ -642,20 +646,20 @@
                 }
             }
         };
-	function createStyle(id, css) {
-		var existingstyle = document.querySelector('style#style-instance-'+id);
-		if (existingstyle) existingstyle.remove();
-		var style = document.createElement('style');
-		style.id = "style-instance-"+id;
-		style.type = "text/css";
-		// WebKit hack
-		if (style.styleSheet){
-			style.styleSheet.cssText = css;
-		} else {
-			style.appendChild(document.createTextNode(css));
-		}
-		document.head.appendChild(style);
-		return style;
+    function createStyle(id, css) {
+        var existingstyle = document.querySelector('style#style-instance-'+id);
+        if (existingstyle) existingstyle.remove();
+        var style = document.createElement('style');
+        style.id = "style-instance-"+id;
+        style.type = "text/css";
+        // WebKit hack
+        if (style.styleSheet){
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }
+        document.head.appendChild(style);
+        return style;
     };
     customElements.define(DmwWidget.is, DmwWidget);
     </script>
