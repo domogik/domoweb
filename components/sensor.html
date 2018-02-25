@@ -99,12 +99,19 @@
                 }
             }
             getLast(num) {
-                this.historyMode = 'last';
-                this.$.socket.send("sensor-getlast", {'caller': this.callback, 'id': this.sensorid, 'count': num});
+                if (!this.sensorreqhistory) {
+                    console.error("GetLast");
+                    this.historyMode = 'last';
+                    this.$.socket.send("sensor-getlast", {'caller': this.callback, 'id': this.sensorid, 'count': num});
+                    this.historyReqHandler();
+                }
             }
             getLastFrom(from) {
-                this.historyMode = 'last';
-                this.$.socket.send("sensor-getlast", {'caller': this.callback, 'id': this.sensorid, 'from': from});
+                if (!this.sensorreqhistory) {
+                    this.historyMode = 'last';
+                    this.$.socket.send("sensor-getlast", {'caller': this.callback, 'id': this.sensorid, 'from': from});
+                    this.historyReqHandler();
+                }
             }
             getCurrentDay() {
                 if (!this.sensorreqhistory) {

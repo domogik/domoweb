@@ -17,8 +17,8 @@
             "width" : 5,
             "min_height" : 2,
             "min_width" : 3,
-            "max_height" : 6,
-            "max_width" : 10,
+            "max_height" : 8,
+            "max_width" : 12,
             "options" : {
                 "cameraName" : {
                     "name": "Camera name",
@@ -53,8 +53,8 @@
             "width" : 5,
             "min_height" : 2,
             "min_width" : 3,
-            "max_height" : 6,
-            "max_width" : 10,
+            "max_height" : 8,
+            "max_width" : 12,
             "options" : {
                 "cameraName" : {
                     "name": "Camera name",

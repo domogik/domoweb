@@ -191,13 +191,25 @@
                         notify: true,
                         observer: 'callerid_valueChanged'
                     },
-                    name_history: {
+                    name_value: {
                         notify: true,
-                        observer: 'name_historyChanged'
+                        observer: 'nameChanged'
+                    },
+                    blacklisted_value: {
+                        notify: true,
+                        observer: 'blacklisted_valueChanged'
+                    },
+                    callerid_history: {
+                        notify: true,
+                        observer: 'callerid_historyChanged'
                     },
                     name_history: {
                         notify: true,
                         observer: 'name_historyChanged'
+                    },
+                    blacklisted_history: {
+                        notify: true,
+                        observer: 'blacklisted_historyChanged'
                     }
                 }
             }
@@ -249,6 +261,7 @@
                 }
             }
             callerid_valueChanged(newValue, oldValue) {
+                console.error("callerid_valueChanged");
                 // In this widget we don't process the newvalue from this function :
                 // we need (currently) to manually find if the 'name' sensor last value correponds to the
                 // 'callerid' sensor last value. In this function we got ONLY the last value and not the timestamp
@@ -260,6 +273,7 @@
                 this.first = false;
                 this.$.callerid.getLast(10);
                 if (this.$.name.isSet) {
+                    console.error("if (this.$.name.isSet)");
                     this.$.name.getLast(10);
                 }
                 if (this.$.blacklisted.isSet) {
@@ -267,6 +281,7 @@
                 }
             }
             callerid_historyChanged(newValue, oldValue) {
+                console.error("callerid_historyChanged");
                 this.calls = [];
                 this.last_call = null;
 
@@ -287,6 +302,7 @@
                 }
             }
             addCall(number, timestamp) {
+                console.error("addCall");
                 this.last_call = {
                         "who": number,
                         "number": number,
