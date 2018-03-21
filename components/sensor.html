@@ -113,12 +113,12 @@
                     this.historyReqHandler();
                 }
             }
-            getCurrentDay() {
+            getCurrentDay(days=1, interval='minute', selector='avg') {
                 if (!this.sensorreqhistory) {
                     this.historyMode = 'day';
-                    var from = moment().subtract(1, 'days').unix();
+                    var from = moment().subtract(days, 'days').unix();
                     var to = moment().unix();
-                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'minute'});
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': interval});
                     this.historyReqHandler();
                 };
             }
@@ -131,12 +131,12 @@
                     this.historyReqHandler();
                 };
             }
-            getCurrentWeek() {
+            getCurrentWeek(weeks=1, interval='hour', selector='avg') {
                 if (!this.sensorreqhistory) {
                     this.historyMode = 'week';
-                    var from = moment().subtract(1, 'weeks').startOf('day').unix();
+                    var from = moment().subtract(weeks, 'weeks').startOf('day').unix();
                     var to = moment().unix();
-                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': 'hour'});
+                    this.$.socket.send("sensor-gethistory", {'caller': this.callback, 'id': this.sensorid, 'from': from, 'to': to, 'interval': interval});
                     this.historyReqHandler();
                 };
             }

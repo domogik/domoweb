@@ -52,7 +52,7 @@
         "lines": {
             "name" : "Lines chart",
             "height" : 3,
-            "width" : 4,
+            "width" : 6,
             "min_height" : 2,
             "min_width" : 4,
             "max_height" : 6,
@@ -77,6 +77,58 @@
                     "type": "number",
                     "default": null,
                     "required": false
+                },
+                "dateMode" : {
+                    "name": "Chart mode",
+                    "description": "Set the chart mode plot",
+                    "type": "choice",
+                    "default": "lastWeek",
+                    "required": false,
+                    "choices": {
+                        "lastHour": "Current hour(s)",
+                        "lastDay": "Current day(s)",
+                        "lastWeek": "Current week(s)",
+                        "lastMonth": "Current month(s)",
+                        "day": "Specific day(s)",
+                        "week": "Specific week(s)",
+                        "month": "Specific month(s)",
+                        "year": "Specific year(s)",
+                        "fromto": "From to date"
+                    }
+                },
+                "currentperiod" : {
+                    "name": "Duration",
+                    "description": "Set duration from current (in hour, day, week or month)",
+                    "type": "number",
+                    "default": 1,
+                    "required": false
+                },
+                "interval" : {
+                    "name": "Chart interval",
+                    "description": "Set the chart interval value",
+                    "type": "choice",
+                    "default": "hour",
+                    "required": false,
+                    "choices": {
+                        "minute": "Minute",
+                        "hour": "Hour",
+                        "week": "Week",
+                        "month": "Month",
+                        "year": "Year"
+                    }
+                },
+                "selector" : {
+                    "name": "Chart function",
+                    "description": "Set the chart math function on interval",
+                    "type": "choice",
+                    "default": "avg",
+                    "required": false,
+                    "choices": {
+                        "min": "Minimum value",
+                        "max": "Maximum value",
+                        "avg": "Average of values",
+                        "sum": "Sum of values"
+                    }
                 }
             },
             "sensors" : {

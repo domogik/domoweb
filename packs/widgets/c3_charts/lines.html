@@ -1,7 +1,9 @@
+<link rel="import" href="/libraries/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/libraries/bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../common/config-datetime-dialog.html">
+
 <dom-module id="dmw-c3_charts-lines">
     <template id="extended-styles">
-        <link rel="import" href="/libraries/polymer/paper-dialog.html">
-        <link rel="stylesheet" href="/widget/c3_charts/css/common.css" shim-domshadow>
         <link rel="stylesheet" href="/widget/c3_charts/css/c3.min.css" shim-domshadow>
         <style type="text/css" is="dmw-c3-charts-lines">
             :host {
@@ -9,13 +11,21 @@
             }
             #container {
                 position: absolute;
-                height: 92%;
+                height: 100%;
                 width: 100%;
+                top: 0px;
+            }
+            #btconfig {
+                min-width: 25px;
+                position: absolute;
+                left: 0px;
+                bottom: 5px;
             }
             #legend {
                 position: absolute;
                 bottom: 0px;
                 width: 100%;
+                margin-left: 25px;
                 font-size: 1.3em;
                 text-align: center;
             }
@@ -23,6 +33,10 @@
                 height: 98%;
                 width: 100%;
             }
+            paper-button {
+                max-height: 30px;
+            }
+
 /* colors */
 #chart .c3-legend-item text {
 /* TODO : dynamic update !!!! */
@@ -59,6 +73,16 @@
 #chart .c3-axis-x .tick {
    display: none;
 }
+
+/* tooltip */
+#chart .c3-tooltip {
+    opacity: 0.7;
+}
+
+#chart .c3-tooltip tr {
+    color: black;
+}
+
 /* running process */
 .exclusive-process {
     position: absolute;
@@ -92,50 +116,17 @@
     100% { transform: rotate(360deg); }
 }
         </style>
-	    <dmw-sensor id='series0' sensorkey="series-0" sensorvalue="{{sensorvalue0}}" sensorhistory="{{history0}}"></dmw-sensor>
-	    <dmw-sensor id='series1' sensorkey="series-1" sensorvalue="{{sensorvalue1}}" sensorhistory="{{history1}}"></dmw-sensor>
-	    <dmw-sensor id='series2' sensorkey="series-2" sensorvalue="{{sensorvalue2}}" sensorhistory="{{history2}}"></dmw-sensor>
-	    <dmw-sensor id='series3' sensorkey="series-3" sensorvalue="{{sensorvalue3}}" sensorhistory="{{history3}}"></dmw-sensor>
-	    <dmw-sensor id='series4' sensorkey="series-4" sensorvalue="{{sensorvalue4}}" sensorhistory="{{history4}}"></dmw-sensor>
-        <shadow></shadow>
+        <slot>
+            <dmw-sensor id='series0' sensorkey="series-0" sensorvalue="{{sensorvalue0}}" sensorhistory="{{history0}}"></dmw-sensor>
+            <dmw-sensor id='series1' sensorkey="series-1" sensorvalue="{{sensorvalue1}}" sensorhistory="{{history1}}"></dmw-sensor>
+            <dmw-sensor id='series2' sensorkey="series-2" sensorvalue="{{sensorvalue2}}" sensorhistory="{{history2}}"></dmw-sensor>
+            <dmw-sensor id='series3' sensorkey="series-3" sensorvalue="{{sensorvalue3}}" sensorhistory="{{history3}}"></dmw-sensor>
+            <dmw-sensor id='series4' sensorkey="series-4" sensorvalue="{{sensorvalue4}}" sensorhistory="{{history4}}"></dmw-sensor>
+        </slot>
         <div>
             <div id="loadingData" class="exclusive-process">
                <div class="loader"></div>
             </div>
-            <paper-button raised onclick="configCurves.open()">
-                <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
-            </paper-button>
-            <paper-dialog id="configCurves" hidden>
-                <div class='panel panel-default'>
-                    <div class='panel-heading text-center'>
-                        <h3 style='margin-top: 5px'><span class='label label-info' id='cronTabExp'>Titre panel</span></h3>
-                    </div>
-                    <div class='panel-body'>
-                        <p>Do you want to save changes you made to document before closing?</p>
-                        <p class="text-warning"><small>If you don't save, your changes will be lost.</small></p>
-                        <div class="dropdown">
-                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                <li><a href="#" title="min">min</a></li>
-                                <li><a href="#" title="max">max</a></li>
-                                <li><a href="#" title="avg">avg</a></li>
-                                <li role="separator" class="divider"></li>
-                                <li><a href="#" title="sum">sum</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="panel-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary">Close</button>
-                    </div>
-                </div>
-            </paper-dialog>
-            <button class="btn btn-default" id="day" on-click="{{selectDay}}">Day</button>
-            <button class="btn btn-default" id="week" on-click="{{selectWeek}}" style="background:#58ACFA;">Week</button>
-            from <input type="date" id="daystart" style="width: 125px;" on-change="{{selectDayStart}}"> to
-            <input type="date" id="dayend" style="width: 125px;">
             <div id='container'>
                 <div id='chart'>
                 </div>
@@ -143,6 +134,11 @@
                 {{ legend }}
                 </div>
             </div>
+            <paper-button id="btconfig" raised on-click="openconfig">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+            </paper-button>
+            <config-datetime-dialog id="configCurves" bindvalue={{handleRange}}>
+            </config-datetime-dialog>
         </div>
     </template>
     <script src="/widget/c3_charts/js/d3.v3.min.js" charset="utf-8"></script>
@@ -220,7 +216,7 @@
                 this.series =  {0:false,1:false,2:false,3:false,4:false};
                 this.data = {1:[],2:[],3:[],4:[],5:[]};
                 this.names = {0:'',1:'',2:'',3:'',4:''};
-                this.range = {"mode": "lastWeek", "interval": "hour"};
+                this.range = {"mode": "lastWeek", "duration": 1,"interval": "hour", "selector": "avg", "from": null, "to": null};
             }
             draw() {
                 // color
@@ -250,9 +246,9 @@
                 this.xlines = [];
                 var fx = '%d/%m';
                 var startDate = new Date(this.x[1]);
-                this.$.daystart.value = new Date(this.x[1]).toISOString().split('T')[0];
+             //   this.$.daystart.value = new Date(this.x[1]).toISOString().split('T')[0];
                 var endDate = new Date(this.x[this.x.length-1]);
-                this.$.dayend.value = new Date(this.x[this.x.length-1]).toISOString().split('T')[0];
+             //   this.$.dayend.value = new Date(this.x[this.x.length-1]).toISOString().split('T')[0];
                 switch (this.range.mode) {
                     case "lastDay" :
                         fx = '%d/%m %H:%M';
@@ -394,7 +390,11 @@
                     this.$.labelprimary.style.visibility = "visible";
                     this.$.labelsecondary.style.visibility = "visible";
                 }
-                //this.draw();
+                this.range.mode = this.options['dateMode']
+                this.range.duration = this.options['currentperiod']
+                this.range.interval = this.options['interval']
+                this.range.selector = this.options['selector']
+                this.$.configCurves.range = this.range;
             }
             sensorsUpdated() {
                 if (this.$.series0.isSet) {this.series[0] = this.$.series0;};
@@ -460,36 +460,59 @@
                 this.data[series_num+1] = values.serie;
                 this.draw();
             }
-            editConfig() {
-                $(this.$.configCurves).modal('show');
+            handleRange(range, toSave) {
+                switch (range.mode) {
+                    case "lastDay" :
+                        this.range = range;
+                        this.dayMode();
+                        break;
+                    case "lastWeek" :
+                        this.range = range;
+                        this.weekMode();
+                        break;
+                }
+                if (toSave) {
+                    this.options['dateMode'] = this.range.mode;
+                    this.options['currentperiod']= this.range.duration;
+                    this.options['interval'] = this.range.interval;
+                    this.options['selector'] = this.range.selector;
+                    var urljson = "";
+                    var keys = ['dateMode', 'currentperiod', 'interval', 'selector'];
+                    for(var i=0; i <keys.length; i++){
+                        urljson += encodeURIComponent("optionparam_"+keys[i]) + "=" + encodeURIComponent(this.options[keys[i]]);
+                        if (i < (keys.length-1)) urljson+="&";
+                    }
+                    this.$.ajax.setAttribute('body', urljson);
+                    this.$.ajax.setAttribute('method', 'POST');
+                    this.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + this.instanceid + '"}');
+                    this.$.ajax.go();
+                }
             }
-            selectDay() {
-                if (this.range.mode != "lastDay") {
-                    this.range = {"mode": "lastDay", "interval": "minute"};
-                    this.$.week.style.backgroundColor = "";
+            dayMode() {
+                if (this.range.mode == "lastDay") {
+                /**    this.$.week.style.backgroundColor = "";
                     this.$.daystart.style.backgroundColor = "";
                     this.$.dayend.style.backgroundColor = "";
-                    this.$.day.style.backgroundColor = "#58ACFA";
+                    this.$.day.style.backgroundColor = "#58ACFA";**/
                     this.$.loadingData.style.visibility = "visible";
                     this.data = {1:[],2:[],3:[],4:[],5:[]};
                     this.x = [];
                     for (var s in this.series) {
-                        if (this.series[s]) { this.series[s].getCurrentDay(); };
-                    };
-                };
+                        if (this.series[s]) { this.series[s].getCurrentDay(this.range.days, this.range.interval, this.range.selector); };
+                    }
+                }
             }
-            selectWeek() {
-                if (this.range.mode != "lastWeek") {
-                    this.range = {"mode": "lastWeek", "interval": "hour"};
-                    this.$.day.style.backgroundColor = "";
+            weekMode() {
+                if (this.range.mode == "lastWeek") {
+           /**         this.$.day.style.backgroundColor = "";
                     this.$.daystart.style.backgroundColor = "";
                     this.$.dayend.style.backgroundColor = "";
-                    this.$.week.style.backgroundColor = "#58ACFA";
+                    this.$.week.style.backgroundColor = "#58ACFA"; **/
                     this.$.loadingData.style.visibility = "visible";
                     this.data = {1:[],2:[],3:[],4:[],5:[]};
                     this.x = [];
                     for (var s in this.series) {
-                        if (this.series[s]) { this.series[s].getCurrentWeek(); };
+                        if (this.series[s]) { this.series[s].getCurrentWeek(this.range.weeks, this.range.interval, this.range.selector); };
                     };
                 };
             }
@@ -514,6 +537,9 @@
                 for (var s in this.series) {
                     if (this.series[s]) { this.series[s].getFromToDay(this.range.start,this.range.end, this.range.interval) };
                 };
+            }
+            openconfig() {
+                this.$.configCurves.open();
             }
         };
         function convert(history, range, series_num, interval) {
