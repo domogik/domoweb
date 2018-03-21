@@ -1,14 +1,10 @@
 DMW.main.menuConfigure = document.getElementById('menuConfigure');
-DMW.main.menuWidgets = document.getElementById('menuWidgets');
-DMW.main.panelConfigure = document.getElementById('panelConfigure');
-DMW.main.main = document.querySelector('main');
 DMW.main.section = document.getElementById('currentsection');
 DMW.main.socket = document.getElementById('socket');
 DMW.main.layout = document.getElementById('grid-layout');
 DMW.main.modalOverlay = document.getElementById('modal-overlay');
 DMW.main.ajax = document.getElementById('ajax');
-DMW.main.menu = document.getElementById('main-menu');
-DMW.main.navigation = document.getElementById('sections-tree');
+DMW.menus = document.getElementById('menus');
 
 NodeList.prototype.forEach = Array.prototype.forEach;
 HTMLCollection.prototype.forEach = Array.prototype.forEach; // Because of https://bugzilla.mozilla.org/show_bug.cgi?id=14869
@@ -52,7 +48,7 @@ function sectionChanged(e) {
             if (!instance.width) {instance.width = instance.widget.width; }
 			DMW.main.layout.appendInstance(node, instance);
 		}
-        activateCornerMenu();
+        DMW.menus.activateCorner();
         $("#loading").fadeOut(200);
 	}
 }
@@ -63,10 +59,8 @@ function setSectionStyle() {
 	} else {
 		DMW.background.setGradient(DMW.main.section.params['SectionL0Hue'], DMW.main.section.params['SectionL0Saturation'], DMW.main.section.params['SectionL0Lightness'], DMW.main.section.params['SectionL1Hue'], DMW.main.section.params['SectionL1Saturation'], DMW.main.section.params['SectionL1Lightness'], DMW.main.section.params['SectionL2Hue'], DMW.main.section.params['SectionL2Saturation'], DMW.main.section.params['SectionL2Lightness'], DMW.main.section.params['SectionL3Hue'], DMW.main.section.params['SectionL3Saturation'], DMW.main.section.params['SectionL3Lightness']);
 	}
-	if ('SectionBackgroundImage' in DMW.main.section.params) {
+	if (('SectionBackgroundImage' in DMW.main.section.params) && (DMW.main.section.params['SectionBackgroundImage']!='none')){
 		DMW.background.setImage(DMW.main.section.params['SectionBackgroundImage'], DMW.main.section.params['SectionBackgroundPosition'], DMW.main.section.params['SectionBackgroundRepeat'], DMW.main.section.params['SectionBackgroundSize'], DMW.main.section.params['SectionBackgroundOpacity']);
-	} else {
-		DMW.background.setImage('none', null, null, null, null);
 	}
 
 	var ss = document.getElementById('sectionstyle');

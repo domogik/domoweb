@@ -1,8 +1,7 @@
 DMW.background = DMW.background || {};
 
 DMW.background.setImage = function (image, position, repeat, size, opacity) {
-	var ss = document.getElementById('sectionstyle');
-	var body = ss.sheet.cssRules[0];
+	var body = document.querySelector('body');
 	body.style.backgroundAttachment = 'fixed';
 	if (image == 'none') {
 		body.style.backgroundImage = "none";

@@ -353,7 +353,7 @@ def install_dependencies():
         'simplejson >= 1.9.2',
         'WTForms >= 2.0',
         'WTForms-Components',
-        'pillow < 3.0.0',
+        'pillow < 4.0.0',
         'pyzmq'
     ])
 
