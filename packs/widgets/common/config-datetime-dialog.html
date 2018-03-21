@@ -1,0 +1,292 @@
+<link rel="import" href="/libraries/bower_components/polymer/polymer.html">
+<link rel="import" href="/libraries/bower_components/app-localize-behavior/app-localize-behavior.html">
+<link rel="import" href="/libraries/bower_components/bootstrap-styles/bootstrap-styles.html">
+<link rel="import" href="/libraries/bower_components/slate-font-awesome/slate-font-awesome.html">
+<link rel="import" href="/libraries/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/libraries/bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="/libraries/bower_components/datetime-picker/date-picker.html">
+<link rel="import" href="/libraries/bower_components/datetime-picker/datetime-picker.html">
+
+<dom-module id="config-datetime-dialog">
+    <template>
+        <style include="bootstrap-styles"></style>
+        <style include="slate-font-awesome"></style>
+        <style type="text/css" is="config-datetime-dialog">
+            :host {
+            }
+            #container {
+                position: absolute;
+                height: 100%;
+                width: 100%;
+                top: 0px;
+            }
+            paper-button {
+                max-height: 30px;
+            }
+        </style>
+            <paper-dialog id="dialogbox" on-iron-overlay-closed="_returnValue">
+                <div class='panel panel-default'>
+                    <div class='panel-heading text-center'>
+                        <h4 style='margin-top: 5px'>{{localize('Configure chart')}}</h4>
+                    </div>
+                    <div class='panel-body'>
+                        <p class="text-warning text-center"><small>{{localize("If you don't save your changes will be lost")}}.</small></p>
+                        <form>
+                            <div class="input-group text-center">
+                                <label for="datemode">{{localize('Select display mode')}} :</label>
+                                <select class="form-control" id="datemode" on-change="changeDateMode">
+                                    <option value="lastHour">{{localize('Current hour(s)')}}</option>
+                                    <option value="lastDay">{{localize('Current day(s)')}}</option>
+                                    <option value="lastWeek" selected>{{localize('Current week(s)')}}</option>
+                                    <option value="lastMonth">{{localize('Current month(s)')}}</option>
+                                    <option value="time">{{localize('Time')}}</option>
+                                    <option value="day">{{localize('Day')}}</option>
+                                    <option value="week">{{localize('Week')}}</option>
+                                    <option value="month">{{localize('Month')}}</option>
+                                    <option value="year">{{localize('Year')}}</option>
+                                    <option value="fromto">{{localize('From date to date')}}</option>
+                                </select>
+                            </div>
+                        </form>
+                        <div class="well">
+                            <form id="formlastHour" class="specificform">
+                                <div class="input-group">
+                                    <label for="lastHour">{{localize('Duration')}} :</label>
+                                    <div class="input-group">
+                                        <input type="number" id="lastHour" class="form-control" min="1" max="23">
+                                        <div class="input-group-addon">{{localize('Hour(s)')}}</div>
+                                    </div>
+                                    <span>{{localize('Minute interval')}}</span>
+                                </div>
+                            </form>
+                            <form id="formlastDay" class="specificform">
+                                <div class="input-group">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <label for="lastDay">{{localize('Duration')}} :</label>
+                                            <div class="input-group">
+                                                <input type="number" id="lastDay" class="form-control" min="1" max="6">
+                                                <div class="input-group-addon">{{localize('Day(s)')}}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <label for="lastDayinterval">{{localize('Interval')}} :</label>
+                                            <select class="form-control" id="lastDayinterval">
+                                                <option value="minute" selected>{{localize('Every minutes')}}</option>
+                                                <option value="hour">{{localize('Every hours')}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                        </div>
+                                        <div class="col-md-7">
+                                            <label for="lastDayselector">{{localize('Selector')}} :</label>
+                                            <select class="form-control" id="lastDayselector">
+                                                <option value="min" selected>{{ localize('Min value')}}</option>
+                                                <option value="max">{{localize('Max value')}}</option>
+                                                <option value="avg">{{localize('Average value')}}</option>
+                                                <option value="sum">{{localize('Sum value')}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <form id="formlastWeek" class="specificform">
+                                <div class="input-group">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <label for="lastWeek">{{localize('Duration')}} :</label>
+                                            <div class="input-group">
+                                                <input type="number" id="lastWeek" class="form-control" min="1" max="3">
+                                                <div class="input-group-addon">{{localize('Week(s)')}}</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <label for="lastWeekinterval">{{localize('Interval')}} :</label>
+                                            <select class="form-control" id="lastWeekinterval">
+                                                <option value="minute" selected>{{ localize('Every minutes')}}</option>
+                                                <option value="hour">{{localize('Every hours')}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                        </div>
+                                        <div class="col-md-7">
+                                            <label for="lastWeekselector">{{localize('Selector')}} :</label>
+                                            <select class="form-control" id="lastWeekselector">
+                                                <option value="min" selected>{{ localize('Min value')}}</option>
+                                                <option value="max">{{localize('Max value')}}</option>
+                                                <option value="avg">{{localize('Average value')}}</option>
+                                                <option value="sum">{{localize('Sum value')}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                            </form>
+                            <form id="formtime" class="specificform">
+                                <div class="form-group">
+                                    <label for="time">Select time :</label>
+                                    <input type="datetime-local" id="time">
+                                </div>
+                            </form>
+                            <form id="formweek" class="specificform">
+                                <div class="form-group">
+                                    <label for="week">{{localize('Week')}} :</label>
+                                    <input type="week" id="week">
+                                    <date-picker clamp="hours" value="{{value}}"></date-picker>
+                                </div>
+                            </form>
+                            <form id="formmonth" class="specificform">
+                                <div class="form-group">
+                                    <label for="month">{{localize('Month')}} :</label>
+                                    <input type="month" id="month">
+                                </div>
+                            </form>
+                            <form id="formyear" class="specificform">
+                                <div class="form-group">
+                                    <label for="month">{{localize('Year')}} :</label>
+                                    <input type="year" id="year">
+                                </div>
+                            </form>
+                            <form id="formfromto" class="specificform">
+                                <div class="form-group">
+                                    <label for="daystart">From :</label>
+                                    <datetime-picker id="daystart" value="{{value}}" on-change="selectDayStart"></datetime-picker>
+                                    <label for="dayend">To :</label>
+                                    <datetime-picker id="dayend" value="{{value}}"></datetime-picker>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <paper-button raised dialog-dismiss>{{localize('Cancel')}}</paper-button>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <paper-button raised dialog-confirm autofocus>{{localize('OK')}}</paper-button>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <paper-button raised dialog-confirm on-click="_setsave">{{localize('Save')}}</paper-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </paper-dialog>
+    </template>
+    <script>
+
+        class ConfigDateTimeDialog extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
+            static get is () { return 'config-datetime-dialog'; }
+            static get properties() {
+                return {
+                    /* Overriden from AppLocalizeBehavior */
+                    language: {
+                        value: navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage,
+                        type: String
+                    },
+                    bindvalue: {
+                        notify: true
+                    },
+                    range: {
+                        notify: true,
+                        observer: "rangevalueChanged"
+                    }
+                }
+            }
+            constructor() {
+                super();
+                // For AppLocalizeBehavior : if the translation does not exist retourn the key
+                this.useKeyIfMissing = true;
+                this.loadResources(this.resolveUrl('locales/'+this.language+'/translation.json'), this.language, true);
+                this.toSave = false;
+            }
+            connectedCallback() {
+            }
+            rangevalueChanged(newValue, oldValue) {
+                if ('mode' in newValue) {
+                    this.$.datemode.value = this.range.mode;
+                    this.$.lastHour.value = this.range.duration;
+                    this.$.lastDay.value = this.range.duration;
+                    this.$.lastWeek.value = this.range.duration;
+                 /**    this.range.interval = this.options['interval']
+                    this.range.selector = this.options['selector'] **/
+                }
+            }
+            changeDateMode() {
+                this.shadowRoot.querySelectorAll(".specificform ").forEach(function(form) {
+                    form.setAttribute('hidden', true);
+                });
+                this.shadowRoot.querySelector("#form"+this.$.datemode.value).removeAttribute('hidden');
+                this.$.dialogbox.center()
+            }
+            _setsave(e) {
+                this.toSave = true;
+            }
+            _returnValue(e) {
+                if (e.detail.confirmed) {
+                    let datas = {};
+                    switch (this.$.datemode.value) {
+                        case "lastDay" :
+                            datas['mode'] = "lastDay";
+                            datas['duration'] = this.$.lastDay.value;
+                            datas['interval'] = this.$.lastDayinterval.value;
+                            datas['selector'] = this.$.lastDayselector.value;
+                            break;
+                        case "lastWeek" :
+                            datas['mode'] = "lastWeek";
+                            datas['duration'] = this.$.lastWeek.value;
+                            datas['interval'] = this.$.lastWeekinterval.value;
+                            datas['selector'] = this.$.lastWeekselector.value;
+                            break;
+                    }
+                    if (datas) this.bindvalue.call(this.offsetParent, datas, this.toSave);
+                    this.toSave = false;
+                }
+            }
+            selectWeek() {
+                if (this.range.mode != "lastWeek") {
+                    this.range = {"mode": "lastWeek", "interval": "hour"};
+                    this.$.day.style.backgroundColor = "";
+                    this.$.daystart.style.backgroundColor = "";
+                    this.$.dayend.style.backgroundColor = "";
+                    this.$.week.style.backgroundColor = "#58ACFA";
+                    this.$.loadingData.style.visibility = "visible";
+                    this.data = {1:[],2:[],3:[],4:[],5:[]};
+                    this.x = [];
+                    for (var s in this.series) {
+                        if (this.series[s]) { this.series[s].getCurrentWeek(); };
+                    }
+                }
+            }
+            selectDayStart() {
+                this.range = {"mode": "lastFromToDay","start": this.$.daystart.value+" 00:00", "end": this.$.dayend.value+" 23:59", "interval": "hour", "selector": "avg", "factor": 2};
+                this.$.day.style.backgroundColor = "";
+                this.$.week.style.backgroundColor = "";
+                this.$.daystart.style.backgroundColor = "#58ACFA";
+                this.$.dayend.style.backgroundColor = "#58ACFA";
+                this.$.loadingData.style.visibility = "visible";
+                this.data = {1:[],2:[],3:[],4:[],5:[]};
+                this.x = [];
+                var duration = moment.duration(moment(this.range.end).diff(this.range.start)),
+                    days = duration.asDays(),
+                    weeks = duration.asWeeks(),
+                    months = duration.asMonths(),
+                    years = duration.asYears();
+                if (days <= 3) {this.range.interval = 'minute';
+                } else if (days <= 30) {this.range.interval = 'hour';
+                } else if (months <= 3) {this.range.interval = 'day';
+                };
+                for (var s in this.series) {
+                    if (this.series[s]) { this.series[s].getFromToDay(this.range.start,this.range.end, this.range.interval) };
+                };
+            }
+            open() {
+                this.changeDateMode();
+                this.$.dialogbox.open();
+            }
+        };
+        customElements.define(ConfigDateTimeDialog.is, ConfigDateTimeDialog);
+    </script>
+</dom-module>

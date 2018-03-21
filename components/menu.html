@@ -1,0 +1,570 @@
+<link rel="import" href="/libraries/bower_components/polymer/polymer.html">
+<link rel="import" href="/libraries/bower_components/app-localize-behavior/app-localize-behavior.html">
+<link rel="import" href="/libraries/bower_components/bootstrap-styles/bootstrap-styles.html">
+<link rel="import" href="/libraries/bower_components/slate-font-awesome/slate-font-awesome.html">
+<link rel="import" href="/css/menuStyles.html">
+<link rel="import" href="/css/navigationStyles.html">
+
+<dom-module id="dmw-menu">
+  <template>
+    <style include="dmw-menu-styles"></style>
+    <style include="dmw-navigation-styles"></style>
+    <style include="bootstrap-styles"></style>
+    <style include="slate-font-awesome"></style>
+
+      <div id='mainMenuTouch'>
+          <div class="menu-item">
+            <button id="accesMenu" on-click="activateCorner" class="acmbt"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></button>
+        </div>
+      </div>
+
+      <div id='mainMenu' class="">
+          <div class="menu-cnitem">
+              <div class="menu-button">
+                  <button class="cnbutton" id="cnbutton"><span class='sr-only' data-i18n="menu.open"></span></button>
+                  <nav id="cnwrapper" role="navigation">
+                  <ul id='mainMenuRoot'></ul>
+                  </nav>
+                  <div id="emptyoverlay" class="overlay"></div>
+              </div>
+          </div>
+      </div>
+
+      <div id="sectionsTree" class="">
+            <div class="menu-item">
+                <button id="toggleRadial" class="menu-button"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></button>
+            </div>
+      </div>
+
+      <div id="butler" class="">
+          <div class="menu-item">
+            <button id="toggleRadialTopLeft" on-click="activateButler" class="menu-button">
+                <i class="fa fa-microphone"></i>
+            </button>
+          </div>
+      </div>
+
+      <div id="logout" class="">
+          <div class="menu-item">
+            <button id="toggleRadialTopRight" on-click="handleLogout" class="menu-button">
+                <i class="fa fa-sign-out"></i>
+            </button>
+          </div>
+      </div>
+  </template>
+  <script>
+    // Var and Const navigation
+
+        const toRadians = Math.PI / 180;
+
+        class DmwMenu extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.GestureEventListeners(Polymer.Element)) {
+            static get is () { return 'dmw-menu'; }
+            static get properties() {
+                return {
+                    /* Overriden from AppLocalizeBehavior */
+                    language: {
+                        value: navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage,
+                        type: String
+                    },
+                    items: {
+                        type: Object,
+                        value: {},
+                        notify: true,
+                        observer: 'itemsChanged'
+                    }
+                }
+            }
+            constructor() {
+                super();
+                // For AppLocalizeBehavior : if the translation does not exist retourn the key
+                this.useKeyIfMissing = true;
+                this.loadResources(this.resolveUrl('/locales/domoweb/'+this.language+'/translation.json'),this.language);
+                this._closeNavListener = this.closeNav.bind(this);
+                this.items = [];
+                this.navRadLevelOneShown = false;
+                this.navRadLevelTwoShown = false;
+                this.navRadLevelThreeShown = false;
+                this.$navRadFirstLevel = null;
+                this.$navRadSecondLevel = null;
+                this.$navRadLevelOneItems = null;
+                this.$navRadLevelTwoItems = null;
+                this.navPositionOne = null;
+                this.navPositionTwo = null;
+            }
+            connectedCallback() {
+                super.connectedCallback();
+                document.addEventListener('click', this._closeNavListener);
+                let template = document.createElement('template');
+                const html = this.attributes.itemstree.value.trim(); // Never return a text node of whitespace as the result
+                template.innerHTML = html;
+                this.$.sectionsTree.appendChild(template.content.firstChild);
+
+            }
+            disconnectedCallback() {
+              super.disconnectedCallback();
+              document.removeEventListener('click', _closeNavListener);
+            }
+            __localizeItems(subItems) {
+                for (let i=0; i<subItems.length; i++) {
+                    subItems[i].label = this.localize(subItems[i].label);
+                    if ('childs' in subItems[i]) {
+                        this.__localizeItems(subItems[i]['childs'])
+                    }
+                }
+                return subItems;
+            }
+            itemsChanged(newValue, oldValue) {
+                if (newValue != []&& oldValue != undefined) {
+                    this.items = this.__localizeItems(newValue);
+                    this.displayed = [];
+                    this.open = false;
+                    this.$.cnbutton.addEventListener('click', this.handler.bind(this), false);
+                    this.$.cnwrapper.addEventListener('click', this.cnhandle.bind(this), false);
+                    this.displayItems(null);
+                }
+            }
+
+            openNav(){
+                this.open = true;
+                if (this.items.length != 0) {
+                    this.$.cnbutton.innerHTML = "<span class='sr-only'>Close Menu</span>";
+                    this.$.cnwrapper.classList.add('opened-nav');
+                    this.$.cnbutton.parentElement.classList.add('active');
+                }
+            }
+            closeNav(){
+                this.open = false;
+                if (this.items.length != 0) {
+                    this.$.cnbutton.innerHTML = "<span class='sr-only'>Open Menu</span>";
+                    this.$.cnwrapper.classList.remove('opened-nav');
+                    this.$.cnbutton.parentElement.classList.remove('active');
+                }
+            }
+            handler(e){
+                if (!e) var e = window.event;
+                e.stopPropagation();//so that it doesn't trigger click event on document
+                if(!this.open){
+                    this.openNav();
+                } else{
+                    this.closeNav();
+                }
+
+            }
+            cnhandle(e){
+                e.stopPropagation();
+            }
+            selectItem(e) {
+                var item = this.findItem(this.items, e.target.id);
+                if (item.childs) {
+                    this.displayItems(item);
+                } else {
+                    this.closeNav();
+                }
+                if (item.close) {
+                    this.displayItems(null);
+                }
+                if (item.id) {
+                    switch(item.id) {
+                        case 'menuConfigure':
+                            configureHandler();
+                            break;
+                        case 'menuWidgets':
+                            widgetsEditHandler();
+                            break;
+                        case 'menuFinishWidgets':
+                            widgetsFinishHandler();
+                            break;
+                        case 'menuAddWidget':
+                            addWidgetHandler();
+                            break;
+                        case 'menuAddSection':
+                            addSectionHandler();
+                            break;
+                        case 'menuRemoveSection':
+                            removeSectionHandler();
+                            break;
+                    }
+                }
+            }
+
+            findItem(treeNodes, searchID){
+                for (var nodeIdx = 0; nodeIdx <= treeNodes.length-1; nodeIdx++) {
+                    var currentNode = treeNodes[nodeIdx],
+                        currentId = currentNode.id;
+                    if (currentId == searchID) {
+                        return currentNode;
+                    }
+                    else {
+                        if (currentNode.childs) {
+                            var foundDescendant = this.findItem(currentNode.childs, searchID);
+                            if (foundDescendant) {
+                                return foundDescendant;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+
+            displayItems(parent) {
+                var root = null
+                if (parent === null) {
+                    root = this.items;
+                } else {
+                    root = parent.childs;
+                }
+
+                // Clean the menu
+                while (this.$.mainMenuRoot.firstChild) {
+                    this.$.mainMenuRoot.removeChild(this.$.mainMenuRoot.firstChild);
+                }
+                for (var i = 0; i < root.length; i++){
+                    this.appendMenu(root[i]);
+                }
+                // Add blank items
+                for (var i ; i < 3; i++) {
+                    this.appendMenu(null);
+                }
+            }
+            disableItems() {
+                this.$.butler.style.visibility = "hidden";
+                this.$.mainMenu.style.visibility = "hidden";
+                this.$.sectionsTree.style.visibility = "hidden";
+                this.$.logout.style.visibility = "hidden";
+            }
+
+            unableItems() {
+                this.$.butler.style.visibility = "visible";
+                this.$.mainMenu.style.visibility = "visible";
+                this.$.sectionsTree.style.visibility = "visible";
+                this.$.logout.style.visibility = "visible";
+            }
+
+            appendMenu(item) {
+                var li = document.createElement('li');
+                if (item) {
+                    var button = document.createElement('div');
+                    button.setAttribute('id', item.id);
+                    if (item.close) {
+                        button.setAttribute('class', 'menuitem finish');
+                    } else {
+                        button.setAttribute('class', 'menuitem');
+                    }
+                    button.setAttribute('role', 'button');
+                    button.setAttribute('tabindex', 0);
+                    button.addEventListener('click', this.selectItem.bind(this), false);
+                    button.appendChild(document.createTextNode(item.label));
+                    li.appendChild(button);
+                } else {
+                    var button = document.createElement('div');
+                    button.setAttribute('class', 'menuitem');
+                    li.appendChild(button);
+                }
+                this.$.mainMenuRoot.appendChild(li);
+            }
+            activateCorner() {
+                this.$.mainMenu.classList.remove('menu-corners');
+                this.$.sectionsTree.classList.remove('menu-corners');
+                this.$.butler.classList.remove('menu-corners');
+                this.$.logout.classList.remove('menu-corners');;
+                var self = this;
+                setTimeout(function() {
+                    self.$.mainMenu.classList.add('menu-corners');
+                    self.$.sectionsTree.classList.add('menu-corners');
+                    if (!self.$.sectionsTree.getElementsByClassName('show')[0]) {
+                        self.$.sectionsTree.getElementsByClassName('menu-button')[0].classList.remove('active');
+                    }
+                    self.$.butler.classList.add('menu-corners');
+                    self.$.logout.classList.add('menu-corners');;
+                    }, 10000)
+            }
+            handleLogout() {
+                window.location = "/logout";
+            }
+            activateButler() {
+                addButlerHandler();
+            }
+
+     // *** Handle Navigation **** //
+            navigationInit(){
+                this.style.setProperty("--toggleRadialHeight", `${-1*(this.$.toggleRadial.offsetHeight+2)}px`);
+                this.$.toggleRadial.addEventListener('click', this.navigationRadLevelOneToggle.bind(this));
+                this.navigatioRegister();
+            }
+
+            navigatioRegister() {
+                let $sectionsTree = $(this.$.sectionsTree);
+
+                $sectionsTree.find('ul li').addClass('radial-menu-items');
+                $sectionsTree.find('ul li > a').addClass('radial-menu-links');
+
+                $sectionsTree.find('ul.level-1').addClass('hide');
+                $sectionsTree.find('ul.level-1').addClass('radial-first-items');
+                $sectionsTree.find('ul.level-2').addClass('hide');
+                $sectionsTree.find('ul.level-2').addClass('radial-upper-items')
+                $sectionsTree.find('ul.level-3').addClass('hide');
+                $sectionsTree.find('ul.level-3').addClass('radial-upper-items')
+
+                $sectionsTree.find('li > ul').parent().addClass('have-subs');
+                // $sectionsTree.find('ul li > a').wrap('<div class="radial-label" />')
+                $sectionsTree.find('ul.level-1 > li.have-subs > a').click(this.navigationRadLevelTwoToggle.bind(this));
+                $sectionsTree.find('ul.level-2 > li.have-subs > a').click(this.navigationRadLevelThreeToggle.bind(this));
+
+                var sections = $sectionsTree.find('ul li:not(.have-subs) > a');
+                for (var i = sections.length - 1; i >= 0; i--) {
+                    sections[i].addEventListener('click', this.navigationSelectSection.bind(this), false);
+                };
+            }
+            navigationSetSelection(id){
+                var sections = this.$.sectionsTree.querySelectorAll('ul li > a');
+                for (let i=0; i < sections.length; i++) {
+                    if (sections[i].dataset.section == id) {
+                        sections[i].classList.add('current');
+                    } else {
+                        sections[i].classList.remove('current');
+                    }
+                }
+            }
+            navigationSelectSection(e) {
+                e.stopPropagation(); //so that it doesn't trigger click event on document
+                this.navigationRadLevelOneToggle(e);
+                var id = e.target.dataset.section;
+                DMW.main.section.setAttribute('sectionid', id);
+                this.navigationSetSelection(id);
+            }
+
+            navigationSectionsUpdated() {
+                DMW.main.socket.send('section-gettree');
+            }
+
+            navigationSectionsReceived(topic, json) {
+                var root = this.$.sectionsTree.querySelector('ul');
+                this.$.sectionsTree.removeChild(root);
+                var nodes = this.navigationGenerateLevelNodes(json);
+                if (nodes) {
+                    this.$.sectionsTree.appendChild(nodes);
+                }
+                this.navigatioRegister();
+            }
+
+            navigationGenerateLevelNodes(section) {
+                var childs = section['childs'];
+                var newlevel = parseInt(section['level']) + 1;
+                if (childs.length > 0) {
+                    var ul = document.createElement('ul');
+                    ul.setAttribute('class', 'level-' + newlevel);
+                    var li = document.createElement('li');
+                    li.setAttribute('class', 'level-main');
+                    var a = document.createElement('a');
+                    a.setAttribute('href','#');
+                    a.dataset.section = section['id'];
+                    a.appendChild(document.createTextNode(section['name']));
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                    let child;
+                    for (var i = 0; i < childs.length; i++) {
+                        child = childs[i];
+                        var li = document.createElement('li');
+                        var a = document.createElement('a');
+                        a.setAttribute('href','#');
+                        a.dataset.section = child['id'];
+                        a.appendChild(document.createTextNode(child['name']));
+                        li.appendChild(a);
+                        var nodes = this.navigationGenerateLevelNodes(child);
+                        if (nodes) {
+                            li.appendChild(nodes);
+                        }
+                        ul.appendChild(li);
+                    };
+                    return ul;
+                } else if (parseInt(section['level']) == 0) { // Root case
+                    var ul = document.createElement('ul');
+                    ul.setAttribute('class', 'level-' + newlevel);
+                    var li = document.createElement('li');
+                    li.setAttribute('class', 'level-main');
+                    var a = document.createElement('a');
+                    a.setAttribute('href','#');
+                    a.dataset.section = section['id'];
+                    a.appendChild(document.createTextNode(section['name']));
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                    return ul;
+                }
+                return null;
+            };
+
+/* ------------ Radial toggle button related behavior: Toggling level-1 Menu ------------*/
+            navigationRadLevelOneToggle(e) {
+                var $sectionsTree = $(this.$.sectionsTree);
+                let self = e.currentTarget;
+                if(!this.navRadLevelOneShown){
+                        self.classList.add('active');
+
+                        var $level1 = $sectionsTree.find('ul.level-1')[0];
+                        this.navigationToggleMenuItems(self.parentNode, $level1);
+
+                        $sectionsTree.find('ul.level-1').removeClass('hide');
+                        $sectionsTree.find('ul.level-1').addClass('show');
+                        this.navRadLevelOneShown = true;
+                    } else {
+                        this.navRadLevelOneShown = false;
+                        $(self).removeClass('active');
+                        $sectionsTree.find('ul.level-1 > li').animate({ left: '0px', top: '0px' }, 150);
+                        $sectionsTree.find('ul.level-1').fadeOut(200, function(){
+                            $sectionsTree.find('ul.level-1 > li.have-subs').removeClass('active');
+                            $sectionsTree.find('ul.level-1').removeClass('show');
+                            $sectionsTree.find('ul.level-1').addClass('hide');
+                            if(this.navRadLevelTwoShown){
+                                this.$navRadFirstLevel.fadeTo(200, 1);
+                                this.$navRadLevelOneItems.bind('click', this.navigationRadLevelTwoToggle);
+                                $sectionsTree.find('ul.level-2 > li').animate({ top: this.navPositionOne.top, left: this.navPositionOne.left }, 200);
+                                $sectionsTree.find('ul.level-2 > li.have-subs').removeClass('active');
+                                $sectionsTree.find('ul.level-2').removeClass('show');
+                                $sectionsTree.find('ul.level-2').addClass('hide');
+                                this.navRadLevelTwoShown = false;
+                            }
+                            if(this.navRadLevelThreeShown){
+                                this.$navRadSecondLevel.fadeTo(200, 1);
+                                this.$navRadLevelTwoItems.bind('click', navigationRadLevelThreeToggle);
+                                $sectionsTree.find('ul.level-3 > li').animate({ top: this.navPositionTwo.top, left: this.navPositionTwo.left }, 200);
+                                $sectionsTree.find('ul.level-3').removeClass('show');
+                                $sectionsTree.find('ul.level-3').addClass('hide');
+                                this.navRadLevelThreeShown = false;
+                            }
+                        });
+                    }
+                }
+
+/* ------------ Radial toggle button related behavior: Toggling level-2 Menu ------------*/
+                navigationRadLevelTwoToggle(e){
+                    let self = e.currentTarget;
+                    var $sectionsTree = $(this.$.sectionsTree);
+                    this.$navRadFirstLevel = $(self).parent().siblings();
+                    this.$navRadLevelOneItems = $(self).parent().siblings('.have-subs').children('a');
+                    this.navPositionOne = $(self).position();
+                    if(!this.navRadLevelTwoShown){
+                        $(self).parent().addClass('active');
+                        this.$navRadFirstLevel.fadeTo(200, 0.1);
+                        this.$navRadLevelOneItems.unbind('click');
+
+                        var $level2 = $sectionsTree.find('ul.level-2')[0];
+                        this.navigationToggleMenuItems(self, $level2);
+
+                        $(self).parent().children('ul.level-2').removeClass('hide');
+                        $(self).parent().children('ul.level-2').addClass('show');
+                        this.navRadLevelTwoShown = true;
+                    } else {
+                        this.navRadLevelTwoShown = false;
+                        $(self).parent().removeClass('active');
+                        this.$navRadFirstLevel.fadeTo(200, 1);
+                        this.$navRadLevelOneItems.bind('click', navigationRadLevelTwoToggle);
+                        $sectionsTree.find('ul.level-2 > li').animate({ top: this.navPositionOne.top, left: this.navPositionOne.left }, 200);
+                        $sectionsTree.find('ul.level-2').fadeOut(200, function(){
+                            $sectionsTree.find('ul.level-2 > li.have-subs').removeClass('active');
+                            $sectionsTree.find('ul.level-2').removeClass('show');
+                            $sectionsTree.find('ul.level-2').addClass('hide');
+                            if(this.navRadLevelThreeShown){
+                                this.$navRadSecondLevel.fadeTo(200, 1);
+                                this.$navRadLevelTwoItems.bind('click', navigationRadLevelThreeToggle);
+                                $sectionsTree.find('ul.level-3 > li').animate({ top: this.navPositionTwo.top, left: this.navPositionTwo.left }, 200);
+                                $sectionsTree.find('ul.level-3').removeClass('show');
+                                $sectionsTree.find('ul.level-3').addClass('hide');
+                                this.navRadLevelThreeShown = false;
+                            }
+                        });
+                    }
+                }
+
+/* ------------ Radial toggle button related behavior: Toggling level-3 Menu ------------*/
+                navigationRadLevelThreeToggle(e) {
+                    let self = e.currentTarget;
+                    var $sectionsTree = $(this.$.sectionsTree);
+                    this.$navRadSecondLevel = $(self).parent().siblings();
+                    this.$navRadLevelTwoItems = $(self).parent().siblings('.have-subs').children('a');
+                    this.navPositionTwo = $(self).position();
+                    if(!this.navRadLevelThreeShown){
+                        $(self).parent().addClass('active');
+                        this.$navRadSecondLevel.fadeTo(200, 0.1);
+                        this.$navRadLevelTwoItems.unbind('click');
+
+                        var $level3 = $sectionsTree.find('ul.level-3')[0];
+                        this.navigationToggleMenuItems(self, $level3);
+
+                        $(self).parent().children('ul.level-3').removeClass('hide');
+                        $(self).parent().children('ul.level-3').addClass('show');
+                        this.navRadLevelThreeShown = true;
+                    } else {
+                        this.navRadLevelThreeShown = false;
+                        $(self).parent().removeClass('active');
+                        this.$navRadSecondLevel.fadeTo(200, 1);
+                        this.$navRadLevelTwoItems.bind('click', navigationRadLevelThreeToggle);
+                        $sectionsTree.find('ul.level-3 > li').animate({ top: navPositionTwo.top, left: navPositionTwo.left }, 200);
+                        $sectionsTree.find('ul.level-3').fadeOut(200, function(){
+                            $sectionsTree.find('ul.level-3').removeClass('show');
+                            $sectionsTree.find('ul.level-3').addClass('hide');
+                        });
+                    }
+                }
+
+            navigationToggleMenuItems(node, selectParent) {
+                var yPositionAdjust, xPositionAdjust, xCoord, yCoord;
+
+                let styles = getComputedStyle(this);
+
+                var circleRadius = parseFloat(styles.getPropertyValue('--navCircleRadius'));
+                var innerRing_items = parseFloat(styles.getPropertyValue('--navInnerRing_items'));
+                var middleRing_items = parseFloat(styles.getPropertyValue('--navMiddleRing_items'));
+                var outerRing_items = parseFloat(styles.getPropertyValue('--navOuterRing_items'));
+                var innerRing_radius = parseFloat(styles.getPropertyValue('--navInnerRing_radius'));
+                var middleRing_radius = parseFloat(styles.getPropertyValue('--navMiddleRing_radius'));
+                var outerRing_radius = parseFloat(styles.getPropertyValue('--navOuterRing_radius'));
+
+                yPositionAdjust = (circleRadius - $(node).outerHeight())/2;
+                xPositionAdjust = (circleRadius - $(node).outerHeight())/2;
+
+                var angleDegree = 0,
+                    angleRad = 0;
+
+                var xPosMod = 1;
+                var yPosMod = -1;
+
+                var outerAngleIncrease = 90/(outerRing_items-1);
+                var middleAngleIncrease = 90/(middleRing_items-1);
+                var innerAngleIncrease = 90/(innerRing_items-1);
+
+                /* ------------ Looping for INNER Ring - Sub-Menu level toggle and animation ------------*/
+                for( var index = 0; index < innerRing_items; index++ ){
+                    angleRad = angleDegree * toRadians;
+                    xCoord = innerRing_radius * Math.cos( angleRad );
+                    yCoord = innerRing_radius * Math.sin( angleRad );
+                    $(node).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust , top: yCoord*yPosMod-yPositionAdjust}, 200);
+                    angleDegree += innerAngleIncrease;
+                }
+
+                angleDegree = 0;
+
+                /* ------------ Looping for MIDDLE Ring - Sub-Menu level toggle and animation ------------*/
+
+                for( var index = innerRing_items; index < innerRing_items + middleRing_items; index++ ){
+                    angleRad = angleDegree * toRadians;
+                    xCoord = middleRing_radius * Math.cos( angleRad );
+                    yCoord = middleRing_radius * Math.sin( angleRad );
+                    $(node).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust, top: yCoord*yPosMod-yPositionAdjust }, 200);
+                    angleDegree += middleAngleIncrease;
+                }
+                /* ------------ Looping for OUTER Ring - Sub-Menu level toggle and animation ------------*/
+
+                angleDegree = 0;
+
+                for( var index = innerRing_items + middleRing_items; index < innerRing_items + middleRing_items + outerRing_items; index++ ){
+                    angleRad = angleDegree * toRadians;
+                    xCoord = outerRing_radius * Math.cos( angleRad );
+                    yCoord = outerRing_radius * Math.sin( angleRad );
+                    $(node).parent().children(selectParent).children(' li:nth-child('+ (index+1) +')').animate({ left: xCoord*xPosMod-xPositionAdjust, top: yCoord*yPosMod-yPositionAdjust }, 200);
+                    angleDegree += outerAngleIncrease;
+                }
+            }
+        }
+    customElements.define(DmwMenu.is, DmwMenu);
+    </script>
+</dom-module>

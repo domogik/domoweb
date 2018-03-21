@@ -302,10 +302,7 @@
                 this.$.helpModal.style.visibility = "hidden";
 
                 // Hide the corner buttons
-                document.getElementById('butler').style.visibility = "hidden";
-                document.getElementById('main-menu').style.visibility = "hidden";
-                document.getElementById('sections-tree').style.visibility = "hidden";
-
+                DMW.menus.disableItems();
 
                 var doSTT = true;
                 // display warning if no STT support :(
@@ -341,12 +338,10 @@
                 }
             }
             close(e) {
-                this.recognition.stop();
+                if (this.recognition) {this.recognition.stop();}
 
                 // Redisplay the corner buttons
-                document.getElementById('butler').style.visibility = "visible";
-                document.getElementById('main-menu').style.visibility = "visible";
-                document.getElementById('sections-tree').style.visibility = "visible";
+                DMW.menus.unableItems();
                 var modalOverlay = document.getElementById('modal-overlay');
                 modalOverlay.classList.remove('on');
                 this.remove();

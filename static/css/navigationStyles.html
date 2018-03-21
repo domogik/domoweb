@@ -1,6 +1,21 @@
 @charset "UTF-8";
 
-/*--------------  SAFELY CUSTOMIZABLE - Visual styling for menu elements -------------------*/
+<!-- --------------  SAFELY CUSTOMIZABLE - Visual styling for menu elements ------------------- -->
+<dom-module id="dmw-navigation-styles">
+  <template>
+    <style>
+
+    :host {
+        --navCircleRadius: 80px;
+        --navInnerRing_items: 3px;
+        --navMiddleRing_items:5px;
+        --navOuterRing_items: 7px;
+        --navInnerRing_radius: 110px;
+        --navMiddleRing_radius: 220px;
+        --navOuterRing_radius: 330px;
+
+        --toggleRadialHeight: var(--navOuterRing_radius);
+    }
 
 #butler .active {
 	background-color: #2D2C2F !important;
@@ -32,13 +47,13 @@
 }
 
 
-#sections-tree .active {
+#sectionsTree .active {
 	background-color: #2D2C2F !important;
 	color: #ffffff !important;
 	z-index: 15;
 }
 
-#sections-tree {
+#sectionsTree {
     z-index: 20000;
 	font-size: 0.8em;
 	position: fixed;
@@ -58,9 +73,7 @@
     opacity:1;
 }
 
-/*--------------  Toggle Button -------------- */
-
-#toggle-radial {
+#toggleRadial {
 	width: 6em;
 	height: 6em;
 	border-radius: 0 6em 0 0;
@@ -69,16 +82,16 @@
 	color: #ffffff;
 	outline: none;
 }
-#toggle-radial span {
+#toggleRadial span {
 	font-size: 2em;
 	margin: 0.5em 0.5em 0 0;
 }
-#toggle-radial:hover, #toggle-radial:active, #toggle-radial.active {
+#toggleRadial:hover, #toggleRadial:active, #toggleRadial.active {
 	background: #ffffff;
 	color: #2D2C2F;
 }
 
-#toggle-radial-top-right {
+#toggleRadialTopRight {
 	width: 6em;
 	height: 6em;
 	border-radius: 0 0 0 6em;
@@ -87,20 +100,20 @@
 	color: #ffffff;
 	outline: none;
 }
-#toggle-radial-top-right span {
+#toggleRadialTopRight span {
 	font-size: 2em;
 	margin: 0 0 0.5em 0.5em;
 }
-#toggle-radial-top-right i {
+#toggleRadialTopRight i {
 	font-size: 2em;
 	margin: 0 0 0.5em 0.5em;
 }
-#toggle-radial-top-right:hover, #toggle-radial-top-right:active, #toggle-radial-top-right.active {
+#toggleRadialTopRight:hover, #toggleRadialTopRight:active, #toggleRadialTopRight.active {
 	background: #ffffff;
 	color: #2D2C2F;
 }
 
-#toggle-radial-top-left {
+#toggleRadialTopLeft {
 	width: 6em;
 	height: 6em;
 	border-radius: 0 0 6em 0;
@@ -109,116 +122,116 @@
 	color: #ffffff;
 	outline: none;
 }
-#toggle-radial-top-left span {
+#toggleRadialTopLeft span {
 	font-size: 2em;
 	margin: 0 0.5em 0.5em 0;
 }
-#toggle-radial-top-left i {
+#toggleRadialTopLeft i {
 	font-size: 2em;
 	margin: 0 0.5em 0.5em 0;
 }
-#toggle-radial-top-left:hover, #toggle-radial-top-left:active, #toggle-radial-top-left.active {
+#toggleRadialTopLeft:hover, #toggleRadialTopLeft:active, #toggleRadialTopLeft.active {
 	background: #ffffff;
 	color: #2D2C2F;
 }
 
-/* -------------- Menu Levels general styling -------------- */
-
-#sections-tree ul.level-1 {
+#sectionsTree ul.level-1 {
 	font-size: 1.2em;
 }
 
-/* -------------- Menu Items -------------- */
-
-#sections-tree > ul li {
+#sectionsTree > ul li {
 	color: #ffffff;
     box-shadow: 0 3px 3px rgba(0,0,0,.1);
 	background-color: #00506A;
 }
 
-#sections-tree > ul li.level-main {
+#sectionsTree > ul li.level-main {
 	color: #2D2C2F;
 	background-color: #B13822;
 }
 
-#sections-tree > ul li:hover {
+#sectionsTree > ul li:hover {
 	background-color: #2D2C2F;
 }
-#sections-tree ul li.have-subs {
+#sectionsTree ul li.have-subs {
 	border: 2px solid #B13822;
 }
 
-/* -------------- Menu Items - Links -------------- */
-#sections-tree ul li a {
+#sectionsTree ul li a {
 	text-decoration: none;
 	color: #ffffff;
 	outline: none;
 }
-#sections-tree ul li.have-subs > a {
+#sectionsTree ul li.have-subs > a {
  	background: url("../images/multi-level-arrow.png") no-repeat right bottom;
 }
-#sections-tree ul li.active > a {
+#sectionsTree ul li.active > a {
 	color: #ffffff;
 }
-#sections-tree ul li > a:hover, nav.square ul li > a:active {
+#sectionsTree ul li > a:hover, nav.square ul li > a:active {
 	color: #ffffff;
+}
+#sectionsTree ul li > a.current {
+	background-color: #229a26;
 }
 
 
-/*--------------------------- RESTRICTED - Should not be modified ---------------------------*/
-
-#sections-tree .hide {
+#sectionsTree .hide {
 	display: none !important;
 }
-#sections-tree .show {
+#sectionsTree .show {
 	display: inherit !important;
 }
-/*
-.disable {
-	opacity: 0.2;
-}
-*/
 
-#sections-tree #toggle-radial {
+#sectionsTree #toggleRadial {
 	cursor: pointer;
 	position: relative;
 	z-index: 15;
 }
 
-#sections-tree ul {
+#sectionsTree ul {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 	position: relative;
 }
 
-#sections-tree > ul li {
+#sectionsTree > ul li {
 	display: block;
 	position: absolute;
 }
 
-#sections-tree ul.level-2, #sections-tree ul.level-3 {
+#sectionsTree ul.level-2, #sectionsTree ul.level-3 {
 	padding: 0;
 	margin: 0;
 	position: absolute;
 }
 
-#sections-tree ul li a {
+#sectionsTree ul li a {
 	display: table-cell;
 	vertical-align: middle;
 	text-align: center;
-	/* Styling for unwrapped item labels (Experimental)
-	display: block;
-	line-height: 55px;
-	margin-left: -50%;
-	white-space: nowrap;
-	*/
 }
 
-/*Styling for unwrapped item labels (Experimental)
-.radial-label {
-	display: inline-block;
-	position: relative;
-	left: 50%;
-}*/
+    .radial-menu-items {
+        height: var(--navCircleRadius);
+        width: var(--navCircleRadius);
+        border-radius: var(--navCircleRadius);
+    }
+    .radial-first-items {
+        top: var(--toggleRadialHeight);
+        left: -2px
+    }
+    .radial-upper-items {
+        top: -2px;
+        left: -1px;
+    }
+    .radial-menu-links {
+        height: var(--navCircleRadius);
+        width: var(--navCircleRadius);
+        border-radius: var(--navCircleRadius);
+    }
 
+    </style>
+  </template>
+</dom-module>
