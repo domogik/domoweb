@@ -69,5 +69,17 @@
             "Southwest": "southwest",
             "SW": "SW"
         }
+    },
+    "login": {
+        "welcome": "Please enter username and password",
+        "name": "Your name...",
+        "password" : "Your secret password",
+        "help": "Help",
+        "signIn": "Sign in",
+        "helpMsg1": "Domoweb is the web interface for ",
+        "helpMsg2": "For security reasons, to use Domoweb, you need an account. The accounts are managed in the Domogik interface administration. Please login with one of the created accounts.",
+        "helpMsg3": "Notice that if you didn't activate the authentication on Domogik side, you may be able to login with any username and password.",
+        "close": "Close"
+
     }
 }

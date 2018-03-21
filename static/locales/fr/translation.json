@@ -70,5 +70,17 @@
             "Southwest": "sud-ouest",
             "SW": "SO"
         }
+    },
+    "login": {
+        "welcome": "Entrez votre nom utilisateur et mot de passe",
+        "name": "Votre nom...",
+        "password" : "Votre mot de passe secret...",
+        "help": "Aide",
+        "signIn": "Se connecter",
+        "helpMsg1": "Domoweb est une interface web pour ",
+        "helpMsg2": "Pour des raisons de sécurité et utiliser Domoweb, vous avez besoin d'un compte. Les comptes sont gérés dans l'administration de l'interface Domogik. Veuillez vous connecter avec l'un des comptes créés.",
+        "helpMsg3": "Notez que si vous n'avez pas activé l'authentification côté Domogik, vous pourrez vous connecter avec n'importe quel nom d'utilisateur et mot de passe.",
+        "close": "Fermer"
+
     }
 }
