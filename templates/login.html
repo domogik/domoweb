@@ -12,6 +12,7 @@
   <title>Domoweb - Login</title>
   <link rel="stylesheet" href="/libraries/bootstrap-3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="import" href="/components/widgetLogin.html">
   <style>
     body {
         color: #2D2C2F;
@@ -32,14 +33,14 @@
         border-width: 5px 1px 1px;
         padding: 1em 1em 0 1em;
     }
-    
+
     .login h1 {
         font-size: 2em;
         font-weight: normal;
         display: block;
         text-align: center;
     }
-    
+
     .login .form-title {
         font-size: 1.2em;
         display: block;
@@ -49,7 +50,6 @@
 
   </style>
   <script src="/libraries/jquery-2.1.0/jquery.min.js"></script>
-  <script type="text/javascript" src="/libraries/i18next-1.10.1/i18next-1.10.1.min.js"></script>
   <script>
     $(document).on("submit", "form", function(event)
       {
@@ -58,7 +58,7 @@
           '<div class="text">Authenticating...</div>'
           '</div></div>';
         $(over).appendTo('body');
-    });        
+    });
   </script>
 </head>
 <body id="body">
@@ -80,71 +80,13 @@
       </div>
     {% end %}
 
-  <div class="box">
-    <form id="login" action="/login" method="post" class="form-vertical login-form">
-      <div class="form-title">Please enter username and password</div>
-  
-      <div class="form-group">
-        <label for="name" class="sr-only">Name</label>
-        <div class="input-group">
-          <span class="input-group-addon"><span class="glyphicon glyphicon-user" aria-hidden='true'></span></span>
-          <input type="text" class="form-control" name="name" id="name" placeholder="Your name...">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="password" class="sr-only">Password</label>
-        <div class="input-group">
-          <span class="input-group-addon"><span class="glyphicon glyphicon-lock" aria-hidden='true'></span></span>
-          <input type="password" class="form-control" name="password" id="password" placeholder="Your secret password...">
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="form-actions clearfix">
-          <button class="submit btn btn-primary pull-right" type="submit">Sign In <span class="glyphicon glyphicon-chevron-right" aria-hidden='true'></span>
-          </button>
-          <a class="btn btn-default" id="helpBtn"><span class="glyphicon glyphicon-question-sign" aria-hidden='true'></span> Help
-          </a>
-        </div>
-      </div>
-    </form>
-  </div>
-
-  <div class="modal" id="help" role="dialog" aria-labelledby="help" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" id="help">Domoweb login</h4>
-        </div>
-        <div class="modal-body">
-          <p>Domoweb is the web interface for <a href="http://www.domogik.org/">Domogik</a>.</p>
-          <p>For security reasons, to use Domoweb, you need an account. The accounts are managed in the Domogik interface administration. Please login with one of the created accounts.</p>
-          <p>Notice that if you didn't activate the authentication on Domogik side, you may be able to login with any username and password.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
+    <dmw-login></dmw-login>
 
   <script src="/libraries/bootstrap-3.3.7/js/bootstrap.min.js"></script>
   <script type="text/javascript">
     $( document ).ready(function() {
-        $('#helpBtn').click(function() {
-            $('#help').modal('show');
-        });
 
 
-        // Please notice that this should be improved in 0.6 as here we store the user password as clear data !!
-        // TODO : improve in 0.6
-        // These data are used in the component/websocket.html file : they are added to each json send over WS
-        $("#name").change(function() {
-            localStorage.setItem("username", $("#name").val());
-        });
-        $("#password").change(function() {
-            localStorage.setItem("password", $("#password").val());
-        });
     });
   </script>
 </content>
