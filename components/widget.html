@@ -268,7 +268,7 @@
                 this.loaded = false;
                 this._ajaxEditEvent = false;
                 this._timeoutEvents = [];
-                this._computeScale();
+                this.computeScale();
                  // Memorize style attribute modified by the-grid
                 this.MemZindex = this.style.zIndex;
                 this.MemTransition = this.style.transition;
@@ -281,7 +281,7 @@
                 super.connectedCallback();
                 this._removeTimeoutEvents();
             }
-            _computeScale() {
+            computeScale() {
                 const cellHeight = this.parentNode.getAttribute('cell-height'),
                     cellWidth = this.parentNode.getAttribute('cell-width'),
                     cellMargin = this.parentNode.getAttribute('cell-margin'),
@@ -291,8 +291,10 @@
                     orgWidthCell = this.getAttribute('org-width');
                 const height = heightCell * cellHeight + ((heightCell - 1) * cellMargin),
                     width = widthCell * cellWidth + ((widthCell - 1) * cellMargin),
-                    orgHeight = orgHeightCell * cellHeight + ((orgHeightCell - 1) * cellMargin),
-                    orgWidth = orgWidthCell * cellWidth + ((orgWidthCell - 1) * cellMargin);
+//                    orgHeight = orgHeightCell * cellHeight + ((orgHeightCell - 1) * cellMargin),
+//                    orgWidth = orgWidthCell * cellWidth + ((orgWidthCell - 1) * cellMargin);
+                    orgHeight = orgHeightCell * 50 + ((orgHeightCell - 1) * 20),
+                    orgWidth = orgWidthCell * 50 + ((orgWidthCell - 1) * 20);
                 const wscaleH = height / orgHeight,
                     wscaleW = width / orgWidth,
                     orgRatio = orgWidth /orgHeight,
@@ -368,6 +370,18 @@
                                 modalOverlay.innerHTML = '';
                             } else {
                                 modalOverlay.innerHTML = response;
+                                let previewW = Polymer.dom(self).cloneNode(true);
+                                previewW.removeAttribute('edit');
+                                let prevDiv = document.getElementById("preview-widget");
+                                prevDiv.style.height = `${self.offsetHeight}px`;
+                                prevDiv.style.width = `${self.offsetWidth}px`;
+                                prevDiv.style.margin = `${parseInt(self.parentNode.getAttribute('cell-margin'))+10}px`;
+                                prevDiv.appendChild(previewW);
+                                previewW.scales = self.scales;
+                                previewW.style.setProperty("--wscale-h", self.scales.height);
+                                previewW.style.setProperty("--wscale-w", self.scales.width);
+                                previewW.style.setProperty("--wscale-r", self.scales.constraintRatio);
+                                previewW.resized();
                                 var saveConfig = modalOverlay.querySelector('#saveConfig');
                                 var cancelConfig = modalOverlay.querySelector('#cancelConfig');
                                 var formConfig = modalOverlay.querySelector('#formConfig');

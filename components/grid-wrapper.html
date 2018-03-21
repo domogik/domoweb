@@ -256,8 +256,17 @@
             removeInstance(widget) {
                 this.$.widgetGrid.removeChild(widget);
             }
+            refresh(mode, columns, rows, widgetSize, widgetSpace) {
+                this.setParams(mode, columns, rows, widgetSize, widgetSpace);
+                let list = this.widgetList();
+                for (var i=0; i<list.length; i++) {
+                    list[i].computeScale();
+                    list[i].resized();
+                }
+            }
+
             widgetResized(e) {
-                e.detail.tile._computeScale();
+                e.detail.tile.computeScale();
                 e.detail.tile.resized();
                 this.widgetMoved(e);
             }
