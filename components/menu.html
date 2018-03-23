@@ -279,6 +279,8 @@
                     }, 10000)
             }
             handleLogout() {
+                localStorage.setItem("username", '');
+                localStorage.setItem("password", '');
                 window.location = "/logout";
             }
             activateButler() {

@@ -54,6 +54,7 @@ class MainHandler(BaseHandler):
 class LogoutHandler(BaseHandler):
     def get(self):
         self.clear_cookie("user")
+        self.clear_cookie("hashrestpwd")
         self.redirect("/")
 
 class LoginHandler(BaseHandler):
@@ -67,6 +68,7 @@ class LoginHandler(BaseHandler):
         status, msg = self.check_permission(self.get_argument("name", None), self.get_argument("password", None))
         if status:
             self.set_secure_cookie("user", self.get_argument("name"))
+            self.set_secure_cookie("hashrestpwd", self.get_argument("password", None))
             self.redirect("/")
         else:
             self.render("login.html", error = msg, info = None)
@@ -76,7 +78,7 @@ class LoginHandler(BaseHandler):
 
         # we test a protected url on the rest server to check if the account exists
         url = '{0}/device'.format(options.rest_url).replace("://", "://{0}:{1}@".format(username, password))
-        logger.info("REST Call : %s" % url)
+        logger.info("REST Call : {0}/device".format(url).replace(password, "*******"))
 
         http_client = HTTPClient()
         # TODO : improve this part!
@@ -203,9 +205,22 @@ class WSHandler(websocket.WebSocketHandler):
 
     @gen.coroutine
     def on_message(self, message):
-        logger.info("WS: Received message %s" % message)
         jsonmessage = json.loads(message)
-
+        logger.info("WS: Received message {0} /n {1}" .format(message, jsonmessage[1]))
+        if 'rest_auth' in jsonmessage[1] :
+            pwd = self.get_secure_cookie('hashrestpwd')
+            hashPwd = self.get_cookie('hashrestpwd')
+            jsonPwd = jsonmessage[1]['rest_auth']['password']
+            jsonmessage[1]['rest_auth']['username']
+            if jsonPwd and (jsonPwd[0] == '"' and jsonPwd[-1] == '"'):
+                jsonPwd = jsonPwd[1:-1]
+            logger.debug("REST password cookie {0} compare with request : {1}".format(hashPwd, jsonPwd))
+            if  not jsonmessage[1]['rest_auth']['username'] or not hashPwd or hashPwd != jsonPwd :
+                logger.warning("Access denied. Incorrect name or REST password")
+                self.sendMessage(['login', {'error': "Access denied. Incorrect name or REST password"}])
+                return
+            else :
+                jsonmessage[1]['rest_auth']['password'] = pwd
         if (jsonmessage[0] == 'sensor-gethistory'):
             data = yield self.WSSensorGetHistory(jsonmessage[1])
         elif(jsonmessage[0] == 'sensor-getlast'):
@@ -372,7 +387,7 @@ class WSHandler(websocket.WebSocketHandler):
         else:
             selector = 'avg'
         url = '{0}/sensorhistory/id/{1}/from/{2}/to/{3}/interval/{4}/selector/{5}'.format(options.rest_url, data['id'],data['from'],data['to'],data['interval'], selector).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
-        logger.info("REST Call : %s" % url)
+        logger.info("REST Call : {0}/device".format(url).replace(data['rest_auth']['password'], "*******"))
         http = AsyncHTTPClient()
         request = HTTPRequest(url=url, validate_cert=False)
         response = yield http.fetch(request)
@@ -392,7 +407,7 @@ class WSHandler(websocket.WebSocketHandler):
         else:
             # REST: /rest/sensorhistory/id/<id>/from/<tstamp> Retrieve the history from a certain timestamp
             url = '{0}/sensorhistory/id/{1}/from/{2}'.format(options.rest_url, data['id'],data['from']).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
-        logger.info("REST Call : %s" % url)
+        logger.info("REST Call : {0}/device".format(url).replace(data['rest_auth']['password'], "*******"))
         http = AsyncHTTPClient()
         request = HTTPRequest(url=url, validate_cert=False)
         response = yield http.fetch(request)
@@ -415,7 +430,7 @@ class WSHandler(websocket.WebSocketHandler):
 
         logger.info("IN WSButlerDiscuss")
         url = '{0}/butler/discuss'.format(options.rest_url).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
-        logger.info("REST Call : %s" % url)
+        logger.info("REST Call : {0}/device".format(url).replace(data['rest_auth']['password'], "*******"))
         http = AsyncHTTPClient()
 
         discuss_data = {"text" : data["data"]["text"], "source" : data["data"]["source"]}

@@ -548,3 +548,17 @@ function websocketClosed(e) {
 	}
 	websocketConnection = false;
 }
+
+function websocketLogin(event, msg) {
+    console.log(msg);
+    if (msg.error != "") {
+        notif({
+          type: "error",
+          msg: msg.error,
+          position: "center",
+          //width: "all",
+          height: 60,
+        });
+        setTimeout(function() {window.location = "/logout";}, 3000);
+    }
+}

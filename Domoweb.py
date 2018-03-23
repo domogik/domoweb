@@ -140,7 +140,7 @@ if __name__ == '__main__':
         http_server_ssl.listen(options.ssl_port)
     else:
         logger.info("SSL not activated")
-                                                
+
     # http
     logger.info("Start http server on port '{0}'".format(options.port))
     http_server = tornado.httpserver.HTTPServer(application)
@@ -149,7 +149,7 @@ if __name__ == '__main__':
     # Process info
     mq_pub = MQPub(zmq.Context(), "domoweb-engine")
     stop = threading.Event()
-    process_info = ProcessInfo(os.getpid(), 
+    process_info = ProcessInfo(os.getpid(),
                                TIME_BETWEEN_EACH_PROCESS_STATUS,
                                send_process_info,
                                logger,
@@ -160,13 +160,13 @@ if __name__ == '__main__':
                                        (),
                                        {})
     thr_send_process_info.start()
-    # to allow killing the process info thread 
+    # to allow killing the process info thread
     signal.signal(signal.SIGTERM, signal_handler)
 
     logger.info("Starting MQ Handler")
     MQHandler()
     try:
-        ioloop.IOLoop.instance().start() 
+        ioloop.IOLoop.instance().start()
     except KeyboardInterrupt:
         logging.info("Manual stop requested. Exiting!")
         stop.set()

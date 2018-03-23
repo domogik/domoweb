@@ -56,12 +56,12 @@
             <label for="password" class="sr-only">{{ localize('login:password') }}</label>
             <div class="input-group">
               <span class="input-group-addon"><span class="glyphicon glyphicon-lock" aria-hidden='true'></span></span>
-              <input type="password" class="form-control" name="password" id="password" placeholder="{{ localize('login:password') }}">
+              <input type="password" class="form-control" name="password" id="password" placeholder="{{ localize('login:password') }}"></input>
             </div>
           </div>
           <div class="form-group">
             <div class="form-actions clearfix">
-              <button class="submit btn btn-primary pull-right" type="submit">{{ localize('login:signIn') }} <span class="glyphicon glyphicon-chevron-right" aria-hidden='true'></span>
+              <button class="submit btn btn-primary pull-right" type="submit" on-click="memorizeLogin">{{ localize('login:signIn') }} <span class="glyphicon glyphicon-chevron-right" aria-hidden='true'></span>
               </button>
               <a class="btn btn-default" id="helpBtn" on-click="showHelp"><span class="glyphicon glyphicon-question-sign" aria-hidden='true'></span> {{ localize('login:help') }}
               </a>
@@ -97,19 +97,7 @@
                     language: {
                         value: navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage,
                         type: String
-                    },
-                    username: {
-                        type: String,
-                        notify: true,
-                        reflectToAttribute: true,
-                        observer: '_nameChanged'
-                    },
-                    password: {
-                        type: String,
-                        notify: true,
-                        reflectToAttribute: true,
-                        observer: '_psswdChanged'
-                    },
+                    }
                 }
             }
             constructor() {
@@ -120,18 +108,13 @@
             }
             connectedCallback() {
                 super.connectedCallback();
-                // Please notice that this should be improved in 0.6 as here we store the user password as clear data !!
-                // TODO : improve in 0.6
-                // These data are used in the component/websocket.html file : they are added to each json send over WS
             }
             showHelp() {
                 $(this.$.help).modal("show");
             }
-            _nameChanged(newValue, oldValue) {
-                localStorage.setItem("username", newValue);
-            }
-            _psswdChanged(newValue, oldValue) {
-                localStorage.setItem("password", newValue);
+            memorizeLogin() {
+                localStorage.setItem("username", this.$.username.value);
+                localStorage.setItem("password", '*****');
             }
         }
     customElements.define(DmwLogin.is, DmwLogin);
