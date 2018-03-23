@@ -1,0 +1,164 @@
+<link rel="import" href="../input-picker-pattern/input-picker-pattern.html">
+
+<script>
+  /**
+   * mixin to extend an element with a test for an expected input type and implement a polyfill, when wanted or needed
+   *
+   * @appliesMixin InputPickerPattern
+   *
+   * @mixinFunction
+   * @polymer
+   *
+   * @param {Object} superClass class to extend
+   * @return {Object} extended class
+   */
+  const PolyfillPickerPattern = (superClass) => { // eslint-disable-line no-unused-vars
+
+    return class extends InputPickerPattern(superClass) {  // eslint-disable-line no-undef
+      /**
+       * template for native input element
+       * @type {string}
+       */
+      static get _nativeInputTemplate() {
+        return `
+          <input class="native" type="${this.expectedNativeInputType}" hidden$="[[!native]]" disabled$="[[disabled]]" min="[[min]]" max="[[max]]" value="{{${this.nativeInputBinding || this.expectedNativeInputType}::input}}" step="1">
+        `;
+      }
+
+      static get nativeInputBinding() {
+        return 'datetime';
+      }
+
+      static get customStyleToInclude() {
+        return `datetime-shared-style dropdown-style`;
+      }
+
+      static get observers() {
+        return [
+          '_computeValue(confirmedDate, confirmedTime)',
+          '_computeValue(confirmedDatetime)'
+        ];
+      }
+
+      static get properties() {
+        return {
+          confirmedDate: {
+            type: String,
+            notify: true
+          },
+
+          confirmedTime: {
+            type: String,
+            notify: true
+          },
+
+          confirmedDatetime: {
+            type: String,
+            notify: true
+          },
+
+          confirmedValue: {
+            type: Number,
+            notify: true
+          }
+        };
+      }
+
+      /**
+       * custom style content
+       * @type {string}
+       */
+      static get customStyleContent() {
+        return `
+          ${super.customStyleContent || ''}
+          .icon:focus,
+          .icon:hover {
+            @apply --datetime-focus;
+          }
+          #polyfill {
+            @apply --datetime-input;
+          }
+          #polyfill .replacement {
+            padding: 0;
+          }
+          #polyfill:focus,
+          #polyfill:hover {
+            @apply --datetime-focus;
+          }
+          input.native {
+            @apply --datetime-input;
+          }
+          #picker {
+            @apply --datetime-element;
+            @apply --datetime-picker;
+            padding: 0;
+          }
+          #picker #buttons {
+            @apply --datetime-element;
+            background-color: var(--datetime-background);
+            color: var(--datetime-color);
+          }
+        `;
+      }
+
+      static get replacementInputTemplate() {
+        return `
+          <${this.nativeInputBinding}-input class="replacement" locale="[[locale]]" hour12=[[hour12]] clamp="[[clamp]]" datetime="{{confirmedDatetime}}" min="[[min]]" max="[[max]]"></${this.nativeInputBinding}-input>
+        `;
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        setTimeout(() => {
+          this.confirm();
+        }, 0);
+      }
+
+      /**
+       * key press event handler
+       * @param  {[type]} e Event
+       */
+      _checkKeycode(e) {
+        if (!e || (this._hasNative && this.native)) {
+          return;
+        }
+        if (this.opened) {
+          super._checkKeycode(e);
+        } else {
+          this.open();
+        }
+      }
+
+      _computeValue(date, time) {
+        super._computeValue(date, time);
+        if (this.autoConfirm || (this._hasNative && this.native)) {
+          this.confirm();
+        }
+      }
+
+      confirm() {
+        this.setProperties({
+          confirmedDate: this.date,
+          confirmedTime: this.time,
+          confirmedDatetime: this.datetime,
+          confirmedValue: this.value
+        })
+        setTimeout(() => {
+          super.confirm();
+        }, 0);
+      }
+
+      cancel() {
+        this.setProperties({
+          date: this.confirmedDate,
+          time: this.confirmedTime,
+          datetime: this.confirmedDatetime,
+          value: this.confirmedValue
+        })
+        setTimeout(() => {
+          super.cancel();
+        }, 0);
+      }
+    }
+  }
+</script>

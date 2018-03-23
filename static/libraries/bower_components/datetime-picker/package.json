@@ -1,0 +1,36 @@
+{
+  "name": "@fooloomanzoo/datetime-picker",
+  "version": "2.5.4",
+  "authors": [
+    "Johannes Brautzsch <fooloomanzoo>"
+  ],
+  "description": "A picker for date and time, that prefers to use the native input. It includes a calendar and a timer.",
+  "homepage": "https://github.com/fooloomanzoo/datetime-picker/",
+  "keywords": [
+    "webcomponents",
+    "polymer",
+    "picker",
+    "datetime",
+    "date",
+    "calendar",
+    "time",
+    "timer",
+    "range",
+    "input",
+    "polyfill"
+  ],
+  "main": "index.html",
+  "scripts": {
+    "postinstall": "bower install",
+    "prepublish": "npm run build && git add . && git commit -m \"publish new version\" && git push && npm version patch",
+    "build": "bower update && polymer analyze > analysis.json",
+    "prestart": "polymer analyze > analysis.json",
+    "start": "polymer serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fooloomanzoo/datetime-picker.git"
+  },
+  "license": "MIT"
+}

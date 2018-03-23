@@ -1,0 +1,139 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../number-input/number-input.html">
+<link rel="import" href="../input-picker-pattern/dropdown-style.html">
+
+<link rel="import" href="polyfill-picker-pattern.html">
+<link rel="import" href="datetime-input.html">
+<link rel="import" href="time-element.html">
+<link rel="import" href="calendar-element.html">
+
+<dom-module id="datetime-picker">
+  <script>
+    /**
+     *  `<datetime-picker>` is a picker for date and time for **[Polymer](https://github.com/Polymer/polymer)** that can use the **native** input, too. If the **native** picker is choosen and is not supported, this element uses the **polyfill** datetime-picker. The `<calendar-element>` and the `<time-element>` will come in place if the native picker is not available or is not explicitly wanted. A range picker is provided by combining the `min`- and `max`-attributes.
+     *
+     *  ```html
+     *    <datetime-picker value="{{value}}"></datetime-picker>
+     *  ```
+     *
+     *  A use case could be for example, if you want on mobile devices use the `native picker` and on desktop devices this polyfill.
+     *
+     *  ```html
+     *    <datetime-picker native="[[isMobile]]"></datetime-picker>
+     *    ...
+     *      isMobile() {
+     *        const ua = window.navigator.userAgent;
+     *        return (/[mM]obi/i.test(ua) || /[tT]ablet/i.test(ua) || /[aA]ndroid/i.test(ua));
+     *      }
+     *    ...
+     *  ```
+     *
+     *  If you need an **overlay** then use `overlay-datetime-picker`, that creates the element in an `overlay-element`, that extends *IronOverlayBehavior* and will create some of its attribute-bindings.
+     *
+     * Custom property | Description | Default
+     * ----------------|-------------|----------
+     * `--datetime-background` | text-color of the time-element | `#2b2b2b`
+     * `--datetime-color` | text-color of the time-element | `#dadada`
+     * `--datetime-selected-background` | background-color of the focussed time-input and the hovered icons and buttons | `--primary-color, #394FE8`
+     * `--datetime-selected-color` | color of the focussed time-input and the hovered icons and buttons | `#f5f5f5`
+     * `--datetime-element` | Mixin applied to the time-element and the calender-element | `{border-radius: 4px; padding: 4px;}`
+     * `--datetime-picker` | Mixin applied to the picker | `{ box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 1px 8px 0 rgba(0, 0, 0, 0.12), 0 3px 3px -2px rgba(0, 0, 0, 0.4); }`
+     * `--datetime-input` | Mixin applied to the inputs | {border-radius: 4px; padding: 0.3em 0.2em; border: none; outline: none; text-align: center; color: inherit; cursor: pointer; background-color: transparent; box-sizing: content-box; transition: background-color 150ms cubic-bezier(0.6, 1, 0.2, 1);}`
+     * `--datetime-icon` | Mixin applied to closing icon | `{border-radius: 2px; padding: 8px; height: 16px; width: 16px; background-color: transparent; transition: background-color 150ms cubic-bezier(0.6, 1, 0.2, 1); cursor: pointer; fill: currentColor; }`
+     *
+     *  @customElement
+     *  @polymer
+     *
+     *  @appliesMixin CalendarElementPattern
+     *  @appliesMixin TimeElementPattern
+     *  @appliesMixin DatetimePickerMixin
+     *  @appliesMixin PolyfillPickerPattern
+     *  @appliesMixin InputPickerPattern
+     *
+     *  @demo demo/datetime-picker.html
+     **/
+    class DatetimePicker extends PolyfillPickerPattern(TimeElementPattern(CalendarElementPattern(DatetimePickerMixin(Polymer.Element)))) { // eslint-disable-line no-undef
+
+      static get is() {
+        return 'datetime-picker';
+      }
+
+      static get expectedNativeInputType() {
+        return 'datetime-local';
+      }
+
+      static get nativeInputBinding() {
+        return 'datetime';
+      }
+
+      get _hasNative() {
+        return DatetimePicker._hasNative;
+      }
+
+      /**
+       * custom style content
+       * @type {string}
+       */
+      static get customStyleContent() {
+        return `
+          ${super.customStyleContent || ''}
+          .lower {
+            display: inline-flex;
+            flex-direction: row;
+            @apply --datetime-element;
+            padding: 0;
+            overflow: hidden;
+          }
+          .lower > * {
+            border-radius: 0 !important;
+          }
+          .lower > #buttons {
+            flex: 1 0 1px;
+            align-self: stretch;
+            align-items: flex-end;
+            flex-wrap: wrap;
+          }
+        `;
+      }
+
+      static get pickerTemplate() {
+        return `
+          <div id="picker" class="dropdown" horizontal$="[[_hideDay]]">
+            ${this.calendarTemplate}
+            <div class="lower">
+              ${this.timeTemplate}
+              <div id="buttons">
+                ${this._buttonTemplate}
+              <div>
+            <div>
+          </div>
+        `;
+      }
+
+      _onDblClickDay(e) {
+        if (!this.autoConfirm) {
+          super.renderCalendar(this.year, this.month, this.day, this.date);
+          setTimeout( () => {
+            this.confirm();
+          }, 0);
+        }
+      }
+
+      renderCalendar(year, month, day) {
+        if (this._hasNative && this.native) {
+          return;
+        }
+        super.renderCalendar(year, month, day, this.confirmedDate);
+      }
+
+      open() {
+        if (super.open) {
+          super.open();
+        }
+        this.renderCalendar(this.year, this.month, this.day, this.confirmedDate);
+      }
+    }
+
+    window.customElements.define(DatetimePicker.is, DatetimePicker);
+  </script>
+</dom-module>

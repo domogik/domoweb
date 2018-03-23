@@ -1,0 +1,148 @@
+
+<!doctype html>
+<html>
+  <head>
+    <title>&lt;time-picker&gt; demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+
+    <link rel="import" href="../time-picker.html">
+    <link rel="import" href="../date-picker.html">
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+        .result {
+          margin: 0.75em auto;
+          padding: 0.5em;
+          line-height: 1.5;
+        }
+      </style>
+    </custom-style>
+  </head>
+
+  <body>
+
+    <div class="vertical-section-container centered">
+      <h3>Create a standalone time-element and time-input</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <time-element time="{{time}}"></time-element>
+              <div class="vertical-section-container result">
+                <time-input time="{{time}}"></time-input>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Create a native time-picker, if available</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <time-picker native value="{{value}}" date="{{date}}" time="{{time}}" timezone-offset="{{timezoneOffset}}" position="bottom"></time-picker>
+              <div class="vertical-section-container result">
+                <div><code>numeric value</code>: <b>[[value]]</b></div>
+                <div><code>date</code>: <b>[[date]]</b></div>
+                <div><code>time</code>: <b>[[time]]</b></div>
+                <div><code>timezoneOffset</code>: <b>[[timezoneOffset]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Mediated Input</h3>
+      <h4>to confirm the values for date, time, datetime and value</h4>
+      <h5>in 12-hour-format and showing milliseconds (unset 'clamp'-attribute)</h5>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <time-picker hour12 time="{{time}}" confirmed-time="{{confirmedTime}}" clamp="" vertical-align="bottom"></time-picker>
+              <div class="vertical-section-container result">
+                <div><code>current time</code>: <b>[[time]]</b></div>
+                <div><code>confirmed time</code>: <b>[[confirmedTime]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Handling range of dates</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <custom-style>
+                <style is="custom-style">
+                  time-picker.begin {
+                    --datetime-selected-background: #CC1C1C;
+                  }
+                  time-picker.end {
+                    --datetime-selected-background: #2362EC;
+                  }
+                </style>
+              </custom-style>
+              <div class="vertical-section-container">
+                <b>starting time:</b>
+                <time-picker class="begin"  date="{{date}}" datetime="{{min}}" max="{{max}}" vertical-align="bottom"></time-picker>
+                <b>end time:</b>
+                <time-picker class="end"  date="{{date}}" datetime="{{max}}" min="{{min}}" vertical-align="top"></time-picker>
+                <b>at date:</b>
+                <date-picker date="{{date}}" vertical-align="top"></date-picker>
+              </div>
+              <div class="vertical-section-container result">
+                <code>start:</code>
+                <b>[[min]]</b>
+                <code>end:</code>
+                <b>[[max]]</b>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Clamp on seconds</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <custom-style>
+                <style is="custom-style">
+                  time-picker.clamp {
+                    --datetime-selected-background: #9ab6ed;
+                    --datetime-selected-color: #001641;
+                    --datetime-background: #e2ab59;
+                    --datetime-color: #001641;
+                  }
+                </style>
+              </custom-style>
+              <div class="vertical-section-container">
+                <time-picker class="clamp" time="{{time}}" clamp="seconds" vertical-align="bottom"></time-picker>
+              </div>
+              <div class="vertical-section-container result">
+                <div><code>time</code>: <b>[[time]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,231 @@
+
+<!doctype html>
+<html>
+  <head>
+    <title>&lt;date-picker&gt; demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+
+    <link rel="import" href="../date-picker.html">
+    <link rel="import" href="../../input-picker-pattern/overlay-element.html">
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+        .result {
+          margin: 0.75em;
+          padding: 0.5em;
+          line-height: 1.5;
+        }
+      </style>
+    </custom-style>
+  </head>
+
+  <body>
+
+    <div class="vertical-section-container centered">
+      <h3>Create a standalone calendar-element and date-input</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <calendar-element date="{{date}}"></calendar-element>
+              <div class="vertical-section-container result">
+                <date-input date="{{date}}"></date-input>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Create a native date-picker, if available</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <date-picker native value="{{value}}" date="{{date}}" confirmed-date="{{confirmedDate}}" vertical-align="bottom"></date-picker>
+              <div class="vertical-section-container result">
+                <div><code>numeric value</code>: <b>[[value]]</b></div>
+                <div><code>date</code>: <b>[[date]]</b></div>
+                <div><code>confirmed date</code>: <b>[[confirmedDate]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Autoconfirming Input</h3>
+      <h4>to confirm the values for date, time, datetime and value</h4>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <date-picker auto-confirm date="{{date}}" confirmed-date="{{confirmedDate}}" vertical-align="bottom"></date-picker>
+              <div class="vertical-section-container result">
+                <div><code>current date</code>: <b>[[date]]</b></div>
+                <div><code>confirmed date</code>: <b>[[confirmedDate]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Handling range of dates</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <custom-style>
+                <style is="custom-style">
+                  date-picker.begin {
+                    --datetime-selected-background: #1cccac;
+                    --datetime-selected-color: #fff;
+                    --datetime-background: #448b7e;
+                    --datetime-color: #fff;
+                  }
+                  date-picker.end {
+                    --datetime-selected-background: #7551ee;
+                    --datetime-selected-color: #fff;
+                    --datetime-background: #594894;
+                    --datetime-color: #fff;
+                  }
+                </style>
+              </custom-style>
+              <div class="vertical-section-container">
+                <date-picker class="begin" confirmed-date="{{min}}" max="{{max}}" vertical-align="bottom"></date-picker>
+                <date-picker class="end" confirmed-date="{{max}}" min="{{min}}" vertical-align="top"></date-picker>
+              </div>
+              <div class="vertical-section-container result">
+                <div><code>start</code>: <b>[[min]]</b></div>
+                <div><code>end</code>: <b>[[max]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Use the properties to extend a picker to a custom event listing</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind id="eventPickerDemo">
+            <template is="dom-bind">
+              <custom-style>
+                <style is="custom-style">
+                  #eventPicker {
+                    --datetime-selected-background: #ddcd7e;
+                    --datetime-selected-color: #202020;
+                    --datetime-background: #b07143;
+                    --datetime-color: #f1f1f1;
+                  }
+                  .info {
+                    background: #e9bd9d;
+                    color: #1d1d1d;
+                    border-radius: 4px;
+                    padding: 1em;
+                    padding-bottom: 0.25em;
+                    font-size: 0.75em;
+                  }
+                  .overlay {
+                    max-width: 100% !important;
+                    max-height: 100% !important;
+                  }
+                </style>
+              </custom-style>
+              <div class="vertical-section-container">
+                <date-picker id="eventPicker" opened="{{opened}}" date="{{date}}" current-selected-day-node="{{currentSelectedDayNode}}" vertical-align="bottom"></date-picker>
+                <template is="dom-if" if="[[currentSelectedDayNode]]">
+                  <overlay-element class="overlay" opened$="[[_enshureOpened(opened, currentSelectedDayNode)]]" on-click="close" no-overlap fit-into="[[currentSelectedDayNode]]" no-cancel-on-outside-click vertical-align="auto" horizontal-align="auto">
+                    <div class="info">
+                      <div><b>[[_toLocaleDateString(currentSelectedDayNode.dataset.date)]]</b></div>
+                      <ul>
+                        <template is="dom-repeat" items="[[_generateEventList(currentSelectedDayNode.dataset.date)]]">
+                          <li><b>[[item.time]]:  </b>[[item.detail]]</li>
+                        </template>
+                      </ul>
+                    </div>
+                  </overlay-element>
+                </template>
+              </div>
+            </template>
+          </dom-bind>
+          <script>
+            const bind = document.querySelector('#eventPickerDemo');
+            bind._toLocaleDateString = function(datestr) {
+              return new Date(datestr).toLocaleDateString(window.navigator.language, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+            bind._generateEventList = function() {
+              const list = [];
+              const startHour = 8;
+              const endHour = 21;
+              const where = ['at the bar', 'at the beach', 'at the forest', 'at the zoo', 'in the cinema', 'on the moon', 'in the trunk'];
+              const who = ['Mom', 'Peter', 'Paul', 'Mary', 'Sally', 'my dog', 'my lawyer'];
+              const what = ['see', 'put', 'swim with', 'walk with', 'watch', 'meet with'];
+              for (let i = startHour; i < endHour; i++) {
+                if (Math.random() > 0.75) {
+                  list.push( {
+                    time: i + ':00',
+                    detail: what[Math.floor(what.length*Math.random())] + ' ' + who[Math.floor(who.length*Math.random())] + ' ' + where[Math.floor(where.length*Math.random())]
+                  })
+                }
+              }
+              return list;
+            }
+            bind._enshureOpened = function(opened) {
+              return opened;
+            }
+            bind.close = function(e) {
+              let paths = e.path;
+              while (paths.length) {
+                if (paths[0] && paths[0].opened === true) {
+                  paths[0].removeAttribute('opened');
+                  break;
+                }
+                paths.shift();
+              }
+            }
+          </script>
+        </template>
+      </demo-snippet>
+    </div>
+
+    <div class="vertical-section-container centered">
+      <h3>Clamp on day to get a month-picker</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind>
+            <template is="dom-bind">
+              <custom-style>
+                <style is="custom-style">
+                  date-picker.clamp {
+                    --datetime-selected-background: #9ab6ed;
+                    --datetime-selected-color: #001641;
+                    --datetime-background: #e39f3b;
+                    --datetime-color: #001641;
+                  }
+                </style>
+              </custom-style>
+              <div class="vertical-section-container">
+                <date-picker class="clamp" date="{{date}}" clamp="day" vertical-align="top"></date-picker>
+              </div>
+              <div class="vertical-section-container result">
+                <div><code>date</code>: <b>[[date]]</b></div>
+              </div>
+            </template>
+          </dom-bind>
+        </template>
+      </demo-snippet>
+    </div>
+
+  </body>
+
+</html>
