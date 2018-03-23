@@ -206,7 +206,7 @@ class WSHandler(websocket.WebSocketHandler):
     @gen.coroutine
     def on_message(self, message):
         jsonmessage = json.loads(message)
-        logger.info("WS: Received message {0} /n {1}" .format(message, jsonmessage[1]))
+        logger.info("WS: Received message {0}".format(message))
         if 'rest_auth' in jsonmessage[1] :
             pwd = self.get_secure_cookie('hashrestpwd')
             hashPwd = self.get_cookie('hashrestpwd')
