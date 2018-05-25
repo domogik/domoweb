@@ -4,6 +4,8 @@ from sqlalchemy import Column, Integer, Unicode, UnicodeText, Boolean, ForeignKe
 from sqlalchemy.orm import backref, relationship, sessionmaker, joinedload
 import logging
 import inspect
+from threading import Lock
+import traceback
 
 logger = logging.getLogger('domoweb')
 
@@ -15,6 +17,7 @@ engine = create_engine(url)
 
 from sqlalchemy.ext.declarative import declarative_base
 
+SessionLock = Lock()
 Base = declarative_base()
 metadata = Base.metadata
 # create a configured "Session" class
@@ -178,7 +181,7 @@ class SectionParam(Base):
         s = session.query(cls).filter_by(section_id = section_id, key = key).first()
         if s:
             session.delete(s)
-        session.commit()
+            session.commit()
         return s
 
 class Section(Base):
@@ -446,12 +449,19 @@ class Sensor(Base):
 
     @classmethod
     def update(cls, id, timestamp, value):
-        s = session.query(cls).get(id)
-        if s:
-            s.last_received = timestamp
-            s.last_value = value
-        session.add(s)
-        session.commit()
+#        logger.info(u"Sensor.update Session locked : {0}".format(SessionLock.locked()))
+        with SessionLock :
+            try :
+                s = session.query(cls).get(id)
+                if s :
+                    s.last_received = timestamp
+                    s.last_value = value
+                    session.add(s)
+                    session.commit()
+                else :
+                    logger.warning(u"Class Sensor.update: session.query return {0}".format(s))
+            except :
+               logger.warning(u"Class Sensor.update session.query FAIL : {0}".format(traceback.format_exc()))
         return s
 
 class WidgetInstance(Base):
@@ -580,6 +590,7 @@ class WidgetInstanceOption(Base):
 
     @classmethod
     def saveKey(cls, instance_id, key, value):
+        logger.info(u"Section Save WidgetInstanceOption: {0} / {1} / {2}".format(instance_id, key, value))
         s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
         if not s:
             s = cls(instance_id=instance_id, key=key)

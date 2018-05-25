@@ -74,11 +74,11 @@ class LoginHandler(BaseHandler):
             self.render("login.html", error = msg, info = None)
 
     def check_permission(self, username, password):
-        logger.info("Authentication : checking persmission. User='{0}'".format(username))
+        logger.info(u"Authentication : checking persmission. User='{0}'".format(username))
 
         # we test a protected url on the rest server to check if the account exists
         url = '{0}/device'.format(options.rest_url).replace("://", "://{0}:{1}@".format(username, password))
-        logger.info("REST Call : {0}/device".format(url).replace(password, "*******"))
+        logger.info(u"REST Call : {0}/device".format(url).replace(password, "*******"))
 
         http_client = HTTPClient()
         # TODO : improve this part!
@@ -96,15 +96,15 @@ class LoginHandler(BaseHandler):
 
             # Access denied, so bad login/password
             if e.response.code == 401:
-                logger.warning("Authentication denied by REST")
+                logger.warning(u"Authentication denied by REST")
                 return False, "Access denied. Incorrect name or password"
             # Other error
             else:
-                logger.error("Error ({0}) : {1}".format(e.response.code, str(e)))
+                logger.error(u"Error ({0}) : {1}".format(e.response.code, str(e)))
                 return False, "HTTP error while calling the rest server : {0}<br>Url called is {1}".format(str(e), url)
         except Exception as e:
             # Other errors are possible, such as IOError.
-            logger.error("Error: " + str(e))
+            logger.error(u"Error: " + str(e))
             return False, "An error occured while logging : {0}".format(str(e))
         http_client.close()
 
@@ -191,8 +191,6 @@ class ConfigurationHandler(BaseHandler):
                 if p.startswith( 'params' ):
                     if v[0]:
                         SectionParam.saveKey(section_id=s.id, key=p[7:], value=v[0])
-                        print s.id, p[7:], v[0]
-
             json = to_json(s)
             WSHandler.sendAllMessage(['section-added', json])
             self.write("{success:true}")
@@ -206,7 +204,7 @@ class WSHandler(websocket.WebSocketHandler):
     @gen.coroutine
     def on_message(self, message):
         jsonmessage = json.loads(message)
-        logger.info("WS: Received message {0}".format(message))
+        logger.info(u"WS: Received message {0}".format(message))
         if 'rest_auth' in jsonmessage[1] :
             pwd = self.get_secure_cookie('hashrestpwd')
             hashPwd = self.get_cookie('hashrestpwd')
@@ -214,9 +212,9 @@ class WSHandler(websocket.WebSocketHandler):
             jsonmessage[1]['rest_auth']['username']
             if jsonPwd and (jsonPwd[0] == '"' and jsonPwd[-1] == '"'):
                 jsonPwd = jsonPwd[1:-1]
-            logger.debug("REST password cookie {0} compare with request : {1}".format(hashPwd, jsonPwd))
+            logger.debug(u"REST password cookie {0} compare with request : {1}".format(hashPwd, jsonPwd))
             if  not jsonmessage[1]['rest_auth']['username'] or not hashPwd or hashPwd != jsonPwd :
-                logger.warning("Access denied. Incorrect name or REST password")
+                logger.warning(u"Access denied. Incorrect name or REST password")
                 self.sendMessage(['login', {'error': "Access denied. Incorrect name or REST password"}])
                 return
             else :
@@ -268,7 +266,7 @@ class WSHandler(websocket.WebSocketHandler):
                 optionsdict = WidgetInstance.getOptionsDict(id=item.id)
                 j['instances'][index]["options"] = optionsdict
             except:
-                logger.error("Error while getting options for a widget instance. Maybe you delete a widget folder but it is still defined in database? Error: {0}".format(traceback.format_exc()))
+                logger.error(u"Error while getting options for a widget instance. Maybe you delete a widget folder but it is still defined in database? Error: {0}".format(traceback.format_exc()))
 
         return ['section-details', j]
 
@@ -328,7 +326,7 @@ class WSHandler(websocket.WebSocketHandler):
             if item.widget:
                 json['instances'][index]["widget"] = to_json(item.widget)
             else: #remove instance
-                logger.info("Section: Widget '%s' not installed, removing instance" % item.widget_id)
+                logger.info(u"Section: Widget '{0}' not installed, removing instance".format(item.widget_id))
                 WidgetInstance.delete(item.id)
                 del json['instances'][index]
         return ['widgetinstance-sectionlist', json];
@@ -387,7 +385,7 @@ class WSHandler(websocket.WebSocketHandler):
         else:
             selector = 'avg'
         url = '{0}/sensorhistory/id/{1}/from/{2}/to/{3}/interval/{4}/selector/{5}'.format(options.rest_url, data['id'],data['from'],data['to'],data['interval'], selector).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
-        logger.info("REST Call : {0}/device".format(url).replace(data['rest_auth']['password'], "*******"))
+        logger.info(u"REST Call : {0}/device".format(url).replace(data['rest_auth']['password'], "*******"))
         http = AsyncHTTPClient()
         request = HTTPRequest(url=url, validate_cert=False)
         response = yield http.fetch(request)
@@ -407,7 +405,7 @@ class WSHandler(websocket.WebSocketHandler):
         else:
             # REST: /rest/sensorhistory/id/<id>/from/<tstamp> Retrieve the history from a certain timestamp
             url = '{0}/sensorhistory/id/{1}/from/{2}'.format(options.rest_url, data['id'],data['from']).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
-        logger.info("REST Call : {0}/device".format(url).replace(data['rest_auth']['password'], "*******"))
+        logger.info(u"REST Call : {0}/device".format(url).replace(data['rest_auth']['password'], "*******"))
         http = AsyncHTTPClient()
         request = HTTPRequest(url=url, validate_cert=False)
         response = yield http.fetch(request)
@@ -424,29 +422,29 @@ class WSHandler(websocket.WebSocketHandler):
 
         def handle_request(response):
             if response.error:
-                logger.error("Call to butler in Error: {0}".format(response.error))
+                logger.error(u"Call to butler in Error: {0}".format(response.error))
             else:
-                logger.info("Call to butler OK")
+                logger.info(u"Call to butler OK")
 
-        logger.info("IN WSButlerDiscuss")
+        logger.info(u"IN WSButlerDiscuss")
         url = '{0}/butler/discuss'.format(options.rest_url).replace("://", "://{0}:{1}@".format(data['rest_auth']['username'], data['rest_auth']['password']))
-        logger.info("REST Call : {0}/device".format(url).replace(data['rest_auth']['password'], "*******"))
+        logger.info(u"REST Call : {0}/device".format(url).replace(data['rest_auth']['password'], "*******"))
         http = AsyncHTTPClient()
 
         discuss_data = {"text" : data["data"]["text"], "source" : data["data"]["source"]}
         #body = urllib.urlencode(data)
         body = json.dumps(discuss_data)
         headers = {'Content-Type': 'application/json'}
-        logger.info("BEFORE")
+        logger.info(u"BEFORE")
         #response = yield http.fetch(url, handle_request, method='POST', headers=headers, body=body)
         request = HTTPRequest(url, method='POST', headers=headers, body=body, validate_cert=False)
         try:
             response = yield http.fetch(request)
-            logger.info("REST response : {0}".format(response.body))
+            logger.info(u"REST response : {0}".format(response.body))
             j = json_decode(response.body)
         except HTTPError as e:
             # Handle HTTP errors
-            logger.warning("REST error : {0}".format(str(e)))
+            logger.warning(u"REST error : {0}".format(str(e)))
 
             if e.code == 599:
                 j = {"text" : "Timeout while requesting the butler over REST (Error 599)"}
@@ -457,13 +455,13 @@ class WSHandler(websocket.WebSocketHandler):
 
     def sendMessage(self, content):
         data=json.dumps(content)
-        logger.info("WS: Sending message %s" % data)
+        logger.info(u"WS: Sending message {0}".format(data))
         self.write_message(data)
 
     @classmethod
     def sendAllMessage(cls, content):
         data=json.dumps(content)
-        logger.info("WS: Sending message %s" % data)
+        logger.info(u"WS: Sending to all message {0}".format(data))
         for socket in socket_connections:
             socket.write_message(data)
 
@@ -487,16 +485,16 @@ class MQHandler(MQAsyncSub):
                 logger.error(u"MQ: PATCH for issue #1976")
 
             logger.info(u"id={0}, timestamp={1}, value='{2}'".format(content["sensor_id"], content["timestamp"], content["stored_value"]))
-            Sensor.update(content["sensor_id"], content["timestamp"], content["stored_value"])
-            WSHandler.sendAllMessage([msgid, content])
+            try:
+                Sensor.update(content["sensor_id"], content["timestamp"], content["stored_value"])
+                WSHandler.sendAllMessage([msgid, content])
+            except :
+                logger.error(u"MQ Fail to update device-stats sensor {0} , ERROR : {1}".format(content["sensor_id"], traceback.format_exc()))
 
         elif msgid == 'device.update':
-            logger.info("MQ: message 'device.update' catched! Reloading the devices list")
+            logger.info(u"MQ: message 'device.update' catched! Reloading the devices list")
             mqDataLoader.loadDevices(options.develop)
 
-
-# TODO : use BaseHandler also ?
-#class UploadHandler(RequestHandler):
 class UploadHandler(BaseHandler):
     def post(self):
         from PIL import Image
