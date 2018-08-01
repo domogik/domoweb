@@ -28,6 +28,7 @@
                 display: inline-flex;
                 margin-top: calc(3px*var(--wscale-h)*var(--wscale-r));
                 width: 100%;
+                border: 1px solid #0094CE;
             }
             .contalergen li,
             .contlegend li {
@@ -220,6 +221,10 @@
                         notify: true,
                         observer: 'DmwHealthVigipollensChanged'
                     },
+                    vigilanceDepartement_value: {
+                        notify: true,
+                        observer: 'vigilanceDepartement_valueChanged',
+                    },
                     vigilanceColorDepartement_value: {
                         notify: true,
                         observer: 'vigilanceColorDepartement_valueChanged',
@@ -328,7 +333,7 @@
 
             vigilanceDepartement_valueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value ;
-                this.title = "Risques allergiques (" + newValue + ")"
+                this.title = "Risques allergiques du " + newValue
             }
 
             vigilanceColorDepartement_valueChanged(newValue, oldValue) {
