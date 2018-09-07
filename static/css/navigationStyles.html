@@ -24,13 +24,22 @@
 }
 
 #butler {
-    z-index: 20000;
+    z-index: 20;
 	font-size: 0.8em;
 	position: fixed;
 	top: 0;
 	left: 0;
+    -moz-transition:z-index 5s;
+    -webkit-transition:z-index 5s;
+    transition:z-index 5s;
 }
 
+#butler:hover {
+    z-index:500;
+    -moz-transition:z-index 8s;
+    -webkit-transition:z-index 8s;
+    transition:z-index 8s;
+}
 
 #logout .active {
 	background-color: #2D2C2F !important;
@@ -39,13 +48,22 @@
 }
 
 #logout {
-    z-index: 20000;
+    z-index: 20;
 	font-size: 0.8em;
 	position: fixed;
 	top: 0;
 	right: 0;
+    -moz-transition:z-index 5s;
+    -webkit-transition:z-index 5s;
+    transition:z-index 5s;
 }
 
+#logout:hover {
+    z-index:500;
+    -moz-transition:z-index 8s;
+    -webkit-transition:z-index 8s;
+    transition:z-index 8s;
+}
 
 #sectionsTree .active {
 	background-color: #2D2C2F !important;
@@ -54,11 +72,21 @@
 }
 
 #sectionsTree {
-    z-index: 20000;
+    z-index: 20;
 	font-size: 0.8em;
 	position: fixed;
 	bottom: 0;
 	left: 0;
+    -moz-transition:z-index 5s;
+    -webkit-transition:z-index 5s;
+    transition:z-index 5s;
+}
+
+#sectionsTree:hover {
+    z-index:500;
+    -moz-transition:z-index 8s;
+    -webkit-transition:z-index 8s;
+    transition:z-index 8s;
 }
 
 .menu-corners .menu-item .menu-button:not(.active),
@@ -230,6 +258,14 @@
         height: var(--navCircleRadius);
         width: var(--navCircleRadius);
         border-radius: var(--navCircleRadius);
+    }
+
+    .stop-transition {
+      -webkit-transition: none !important;
+      -moz-transition: none !important;
+      -o-transition: none !important;
+      -ms-transition: none !important;
+      transition: none !important;
     }
 
     </style>

@@ -37,11 +37,11 @@
       </div>
 
       <div id="butler" class="">
-          <div class="menu-item">
+        <div class="menu-item">
             <button id="toggleRadialTopLeft" on-click="activateButler" class="menu-button">
                 <i class="fa fa-microphone"></i>
             </button>
-          </div>
+        </div>
       </div>
 
       <div id="logout" class="">
@@ -400,6 +400,8 @@
                 var $sectionsTree = $(this.$.sectionsTree);
                 let self = e.currentTarget;
                 if(!this.navRadLevelOneShown){
+                        $sectionsTree.addClass('stop-transition');
+                        $sectionsTree.css('z-index',2000);
                         self.classList.add('active');
 
                         var $level1 = $sectionsTree.find('ul.level-1')[0];
@@ -408,6 +410,7 @@
                         $sectionsTree.find('ul.level-1').removeClass('hide');
                         $sectionsTree.find('ul.level-1').addClass('show');
                         this.navRadLevelOneShown = true;
+                        $sectionsTree.removeClass('stop-transition');
                     } else {
                         this.navRadLevelOneShown = false;
                         $(self).removeClass('active');
@@ -434,6 +437,7 @@
                                 this.navRadLevelThreeShown = false;
                             }
                         });
+                        $sectionsTree.css('z-index','');
                     }
                 }
 
