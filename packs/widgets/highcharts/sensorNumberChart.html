@@ -22,32 +22,28 @@
                 height: 100%;
                 display: block;
             }
-            #numblock {
-                position: relative;
-                top: 35%;
-                height: 70%;
-                -webkit-transform: translateY(-35%);
-                -ms-transform: translateY(-35%);
-                transform: translateY(-35%);
-                text-align: center;
-                margin-left: 3px;
-                margin-right: 3px;
-            }
             #number {
+                position: relative;
+                top: 50%;
+                -webkit-transform: translate(-50%, -50%);
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                left: 50%;
+                text-align: center;
+                overflow: hidden;
                 display: inline-block;
+                padding: 10px;
             }
             #unit {
                 position: absolute;
                 top:5px;
                 right: 5px;
-                /* font-size: calc(2em*var(--wscale-h)); */
                 font-size: calc(1em*var(--wscale-h)*var(--wscale-r));
             }
             #icongraph {
                 position: absolute;
                 bottom: 2px;
                 right: 5px;
-                /* font-size: calc(1.3em*var(--wscale-h)); */
                 font-size: calc(1em*var(--wscale-h)*var(--wscale-r));
 
             }
@@ -80,9 +76,7 @@
             <dmw-sensor id='primary' sensorkey="primary" sensorvalue="{{sensorvalue}}" sensorhistory="{{history}}"></dmw-sensor>
         </slot>
 
-        <div id='numblock'>
-            <span id='number'>{{number}}</span>
-        </div>
+        <div id='number'>{{number}}</div>
         <div id='unit'>{{unit}}</div>
 
         <div id="icongraph" on-click="displayGraph">
@@ -122,6 +116,12 @@
               }
               return memoizedTemplate;
             }
+            
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
+
             connectedCallback() {
                 super.connectedCallback();
                 this.number = "--";
@@ -136,8 +136,9 @@
                 this.periode = this.localize("Day");
                 this.initialZIndex = this.style.zIndex;      // z-index for the zoom mode
             }
+            
             resized() {
-                this.adjustText(this.$.numblock, this.$.number);
+                this.adjustText(this, this.$.number);
             }
 
             // ------------------------------------------------------------------------------------
@@ -175,15 +176,15 @@
                        var i = Math.floor(Math.log(newValue) / Math.log(k));
                     this.$.number.innerHTML = (newValue / Math.pow(k, i)).toPrecision(3);
                     if (unit) {
-                        this.unit = sizes[i] + this.localize("domoweb:unit", 'value', unit);
+                        this.unit = sizes[i] + this.localize("domoweb:unit", "value", unit);
                     }
                 } else {
                     this.$.number.innerHTML = newValue;
                     if (unit) {
-                        this.unit = this.localize("domoweb:unit", 'value', unit);
+                        this.unit = this.localize("domoweb:unit", "value", unit);
                     }
                 }
-                this.adjustText(this.$.numblock, this.$.number);
+                this.adjustText(this, this.$.number);
             }
 
             // ------------------------------------------------------------------------------------

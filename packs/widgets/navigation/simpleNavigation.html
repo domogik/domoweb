@@ -8,9 +8,9 @@
 }
 </style>
 
-<dom-module id="dmw-navigation-simpleNavigation" extends="dmw-widget">
-    <template>
-        <link rel="stylesheet" href="/widget/navigation/font-awesome-4.7.0/css/font-awesome.min.css" shim-domshadow>
+<dom-module id="dmw-navigation-simplenavigation">
+    <template id="extended-styles">
+        <link rel="stylesheet" href="/widget/navigation/font-awesome-4.7.0/css/font-awesome.min.css">
         <style type="text/css">
             :host {
                 height: 100%;
@@ -21,21 +21,45 @@
                 border-style: none;
                 width: 80%;
                 height: 80%;
-                top: 10%;
-                left: 10%;
+                top: 15%;
+                left: 15%;
                 background-color: transparent;
             }
         </style>
-        <shadow></shadow>
-        <button id="goto" class=""><i class="fa fa-{{ icon }} fa-4x"></i></button>
+        <!-- <button id="goto" class=""><i class="fa fa-{{icon}} fa-2x"></i></button> -->   <!-- I don't understand why the icon doesn't display with this line -->
+        <button id="goto"><i class="fa fa-external-link fa-2x"></i></button>
     </template>
+    
     <script>
-                class Dmw extends DmwWidget {
-            static get is () { return 'dmw-navigation-simpleNavigation',
+     (function () {
+        let memoizedTemplate;
+
+        class Dmw extends DmwWidget {
+            static get is () { return 'dmw-navigation-simplenavigation'; }
+            
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+            
+            constructor() {
+                super();
+                this.ratioConstraint = 'width';
+            }
+            
             connectedCallback() {
                 super.connectedCallback();
                 this.$.goto.addEventListener('click', this.goto.bind(this));
-            },
+            }
+            
             optionsUpdated() {
                 if (this.options['WidgetTextColor'] == undefined) {
                     this.$.goto.style.color = "#ffffff";
@@ -43,8 +67,10 @@
                 else {
                     this.$.goto.style.color = this.options['WidgetTextColor'];
                 }
+                console.error("faIcon: " + this.options['faIcon']) ;
                 this.icon = this.options['faIcon'];
-            },
+            }
+            
             goto(e) {
                 DMW.main.section.setAttribute('sectionid', this.options['targetSection']);
                 e.preventDefault();
@@ -52,5 +78,6 @@
             }
 	    };
     customElements.define(Dmw.is, Dmw);
+    })();
     </script>
 </dom-module>
