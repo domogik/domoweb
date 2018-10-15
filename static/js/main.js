@@ -157,7 +157,7 @@ function configureHandler() {
 
 	DMW.main.ajax.setAttribute('handleAs', 'text');
 	DMW.main.ajax.addEventListener("polymer-response",
-		function(e) {
+		function handler(e) {
 			var response = e.detail.response;
 			if (response == "{success:true}") {
 				DMW.main.modalOverlay.classList.remove('on');
@@ -193,17 +193,19 @@ function configureHandler() {
 				var inputs = DMW.main.modalOverlay.querySelectorAll('#widgetstyle input');
 				inputs = Array.prototype.slice.call(inputs);
 				inputs.forEach(function(element) {
-					element.addEventListener('change', onWidgetStyleChange);
+					element.addEventListener('input', onWidgetStyleChange);
 				});
 
 				// Init Widget Preview
-				var widgetpreview = document.getElementById('widgetpreview');
-				widgetpreview.style.color = document.getElementById('params-WidgetTextColor').value;
-				widgetpreview.style.borderColor = document.getElementById('params-WidgetBorderColor').value;
-				widgetpreview.style.backgroundColor = document.getElementById('params-WidgetBackgroundColor').value;
-				widgetpreview.style.borderRadius = document.getElementById('params-WidgetBorderRadius').value;
-				widgetpreview.style.boxShadow = document.getElementById('params-WidgetBoxShadow').value;
-
+				var widgetpreview = document.getElementById('widgetSectionPreview');
+				widgetpreview.style.color = document.getElementById('params_WidgetTextColor').value;
+			//	widgetpreview.style.borderColor = document.getElementById('params_WidgetBorderColor').value;
+                widgetpreview.style.borderColor = getWidgetColorValue('params_WidgetBorderColor');
+				widgetpreview.style.backgroundColor = getWidgetColorValue('params_WidgetBackgroundColor'); // document.getElementById('params_WidgetBackgroundColor').value;
+              //  setWidgetColorValue('params_WidgetBackgroundColor', document.getElementById('params_WidgetBackgroundColor').value);
+				widgetpreview.style.borderRadius = document.getElementById('params_WidgetBorderRadius').value;
+				widgetpreview.style.boxShadow = getWidgetBoxShadowValue('params_WidgetBoxShadow');
+              //  setWidgetBoxShadowValue('params_WidgetBoxShadow', document.getElementById('params_WidgetBoxShadow').value);
 				// Mode selector
 				document.querySelectorAll('input.gridType').forEach(function(input) {
 					input.addEventListener('click', gridModeSwitch, false);
@@ -216,8 +218,9 @@ function configureHandler() {
 
 				// Background
 				var sectionBackgroundCSS = document.getElementById('SectionBackgroundCSS'),
-				backgroundPreview = document.getElementById('backgroundpreview'),
-				imagePreview = document.getElementById('imagepreview');
+                    backgroundPreview = document.getElementById('backgroundpreview'),
+                    imagePreview = document.getElementById('imagepreview'),
+                    widgetStyleBackground = document.getElementById('widgetstyleBackground');
 
 				// Gradient generator
 				var generator = new ColorfulBackgroundGenerator();
@@ -226,13 +229,28 @@ function configureHandler() {
 				generator.addLayer(new ColorfulBackgroundLayer(135, section.params.SectionL2Hue, section.params.SectionL2Saturation, section.params.SectionL2Lightness, 10, 80))
 				generator.addLayer(new ColorfulBackgroundLayer(45, section.params.SectionL3Hue, section.params.SectionL3Saturation, section.params.SectionL3Lightness, 0, 70));
 				// Assign generated style to the element identified by it's id
-				if (!sectionBackgroundCSS.value) gradientHandler(generator, 'backgroundpreview');
-
+                if (!sectionBackgroundCSS.value) {
+                    gradientHandler(generator, 'backgroundpreview');
+                    if (widgetStyleBackground.style.background == "") {
+                        generator.assignStyleToElementId('widgetstyleBackground');
+                    }
+                } else {
+                    backgroundPreview.style.background = sectionBackgroundCSS.value;
+                    if (widgetStyleBackground.style.background == "") {
+                        widgetStyleBackground.style.background = sectionBackgroundCSS.value;
+                    }
+                }
 				sectionBackgroundCSS.addEventListener('change', function(e) {
 					if (sectionBackgroundCSS.value) {
 						backgroundPreview.style.background = sectionBackgroundCSS.value;
+                        if (imagePreview.style.backgroundImage == "none") {
+                            widgetStyleBackground.style.background = sectionBackgroundCSS.value;
+                        }
 					} else {
 						gradientHandler(generator, 'backgroundpreview');
+                        if (imagePreview.style.backgroundImage == "none") {
+                            widgetStyleBackground.style.background = backgroundPreview.style.background;
+                        }
 					}
 				}, false);
 
@@ -253,7 +271,10 @@ function configureHandler() {
 					        case "Saturation":
 					            c.saturation = e.target.value;
 					    }
-					    if (!sectionBackgroundCSS.value) generator.assignStyleToElementId('backgroundpreview');
+					    if (!sectionBackgroundCSS.value) {
+                            generator.assignStyleToElementId('backgroundpreview');
+                            widgetStyleBackground.style.background = backgroundPreview.style.background;
+                        }
 					});
 				})
 				document.getElementById('randomgradient').addEventListener('click', function(e) {
@@ -274,8 +295,11 @@ function configureHandler() {
 			          changed  : function(oldValue, newValue) {
 			          	if (newValue != "none") {
 							imagePreview.style.backgroundImage = "url('" + newValue + "')";
+                            widgetStyleBackground.style.backgroundImage = "url('" + newValue + "')";
 			          	} else {
 			          		imagePreview.style.backgroundImage = "none";
+                            widgetStyleBackground.style.backgroundImage = "none";
+                            widgetStyleBackground.style.background = backgroundPreview.style.background;
 			          	}
 			          }
 			        });
@@ -300,7 +324,7 @@ function configureHandler() {
 
 				// Display modal
 				DMW.main.modalOverlay.classList.add('on');
-			}
+                this.removeEventListener('polymer-response', handler);			}
 		});
 	DMW.main.ajax.setAttribute('method', 'GET');
 	DMW.main.ajax.setAttribute('params', '{"action":"section", "id":"' + DMW.main.section.getAttribute('sectionid') + '"}');
@@ -475,7 +499,7 @@ function gridParameterChange(e) {
 }
 
 function gridParametersCheck() {
-	var type = document.querySelector('input[name="params-GridMode"]:checked').value;
+	var type = document.querySelector('input[name="params_GridMode"]:checked').value;
 	var columns = document.getElementById('GridColumns').value;
 	var rows = document.getElementById('GridRows').value;
 	var widgetSize = document.getElementById('GridWidgetSize').value;
@@ -502,26 +526,113 @@ function removeSectionHandler() {
 }
 
 function onWidgetStyleChange(e) {
-	var widgetpreview = document.getElementById('widgetpreview');
-
-	switch(e.target.id) {
-	    case 'WidgetTextColor':
-	    	widgetpreview.style.color = e.target.value;
-	        break;
-	    case 'WidgetBorderColor':
-		    widgetpreview.style.borderColor = e.target.value;
-	        break;
-	    case 'WidgetBackgroundColor':
-	    	widgetpreview.style.backgroundColor = e.target.value;
-	        break;
-	    case 'WidgetBorderRadius':
-		    widgetpreview.style.borderRadius = e.target.value;
-	        break;
-	    case 'WidgetBoxShadow':
-		    widgetpreview.style.boxShadow = e.target.value;
-	        break;
+	var widgetpreview = document.getElementById('widgetSectionPreview');
+    let key = e.target.id.split('_')[1].split('-')[0];
+    switch (key) {
+        case 'WidgetTextColor' :
+            widgetpreview.style.color = e.target.value;
+            break;
+        case 'WidgetBackgroundColor' :
+            widgetpreview.style.backgroundColor = getWidgetColorValue(e.target.id);
+            break;
+        case 'WidgetBorderColor' :
+            widgetpreview.style.borderColor = getWidgetColorValue(e.target.id);
+            break;
+        case 'WidgetBorderRadius' :
+            widgetpreview.style.borderRadius = e.target.value;
+           break;
+        case 'WidgetBoxShadow':
+            widgetpreview.style.boxShadow = getWidgetBoxShadowValue(e.target.id);
+            break;
 	}
 }
+
+function getWidgetColorValue(widgetId) {
+    const ids = widgetId.split('-');
+    const baseId = ( ids.length != 1) ? ids.slice(0, ids.length -1).join("-") : ids[0];
+    let color = document.getElementById(baseId +"-WidgetColor");
+    let opacity = document.getElementById(baseId +"-WidgetOpacity");
+  //  setWidgetColorValue(baseId,hex2rgba(color.value, opacity.value / 10.0));
+    return hex2rgba(color.value, opacity.value / 10.0);
+}
+
+function setWidgetColorValue(widgetId, value) {
+    let color = document.getElementById(widgetId +"-WidgetColor");
+    let opacity = document.getElementById(widgetId +"-WidgetOpacity");
+    let cValue, oValue;
+    if (value[0] == '#') {
+        cValue = value;
+        oValue = 10;
+    } else if (value.search(",") == -1) {
+        if (value == "transparent") {
+            cValue = "#000000";
+            oValue = 0;
+        } else {
+            cValue = value;
+            oValue = 1;
+        }
+    } else {
+        let val = value.slice(5, value.length -1).split(",");
+        cValue = `#${('00' + parseInt(val[0]).toString(16)).slice(-2)}${('00' + parseInt(val[1]).toString(16)).slice(-2)}${('00' + parseInt(val[2]).toString(16)).slice(-2)}`;
+        oValue = parseInt(parseFloat(val[3]) * 10.0);
+    }
+    color.value = cValue;
+    opacity.value = oValue;
+}
+
+function getWidgetBoxShadowValue(widgetId) {
+    const ids = widgetId.split('-');
+    const baseId = ids[0];
+    let subformNode = document.getElementById(baseId + '-InsetField');
+    let newValue = subformNode.checked ? "inset " : "";
+    subformNode = document.getElementById(baseId + '-ShiftRightField');
+    newValue += subformNode.value + 'px ';
+    subformNode = document.getElementById(baseId + '-ShiftDownField');
+    newValue += subformNode.value + 'px ';
+    subformNode = document.getElementById(baseId + '-BlurField');
+    newValue += subformNode.value + 'px ';
+    subformNode = document.getElementById(baseId + '-SpreadField');
+    newValue += subformNode.value + 'px ';
+    newValue += getWidgetColorValue(baseId + "-ColorField-");
+ //   setWidgetBoxShadowValue(baseId, newValue);
+    return newValue;
+}
+
+function setWidgetBoxShadowValue(widgetId, value) {
+    values = value.split(" ")
+    let inset = false,
+        shiftR = 0,
+        shiftD = 0,
+        blur = 0,
+        spread = 0,
+        color = "";
+    for (i=0; i<values.length; i++) {
+        let len = values[i].length;
+        if (values[i]=='inset'){
+            inset = true;
+        } else if (values[i].slice(len-2, len) == "px") {
+            val = parseInt(values[i].slice(0,len-2));
+            if (shiftR == 0) {
+                shiftR = val;
+            } else if (shiftD == 0) {
+                shiftD = val;
+            } else if (blur == 0) {
+                blur = val;
+            } else if (spread == 0) {
+                spread = val;
+            } else {
+               color = values[i];
+            }
+        }
+    }
+    document.getElementById(widgetId +"-InsetField").checked = inset;
+    document.getElementById(widgetId +"-ShiftRightField").value = inset;
+    document.getElementById(widgetId +"-ShiftDownField").value = inset;
+    document.getElementById(widgetId +"-BlurField").value = inset;
+    document.getElementById(widgetId +"-SpreadField").value = inset;
+    setWidgetColorValue(widgetId +"-ColorField", color);
+}
+
 var websocketConnection = null;
 function websocketConnected(e) {
 	if (websocketConnection === null || websocketConnection === false) {

@@ -21,7 +21,7 @@
             "options" : {
                 "waterColor" : {
                     "name": "Water color",
-                    "type": "string",
+                    "type": "color",
                     "default": "#1d96d3",
                     "required": true
                 }
@@ -52,7 +52,7 @@
                 },
                 "waterColor" : {
                     "name": "Water color",
-                    "type": "string",
+                    "type": "color",
                     "default": "#1d96d3",
                     "required": true
                 }

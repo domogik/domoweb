@@ -467,7 +467,7 @@
                 "chartColor" : {
                     "name": "Chart color",
                     "description": "Set the chart color",
-                    "type": "string",
+                    "type": "color",
                     "default": "#ffffff"
                 },
                 "precision" : {
@@ -523,8 +523,8 @@
                 },
                 "chartColor" : {
                     "name": "Chart color",
-                    "description": "Set the chart color in hexadecimal format (mandatory!)",
-                    "type": "string",
+                    "description": "Set the chart color",
+                    "type": "color",
                     "default": "#ffffff"
                 },
                 "precision" : {
@@ -581,7 +581,7 @@
                 "chartColor" : {
                     "name": "Chart color",
                     "description": "Set the chart color",
-                    "type": "string",
+                    "type": "color",
                     "default": "#ffffff"
                 },
                 "precision_primary" : {

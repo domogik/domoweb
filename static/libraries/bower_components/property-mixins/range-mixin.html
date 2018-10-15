@@ -1,0 +1,200 @@
+<script>
+  /**
+   * mixin to provide a range behavior for a given value
+   *
+   * @mixinFunction
+   * @polymer
+   */
+  const RangeMixin = (superClass) => { // eslint-disable-line no-unused-vars
+
+    return class extends superClass {
+
+      static get properties() {
+        return {
+          /**
+           * minimal input
+           * @type {number}
+           */
+          min: {
+            type: Number
+          },
+          /**
+           * maximal input
+           * @type {number}
+           */
+          max: {
+            type: Number
+          },
+          /**
+           * step for changing the input (referencing to `min` or `0`)
+           * @type {number}
+           */
+          step: {
+            type: Number,
+            value: 1,
+            observer: '_updateValue'
+          },
+          /**
+           * value of the input
+           * @type {number}
+           */
+          value: {
+            type: Number,
+            notify: true,
+            observer: '_valueChanged'
+          },
+          /**
+           * if true, the value does not revolve the range according to the maximum or the minimum
+           * @type {boolean}
+           */
+          saturate: {
+            type: Boolean,
+            observer: '_updateValue'
+          }
+        }
+      }
+
+      static get observers() {
+        return [
+          '_minMaxChanged(min, max)'
+        ]
+      }
+
+      _minMaxChanged(min, max) {
+        if (+max < +min) {
+          this.setProperties({
+            min: +max,
+            max: +min
+          })
+        } else if (min !== undefined && max !== undefined && this.value === undefined) {
+          if (+min <= 0 && +max >= 0) {
+            this.value = 0;
+          } else {
+            this.value = this._checkStep((+max - min) / 2, this.step)
+          }
+        } else {
+          this._updateValue();
+        }
+      }
+
+      _valueChanged(value, oldValue) {
+        if (value === undefined) return;
+
+        value = this._checkValue(value, oldValue);
+
+        if (value !== this.value) {
+          this.value = value;
+          return;
+        }
+      }
+
+      _checkValue(value, oldValue) {
+        if (isNaN(value)) {
+          if (!isNaN(oldValue)) {
+            return oldValue;
+          }
+          return (this.min !== undefined) ? this.min : (this.max !== undefined ? this.max : 0);
+        }
+        const saturate = this.saturate,
+          min = this.min,
+          max = this.max;
+
+        if (min !== undefined && value <= min) {
+          if (saturate || max === undefined || oldValue !== min) {
+            return min;
+          }
+          return max;
+          // return this._checkStep(max, this.step);
+        }
+        if (max !== undefined && value >= max) {
+          // max = this._checkStep(max, this.step);
+          if (saturate || min === undefined || max !== oldValue) {
+            return max;
+          }
+          return min;
+        }
+        return this._checkStep(value, this.step);
+      }
+
+      _updateValue() {
+        if (this.value !== undefined) {
+          this._valueChanged(this.value, this.value);
+        }
+      }
+
+      _checkStep(value, step) {
+        if (!step) {
+          return value;
+        }
+        const min = this.min,
+        max = this.max;
+        if (min !== undefined) {
+          return this._safeAdd(this._safeMult(Math.round((value - min) / step), step), min);
+        }
+        if (max !== undefined) {
+          return this._safeAdd(this._safeMult(-Math.round((max - value) / step), step), max);
+        }
+        return this._safeAdd(this._safeMult(Math.round(value / step), step), 0);
+      }
+
+      /**
+       * emulating handwritten multiplication
+       * @param  {[number]} a [factor]
+       * @param  {[number]} b [factor]
+       * @return {[type]}   [product]
+       */
+      _safeMult(a, b) {
+        a = '' + (a || 0);
+        b = '' + (b || 0);
+
+        const aDecimal = a.slice(a.indexOf('.')).length - 1;
+        const bDecimal = b.slice(b.indexOf('.')).length - 1;
+
+        const decimal = aDecimal + bDecimal;
+        const sign = (a[0] === '-' ? b[0] !== '-' : b[0] === '-') ? '-' : '';
+
+        a = a.replace(/\D/g, '');
+        b = b.replace(/\D/g, '');
+
+        let whole = 0;
+        for (let i = 0; i < b.length; i++) {
+          whole += Math.pow(10, b.length - 1 - i) * Number(a) * Number(b[i]);
+        }
+        whole = '' + whole;
+        for (let i = whole.length; i < decimal; i++) {
+          whole = '0' + whole;
+        }
+        return Number(sign + whole.slice(0, whole.length - decimal) + '.' + whole.slice(whole.length - decimal));
+      }
+
+      /**
+       * emulating handwritten addition
+       * @param  {[number]} a [summand]
+       * @param  {[number]} b [summand]
+       * @return {[type]}   [sum]
+       */
+      _safeAdd(a, b) {
+        a = '' + (a || 0);
+        b = '' + (b || 0);
+
+        const aDecimal = a.slice(a.indexOf('.')).length - 1;
+        const bDecimal = b.slice(b.indexOf('.')).length - 1;
+
+        const decimal = Math.max(aDecimal, bDecimal);
+
+        let whole = Math.round( Math.pow(10, decimal) * Number(a) +
+                                Math.pow(10, decimal) * Number(b) );
+
+        const sign = whole < 0 ? '-' : '';
+        whole = '' + Math.abs(whole);
+        for (let i = whole.length; i < decimal; i++) {
+          whole = '0' + whole;
+        }
+
+        return Number(sign + whole.slice(0, whole.length - decimal) + '.' + whole.slice(whole.length - decimal));
+      }
+    }
+  }
+  
+  window.RangeMixin = RangeMixin;
+</script>

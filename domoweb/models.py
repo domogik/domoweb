@@ -184,6 +184,13 @@ class SectionParam(Base):
             session.commit()
         return s
 
+    @classmethod
+    def deleteAll(cls, section_id):
+        s = session.query(cls).filter_by(section_id = section_id).delete()
+        if s:
+            session.commit()
+        return s
+
 class Section(Base):
     # http://mikehillyer.com/articles/managing-hierarchical-data-in-mysql/
     # http://www.sitepoint.com/hierarchical-data-database-2/
@@ -478,6 +485,7 @@ class WidgetInstance(Base):
     options = relationship("WidgetInstanceOption", cascade="all, delete-orphan")
     sensors = relationship("WidgetInstanceSensor", cascade="all, delete-orphan")
     commands = relationship("WidgetInstanceCommand", cascade="all, delete-orphan")
+    widgetStyleOptions = ['WidgetBackgroundColor', 'WidgetTextColor',  'WidgetBorderColor',  'WidgetBorderRadius', 'WidgetBoxShadow']
 
     @classmethod
     def get(cls, id):
@@ -511,12 +519,12 @@ class WidgetInstance(Base):
             for key in sstyle[part]:
                 k = key[0].upper() + key[1:] # Uppercase first char
                 # We keep those for the section params
-                if (p + k) not in ['WidgetTextColor', 'WidgetBackgroundColor', 'WidgetBorderColor', 'WidgetBorderRadius', 'WidgetBoxShadow']:
+                if (p + k) not in cls.widgetStyleOptions:
                     options[p + k] = sstyle[part][key]
         # Override with section user options
         for p in s.section.params:
             # We keep those for the section params
-            if p.key.startswith('Widget') and p.key not in ['WidgetTextColor', 'WidgetBackgroundColor', 'WidgetBorderColor', 'WidgetBorderRadius', 'WidgetBoxShadow']:
+            if p.key.startswith('Widget') and p.key not in cls.widgetStyleOptions:
                 options[p.key] = p.value
         # Override with widget options
         if s.widget.style:
@@ -524,9 +532,13 @@ class WidgetInstance(Base):
                 k = key[0].upper() + key[1:] # Uppercase first char
                 options['Widget' + k] = wstyle[key]
         # Override with user options
+        defaultStyle = True
         for p in s.options:
+            if p.key in cls.widgetStyleOptions:
+                defaultStyle = False
             options[p.key] = p.value
         session.flush()
+        options['WidgetDefaultStyle'] = defaultStyle
         return options
 
     @classmethod
@@ -540,9 +552,13 @@ class WidgetInstance(Base):
                 k = key[0].upper() + key[1:] # Uppercase first char
                 options['Widget' + k] = wstyle[key]
         # Override with user options
+        defaultStyle = True
         for p in s.options:
             options[p.key] = p.value
+            if p.key in cls.widgetStyleOptions:
+                defaultStyle = False
         session.flush()
+        options['WidgetDefaultStyle'] = defaultStyle
         return options
 
     @classmethod
@@ -590,7 +606,7 @@ class WidgetInstanceOption(Base):
 
     @classmethod
     def saveKey(cls, instance_id, key, value):
-        logger.info(u"Section Save WidgetInstanceOption: {0} / {1} / {2}".format(instance_id, key, value))
+        logger.info(u"Widget Save WidgetInstanceOption: {0} / {1} / {2}".format(instance_id, key, value))
         s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
         if not s:
             s = cls(instance_id=instance_id, key=key)
@@ -602,6 +618,7 @@ class WidgetInstanceOption(Base):
 
     @classmethod
     def delete(cls, instance_id, key):
+        logger.info(u"Widget Delete WidgetInstanceOption: {0} / {1}".format(instance_id, key))
         s = session.query(cls).filter_by(instance_id = instance_id, key = key).first()
         if s:
             session.delete(s)

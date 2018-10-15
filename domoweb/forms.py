@@ -6,17 +6,23 @@ import itertools
 import wtforms
 import re
 from collections import OrderedDict
-from wtforms import StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, widgets, FieldList
+from wtforms import StringField, TextAreaField, BooleanField, DateField, DateTimeField, DecimalField, IntegerField, SelectField, SelectMultipleField, FormField, widgets, FieldList
+from wtforms.fields import  html5
+from wtforms.widgets import HTMLString
+from wtforms.compat import iteritems
 from wtforms.validators import InputRequired, Length, Email, URL, IPAddress, NumberRange, Optional
 from domoweb.models import WidgetOption, WidgetSensor, WidgetCommand, WidgetDevice, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, Device, Sensor, Command, DataType
-from wtforms_components import SelectField
+from wtforms_components import SelectField, ColorField
+
+import traceback
+
 
 """
 .. _WTForms: http://wtforms.simplecodes.com/
 
 A simple wrapper for WTForms_.
 
-Basically we only need to map the request handler's `arguments` to the 
+Basically we only need to map the request handler's `arguments` to the
 `wtforms.form.Form` input. Quick example::
 
     from wtforms import TextField, validators
@@ -78,6 +84,118 @@ class BooleanField(BooleanField):
         if isinstance(value, str) or isinstance(value, unicode):
             value = int(value)
         self.data = bool(value)
+
+class ColorField(ColorField):
+    """
+    Orverwrite class to get html color value and not named color return by original class
+    """
+    def process_formdata(self, valuelist):
+        self.data = valuelist[0]
+
+class WidgetIntegerRangeField(html5.IntegerRangeField):
+    """
+    Overwrite class to add html render value
+    """
+    def __call__(self, *args, **kwargs):
+        parent_html = super(html5.IntegerRangeField, self).__call__(*args, **kwargs)
+        outPutId = "{0}-Num".format(self.name)
+        onoff_html = '<div>{0} oninput="document.getElementById({1}).innerText = parseInt(this.value);">' \
+                          '<output id={1}>{2}</output></div>'.format(parent_html[:-1], "'{0}'".format(outPutId), self.data)
+        return HTMLString(onoff_html)
+
+class WidgetColorOpacityField(wtforms.Form):
+    WidgetColor = ColorField(u'Color', description=u'')
+    WidgetOpacity = WidgetIntegerRangeField(u'Opacity', description=u'', render_kw ={'max': "10",  'min':"0", 'step': "1"})
+
+    def process(self, formdata=None, obj=None, data=None, **kwargs):
+        if formdata is not None :
+            super(WidgetColorOpacityField, self).process(formdata, obj, data, **kwargs)
+        else :
+            color = ""
+            opacity = 0
+            try:
+                if obj[0] == '#' :
+    #                All database value -> use as is
+                    color = obj
+                    opacity = 10
+                elif obj.find(",") == -1 :
+                    if obj == "transparent" :
+                        color = "#000000"
+                        opacity = 0
+                    else :
+                        color = obj
+                        opacity = 1
+                else :
+                    value = obj[5:-1].split(",")
+                    color = "#{:02x}{:02x}{:02x}".format(int(value[0]), int(value[1]), int(value[2]))
+                    opacity = int(float(value[3]) * 10.0)
+            except :
+                pass
+            args = {'WidgetColor': color, 'WidgetOpacity': opacity}
+            super(WidgetColorOpacityField, self).process(formdata, None, None, **args)
+
+    @property
+    def data(self):
+        datas = dict((name, f.data) for name, f in iteritems(self._fields))
+        value = datas['WidgetColor'].lstrip('#')
+        lv = len(value)
+        rgb = ",".join(tuple(str(int(value[i:i + lv // 3], 16)) for i in range(0, lv, lv // 3)))
+        opacity =  datas['WidgetOpacity']/10.0
+        return u"rgba({0},{1})".format(rgb, opacity)
+
+class BoxShadowField(wtforms.Form):
+    ShiftRightField = WidgetIntegerRangeField(label=u'Shift right', description=u'', render_kw ={'max': "50",  'min':"-50", 'step': "1"})
+    ShiftDownField = WidgetIntegerRangeField(u'Shift down', description=u'', render_kw ={'max': "50",  'min':"-50", 'step': "1"})
+    SpreadField = WidgetIntegerRangeField(u'Spread', description=u'', render_kw ={'max': "30",  'min':"-30", 'step': "1"})
+    BlurField = WidgetIntegerRangeField(u'Blur', description=u'', render_kw ={'max': "50",  'min':"0", 'step': "1"})
+    InsetField = BooleanField(u'Inset', default=False, description=u'')
+    ColorField = FormField(WidgetColorOpacityField, label='Color', description=u'')
+
+    def process(self, formdata=None, obj=None, data=None, **kwargs):
+        if formdata is not None :
+            super(BoxShadowField, self).process(formdata, obj, data, **kwargs)
+        else :
+            inset = False
+            shiftR = None
+            shiftD = None
+            blur = None
+            spread = None
+            color = ""
+            try:
+                values = obj.split(" ")
+                for v in values :
+                    if v =='inset':
+                        inset = True
+                    elif v[-2:]=="px":
+                        val = int(v[:-2])
+                        if shiftR is None :
+                            shiftR = val
+                        elif shiftD is None :
+                            shiftD = val
+                        elif blur is None :
+                            blur = val
+                        elif spread is None :
+                            spread = val
+                    else:
+                       color = v
+            except:
+                pass
+            if shiftR is None : shiftR = 0
+            if shiftD is None : shiftD = 0
+            if blur is None : blur = 0
+            if spread is None : spread = 0
+            args = {'ShiftRightField': shiftR, 'ShiftDownField': shiftD, 'SpreadField': spread,
+                'BlurField': blur, 'InsetField': inset, 'ColorField': color}
+            super(BoxShadowField, self).process(formdata, None, None, **args)
+
+    @property
+    def data(self):
+        datas = dict((name, f.data) for name, f in iteritems(self._fields))
+        inset = "inset " if datas['InsetField'] else ""
+        retval = None
+        if datas['ShiftRightField'] != 0 or datas['ShiftDownField'] != 0 or datas['SpreadField'] != 0 or datas['BlurField'] != 0:
+            retval = u"{0}{1}px {2}px {3}px {4}px {5}".format(inset, datas['ShiftRightField'], datas['ShiftDownField'], datas['BlurField'], datas['SpreadField'], datas['ColorField'])
+        return retval
 
 class ParametersForm(wtforms.Form):
     def __init__(self, instance, handler=None, data=None, prefix='', **kwargs):
@@ -295,6 +413,16 @@ class ParametersForm(wtforms.Form):
         validators.append(IPAddress())
         setattr(cls, key, StringField(label, default=default, validators=validators, description=help_text))
 
+    @classmethod
+    def addColorLField(cls, key, label, default=None, required=False, help_text=None):
+        validators=[]
+        if required:
+            validators.append(InputRequired())
+        else:
+            validators.append(Optional())
+#        validators.append(IPAddress())
+        setattr(cls, key, ColorField(label, default=default, validators=validators, description=help_text))
+
 class WidgetOptionsForm(ParametersForm):
     def __init__(self, *args, **kwargs):
         # This should be done before any references to self.fields
@@ -335,6 +463,8 @@ class WidgetOptionsForm(ParametersForm):
             cls.addIPv4Field(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description)
         elif option.type == 'url':
             cls.addURLField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description, parameters=parameters)
+        elif option.type == 'color':
+            cls.addColorLField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description)
         else:
             cls.addStringField(key=option.key, label=option.name, default=value, required=option.required, help_text=option.description, parameters=parameters)
 
@@ -410,17 +540,18 @@ class WidgetGeneralForm(Form):
     debug = BooleanField(u'Debug', default=False, description=u'Enable widget debug mode')
 
 class WidgetStyleForm(Form):
-    WidgetBackgroundColor = StringField(u'Background Color', description=u'Override default background color')
-    WidgetTextColor = StringField(u'Text Color', description=u'Override default text color')
-    WidgetBorderColor = StringField(u'Border Color', description=u'Override default border color')
+    WidgetBackgroundColor = FormField(WidgetColorOpacityField, label='Background Color', description=u'Override default background color')
+    WidgetTextColor = ColorField(u'Text Color', description=u'Override default text color')
+    WidgetBorderColor = FormField(WidgetColorOpacityField, label='Border Color', description=u'Override default border color')
     WidgetBorderRadius = StringField(u'Border Radius', description=u'Override default border radius')
-    WidgetBoxShadow = StringField(u'Box Shadow', description=u'Override default shadow parameters')
+    WidgetBoxShadow = FormField(BoxShadowField, label=u'Box Shadow', description=u'Override default shadow parameters')
 
 class WidgetInstanceForms(object):
     has_options = False
     has_sensors = False
     has_commands = False
     has_devices = False
+    widgetStyleOptions = ['WidgetBackgroundColor', 'WidgetTextColor',  'WidgetBorderColor',  'WidgetBorderRadius', 'WidgetBoxShadow']
 
     def __init__(self, instance, handler=None):
         self.instance = instance
@@ -436,7 +567,7 @@ class WidgetInstanceForms(object):
         widgetoptions = WidgetOption.getWidget(instance.widget_id)
         if widgetoptions:
             self.has_options = True
-        widgetsensors = WidgetSensor.getWidget(instance.widget_id) 
+        widgetsensors = WidgetSensor.getWidget(instance.widget_id)
         if widgetsensors:
             self.has_sensors = True
         widgetcommands = WidgetCommand.getWidget(instance.widget_id)
@@ -497,7 +628,7 @@ class WidgetInstanceForms(object):
         valid = self.styleform.validate() and valid
         return valid
 
-    def save(self):    
+    def save(self, useDefaultStyle=True):
         self.optionsform.save()
         self.sensorsform.save()
         self.commandsform.save()
@@ -515,7 +646,13 @@ class WidgetInstanceForms(object):
         for key, value in self.styleform.data.iteritems():
             if isinstance(value, list):
                 value = ', '.join(value)
-            if value:
-                WidgetInstanceOption.saveKey(instance_id=self.instance.id, key=key, value=value)
-            else:
+            if useDefaultStyle or key not in self.widgetStyleOptions:
                 WidgetInstanceOption.delete(instance_id=self.instance.id, key=key)
+            else:
+                # handle specific return of WidgetBoxShadow form
+                if key == "WidgetBoxShadow" and value is None :
+                    value = "0px 0px 0px 0px rgba(0,0,0,0.0)"
+                if value :
+                    WidgetInstanceOption.saveKey(instance_id=self.instance.id, key=key, value=value)
+                else :
+                    WidgetInstanceOption.delete(instance_id=self.instance.id, key=key)

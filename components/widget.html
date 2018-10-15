@@ -372,21 +372,157 @@
                                 modalOverlay.innerHTML = response;
                                 let previewW = Polymer.dom(self).cloneNode(true);
                                 previewW.removeAttribute('edit');
-                                let prevDiv = document.getElementById("preview-widget");
-                                prevDiv.style.height = `${self.offsetHeight}px`;
-                                prevDiv.style.width = `${self.offsetWidth}px`;
-                                prevDiv.style.margin = `${parseInt(self.parentNode.getAttribute('cell-margin'))+10}px`;
-                                prevDiv.appendChild(previewW);
+                                let prevDiv = document.getElementById("preview");
+                                let prevWidget = document.getElementById("preview-widget");
+                                let margin = parseInt(self.parentNode.getAttribute('cell-margin'))+10;
+                                prevDiv.style.height = `${self.offsetHeight+(2*margin)}px`;
+                                prevDiv.style.width = `${self.offsetWidth+(2*+margin)}px`;
+                                prevWidget.style.height = `${self.offsetHeight}px`;
+                                prevWidget.style.width = `${self.offsetWidth}px`;
+                                prevWidget.style.margin = `${margin}px`;
+                                prevDiv.style.background = document.body.style.background;
+                                let rect = self.getBoundingClientRect(),
+                                    height = window.innerHeight,
+                                    width = window.innerWidth;
+                                let img = new Image();
+                                img.src = window.getComputedStyle(document.body).getPropertyValue("background-image").replace(/url\((['"])?(.*?)\1\)/gi, '$2');
+                                let imgRatio = img.height / img.width;
+
+                                height = (width * imgRatio) > height ? (width * imgRatio) : height ;
+                                width = (height / imgRatio) > width ? (height / imgRatio) : width ;
+                                let configAction = document.getElementById("widgetConfigAction");
+                                configAction.style.marginTop = `${self.offsetHeight+(2*margin)+10}px`;
+                                configAction.style.width = prevDiv.style.width;
+                                prevDiv.style.backgroundSize = `${width}px ${height}px`;
+                                prevDiv.style.backgroundAttachment = "local";
+                                prevDiv.style.backgroundPosition = `-${rect.left-margin}px -${rect.top-margin}px`;
+                                prevWidget.appendChild(previewW);
                                 previewW.scales = self.scales;
                                 previewW.style.setProperty("--wscale-h", self.scales.height);
                                 previewW.style.setProperty("--wscale-w", self.scales.width);
                                 previewW.style.setProperty("--wscale-r", self.scales.constraintRatio);
-                                previewW.resized();
+                                try { // Prevent error if widget not ready
+                                    previewW.resized();
+                                } catch (e) {
+                                   console.error(e);
+                                }
                                 var saveConfig = modalOverlay.querySelector('#saveConfig');
                                 var cancelConfig = modalOverlay.querySelector('#cancelConfig');
                                 var formConfig = modalOverlay.querySelector('#formConfig');
+                                var inputs = formConfig.querySelectorAll('[id^="styleparam_"]');
+                                for (let i=0; i<inputs.length; i++) {
+                                    inputs[i].addEventListener("input",
+                                        function(e) {
+                                            let subformNode, newValue
+                                            let key = this.id.split('_')[1];
+                                            switch (key) {
+                                                case 'WidgetTextColor' :
+                                                    previewW.style.color = this.value;
+                                                    previewW.options['WidgetTextColor'] = this.value;
+                                                    break;
+                                                case 'WidgetBackgroundColor-WidgetColor' :
+                                                    subformNode = getSubformNode(this, 'table', 'WidgetOpacity');
+                                                    newValue = hex2rgba(this.value, subformNode.value / 10.0);
+                                                    previewW.style.backgroundColor = newValue;
+                                                    previewW.options['WidgetBackgroundColor'] = newValue;
+                                                    break;
+                                                case 'WidgetBackgroundColor-WidgetOpacity' :
+                                                    subformNode = getSubformNode(this, 'table', 'WidgetColor');
+                                                    newValue = hex2rgba(subformNode.value, this.value / 10.0);
+                                                    previewW.style.backgroundColor = newValue;
+                                                    previewW.options['WidgetBackgroundColor'] = newValue;
+                                                    break;
+                                                case 'WidgetBorderColor-WidgetColor' :
+                                                    subformNode = getSubformNode(this, 'table', 'WidgetOpacity');
+                                                    newValue = hex2rgba(this.value, subformNode.value / 10.0);
+                                                    previewW.style.borderColor = newValue;
+                                                    previewW.options['WidgetBorderColor'] = newValue;
+                                                    break;
+                                                case 'WidgetBorderColor-WidgetOpacity' :
+                                                    subformNode = getSubformNode(this, 'table', 'WidgetColor');
+                                                    newValue = hex2rgba(subformNode.value, this.value / 10.0);
+                                                    previewW.style.borderColor = newValue;
+                                                    previewW.options['WidgetBorderColor'] = newValue;
+                                                    break;
+                                                 case 'WidgetBorderRadius' :
+                                                    previewW.style.borderRadius = this.value;
+                                                    previewW.options['WidgetBorderRadius'] = this.value;
+                                                   break;
+                                                 case 'WidgetBoxShadow' :
+                                                    subformNode = $(this).find("#"+this.id +"-"+"InsetField")[0]
+                                                    newValue = subformNode.checked ? "inset " : "";
+                                                    subformNode = $(this).find("#"+this.id +"-"+"ShiftRightField")[0]
+                                                    newValue += subformNode.value + 'px ';
+                                                    subformNode = $(this).find("#"+this.id +"-"+"ShiftDownField")[0]
+                                                    newValue += subformNode.value + 'px ';
+                                                    subformNode = $(this).find("#"+this.id +"-"+"BlurField")[0]
+                                                    newValue += subformNode.value + 'px ';
+                                                    subformNode = $(this).find("#"+this.id +"-"+"SpreadField")[0]
+                                                    newValue += subformNode.value + 'px ';
+                                                    subformNode = $(this).find("#"+this.id +"-"+"ColorField")[0]
+                                                    newValue += getRGBaColorValue(subformNode);
+                                                    previewW.style.boxShadow = newValue;
+                                                    previewW.options['WidgetBoxShadow'] = newValue;
+                                                    break;
+                                            }
+                                            previewW.resized();
+                                        });
+                                }
+                                let defaultStyle = formConfig.querySelector('#WidgetStyle-default');
+                                defaultStyle.addEventListener("change",
+                                    function(e) {
+                                        var inputs = formConfig.querySelectorAll('[id^="styleparam_"]');
+                                        toggleStyleParamConfig(this, inputs, previewW);
+                                        previewW.default_style = this.checked;
+                                        if (previewW.default_style) {
+                                            previewW.style.color = "";
+                                            previewW.style.backgroundColor="";
+                                            previewW.style.borderColor="";
+                                            previewW.style.borderRadius="";
+                                            previewW.style.boxShadow="";
+
+                                        } else {
+                                            previewW.style.color=previewW.options['WidgetTextColor'];
+                                            previewW.style.backgroundColor=previewW.options['WidgetBackgroundColor'];
+                                            previewW.style.borderColor=previewW.options['WidgetBorderColor'];
+                                            previewW.style.borderRadius=previewW.options['WidgetBorderRadius'];
+                                            previewW.style.boxShadow=previewW.options['WidgetBoxShadow'];
+                                        }
+                                        previewW.resized();
+                                    });
+                                inputs = formConfig.querySelectorAll('[id^="optionparam_"]');
+                                for (let i=0; i<inputs.length; i++) {
+                                    inputs[i].addEventListener("change",
+                                        function(e) {
+                                            let key = this.id.split('_')[1];
+                                            let newValue = this.value;
+                                            switch (this.type) {
+                                                case "text" :
+                                                    newValue = this.value;
+                                                    break;
+                                                case "checkbox" :
+                                                    newValue = this.checked;
+                                                    break;
+                                            }
+                                            previewW.options[key] = newValue;
+                                            previewW.optionsUpdated();
+                                            previewW.resized();
+                                        });
+                                }
+                                inputs = formConfig.querySelectorAll('[id^="sensorparam_"]');
+                                for (let i=0; i<inputs.length; i++) {
+                                    inputs[i].addEventListener("change",
+                                        function(e) {
+                                            let key = this.id.split('_')[1];
+                                            previewW.$[key].sensoridChanged(this.value);
+                                            previewW.$.socket.send("widgetinstance-getsensors", {'instance_id': previewW.instanceid});
+                                        });
+                                }
                                 saveConfig.addEventListener("click",
                                     function(e) {
+                                        // Fake activate input form to retrieve them
+                                        var inputs = formConfig.querySelectorAll('[id^="styleparam_"]');
+                                        toggleStyleParamConfig({'checked': false}, inputs, previewW);
                                         self.$.ajax.setAttribute('body', $(formConfig).serialize());
                                         self.$.ajax.setAttribute('method', 'POST');
                                         self.$.ajax.setAttribute('params', '{"action":"widget", "id":"' + self.instanceid + '"}');
@@ -466,6 +602,16 @@
             }
             optionsReceived(topic, json) {
                 this.options = json['options'];
+                let modalOverlay = document.getElementById('modal-overlay');
+                if (!modalOverlay.hidden) {
+                    let defaultStyle = modalOverlay.querySelector('#WidgetStyle-default');
+                    if (defaultStyle != undefined) {
+                        defaultStyle.checked = this.options['WidgetDefaultStyle'];
+                        let formConfig = modalOverlay.querySelector('#formConfig');
+                        var inputs = formConfig.querySelectorAll('[id^="styleparam_"]');
+                        toggleStyleParamConfig(defaultStyle, inputs);
+                    }
+                }
                 if (this.default_style!=null) {
                   this.style.color=this.options['WidgetTextColor'];
                   this.style.backgroundColor=this.options['WidgetBackgroundColor'];
@@ -473,6 +619,7 @@
                   this.style.borderRadius=this.options['WidgetBorderRadius'];
                   this.style.boxShadow=this.options['WidgetBoxShadow'];
                 }
+                this.default_style = this.options['WidgetDefaultStyle'];
                 this.optionsUpdated();
                 if (!this.loaded && this.datatypes) this.initialStepReady();
             }
@@ -520,7 +667,7 @@
                     var sensor = json['sensors'][key];
                     var dmwsensor = this.shadowRoot.querySelector('dmw-sensor[sensorkey="' + key + '"]');
                     if (dmwsensor) {
-                        if (this.options['WidgetSensorTimeout'] == 1) this._addTimeoutEvents(dmwsensor);
+                        if (this.options && this.options['WidgetSensorTimeout'] == 1) this._addTimeoutEvents(dmwsensor);
                         dmwsensor.init(sensor);
                     }
                 }
@@ -674,7 +821,39 @@
         }
         document.head.appendChild(style);
         return style;
-    };
+    }
+    function hex2rgba(hex, opacity) {
+        var h=hex.replace('#', '');
+        h =  h.match(new RegExp('(.{'+h.length/3+'})', 'g'));
+
+        for(var i=0; i<h.length; i++)
+            h[i] = parseInt(h[i].length==1? h[i]+h[i]:h[i], 16);
+
+        if (typeof opacity != 'undefined')  h.push(opacity);
+
+        return 'rgba('+h.join(',')+')';
+    }
+    function getSubformNode(node, parentTag, subId) {
+        const baseId = node.id.split('-')[0]
+        let subNode = $(node).parent().closest(parentTag).find("#"+baseId +"-"+subId)[0];
+        return subNode;
+    }
+    function getRGBaColorValue(form) {
+        let subColor = $(form).find("#"+form.id +"-"+"WidgetColor")[0]
+        let subOpacity = $(form).find("#"+form.id +"-"+"WidgetOpacity")[0]
+        return hex2rgba(subColor.value, subOpacity.value / 10.0);
+    }
+
+    function toggleStyleParamConfig(self, inputs) {
+        for (let i=0; i<inputs.length; i++) {
+            inputs[i].disabled = self.checked;
+            if (self.checked) {
+                $(inputs[i]).closest('.form-control').addClass('disabled')
+            } else {
+                $(inputs[i]).closest('.form-control').removeClass('disabled')
+            }
+        }
+    }
     customElements.define(DmwWidget.is, DmwWidget);
     </script>
 </dom-module>

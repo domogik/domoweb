@@ -6,6 +6,9 @@
 	list-style: none;
 	position: relative
 }
+:not(#modal-overlay)::-webkit-scrollbar {
+    display: none;
+}
 
 html,
 body {
@@ -51,6 +54,11 @@ h3 {
 	padding-right: 0;
 }
 
+#modal-overlay ul.nav.nav-pills.nav-stacked {
+    position:fixed;
+    z-index: 2;
+}
+
 .overlay.on {
 	visibility: visible;
 	opacity: 1;
@@ -73,6 +81,62 @@ h3 {
 	transition: all .3s ease;
 	z-index: 30000;   /* previsous value was 1000. Fritz - 20161020 */
 	overflow-y:auto;
+}
+
+#modal-overlay th label {
+    margin-right: 10px;
+    line-height: normal;
+}
+
+#modal-overlay td div {
+    width: 100%;
+    display: inline-flex;
+}
+
+#modal-overlay td output {
+    min-width: 15px;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+#modal-overlay input[type='color'] {
+    width: 20%;
+    padding: 0px;
+}
+
+#modal-overlay td input[type='color'] {
+    width: 100%;
+    padding: 0px;
+    border-radius: 4px;
+}
+
+#modal-overlay table.subform {
+    height: 100%;
+}
+
+#modal-overlay .form-control.disabled,
+#panelConfigurationForm .form-control[disabled] {
+    background: repeating-linear-gradient(
+      -55deg,
+      #222,
+      #222 10px,
+      #333 10px,
+      #333 20px
+    );
+}
+#modal-overlay input[id^="styleparam_"][disabled]{
+    background: repeating-linear-gradient(
+      -55deg,
+      #222,
+      #222 10px,
+      #333 10px,
+      #333 20px
+    );
+    cursor: not-allowed;
+}
+
+#modal-overlay #preview {
+    position: fixed;
 }
 
 /* Widget default style */
@@ -102,6 +166,19 @@ input[type='range'] {
 /* Section configuration */
 form#formConfig {
 	padding-bottom: 30px;
+}
+#formConfig .panel-title {
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+#formConfig .panel-title:first-child {
+    margin-top: 0px;
+}
+#formConfig .navbar-fixed-top {
+    background-color: rgba(0,0,0,0.8);
+}
+#formConfig #widgetConfigAction {
+    min-width: 170px;
 }
 
 #backgroundpreview {

@@ -76,7 +76,7 @@
                 "color" : {
                     "name": "HighStock line graph color",
                     "description": "HighStock line graph color",
-                    "type": "string",
+                    "type": "color",
                     "default": "#848484"
                 },
                 "theme" : {
@@ -113,7 +113,7 @@
                 "color" : {
                     "name": "HighStock line graph color",
                     "description": "HighStock line graph color",
-                    "type": "string",
+                    "type": "color",
                     "default": "#848484"
                 },
                 "theme" : {

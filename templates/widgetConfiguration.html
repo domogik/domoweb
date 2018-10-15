@@ -1,174 +1,189 @@
 <div id="widgetConfigurationForm" class="container-fluid">
   <form id="formConfig" role="form">
-    <div class="row">
-      <div class="col-sm-12">
+    <div class="container-fluid navbar-fixed-top">
         <h1>{{ instance.widget.name }} configuration</h1>
-      </div>
     </div>
-    <div class="row">
-      <!-- Navigation Buttons -->
-      <div class="col-sm-3 col-nav">
-        <ul class="nav nav-pills nav-stacked" role="tablist">
-          {% if forms.has_options %}
-          <li class="active"><a href="#options" role="tab" data-toggle="tab">Options</a></li>
-          {% end %}
-          {% if forms.has_sensors %}
-          <li{% if not(forms.has_options) %} class="active"{% end %}><a href="#sensors" role="tab" data-toggle="tab">Sensors</a></li>
-          {% end %}
-          {% if forms.has_commands %}
-          <li{% if not(forms.has_options) and not(forms.has_sensors) %} class="active"{% end %}><a href="#commands" role="tab" data-toggle="tab">Commands</a></li>
-          {% end %}
-          {% if forms.has_devices %}
-          <li{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) %} class="active"{% end %}><a href="#devices" role="tab" data-toggle="tab">Devices</a></li>
-          {% end %}
-          <li{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) and not(forms.has_devices) %} class="active"{% end %}><a href="#general" role="tab" data-toggle="tab">General</a></li>
-           <!-- Preview widget -->
-          <li>
-            <div id="preview-widget"><div>
-           </li>
-        </ul>
-      </div>
-      <!-- Content -->
-      <div class="col-sm-6">
-        <!-- Tab panes -->
-        <div class="tab-content">
-          {% if forms.has_options %}
-          <div class="tab-pane active" id="options">
-            {% for field in forms.optionsform %}
-            <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
-              {% raw field.label() %}
-              {% if field.type == 'BooleanField' %}
-                {% raw field() %}<br/>
-              {% else %}
-                {% raw field(class_='form-control') %}
+    <div class="container-fluid" style="margin-top: 70px;">
+        <div class="row">
+          <!-- Navigation Buttons -->
+          <div class="col-sm-2 col-nav">
+            <ul class="nav nav-pills nav-stacked" role="tablist">
+              {% if forms.has_options %}
+              <li class="active"><a href="#options" role="tab" data-toggle="tab">Options</a></li>
               {% end %}
-              {% if field.description %}
-              <em>{% raw field.description %}</em>
+              {% if forms.has_sensors %}
+              <li{% if not(forms.has_options) %} class="active"{% end %}><a href="#sensors" role="tab" data-toggle="tab">Sensors</a></li>
               {% end %}
-              {% if field.errors %}
-              <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-              <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+              {% if forms.has_commands %}
+              <li{% if not(forms.has_options) and not(forms.has_sensors) %} class="active"{% end %}><a href="#commands" role="tab" data-toggle="tab">Commands</a></li>
               {% end %}
-            </div>
-            {% end %}
+              {% if forms.has_devices %}
+              <li{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) %} class="active"{% end %}><a href="#devices" role="tab" data-toggle="tab">Devices</a></li>
+              {% end %}
+              <li{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) and not(forms.has_devices) %} class="active"{% end %}><a href="#general" role="tab" data-toggle="tab">General</a></li>
+
+            </ul>
           </div>
-          {% end %}
-          {% if forms.has_sensors %}
-          <div class="tab-pane{% if not(forms.has_options) %} active{% end %}" id="sensors">
-            {% for field in forms.sensorsform %}
-              {% if field.type == 'FieldList' %}
-              <fieldset data-toggle="fieldset" data-mingroup="{{field.min_entries}}" data-maxgroup="{{field.max_entries}}" id="{{ field.id }}-fieldset" class="{% if field.errors %} has-error has-feedback{% end %}">
-                <legend>{% raw field.label() %}</legend>
-                {% for i, f in enumerate(field) %}
-                  <div  data-toggle="fieldset-entry" class="input-group{% if f.errors %} has-error has-feedback{% end %}">
-                    <label class="input-group-addon" for="{{f.name}}">#{{ i + 1 }}</label>
-                    {% raw f(class_='form-control') %}
-                    {% if f.errors %}
+          <!-- Content -->
+          <div class="col-sm-4">
+            <!-- Tab panes -->
+            <div class="tab-content">
+              {% if forms.has_options %}
+              <div class="tab-pane active" id="options">
+                {% for field in forms.optionsform %}
+                <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
+                  {% raw field.label() %}
+                  {% if field.type == 'BooleanField' %}
+                    {% raw field() %}<br/>
+                  {% else %}
+                    {% raw field(class_='form-control') %}
+                  {% end %}
+                  {% if field.description %}
+                  <em>{% raw field.description %}</em>
+                  {% end %}
+                  {% if field.errors %}
+                  <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                  <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+                  {% end %}
+                </div>
+                {% end %}
+              </div>
+              {% end %}
+              {% if forms.has_sensors %}
+              <div class="tab-pane{% if not(forms.has_options) %} active{% end %}" id="sensors">
+                {% for field in forms.sensorsform %}
+                  {% if field.type == 'FieldList' %}
+                  <fieldset data-toggle="fieldset" data-mingroup="{{field.min_entries}}" data-maxgroup="{{field.max_entries}}" id="{{ field.id }}-fieldset" class="{% if field.errors %} has-error has-feedback{% end %}">
+                    <legend>{% raw field.label() %}</legend>
+                    {% for i, f in enumerate(field) %}
+                      <div  data-toggle="fieldset-entry" class="input-group{% if f.errors %} has-error has-feedback{% end %}">
+                        <label class="input-group-addon" for="{{f.name}}">#{{ i + 1 }}</label>
+                        {% raw f(class_='form-control') %}
+                        {% if f.errors %}
+                        <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                        <ul class="errors">{% for error in f.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+                        {% end %}
+                      </div>
+                    {% end %}
+                    <div>
+                      <button type="button" class="btn btn-success" data-toggle="fieldset-add-row" data-target="#{{ field.id }}-fieldset"{% if (len(field) == field.max_entries) %} disabled="disabled"{% end %}>Add</button>
+                      <button type="button" class="btn btn-warning" data-toggle="fieldset-remove-row" data-target="#{{ field.id }}-fieldset"{% if (len(field) == field.min_entries) %} disabled="disabled"{% end %}>Remove Last</button>
+                    </div>
+                    {% if field.description %}
+                    <em>{% raw field.description %}</em>
+                    {% end %}
+                  </fieldset>
+                  {% else %}
+                  <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
+                    {% raw field.label() %}
+                    {% raw field(class_='form-control') %}
+                    {% if field.description %}
+                    <em>{% raw field.description %}</em>
+                    {% end %}
+                    {% if field.errors %}
                     <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-                    <ul class="errors">{% for error in f.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+                    <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
                     {% end %}
                   </div>
+                  {% end %}
                 {% end %}
-                <div>
-                  <button type="button" class="btn btn-success" data-toggle="fieldset-add-row" data-target="#{{ field.id }}-fieldset"{% if (len(field) == field.max_entries) %} disabled="disabled"{% end %}>Add</button>
-                  <button type="button" class="btn btn-warning" data-toggle="fieldset-remove-row" data-target="#{{ field.id }}-fieldset"{% if (len(field) == field.min_entries) %} disabled="disabled"{% end %}>Remove Last</button>
-                </div>
-                {% if field.description %}
-                <em>{% raw field.description %}</em>
-                {% end %}
-              </fieldset>
-              {% else %}
+              </div>
+              {% end %}
+              {% if forms.has_commands %}
+              <div class="tab-pane{% if not(forms.has_options) and not(forms.has_sensors) %} active{% end %}" id="commands">
+              {% for field in forms.commandsform %}
               <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
                 {% raw field.label() %}
                 {% raw field(class_='form-control') %}
-                {% if field.description %}
-                <em>{% raw field.description %}</em>
-                {% end %}
+                  {% if field.description %}
+                  <em>{% raw field.description %}</em>
+                  {% end %}
                 {% if field.errors %}
                 <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
                 <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
                 {% end %}
               </div>
               {% end %}
-            {% end %}
-          </div>
-          {% end %}
-          {% if forms.has_commands %}
-          <div class="tab-pane{% if not(forms.has_options) and not(forms.has_sensors) %} active{% end %}" id="commands">
-          {% for field in forms.commandsform %}
-          <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
-            {% raw field.label() %}
-            {% raw field(class_='form-control') %}
-              {% if field.description %}
-              <em>{% raw field.description %}</em>
+              </div>
               {% end %}
-            {% if field.errors %}
-            <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-            <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
-            {% end %}
-          </div>
-          {% end %}
-          </div>
-          {% end %}
-          {% if forms.has_devices %}
-          <div class="tab-pane{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) %} active{% end %}" id="devices">
-          {% for field in forms.devicesform %}
-          <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
-            {% raw field.label() %}
-            {% raw field(class_='form-control') %}
-              {% if field.description %}
-              <em>{% raw field.description %}</em>
-              {% end %}
-            {% if field.errors %}
-            <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-            <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
-            {% end %}
-          </div>
-          {% end %}
-          </div>
-          {% end %}
-          <div class="tab-pane{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) and not(forms.has_devices) %} active{% end %}" id="general">
-            {% for field in forms.generalform %}
-            <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
-              {% raw field.label() %}
-              {% if field.type == 'BooleanField' %}
-                {% raw field() %}<br/>
-              {% else %}
+              {% if forms.has_devices %}
+              <div class="tab-pane{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) %} active{% end %}" id="devices">
+              {% for field in forms.devicesform %}
+              <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
+                {% raw field.label() %}
                 {% raw field(class_='form-control') %}
+                  {% if field.description %}
+                  <em>{% raw field.description %}</em>
+                  {% end %}
+                {% if field.errors %}
+                <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+                {% end %}
+              </div>
               {% end %}
-              <span>{% raw field.description %}</span>
-              {% if field.errors %}
-              <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-              <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+              </div>
               {% end %}
+              <div class="tab-pane{% if not(forms.has_options) and not(forms.has_sensors) and not(forms.has_commands) and not(forms.has_devices) %} active{% end %}" id="general">
+                {% for field in forms.generalform %}
+                <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
+                  {% raw field.label() %}
+                  {% if field.type == 'BooleanField' %}
+                    {% raw field() %}<br/>
+                  {% else %}
+                    {% raw field(class_='form-control') %}
+                  {% end %}
+                  <span>{% raw field.description %}</span>
+                  {% if field.errors %}
+                  <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                  <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+                  {% end %}
+                </div>
+                {% end %}
+                <h2>Style
+                      <span style="position: absolute; right: 0; font-size: small;">
+                           <label for="WidgetStyle-default">Use default style</label>
+                           <input checked="" id="WidgetStyle-default" name="WidgetStyle-default" type="checkbox" value="">
+                      </span>
+                </h2>
+                {% for field in forms.styleform %}
+                <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
+                  {% raw field.label() %}
+                  {% if field.type == 'BooleanField' %}
+                    {% raw field() %}<br/>
+                  {% elif field.type == 'FormField' %}
+                    {% raw field(class_='form-control subform') %}
+                  {% else %}
+                    {% raw field(class_='form-control') %}
+                  {% end %}
+                  <span>{% raw field.description %}</span>
+                  {% if field.errors %}
+                  <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                  <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
+                  {% end %}
+                </div>
+                {% end %}
+              </div>
             </div>
-            {% end %}
-            <h2>Style</h2>
-            {% for field in forms.styleform %}
-            <div class="form-group{% if field.errors %} has-error has-feedback{% end %}">
-              {% raw field.label() %}
-              {% if field.type == 'BooleanField' %}
-                {% raw field() %}<br/>
-              {% else %}
-                {% raw field(class_='form-control') %}
-              {% end %}
-              <span>{% raw field.description %}</span>
-              {% if field.errors %}
-              <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
-              <ul class="errors">{% for error in field.errors %}<li class="text-danger">{{ error }}</li>{% end %}</ul>
-              {% end %}
+          </div>
+          <div class="col-sm-6">
+            <div style="position: fixed;">
+                <div class="row">
+                    <!-- Preview widget -->
+                    <div id="preview">
+                        <div id="preview-widget"></div>
+                    </div>
+                </div>
+                <div id="widgetConfigAction" class="row">
+                    <div class="col-sm-6">
+                      <button id="saveConfig" class="btn btn-primary">Save</button>
+                    </div>
+                    <div class="col-sm-6">
+                      <button id="cancelConfig" class="btn btn-default pull-right">Cancel</button>
+                    </div>
+                </div>
             </div>
-            {% end %}
           </div>
         </div>
-      </div>
     </div>
-      <div class="row">
-        <div class="col-sm-offset-3 col-sm-6">
-          <button id="saveConfig" class="btn btn-primary">Save</button>
-          <button id="cancelConfig" class="btn btn-default">Cancel</button>
-        </div>
-      </div>
-
   </form>
 </div>

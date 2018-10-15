@@ -1,0 +1,129 @@
+<script>
+  /**
+   * Mixin that provides Intl.NumberFormat properties
+   *
+   * @mixinFunction
+   * @polymer
+   */
+  const IntlNumberMixin = (superClass) => { // eslint-disable-line no-unused-vars no-undef
+
+    return class extends superClass {
+
+      static get properties() {
+        return {
+
+          /**
+           * The current locale
+           */
+          locale: {
+            type: String,
+            value: window.navigator.language
+          },
+
+          /**
+           * format function for number values
+           * @type {string}
+           */
+          formatNumber: {
+            type: Function
+          },
+
+          /**
+           * Separator for local decimal values
+           * @type {string}
+           */
+          decimalSeparator: {
+            type: String,
+            value: '.'
+          },
+
+          /**
+           * if true, format is forced to use group digits
+           * @type {boolean}
+           */
+          useGrouping: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * maximum digits right to the decimal separator
+           * @type {number}
+           */
+          maximumFractionDigits: {
+            type: Number,
+            value: 20
+          },
+
+          /**
+           * minimum digits right to the decimal separator
+           * @type {number}
+           */
+          minimumFractionDigits: {
+            type: Number,
+            value: 0
+          },
+
+          /**
+           * minimum digits left to the decimal separator
+           * @type {number}
+           */
+          minimumIntegerDigits: {
+            type: Number,
+            value: 1
+          }
+        }
+
+      }
+
+
+      static get observers() {
+        return [
+          '_computeLocaleNumberFormat(locale, minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, useGrouping)'
+        ]
+      }
+
+      _computeLocaleNumberFormat(locale, minimumIntegerDigits, minimumFractionDigits, maximumFractionDigits, useGrouping) {
+        let formatNumber, decimalSeparator;
+        if (!(Intl.NumberFormat)) {
+          // fallback
+          formatNumber = () => {
+            const n = arguments[0];
+            let str = '' + Math.abs(n);
+            const decimal = str.slice(str.indexOf('.')).length - 1;
+
+            if (this.minimumFractionDigits > 0) {
+              if (decimal === 0) {
+                str += '.';
+              }
+              for (let i = 0; i < this.minimumFractionDigits - decimal; i++) {
+                str += '0';
+              }
+            }
+            for (let i = 0; i < this.minimumIntegerDigits - decimal - 1; i++) {
+              str = '0' + str;
+            }
+            str.replace('.', this.decimalSeparator);
+            return (n < 0 ? '-' : '') + str;
+          };
+          decimalSeparator = '.';
+        } else if (!locale || !Intl.NumberFormat.supportedLocalesOf(locale)){
+          this.locale = window.navigator.language;
+          return;
+        } else {
+          // test locale (currently just for Latin letters and Western Arabic/European numerals)
+          locale += '-u-nu-latn-ca-iso8601';
+          formatNumber = new Intl.NumberFormat(locale, {useGrouping: useGrouping, maximumFractionDigits: maximumFractionDigits, minimumFractionDigits: minimumFractionDigits, minimumIntegerDigits: minimumIntegerDigits}).format;
+          decimalSeparator = formatNumber(1.2).split(/\d/g).filter(s => { return s !== ''; }).pop();
+        }
+        this.setProperties({
+          formatNumber: formatNumber,
+          decimalSeparator: decimalSeparator
+        });
+      }
+
+    }
+  }
+
+  window.IntlNumberMixin = IntlNumberMixin;
+</script>

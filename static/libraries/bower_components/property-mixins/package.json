@@ -1,0 +1,30 @@
+{
+  "name": "property-mixins",
+  "version": "1.0.5",
+  "description": "mixin for custom elements to extends property mixins for data formats",
+  "main": [
+    "color-mixin.html",
+    "datetime-mixin.html",
+    "intl-number-mixin.html",
+    "range-mixin.html"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fooloomanzoo/property-mixins.git"
+  },
+  "keywords": [
+    "mixin",
+    "custom elements",
+    "property",
+    "data"
+  ],
+  "author": "fooloomanzoo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fooloomanzoo/property-mixins/issues"
+  },
+  "homepage": "https://github.com/fooloomanzoo/property-mixins#readme"
+}

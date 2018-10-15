@@ -3,7 +3,7 @@ from tornado import web, websocket, gen
 from tornado.options import options
 from tornado.web import RequestHandler, StaticFileHandler, authenticated
 from tornado.gen import Return
-from tornado.escape import json_decode
+from tornado.escape import json_decode, url_unescape
 from tornado.httpclient import AsyncHTTPClient, HTTPClient, HTTPError, HTTPRequest
 
 from domoweb.models import to_json, Section, Widget, DataType, WidgetInstance, WidgetInstanceOption, WidgetInstanceSensor, WidgetInstanceCommand, WidgetInstanceDevice, SectionParam, Sensor, Theme
@@ -128,7 +128,7 @@ class ConfigurationHandler(BaseHandler):
             themeWidgetsStyle = Theme.getParamsDict(section.theme.id, ["widget"])
             options = SectionParam.getSection(section_id=id)
             dataOptions = dict([(r.key, r.value) for r in options])
-            widgetForm = WidgetStyleForm(data=dataOptions, prefix='params')
+            widgetForm = WidgetStyleForm(data=dataOptions, prefix='params_')
             backgrounds = [{'type':'uploaded', 'href': 'backgrounds/thumbnails/%s'%f, 'value': 'backgrounds/%s'%f} for f in os.listdir('/var/lib/domoweb/backgrounds') if any(f.lower().endswith(x) for x in ('.jpeg', '.jpg','.gif','.png'))]
             themeSectionStyle = Theme.getParamsDict(section.theme.id, ["section"])
             if 'SectionBackgroundImage' in themeSectionStyle:
@@ -142,10 +142,12 @@ class ConfigurationHandler(BaseHandler):
         action = self.get_argument('action', None)
         id = self.get_argument('id', None)
         if action=='widget':
+            config = { k: self.get_argument(k) for k in self.request.arguments }
             instance = WidgetInstance.get(id);
+            instance.widget.default_style = True if 'WidgetStyle-default' in config else False
             forms = WidgetInstanceForms(instance=instance, handler=self)
             if forms.validate():
-                forms.save();
+                forms.save(instance.widget.default_style);
                 if (instance.widget.default_style):
                     d = WidgetInstance.getFullOptionsDict(id=id)
                 else:
@@ -169,15 +171,21 @@ class ConfigurationHandler(BaseHandler):
             Section.update(id, self.get_argument('sectionName'), self.get_argument('sectionDescription', None))
             section = Section.get(id)
             themeSectionStyle = Theme.getParamsDict(section.theme.id, ["section"])
+            SectionParam.deleteAll(section_id=id)
+            widgetForm = WidgetStyleForm(handler=self, prefix='params_')
+            for key, value in widgetForm.data.iteritems():
+                if isinstance(key, list):
+                    value = ', '.join(value)
+                if value not in [None, u""] :
+                    SectionParam.saveKey(section_id=id, key=key, value=value)
 
-            widgetForm = WidgetStyleForm(handler=self, prefix='params')
-
+            savedKeys = widgetForm.data.keys()
             for p, v in self.request.arguments.iteritems():
                 if p.startswith( 'params' ):
-                    if v[0] and not (p[0] == 'params-SectionBackgroundImage' and v[0] == themeSectionStyle['SectionBackgroundImage']):
-                        SectionParam.saveKey(section_id=id, key=p[7:], value=v[0])
-                    else:
-                        SectionParam.delete(section_id=id, key=p[7:])
+                    keys = p[7:].split("-")
+                    if keys[0] not in savedKeys :
+                        if v[0] and not (p[0] == 'params_SectionBackgroundImage' and v[0] == themeSectionStyle['SectionBackgroundImage']):
+                            SectionParam.saveKey(section_id=id, key=p[7:], value=v[0])
 
             # Send section updated params
             json = to_json(Section.get(id))
