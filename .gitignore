@@ -22,3 +22,4 @@ _build/*
 ._*
 *.pem
 _build/
+packs/widgets/wigtests
