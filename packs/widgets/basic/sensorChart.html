@@ -180,22 +180,22 @@
                         chartValues.push(newValue[i][5]);
                     }
                     // display the chart
-                    var minvalue = Math.min.apply(Math, chartValues).toPrecision(3);
-                    var maxvalue = Math.max.apply(Math, chartValues).toPrecision(3);
+                    var minvalue = Math.min.apply(Math, chartValues);
+                    var maxvalue = Math.max.apply(Math, chartValues);
 
                     // as the graph history is an average, the current value could be lower or bigger than the min/max average value. So we adjust
-                    var current = this.$.number.innerHTML;
+                    var current = Number(this.$.number.innerHTML);
                     if (current > maxvalue) {
-                        this.max = current;
+                        this.max = current.toPrecision(3);
                     }
                     else {
-                        this.max = maxvalue;
+                        this.max = maxvalue.toPrecision(3);
                     }
                     if (current < minvalue) {
-                        this.min = current;
+                        this.min = current.toPrecision(3);
                     }
                     else {
-                        this.min = minvalue;
+                        this.min = minvalue.toPrecision(3);
                     }
                     $(this.$.spark).sparkline(chartValues, {type: 'line',
                                                             lineColor: this.options['chartColor'],

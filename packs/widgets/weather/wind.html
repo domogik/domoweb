@@ -184,8 +184,8 @@
                     } else {
                         this.$.gustdisplay.classList.add('inactive');
                     }
+                    this.resized();
                 }
-                this.resized();
             }
             directionvalueChanged(newValue, oldValue) {
                 newValue = newValue.stored_value;
