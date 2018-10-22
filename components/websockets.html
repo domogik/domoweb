@@ -26,13 +26,15 @@
         }
 
         WebsocketHandler.prototype.onMessage = function(msg) {
-            console.info("WS: message received", msg.data);
             var json = JSON.parse(msg.data),
-            listener,
-            match;
+                listener,
+                match;
+            // Reduce log to limit memory use on debug
             if (json[0] == 'sensor-history') {
-                console.log('break');
-                }
+                console.info("WS: message received", msg.data.substring(0, 200), " ...");
+            } else {
+                console.info("WS: message received", msg.data);
+            }
             for ( var i=0; i < this.listeners.length; i++ ) {
                 listener = this.listeners[i];
                 if (listener[3] != null) {
