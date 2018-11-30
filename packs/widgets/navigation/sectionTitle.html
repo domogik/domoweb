@@ -1,11 +1,11 @@
-<dom-module id="dmw-navigation-sectionTitle" extends="dmw-widget">
-    <template>
+<dom-module id="dmw-navigation-sectiontitle" extends="dmw-widget">
+    <template id="extended-styles">
         <style type="text/css">
             :host {
                 height: 100%;
                 padding: 5px;
             }
-            ::content #labelprimary {
+            :host #labelprimary {
                 position: relative;
                 top: 50%;
                 -webkit-transform: translateY(-50%);
@@ -14,32 +14,47 @@
                 overflow: hidden;
                 display: inline-block;
             }
-            ::content #labelsecondary {
+            :host #labelsecondary {
                 position: absolute;
                 bottom: 5px;
                 right: 5px;
                 font-style: italic;
             }
         </style>
-        <shadow></shadow>
     </template>
     <script>
-                class Dmw extends DmwWidget {
-            static get is () { return 'dmw-navigation-sectionTitle',
-            connectedCallback() {
-                super.connectedCallback();
+    (function () {
+        let memoizedTemplate;
+
+        class DmwNavigationSectionTitle extends DmwWidget {
+            static get is () { return 'dmw-navigation-sectiontitle';}
+            static get template() {
+              if (!memoizedTemplate) {
+                // start with clone of superclass template
+                memoizedTemplate = DmwWidget.template.cloneNode(true);
+                // get some stuff you want to insert into super template
+                const subStyle = Polymer.DomModule.import(this.is, 'template#extended-styles').content;
+                // insert stuff in template after the super template's <style>
+                const superStyle = memoizedTemplate.content.querySelector('style');
+                superStyle.parentNode.insertBefore(subStyle, superStyle.nextSibling);
+              }
+              return memoizedTemplate;
+            }
+
+            constructor() {
+                super();
                 this.section = document.getElementById('currentsection');
-            },
+            }
             loadingDone() {
                 this.setSection();
-            },
+            }
             optionsUpdated() {
                 this.setSection();
-            },
-            setSection: function () {
+            }
+            setSection() {
                 this.section.addEventListener('section-updated', this.sectionUpdated.bind(this));
                 this.sectionUpdated();
-            },
+            }
             sectionUpdated() {
                 if (this.options['overrideLabel']) {
                     this.$.labelprimary.innerHTML = this.options['overrideLabel'];
@@ -52,8 +67,10 @@
                     this.labelsecondary = this.section.description;
                 }
                 this.adjustText(this, this.$.labelprimary);
-            },
+            }
 	    };
-    customElements.define(Dmw.is, Dmw);
+    customElements.define(DmwNavigationSectionTitle.is, DmwNavigationSectionTitle);
+    })();
+
     </script>
 </dom-module>

@@ -14,6 +14,10 @@
             "name" : "Section title",
             "height" : 1,
             "width" : 3,
+            "min_height" : 1,
+            "min_width" : 2,
+            "max_height" : 3,
+            "max_width" : 6,
             "options" : {
                 "overrideLabel" : {
                     "name": "Override label",
@@ -41,6 +45,10 @@
             "name" : "Simple navigation",
             "height" : 1,
             "width" : 1,
+            "min_height" : 1,
+            "min_width" : 1,
+            "max_height" : 3,
+            "max_width" : 3,
             "options" : {
                 "targetSection" : {
                     "name": "Section id to go to",
