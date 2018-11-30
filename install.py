@@ -351,7 +351,7 @@ def install_dependencies():
         'alembic',
         'tornado >= 3.1',
         'simplejson >= 1.9.2',
-        'WTForms >= 2.0',
+        'WTForms >= 2.1',
         'WTForms-Components >= 0.10.3',
         'pillow < 4.0.0',
         'colour >= 0.1.5',
