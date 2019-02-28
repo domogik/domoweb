@@ -117,7 +117,7 @@
                 "vigipollens" : {
                     "name": "Pollens",
                     "description": "Allergen vigilance",
-                    "types" : ["vigipollens"],
+                    "types" : ["vigiallergen.pollens-rnsa-dep"],
                     "required": true
                 }
             }
