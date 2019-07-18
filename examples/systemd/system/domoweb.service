@@ -1,0 +1,21 @@
+[Unit]
+Description=Domweb daemon
+Documentation=http://domogik.readthedocs.io/en/master/
+Before=shutdown.target
+After=domogik.service
+Requisite=domogik.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/default/domoweb
+ExecStart=/usr/bin/python /opt/dmg/domoweb/Domoweb.py
+User=domogik
+PIDFile=/var/run/domoweb/domoweb.pid
+Environment=PATH=$PATH:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+#StandardOutput=/var/log/domoweb/console.log
+#StandardError=/var/log/domoweb/console.log
+
+
+[Install]
+WantedBy=multi-user.target
